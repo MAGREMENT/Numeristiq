@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuSolver", "SudokuSolver\SudokuSolver.csproj", "{EBD1E579-B969-40E4-9E58-DF3A51C1008E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{AB1A5912-C1D9-4603-B391-B50A00BD5CCA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EBD1E579-B969-40E4-9E58-DF3A51C1008E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBD1E579-B969-40E4-9E58-DF3A51C1008E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBD1E579-B969-40E4-9E58-DF3A51C1008E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBD1E579-B969-40E4-9E58-DF3A51C1008E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1A5912-C1D9-4603-B391-B50A00BD5CCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1A5912-C1D9-4603-B391-B50A00BD5CCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1A5912-C1D9-4603-B391-B50A00BD5CCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1A5912-C1D9-4603-B391-B50A00BD5CCA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
