@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Model.Strategies;
+﻿using Model.Strategies.IHaveToFindBetterNames;
 using Model.Strategies.SamePossibilities;
 using Model.Strategies.SinglePossibility;
 
@@ -13,7 +11,9 @@ public class Solver : ISolver
 
     private readonly ISolverStrategy[] _strategies =
     {
-        new SinglePossibilityStrategyPackage(), new MiniGridDeductionStrategy(), new SamePossibilitiesStrategyPackage()
+        new SinglePossibilityStrategyPackage(),
+        new SamePossibilitiesStrategyPackage(),
+        new GroupedPossibilitiesStrategyPackage()
     };
     
     public delegate void OnSudokuChange();
@@ -76,16 +76,10 @@ public class Solver : ISolver
 
     public void Solve()
     {
-        bool wasProgressMade = true;
-        while (wasProgressMade)
+        for (int i = 0; i < _strategies.Length; i++)
         {
-            wasProgressMade = false;
-
-            foreach (var strategy in _strategies)
-            {
-                if (strategy.ApplyOnce(this)) wasProgressMade = true;
-                if (Sudoku.IsComplete()) return;
-            }
+            if (Sudoku.IsComplete()) return;
+            if (_strategies[i].ApplyOnce(this)) i = -1;
         }
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Model.Strategies;
+namespace Model.Strategies.IHaveToFindBetterNames;
 
 public class MiniGridDeductionStrategy : ISolverStrategy
 {
@@ -54,7 +54,7 @@ public class MiniGridDeductionStrategy : ISolverStrategy
                 var realCol = miniCol * 3 + j;
                 
                 if (solver.Sudoku[realRow, realCol] == number) return new List<int[]>();
-                if (solver.Sudoku[realRow, realCol] == 0 && solver.Possibilities[realRow, realCol].GetPossibilities().Contains(number))
+                if (solver.Sudoku[realRow, realCol] == 0 && solver.Possibilities[realRow, realCol].Peek(number))
                     result.Add(new[]{realRow, realCol});
             }
         }

@@ -4,6 +4,8 @@ public class RowSinglePossibilityStrategy : ISolverStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
+        bool wasProgressMade = false;
+        
         for (int row = 0; row < 9; row++)
         {
             for (int n = 1; n <= 9; n++)
@@ -12,12 +14,12 @@ public class RowSinglePossibilityStrategy : ISolverStrategy
                 if (pos != -1)
                 {
                     solver.AddDefinitiveNumber(n, row, pos);
-                    return true;
+                    wasProgressMade = true;
                 }
             } 
         }
         
-        return false;
+        return wasProgressMade;
     }
     
     private int CheckRowForUnique(ISolver solver, int row, int number)

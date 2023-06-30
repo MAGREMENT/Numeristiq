@@ -4,6 +4,8 @@ public class ColumnSinglePossibilityStrategy : ISolverStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
+        bool wasProgressMade = false;
+        
         for (int col = 0; col < 9; col++)
         {
             for (int n = 1; n <= 9; n++)
@@ -12,12 +14,12 @@ public class ColumnSinglePossibilityStrategy : ISolverStrategy
                 if (pos != -1)
                 {
                     solver.AddDefinitiveNumber(n, pos, col);
-                    return true;
+                    wasProgressMade = true;
                 }
             } 
         }
         
-        return false;
+        return wasProgressMade;
     }
     
     private int CheckColumnForUnique(ISolver solver, int col, int number)

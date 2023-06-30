@@ -8,6 +8,8 @@ public class RowSamePossibilitiesStrategy : ISolverStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
+        bool wasProgressMade = false;
+        
         for (int row = 0; row < 9; row++)
         {
             var listOfPossibilities = GetListOfPossibilities(solver, row);
@@ -27,13 +29,13 @@ public class RowSamePossibilitiesStrategy : ISolverStrategy
 
                     if (currentList.Count == currentList[0].Count)
                     {
-                        return RemovePossibilitiesFromRow(solver, row, currentList[0]);
+                        wasProgressMade = RemovePossibilitiesFromRow(solver, row, currentList[0]);
                     }
                 }
             }
         }
 
-        return false;
+        return wasProgressMade;
     }
 
     private List<CellPossibilities> GetListOfPossibilities(ISolver solver, int row)

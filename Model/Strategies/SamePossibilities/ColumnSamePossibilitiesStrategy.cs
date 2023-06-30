@@ -6,6 +6,8 @@ public class ColumnSamePossibilitiesStrategy : ISolverStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
+        bool wasProgressMade = false;
+        
         for (int col = 0; col < 9; col++)
         {
             var listOfPossibilities = GetListOfPossibilities(solver, col);
@@ -25,13 +27,13 @@ public class ColumnSamePossibilitiesStrategy : ISolverStrategy
 
                     if (currentList.Count == currentList[0].Count)
                     {
-                        return RemovePossibilitiesFromColumn(solver, col, currentList[0]);
+                        wasProgressMade = RemovePossibilitiesFromColumn(solver, col, currentList[0]);
                     }
                 }
             }
         }
 
-        return false;
+        return wasProgressMade;
     }
 
     private List<CellPossibilities> GetListOfPossibilities(ISolver solver, int col)

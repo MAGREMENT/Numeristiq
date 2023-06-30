@@ -6,6 +6,8 @@ public class MiniGridSamePossibilitiesStrategy : ISolverStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
+        bool wasProgressMade = false;
+        
         for(int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
@@ -27,14 +29,14 @@ public class MiniGridSamePossibilitiesStrategy : ISolverStrategy
 
                         if (currentList.Count == currentList[0].Count)
                         {
-                            return RemovePossibilitiesFromMiniGrid(solver, miniRow, miniCol, currentList[0]);
+                            wasProgressMade = RemovePossibilitiesFromMiniGrid(solver, miniRow, miniCol, currentList[0]);
                         }
                     }
                 }
             }
         }
 
-        return false;
+        return wasProgressMade;
     }
 
     private List<CellPossibilities> GetListOfPossibilities(ISolver solver, int miniRow, int miniCol)

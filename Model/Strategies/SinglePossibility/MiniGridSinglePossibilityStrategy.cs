@@ -4,22 +4,24 @@ public class MiniGridSinglePossibilityStrategy : ISolverStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
+        bool wasProgressMade = false;
+        
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
             for (int gridCol = 0; gridCol < 3; gridCol++)
             {
                 for (int n = 1; n <= 9; n++)
                 {
-                    int[]? pos = null;
+                    int[]? pos = CheckMiniGridForUnique(solver, gridRow, gridCol, n);
                     if (pos is not null)
                     {
                         solver.AddDefinitiveNumber(n, pos[0], pos[1]);
-                        return true; //TODO Modifier pr pas retourner tt de suite
+                        wasProgressMade = true;
                     }
                 }
             }
         }
-        return false;
+        return wasProgressMade;
     }
     
     private int[]? CheckMiniGridForUnique(ISolver solver, int gridRow, int gridCol, int number)

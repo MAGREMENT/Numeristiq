@@ -1,18 +1,7 @@
 ﻿namespace Model.Strategies.SamePossibilities;
 
-public class SamePossibilitiesStrategyPackage : ISolverStrategyPackage
+public class SamePossibilitiesStrategyPackage : SolverStrategyPackage
 {
-    private readonly ISolverStrategy[] _strategies = {new RowSamePossibilitiesStrategy(),
-        new ColumnSamePossibilitiesStrategy(), new MiniGridSamePossibilitiesStrategy()};
-    
-    public bool ApplyOnce(ISolver solver)
-    {
-        bool wasProgressMade = false;
-        foreach (var strategy in _strategies)
-        {
-            if (strategy.ApplyOnce(solver)) wasProgressMade = true;
-        }
-
-        return wasProgressMade;
-    }
+    public SamePossibilitiesStrategyPackage() : base(new RowSamePossibilitiesStrategy(),
+        new ColumnSamePossibilitiesStrategy(), new MiniGridSamePossibilitiesStrategy()) { }
 }

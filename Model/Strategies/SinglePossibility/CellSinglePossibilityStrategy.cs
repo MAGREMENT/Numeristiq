@@ -22,6 +22,7 @@ public class CellSinglePossibilityStrategy : ISolverStrategy
                 }
             }
         }
+        
         return wasProgressMade;
     }
 }
