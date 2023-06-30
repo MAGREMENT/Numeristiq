@@ -17,6 +17,11 @@ namespace SudokuSolver
 
             _main = (FindName("Main") as StackPanel)!;
             _aside = (FindName("Aside") as StackPanel)!;
+
+            ((SudokuUserControl)_main.Children[0]).IsReady += () =>
+            {
+                ((Button)((StackPanel)_main.Children[2]).Children[0]).IsEnabled = true;
+            };
         }
 
         private void UpdateSudoku(string asString)
@@ -32,16 +37,13 @@ namespace SudokuSolver
         private void SolveSudoku(object sender, RoutedEventArgs e)
         {
             if (sender is not Button butt) return;
-
             butt.IsEnabled = false;
-            
+
             bool? stepByStep = ((CheckBox)_aside.Children[1]).IsChecked;
             if (stepByStep is null || (bool) !stepByStep) ((SudokuUserControl) _main.Children[0]).SolveSudoku();
             else ((SudokuUserControl) _main.Children[0]).RunUntilProgress();
 
             ((TextBox)_main.Children[1]).Text = ((SudokuUserControl)_main.Children[0]).SudokuAsString();
-
-            butt.IsEnabled = true;
         }
 
         private void ClearSudoku(object sender, RoutedEventArgs e)

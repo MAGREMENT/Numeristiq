@@ -14,6 +14,9 @@ public partial class SudokuUserControl : UserControl
 
     private Solver _currentSolver = new(new Sudoku());
     private bool _seePossibilities;
+
+    public delegate void OnReady();
+    public event OnReady? IsReady;
     
     public SudokuUserControl()
     {
@@ -77,8 +80,29 @@ public partial class SudokuUserControl : UserControl
         }
     }
 
-    private async void UpdateSolverAsync(List<int[]> changes)
+    public void UpdateIfDifferent(string asString)
     {
+        if(!_currentSolver.Sudoku.AsString().Equals(asString)) InitSolver(new Solver(new Sudoku(asString)));
+    }
+
+    public void SolveSudoku()
+    {
+        _currentSolver.Solve();
+        InitSolver(_currentSolver);
+        IsReady?.Invoke();
+    }
+    
+    public void RunAllStrategiesOnce()
+    {
+        _currentSolver.RunAllStrategiesOnce();
+        InitSolver(_currentSolver);
+        IsReady?.Invoke();
+    }
+
+    public async void RunUntilProgress()
+    {
+        var changes = _currentSolver.RunUntilProgress();
+        
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -101,28 +125,8 @@ public partial class SudokuUserControl : UserControl
             SudokuCellUserControl current = GetTo(coord[0], coord[1]);
             UpdateCell(current, coord[0], coord[1]);
         }
-    }
-
-    public void UpdateIfDifferent(string asString)
-    {
-        if(!_currentSolver.Sudoku.AsString().Equals(asString)) InitSolver(new Solver(new Sudoku(asString)));
-    }
-
-    public void SolveSudoku()
-    {
-        _currentSolver.Solve();
-        InitSolver(_currentSolver);
-    }
-    
-    public void RunAllStrategiesOnce()
-    {
-        _currentSolver.RunAllStrategiesOnce();
-        InitSolver(_currentSolver);
-    }
-
-    public void RunUntilProgress()
-    {
-        UpdateSolverAsync(_currentSolver.RunUntilProgress());
+        
+        IsReady?.Invoke();
     }
 
     public void ClearSudoku()
