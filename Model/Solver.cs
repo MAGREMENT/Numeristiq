@@ -1,4 +1,5 @@
-﻿using Model.Strategies.IHaveToFindBetterNames;
+﻿using System.Collections.Generic;
+using Model.Strategies.IHaveToFindBetterNames;
 using Model.Strategies.SamePossibilities;
 using Model.Strategies.SinglePossibility;
 
@@ -9,15 +10,20 @@ public class Solver : ISolver
     public CellPossibilities[,] Possibilities { get; init; }
     public Sudoku Sudoku { get; }
 
-    private readonly ISolverStrategy[] _strategies =
+    private readonly SolverStrategyPackage[] _strategies =
     {
         new SinglePossibilityStrategyPackage(),
         new SamePossibilitiesStrategyPackage(),
         new GroupedPossibilitiesStrategyPackage()
     };
     
-    public delegate void OnSudokuChange();
-    public event OnSudokuChange? NumberAdded;
+    public delegate void OnNumberAdded(int row, int col);
+    public event OnNumberAdded? NumberAdded;
+
+    public delegate void OnPossibilityRemoved(int row, int col);
+    public event OnPossibilityRemoved? PossibilityRemoved;
+
+    private List<int[]> _listOfChanges = new();
 
     public Solver(Sudoku s)
     {
@@ -49,8 +55,15 @@ public class Solver : ISolver
         if (Sudoku[row, col] != 0) return false;
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        NumberAdded?.Invoke();
+        NumberAdded?.Invoke(row, col);
         return true;
+    }
+
+    public bool RemovePossibility(int possibility, int row, int col)
+    {
+        bool buffer = Possibilities[row, col].Remove(possibility);
+        if(buffer) PossibilityRemoved?.Invoke(row, col);
+        return buffer;
     }
 
     private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)
@@ -79,9 +92,41 @@ public class Solver : ISolver
         for (int i = 0; i < _strategies.Length; i++)
         {
             if (Sudoku.IsComplete()) return;
-            if (_strategies[i].ApplyOnce(this)) i = -1;
+            if (_strategies[i].ApplyAllOnce(this)) i = -1;
         }
     }
+
+    public void RunAllStrategiesOnce()
+    {
+        foreach (var strategy in _strategies)
+        {
+            strategy.ApplyAllOnce(this);
+        }
+    }
+
+    public List<int[]> RunUntilProgress()
+    {
+        _listOfChanges.Clear();
+        NumberAdded += AddToListOfChanges;
+        PossibilityRemoved += AddToListOfChanges;
+        
+        foreach (var strategy in _strategies)
+        {
+            if (strategy.ApplyUntilProgress(this)) break;
+        }
+        
+        NumberAdded -= AddToListOfChanges;
+        PossibilityRemoved -= AddToListOfChanges;
+        
+        return _listOfChanges;
+    }
+
+    private void AddToListOfChanges(int row, int col)
+    {
+        _listOfChanges.Add(new[] {row, col});
+    }
+    
+    
 
 }
 

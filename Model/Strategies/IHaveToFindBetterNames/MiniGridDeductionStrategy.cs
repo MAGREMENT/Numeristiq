@@ -24,7 +24,7 @@ public class MiniGridDeductionStrategy : ISolverStrategy
                             for (int col = 0; col < 9; col++)
                             {
                                 if (col / 3 != miniCol &&
-                                    solver.Possibilities[row, col].Remove(number)) wasProgressMade = true;
+                                    solver.RemovePossibility(number, row, col)) wasProgressMade = true;
                             }
                         }else if (HasSameColumn(ppimg))
                         {
@@ -32,7 +32,7 @@ public class MiniGridDeductionStrategy : ISolverStrategy
                             for (int row = 0; row < 9; row++)
                             {
                                 if (row / 3 != miniRow &&
-                                    solver.Possibilities[row, col].Remove(number)) wasProgressMade = true;
+                                    solver.RemovePossibility(number, row, col)) wasProgressMade = true;
                             }
                         }
                     }

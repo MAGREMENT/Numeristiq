@@ -6,6 +6,8 @@ public interface ISolver
 {
     bool AddDefinitiveNumber(int number, int row, int col);
 
+    bool RemovePossibility(int possibility, int row, int col);
+
     public Sudoku Sudoku { get; }
 
     public CellPossibilities[,] Possibilities { get; init; }

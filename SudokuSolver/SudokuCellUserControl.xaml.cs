@@ -24,6 +24,16 @@ public partial class SudokuCellUserControl : UserControl
         _backGround.MouseLeftButtonDown += OnClick;
     }
 
+    public void HighLight()
+    {
+        _backGround.Background = new SolidColorBrush(Colors.Aqua);
+    }
+
+    public void UnHighLight()
+    {
+        _backGround.Background = new SolidColorBrush(Colors.White);
+    }
+
     private void OnClick(object sender, MouseEventArgs e)
     {
         //TODO

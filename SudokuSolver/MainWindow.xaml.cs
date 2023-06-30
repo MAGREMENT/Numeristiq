@@ -31,8 +31,17 @@ namespace SudokuSolver
 
         private void SolveSudoku(object sender, RoutedEventArgs e)
         {
-            ((SudokuUserControl) _main.Children[0]).SolveSudoku();
+            if (sender is not Button butt) return;
+
+            butt.IsEnabled = false;
+            
+            bool? stepByStep = ((CheckBox)_aside.Children[1]).IsChecked;
+            if (stepByStep is null || (bool) !stepByStep) ((SudokuUserControl) _main.Children[0]).SolveSudoku();
+            else ((SudokuUserControl) _main.Children[0]).RunUntilProgress();
+
             ((TextBox)_main.Children[1]).Text = ((SudokuUserControl)_main.Children[0]).SudokuAsString();
+
+            butt.IsEnabled = true;
         }
 
         private void ClearSudoku(object sender, RoutedEventArgs e)

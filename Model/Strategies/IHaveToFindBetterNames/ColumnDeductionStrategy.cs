@@ -28,7 +28,7 @@ public class ColumnDeductionStrategy : ISolverStrategy
                                 int realCol = miniCol * 3 + c;
 
                                 if (realCol != col &&
-                                    solver.Possibilities[realRow, realCol].Remove(number)) wasProgressMade = true;
+                                    solver.RemovePossibility(number, realRow, realCol)) wasProgressMade = true;
                             }
                         }
                     }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using Model;
@@ -49,7 +51,7 @@ public partial class SudokuUserControl : UserControl
         }
     }
 
-    public void InitSolver(Solver solver)
+    private void InitSolver(Solver solver)
     {
         _currentSolver = solver;
 
@@ -57,18 +59,47 @@ public partial class SudokuUserControl : UserControl
         {
             for (int j = 0; j < 9; j++)
             {
-                if (i == 1 && j == 6)
-                {
-                    int a = 0;
-                }
                 SudokuCellUserControl current = GetTo(i, j);
-                if(solver.Sudoku[i, j] != 0) current.SetDefinitiveNumber(solver.Sudoku[i, j]);
-                else
-                {
-                    if(_seePossibilities) current.SetPossibilities(solver.Possibilities[i, j].GetPossibilities());
-                    else current.Void();
-                }
+                current.UnHighLight();
+                
+                UpdateCell(current, i, j);
             }
+        }
+    }
+
+    private void UpdateCell(SudokuCellUserControl current, int row, int col)
+    {
+        if(_currentSolver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_currentSolver.Sudoku[row, col]);
+        else
+        {
+            if(_seePossibilities) current.SetPossibilities(_currentSolver.Possibilities[row, col].GetPossibilities());
+            else current.Void();
+        }
+    }
+
+    private async void UpdateSolverAsync(List<int[]> changes)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                SudokuCellUserControl current = GetTo(i, j);
+                current.UnHighLight();
+            }
+        }
+
+        foreach (var coord in changes)
+        {
+            SudokuCellUserControl current = GetTo(coord[0], coord[1]);
+            current.HighLight();
+        }
+
+        await Task.Delay(TimeSpan.FromSeconds(2));
+
+        foreach (var coord in changes)
+        {
+            SudokuCellUserControl current = GetTo(coord[0], coord[1]);
+            UpdateCell(current, coord[0], coord[1]);
         }
     }
 
@@ -81,6 +112,17 @@ public partial class SudokuUserControl : UserControl
     {
         _currentSolver.Solve();
         InitSolver(_currentSolver);
+    }
+    
+    public void RunAllStrategiesOnce()
+    {
+        _currentSolver.RunAllStrategiesOnce();
+        InitSolver(_currentSolver);
+    }
+
+    public void RunUntilProgress()
+    {
+        UpdateSolverAsync(_currentSolver.RunUntilProgress());
     }
 
     public void ClearSudoku()

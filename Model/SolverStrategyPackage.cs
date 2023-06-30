@@ -1,6 +1,8 @@
-﻿namespace Model;
+﻿using System.Linq;
 
-public abstract class SolverStrategyPackage : ISolverStrategy
+namespace Model;
+
+public abstract class SolverStrategyPackage
 {
     private readonly ISolverStrategy[] _strategies;
 
@@ -9,7 +11,7 @@ public abstract class SolverStrategyPackage : ISolverStrategy
         _strategies = strategies;
     }
     
-    public bool ApplyOnce(ISolver solver)
+    public bool ApplyAllOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         foreach (var strategy in _strategies)
@@ -18,5 +20,10 @@ public abstract class SolverStrategyPackage : ISolverStrategy
         }
 
         return wasProgressMade;
+    }
+
+    public bool ApplyUntilProgress(ISolver solver)
+    {
+        return _strategies.Any(strategy => strategy.ApplyOnce(solver));
     }
 }

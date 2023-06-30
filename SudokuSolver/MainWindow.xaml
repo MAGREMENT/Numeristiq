@@ -21,6 +21,7 @@
         <StackPanel x:Name="Aside" Width="280">
             <CheckBox Checked="SeePossibilities" Unchecked="UnSeePossibilities" HorizontalAlignment="Center"
                       Margin="0, 0, 0, 10">See possibilities</CheckBox>
+            <CheckBox HorizontalAlignment="Center" Margin="0, 0, 0, 10">Step by step</CheckBox>
             <TextBox Width="100" Height="100" FontSize="70" HorizontalAlignment="Center"
                      TextAlignment="Center"></TextBox>
         </StackPanel>

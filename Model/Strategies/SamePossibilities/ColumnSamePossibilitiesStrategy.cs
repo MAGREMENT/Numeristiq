@@ -55,10 +55,9 @@ public class ColumnSamePossibilitiesStrategy : ISolverStrategy
         {
             if (solver.Sudoku[row, col] == 0 && !solver.Possibilities[row, col].Equals(toRemove))
             {
-                CellPossibilities current = solver.Possibilities[row, col];
                 foreach (var number in toRemove.GetPossibilities())
                 {
-                    if (current.Remove(number)) wasProgressMade = true;
+                    if (solver.RemovePossibility(number, row, col)) wasProgressMade = true;
                 }
             }
         }

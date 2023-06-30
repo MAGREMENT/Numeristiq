@@ -24,7 +24,7 @@ public class Testing
 
         var solver = new Solver(sud);
         int numbersAdded = 0;
-        solver.NumberAdded += () => numbersAdded++;
+        solver.NumberAdded += (_, _) => numbersAdded++;
         solver.Solve();
         Console.WriteLine("Sudoku après résolution : ");
         Console.WriteLine(solver.Sudoku);
