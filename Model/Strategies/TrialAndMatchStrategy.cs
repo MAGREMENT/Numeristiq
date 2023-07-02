@@ -56,6 +56,7 @@ public class TrialAndMatchStrategy : IStrategy
         foreach (var possibility in possibilities)
         {
             Solver simulation = new Solver(solver.Sudoku.Copy());
+            simulation.Strategies.RemoveAt(3); //TODO make responsive
             simulation.AddDefinitiveNumber(possibility, row, col);
             simulation.Solve();
 

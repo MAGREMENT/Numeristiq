@@ -11,7 +11,7 @@ public class Solver : ISolver
     public CellPossibilities[,] Possibilities { get; init; }
     public Sudoku Sudoku { get; }
 
-    private readonly IStrategy[] _strategies =
+    public List<IStrategy> Strategies { get; } = new()
     {
         new SinglePossibilityStrategyPackage(),
         new SamePossibilitiesStrategyPackage(),
@@ -25,7 +25,7 @@ public class Solver : ISolver
     public delegate void OnPossibilityRemoved(int row, int col);
     public event OnPossibilityRemoved? PossibilityRemoved;
 
-    private List<int[]> _listOfChanges = new();
+    private readonly List<int[]> _listOfChanges = new();
 
     public Solver(Sudoku s)
     {
@@ -91,16 +91,16 @@ public class Solver : ISolver
 
     public void Solve()
     {
-        for (int i = 0; i < _strategies.Length; i++)
+        for (int i = 0; i < Strategies.Count; i++)
         {
             if (Sudoku.IsComplete()) return;
-            if (_strategies[i].ApplyOnce(this)) i = -1;
+            if (Strategies[i].ApplyOnce(this)) i = -1;
         }
     }
 
     public void RunAllStrategiesOnce()
     {
-        foreach (var strategy in _strategies)
+        foreach (var strategy in Strategies)
         {
             strategy.ApplyOnce(this);
         }
@@ -112,7 +112,7 @@ public class Solver : ISolver
         NumberAdded += AddToListOfChanges;
         PossibilityRemoved += AddToListOfChanges;
         
-        foreach (var strategy in _strategies)
+        foreach (var strategy in Strategies)
         {
             if (strategy.ApplyUntilProgress(this)) break;
         }
