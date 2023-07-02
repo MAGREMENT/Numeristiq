@@ -1,6 +1,6 @@
 ﻿namespace Model;
 
-public interface ISolverStrategy
+public interface ISubStrategy
 {
     bool ApplyOnce(ISolver solver);
 }

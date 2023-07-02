@@ -2,7 +2,7 @@
 
 namespace Model.Strategies.SamePossibilities;
 
-public class MiniGridSamePossibilitiesStrategy : ISolverStrategy
+public class MiniGridSamePossibilitiesStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {

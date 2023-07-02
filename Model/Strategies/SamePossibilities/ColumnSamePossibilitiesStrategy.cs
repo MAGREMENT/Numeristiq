@@ -2,7 +2,7 @@
 
 namespace Model.Strategies.SamePossibilities;
 
-public class ColumnSamePossibilitiesStrategy : ISolverStrategy
+public class ColumnSamePossibilitiesStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {

@@ -2,16 +2,16 @@
 
 namespace Model;
 
-public abstract class SolverStrategyPackage
+public abstract class StrategyPackage : IStrategy
 {
-    private readonly ISolverStrategy[] _strategies;
+    private readonly ISubStrategy[] _strategies;
 
-    protected SolverStrategyPackage(params ISolverStrategy[] strategies)
+    protected StrategyPackage(params ISubStrategy[] strategies)
     {
         _strategies = strategies;
     }
     
-    public bool ApplyAllOnce(ISolver solver)
+    public bool ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         foreach (var strategy in _strategies)
@@ -24,6 +24,11 @@ public abstract class SolverStrategyPackage
 
     public bool ApplyUntilProgress(ISolver solver)
     {
-        return _strategies.Any(strategy => strategy.ApplyOnce(solver));
+        foreach (var strategy in _strategies)
+        {
+            if (strategy.ApplyOnce(solver)) return true;
+        }
+        
+        return false;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Model;
 
 namespace SudokuSolver
 {
@@ -10,6 +11,8 @@ namespace SudokuSolver
     {
         private readonly StackPanel _main;
         private readonly StackPanel _aside;
+
+        private bool _justSolvedSudoku = false;
         
         public MainWindow()
         {
@@ -26,7 +29,8 @@ namespace SudokuSolver
 
         private void UpdateSudoku(string asString)
         {
-            ((SudokuUserControl) _main.Children[0]).UpdateIfDifferent(asString);
+            if (!_justSolvedSudoku) ((SudokuUserControl)_main.Children[0]).InitSolver(new Solver(new Sudoku(asString)));
+            else _justSolvedSudoku = false;
         }
 
         private void UpdateSudoku(object sender, TextChangedEventArgs e)
@@ -42,6 +46,8 @@ namespace SudokuSolver
             bool? stepByStep = ((CheckBox)_aside.Children[1]).IsChecked;
             if (stepByStep is null || (bool) !stepByStep) ((SudokuUserControl) _main.Children[0]).SolveSudoku();
             else ((SudokuUserControl) _main.Children[0]).RunUntilProgress();
+
+            _justSolvedSudoku = true;
 
             ((TextBox)_main.Children[1]).Text = ((SudokuUserControl)_main.Children[0]).SudokuAsString();
         }

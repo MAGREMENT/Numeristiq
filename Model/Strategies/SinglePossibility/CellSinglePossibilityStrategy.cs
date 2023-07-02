@@ -2,7 +2,7 @@
 
 namespace Model.Strategies.SinglePossibility;
 
-public class CellSinglePossibilityStrategy : ISolverStrategy
+public class CellSinglePossibilityStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {

@@ -1,4 +1,6 @@
-﻿namespace Model;
+﻿using System.Text.RegularExpressions;
+
+namespace Model;
 
 public class Sudoku
 {
@@ -31,6 +33,8 @@ public class Sudoku
         bool isCounting = false;
         string buffer = "";
 
+        Regex digits = new Regex("[0-9]");
+
         foreach (var c in asString)
         {
             switch (c)
@@ -57,6 +61,12 @@ public class Sudoku
                     break;
                 default:
                 {
+                    if (!digits.IsMatch(c.ToString()))
+                    {
+                        FillOfVoid(row, column, 81 - row * GridSize - column);
+                        return;
+                    }
+                    
                     if (isCounting) buffer += c;
                     else
                     {
@@ -232,6 +242,20 @@ public class Sudoku
             if (value < 0 || value > GridSize || _grid[row, column].IsFixed) return;
             _grid[row, column].Number = value;
         }
+    }
+
+    public Sudoku Copy()
+    {
+        Sudoku result = new Sudoku();
+        for (int i = 0; i < GridSize; i++)
+        {
+            for (int j = 0; j < GridSize; j++)
+            {
+                result[i, j] = this[i, j];
+            }
+        }
+
+        return result;
     }
 
     public override string ToString()

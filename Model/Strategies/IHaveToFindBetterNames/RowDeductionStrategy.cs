@@ -2,7 +2,7 @@
 
 namespace Model.Strategies.IHaveToFindBetterNames;
 
-public class RowDeductionStrategy : ISolverStrategy
+public class RowDeductionStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
@@ -27,7 +27,7 @@ public class RowDeductionStrategy : ISolverStrategy
                                 int realRow = miniRow * 3 + r;
                                 int realCol = miniCol * 3 + c;
 
-                                if (realRow != row &&
+                                if (realRow != row && solver.Sudoku[realRow, realCol] == 0 &&
                                     solver.RemovePossibility(number, realRow, realCol)) wasProgressMade = true;
                             }
                         }

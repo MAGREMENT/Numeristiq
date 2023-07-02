@@ -1,6 +1,6 @@
 ﻿namespace Model.Strategies.SinglePossibility;
 
-public class ColumnSinglePossibilityStrategy : ISolverStrategy
+public class ColumnSinglePossibilityStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {

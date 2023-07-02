@@ -54,7 +54,7 @@ public partial class SudokuUserControl : UserControl
         }
     }
 
-    private void InitSolver(Solver solver)
+    public void InitSolver(Solver solver)
     {
         _currentSolver = solver;
 
@@ -78,11 +78,6 @@ public partial class SudokuUserControl : UserControl
             if(_seePossibilities) current.SetPossibilities(_currentSolver.Possibilities[row, col].GetPossibilities());
             else current.Void();
         }
-    }
-
-    public void UpdateIfDifferent(string asString)
-    {
-        if(!_currentSolver.Sudoku.AsString().Equals(asString)) InitSolver(new Solver(new Sudoku(asString)));
     }
 
     public void SolveSudoku()
@@ -118,14 +113,18 @@ public partial class SudokuUserControl : UserControl
             current.HighLight();
         }
 
-        await Task.Delay(TimeSpan.FromSeconds(2));
+        await Task.Delay(TimeSpan.FromSeconds(0.5));
 
-        foreach (var coord in changes)
-        {
-            SudokuCellUserControl current = GetTo(coord[0], coord[1]);
-            UpdateCell(current, coord[0], coord[1]);
-        }
         
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                SudokuCellUserControl current = GetTo(i, j);
+                UpdateCell(current, i, j);
+            }
+        }
+
         IsReady?.Invoke();
     }
 

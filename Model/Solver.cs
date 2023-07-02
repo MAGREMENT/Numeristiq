@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Strategies;
 using Model.Strategies.IHaveToFindBetterNames;
 using Model.Strategies.SamePossibilities;
 using Model.Strategies.SinglePossibility;
@@ -10,11 +11,12 @@ public class Solver : ISolver
     public CellPossibilities[,] Possibilities { get; init; }
     public Sudoku Sudoku { get; }
 
-    private readonly SolverStrategyPackage[] _strategies =
+    private readonly IStrategy[] _strategies =
     {
         new SinglePossibilityStrategyPackage(),
         new SamePossibilitiesStrategyPackage(),
-        new GroupedPossibilitiesStrategyPackage()
+        new GroupedPossibilitiesStrategyPackage(),
+        new TrialAndMatchStrategy(2)
     };
     
     public delegate void OnNumberAdded(int row, int col);
@@ -92,7 +94,7 @@ public class Solver : ISolver
         for (int i = 0; i < _strategies.Length; i++)
         {
             if (Sudoku.IsComplete()) return;
-            if (_strategies[i].ApplyAllOnce(this)) i = -1;
+            if (_strategies[i].ApplyOnce(this)) i = -1;
         }
     }
 
@@ -100,7 +102,7 @@ public class Solver : ISolver
     {
         foreach (var strategy in _strategies)
         {
-            strategy.ApplyAllOnce(this);
+            strategy.ApplyOnce(this);
         }
     }
 

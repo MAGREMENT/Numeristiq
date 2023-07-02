@@ -1,6 +1,6 @@
 ﻿namespace Model.Strategies.SinglePossibility;
 
-public class MiniGridSinglePossibilityStrategy : ISolverStrategy
+public class MiniGridSinglePossibilityStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {

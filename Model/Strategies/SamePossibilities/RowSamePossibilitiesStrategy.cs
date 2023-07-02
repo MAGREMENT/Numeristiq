@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Model.Strategies.SamePossibilities;
 
-public class RowSamePossibilitiesStrategy : ISolverStrategy
+public class RowSamePossibilitiesStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
