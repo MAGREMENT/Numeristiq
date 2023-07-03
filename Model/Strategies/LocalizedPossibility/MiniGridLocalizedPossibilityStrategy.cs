@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Model.Strategies.IHaveToFindBetterNames;
+namespace Model.Strategies.LocalizedPossibility;
 
-public class MiniGridDeductionStrategy : ISubStrategy
+public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
@@ -24,7 +23,8 @@ public class MiniGridDeductionStrategy : ISubStrategy
                             for (int col = 0; col < 9; col++)
                             {
                                 if (col / 3 != miniCol && solver.Sudoku[row, col] == 0 &&
-                                    solver.RemovePossibility(number, row, col)) wasProgressMade = true;
+                                    solver.RemovePossibility(number, row, col,
+                                        new LocalizedPossibilityLog(number, row, col))) wasProgressMade = true;
                             }
                         }else if (HasSameColumn(ppimg))
                         {
@@ -32,7 +32,8 @@ public class MiniGridDeductionStrategy : ISubStrategy
                             for (int row = 0; row < 9; row++)
                             {
                                 if (row / 3 != miniRow && solver.Sudoku[row, col] == 0 &&
-                                    solver.RemovePossibility(number, row, col)) wasProgressMade = true;
+                                    solver.RemovePossibility(number, row, col,
+                                        new LocalizedPossibilityLog(number, row, col))) wasProgressMade = true;
                             }
                         }
                     }

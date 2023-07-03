@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO.Packaging;
-using System.Linq;
 
 namespace Model.Strategies.SamePossibilities;
 
@@ -59,7 +57,8 @@ public class RowSamePossibilitiesStrategy : ISubStrategy
             {
                 foreach (var number in toRemove.GetPossibilities())
                 {
-                    if (solver.RemovePossibility(number, row, col)) wasProgressMade = true;
+                    if (solver.RemovePossibility(number, row, col,
+                            new SamePossibilitiesLog(number, row, col))) wasProgressMade = true;
                 }
             }
         }

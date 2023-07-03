@@ -15,7 +15,8 @@ public class MiniGridSinglePossibilityStrategy : ISubStrategy
                     int[]? pos = CheckMiniGridForUnique(solver, gridRow, gridCol, n);
                     if (pos is not null)
                     {
-                        solver.AddDefinitiveNumber(n, pos[0], pos[1]);
+                        solver.AddDefinitiveNumber(n, pos[0], pos[1],
+                            new SinglePossibilityLog(n, pos[0], pos[1]));
                         wasProgressMade = true;
                     }
                 }

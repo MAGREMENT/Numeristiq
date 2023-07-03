@@ -91,20 +91,31 @@ public class TrialAndMatchStrategy : IStrategy
         return commonChanges;
     }
 
-    private bool ApplyChanges(ISolver solver, List<int[]>? toApply)
+    private static bool ApplyChanges(ISolver solver, List<int[]>? toApply)
     {
         if (toApply == null || toApply.Count == 0) return false;
 
         foreach (var change in toApply)
         {
-            solver.AddDefinitiveNumber(change[2], change[0], change[1]);
+            solver.AddDefinitiveNumber(change[2], change[0], change[1],
+                new TrialAndMatchLog(change[2], change[0], change[1]));
         }
 
         return true;
     }
 }
 
-public class TrialAndMatchLog
+public class TrialAndMatchLog : ISolverLog
 {
-    
+    private readonly string _string;
+
+    public TrialAndMatchLog(int number, int row, int col)
+    {
+        _string = $"{number} added in row {row}, column {col} by trial and match";
+    }
+
+    public string ViewLog()
+    {
+        return _string;
+    }
 }

@@ -71,7 +71,8 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
                 {
                     foreach (var number in toRemove.GetPossibilities())
                     {
-                        if (solver.RemovePossibility(number, realRow, realCol)) wasProgressMade = true;
+                        if (solver.RemovePossibility(number, realRow, realCol, 
+                                new SamePossibilitiesLog(number, realRow, realCol))) wasProgressMade = true;
                     }
                 }
             }

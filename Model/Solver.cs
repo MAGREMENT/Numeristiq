@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Strategies;
-using Model.Strategies.IHaveToFindBetterNames;
+using Model.Strategies.LocalizedPossibility;
 using Model.Strategies.SamePossibilities;
 using Model.Strategies.SinglePossibility;
 
@@ -16,7 +16,7 @@ public class Solver : ISolver
     {
         new SinglePossibilityStrategyPackage(),
         new SamePossibilitiesStrategyPackage(),
-        new GroupedPossibilitiesStrategyPackage(),
+        new LocalizedPossibilityStrategyPackage(),
         new TrialAndMatchStrategy(2)
     };
     

@@ -1,24 +1,24 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.Strategies.IHaveToFindBetterNames;
+namespace Model.Strategies.LocalizedPossibility;
 
-public class ColumnDeductionStrategy : ISubStrategy
+public class RowLocalizedPossibilityStrategy : ISubStrategy
 {
     public bool ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
 
-        for (int col = 0; col < 9; col++)
+        for (int row = 0; row < 9; row++)
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppic = PossiblePositionsInColumn(solver, col, number);
-                if (ppic.Count is > 1 and < 4)
+                var ppir = PossiblePositionsInRow(solver, row, number);
+                if (ppir.Count is > 1 and < 4)
                 {
-                    if (IsInSameMiniGrid(ppic))
+                    if (IsInSameMiniGrid(ppir))
                     {
-                        int miniRow = ppic[0][0] / 3;
-                        int miniCol = ppic[0][1] / 3;
+                        int miniRow = ppir[0][0] / 3;
+                        int miniCol = ppir[0][1] / 3;
 
                         for (int r = 0; r < 3; r++)
                         {
@@ -27,8 +27,9 @@ public class ColumnDeductionStrategy : ISubStrategy
                                 int realRow = miniRow * 3 + r;
                                 int realCol = miniCol * 3 + c;
 
-                                if (realCol != col && solver.Sudoku[realRow, realCol] == 0 &&
-                                    solver.RemovePossibility(number, realRow, realCol)) wasProgressMade = true;
+                                if (realRow != row && solver.Sudoku[realRow, realCol] == 0 &&
+                                    solver.RemovePossibility(number, realRow, realCol,
+                                        new LocalizedPossibilityLog(number, realRow, realCol))) wasProgressMade = true;
                             }
                         }
                     }
@@ -39,10 +40,10 @@ public class ColumnDeductionStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private List<int[]> PossiblePositionsInColumn(ISolver solver, int col, int number)
+    private List<int[]> PossiblePositionsInRow(ISolver solver, int row, int number)
     {
         List<int[]> result = new();
-        for (int row = 0; row < 9; row++)
+        for (int col = 0; col < 9; col++)
         {
             if (solver.Sudoku[row, col] == number) return new List<int[]>();
             if (solver.Sudoku[row, col] == 0 &&

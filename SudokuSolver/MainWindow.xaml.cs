@@ -12,7 +12,7 @@ namespace SudokuSolver
         private readonly StackPanel _main;
         private readonly StackPanel _aside;
 
-        private bool _justSolvedSudoku = false;
+        private bool _justSolvedSudoku;
         
         public MainWindow()
         {

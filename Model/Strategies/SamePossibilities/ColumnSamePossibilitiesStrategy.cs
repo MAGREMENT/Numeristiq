@@ -57,7 +57,8 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
             {
                 foreach (var number in toRemove.GetPossibilities())
                 {
-                    if (solver.RemovePossibility(number, row, col)) wasProgressMade = true;
+                    if (solver.RemovePossibility(number, row, col,
+                            new SamePossibilitiesLog(number, row, col))) wasProgressMade = true;
                 }
             }
         }

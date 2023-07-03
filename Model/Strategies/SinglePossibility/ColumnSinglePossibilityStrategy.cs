@@ -13,7 +13,7 @@ public class ColumnSinglePossibilityStrategy : ISubStrategy
                 int pos = CheckColumnForUnique(solver, col, n);
                 if (pos != -1)
                 {
-                    solver.AddDefinitiveNumber(n, pos, col);
+                    solver.AddDefinitiveNumber(n, pos, col, new SinglePossibilityLog(n, pos, col));
                     wasProgressMade = true;
                 }
             } 

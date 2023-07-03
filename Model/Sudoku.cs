@@ -300,6 +300,11 @@ public class Sudoku
 
         return true;
     }
+
+    public override int GetHashCode()
+    {
+        return _grid.GetHashCode();
+    }
 }
 
 

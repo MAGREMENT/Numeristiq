@@ -1,5 +1,4 @@
-﻿using System.Linq;
-
+﻿
 namespace Model;
 
 public abstract class StrategyPackage : IStrategy

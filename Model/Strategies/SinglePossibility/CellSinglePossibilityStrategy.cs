@@ -17,7 +17,7 @@ public class CellSinglePossibilityStrategy : ISubStrategy
                 List<int> poss = solver.Possibilities[i, j].GetPossibilities();
                 if (poss.Count == 1)
                 {
-                    solver.AddDefinitiveNumber(poss[0], i, j);
+                    solver.AddDefinitiveNumber(poss[0], i, j, new SinglePossibilityLog(poss[0], i, j));
                     wasProgressMade = true;
                 }
             }
