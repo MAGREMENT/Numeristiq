@@ -77,43 +77,30 @@ public class CellPossibilities
 
 public interface ISolverLog
 {
-    string ViewLog();
+    public string AsString { get; }
+    public StrategyLevel Level { get; }
 }
 
 public class BasicNumberAddedLog : ISolverLog
 {
-    private int _number;
-    private int _row;
-    private int _col;
+    public string AsString { get; }
+    public StrategyLevel Level => StrategyLevel.None;
 
     public BasicNumberAddedLog(int number, int row, int col)
     {
-        _number = number;
-        _row = row;
-        _col = col;
+        AsString = $"{number} added in row {row}, column {col}";
     }
 
-    public string ViewLog()
-    {
-        return $"{_number} added in row {_row}, column {_col}";
-    }
 }
 
 public class BasicPossibilityRemovedLog : ISolverLog
 {
-    private int _number;
-    private int _row;
-    private int _col;
+    public string AsString { get; }
+    public StrategyLevel Level => StrategyLevel.None;
 
     public BasicPossibilityRemovedLog(int number, int row, int col)
     {
-        _number = number;
-        _row = row;
-        _col = col;
+        AsString = $"{number} removed from the possibilities in row {row}, column {col}";
     }
-    
-    public string ViewLog()
-    {
-        return $"{_number} removed from the possibilities in row {_row}, column {_col}";
-    }
+
 }

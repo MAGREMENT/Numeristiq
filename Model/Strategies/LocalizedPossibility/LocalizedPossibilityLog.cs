@@ -2,15 +2,12 @@
 
 public class LocalizedPossibilityLog : ISolverLog
 {
-    private readonly string _string;
+    public string AsString { get; }
+    public StrategyLevel Level => StrategyLevel.Medium;
 
     public LocalizedPossibilityLog(int number, int row, int col)
     {
-        _string = $"{number} removed from the possibilities in row {row}, column {col} because of localized possibility";
+        AsString = $"{number} removed from the possibilities in row {row}, column {col} because of localized possibility";
     }
 
-    public string ViewLog()
-    {
-        return _string;
-    }
 }

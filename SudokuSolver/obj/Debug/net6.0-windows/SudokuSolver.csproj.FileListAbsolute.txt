@@ -30,5 +30,7 @@ C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\bin\Debug\net6.0-windows\M
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\bin\Debug\net6.0-windows\Model.pdb
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\SudokuSolver.csproj.CopyComplete
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\GeneratedInternalTypeHelper.g.cs
+C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LogListUserControl.g.cs
+C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LogListUserControl.baml
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LogUserControl.g.cs
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LogUserControl.baml

@@ -1,34 +1,34 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model;
 
 namespace SudokuSolver;
 
 public partial class LogUserControl : UserControl
 {
-    private readonly StackPanel _list;
+    private readonly TextBlock _title;
+    private readonly TextBlock _text;
     
     public LogUserControl()
     {
         InitializeComponent();
 
-        _list = (FindName("List") as StackPanel)!;
+        _title = (FindName("Title") as TextBlock)!;
+        _text = (FindName("Text") as TextBlock)!;
     }
 
-    public void InitLogs(List<ISolverLog> logs)
+    public void InitLog(ISolverLog log)
     {
-        _list.Children.Clear();
-
-        foreach (var log in logs)
+        _title.Foreground = new SolidColorBrush(log.Level switch
         {
-            var tb = new TextBox
-            {
-                Width = 200,
-                Text = log.ViewLog(),
-                TextWrapping = TextWrapping.Wrap
-            };
-            _list.Children.Add(tb);
-        }
+            StrategyLevel.None => Colors.Black,
+            StrategyLevel.Easy => Colors.Green,
+            StrategyLevel.Medium => Colors.Orange,
+            StrategyLevel.Hard => Colors.Red,
+            _ => Colors.Black
+        });
+        _title.Text = log.Level.ToString();
+        _text.Text = log.AsString;
     }
 }

@@ -48,7 +48,7 @@ namespace SudokuSolver
 
             _justSolvedSudoku = true;
 
-            (FindName("Logs") as LogUserControl)!.InitLogs(suc.GetLogs());
+            (FindName("Logs") as LogListUserControl)!.InitLogs(suc.GetLogs());
             ((TextBox)_main.Children[1]).Text = ((SudokuUserControl)_main.Children[0]).SudokuAsString();
         }
 
@@ -57,7 +57,7 @@ namespace SudokuSolver
             SudokuUserControl suc = (SudokuUserControl)_main.Children[0];
             suc.ClearSudoku();
             
-            (FindName("Logs") as LogUserControl)!.InitLogs(suc.GetLogs());
+            (FindName("Logs") as LogListUserControl)!.InitLogs(suc.GetLogs());
             ((TextBox) _main.Children[1]).Text = "";
         }
 

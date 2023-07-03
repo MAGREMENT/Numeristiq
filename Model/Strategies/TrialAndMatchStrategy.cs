@@ -107,15 +107,11 @@ public class TrialAndMatchStrategy : IStrategy
 
 public class TrialAndMatchLog : ISolverLog
 {
-    private readonly string _string;
+    public string AsString { get; }
+    public StrategyLevel Level => StrategyLevel.Hard;
 
     public TrialAndMatchLog(int number, int row, int col)
     {
-        _string = $"{number} added in row {row}, column {col} by trial and match";
-    }
-
-    public string ViewLog()
-    {
-        return _string;
+        AsString = $"{number} added in row {row}, column {col} by trial and match";
     }
 }
