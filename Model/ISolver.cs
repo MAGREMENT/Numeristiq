@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Model;
 
 public interface ISolver
 {
-    bool AddDefinitiveNumber(int number, int row, int col);
+    bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null);
 
-    bool RemovePossibility(int possibility, int row, int col);
+    bool RemovePossibility(int possibility, int row, int col, ISolverLog? log = null);
 
     public Sudoku Sudoku { get; }
 
-    public CellPossibilities[,] Possibilities { get; init; }
+    public CellPossibilities[,] Possibilities { get; }
+    
+    public List<ISolverLog> Logs { get; }
 }
 
 public class CellPossibilities
@@ -70,5 +73,48 @@ public class CellPossibilities
 
         result = result.Length > 1 ? result.Substring(0, result.Length - 2) : result;
         return result + "]";
+    }
+}
+
+public interface ISolverLog
+{
+    string ViewLog();
+}
+
+public class BasicNumberAddedLog : ISolverLog
+{
+    private int _number;
+    private int _row;
+    private int _col;
+
+    public BasicNumberAddedLog(int number, int row, int col)
+    {
+        _number = number;
+        _row = row;
+        _col = col;
+    }
+
+    public string ViewLog()
+    {
+        return $"{_number} added in row {_row}, column {_col}";
+    }
+}
+
+public class BasicPossibilityRemovedLog : ISolverLog
+{
+    private int _number;
+    private int _row;
+    private int _col;
+
+    public BasicPossibilityRemovedLog(int number, int row, int col)
+    {
+        _number = number;
+        _row = row;
+        _col = col;
+    }
+    
+    public string ViewLog()
+    {
+        return $"{_number} removed from the possibilities in row {_row}, column {_col}";
     }
 }

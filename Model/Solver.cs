@@ -8,7 +8,8 @@ namespace Model;
 
 public class Solver : ISolver
 {
-    public CellPossibilities[,] Possibilities { get; init; }
+    public CellPossibilities[,] Possibilities { get; }
+    public List<ISolverLog> Logs { get; } = new();
     public Sudoku Sudoku { get; }
 
     public List<IStrategy> Strategies { get; } = new()
@@ -52,19 +53,24 @@ public class Solver : ISolver
         }
     }
     
-    public bool AddDefinitiveNumber(int number, int row, int col)
+    public bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null)
     {
         if (Sudoku[row, col] != 0) return false;
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+        Logs.Add(log ?? new BasicNumberAddedLog(number, row, col));
         NumberAdded?.Invoke(row, col);
         return true;
     }
 
-    public bool RemovePossibility(int possibility, int row, int col)
+    public bool RemovePossibility(int possibility, int row, int col, ISolverLog? log = null)
     {
         bool buffer = Possibilities[row, col].Remove(possibility);
-        if(buffer) PossibilityRemoved?.Invoke(row, col);
+        if (buffer)
+        {
+            Logs.Add(log ?? new BasicPossibilityRemovedLog(possibility, row, col));
+            PossibilityRemoved?.Invoke(row, col);
+        }
         return buffer;
     }
 

@@ -139,6 +139,11 @@ public partial class SudokuUserControl : UserControl
         return _currentSolver.Sudoku.AsString();
     }
 
+    public List<ISolverLog> GetLogs()
+    {
+        return _currentSolver.Logs;
+    }
+
     public bool SeePossibilities
     {
         set

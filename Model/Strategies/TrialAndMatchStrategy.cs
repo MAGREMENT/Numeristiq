@@ -103,3 +103,8 @@ public class TrialAndMatchStrategy : IStrategy
         return true;
     }
 }
+
+public class TrialAndMatchLog
+{
+    
+}

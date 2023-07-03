@@ -27,15 +27,12 @@ namespace SudokuSolver
             };
         }
 
-        private void UpdateSudoku(string asString)
-        {
-            if (!_justSolvedSudoku) ((SudokuUserControl)_main.Children[0]).InitSolver(new Solver(new Sudoku(asString)));
-            else _justSolvedSudoku = false;
-        }
-
         private void UpdateSudoku(object sender, TextChangedEventArgs e)
         {
-            UpdateSudoku(((TextBox) _main.Children[1]).Text);
+            string asString = ((TextBox) _main.Children[1]).Text;
+            if (!_justSolvedSudoku) ((SudokuUserControl)_main.Children[0]).InitSolver(
+                new Solver(new Sudoku(asString)));
+            else _justSolvedSudoku = false;
         }
 
         private void SolveSudoku(object sender, RoutedEventArgs e)
@@ -43,18 +40,24 @@ namespace SudokuSolver
             if (sender is not Button butt) return;
             butt.IsEnabled = false;
 
+            SudokuUserControl suc = (SudokuUserControl)_main.Children[0];
+
             bool? stepByStep = ((CheckBox)_aside.Children[1]).IsChecked;
-            if (stepByStep is null || (bool) !stepByStep) ((SudokuUserControl) _main.Children[0]).SolveSudoku();
-            else ((SudokuUserControl) _main.Children[0]).RunUntilProgress();
+            if (stepByStep is null || (bool) !stepByStep) suc.SolveSudoku();
+            else suc.RunUntilProgress();
 
             _justSolvedSudoku = true;
 
+            (FindName("Logs") as LogUserControl)!.InitLogs(suc.GetLogs());
             ((TextBox)_main.Children[1]).Text = ((SudokuUserControl)_main.Children[0]).SudokuAsString();
         }
 
         private void ClearSudoku(object sender, RoutedEventArgs e)
         {
-            ((SudokuUserControl) _main.Children[0]).ClearSudoku();
+            SudokuUserControl suc = (SudokuUserControl)_main.Children[0];
+            suc.ClearSudoku();
+            
+            (FindName("Logs") as LogUserControl)!.InitLogs(suc.GetLogs());
             ((TextBox) _main.Children[1]).Text = "";
         }
 
