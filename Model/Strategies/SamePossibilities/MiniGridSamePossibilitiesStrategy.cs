@@ -12,26 +12,10 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                var listOfPossibilities = GetListOfPossibilities(solver, miniRow, miniCol);
-
-                if (listOfPossibilities.Count != 0)
+                foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, miniRow, miniCol))
                 {
-                    listOfPossibilities.Sort((poss1, poss2) => poss1.Count - poss2.Count);
-                
-                    List<CellPossibilities> currentList = new() { listOfPossibilities[0] };
-
-                    for (int i = 1; i < listOfPossibilities.Count; i++)
-                    {
-                        var current = listOfPossibilities[i];
-
-                        if (current.Count != currentList[0].Count || !current.Equals(currentList[0])) currentList.Clear();
-                        currentList.Add(current);
-
-                        if (currentList.Count == currentList[0].Count)
-                        {
-                            wasProgressMade = RemovePossibilitiesFromMiniGrid(solver, miniRow, miniCol, currentList[0]);
-                        }
-                    }
+                    if (keyValuePair.Key.Count == keyValuePair.Value)
+                        wasProgressMade = RemovePossibilitiesFromMiniGrid(solver, miniRow, miniCol, keyValuePair.Key);
                 }
             }
         }
@@ -52,6 +36,26 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
             }
         }
         
+
+        return result;
+    }
+    
+    private Dictionary<CellPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int miniRow, int miniCol)
+    {
+        Dictionary<CellPossibilities, int> result = new();
+        for (int row = 0; row < 3; row++)
+        {
+            for (int col = 0; col < 3; col++)
+            {
+                int realRow = miniRow * 3 + row;
+                int realCol = miniCol * 3 + col;
+                if (solver.Sudoku[realRow, realCol] == 0)
+                {
+                    if (!result.TryAdd(solver.Possibilities[realRow, realCol], 1))
+                        result[solver.Possibilities[realRow, realCol]] += 1;
+                }
+            }
+        }
 
         return result;
     }

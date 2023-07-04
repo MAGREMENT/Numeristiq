@@ -44,8 +44,6 @@ public class CellPossibilities
         return result;
     }
 
-    
-
     public override bool Equals(object? obj)
     {
         if (obj is not CellPossibilities cp) return false;
@@ -59,7 +57,13 @@ public class CellPossibilities
 
     public override int GetHashCode()
     {
-        return _possibilities.GetHashCode();
+        int result = 0;
+        for (int i = 0; i < _possibilities.Length; i++)
+        {
+            if (_possibilities[i]) result |= 1 << i;
+        }
+
+        return result;
     }
 
     public override string ToString()

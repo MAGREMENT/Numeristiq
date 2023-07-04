@@ -10,38 +10,26 @@ public class RowSamePossibilitiesStrategy : ISubStrategy
         
         for (int row = 0; row < 9; row++)
         {
-            var listOfPossibilities = GetListOfPossibilities(solver, row);
-
-            if (listOfPossibilities.Count != 0)
+            foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, row))
             {
-                listOfPossibilities.Sort((poss1, poss2) => poss1.Count - poss2.Count);
-                
-                List<CellPossibilities> currentList = new() { listOfPossibilities[0] };
-
-                for (int i = 1; i < listOfPossibilities.Count; i++)
-                {
-                    var current = listOfPossibilities[i];
-
-                    if (current.Count != currentList[0].Count || !current.Equals(currentList[0])) currentList.Clear();
-                    currentList.Add(current);
-
-                    if (currentList.Count == currentList[0].Count)
-                    {
-                        wasProgressMade = RemovePossibilitiesFromRow(solver, row, currentList[0]);
-                    }
-                }
+                if (keyValuePair.Key.Count == keyValuePair.Value)
+                    wasProgressMade = RemovePossibilitiesFromRow(solver, row, keyValuePair.Key);
             }
         }
 
         return wasProgressMade;
     }
-
-    private List<CellPossibilities> GetListOfPossibilities(ISolver solver, int row)
+    
+    private Dictionary<CellPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int row)
     {
-        List<CellPossibilities> result = new();
+        Dictionary<CellPossibilities, int> result = new();
         for (int col = 0; col < 9; col++)
         {
-            if(solver.Sudoku[row, col] == 0) result.Add(solver.Possibilities[row, col]);
+            if (solver.Sudoku[row, col] == 0)
+            {
+                if (!result.TryAdd(solver.Possibilities[row, col], 1))
+                    result[solver.Possibilities[row, col]] += 1;
+            }
         }
 
         return result;

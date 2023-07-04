@@ -10,25 +10,13 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         
         for (int col = 0; col < 9; col++)
         {
-            var listOfPossibilities = GetListOfPossibilities(solver, col);
-
-            if (listOfPossibilities.Count != 0)
+            foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, col))
             {
-                listOfPossibilities.Sort((poss1, poss2) => poss1.Count - poss2.Count);
-                
-                List<CellPossibilities> currentList = new() { listOfPossibilities[0] };
-
-                for (int i = 1; i < listOfPossibilities.Count; i++)
+                if (keyValuePair.Key.Count == keyValuePair.Value)
+                    wasProgressMade = RemovePossibilitiesFromColumn(solver, col, keyValuePair.Key);
+                else if (keyValuePair.Key.Count == 3 && keyValuePair.Value == 2)
                 {
-                    var current = listOfPossibilities[i];
-
-                    if (current.Count != currentList[0].Count || !current.Equals(currentList[0])) currentList.Clear();
-                    currentList.Add(current);
-
-                    if (currentList.Count == currentList[0].Count)
-                    {
-                        wasProgressMade = RemovePossibilitiesFromColumn(solver, col, currentList[0]);
-                    }
+                    
                 }
             }
         }
@@ -36,12 +24,16 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private List<CellPossibilities> GetListOfPossibilities(ISolver solver, int col)
+    private Dictionary<CellPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int col)
     {
-        List<CellPossibilities> result = new();
+        Dictionary<CellPossibilities, int> result = new();
         for (int row = 0; row < 9; row++)
         {
-            if(solver.Sudoku[row, col] == 0) result.Add(solver.Possibilities[row, col]);
+            if (solver.Sudoku[row, col] == 0)
+            {
+                if (!result.TryAdd(solver.Possibilities[row, col], 1))
+                    result[solver.Possibilities[row, col]] += 1;
+            }
         }
 
         return result;
@@ -64,5 +56,10 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         }
 
         return wasProgressMade;
+    }
+
+    private bool SearchForHiddenTriple(ISolver solver, int col, CellPossibilities search)
+    {
+        return false;
     }
 }

@@ -8,12 +8,8 @@ public class Testing
 {
     public static void Main(string[] args)
     {
-        var sud = new Sudoku("s4s6  27s8s5  4 91 8   8s5s4   43s5s7  8  3 3s4s9  172 1s6s9s4s2");
-        Solver solv = new Solver(sud);
-        solv.Solve();
-        Console.WriteLine(solv.Possibilities[1, 6]);
-        solv.Solve();
-        Console.WriteLine(solv.Possibilities[1, 6]);
+        var sud = new Sudoku("938761245567942183241853976124687539896435721753129468682594317379216854415378692");
+        Console.WriteLine(sud.IsCorrect());
     }
 
     private void SudokuResolutionTest(String asString)
