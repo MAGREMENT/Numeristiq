@@ -2,11 +2,10 @@
 
 public interface IStrategy
 {
-    bool ApplyOnce(ISolver solver);
-    bool ApplyUntilProgress(ISolver solver);
+    void ApplyOnce(ISolver solver);
 }
 
 public enum StrategyLevel
 {
-    None, Easy, Medium, Hard
+    None, Basic, Easy, Medium, Hard, Ultimate
 }

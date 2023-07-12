@@ -7,7 +7,7 @@ public class SamePossibilitiesLog : ISolverLog
 
     public SamePossibilitiesLog(int number, int row, int col)
     {
-        AsString = $"{number} removed from the possibilities in row {row}, column {col} because of same possibilities";
+        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of same possibilities";
     }
 
 }

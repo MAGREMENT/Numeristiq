@@ -10,72 +10,35 @@ public interface ISolver
 
     public Sudoku Sudoku { get; }
 
-    public CellPossibilities[,] Possibilities { get; }
+    public IPossibilities[,] Possibilities { get; }
     
     public List<ISolverLog> Logs { get; }
 }
 
-public class CellPossibilities
+public interface IPossibilities
 {
-    private readonly bool[] _possibilities = { true, true, true, true, true, true, true, true, true};
-    public int Count { private set; get; } = 9;
+    public const int Min = 1;
+    public const int Max = 9;
     
-    public bool Remove(int i)
-    {
-        var old = _possibilities[i - 1];
-        _possibilities[i - 1] = false;
-        if(old) Count--;
-        return old;
-    }
+    public int Count { get; }
+    public bool Remove(int n);
+    public void RemoveAll();
+    public void RemoveAll(params int[] except);
+    public void RemoveAll(IEnumerable<int> except);
+    public IPossibilities Mash(IPossibilities possibilities);
+    public bool Peek(int n);
+    public List<int> GetPossibilities();
+    public int GetFirst();
 
-    public bool Peek(int i)
+    public static IPossibilities DefaultMash(IPossibilities poss1, IPossibilities poss2)
     {
-        return _possibilities[i - 1];
-    }
-
-    public List<int> GetPossibilities()
-    {
-        List<int> result = new();
-        for (int i = 0; i < _possibilities.Length; i++)
+        IPossibilities result = new ArrayPossibilities();
+        for (int i = Min; i <= Max; i++)
         {
-            if(_possibilities[i]) result.Add(i + 1);
+            if (!poss1.Peek(i) && !poss2.Peek(i)) result.Remove(i);
         }
 
         return result;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not CellPossibilities cp) return false;
-        for (int i = 0; i < _possibilities.Length; i++)
-        {
-            if (_possibilities[i] != cp._possibilities[i]) return false;
-        }
-
-        return true;
-    }
-
-    public override int GetHashCode()
-    {
-        int result = 0;
-        for (int i = 0; i < _possibilities.Length; i++)
-        {
-            if (_possibilities[i]) result |= 1 << i;
-        }
-
-        return result;
-    }
-
-    public override string ToString()
-    {
-        string result = "[";
-        for (int i = 0; i < _possibilities.Length; i++)
-        {
-            if (_possibilities[i]) result += (i + 1) + ", ";
-        }
-
-        result = result.Length > 1 ? result.Substring(0, result.Length - 2) : result;
-        return result + "]";
     }
 }
 
@@ -92,7 +55,7 @@ public class BasicNumberAddedLog : ISolverLog
 
     public BasicNumberAddedLog(int number, int row, int col)
     {
-        AsString = $"{number} added in row {row}, column {col}";
+        AsString = $"[{row + 1}, {col + 1}] {number} added as definitive";
     }
 
 }
@@ -104,7 +67,7 @@ public class BasicPossibilityRemovedLog : ISolverLog
 
     public BasicPossibilityRemovedLog(int number, int row, int col)
     {
-        AsString = $"{number} removed from the possibilities in row {row}, column {col}";
+        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities";
     }
 
 }

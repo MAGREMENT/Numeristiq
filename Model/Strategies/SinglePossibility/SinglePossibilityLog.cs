@@ -3,10 +3,10 @@
 public class SinglePossibilityLog : ISolverLog
 {
     public string AsString { get; }
-    public StrategyLevel Level => StrategyLevel.Easy;
+    public StrategyLevel Level => StrategyLevel.Basic;
 
     public SinglePossibilityLog(int number, int row, int col)
     {
-        AsString = $"{number} added in row {row}, column {col} because of single possibility";
+        AsString = $"[{row + 1}, {col + 1}] {number} added as definitive because of single possibility";
     }
 }

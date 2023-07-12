@@ -251,7 +251,7 @@ public class Sudoku
         {
             for (int j = 0; j < GridSize; j++)
             {
-                result[i, j] = this[i, j];
+                result[i, j] = this[i, j]; //TODO à faire avec sudoku cell
             }
         }
 

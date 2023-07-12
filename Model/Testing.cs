@@ -8,8 +8,7 @@ public class Testing
 {
     public static void Main(string[] args)
     {
-        var sud = new Sudoku("938761245567942183241853976124687539896435721753129468682594317379216854415378692");
-        Console.WriteLine(sud.IsCorrect());
+        
     }
 
     private void SudokuResolutionTest(String asString)

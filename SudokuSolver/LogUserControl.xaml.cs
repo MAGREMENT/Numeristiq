@@ -22,11 +22,13 @@ public partial class LogUserControl : UserControl
     {
         _title.Foreground = new SolidColorBrush(log.Level switch
         {
-            StrategyLevel.None => Colors.Black,
+            StrategyLevel.None => Colors.Gray,
+            StrategyLevel.Basic => Colors.RoyalBlue,
             StrategyLevel.Easy => Colors.Green,
             StrategyLevel.Medium => Colors.Orange,
             StrategyLevel.Hard => Colors.Red,
-            _ => Colors.Black
+            StrategyLevel.Ultimate => Colors.Black,
+            _ => Colors.Gray
         });
         _title.Text = log.Level.ToString();
         _text.Text = log.AsString;

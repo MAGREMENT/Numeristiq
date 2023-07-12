@@ -11,27 +11,7 @@ public class TrialAndMatchStrategy : IStrategy
         _maxNumberOfPossibility = num;
     }
     
-    public bool ApplyOnce(ISolver solver)
-    {
-        bool wasProgressMade = false;
-        
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                List<int> poss;
-                if (solver.Sudoku[row, col] == 0 &&
-                    (poss = solver.Possibilities[row, col].GetPossibilities()).Count <= _maxNumberOfPossibility)
-                {
-                    if (ApplyChanges(solver, RunSimulation(solver, row, col, poss))) wasProgressMade = true;
-                }
-            }
-        }
-
-        return wasProgressMade;
-    }
-
-    public bool ApplyUntilProgress(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -41,12 +21,10 @@ public class TrialAndMatchStrategy : IStrategy
                 if (solver.Sudoku[row, col] == 0 &&
                     (poss = solver.Possibilities[row, col].GetPossibilities()).Count <= _maxNumberOfPossibility)
                 {
-                    if (ApplyChanges(solver, RunSimulation(solver, row, col, poss))) return true;
+                    ApplyChanges(solver, RunSimulation(solver, row, col, poss));
                 }
             }
         }
-
-        return false;
     }
 
     private List<int[]>? RunSimulation(ISolver solver, int row, int col, List<int> possibilities)
@@ -108,10 +86,10 @@ public class TrialAndMatchStrategy : IStrategy
 public class TrialAndMatchLog : ISolverLog
 {
     public string AsString { get; }
-    public StrategyLevel Level => StrategyLevel.Hard;
+    public StrategyLevel Level => StrategyLevel.Ultimate;
 
     public TrialAndMatchLog(int number, int row, int col)
     {
-        AsString = $"{number} added in row {row}, column {col} by trial and match";
+        AsString = $"[{row + 1}, {col + 1}] {number} added as definitive by trial and match";
     }
 }

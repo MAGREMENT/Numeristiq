@@ -3,20 +3,30 @@ using Model.Strategies;
 using Model.Strategies.LocalizedPossibility;
 using Model.Strategies.SamePossibilities;
 using Model.Strategies.SinglePossibility;
+using Model.StrategiesV2;
 
 namespace Model;
 
 public class Solver : ISolver
 {
-    public CellPossibilities[,] Possibilities { get; }
+    public IPossibilities[,] Possibilities { get; }
     public List<ISolverLog> Logs { get; } = new();
     public Sudoku Sudoku { get; }
 
     public List<IStrategy> Strategies { get; } = new()
     {
-        new SinglePossibilityStrategyPackage(),
+        /*new SinglePossibilityStrategyPackage(),
         new SamePossibilitiesStrategyPackage(),
+        new LocalizedPossibilityStrategyPackage(),*/
+        new NakedPossibilitiesStrategy(1),
+        new HiddenPossibilityStrategy(1),
+        new NakedPossibilitiesStrategy(2),
+        new HiddenPossibilityStrategy(2),
         new LocalizedPossibilityStrategyPackage(),
+        new NakedPossibilitiesStrategy(3),
+        new HiddenPossibilityStrategy(3),
+        new NakedPossibilitiesStrategy(4),
+        new HiddenPossibilityStrategy(4),
         new TrialAndMatchStrategy(2)
     };
     
@@ -27,17 +37,18 @@ public class Solver : ISolver
     public event OnPossibilityRemoved? PossibilityRemoved;
 
     private readonly List<int[]> _listOfChanges = new();
+    private bool _changeWasMade;
 
     public Solver(Sudoku s)
     {
-        Possibilities = new CellPossibilities[9, 9];
+        Possibilities = new IPossibilities[9, 9];
         Sudoku = s;
 
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
             {
-                Possibilities[i, j] = new CellPossibilities();
+                Possibilities[i, j] = new ArrayPossibilities();
             }
         }
         
@@ -51,6 +62,9 @@ public class Solver : ISolver
                 }
             }
         }
+
+        NumberAdded += (_, _) => _changeWasMade = true;
+        PossibilityRemoved += (_, _) => _changeWasMade = true;
     }
     
     public bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null)
@@ -76,6 +90,7 @@ public class Solver : ISolver
 
     private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)
     {
+        Possibilities[row, col].RemoveAll();
         for (int i = 0; i < 9; i++)
         {
             Possibilities[row, i].Remove(number);
@@ -100,7 +115,12 @@ public class Solver : ISolver
         for (int i = 0; i < Strategies.Count; i++)
         {
             if (Sudoku.IsComplete()) return;
-            if (Strategies[i].ApplyOnce(this)) i = -1;
+            Strategies[i].ApplyOnce(this);
+            if (_changeWasMade)
+            {
+                _changeWasMade = false;
+                i = -1;
+            }
         }
     }
 
@@ -120,7 +140,12 @@ public class Solver : ISolver
         
         foreach (var strategy in Strategies)
         {
-            if (strategy.ApplyUntilProgress(this)) break;
+            strategy.ApplyOnce(this);
+            if (_changeWasMade)
+            {
+                _changeWasMade = false;
+                break;
+            }
         }
         
         NumberAdded -= AddToListOfChanges;

@@ -23,9 +23,9 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private List<CellPossibilities> GetListOfPossibilities(ISolver solver, int miniRow, int miniCol)
+    private List<IPossibilities> GetListOfPossibilities(ISolver solver, int miniRow, int miniCol)
     {
-        List<CellPossibilities> result = new();
+        List<IPossibilities> result = new();
         for (int row = 0; row < 3; row++)
         {
             for (int col = 0; col < 3; col++)
@@ -40,9 +40,9 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
         return result;
     }
     
-    private Dictionary<CellPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int miniRow, int miniCol)
+    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int miniRow, int miniCol)
     {
-        Dictionary<CellPossibilities, int> result = new();
+        Dictionary<IPossibilities, int> result = new();
         for (int row = 0; row < 3; row++)
         {
             for (int col = 0; col < 3; col++)
@@ -60,7 +60,7 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
         return result;
     }
 
-    private bool RemovePossibilitiesFromMiniGrid(ISolver solver, int miniRow, int miniCol, CellPossibilities toRemove)
+    private bool RemovePossibilitiesFromMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities toRemove)
     {
         bool wasProgressMade = false;
         

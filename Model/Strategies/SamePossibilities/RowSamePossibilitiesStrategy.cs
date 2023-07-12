@@ -20,9 +20,9 @@ public class RowSamePossibilitiesStrategy : ISubStrategy
         return wasProgressMade;
     }
     
-    private Dictionary<CellPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int row)
+    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int row)
     {
-        Dictionary<CellPossibilities, int> result = new();
+        Dictionary<IPossibilities, int> result = new();
         for (int col = 0; col < 9; col++)
         {
             if (solver.Sudoku[row, col] == 0)
@@ -35,7 +35,7 @@ public class RowSamePossibilitiesStrategy : ISubStrategy
         return result;
     }
 
-    private bool RemovePossibilitiesFromRow(ISolver solver, int row, CellPossibilities toRemove)
+    private bool RemovePossibilitiesFromRow(ISolver solver, int row, IPossibilities toRemove)
     {
         bool wasProgressMade = false;
         

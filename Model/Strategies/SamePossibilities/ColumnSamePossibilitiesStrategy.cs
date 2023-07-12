@@ -24,9 +24,9 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private Dictionary<CellPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int col)
+    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int col)
     {
-        Dictionary<CellPossibilities, int> result = new();
+        Dictionary<IPossibilities, int> result = new();
         for (int row = 0; row < 9; row++)
         {
             if (solver.Sudoku[row, col] == 0)
@@ -39,7 +39,7 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         return result;
     }
 
-    private bool RemovePossibilitiesFromColumn(ISolver solver, int col, CellPossibilities toRemove)
+    private bool RemovePossibilitiesFromColumn(ISolver solver, int col, IPossibilities toRemove)
     {
         bool wasProgressMade = false;
         
@@ -58,7 +58,7 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private bool SearchForHiddenTriple(ISolver solver, int col, CellPossibilities search)
+    private bool SearchForHiddenTriple(ISolver solver, int col, IPossibilities search)
     {
         return false;
     }

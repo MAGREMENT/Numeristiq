@@ -10,24 +10,11 @@ public abstract class StrategyPackage : IStrategy
         _strategies = strategies;
     }
     
-    public bool ApplyOnce(ISolver solver)
-    {
-        bool wasProgressMade = false;
-        foreach (var strategy in _strategies)
-        {
-            if (strategy.ApplyOnce(solver)) wasProgressMade = true;
-        }
-
-        return wasProgressMade;
-    }
-
-    public bool ApplyUntilProgress(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         foreach (var strategy in _strategies)
         {
-            if (strategy.ApplyOnce(solver)) return true;
+            strategy.ApplyOnce(solver);
         }
-        
-        return false;
     }
 }
