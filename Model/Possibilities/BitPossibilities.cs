@@ -4,9 +4,21 @@ namespace Model;
 
 public class BitPossibilities : IPossibilities
 {
-    private byte _possibilities = 0xFF;
-    public int Count { private set; get; } = 9;
+    private byte _possibilities;
+    public int Count { private set; get; }
 
+    private BitPossibilities(byte possibilities, int count)
+    {
+        _possibilities = possibilities;
+        Count = count;
+    }
+
+    public BitPossibilities()
+    {
+        _possibilities = 0xFF;
+        Count = 9;
+    }
+    
     public bool Remove(int number)
     {
         int index = number - 1;
@@ -18,27 +30,43 @@ public class BitPossibilities : IPossibilities
 
     public void RemoveAll()
     {
-        throw new System.NotImplementedException();
+        _possibilities = 0;
+        Count = 0;
     }
 
     public void RemoveAll(params int[] except)
     {
-        throw new System.NotImplementedException();
+        RemoveAll();
+        foreach (var num in except)
+        {
+            _possibilities |= (byte) (1 << (num - 1));
+            Count++;
+        }
     }
 
     public void RemoveAll(IEnumerable<int> except)
     {
-        throw new System.NotImplementedException();
+        RemoveAll();
+        foreach (var num in except)
+        {
+            _possibilities |= (byte) (1 << (num - 1));
+            Count++;
+        }
     }
 
     public IPossibilities Mash(IPossibilities possibilities)
     {
-        throw new System.NotImplementedException();
+        if (possibilities is BitPossibilities bp)
+        {
+            byte mashed = (byte) (this._possibilities | bp._possibilities);
+            return new BitPossibilities(mashed, System.Numerics.BitOperations.PopCount(mashed));
+        }
+        return IPossibilities.DefaultMash(this, possibilities);
     }
 
     public bool Peek(int number)
     {
-        return ((_possibilities >> number - 1) & 1) > 0;
+        return ((_possibilities >> (number - 1)) & 1) > 0;
     }
 
     public List<int> GetPossibilities()

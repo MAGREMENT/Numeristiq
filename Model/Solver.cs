@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Strategies;
 using Model.Strategies.LocalizedPossibility;
 using Model.Strategies.SamePossibilities;
@@ -13,7 +14,7 @@ public class Solver : ISolver
     public List<ISolverLog> Logs { get; } = new();
     public Sudoku Sudoku { get; }
 
-    public List<IStrategy> Strategies { get; } = new()
+    private List<IStrategy> Strategies { get; } = new()
     {
         /*new SinglePossibilityStrategyPackage(),
         new SamePossibilitiesStrategyPackage(),
@@ -29,7 +30,7 @@ public class Solver : ISolver
         new HiddenPossibilityStrategy(4),
         new TrialAndMatchStrategy(2)
     };
-    
+
     public delegate void OnNumberAdded(int row, int col);
     public event OnNumberAdded? NumberAdded;
 
@@ -106,8 +107,14 @@ public class Solver : ISolver
                 Possibilities[startRow + i, startColumn + j].Remove(number);
             }
         }
-        
-        
+    }
+
+    public void ExcludeStrategy(Type type)
+    {
+        for (int i = 0; i < Strategies.Count; i++)
+        {
+            if (Strategies[i].GetType() == type) Strategies.RemoveAt(i);
+        }
     }
 
     public void Solve()

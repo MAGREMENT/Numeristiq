@@ -34,7 +34,7 @@ public class TrialAndMatchStrategy : IStrategy
         foreach (var possibility in possibilities)
         {
             Solver simulation = new Solver(solver.Sudoku.Copy());
-            simulation.Strategies.RemoveAt(3); //TODO make responsive
+            simulation.ExcludeStrategy(typeof(TrialAndMatchStrategy));
             simulation.AddDefinitiveNumber(possibility, row, col);
             simulation.Solve();
 
@@ -69,17 +69,15 @@ public class TrialAndMatchStrategy : IStrategy
         return commonChanges;
     }
 
-    private static bool ApplyChanges(ISolver solver, List<int[]>? toApply)
+    private static void ApplyChanges(ISolver solver, List<int[]>? toApply)
     {
-        if (toApply == null || toApply.Count == 0) return false;
+        if (toApply == null || toApply.Count == 0) return;
 
         foreach (var change in toApply)
         {
             solver.AddDefinitiveNumber(change[2], change[0], change[1],
                 new TrialAndMatchLog(change[2], change[0], change[1]));
         }
-
-        return true;
     }
 }
 
