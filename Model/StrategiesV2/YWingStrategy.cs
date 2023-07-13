@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
 
 namespace Model.StrategiesV2;
 
 public class YWingStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
-    {
-        FirstAlgorithm(solver);
-    }
-
-    private void FirstAlgorithm(ISolver solver)
     {
         var toSearch = AllCellsWith2Possibilities(solver);
         foreach(var current in toSearch)
@@ -31,14 +25,14 @@ public class YWingStrategy : IStrategy
                     {
                         if(IsYWing(solver, current, one, two)
                            && ProcessYWing(solver, current, one, two))
-                           return;
+                            return;
                     }
                     
                     foreach (var two in unitsDispersion[2])
                     {
                         if(IsYWing(solver, current, one, two)
                            && ProcessYWing(solver, current, one, two))
-                           return;
+                            return;
                     }
                 }
             }
@@ -55,32 +49,9 @@ public class YWingStrategy : IStrategy
                     foreach (var two in unitsDispersion[2])
                     {
                         if (IsYWing(solver, current, one, two)
-                             && ProcessYWing(solver, current, one, two))
+                            && ProcessYWing(solver, current, one, two))
                             return;
                     }
-                }
-            }
-        }
-    }
-
-    private void SecondAlgorithm(ISolver solver)
-    {
-        var toSearch = AllCellsWith2Possibilities(solver);
-        foreach (var current in toSearch)
-        {
-            var matchingUnit = new List<Coordinate>(MatchingUnit(current, toSearch));
-
-            while (matchingUnit.Count > 0)
-            {
-                Coordinate one = matchingUnit[0];
-                matchingUnit.RemoveAt(0);
-
-                var copy = new List<Coordinate>(matchingUnit);
-                foreach (var two in copy)
-                {
-                    if(!IsYWing(solver, current, one, two)
-                       && ProcessYWing(solver, current, one, two))
-                        return;
                 }
             }
         }
@@ -103,17 +74,6 @@ public class YWingStrategy : IStrategy
             {
                 result[2].Add(c);
             }
-        }
-        return result;
-    }
-
-    private HashSet<Coordinate> MatchingUnit(Coordinate coord, IEnumerable<Coordinate> list)
-    {
-        HashSet<Coordinate> result = new();
-        foreach (var c in list)
-        {
-            if (c.Row == coord.Row || c.Col == coord.Col || (c.Row / 3 == coord.Row / 3 && c.Col / 3 == coord.Col / 3))
-                result.Add(c);
         }
         return result;
     }
