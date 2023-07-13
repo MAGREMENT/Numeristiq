@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Printing;
+using Model.StrategiesV2;
 
 namespace Model;
 
@@ -8,7 +10,11 @@ public class Testing
 {
     public static void Main(string[] args)
     {
+        long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
+        Console.WriteLine($"Time taken : {end - start}ms");
     }
 
     private void SudokuResolutionTest(String asString)

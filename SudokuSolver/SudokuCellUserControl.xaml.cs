@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Model;
 
 namespace SudokuSolver;
 
@@ -46,7 +47,7 @@ public partial class SudokuCellUserControl : UserControl
         _tb.Text = number.ToString();
     }
 
-    public void SetPossibilities(List<int> possibilities)
+    public void SetPossibilities(IPossibilities possibilities)
     {
         if (possibilities.Count == 0)
         {
@@ -56,7 +57,7 @@ public partial class SudokuCellUserControl : UserControl
         
         string result = "";
         int counter = 0;
-        foreach (var number in possibilities)
+        foreach (var number in possibilities.All())
         {
             counter++;
             result += number + " ";

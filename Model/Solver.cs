@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Possibilities;
 using Model.Strategies;
 using Model.Strategies.LocalizedPossibility;
 using Model.Strategies.SamePossibilities;
@@ -28,7 +29,9 @@ public class Solver : ISolver
         new HiddenPossibilityStrategy(3),
         new NakedPossibilitiesStrategy(4),
         new HiddenPossibilityStrategy(4),
-        new TrialAndMatchStrategy(2)
+        new XWingStrategy(),
+        new YWingStrategy()
+        //new TrialAndMatchStrategy(2)
     };
 
     public delegate void OnNumberAdded(int row, int col);
@@ -49,7 +52,7 @@ public class Solver : ISolver
         {
             for (int j = 0; j < 9; j++)
             {
-                Possibilities[i, j] = new ArrayPossibilities();
+                Possibilities[i, j] = new BoolArrayPossibilities();
             }
         }
         
@@ -115,6 +118,47 @@ public class Solver : ISolver
         {
             if (Strategies[i].GetType() == type) Strategies.RemoveAt(i);
         }
+    }
+    
+    public Positions PossiblePositionsInRow(int row, int number)
+    {
+        Positions result = new();
+        for (int col = 0; col < 9; col++)
+        {
+            if (Sudoku[row, col] == number) return new Positions();
+            if (Possibilities[row, col].Peek(number)) result.Add(col);
+        }
+        return result;
+    }
+    
+    public Positions PossiblePositionsInColumn(int col, int number)
+    {
+        Positions result = new();
+        for (int row = 0; row < 9; row++)
+        {
+            if (Sudoku[row, col] == number) return new Positions();
+            if (Possibilities[row, col].Peek(number)) result.Add(row);
+        }
+
+        return result;
+    }
+    
+    public List<int[]> PossiblePositionsInMiniGrid(int miniRow, int miniCol, int number)
+    {
+        List<int[]> result = new();
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                var realRow = miniRow * 3 + i;
+                var realCol = miniCol * 3 + j;
+                
+                if (Sudoku[realRow, realCol] == number) return new List<int[]>();
+                if (Possibilities[realRow, realCol].Peek(number)) result.Add(new[]{realRow, realCol});
+            }
+        }
+
+        return result;
     }
 
     public void Solve()

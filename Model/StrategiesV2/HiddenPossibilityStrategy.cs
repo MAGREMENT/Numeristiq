@@ -21,7 +21,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<Positions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = PossiblePositionsInRow(solver, row, number);
+                var positions = solver.PossiblePositionsInRow(row, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -49,7 +49,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<Positions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = PossiblePositionsInColumn(solver, col, number);
+                var positions = solver.PossiblePositionsInColumn(col, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -105,33 +105,7 @@ public class HiddenPossibilityStrategy : IStrategy
             }
         }
     }
-    
-    private Positions PossiblePositionsInRow(ISolver solver, int row, int number)
-    {
-        Positions result = new();
-        for (int col = 0; col < 9; col++)
-        {
-            if (solver.Sudoku[row, col] == number) return new Positions();
-            if (solver.Sudoku[row, col] == 0 &&
-                solver.Possibilities[row, col].Peek(number)) result.Add(col);
-        }
 
-        return result;
-    }
-
-    private Positions PossiblePositionsInColumn(ISolver solver, int col, int number)
-    {
-        Positions result = new();
-        for (int row = 0; row < 9; row++)
-        {
-            if (solver.Sudoku[row, col] == number) return new Positions();
-            if (solver.Sudoku[row, col] == 0 &&
-                solver.Possibilities[row, col].Peek(number)) result.Add(row);
-        }
-
-        return result;
-    }
-    
     private Positions PossiblePositionsInMiniGrid(ISolver solver, int miniRow, int miniCol, int number)
     {
         Positions result = new();
@@ -159,41 +133,6 @@ public class HiddenPossibilityStrategy : IStrategy
                 solver.RemovePossibility(i, row, col, new HiddenPossibilityLog(row, col, i, _type));
             }
         }
-    }
-}
-
-public class Positions
-{
-    private int _pos;
-    public int Count { private set; get; }
-
-    public void Add(int pos)
-    {
-        _pos |= 1 << pos;
-        Count++;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Positions pos) return false;
-        return _pos == pos._pos;
-    }
-
-    public override int GetHashCode()
-    {
-        // ReSharper disable once NonReadonlyMemberInGetHashCode
-        return _pos;
-    }
-
-    public List<int> All()
-    {
-        List<int> result = new();
-        for (int i = 0; i < 9; i++)
-        {
-            if(((_pos >> i) & 1) > 0) result.Add(i);
-        }
-
-        return result;
     }
 }
 

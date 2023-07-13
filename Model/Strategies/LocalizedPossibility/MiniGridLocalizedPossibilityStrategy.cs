@@ -14,7 +14,7 @@ public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var ppimg = PossiblePositionsInMiniGrid(solver, number, miniRow, miniCol);
+                    var ppimg = solver.PossiblePositionsInMiniGrid(miniRow, miniCol, number);
                     if (ppimg.Count is > 1 and < 4)
                     {
                         if (HasSameRow(ppimg))
@@ -42,25 +42,6 @@ public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
         }
 
         return wasProgressMade;
-    }
-
-    private List<int[]> PossiblePositionsInMiniGrid(ISolver solver, int number, int miniRow, int miniCol)
-    {
-        List<int[]> result = new();
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                var realRow = miniRow * 3 + i;
-                var realCol = miniCol * 3 + j;
-                
-                if (solver.Sudoku[realRow, realCol] == number) return new List<int[]>();
-                if (solver.Sudoku[realRow, realCol] == 0 && solver.Possibilities[realRow, realCol].Peek(number))
-                    result.Add(new[]{realRow, realCol});
-            }
-        }
-
-        return result;
     }
 
     private bool HasSameRow(List<int[]> list)

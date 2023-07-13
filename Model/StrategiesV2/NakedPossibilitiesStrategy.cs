@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Possibilities;
 
 namespace Model.StrategiesV2;
 
@@ -17,7 +18,7 @@ public class NakedPossibilitiesStrategy : IStrategy
         //Rows
         for (int row = 0; row < 9; row++)
         {
-            IPossibilities empty = new ArrayPossibilities();
+            IPossibilities empty = new BoolArrayPossibilities();
             empty.RemoveAll();
             var possibleCols = EveryRowCellWithLessPossibilities(solver, row, _type + 1);
             RecursiveRowMashing(solver, empty, possibleCols, row, _type, new HashSet<int>());
@@ -30,7 +31,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 int a = 0;
             }
-            IPossibilities empty = new ArrayPossibilities();
+            IPossibilities empty = new BoolArrayPossibilities();
             empty.RemoveAll();
             var possibleRows = EveryColumnCellWithLessPossibilities(solver, col, _type + 1);
             RecursiveColumnMashing(solver, empty, possibleRows, col, _type, new HashSet<int>());
@@ -41,7 +42,7 @@ public class NakedPossibilitiesStrategy : IStrategy
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                IPossibilities empty = new ArrayPossibilities();
+                IPossibilities empty = new BoolArrayPossibilities();
                 empty.RemoveAll();
                 var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(solver, miniRow, miniCol, _type + 1);
                 RecursiveMiniGridMashing(solver, empty, possibleGridNumbers, miniRow, miniCol, _type, new HashSet<int>());
@@ -64,24 +65,26 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RecursiveRowMashing(ISolver solver, IPossibilities current,
         List<int> possibleCols, int row, int count, HashSet<int> visited)
     {
-        foreach (var col in possibleCols)
+        for (int i = 0; i < possibleCols.Count; i++)
         {
-            if (!visited.Contains(col))
+            int col = possibleCols[i];
+            possibleCols.RemoveAt(i);
+
+            IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
+            var newVisited = new HashSet<int>(visited) { col };
+            
+            if (newCurrent.Count <= _type)
             {
-                IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
-                var newVisited = new HashSet<int>(visited) { col };
-                if (newCurrent.Count <= _type)
+                if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (count - 1 == 0 && newCurrent.Count == _type)
-                    {
-                        if (_type == 1) solver.AddDefinitiveNumber(newCurrent.GetFirst(), row, col,
-                            new NakedPossibilityLog(row, col, newCurrent.GetFirst(), _type));
-                        else RemovePossibilitiesFromRow(solver, row, newCurrent, newVisited);
-                    }
-                    else
-                    {
-                        RecursiveRowMashing(solver, newCurrent, possibleCols, row, count - 1, newVisited);
-                    }
+                    if (_type == 1) solver.AddDefinitiveNumber(newCurrent.GetFirst(), row, col,
+                        new NakedPossibilityLog(row, col, newCurrent.GetFirst(), _type));
+                    else RemovePossibilitiesFromRow(solver, row, newCurrent, newVisited);
+                }
+                else
+                {
+                    RecursiveRowMashing(solver, newCurrent,
+                        new List<int>(possibleCols), row, count - 1, newVisited);
                 }
             }
         }
@@ -89,7 +92,7 @@ public class NakedPossibilitiesStrategy : IStrategy
 
     private void RemovePossibilitiesFromRow(ISolver solver, int row, IPossibilities toRemove, HashSet<int> except)
     {
-        foreach (var n in toRemove.GetPossibilities())
+        foreach (var n in toRemove.All())
         {
             for (int col = 0; col < 9; col++)
             {
@@ -114,24 +117,26 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RecursiveColumnMashing(ISolver solver, IPossibilities current,
         List<int> possibleRows, int col, int count, HashSet<int> visited)
     {
-        foreach (var row in possibleRows)
+        for (int i = 0; i < possibleRows.Count; i++)
         {
-            if (!visited.Contains(row))
+            int row = possibleRows[i];
+            possibleRows.RemoveAt(i);
+
+            IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
+            var newVisited = new HashSet<int>(visited) { row };
+            
+            if (newCurrent.Count <= _type)
             {
-                IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
-                var newVisited = new HashSet<int>(visited) { row };
-                if (newCurrent.Count <= _type)
+                if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (count - 1 == 0 && newCurrent.Count == _type)
-                    {
-                        if (_type == 1) solver.AddDefinitiveNumber(newCurrent.GetFirst(), row, col,
-                            new NakedPossibilityLog(row, col, newCurrent.GetFirst(), _type));
-                        else RemovePossibilitiesFromColumn(solver, col, newCurrent, newVisited);
-                    }
-                    else
-                    {
-                        RecursiveColumnMashing(solver, newCurrent, possibleRows, col, count - 1, newVisited);
-                    }
+                    if (_type == 1) solver.AddDefinitiveNumber(newCurrent.GetFirst(), row, col,
+                        new NakedPossibilityLog(row, col, newCurrent.GetFirst(), _type));
+                    else RemovePossibilitiesFromColumn(solver, col, newCurrent, newVisited);
+                }
+                else
+                {
+                    RecursiveColumnMashing(solver, newCurrent, new List<int>(possibleRows),
+                        col, count - 1, newVisited);
                 }
             }
         }
@@ -139,7 +144,7 @@ public class NakedPossibilitiesStrategy : IStrategy
 
     private void RemovePossibilitiesFromColumn(ISolver solver, int col, IPossibilities toRemove, HashSet<int> except)
     {
-        foreach (var n in toRemove.GetPossibilities())
+        foreach (var n in toRemove.All())
         {
             for (int row = 0; row < 9; row++)
             {
@@ -167,29 +172,29 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RecursiveMiniGridMashing(ISolver solver, IPossibilities current,
         List<int> possibleGridNumbers, int miniRow, int miniCol, int count, HashSet<int> visited)
     {
-        foreach (var gridNumber in possibleGridNumbers)
+        for (int i = 0; i < possibleGridNumbers.Count; i++)
         {
-            if (!visited.Contains(gridNumber))
-            {
-                int row = miniRow * 3 + gridNumber / 3;
-                int col = miniCol * 3 + gridNumber % 3;
-                
-                IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
-                var newVisited = new HashSet<int>(visited) { gridNumber };
+            int gridNumber = possibleGridNumbers[i];
+            possibleGridNumbers.RemoveAt(i);
+            
+            int row = miniRow * 3 + gridNumber / 3;
+            int col = miniCol * 3 + gridNumber % 3;
+            
+            IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
+            var newVisited = new HashSet<int>(visited) { gridNumber };
 
-                if (newCurrent.Count <= _type)
+            if (newCurrent.Count <= _type)
+            {
+                if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (count - 1 == 0 && newCurrent.Count == _type)
-                    {
-                        if (_type == 1) solver.AddDefinitiveNumber(newCurrent.GetFirst(), row, col,
-                            new NakedPossibilityLog(row, col, newCurrent.GetFirst(), _type));
-                        else RemovePossibilitiesFromMiniGrid(solver, miniRow, miniCol, newCurrent, newVisited);
-                    }
-                    else
-                    {
-                        RecursiveMiniGridMashing(solver, newCurrent, possibleGridNumbers, miniRow, miniCol,
-                            count - 1, newVisited);
-                    }
+                    if (_type == 1) solver.AddDefinitiveNumber(newCurrent.GetFirst(), row, col,
+                        new NakedPossibilityLog(row, col, newCurrent.GetFirst(), _type));
+                    else RemovePossibilitiesFromMiniGrid(solver, miniRow, miniCol, newCurrent, newVisited);
+                }
+                else
+                {
+                    RecursiveMiniGridMashing(solver, newCurrent, new List<int>(possibleGridNumbers),
+                        miniRow, miniCol, count - 1, newVisited);
                 }
             }
         }
@@ -198,7 +203,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities toRemove,
         HashSet<int> except)
     {
-        foreach (var n in toRemove.GetPossibilities())
+        foreach (var n in toRemove.All())
         {
             for (int gridNumber = 0; gridNumber < 9; gridNumber++)
             {

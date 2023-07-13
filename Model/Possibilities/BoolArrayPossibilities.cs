@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace Model;
+namespace Model.Possibilities;
 
-public class ArrayPossibilities : IPossibilities
+public class BoolArrayPossibilities : IPossibilities
 {
     private bool[] _possibilities = { true, true, true, true, true, true, true, true, true};
     public int Count { private set; get; } = 9;
@@ -52,15 +52,15 @@ public class ArrayPossibilities : IPossibilities
         return _possibilities[i - 1];
     }
 
-    public List<int> GetPossibilities()
+    public IEnumerable<int> All()
     {
-        List<int> result = new();
         for (int i = 0; i < _possibilities.Length; i++)
         {
-            if(_possibilities[i]) result.Add(i + 1);
+            if (_possibilities[i])
+            {
+                yield return i + 1;
+            }
         }
-
-        return result;
     }
 
     public int GetFirst()
@@ -75,7 +75,7 @@ public class ArrayPossibilities : IPossibilities
 
     public override bool Equals(object? obj)
     {
-        if (obj is not ArrayPossibilities cp) return false;
+        if (obj is not BoolArrayPossibilities cp) return false;
         for (int i = 0; i < _possibilities.Length; i++)
         {
             if (_possibilities[i] != cp._possibilities[i]) return false;

@@ -75,7 +75,7 @@ public partial class SudokuUserControl : UserControl
         if(_currentSolver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_currentSolver.Sudoku[row, col]);
         else
         {
-            if(_seePossibilities) current.SetPossibilities(_currentSolver.Possibilities[row, col].GetPossibilities());
+            if(_seePossibilities) current.SetPossibilities(_currentSolver.Possibilities[row, col]);
             else current.Void();
         }
     }

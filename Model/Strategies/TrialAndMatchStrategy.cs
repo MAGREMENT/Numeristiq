@@ -17,17 +17,17 @@ public class TrialAndMatchStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                List<int> poss;
                 if (solver.Sudoku[row, col] == 0 &&
-                    (poss = solver.Possibilities[row, col].GetPossibilities()).Count <= _maxNumberOfPossibility)
+                    solver.Possibilities[row, col].Count <= _maxNumberOfPossibility)
                 {
-                    ApplyChanges(solver, RunSimulation(solver, row, col, poss));
+                    ApplyChanges(solver, RunSimulation(solver, row, col,
+                        solver.Possibilities[row, col].All()));
                 }
             }
         }
     }
 
-    private List<int[]>? RunSimulation(ISolver solver, int row, int col, List<int> possibilities)
+    private List<int[]>? RunSimulation(ISolver solver, int row, int col, IEnumerable<int> possibilities)
     {
         List<int[]>? commonChanges = null;
 

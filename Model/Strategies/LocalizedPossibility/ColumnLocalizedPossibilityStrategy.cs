@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Model.Strategies.LocalizedPossibility;
 
@@ -12,13 +13,13 @@ public class ColumnLocalizedPossibilityStrategy : ISubStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppic = PossiblePositionsInColumn(solver, col, number);
+                var ppic = solver.PossiblePositionsInColumn(col, number);
                 if (ppic.Count is > 1 and < 4)
                 {
-                    if (IsInSameMiniGrid(ppic))
+                    if (IsInSameMiniGrid(ppic.All()))
                     {
-                        int miniRow = ppic[0][0] / 3;
-                        int miniCol = ppic[0][1] / 3;
+                        int miniRow = ppic.All().First() / 3;
+                        int miniCol = col / 3;
 
                         for (int r = 0; r < 3; r++)
                         {
@@ -40,27 +41,13 @@ public class ColumnLocalizedPossibilityStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private List<int[]> PossiblePositionsInColumn(ISolver solver, int col, int number)
+    private bool IsInSameMiniGrid(IEnumerable<int> list)
     {
-        List<int[]> result = new();
-        for (int row = 0; row < 9; row++)
+        int miniRow = list.First() / 3;
+
+        foreach (var row in list)
         {
-            if (solver.Sudoku[row, col] == number) return new List<int[]>();
-            if (solver.Sudoku[row, col] == 0 &&
-                solver.Possibilities[row, col].Peek(number)) result.Add(new[]{row, col});
-        }
-
-        return result;
-    }
-
-    private bool IsInSameMiniGrid(List<int[]> list)
-    {
-        int miniRow = list[0][0] / 3;
-        int miniCol = list[0][1] / 3;
-
-        for (int i = 1; i < list.Count; i++)
-        {
-            if (list[i][0] / 3 != miniRow || list[i][1] / 3 != miniCol) return false;
+            if (row / 3 != miniRow) return false;
         }
 
         return true;

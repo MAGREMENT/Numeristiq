@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
-namespace Model;
+namespace Model.Possibilities;
 
 public class BitPossibilities : IPossibilities
 {
@@ -69,14 +70,25 @@ public class BitPossibilities : IPossibilities
         return ((_possibilities >> (number - 1)) & 1) > 0;
     }
 
-    public List<int> GetPossibilities()
+    public IEnumerable<int> All()
     {
-        throw new System.NotImplementedException();
+        for (int i = 0; i < 9; i++)
+        {
+            if (((_possibilities >> i) & 1) > 0)
+            {
+                yield return i + 1;
+            }
+        }
     }
 
     public int GetFirst()
     {
-        throw new System.NotImplementedException();
+        for (int i = 0; i < 9; i++)
+        {
+            if (((_possibilities >> i) & 1) > 0) return i + 1;
+        }
+
+        return 0;
     }
 
     public override int GetHashCode()

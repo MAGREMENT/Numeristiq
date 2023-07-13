@@ -14,10 +14,11 @@ public class CellSinglePossibilityStrategy : ISubStrategy
             {
                 if (solver.Sudoku[i, j] != 0) continue;
                 
-                List<int> poss = solver.Possibilities[i, j].GetPossibilities();
-                if (poss.Count == 1)
+                if (solver.Possibilities[i, j].Count == 1)
                 {
-                    solver.AddDefinitiveNumber(poss[0], i, j, new SinglePossibilityLog(poss[0], i, j));
+                    int n = solver.Possibilities[i, j].GetFirst();
+                    solver.AddDefinitiveNumber(n,
+                        i, j, new SinglePossibilityLog(n, i, j));
                     wasProgressMade = true;
                 }
             }
