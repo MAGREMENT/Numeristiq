@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Model.StrategiesV2;
+namespace Model.Strategies;
 
 public class YWingStrategy : IStrategy
 {

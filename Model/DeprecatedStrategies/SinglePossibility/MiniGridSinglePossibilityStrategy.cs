@@ -1,8 +1,8 @@
-﻿namespace Model.Strategies.SinglePossibility;
+﻿namespace Model.DeprecatedStrategies.SinglePossibility;
 
-public class MiniGridSinglePossibilityStrategy : ISubStrategy
+public class MiniGridSinglePossibilityStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         
@@ -22,7 +22,6 @@ public class MiniGridSinglePossibilityStrategy : ISubStrategy
                 }
             }
         }
-        return wasProgressMade;
     }
     
     private int[]? CheckMiniGridForUnique(ISolver solver, int gridRow, int gridCol, int number)

@@ -1,4 +1,4 @@
-﻿namespace Model.Strategies.SamePossibilities;
+﻿namespace Model.DeprecatedStrategies.SamePossibilities;
 
 public class SamePossibilitiesStrategyPackage : StrategyPackage
 {

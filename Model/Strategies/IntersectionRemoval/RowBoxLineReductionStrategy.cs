@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Model.Strategies.LocalizedPossibility;
+namespace Model.Strategies.IntersectionRemoval;
 
-public class RowLocalizedPossibilityStrategy : ISubStrategy
+public class RowBoxLineReductionStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
 
@@ -13,7 +13,7 @@ public class RowLocalizedPossibilityStrategy : ISubStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppir = solver.PossiblePositionsInRow(row, number);
+                var ppir = solver.PossibilityPositionsInRow(row, number);
                 if (ppir.Count is > 1 and < 4)
                 {
                     if (IsInSameMiniGrid(ppir.All()))
@@ -30,15 +30,13 @@ public class RowLocalizedPossibilityStrategy : ISubStrategy
 
                                 if (realRow != row && solver.Sudoku[realRow, realCol] == 0 &&
                                     solver.RemovePossibility(number, realRow, realCol,
-                                        new LocalizedPossibilityLog(number, realRow, realCol))) wasProgressMade = true;
+                                        new IntersectionRemovalLog(number, realRow, realCol))) wasProgressMade = true;
                             }
                         }
                     }
                 }
             }
         }
-
-        return wasProgressMade;
     }
 
     private bool IsInSameMiniGrid(IEnumerable<int> list)

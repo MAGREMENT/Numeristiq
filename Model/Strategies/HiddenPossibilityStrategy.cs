@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Sockets;
 
-namespace Model.StrategiesV2;
+namespace Model.Strategies;
 
 public class HiddenPossibilityStrategy : IStrategy
 {
@@ -21,7 +19,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<Positions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = solver.PossiblePositionsInRow(row, number);
+                var positions = solver.PossibilityPositionsInRow(row, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -49,7 +47,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<Positions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = solver.PossiblePositionsInColumn(col, number);
+                var positions = solver.PossibilityPositionsInColumn(col, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))

@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.Strategies.LocalizedPossibility;
+namespace Model.Strategies.IntersectionRemoval;
 
-public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
+public class PointingPossibilitiesStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         
@@ -14,7 +14,7 @@ public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var ppimg = solver.PossiblePositionsInMiniGrid(miniRow, miniCol, number);
+                    var ppimg = solver.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
                     if (ppimg.Count is > 1 and < 4)
                     {
                         if (HasSameRow(ppimg))
@@ -24,7 +24,7 @@ public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
                             {
                                 if (col / 3 != miniCol && solver.Sudoku[row, col] == 0 &&
                                     solver.RemovePossibility(number, row, col,
-                                        new LocalizedPossibilityLog(number, row, col))) wasProgressMade = true;
+                                        new IntersectionRemovalLog(number, row, col))) wasProgressMade = true;
                             }
                         }else if (HasSameColumn(ppimg))
                         {
@@ -33,15 +33,13 @@ public class MiniGridLocalizedPossibilityStrategy : ISubStrategy
                             {
                                 if (row / 3 != miniRow && solver.Sudoku[row, col] == 0 &&
                                     solver.RemovePossibility(number, row, col,
-                                        new LocalizedPossibilityLog(number, row, col))) wasProgressMade = true;
+                                        new IntersectionRemovalLog(number, row, col))) wasProgressMade = true;
                             }
                         }
                     }
                 }
             }
         }
-
-        return wasProgressMade;
     }
 
     private bool HasSameRow(List<int[]> list)

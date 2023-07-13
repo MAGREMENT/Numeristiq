@@ -1,33 +1,27 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.Strategies.SamePossibilities;
+namespace Model.DeprecatedStrategies.SamePossibilities;
 
-public class ColumnSamePossibilitiesStrategy : ISubStrategy
+public class RowSamePossibilitiesStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         
-        for (int col = 0; col < 9; col++)
+        for (int row = 0; row < 9; row++)
         {
-            foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, col))
+            foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, row))
             {
                 if (keyValuePair.Key.Count == keyValuePair.Value)
-                    wasProgressMade = RemovePossibilitiesFromColumn(solver, col, keyValuePair.Key);
-                else if (keyValuePair.Key.Count == 3 && keyValuePair.Value == 2)
-                {
-                    
-                }
+                    wasProgressMade = RemovePossibilitiesFromRow(solver, row, keyValuePair.Key);
             }
         }
-
-        return wasProgressMade;
     }
-
-    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int col)
+    
+    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int row)
     {
         Dictionary<IPossibilities, int> result = new();
-        for (int row = 0; row < 9; row++)
+        for (int col = 0; col < 9; col++)
         {
             if (solver.Sudoku[row, col] == 0)
             {
@@ -39,11 +33,11 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         return result;
     }
 
-    private bool RemovePossibilitiesFromColumn(ISolver solver, int col, IPossibilities toRemove)
+    private bool RemovePossibilitiesFromRow(ISolver solver, int row, IPossibilities toRemove)
     {
         bool wasProgressMade = false;
         
-        for (int row = 0; row < 9; row++)
+        for (int col = 0; col < 9; col++)
         {
             if (solver.Sudoku[row, col] == 0 && !solver.Possibilities[row, col].Equals(toRemove))
             {
@@ -58,8 +52,4 @@ public class ColumnSamePossibilitiesStrategy : ISubStrategy
         return wasProgressMade;
     }
 
-    private bool SearchForHiddenTriple(ISolver solver, int col, IPossibilities search)
-    {
-        return false;
-    }
 }

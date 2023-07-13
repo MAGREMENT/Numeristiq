@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Possibilities;
 
-namespace Model.StrategiesV2;
+namespace Model.Strategies;
 
 public class NakedPossibilitiesStrategy : IStrategy
 {
@@ -27,10 +27,6 @@ public class NakedPossibilitiesStrategy : IStrategy
         //Cols
         for (int col = 0; col < 9; col++)
         {
-            if (col == 7 && _type == 3)
-            {
-                int a = 0;
-            }
             IPossibilities empty = new BoolArrayPossibilities();
             empty.RemoveAll();
             var possibleRows = EveryColumnCellWithLessPossibilities(solver, col, _type + 1);
@@ -226,7 +222,7 @@ public class NakedPossibilityLog : ISolverLog
     {
         if (type == 1)
         {
-            AsString = $"[{row + 1}, {col + 1}] {number} added as definitive because of hidden {type}";
+            AsString = $"[{row + 1}, {col + 1}] {number} added as definitive because of naked {type}";
             Level = StrategyLevel.Basic;
         }
         else

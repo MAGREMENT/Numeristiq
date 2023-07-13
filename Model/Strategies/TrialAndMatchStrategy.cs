@@ -2,7 +2,7 @@
 
 namespace Model.Strategies;
 
-public class TrialAndMatchStrategy : IStrategy
+public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7      3s4s1  3  28   4   6   89  1  5s4s2s6s6 8942   2  3  6
 {
     private readonly int _maxNumberOfPossibility;
 
@@ -22,6 +22,7 @@ public class TrialAndMatchStrategy : IStrategy
                 {
                     ApplyChanges(solver, RunSimulation(solver, row, col,
                         solver.Possibilities[row, col].All()));
+                    return;
                 }
             }
         }
@@ -33,8 +34,7 @@ public class TrialAndMatchStrategy : IStrategy
 
         foreach (var possibility in possibilities)
         {
-            Solver simulation = new Solver(solver.Sudoku.Copy());
-            simulation.ExcludeStrategy(typeof(TrialAndMatchStrategy));
+            Solver simulation = Solver.BasicSolver(solver.Sudoku.Copy());
             simulation.AddDefinitiveNumber(possibility, row, col);
             simulation.Solve();
 

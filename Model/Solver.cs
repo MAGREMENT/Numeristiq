@@ -2,37 +2,16 @@
 using System.Collections.Generic;
 using Model.Possibilities;
 using Model.Strategies;
-using Model.Strategies.LocalizedPossibility;
-using Model.Strategies.SamePossibilities;
-using Model.Strategies.SinglePossibility;
-using Model.StrategiesV2;
+using Model.Strategies.IntersectionRemoval;
 
 namespace Model;
 
 public class Solver : ISolver
 {
-    public IPossibilities[,] Possibilities { get; }
+    public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs { get; } = new();
     public Sudoku Sudoku { get; }
-
-    private List<IStrategy> Strategies { get; } = new()
-    {
-        /*new SinglePossibilityStrategyPackage(),
-        new SamePossibilitiesStrategyPackage(),
-        new LocalizedPossibilityStrategyPackage(),*/
-        new NakedPossibilitiesStrategy(1),
-        new HiddenPossibilityStrategy(1),
-        new NakedPossibilitiesStrategy(2),
-        new HiddenPossibilityStrategy(2),
-        new LocalizedPossibilityStrategyPackage(),
-        new NakedPossibilitiesStrategy(3),
-        new HiddenPossibilityStrategy(3),
-        new NakedPossibilitiesStrategy(4),
-        new HiddenPossibilityStrategy(4),
-        new XWingStrategy(),
-        new YWingStrategy()
-        //new TrialAndMatchStrategy(2)
-    };
+    private IStrategy[] Strategies { get; }
 
     public delegate void OnNumberAdded(int row, int col);
     public event OnNumberAdded? NumberAdded;
@@ -43,9 +22,8 @@ public class Solver : ISolver
     private readonly List<int[]> _listOfChanges = new();
     private bool _changeWasMade;
 
-    public Solver(Sudoku s)
+    public Solver(Sudoku s, params IStrategy[] strategies)
     {
-        Possibilities = new IPossibilities[9, 9];
         Sudoku = s;
 
         for (int i = 0; i < 9; i++)
@@ -69,6 +47,44 @@ public class Solver : ISolver
 
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
+
+        if (strategies.Length > 0)
+        {
+            Strategies = strategies;
+        }
+        else
+        {
+            Strategies = new IStrategy[]{
+                new NakedPossibilitiesStrategy(1),
+                new HiddenPossibilityStrategy(1),
+                new NakedPossibilitiesStrategy(2),
+                new HiddenPossibilityStrategy(2),
+                new IntersectionRemovalStrategyPackage(),
+                new NakedPossibilitiesStrategy(3),
+                new HiddenPossibilityStrategy(3),
+                new NakedPossibilitiesStrategy(4),
+                new HiddenPossibilityStrategy(4),
+                new XWingStrategy(),
+                new YWingStrategy(),
+                new BugStrategy(),
+                new TrialAndMatchStrategy(2)
+            };
+        }
+    }
+
+    public static Solver BasicSolver(Sudoku s)
+    {
+        return new Solver(s,
+            new NakedPossibilitiesStrategy(1),
+            new HiddenPossibilityStrategy(1),
+            new NakedPossibilitiesStrategy(2),
+            new HiddenPossibilityStrategy(2),
+            new IntersectionRemovalStrategyPackage(),
+            new NakedPossibilitiesStrategy(3),
+            new HiddenPossibilityStrategy(3),
+            new NakedPossibilitiesStrategy(4),
+            new HiddenPossibilityStrategy(4)
+        );
     }
     
     public bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null)
@@ -112,15 +128,7 @@ public class Solver : ISolver
         }
     }
 
-    public void ExcludeStrategy(Type type)
-    {
-        for (int i = 0; i < Strategies.Count; i++)
-        {
-            if (Strategies[i].GetType() == type) Strategies.RemoveAt(i);
-        }
-    }
-    
-    public Positions PossiblePositionsInRow(int row, int number)
+    public Positions PossibilityPositionsInRow(int row, int number)
     {
         Positions result = new();
         for (int col = 0; col < 9; col++)
@@ -131,7 +139,7 @@ public class Solver : ISolver
         return result;
     }
     
-    public Positions PossiblePositionsInColumn(int col, int number)
+    public Positions PossibilityPositionsInColumn(int col, int number)
     {
         Positions result = new();
         for (int row = 0; row < 9; row++)
@@ -143,7 +151,8 @@ public class Solver : ISolver
         return result;
     }
     
-    public List<int[]> PossiblePositionsInMiniGrid(int miniRow, int miniCol, int number)
+    //TODO change to position class
+    public List<int[]> PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
     {
         List<int[]> result = new();
         for (int i = 0; i < 3; i++)
@@ -163,7 +172,7 @@ public class Solver : ISolver
 
     public void Solve()
     {
-        for (int i = 0; i < Strategies.Count; i++)
+        for (int i = 0; i < Strategies.Length; i++)
         {
             if (Sudoku.IsComplete()) return;
             Strategies[i].ApplyOnce(this);

@@ -1,11 +1,11 @@
-﻿namespace Model.Strategies.LocalizedPossibility;
+﻿namespace Model.Strategies.IntersectionRemoval;
 
-public class LocalizedPossibilityLog : ISolverLog
+public class IntersectionRemovalLog : ISolverLog
 {
     public string AsString { get; }
     public StrategyLevel Level => StrategyLevel.Medium;
 
-    public LocalizedPossibilityLog(int number, int row, int col)
+    public IntersectionRemovalLog(int number, int row, int col)
     {
         AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of localized possibilities";
     }

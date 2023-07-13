@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
+﻿namespace Model.DeprecatedStrategies.SinglePossibility;
 
-namespace Model.Strategies.SinglePossibility;
-
-public class CellSinglePossibilityStrategy : ISubStrategy
+public class CellSinglePossibilityStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
 
@@ -23,7 +21,5 @@ public class CellSinglePossibilityStrategy : ISubStrategy
                 }
             }
         }
-        
-        return wasProgressMade;
     }
 }

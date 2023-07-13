@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.Strategies.SamePossibilities;
+namespace Model.DeprecatedStrategies.SamePossibilities;
 
-public class MiniGridSamePossibilitiesStrategy : ISubStrategy
+public class MiniGridSamePossibilitiesStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         
@@ -19,8 +19,6 @@ public class MiniGridSamePossibilitiesStrategy : ISubStrategy
                 }
             }
         }
-
-        return wasProgressMade;
     }
 
     private List<IPossibilities> GetListOfPossibilities(ISolver solver, int miniRow, int miniCol)

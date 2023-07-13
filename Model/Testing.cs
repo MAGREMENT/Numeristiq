@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Printing;
-using Model.StrategiesV2;
 
 namespace Model;
 

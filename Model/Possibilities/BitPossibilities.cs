@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Model.Possibilities;
 
-public class BitPossibilities : IPossibilities
+public class BitPossibilities : IPossibilities //TODO : make work
 {
     private byte _possibilities;
     public int Count { private set; get; }

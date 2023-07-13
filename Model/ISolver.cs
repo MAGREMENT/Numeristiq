@@ -9,11 +9,11 @@ public interface ISolver
 
     bool RemovePossibility(int possibility, int row, int col, ISolverLog? log = null);
 
-    Positions PossiblePositionsInColumn(int col, int number);
+    Positions PossibilityPositionsInColumn(int col, int number);
 
-    Positions PossiblePositionsInRow(int row, int number);
+    Positions PossibilityPositionsInRow(int row, int number);
 
-    List<int[]> PossiblePositionsInMiniGrid(int miniRow, int miniCol, int number);
+    List<int[]> PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
 
     public Sudoku Sudoku { get; }
 

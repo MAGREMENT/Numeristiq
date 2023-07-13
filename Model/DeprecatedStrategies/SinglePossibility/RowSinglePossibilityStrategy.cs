@@ -1,8 +1,8 @@
-﻿namespace Model.Strategies.SinglePossibility;
+﻿namespace Model.DeprecatedStrategies.SinglePossibility;
 
-public class RowSinglePossibilityStrategy : ISubStrategy
+public class RowSinglePossibilityStrategy : IStrategy
 {
-    public bool ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolver solver)
     {
         bool wasProgressMade = false;
         
@@ -18,8 +18,6 @@ public class RowSinglePossibilityStrategy : ISubStrategy
                 }
             } 
         }
-        
-        return wasProgressMade;
     }
     
     private int CheckRowForUnique(ISolver solver, int row, int number)

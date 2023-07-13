@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.StrategiesV2;
+namespace Model.Strategies;
 
 public class XWingStrategy : IStrategy
 {
@@ -13,7 +13,7 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int row = 0; row < 9; row++)
             {
-                var ppir = solver.PossiblePositionsInRow(row, n);
+                var ppir = solver.PossibilityPositionsInRow(row, n);
                 if (ppir.Count == 2)
                 {
                     if (!dict.TryAdd(ppir, row))
@@ -27,7 +27,7 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int col = 0; col < 9; col++)
             {
-                var ppic = solver.PossiblePositionsInColumn(col, n);
+                var ppic = solver.PossibilityPositionsInColumn(col, n);
                 if (ppic.Count == 2)
                 {
                     if (!dict.TryAdd(ppic, col))

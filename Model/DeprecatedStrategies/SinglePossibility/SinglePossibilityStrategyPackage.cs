@@ -1,4 +1,4 @@
-﻿namespace Model.Strategies.SinglePossibility;
+﻿namespace Model.DeprecatedStrategies.SinglePossibility;
 
 public class SinglePossibilityStrategyPackage : StrategyPackage
 {

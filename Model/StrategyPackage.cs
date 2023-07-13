@@ -3,9 +3,9 @@ namespace Model;
 
 public abstract class StrategyPackage : IStrategy
 {
-    private readonly ISubStrategy[] _strategies;
+    private readonly IStrategy[] _strategies;
 
-    protected StrategyPackage(params ISubStrategy[] strategies)
+    protected StrategyPackage(params IStrategy[] strategies)
     {
         _strategies = strategies;
     }
