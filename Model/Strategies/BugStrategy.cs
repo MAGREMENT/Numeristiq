@@ -9,11 +9,12 @@ public class BugStrategy : IStrategy
         {
             foreach (var possibility in solver.Possibilities[triple[0], triple[1]].All())
             {
-                if (solver.PossibilityPositionsInColumn(triple[1], possibility).Count % 2 == 0 &&
-                    solver.PossibilityPositionsInRow(triple[0], possibility).Count % 2 == 0 &&
-                    solver.PossibilityPositionsInMiniGrid(triple[0] / 3, triple[1] / 3, possibility).Count % 2 == 0)
+                if (solver.PossibilityPositionsInColumn(triple[1], possibility).Count % 2 == 1 &&
+                    solver.PossibilityPositionsInRow(triple[0], possibility).Count % 2 == 1 &&
+                    solver.PossibilityPositionsInMiniGrid(triple[0] / 3, triple[1] / 3, possibility).Count % 2 == 1)
                 {
-                    solver.AddDefinitiveNumber(possibility, triple[0], triple[1]);
+                    solver.AddDefinitiveNumber(possibility, triple[0], triple[1],
+                        new BugLog(possibility, triple[0], triple[1]));
                 }
             }
         }
@@ -35,5 +36,16 @@ public class BugStrategy : IStrategy
         }
 
         return triple;
+    }
+}
+
+public class BugLog : ISolverLog
+{
+    public string AsString { get; }
+    public StrategyLevel Level { get; } = StrategyLevel.Medium;
+
+    public BugLog(int number, int row, int col)
+    {
+        AsString = $"[{row + 1}, {col + 1}] {number} added as definitive because of bug strategy";
     }
 }
