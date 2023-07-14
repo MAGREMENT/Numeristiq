@@ -35,6 +35,7 @@ namespace SudokuSolver;
             {
                 _createNewSudoku = false;
                 ((TextBox)_main.Children[1]).Text = asString;
+                _createNewSudoku = true;
             };
             
             GetLiveModificationUserControl().Init(GetSudokuUserControl());
@@ -45,7 +46,6 @@ namespace SudokuSolver;
             string asString = ((TextBox) _main.Children[1]).Text;
             if (_createNewSudoku) GetSudokuUserControl().NewSolver(
                 new Solver(new Sudoku(asString)));
-            else _createNewSudoku = true;
         }
 
         private void SolveSudoku(object sender, RoutedEventArgs e)

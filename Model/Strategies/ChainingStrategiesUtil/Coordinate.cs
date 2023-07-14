@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Model;
+namespace Model.Strategies.ChainingStrategiesUtil;
 
 public class Coordinate
 {
@@ -12,6 +12,13 @@ public class Coordinate
     {
         Row = row;
         Col = col;
+    }
+
+    public bool ShareAUnit(Coordinate coord)
+    {
+        return Row == coord.Row || Col == coord.Col ||
+               (Row / 3 == coord.Row / 3
+                && Col / 3 == coord.Col / 3);
     }
 
     public override int GetHashCode()
@@ -29,4 +36,18 @@ public class Coordinate
     {
         return $"[{Row + 1}, {Col + 1}]";
     }
+}
+
+public class ColoringCoordinate : Coordinate, IColorable
+{
+    public Coloring Coloring { get; set; } = Coloring.None;
+
+    public ColoringCoordinate(int row, int col) : base(row, col)
+    {
+    }
+}
+
+public interface IColorable
+{
+    public Coloring Coloring { get; set; }
 }

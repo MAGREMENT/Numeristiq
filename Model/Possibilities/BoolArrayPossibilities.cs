@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Model.Possibilities;
 
@@ -6,6 +7,13 @@ public class BoolArrayPossibilities : IPossibilities
 {
     private bool[] _possibilities = { true, true, true, true, true, true, true, true, true};
     public int Count { private set; get; } = 9;
+    
+    public BoolArrayPossibilities(){}
+
+    private BoolArrayPossibilities(bool[] possibilities)
+    {
+        Array.Copy(possibilities, _possibilities, possibilities.Length);
+    }
 
     public bool Remove(int i)
     {
@@ -71,6 +79,11 @@ public class BoolArrayPossibilities : IPossibilities
         }
 
         return 0;
+    }
+
+    public IPossibilities Copy()
+    {
+        return new BoolArrayPossibilities(_possibilities);
     }
 
     public override bool Equals(object? obj)

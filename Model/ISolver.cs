@@ -36,6 +36,7 @@ public interface IPossibilities
     public bool Peek(int n);
     public IEnumerable<int> All();
     public int GetFirst();
+    public IPossibilities Copy();
 
     public static IPossibilities DefaultMash(IPossibilities poss1, IPossibilities poss2)
     {

@@ -70,7 +70,27 @@ public partial class SudokuUserControl : UserControl
     public void NewSolver(Solver solver)
     {
         _currentSolver = solver;
-        Update();
+        RefreshSolver();
+    }
+    
+    private void Update()
+    {
+        RefreshSolver();
+        SolverUpdated?.Invoke(_currentSolver.Sudoku.AsString());
+    }
+
+    private void RefreshSolver()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                SudokuCellUserControl current = GetTo(i, j);
+                current.UnHighLight();
+                
+                UpdateCell(current, i, j);
+            }
+        }
     }
 
     public void AddDefinitiveNumber(int number, int row, int col)
@@ -83,22 +103,6 @@ public partial class SudokuUserControl : UserControl
     {
         _currentSolver.RemovePossibility(number, row, col);
         Update();
-    }
-
-    private void Update()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                SudokuCellUserControl current = GetTo(i, j);
-                current.UnHighLight();
-                
-                UpdateCell(current, i, j);
-            }
-        }
-        
-        SolverUpdated?.Invoke(_currentSolver.Sudoku.AsString());
     }
 
     private void UpdateCell(SudokuCellUserControl current, int row, int col)
@@ -161,7 +165,8 @@ public partial class SudokuUserControl : UserControl
 
     public void ClearSudoku()
     {
-        NewSolver(new Solver(new Sudoku()));
+        _currentSolver = new Solver(new Sudoku());
+        Update();
     }
 
     public List<ISolverLog> GetLogs()

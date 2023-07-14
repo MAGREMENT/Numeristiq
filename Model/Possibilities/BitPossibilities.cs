@@ -91,6 +91,11 @@ public class BitPossibilities : IPossibilities //TODO : make work
         return 0;
     }
 
+    public IPossibilities Copy()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public override int GetHashCode()
     {
         // ReSharper disable once NonReadonlyMemberInGetHashCode

@@ -67,9 +67,10 @@ public class Solver : ISolver
                 new XWingStrategy(),
                 new XYWingStrategy(),
                 new XYZWingStrategy(),
-                new SimpleColouringStrategy(),
+                new SimpleColoringStrategy(),
                 new BugStrategy(),
-                new SwordfishStrategy()
+                new SwordfishStrategy(),
+                new ThreeDimensionMedusaStrategy()
                 //new TrialAndMatchStrategy(2)
             };
         }
