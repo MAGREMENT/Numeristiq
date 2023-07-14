@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace Model.Strategies;
 
-public class YWingStrategy : IStrategy
+// ReSharper disable once InconsistentNaming
+public class XYWingStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
     {
@@ -143,7 +144,7 @@ public class YWingStrategy : IStrategy
         foreach (var coord in MatchingCells(one, two))
         {
             if (solver.RemovePossibility(toRemove, coord.Row, coord.Col,
-                    new YWingLog(toRemove, coord.Row, coord.Col,
+                    new XYWingLog(toRemove, coord.Row, coord.Col,
                         opposite, one, two))) wasProgressMade = true;
         }
 
@@ -218,14 +219,15 @@ public class YWingStrategy : IStrategy
     }
 }
 
-public class YWingLog : ISolverLog
+// ReSharper disable once InconsistentNaming
+public class XYWingLog : ISolverLog
 {
     public string AsString { get; }
     public StrategyLevel Level { get; } = StrategyLevel.Hard;
 
-    public YWingLog(int number, int row, int col, Coordinate one, Coordinate two, Coordinate three)
+    public XYWingLog(int number, int row, int col, Coordinate one, Coordinate two, Coordinate three)
     {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of Y-Wings" +
+        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of XY-Wings" +
                    $" at {one}, {two} and {three}";
     }
 }

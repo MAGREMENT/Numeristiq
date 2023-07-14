@@ -53,6 +53,14 @@ public class Positions
 {
     private int _pos;
     public int Count { private set; get; }
+    
+    public Positions(){}
+
+    private Positions(int pos, int count)
+    {
+        _pos = pos;
+        Count = count;
+    }
 
     public void Add(int pos)
     {
@@ -78,6 +86,12 @@ public class Positions
         {
             if(((_pos >> i) & 1) > 0) yield return i;
         }
+    }
+
+    public Positions Mash(Positions pos)
+    {
+        int newPos = _pos | pos._pos;
+        return new Positions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos));
     }
 }
 

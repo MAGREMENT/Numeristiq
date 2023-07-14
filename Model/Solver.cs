@@ -65,9 +65,11 @@ public class Solver : ISolver
                 new NakedPossibilitiesStrategy(4),
                 new HiddenPossibilityStrategy(4),
                 new XWingStrategy(),
-                new YWingStrategy(),
+                new XYWingStrategy(),
+                new XYZWingStrategy(),
                 new SimpleColouringStrategy(),
-                new BugStrategy()
+                new BugStrategy(),
+                new SwordfishStrategy()
                 //new TrialAndMatchStrategy(2)
             };
         }
