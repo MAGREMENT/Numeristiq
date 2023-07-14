@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Model.Strategies;
 
-public class SimpleColouringStrategy : IStrategy //TODO correct s7s7s5s9 81 5  2 3  48   2s5s45   72s9s34  3 8  6 72 1s5s3
+public class SimpleColouringStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
     {
@@ -42,116 +42,48 @@ public class SimpleColouringStrategy : IStrategy //TODO correct s7s7s5s9 81 5  2
 
     private void SearchForTwiceInTheSameUnit(ISolver solver, int number, Chain chain)
     {
-        var divided = chain.DivideVerticesBasedOnColoring();
-        List<int> onColoring = new();
-        List<int> offColoring = new();
-        
-        //Rows
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                ColouringCoordinate current = new(row, col);
-                if (divided[0].Contains(current)) onColoring.Add(col);
-                else if (divided[1].Contains(current)) offColoring.Add(col);
-            }
+        var divided = chain.DivideVerticesBasedOnColoringInQueues();
 
-            if (onColoring.Count == 2)
+        while (divided[0].Count > 0)
+        {
+            ColouringCoordinate current = divided[0].Dequeue();
+            Queue<ColouringCoordinate> copy = new Queue<ColouringCoordinate>(divided[0]);
+            while (copy.Count > 0)
             {
-                foreach (var col in onColoring)
+                ColouringCoordinate next = copy.Dequeue();
+                if (ShareAUnit(current, next))
                 {
-                    solver.RemovePossibility(number, row, col, new SimpleColouringLog(row, col, number, true));
+                    foreach (var toRemove in chain.EachOfColouring(Colouring.On))
+                    {
+                        solver.RemovePossibility(number, toRemove.Row, toRemove.Col,
+                            new SimpleColouringLog(toRemove.Row, toRemove.Col, number, true));
+                    }
                 }
             }
-            
-            if (offColoring.Count == 2)
-            {
-                foreach (var col in offColoring)
-                {
-                    solver.RemovePossibility(number, row, col, new SimpleColouringLog(row, col, number, true));
-                }
-            }
-            
-            onColoring.Clear();
-            offColoring.Clear();
         }
         
-        //Cols
-        for (int col = 0; col < 9; col++)
+        while (divided[1].Count > 0)
         {
-            for (int row = 0; row < 9; row++)
+            ColouringCoordinate current = divided[1].Dequeue();
+            Queue<ColouringCoordinate> copy = new Queue<ColouringCoordinate>(divided[1]);
+            while (copy.Count > 0)
             {
-                ColouringCoordinate current = new(row, col);
-                if (divided[0].Contains(current)) onColoring.Add(row);
-                else if (divided[1].Contains(current)) offColoring.Add(row);
-            }
-
-            if (onColoring.Count == 2)
-            {
-                foreach (var row in onColoring)
+                ColouringCoordinate next = copy.Dequeue();
+                if (ShareAUnit(current, next))
                 {
-                    solver.RemovePossibility(number, row, col, new SimpleColouringLog(row, col, number, true));
-                }
-            }
-            
-            if (offColoring.Count == 2)
-            {
-                foreach (var row in offColoring)
-                {
-                    solver.RemovePossibility(number, row, col, new SimpleColouringLog(row, col, number, true));
-                }
-            }
-            
-            onColoring.Clear();
-            offColoring.Clear();
-        }
-        
-        //MiniGrids
-        List<int[]> onColoringArray = new();
-        List<int[]> offColoringArray = new();
-        for (int miniRow = 0; miniRow < 3; miniRow++)
-        {
-            for (int miniCol = 0; miniCol < 3; miniCol++)
-            {
-                for (int gridRow = 0; gridRow < 3; gridRow++)
-                {
-                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    foreach (var toRemove in chain.EachOfColouring(Colouring.Off))
                     {
-                        int row = miniRow * 3 + gridRow;
-                        int col = miniCol * 3 + gridCol;
-                        ColouringCoordinate current = new(row, col);
-                        if (divided[0].Contains(current)) onColoringArray.Add(new[] {row, col});
-                        else if (divided[1].Contains(current)) offColoringArray.Add(new[] {row, col});
+                        solver.RemovePossibility(number, toRemove.Row, toRemove.Col,
+                            new SimpleColouringLog(toRemove.Row, toRemove.Col, number, true));
                     }
                 }
-                
-                if (onColoringArray.Count == 2)
-                {
-                    foreach (var pos in onColoringArray)
-                    {
-                        solver.RemovePossibility(number, pos[0], pos[1],
-                            new SimpleColouringLog(pos[0], pos[1], number, true));
-                    }
-                }
-            
-                if (offColoringArray.Count == 2)
-                {
-                    foreach (var pos in offColoringArray)
-                    {
-                        solver.RemovePossibility(number, pos[0], pos[1],
-                            new SimpleColouringLog(pos[0], pos[1], number, true));
-                    }
-                }
-            
-                onColoringArray.Clear();
-                offColoringArray.Clear();
             }
         }
     }
 
     private void SearchForTwoColoursElsewhere(ISolver solver, int number, Chain chain)
     {
-        var divided = chain.DivideVerticesBasedOnColoring();
+        var divided = chain.DivideVerticesBasedOnColoringInHashSets();
         
         for (int row = 0; row < 9; row++)
         {
@@ -166,9 +98,7 @@ public class SimpleColouringStrategy : IStrategy //TODO correct s7s7s5s9 81 5  2
 
                         foreach (var coord in divided[0])
                         {
-                            if (coord.Row == current.Row || coord.Col == current.Col ||
-                                (coord.Row / 3 == current.Row / 3
-                                 && coord.Col / 3 == current.Col / 3))
+                            if (ShareAUnit(current, coord))
                             {
                                 onSameUnit = true;
                                 break;
@@ -179,11 +109,10 @@ public class SimpleColouringStrategy : IStrategy //TODO correct s7s7s5s9 81 5  2
                         {
                             foreach (var coord in divided[1])
                             {
-                                if (coord.Row == current.Row || coord.Col == current.Col ||
-                                    (coord.Row / 3 == current.Row / 3
-                                     && coord.Col / 3 == current.Col / 3))
+                                if (ShareAUnit(current, coord))
                                 {
-                                    solver.RemovePossibility(number, row, col, new SimpleColouringLog(row, col, number, false));
+                                    solver.RemovePossibility(number, row, col,
+                                        new SimpleColouringLog(row, col, number, false));
                                     break;
                                 }
                             }
@@ -192,6 +121,13 @@ public class SimpleColouringStrategy : IStrategy //TODO correct s7s7s5s9 81 5  2
                 }
             }
         }
+    }
+
+    private bool ShareAUnit(ColouringCoordinate one, ColouringCoordinate two)
+    {
+        return one.Row == two.Row || one.Col == two.Col ||
+               (one.Row / 3 == two.Row / 3
+                && one.Col / 3 == two.Col / 3);
     }
 
     private void RecursiveColouring(ColouringCoordinate current, Chain chain)
@@ -301,7 +237,7 @@ public class Chain
         return _vertices;
     }
 
-    public HashSet<ColouringCoordinate>[] DivideVerticesBasedOnColoring()
+    public HashSet<ColouringCoordinate>[] DivideVerticesBasedOnColoringInHashSets()
     {
         HashSet<ColouringCoordinate>[] result = { new(), new() };
         foreach (var vertex in _vertices)
@@ -310,6 +246,25 @@ public class Chain
             else if (vertex.Colouring == Colouring.Off) result[1].Add(vertex);
         }
         return result;
+    }
+    
+    public Queue<ColouringCoordinate>[] DivideVerticesBasedOnColoringInQueues()
+    {
+        Queue<ColouringCoordinate>[] result = { new(), new() };
+        foreach (var vertex in _vertices)
+        {
+            if (vertex.Colouring == Colouring.On) result[0].Enqueue(vertex);
+            else if (vertex.Colouring == Colouring.Off) result[1].Enqueue(vertex);
+        }
+        return result;
+    }
+
+    public IEnumerable<ColouringCoordinate> EachOfColouring(Colouring colouring)
+    {
+        foreach (var vertex in _vertices)
+        {
+            if (vertex.Colouring == colouring) yield return vertex;
+        }
     }
 
     public ColouringCoordinate First()
