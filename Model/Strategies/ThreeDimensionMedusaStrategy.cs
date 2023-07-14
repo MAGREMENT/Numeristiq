@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Model.Strategies.ChainingStrategiesUtil;
 
 namespace Model.Strategies;
 
-public class ThreeDimensionMedusaStrategy : IStrategy { //TODO : fix ->   3   8 5s4s1  38 6 4s4s4  83   2  2   3  9   72  1s4s6 1 77  1s4s4 9   5
+public class ThreeDimensionMedusaStrategy : IStrategy {
     public void ApplyOnce(ISolver solver)
     {
         List<ColorableChain<MedusaCoordinate>> chains = new();
@@ -19,7 +20,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy { //TODO : fix ->   3   8 
                     
                     ColorableChain<MedusaCoordinate> chain = new();
                     InitChain(solver, chain, start);
-                    if (chain.Count > 0)
+                    if (chain.Count >= 2)
                     {
                         chain.StartColoring();
                         chains.Add(chain);
@@ -31,7 +32,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy { //TODO : fix ->   3   8 
         foreach (var chain in chains)
         {
             SearchByCombination(solver, chain);
-            SearchEachCell(solver, chain);
+            SearchOffChain(solver, chain);
         }
         
     }
@@ -40,79 +41,96 @@ public class ThreeDimensionMedusaStrategy : IStrategy { //TODO : fix ->   3   8 
     {
         chain.ForEachCombinationOfTwo((one, two) =>
         {
-            //Twice in a cell
-            if (one.Row == two.Row && one.Col == two.Col && one.Coloring == two.Coloring)
+            if (one.Row == two.Row && one.Col == two.Col)
             {
-                InvalidColoring(solver, chain, one.Coloring);
+                //Twice in a cell
+                if (one.Coloring == two.Coloring)
+                {
+                    InvalidColoring(solver, chain, one.Coloring, 1);
+                    return true;
+                }
+                //Two colours in a cell
+                RemoveAllExcept(solver, one.Row, one.Col, one.Number, two.Number);
             }
             
             //Twice in a unit
-            if (one.Number == two.Number && one.ShareAUnit(two))
+            if (one.Number == two.Number && one.ShareAUnit(two) && one.Coloring == two.Coloring)
             {
-                InvalidColoring(solver, chain, one.Coloring);
+                InvalidColoring(solver, chain, one.Coloring, 2);
+                return true;
             }
+
+            return false;
         });
     }
 
-    private void SearchEachCell(ISolver solver, ColorableChain<MedusaCoordinate> chain)
+    private void SearchOffChain(ISolver solver, ColorableChain<MedusaCoordinate> chain)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if(solver.Sudoku[row, col] != 0) continue;
-                Coordinate current = new Coordinate(row, col);
-
-                int[] twoInACell = new int[2];
-                Dictionary<int, bool[]> twoElsewhere = new();
-                IPossibilities[] cellEmptiedByColor = new IPossibilities[]
+                if (solver.Sudoku[row, col] != 0) continue;
+                bool cellTotallyOfChain = true;
+                foreach (var possibility in solver.Possibilities[row, col].All())
                 {
-                    solver.Possibilities[row, col].Copy(),
-                    solver.Possibilities[row, col].Copy()
-                };
-                foreach (var coord in chain)
-                {
-                    //Two colour in a cell
-                    if (coord.Row == current.Row && coord.Col == current.Col)
+                    MedusaCoordinate current = new MedusaCoordinate(row, col, possibility);
+                    if (chain.Contains(current))
                     {
-                        twoInACell[(int)(coord.Coloring - 1)] = coord.Number;
-                        if (twoInACell[0] != 0 && twoInACell[1] != 0)
-                        {
-                            RemoveAllExcept(solver, row, col, twoInACell[0], twoInACell[1]);
-                        }
-                    }
-                    
-                    if (coord.ShareAUnit(current))
-                    {
-                        int arrayCoord = (int)(coord.Coloring - 1);
-                        
-                        //Two X sharing unit
-                        twoElsewhere.TryAdd(coord.Number, new bool[2]);
-                        var array = twoElsewhere[coord.Number];
-                        array[arrayCoord] = true;
-                        if (array[0] && array[1])
-                        {
-                            solver.RemovePossibility(coord.Number, row, col,
-                                new MedusaLog(coord.Number, row, col, false));
-                        }
-                        
-                        //Cell emptied by color
-                        cellEmptiedByColor[arrayCoord].Remove(coord.Number);
-                        if (cellEmptiedByColor[arrayCoord].Count == 0)
-                        {
-                            InvalidColoring(solver, chain, coord.Coloring);
-                        }
+                        cellTotallyOfChain = false;
+                        continue;
                     }
 
-                    //Two sharing Unit + Cell
-                    foreach (var possibility in solver.Possibilities[row, col].All())
+                    bool[] twoElsewhere = new bool[2];
+                    bool[] inCell = new bool[2];
+                    foreach (var coord in chain)
                     {
-                        bool[]? buffer;
-                        if ((twoInACell[0] != 0 && twoElsewhere.TryGetValue(possibility, out buffer) && buffer[1]) ||
-                            (twoInACell[1] != 0 && twoElsewhere.TryGetValue(possibility, out buffer) && buffer[0]))
+                        //Two X & Colours sharing a unit
+                        if (coord.Number == possibility && coord.ShareAUnit(current)) 
+                            twoElsewhere[(int)(coord.Coloring - 1)] = true;
+
+                        //Colour in cell
+                        if (coord.Row == current.Row && coord.Col == current.Col)
+                            inCell[(int)(coord.Coloring - 1)] = true;
+                            
+                        
+                        //Note : the inCell[0] && inCell[1] should be taken care of by the SearchByCombination function
+                        if (twoElsewhere[0] && twoElsewhere[1])
                         {
                             solver.RemovePossibility(possibility, row, col,
-                                new MedusaLog(possibility, row, col, false));
+                                new MedusaLog(coord.Number, row, col, false, 4));
+                            break;
+                        }
+                        if ((twoElsewhere[0] && inCell[1]) ||
+                                  (twoElsewhere[1] && inCell[0]))
+                        {
+                            solver.RemovePossibility(possibility, row, col,
+                                new MedusaLog(coord.Number, row, col, false, 5));
+                            break;
+                        }
+                    }
+                }
+
+                if (cellTotallyOfChain)
+                {
+                    Coordinate here = new Coordinate(row, col);
+                    IPossibilities[] cellEmptiedByColor =
+                    {
+                        solver.Possibilities[row, col].Copy(),
+                        solver.Possibilities[row, col].Copy()
+                    };
+
+                    foreach (var coord in chain)
+                    {
+                        if (coord.ShareAUnit(here))
+                        {
+                            cellEmptiedByColor[(int)(coord.Coloring - 1)].Remove(coord.Number);
+
+                            if (cellEmptiedByColor[0].Count == 0 || cellEmptiedByColor[1].Count == 0)
+                            {
+                                InvalidColoring(solver, chain, coord.Coloring, 6);
+                                return;
+                            }
                         }
                     }
                 }
@@ -126,20 +144,20 @@ public class ThreeDimensionMedusaStrategy : IStrategy { //TODO : fix ->   3   8 
         {
             if (i != exceptOne && i != exceptTwo)
             {
-                solver.RemovePossibility(i, row, col, new MedusaLog(i, row, col, false));
+                solver.RemovePossibility(i, row, col, new MedusaLog(i, row, col, false, 3));
             }
         }
     }
 
-    private void InvalidColoring(ISolver solver, ColorableChain<MedusaCoordinate> chain, Coloring invalid)
+    private void InvalidColoring(ISolver solver, ColorableChain<MedusaCoordinate> chain, Coloring invalid, int type)
     {
         foreach (var coord in chain)
         {
             if (coord.Coloring == invalid)
                 solver.RemovePossibility(coord.Number, coord.Row, coord.Col,
-                    new MedusaLog(coord.Number, coord.Row, coord.Col, false));
+                    new MedusaLog(coord.Number, coord.Row, coord.Col, false, type));
             else solver.AddDefinitiveNumber(coord.Number, coord.Row, coord.Col,
-                new MedusaLog(coord.Number, coord.Row, coord.Col, true));
+                new MedusaLog(coord.Number, coord.Row, coord.Col, true, type));
         }
     }
 
@@ -203,7 +221,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy { //TODO : fix ->   3   8 
             {
                 if (possibility != current.Number)
                 {
-                    MedusaCoordinate next = new MedusaCoordinate(current.Row, current.Col, current.Number);
+                    MedusaCoordinate next = new MedusaCoordinate(current.Row, current.Col, possibility);
                     if(chain.AddLink(current, next)) InitChain(solver, chain, next);
                     break;
                 }
@@ -243,9 +261,9 @@ public class MedusaLog : ISolverLog
     public string AsString { get; }
     public StrategyLevel Level { get; } = StrategyLevel.Hard;
 
-    public MedusaLog(int number, int row, int col, bool definitiveNumber)
+    public MedusaLog(int number, int row, int col, bool definitiveNumber, int type)
     {
         string action = definitiveNumber ? "added as definitive" : "removed from possibilities";
-        AsString = $"[{row + 1}, {col + 1}] {number} {action} because of 3D medusa";
+        AsString = $"[{row + 1}, {col + 1}] {number} {action} because of 3D medusa type {type}";
     }
 }

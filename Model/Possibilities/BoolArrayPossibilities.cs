@@ -10,9 +10,10 @@ public class BoolArrayPossibilities : IPossibilities
     
     public BoolArrayPossibilities(){}
 
-    private BoolArrayPossibilities(bool[] possibilities)
+    private BoolArrayPossibilities(BoolArrayPossibilities toCopy)
     {
-        Array.Copy(possibilities, _possibilities, possibilities.Length);
+        Array.Copy(toCopy._possibilities, _possibilities, _possibilities.Length);
+        Count = toCopy.Count;
     }
 
     public bool Remove(int i)
@@ -83,7 +84,7 @@ public class BoolArrayPossibilities : IPossibilities
 
     public IPossibilities Copy()
     {
-        return new BoolArrayPossibilities(_possibilities);
+        return new BoolArrayPossibilities(this);
     }
 
     public override bool Equals(object? obj)

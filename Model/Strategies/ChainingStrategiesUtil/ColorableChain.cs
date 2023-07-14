@@ -73,7 +73,7 @@ public class ColorableChain<T> : IEnumerable<T> where T : class, IColorable
         return new Queue<T>(_vertices.Keys);
     }
 
-    public delegate void HandeCombination(T one, T two);
+    public delegate bool HandeCombination(T one, T two);
 
     public void ForEachCombinationOfTwo(HandeCombination handler)
     {
@@ -84,7 +84,7 @@ public class ColorableChain<T> : IEnumerable<T> where T : class, IColorable
             Queue<T> copy = new Queue<T>(queue);
             while (copy.Count > 0)
             {
-                handler(one, copy.Dequeue());
+                if(handler(one, copy.Dequeue())) return;
             }
         }
     }
