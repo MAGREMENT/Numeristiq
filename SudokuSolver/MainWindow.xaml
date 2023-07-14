@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolver"
         mc:Ignorable="d"
-        Title="MainWindow" Height="720" Width="820">
+        Title="MainWindow" Height="720" Width="940">
     <StackPanel Orientation="Horizontal">
         <StackPanel x:Name="Main" Orientation="Vertical" Width="540">
             <local:SudokuUserControl HorizontalAlignment="Center"/>
-            <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="UpdateSudoku"
+            <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="NewSudoku"
                      HorizontalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"
@@ -18,11 +18,12 @@
                         Margin="10, 0, 0, 0" >Clear</Button>
             </StackPanel>
         </StackPanel>
-        <StackPanel x:Name="Aside" Width="280">
+        <StackPanel x:Name="Aside" Width="400">
             <CheckBox Checked="SeePossibilities" Unchecked="UnSeePossibilities" HorizontalAlignment="Center"
                       Margin="0, 0, 0, 10">See possibilities</CheckBox>
             <CheckBox HorizontalAlignment="Center" Margin="0, 0, 0, 10">Step by step</CheckBox>
             <local:LogListUserControl x:Name = "Logs"/>
+            <local:LiveModificationUserControl/>
         </StackPanel>
     </StackPanel>
 </Window>

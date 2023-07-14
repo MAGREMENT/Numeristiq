@@ -15,6 +15,12 @@ public partial class SudokuCellUserControl : UserControl
     private readonly TextBlock _tb;
     private readonly Grid _backGround;
 
+    public delegate void OnClickedOn(SudokuCellUserControl sender);
+    public event OnClickedOn? ClickedOn;
+
+    public delegate void OnUpdate();
+    public event OnUpdate? Updated;
+
     public SudokuCellUserControl()
     {
         InitializeComponent();
@@ -22,7 +28,10 @@ public partial class SudokuCellUserControl : UserControl
         _tb = (FindName("TB") as TextBlock)!;
         _backGround = (FindName("Background") as Grid)!;
 
-        _backGround.MouseLeftButtonDown += OnClick;
+        _backGround.MouseLeftButtonDown += (_, _) =>
+        {
+            ClickedOn?.Invoke(this);
+        };
     }
 
     public void HighLight()
@@ -35,16 +44,14 @@ public partial class SudokuCellUserControl : UserControl
         _backGround.Background = new SolidColorBrush(Colors.White);
     }
 
-    private void OnClick(object sender, MouseEventArgs e)
-    {
-        //TODO
-    }
-
     public void SetDefinitiveNumber(int number)
     {
         _tb.FontSize = Size - 5;
         _tb.Foreground = new SolidColorBrush(Colors.Black);
         _tb.Text = number.ToString();
+        IsPossibilities = false;
+        
+        Updated?.Invoke();
     }
 
     public void SetPossibilities(IPossibilities possibilities)
@@ -68,7 +75,14 @@ public partial class SudokuCellUserControl : UserControl
         _tb.FontSize = ((double) Size - 5) / 4;
         _tb.Foreground = new SolidColorBrush(Colors.Red);
         _tb.Text = result;
+        IsPossibilities = true;
+        
+        Updated?.Invoke();
     }
+
+    public string Text => _tb.Text;
+    
+    public bool IsPossibilities { get; private set; }
 
     public void Void()
     {

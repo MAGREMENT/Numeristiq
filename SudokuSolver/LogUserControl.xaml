@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:SudokuSolver"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Width="200" Orientation="Vertical">
-        <TextBlock x:Name="Title" FontSize="25" FontWeight="Heavy" Width="200" TextAlignment="Center"/>
-        <TextBlock x:Name="Text" FontSize="15" Width="200" TextWrapping="Wrap"/>
+    <StackPanel Width="300" Orientation="Vertical">
+        <TextBlock x:Name="Title" FontSize="25" FontWeight="Heavy" Width="300" TextAlignment="Center"/>
+        <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
     </StackPanel>
 </UserControl>

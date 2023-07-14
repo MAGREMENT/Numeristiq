@@ -17,6 +17,12 @@ public partial class SudokuUserControl : UserControl
 
     public delegate void OnReady();
     public event OnReady? IsReady;
+
+    public delegate void OnCellClicked(SudokuCellUserControl sender, int row, int col);
+    public event OnCellClicked? CellClickedOn;
+
+    public delegate void OnSolverUpdate(string solverAsString);
+    public event OnSolverUpdate? SolverUpdated;
     
     public SudokuUserControl()
     {
@@ -50,14 +56,37 @@ public partial class SudokuUserControl : UserControl
                         break;
                 }
                 row.Children.Add(toAdd);
+
+                int rowForEvent = i;
+                int colForEvent = j;
+                    toAdd.ClickedOn += (sender) =>
+                {
+                    CellClickedOn?.Invoke(sender, rowForEvent, colForEvent);
+                };
             }
         }
     }
 
-    public void InitSolver(Solver solver)
+    public void NewSolver(Solver solver)
     {
         _currentSolver = solver;
+        Update();
+    }
 
+    public void AddDefinitiveNumber(int number, int row, int col)
+    {
+        _currentSolver.AddDefinitiveNumber(number, row, col);
+        Update();
+    }
+    
+    public void RemovePossibility(int number, int row, int col)
+    {
+        _currentSolver.RemovePossibility(number, row, col);
+        Update();
+    }
+
+    private void Update()
+    {
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -68,6 +97,8 @@ public partial class SudokuUserControl : UserControl
                 UpdateCell(current, i, j);
             }
         }
+        
+        SolverUpdated?.Invoke(_currentSolver.Sudoku.AsString());
     }
 
     private void UpdateCell(SudokuCellUserControl current, int row, int col)
@@ -83,14 +114,14 @@ public partial class SudokuUserControl : UserControl
     public void SolveSudoku()
     {
         _currentSolver.Solve();
-        InitSolver(_currentSolver);
+        Update();
         IsReady?.Invoke();
     }
     
     public void RunAllStrategiesOnce()
     {
         _currentSolver.RunAllStrategiesOnce();
-        InitSolver(_currentSolver);
+        Update();
         IsReady?.Invoke();
     }
 
@@ -130,13 +161,7 @@ public partial class SudokuUserControl : UserControl
 
     public void ClearSudoku()
     {
-        _currentSolver = new Solver(new Sudoku());
-        InitSolver(_currentSolver);
-    }
-
-    public string SudokuAsString()
-    {
-        return _currentSolver.Sudoku.AsString();
+        NewSolver(new Solver(new Sudoku()));
     }
 
     public List<ISolverLog> GetLogs()
@@ -149,7 +174,7 @@ public partial class SudokuUserControl : UserControl
         set
         {
             _seePossibilities = value;
-            InitSolver(_currentSolver);
+            Update();
         }
     }
 
