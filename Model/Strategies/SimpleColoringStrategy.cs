@@ -94,7 +94,7 @@ public class SimpleColoringStrategy : IStrategy
         var ppir = solver.PossibilityPositionsInRow(current.Row, number);
         if (ppir.Count == 2)
         {
-            foreach (var col in ppir.All())
+            foreach (var col in ppir)
             {
                 if (col != current.Col)
                 {
@@ -108,7 +108,7 @@ public class SimpleColoringStrategy : IStrategy
         var ppic = solver.PossibilityPositionsInColumn(current.Col, number);
         if (ppic.Count == 2)
         {
-            foreach (var row in ppic.All())
+            foreach (var row in ppic)
             {
                 if (row != current.Row)
                 {

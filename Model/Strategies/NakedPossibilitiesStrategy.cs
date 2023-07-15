@@ -46,25 +46,24 @@ public class NakedPossibilitiesStrategy : IStrategy
         }
     }
     
-    private List<int> EveryRowCellWithLessPossibilities(ISolver solver, int row, int than)
+    private Queue<int> EveryRowCellWithLessPossibilities(ISolver solver, int row, int than)
     {
-        List<int> result = new();
+        Queue<int> result = new();
         for (int col = 0; col < 9; col++)
         {
             if (solver.Sudoku[row, col] == 0 && solver.Possibilities[row, col].Count < than) 
-                result.Add(col);
+                result.Enqueue(col);
         }
 
         return result;
     }
 
     private void RecursiveRowMashing(ISolver solver, IPossibilities current,
-        List<int> possibleCols, int row, int count, HashSet<int> visited)
+        Queue<int> possibleCols, int row, int count, HashSet<int> visited)
     {
-        for (int i = 0; i < possibleCols.Count; i++)
+        while (possibleCols.Count > 0)
         {
-            int col = possibleCols[i];
-            possibleCols.RemoveAt(i);
+            int col = possibleCols.Dequeue();
 
             IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
             var newVisited = new HashSet<int>(visited) { col };
@@ -80,7 +79,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 else
                 {
                     RecursiveRowMashing(solver, newCurrent,
-                        new List<int>(possibleCols), row, count - 1, newVisited);
+                        new Queue<int>(possibleCols), row, count - 1, newVisited);
                 }
             }
         }
@@ -88,7 +87,7 @@ public class NakedPossibilitiesStrategy : IStrategy
 
     private void RemovePossibilitiesFromRow(ISolver solver, int row, IPossibilities toRemove, HashSet<int> except)
     {
-        foreach (var n in toRemove.All())
+        foreach (var n in toRemove)
         {
             for (int col = 0; col < 9; col++)
             {
@@ -98,25 +97,24 @@ public class NakedPossibilitiesStrategy : IStrategy
         }
     }
     
-    private List<int> EveryColumnCellWithLessPossibilities(ISolver solver, int col, int than)
+    private Queue<int> EveryColumnCellWithLessPossibilities(ISolver solver, int col, int than)
     {
-        List<int> result = new();
+        Queue<int> result = new();
         for (int row = 0; row < 9; row++)
         {
             if (solver.Sudoku[row, col] == 0 && solver.Possibilities[row, col].Count < than) 
-                result.Add(row);
+                result.Enqueue(row);
         }
 
         return result;
     }
     
     private void RecursiveColumnMashing(ISolver solver, IPossibilities current,
-        List<int> possibleRows, int col, int count, HashSet<int> visited)
+        Queue<int> possibleRows, int col, int count, HashSet<int> visited)
     {
-        for (int i = 0; i < possibleRows.Count; i++)
+        while(possibleRows.Count > 0)
         {
-            int row = possibleRows[i];
-            possibleRows.RemoveAt(i);
+            int row = possibleRows.Dequeue();
 
             IPossibilities newCurrent = current.Mash(solver.Possibilities[row, col]);
             var newVisited = new HashSet<int>(visited) { row };
@@ -131,7 +129,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 }
                 else
                 {
-                    RecursiveColumnMashing(solver, newCurrent, new List<int>(possibleRows),
+                    RecursiveColumnMashing(solver, newCurrent, new Queue<int>(possibleRows),
                         col, count - 1, newVisited);
                 }
             }
@@ -140,7 +138,7 @@ public class NakedPossibilitiesStrategy : IStrategy
 
     private void RemovePossibilitiesFromColumn(ISolver solver, int col, IPossibilities toRemove, HashSet<int> except)
     {
-        foreach (var n in toRemove.All())
+        foreach (var n in toRemove)
         {
             for (int row = 0; row < 9; row++)
             {
@@ -150,28 +148,27 @@ public class NakedPossibilitiesStrategy : IStrategy
         }
     }
     
-    private List<int> EveryMiniGridCellWithLessPossibilities(ISolver solver, int miniRow, int miniCol, int than)
+    private Queue<int> EveryMiniGridCellWithLessPossibilities(ISolver solver, int miniRow, int miniCol, int than)
     {
-        List<int> result = new();
+        Queue<int> result = new();
         for (int gridNumber = 0; gridNumber < 9; gridNumber++)
         {
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
             
             if (solver.Sudoku[row, col] == 0 && solver.Possibilities[row, col].Count < than) 
-                result.Add(gridNumber);
+                result.Enqueue(gridNumber);
         }
         
         return result;
     }
     
     private void RecursiveMiniGridMashing(ISolver solver, IPossibilities current,
-        List<int> possibleGridNumbers, int miniRow, int miniCol, int count, HashSet<int> visited)
+        Queue<int> possibleGridNumbers, int miniRow, int miniCol, int count, HashSet<int> visited)
     {
-        for (int i = 0; i < possibleGridNumbers.Count; i++)
+        while(possibleGridNumbers.Count > 0)
         {
-            int gridNumber = possibleGridNumbers[i];
-            possibleGridNumbers.RemoveAt(i);
+            int gridNumber = possibleGridNumbers.Dequeue();
             
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
@@ -189,7 +186,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 }
                 else
                 {
-                    RecursiveMiniGridMashing(solver, newCurrent, new List<int>(possibleGridNumbers),
+                    RecursiveMiniGridMashing(solver, newCurrent, new Queue<int>(possibleGridNumbers),
                         miniRow, miniCol, count - 1, newVisited);
                 }
             }
@@ -199,7 +196,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities toRemove,
         HashSet<int> except)
     {
-        foreach (var n in toRemove.All())
+        foreach (var n in toRemove)
         {
             for (int gridNumber = 0; gridNumber < 9; gridNumber++)
             {

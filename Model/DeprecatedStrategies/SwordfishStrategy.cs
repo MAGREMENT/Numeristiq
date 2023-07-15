@@ -71,7 +71,7 @@ public class SwordfishStrategy : IStrategy
 
     private void ProcessSwordfishInRows(ISolver solver, int row1, int row2, int row3, Positions cols, int number)
     {
-        foreach (var col in cols.All())
+        foreach (var col in cols)
         {
             for (int row = 0; row < 9; row++)
             {
@@ -85,7 +85,7 @@ public class SwordfishStrategy : IStrategy
 
     private void ProcessSwordfishInColumns(ISolver solver, int col1, int col2, int col3, Positions rows, int number)
     {
-        foreach (var row in rows.All())
+        foreach (var row in rows)
         {
             for (int col = 0; col < 9; col++)
             {

@@ -71,7 +71,7 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
                 
                 if (solver.Sudoku[realRow, realCol] == 0 && !solver.Possibilities[realRow, realCol].Equals(toRemove))
                 {
-                    foreach (var number in toRemove.All())
+                    foreach (var number in toRemove)
                     {
                         if (solver.RemovePossibility(number, realRow, realCol, 
                                 new SamePossibilitiesLog(number, realRow, realCol))) wasProgressMade = true;

@@ -82,7 +82,7 @@ public class XYWingStrategy : IStrategy
 
     private static bool ShareAtLeastOne(IPossibilities one, IPossibilities two)
     {
-        foreach (var poss in one.All())
+        foreach (var poss in one)
         {
             if (two.Peek(poss)) return true;
         }
@@ -109,7 +109,7 @@ public class XYWingStrategy : IStrategy
         var onePoss = solver.Possibilities[one.Row, one.Col];
         var twoPoss = solver.Possibilities[two.Row, two.Col];
         
-        foreach (var poss in oppositePoss.All())
+        foreach (var poss in oppositePoss)
         {
             if (onePoss.Peek(poss))
             {
@@ -121,7 +121,7 @@ public class XYWingStrategy : IStrategy
             else return false;
         }
 
-        foreach (var poss in onePoss.All())
+        foreach (var poss in onePoss)
         {
             if (twoPoss.Peek(poss)) return true;
         }
@@ -154,7 +154,7 @@ public class XYWingStrategy : IStrategy
 
     private static int Minus(IPossibilities one, IPossibilities two)
     {
-        foreach (var n in one.All())
+        foreach (var n in one)
         {
             if (!two.Peek(n)) return n;
         }

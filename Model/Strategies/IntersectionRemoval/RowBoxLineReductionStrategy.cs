@@ -16,10 +16,10 @@ public class RowBoxLineReductionStrategy : IStrategy
                 var ppir = solver.PossibilityPositionsInRow(row, number);
                 if (ppir.Count is > 1 and < 4)
                 {
-                    if (IsInSameMiniGrid(ppir.All()))
+                    if (IsInSameMiniGrid(ppir))
                     {
                         int miniRow = row / 3;
-                        int miniCol = ppir.All().First() / 3;
+                        int miniCol = ppir.First() / 3;
 
                         for (int r = 0; r < 3; r++)
                         {

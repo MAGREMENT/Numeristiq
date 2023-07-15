@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Model.Possibilities;
 
 namespace Model;
@@ -22,7 +23,7 @@ public interface ISolver
     public List<ISolverLog> Logs { get; }
 }
 
-public interface IPossibilities
+public interface IPossibilities : IEnumerable<int>
 {
     public const int Min = 1;
     public const int Max = 9;
@@ -34,7 +35,6 @@ public interface IPossibilities
     public void RemoveAll(IEnumerable<int> except);
     public IPossibilities Mash(IPossibilities possibilities);
     public bool Peek(int n);
-    public IEnumerable<int> All();
     public int GetFirst();
     public IPossibilities Copy();
 
@@ -50,7 +50,7 @@ public interface IPossibilities
     }
 }
 
-public class Positions
+public class Positions : IEnumerable<int>
 {
     private int _pos;
     public int Count { private set; get; }
@@ -74,6 +74,14 @@ public class Positions
         return ((_pos >> pos) & 1) > 0;
     }
 
+    public IEnumerator<int> GetEnumerator()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if(((_pos >> i) & 1) > 0) yield return i;
+        }
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not Positions pos) return false;
@@ -86,12 +94,9 @@ public class Positions
         return _pos;
     }
 
-    public IEnumerable<int> All()
+    IEnumerator IEnumerable.GetEnumerator()
     {
-        for (int i = 0; i < 9; i++)
-        {
-            if(((_pos >> i) & 1) > 0) yield return i;
-        }
+        return GetEnumerator();
     }
 
     public Positions Mash(Positions pos)

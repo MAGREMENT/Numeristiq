@@ -1,4 +1,5 @@
 ﻿using System;
+using Model.Strategies.ChainingStrategiesUtil;
 
 namespace Model;
 
@@ -8,6 +9,18 @@ public class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
+        foreach (var coord in new Coordinate(4, 2).SharedSeenCells(new Coordinate(1, 2)))
+        {
+            Console.WriteLine(coord);
+        }
+
+        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        
+        Console.WriteLine($"Time taken : {end - start}ms");
+    }
+
+    private static void PositionsTest()
+    {
         Positions one = new();
         one.Add(0);
         one.Add(8);
@@ -22,16 +35,12 @@ public class Testing
         PrintPositions(one);
         PrintPositions(two);
         PrintPositions(one.Mash(two));
-
-        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        
-        Console.WriteLine($"Time taken : {end - start}ms");
     }
 
     private static void PrintPositions(Positions pos)
     {
         Console.WriteLine("Count : " + pos.Count);
-        foreach (var n in pos.All())
+        foreach (var n in pos)
         {
             Console.WriteLine("Has : " + n);
         }

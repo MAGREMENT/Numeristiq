@@ -13,7 +13,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in solver.Possibilities[row, col].All())
+                foreach (var possibility in solver.Possibilities[row, col])
                 {
                     MedusaCoordinate start = new MedusaCoordinate(row, col, possibility);
                     if (DoesAnyChainContains(chains, start)) continue;
@@ -72,7 +72,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
             {
                 if (solver.Sudoku[row, col] != 0) continue;
                 bool cellTotallyOfChain = true;
-                foreach (var possibility in solver.Possibilities[row, col].All())
+                foreach (var possibility in solver.Possibilities[row, col])
                 {
                     MedusaCoordinate current = new MedusaCoordinate(row, col, possibility);
                     if (web.Contains(current))
@@ -176,7 +176,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         var ppir = solver.PossibilityPositionsInRow(current.Row, current.Number);
         if (ppir.Count == 2)
         {
-            foreach (var col in ppir.All())
+            foreach (var col in ppir)
             {
                 if (col != current.Col)
                 {
@@ -190,7 +190,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         var ppic = solver.PossibilityPositionsInColumn(current.Col, current.Number);
         if (ppic.Count == 2)
         {
-            foreach (var row in ppic.All())
+            foreach (var row in ppic)
             {
                 if (row != current.Row)
                 {
@@ -217,7 +217,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
         if (solver.Possibilities[current.Row, current.Col].Count == 2)
         {
-            foreach (var possibility in solver.Possibilities[current.Row, current.Col].All())
+            foreach (var possibility in solver.Possibilities[current.Row, current.Col])
             {
                 if (possibility != current.Number)
                 {

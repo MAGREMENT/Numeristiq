@@ -64,7 +64,7 @@ public partial class SudokuCellUserControl : UserControl
         
         string result = "";
         int counter = 0;
-        foreach (var number in possibilities.All())
+        foreach (var number in possibilities)
         {
             counter++;
             result += number + " ";

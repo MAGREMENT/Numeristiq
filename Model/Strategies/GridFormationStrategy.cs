@@ -77,7 +77,7 @@ public class GridFormationStrategy : IStrategy
 
     private void Process(ISolver solver, Positions visited, Positions toRemove, int number)
     {
-        foreach (var first in toRemove.All())
+        foreach (var first in toRemove)
         {
             for (int other = 0; other < 9; other++)
             {

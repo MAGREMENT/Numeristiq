@@ -16,9 +16,9 @@ public class ColumnBoxLineReductionStrategy : IStrategy
                 var ppic = solver.PossibilityPositionsInColumn(col, number);
                 if (ppic.Count is > 1 and < 4)
                 {
-                    if (IsInSameMiniGrid(ppic.All()))
+                    if (IsInSameMiniGrid(ppic))
                     {
-                        int miniRow = ppic.All().First() / 3;
+                        int miniRow = ppic.First() / 3;
                         int miniCol = col / 3;
 
                         for (int r = 0; r < 3; r++)

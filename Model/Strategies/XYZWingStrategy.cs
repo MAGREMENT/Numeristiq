@@ -30,7 +30,7 @@ public class XYZWingStrategy : IStrategy
                     List<int[]> miniGridCandidates = CandidateForXyzWingInMiniGrid(solver, row / 3, col / 3, hinge);
                     
                     //Rows
-                    foreach (var candidateCol in rowCandidates.All())
+                    foreach (var candidateCol in rowCandidates)
                     {
                         foreach (var pos in miniGridCandidates)
                         {
@@ -44,7 +44,7 @@ public class XYZWingStrategy : IStrategy
                     }
                     
                     //Cols
-                    foreach (var candidateRow in colCandidates.All())
+                    foreach (var candidateRow in colCandidates)
                     {
                         foreach (var pos in miniGridCandidates)
                         {
@@ -112,7 +112,7 @@ public class XYZWingStrategy : IStrategy
     private static bool ShareOnlyOne(IPossibilities one, IPossibilities two)
     {
         bool sharedFound = false;
-        foreach (var n in one.All())
+        foreach (var n in one)
         {
             if (two.Peek(n))
             {
@@ -126,7 +126,7 @@ public class XYZWingStrategy : IStrategy
 
     private bool IsSubset(IPossibilities sub, IPossibilities hinge)
     {
-        foreach (var n in sub.All())
+        foreach (var n in sub)
         {
             if (!hinge.Peek(n)) return false;
         }
@@ -205,7 +205,7 @@ public class XYZWingStrategy : IStrategy
 
     private int OneInCommon(IPossibilities hinge, IPossibilities one, IPossibilities two)
     {
-        foreach (var n in one.All())
+        foreach (var n in one)
         {
             if (hinge.Peek(n) && two.Peek(n)) return n;
         }

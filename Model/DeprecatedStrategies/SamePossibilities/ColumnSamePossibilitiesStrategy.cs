@@ -45,7 +45,7 @@ public class ColumnSamePossibilitiesStrategy : IStrategy
         {
             if (solver.Sudoku[row, col] == 0 && !solver.Possibilities[row, col].Equals(toRemove))
             {
-                foreach (var number in toRemove.All())
+                foreach (var number in toRemove)
                 {
                     if (solver.RemovePossibility(number, row, col,
                             new SamePossibilitiesLog(number, row, col))) wasProgressMade = true;

@@ -33,7 +33,7 @@ public class HiddenPossibilityStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    foreach (var col in entry.Key.All())
+                    foreach (var col in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(solver, row, col, entry.Value);
                     }
@@ -61,7 +61,7 @@ public class HiddenPossibilityStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    foreach (var row in entry.Key.All())
+                    foreach (var row in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(solver, row, col, entry.Value);
                     }
@@ -91,7 +91,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     if (entry.Value.Count == _type)
                     {
-                        foreach (var gridNumber in entry.Key.All())
+                        foreach (var gridNumber in entry.Key)
                         {
                             int row = miniRow * 3 + gridNumber / 3;
                             int col = miniCol * 3 + gridNumber % 3;

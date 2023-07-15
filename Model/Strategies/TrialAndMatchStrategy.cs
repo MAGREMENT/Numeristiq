@@ -21,7 +21,7 @@ public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7
                     solver.Possibilities[row, col].Count <= _maxNumberOfPossibility)
                 {
                     ApplyChanges(solver, RunSimulation(solver, row, col,
-                        solver.Possibilities[row, col].All()));
+                        solver.Possibilities[row, col]));
                     return;
                 }
             }

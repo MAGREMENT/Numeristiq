@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Xml.XPath;
 
 namespace Model.Strategies.ChainingStrategiesUtil;
 
@@ -19,6 +21,43 @@ public class Coordinate
         return Row == coord.Row || Col == coord.Col ||
                (Row / 3 == coord.Row / 3
                 && Col / 3 == coord.Col / 3);
+    }
+
+    public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)
+    {
+        //Same MiniGrid
+        if (Row / 3 == coord.Row / 3 && Col / 3 == coord.Col / 3)
+        {
+            int rowStart = Row / 3 * 3;
+            int colStart = Col / 3 * 3;
+
+            for (int miniRow = 0; miniRow < 3; miniRow++)
+            {
+                for (int miniCol = 0; miniCol < 3; miniCol++)
+                {
+                    yield return new Coordinate(rowStart + miniRow, colStart + miniCol);
+                }
+            }
+        }
+        //Same Row
+        if (Row == coord.Row)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                yield return new Coordinate(Row, col);
+            }
+        }
+        //Same Col
+        if (Col == coord.Col)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                yield return new Coordinate(row, Col);
+            }
+        }
+
+        yield return new Coordinate(Row, coord.Col);
+        yield return new Coordinate(coord.Row, Col);
     }
 
     public override int GetHashCode()

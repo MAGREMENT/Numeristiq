@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace Model.Possibilities;
@@ -61,17 +62,6 @@ public class BoolArrayPossibilities : IPossibilities
         return _possibilities[i - 1];
     }
 
-    public IEnumerable<int> All()
-    {
-        for (int i = 0; i < _possibilities.Length; i++)
-        {
-            if (_possibilities[i])
-            {
-                yield return i + 1;
-            }
-        }
-    }
-
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)
@@ -85,6 +75,17 @@ public class BoolArrayPossibilities : IPossibilities
     public IPossibilities Copy()
     {
         return new BoolArrayPossibilities(this);
+    }
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        for (int i = 0; i < _possibilities.Length; i++)
+        {
+            if (_possibilities[i])
+            {
+                yield return i + 1;
+            }
+        }
     }
 
     public override bool Equals(object? obj)
@@ -119,5 +120,10 @@ public class BoolArrayPossibilities : IPossibilities
 
         result = result.Length > 1 ? result[..^2] : result;
         return result + "]";
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

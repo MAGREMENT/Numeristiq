@@ -7,7 +7,7 @@ public class BugStrategy : IStrategy
         int[]? triple = OnlyDoublesAndOneTriple(solver);
         if (triple is not null)
         {
-            foreach (var possibility in solver.Possibilities[triple[0], triple[1]].All())
+            foreach (var possibility in solver.Possibilities[triple[0], triple[1]])
             {
                 if (solver.PossibilityPositionsInColumn(triple[1], possibility).Count % 2 == 1 &&
                     solver.PossibilityPositionsInRow(triple[0], possibility).Count % 2 == 1 &&

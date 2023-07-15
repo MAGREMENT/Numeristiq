@@ -70,17 +70,6 @@ public class BitPossibilities : IPossibilities //TODO : make work
         return ((_possibilities >> (number - 1)) & 1) > 0;
     }
 
-    public IEnumerable<int> All()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            if (((_possibilities >> i) & 1) > 0)
-            {
-                yield return i + 1;
-            }
-        }
-    }
-
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)
@@ -102,6 +91,17 @@ public class BitPossibilities : IPossibilities //TODO : make work
         return _possibilities;
     }
 
+    public IEnumerator<int> GetEnumerator()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (((_possibilities >> i) & 1) > 0)
+            {
+                yield return i + 1;
+            }
+        }
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not BitPossibilities p) return false;
@@ -118,5 +118,10 @@ public class BitPossibilities : IPossibilities //TODO : make work
 
         if (result.Length != 1) result = result[..^2];
         return result + "]";
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }

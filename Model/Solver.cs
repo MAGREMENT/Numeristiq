@@ -71,6 +71,7 @@ public class Solver : ISolver
                 new BugStrategy(),
                 new GridFormationStrategy(3),
                 new GridFormationStrategy(4),
+                new XYChainStrategy(),
                 new ThreeDimensionMedusaStrategy()
                 //new TrialAndMatchStrategy(2)
             };

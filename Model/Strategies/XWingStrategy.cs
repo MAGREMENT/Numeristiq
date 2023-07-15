@@ -18,7 +18,7 @@ public class XWingStrategy : IStrategy
                 {
                     if (!dict.TryAdd(ppir, row))
                     {
-                        RemoveFromColumns(solver, ppir.All(), dict[ppir], row, n);
+                        RemoveFromColumns(solver, ppir, dict[ppir], row, n);
                     }
                 }
             }
@@ -32,7 +32,7 @@ public class XWingStrategy : IStrategy
                 {
                     if (!dict.TryAdd(ppic, col))
                     {
-                        RemoveFromRows(solver, ppic.All(), dict[ppic], col, n);
+                        RemoveFromRows(solver, ppic, dict[ppic], col, n);
                     }
                 }
             }
