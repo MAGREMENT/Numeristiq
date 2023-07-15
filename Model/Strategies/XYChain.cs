@@ -45,13 +45,8 @@ public class XYChainStrategy : IStrategy
     {
         foreach (var coord in start.SharedSeenCells(end))
         {
-            if ((coord.Row == start.Row && coord.Col == start.Col) ||
-                (coord.Row == end.Row && coord.Col == end.Col)) continue;
-            if (solver.RemovePossibility(start.Possibility, coord.Row, coord.Col,
-                    new XYChainLog(start.Possibility, coord.Row, coord.Col)))
-            {
-                int a = 0;
-            }
+            solver.RemovePossibility(start.Possibility, coord.Row, coord.Col,
+                new XYChainLog(start.Possibility, coord.Row, coord.Col));
         }
 
         _used.Add(end);

@@ -25,6 +25,7 @@ public class Coordinate
 
     public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)
     {
+        HashSet<Coordinate> result = new();
         //Same MiniGrid
         if (Row / 3 == coord.Row / 3 && Col / 3 == coord.Col / 3)
         {
@@ -35,7 +36,7 @@ public class Coordinate
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    yield return new Coordinate(rowStart + miniRow, colStart + miniCol);
+                    result.Add(new Coordinate(rowStart + miniRow, colStart + miniCol));
                 }
             }
         }
@@ -44,7 +45,7 @@ public class Coordinate
         {
             for (int col = 0; col < 9; col++)
             {
-                yield return new Coordinate(Row, col);
+                result.Add(new Coordinate(Row, col));
             }
         }
         //Same Col
@@ -52,12 +53,16 @@ public class Coordinate
         {
             for (int row = 0; row < 9; row++)
             {
-                yield return new Coordinate(row, Col);
+                result.Add(new Coordinate(row, Col));
             }
         }
 
-        yield return new Coordinate(Row, coord.Col);
-        yield return new Coordinate(coord.Row, Col);
+        result.Add(new Coordinate(Row, coord.Col));
+        result.Add(new Coordinate(coord.Row, Col));
+        result.Remove(new Coordinate(Row, Col));
+        result.Remove(new Coordinate(coord.Row, coord.Col));
+
+        return result;
     }
 
     public override int GetHashCode()

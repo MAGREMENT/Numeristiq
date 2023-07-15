@@ -17,8 +17,7 @@ public class XYWingStrategy : IStrategy
             //Rows
             while (unitsDispersion[0].Count > 0)
             {
-                Coordinate one = unitsDispersion[0][0];
-                unitsDispersion[0].RemoveAt(0);
+                Coordinate one = unitsDispersion[0].Dequeue();
                 
                 if (ShareAtLeastOne(solver.Possibilities[one.Row, one.Col],
                         solver.Possibilities[current.Row, current.Col]))
@@ -42,8 +41,7 @@ public class XYWingStrategy : IStrategy
             //Columns
             while (unitsDispersion[1].Count > 0)
             {
-                Coordinate one = unitsDispersion[1][0];
-                unitsDispersion[1].RemoveAt(0);
+                Coordinate one = unitsDispersion[1].Dequeue();
                 
                 if (ShareAtLeastOne(solver.Possibilities[one.Row, one.Col],
                         solver.Possibilities[current.Row, current.Col]))
@@ -59,22 +57,22 @@ public class XYWingStrategy : IStrategy
         }
     }
 
-    private List<Coordinate>[] MatchingUnitDispersion(Coordinate coord, List<Coordinate> toSee)
+    private Queue<Coordinate>[] MatchingUnitDispersion(Coordinate coord, List<Coordinate> toSee)
     {
-        List<Coordinate>[] result = { new(), new(), new() };
+        Queue<Coordinate>[] result = { new(), new(), new() };
         foreach (var c in toSee)
         {
             if (c.Row == coord.Row)
             {
-                result[0].Add(c);
+                result[0].Enqueue(c);
             }
             if (c.Col == coord.Col)
             {
-                result[1].Add(c);
+                result[1].Enqueue(c);
             }
             if (c.Row / 3 == coord.Row / 3 && c.Col / 3 == coord.Col / 3)
             {
-                result[2].Add(c);
+                result[2].Enqueue(c);
             }
         }
         return result;

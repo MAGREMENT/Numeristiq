@@ -5,10 +5,10 @@ namespace Model.Possibilities;
 
 public class BitPossibilities : IPossibilities //TODO : make work
 {
-    private byte _possibilities;
+    private int _possibilities;
     public int Count { private set; get; }
 
-    private BitPossibilities(byte possibilities, int count)
+    private BitPossibilities(int possibilities, int count)
     {
         _possibilities = possibilities;
         Count = count;
@@ -16,7 +16,7 @@ public class BitPossibilities : IPossibilities //TODO : make work
 
     public BitPossibilities()
     {
-        _possibilities = 0xFF;
+        _possibilities = 0x1FF;
         Count = 9;
     }
     
@@ -24,7 +24,7 @@ public class BitPossibilities : IPossibilities //TODO : make work
     {
         int index = number - 1;
         bool old = ((_possibilities >> index) & 1) > 0;
-        _possibilities |= (byte) (1 << index);
+        _possibilities |= 1 << index;
         if (old) Count--;
         return old;
     }
@@ -40,7 +40,7 @@ public class BitPossibilities : IPossibilities //TODO : make work
         RemoveAll();
         foreach (var num in except)
         {
-            _possibilities |= (byte) (1 << (num - 1));
+            _possibilities |= 1 << (num - 1);
             Count++;
         }
     }
@@ -50,7 +50,7 @@ public class BitPossibilities : IPossibilities //TODO : make work
         RemoveAll();
         foreach (var num in except)
         {
-            _possibilities |= (byte) (1 << (num - 1));
+            _possibilities |= 1 << (num - 1);
             Count++;
         }
     }
@@ -58,9 +58,9 @@ public class BitPossibilities : IPossibilities //TODO : make work
     public IPossibilities Mash(IPossibilities possibilities)
     {
         if (possibilities is BitPossibilities bp)
-        {
-            byte mashed = (byte) (this._possibilities | bp._possibilities);
-            return new BitPossibilities(mashed, System.Numerics.BitOperations.PopCount(mashed));
+        { 
+            int mashed = _possibilities | bp._possibilities;
+            return new BitPossibilities(mashed, System.Numerics.BitOperations.PopCount((uint) mashed));
         }
         return IPossibilities.DefaultMash(this, possibilities);
     }
