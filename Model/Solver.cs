@@ -69,7 +69,8 @@ public class Solver : ISolver
                 new XYZWingStrategy(),
                 new SimpleColoringStrategy(),
                 new BugStrategy(),
-                new SwordfishStrategy(),
+                new GridFormationStrategy(3),
+                new GridFormationStrategy(4),
                 new ThreeDimensionMedusaStrategy()
                 //new TrialAndMatchStrategy(2)
             };

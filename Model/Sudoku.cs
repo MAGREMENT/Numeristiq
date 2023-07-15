@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 
 namespace Model;
 
@@ -33,56 +34,60 @@ public class Sudoku
         bool isCounting = false;
         string buffer = "";
 
-        Regex digits = new Regex("[0-9]");
-
-        foreach (var c in asString)
+        try
         {
-            switch (c)
+            foreach (var c in asString)
             {
-                case 'x':
-                    nextFixed = true;
-                    break;
-                case 's' when isCounting:
+                switch (c)
                 {
-                    var newPos = FillOfVoid(row, column, int.Parse(buffer));
-                    row = newPos[0];
-                    column = newPos[1];
-                    buffer = "";
-                    isCounting = false;
-                    break;
-                }
-                case 's':
-                    isCounting = true;
-                    break;
-                case ' ':
-                    _grid[row, column] = new SudokuCell();
-
-                    ProgressInSudoku(ref row, ref column);
-                    break;
-                default:
-                {
-                    if (!digits.IsMatch(c.ToString()))
+                    case 'x':
+                        nextFixed = true;
+                        break;
+                    case 's' when isCounting:
                     {
-                        FillOfVoid(row, column, 81 - row * GridSize - column);
-                        return;
+                        var newPos = FillOfVoid(row, column, int.Parse(buffer));
+                        row = newPos[0];
+                        column = newPos[1];
+                        buffer = "";
+                        isCounting = false;
+                        break;
                     }
-                    
-                    if (isCounting) buffer += c;
-                    else
-                    {
-                        _grid[row, column] = new SudokuCell(int.Parse(c.ToString()), nextFixed);
-                        nextFixed = allFixed;
-                    
+                    case 's':
+                        isCounting = true;
+                        break;
+                    case ' ':
+                        _grid[row, column] = new SudokuCell();
+
                         ProgressInSudoku(ref row, ref column);
-                    }
+                        break;
+                    default:
+                    {
+                        if (isCounting) buffer += c;
+                        else
+                        {
+                            _grid[row, column] = new SudokuCell(int.Parse(c.ToString()), nextFixed);
+                            nextFixed = allFixed;
 
-                    break;
+                            ProgressInSudoku(ref row, ref column);
+                        }
+
+                        break;
+                    }
+                }
+            }
+
+            FillOfVoid(row, column, 81 - row * GridSize - column);
+        }
+        catch (Exception)
+        {
+            for (int i = 0; i < GridSize; i++)
+            {
+                for (int j = 0; j < GridSize; j++)
+                {
+                    _grid[i, j] = new SudokuCell();
                 }
             }
         }
-
-        FillOfVoid(row, column, 81 - row * GridSize - column);
-        
     }
 
     public string AsString()

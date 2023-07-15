@@ -69,6 +69,11 @@ public class Positions
         Count++;
     }
 
+    public bool Peek(int pos)
+    {
+        return ((_pos >> pos) & 1) > 0;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not Positions pos) return false;
@@ -93,6 +98,11 @@ public class Positions
     {
         int newPos = _pos | pos._pos;
         return new Positions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos));
+    }
+
+    public Positions Copy()
+    {
+        return new Positions(_pos, Count);
     }
 }
 

@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Model.Strategies.ChainingStrategiesUtil;
 
-public class ColorableChain<T> : IEnumerable<T> where T : class, IColorable
+public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable
 {
     private readonly Dictionary<T, HashSet<T>> _vertices = new();
     private bool _isColored = false;
@@ -14,6 +14,11 @@ public class ColorableChain<T> : IEnumerable<T> where T : class, IColorable
     public bool Contains(T coord)
     {
         return _vertices.ContainsKey(coord);
+    }
+
+    public static List<ColorableWeb<T>> AllChainsFrom(ISolver solver)
+    {
+        return new List<ColorableWeb<T>>(); //TODO
     }
 
     public bool AddLink(T one, T two)
@@ -68,16 +73,11 @@ public class ColorableChain<T> : IEnumerable<T> where T : class, IColorable
         return GetEnumerator();
     }
 
-    public Queue<T> AsQueue()
-    {
-        return new Queue<T>(_vertices.Keys);
-    }
+    public delegate bool HandleCombination(T one, T two);
 
-    public delegate bool HandeCombination(T one, T two);
-
-    public void ForEachCombinationOfTwo(HandeCombination handler)
+    public void ForEachCombinationOfTwo(HandleCombination handler)
     {
-        Queue<T> queue = AsQueue();
+        Queue<T> queue = new Queue<T>(_vertices.Keys);
         while (queue.Count > 0)
         {
             T one = queue.Dequeue();

@@ -8,28 +8,28 @@ public class SwordfishStrategy : IStrategy
     {
         for (int number = 1; number <= 9; number++)
         {
-            Queue<PositionsAndValue> toSearch = new();
+            Queue<ValuePositions> toSearch = new();
             //Rows
             for (int row = 0; row < 9; row++)
             {
                 Positions p = solver.PossibilityPositionsInRow(row, number);
-                if (p.Count is 2 or 3) toSearch.Enqueue(new PositionsAndValue(p, row));
+                if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, row));
             }
 
             while (toSearch.Count > 0)
             {
-                PositionsAndValue first = toSearch.Dequeue();
-                Queue<PositionsAndValue> copyOne = new Queue<PositionsAndValue>(toSearch);
+                ValuePositions first = toSearch.Dequeue();
+                Queue<ValuePositions> copyOne = new Queue<ValuePositions>(toSearch);
                 while (copyOne.Count > 0)
                 {
-                    PositionsAndValue second = copyOne.Dequeue();
+                    ValuePositions second = copyOne.Dequeue();
                     Positions mashed = first.Positions.Mash(second.Positions);
                     if (mashed.Count == 3)
                     {
-                        Queue<PositionsAndValue> copyTwo = new Queue<PositionsAndValue>(copyOne);
+                        Queue<ValuePositions> copyTwo = new Queue<ValuePositions>(copyOne);
                         while (copyTwo.Count > 0)
                         {
-                            PositionsAndValue third = copyTwo.Dequeue();
+                            ValuePositions third = copyTwo.Dequeue();
                             if(mashed.Mash(third.Positions).Count == 3)
                                 ProcessSwordfishInRows(solver, first.Value,
                                     second.Value, third.Value, mashed, number);
@@ -42,23 +42,23 @@ public class SwordfishStrategy : IStrategy
             for (int col = 0; col < 9; col++)
             {
                 Positions p = solver.PossibilityPositionsInColumn(col, number);
-                if (p.Count is 2 or 3) toSearch.Enqueue(new PositionsAndValue(p, col));
+                if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, col));
             }
 
             while (toSearch.Count > 0)
             {
-                PositionsAndValue first = toSearch.Dequeue();
-                Queue<PositionsAndValue> copyOne = new Queue<PositionsAndValue>(toSearch);
+                ValuePositions first = toSearch.Dequeue();
+                Queue<ValuePositions> copyOne = new Queue<ValuePositions>(toSearch);
                 while (copyOne.Count > 0)
                 {
-                    PositionsAndValue second = copyOne.Dequeue();
+                    ValuePositions second = copyOne.Dequeue();
                     Positions mashed = first.Positions.Mash(second.Positions);
                     if (mashed.Count == 3)
                     {
-                        Queue<PositionsAndValue> copyTwo = new Queue<PositionsAndValue>(copyOne);
+                        Queue<ValuePositions> copyTwo = new Queue<ValuePositions>(copyOne);
                         while (copyTwo.Count > 0)
                         {
-                            PositionsAndValue third = copyTwo.Dequeue();
+                            ValuePositions third = copyTwo.Dequeue();
                             if(mashed.Mash(third.Positions).Count == 3)
                                 ProcessSwordfishInColumns(solver, first.Value,
                                     second.Value, third.Value, mashed, number);
@@ -98,9 +98,9 @@ public class SwordfishStrategy : IStrategy
     }
 }
 
-public class PositionsAndValue
+public class ValuePositions
 {
-    public PositionsAndValue(Positions positions, int value)
+    public ValuePositions(Positions positions, int value)
     {
         Positions = positions;
         Value = value;

@@ -23,11 +23,11 @@ public class XYZWingStrategy : IStrategy
             {
                 if (solver.Possibilities[row, col].Count == 3)
                 {
-                    IPossibilities henge = solver.Possibilities[row, col];
+                    IPossibilities hinge = solver.Possibilities[row, col];
 
-                    Positions rowCandidates = CandidateForXyzWingInRow(solver, row, henge);
-                    Positions colCandidates = CandidateForXyzWingInColumn(solver, col, henge);
-                    List<int[]> miniGridCandidates = CandidateForXyzWingInMiniGrid(solver, row / 3, col / 3, henge);
+                    Positions rowCandidates = CandidateForXyzWingInRow(solver, row, hinge);
+                    Positions colCandidates = CandidateForXyzWingInColumn(solver, col, hinge);
+                    List<int[]> miniGridCandidates = CandidateForXyzWingInMiniGrid(solver, row / 3, col / 3, hinge);
                     
                     //Rows
                     foreach (var candidateCol in rowCandidates.All())
@@ -61,12 +61,12 @@ public class XYZWingStrategy : IStrategy
         }
     }
 
-    private Positions CandidateForXyzWingInRow(ISolver solver, int row, IPossibilities henge)
+    private Positions CandidateForXyzWingInRow(ISolver solver, int row, IPossibilities hinge)
     {
         Positions result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], henge))
+            if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], hinge))
             {
                 result.Add(col);
             }
@@ -75,12 +75,12 @@ public class XYZWingStrategy : IStrategy
         return result;
     }
     
-    private Positions CandidateForXyzWingInColumn(ISolver solver, int col, IPossibilities henge)
+    private Positions CandidateForXyzWingInColumn(ISolver solver, int col, IPossibilities hinge)
     {
         Positions result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], henge))
+            if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], hinge))
             {
                 result.Add(row);
             }
@@ -89,7 +89,7 @@ public class XYZWingStrategy : IStrategy
         return result;
     }
 
-    private List<int[]> CandidateForXyzWingInMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities henge)
+    private List<int[]> CandidateForXyzWingInMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities hinge)
     {
         List<int[]> result = new();
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -99,7 +99,7 @@ public class XYZWingStrategy : IStrategy
                 int row = miniRow * 3 + gridRow;
                 int col = miniCol * 3 + gridCol;
                 
-                if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], henge))
+                if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], hinge))
                 {
                     result.Add(new[] {row, col});
                 }
@@ -124,11 +124,11 @@ public class XYZWingStrategy : IStrategy
         return sharedFound;
     }
 
-    private bool IsSubset(IPossibilities sub, IPossibilities henge)
+    private bool IsSubset(IPossibilities sub, IPossibilities hinge)
     {
         foreach (var n in sub.All())
         {
-            if (!henge.Peek(n)) return false;
+            if (!hinge.Peek(n)) return false;
         }
 
         return true;
@@ -141,61 +141,61 @@ public class XYZWingStrategy : IStrategy
                 col1 / 3 == col3 / 3);
     }
 
-    private bool Process(ISolver solver, int hengeRow, int hengeCol, int row1, int col1, int row2, int col2)
+    private bool Process(ISolver solver, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
         bool wasProgressMade = false;
 
-        int toRemove = OneInCommon(solver.Possibilities[hengeRow, hengeCol], solver.Possibilities[row1, col1],
+        int toRemove = OneInCommon(solver.Possibilities[hingeRow, hingeCol], solver.Possibilities[row1, col1],
             solver.Possibilities[row2, col2]);
-        foreach (var pos in MatchingCells(hengeRow, hengeCol, row1, col1, row2, col2))
+        foreach (var pos in MatchingCells(hingeRow, hingeCol, row1, col1, row2, col2))
         {
             if (solver.RemovePossibility(toRemove, pos[0], pos[1],
-                new XYZWingLog(toRemove, pos[0], pos[1], hengeRow, hengeCol,
+                new XYZWingLog(toRemove, pos[0], pos[1], hingeRow, hingeCol,
                     row1, col1, row2, col2))) wasProgressMade = true;
         }
 
         return wasProgressMade;
     }
 
-    private IEnumerable<int[]> MatchingCells(int hengeRow, int hengeCol, int row1, int col1, int row2, int col2)
+    private IEnumerable<int[]> MatchingCells(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
-        //Note : One of the coordinate has to be in the same box as the henge
-        if (row1 / 3 == hengeRow / 3 && col1 / 3 == hengeCol / 3)
+        //Note : One of the coordinate has to be in the same box as the hinge
+        if (row1 / 3 == hingeRow / 3 && col1 / 3 == hingeCol / 3)
         {
-            if (row2 == hengeRow)
+            if (row2 == hingeRow)
             {
-                int start = hengeCol / 3 * 3;
+                int start = hingeCol / 3 * 3;
                 for (int i = 0; i < 3; i++)
                 {
-                    if (start + i != hengeCol) yield return new[] {row2, start + i};
+                    if (start + i != hingeCol) yield return new[] {row2, start + i};
                 }
             }
-            else if (col2 == hengeCol)
+            else if (col2 == hingeCol)
             {
-                int start = hengeRow / 3 * 3;
+                int start = hingeRow / 3 * 3;
                 for (int i = 0; i < 3; i++)
                 {
-                    if (start + i != hengeRow) yield return new[] {start + i, col2};
+                    if (start + i != hingeRow) yield return new[] {start + i, col2};
                 }
             }
             else throw new Exception("Wtf big problem");
         }
-        else if (row2 / 3 == hengeRow / 3 && col2 / 3 == hengeCol / 3)
+        else if (row2 / 3 == hingeRow / 3 && col2 / 3 == hingeCol / 3)
         {
-            if (row1 == hengeRow)
+            if (row1 == hingeRow)
             {
-                int start = hengeCol / 3 * 3;
+                int start = hingeCol / 3 * 3;
                 for (int i = 0; i < 3; i++)
                 {
-                    if (start + i != hengeCol) yield return new[] {row1, start + i};
+                    if (start + i != hingeCol) yield return new[] {row1, start + i};
                 }
             }
-            else if (col1 == hengeCol)
+            else if (col1 == hingeCol)
             {
-                int start = hengeRow / 3 * 3;
+                int start = hingeRow / 3 * 3;
                 for (int i = 0; i < 3; i++)
                 {
-                    if (start + i != hengeRow) yield return new[] {start + i, col1};
+                    if (start + i != hingeRow) yield return new[] {start + i, col1};
                 }
             }
             else throw new Exception("Wtf big problem");
@@ -203,11 +203,11 @@ public class XYZWingStrategy : IStrategy
         else throw new Exception("Wtf big problem");
     }
 
-    private int OneInCommon(IPossibilities henge, IPossibilities one, IPossibilities two)
+    private int OneInCommon(IPossibilities hinge, IPossibilities one, IPossibilities two)
     {
         foreach (var n in one.All())
         {
-            if (henge.Peek(n) && two.Peek(n)) return n;
+            if (hinge.Peek(n) && two.Peek(n)) return n;
         }
 
         throw new Exception("Wtf big problem");
@@ -219,10 +219,10 @@ public class XYZWingLog : ISolverLog
     public string AsString { get; }
     public StrategyLevel Level { get; } = StrategyLevel.Hard;
 
-    public XYZWingLog(int number, int row, int col, int hengeRow, int hengeCol,
+    public XYZWingLog(int number, int row, int col, int hingeRow, int hingeCol,
         int row1, int col1, int row2, int col2)
     {
         AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of XYZ-Wing at " +
-                   $"[{hengeRow + 1}, {hengeCol + 1}], [{row1 + 1}, {col1 + 1}] and [{row2 + 1}, {col2 + 1}]";
+                   $"[{hingeRow + 1}, {hingeCol + 1}], [{row1 + 1}, {col1 + 1}] and [{row2 + 1}, {col2 + 1}]";
     }
 }

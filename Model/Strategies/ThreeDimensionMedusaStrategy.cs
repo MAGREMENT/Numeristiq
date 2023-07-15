@@ -8,7 +8,7 @@ namespace Model.Strategies;
 public class ThreeDimensionMedusaStrategy : IStrategy {
     public void ApplyOnce(ISolver solver)
     {
-        List<ColorableChain<MedusaCoordinate>> chains = new();
+        List<ColorableWeb<MedusaCoordinate>> chains = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -18,12 +18,12 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                     MedusaCoordinate start = new MedusaCoordinate(row, col, possibility);
                     if (DoesAnyChainContains(chains, start)) continue;
                     
-                    ColorableChain<MedusaCoordinate> chain = new();
-                    InitChain(solver, chain, start);
-                    if (chain.Count >= 2)
+                    ColorableWeb<MedusaCoordinate> web = new();
+                    InitChain(solver, web, start);
+                    if (web.Count >= 2)
                     {
-                        chain.StartColoring();
-                        chains.Add(chain);
+                        web.StartColoring();
+                        chains.Add(web);
                     }
                 }
             }
@@ -37,16 +37,16 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         
     }
 
-    private void SearchByCombination(ISolver solver, ColorableChain<MedusaCoordinate> chain)
+    private void SearchByCombination(ISolver solver, ColorableWeb<MedusaCoordinate> web)
     {
-        chain.ForEachCombinationOfTwo((one, two) =>
+        web.ForEachCombinationOfTwo((one, two) =>
         {
             if (one.Row == two.Row && one.Col == two.Col)
             {
                 //Twice in a cell
                 if (one.Coloring == two.Coloring)
                 {
-                    InvalidColoring(solver, chain, one.Coloring, 1);
+                    InvalidColoring(solver, web, one.Coloring, 1);
                     return true;
                 }
                 //Two colours in a cell
@@ -56,7 +56,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
             //Twice in a unit
             if (one.Number == two.Number && one.ShareAUnit(two) && one.Coloring == two.Coloring)
             {
-                InvalidColoring(solver, chain, one.Coloring, 2);
+                InvalidColoring(solver, web, one.Coloring, 2);
                 return true;
             }
 
@@ -64,7 +64,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         });
     }
 
-    private void SearchOffChain(ISolver solver, ColorableChain<MedusaCoordinate> chain)
+    private void SearchOffChain(ISolver solver, ColorableWeb<MedusaCoordinate> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -75,7 +75,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 foreach (var possibility in solver.Possibilities[row, col].All())
                 {
                     MedusaCoordinate current = new MedusaCoordinate(row, col, possibility);
-                    if (chain.Contains(current))
+                    if (web.Contains(current))
                     {
                         cellTotallyOfChain = false;
                         continue;
@@ -83,7 +83,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
                     bool[] twoElsewhere = new bool[2];
                     bool[] inCell = new bool[2];
-                    foreach (var coord in chain)
+                    foreach (var coord in web)
                     {
                         //Two X & Colours sharing a unit
                         if (coord.Number == possibility && coord.ShareAUnit(current)) 
@@ -120,7 +120,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                         solver.Possibilities[row, col].Copy()
                     };
 
-                    foreach (var coord in chain)
+                    foreach (var coord in web)
                     {
                         if (coord.ShareAUnit(here))
                         {
@@ -128,7 +128,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
                             if (cellEmptiedByColor[0].Count == 0 || cellEmptiedByColor[1].Count == 0)
                             {
-                                InvalidColoring(solver, chain, coord.Coloring, 6);
+                                InvalidColoring(solver, web, coord.Coloring, 6);
                                 return;
                             }
                         }
@@ -149,9 +149,9 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         }
     }
 
-    private void InvalidColoring(ISolver solver, ColorableChain<MedusaCoordinate> chain, Coloring invalid, int type)
+    private void InvalidColoring(ISolver solver, ColorableWeb<MedusaCoordinate> web, Coloring invalid, int type)
     {
-        foreach (var coord in chain)
+        foreach (var coord in web)
         {
             if (coord.Coloring == invalid)
                 solver.RemovePossibility(coord.Number, coord.Row, coord.Col,
@@ -161,7 +161,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         }
     }
 
-    private bool DoesAnyChainContains(List<ColorableChain<MedusaCoordinate>> chains, MedusaCoordinate coord)
+    private bool DoesAnyChainContains(List<ColorableWeb<MedusaCoordinate>> chains, MedusaCoordinate coord)
     {
         foreach (var chain in chains)
         {
@@ -171,7 +171,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         return false;
     }
     
-    private void InitChain(ISolver solver, ColorableChain<MedusaCoordinate> chain, MedusaCoordinate current)
+    private void InitChain(ISolver solver, ColorableWeb<MedusaCoordinate> web, MedusaCoordinate current)
     {
         var ppir = solver.PossibilityPositionsInRow(current.Row, current.Number);
         if (ppir.Count == 2)
@@ -181,7 +181,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 if (col != current.Col)
                 {
                     MedusaCoordinate next = new MedusaCoordinate(current.Row, col, current.Number);
-                    if(chain.AddLink(current, next)) InitChain(solver, chain, next);
+                    if(web.AddLink(current, next)) InitChain(solver, web, next);
                     break;
                 }
             }
@@ -195,7 +195,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 if (row != current.Row)
                 {
                     MedusaCoordinate next = new MedusaCoordinate(row, current.Col, current.Number);
-                    if(chain.AddLink(current, next)) InitChain(solver, chain, next);
+                    if(web.AddLink(current, next)) InitChain(solver, web, next);
                     break;
                 }
             }
@@ -209,7 +209,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 if (pos[0] != current.Row && pos[1] != current.Col)
                 {
                     MedusaCoordinate next = new MedusaCoordinate(pos[0], pos[1], current.Number);
-                    if(chain.AddLink(current, next)) InitChain(solver, chain, next);
+                    if(web.AddLink(current, next)) InitChain(solver, web, next);
                     break;
                 }
             }
@@ -222,7 +222,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 if (possibility != current.Number)
                 {
                     MedusaCoordinate next = new MedusaCoordinate(current.Row, current.Col, possibility);
-                    if(chain.AddLink(current, next)) InitChain(solver, chain, next);
+                    if(web.AddLink(current, next)) InitChain(solver, web, next);
                     break;
                 }
             }
