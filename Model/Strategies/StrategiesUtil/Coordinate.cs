@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.XPath;
 
-namespace Model.Strategies.ChainingStrategiesUtil;
+namespace Model.Strategies.StrategiesUtil;
 
 public class Coordinate
 {
@@ -21,6 +20,13 @@ public class Coordinate
         return Row == coord.Row || Col == coord.Col ||
                (Row / 3 == coord.Row / 3
                 && Col / 3 == coord.Col / 3);
+    }
+
+    public static bool ShareAUnit(int row1, int col1, int row2, int col2)
+    {
+        return row1 == row2 || col1 == col2 ||
+               (row1 / 3 == row2 / 3
+                && col1 / 3 == col2 / 3);
     }
 
     public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)

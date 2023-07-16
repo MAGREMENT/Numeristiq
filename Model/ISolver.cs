@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Windows.Documents;
+using Model.Positions;
 using Model.Possibilities;
 
 namespace Model;
@@ -10,11 +12,11 @@ public interface ISolver
 
     bool RemovePossibility(int possibility, int row, int col, ISolverLog? log = null);
 
-    Positions PossibilityPositionsInColumn(int col, int number);
+    LinePositions PossibilityPositionsInColumn(int col, int number);
 
-    Positions PossibilityPositionsInRow(int row, int number);
+    LinePositions PossibilityPositionsInRow(int row, int number);
 
-    List<int[]> PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
+    MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
 
     public Sudoku Sudoku { get; }
 
@@ -40,7 +42,7 @@ public interface IPossibilities : IEnumerable<int>
 
     public static IPossibilities DefaultMash(IPossibilities poss1, IPossibilities poss2)
     {
-        IPossibilities result = new BoolArrayPossibilities();
+        IPossibilities result = New();
         for (int i = Min; i <= Max; i++)
         {
             if (!poss1.Peek(i) && !poss2.Peek(i)) result.Remove(i);
@@ -48,66 +50,10 @@ public interface IPossibilities : IEnumerable<int>
 
         return result;
     }
-}
 
-public class Positions : IEnumerable<int>
-{
-    private int _pos;
-    public int Count { private set; get; }
-    
-    public Positions(){}
-
-    private Positions(int pos, int count)
+    public static IPossibilities New()
     {
-        _pos = pos;
-        Count = count;
-    }
-
-    public void Add(int pos)
-    {
-        _pos |= 1 << pos;
-        Count++;
-    }
-
-    public bool Peek(int pos)
-    {
-        return ((_pos >> pos) & 1) > 0;
-    }
-
-    public IEnumerator<int> GetEnumerator()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            if(((_pos >> i) & 1) > 0) yield return i;
-        }
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Positions pos) return false;
-        return _pos == pos._pos;
-    }
-
-    public override int GetHashCode()
-    {
-        // ReSharper disable once NonReadonlyMemberInGetHashCode
-        return _pos;
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public Positions Mash(Positions pos)
-    {
-        int newPos = _pos | pos._pos;
-        return new Positions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos));
-    }
-
-    public Positions Copy()
-    {
-        return new Positions(_pos, Count);
+        return new BitPossibilities();
     }
 }
 

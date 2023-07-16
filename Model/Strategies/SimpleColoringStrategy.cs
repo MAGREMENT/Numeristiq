@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Strategies.ChainingStrategiesUtil;
+using Model.Strategies.StrategiesUtil;
 
 namespace Model.Strategies;
 

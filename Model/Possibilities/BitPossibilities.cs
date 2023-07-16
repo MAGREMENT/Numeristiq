@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Model.Possibilities;
 
-public class BitPossibilities : IPossibilities //TODO : make work
+public class BitPossibilities : IPossibilities
 {
     private int _possibilities;
     public int Count { private set; get; }
@@ -22,9 +22,8 @@ public class BitPossibilities : IPossibilities //TODO : make work
     
     public bool Remove(int number)
     {
-        int index = number - 1;
-        bool old = ((_possibilities >> index) & 1) > 0;
-        _possibilities |= 1 << index;
+        bool old = Peek(number);
+        _possibilities &= ~(1 << (number - 1));
         if (old) Count--;
         return old;
     }
@@ -76,13 +75,13 @@ public class BitPossibilities : IPossibilities //TODO : make work
         {
             if (((_possibilities >> i) & 1) > 0) return i + 1;
         }
-
+        
         return 0;
     }
 
     public IPossibilities Copy()
     {
-        throw new System.NotImplementedException();
+        return new BitPossibilities(_possibilities, Count);
     }
 
     public override int GetHashCode()

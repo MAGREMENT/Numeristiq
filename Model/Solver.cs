@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Positions;
 using Model.Possibilities;
 using Model.Strategies;
 using Model.Strategies.IntersectionRemoval;
@@ -30,7 +31,7 @@ public class Solver : ISolver
         {
             for (int j = 0; j < 9; j++)
             {
-                Possibilities[i, j] = new BoolArrayPossibilities();
+                Possibilities[i, j] = IPossibilities.New();
             }
         }
         
@@ -72,7 +73,8 @@ public class Solver : ISolver
                 new GridFormationStrategy(3),
                 new GridFormationStrategy(4),
                 new XYChainStrategy(),
-                new ThreeDimensionMedusaStrategy()
+                new ThreeDimensionMedusaStrategy(),
+                new XCyclesStrategy()
                 //new TrialAndMatchStrategy(2)
             };
         }
@@ -123,8 +125,8 @@ public class Solver : ISolver
             Possibilities[i, col].Remove(number);
         }
         
-        int startRow = (row / 3) * 3;
-        int startColumn = (col / 3) * 3;
+        int startRow = row / 3 * 3;
+        int startColumn = col / 3 * 3;
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -134,42 +136,41 @@ public class Solver : ISolver
         }
     }
 
-    public Positions PossibilityPositionsInRow(int row, int number)
+    public LinePositions PossibilityPositionsInRow(int row, int number)
     {
-        Positions result = new();
+        LinePositions result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (Sudoku[row, col] == number) return new Positions();
+            if (Sudoku[row, col] == number) return new LinePositions();
             if (Possibilities[row, col].Peek(number)) result.Add(col);
         }
         return result;
     }
     
-    public Positions PossibilityPositionsInColumn(int col, int number)
+    public LinePositions PossibilityPositionsInColumn(int col, int number)
     {
-        Positions result = new();
+        LinePositions result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (Sudoku[row, col] == number) return new Positions();
+            if (Sudoku[row, col] == number) return new LinePositions();
             if (Possibilities[row, col].Peek(number)) result.Add(row);
         }
 
         return result;
     }
     
-    //TODO change to position class
-    public List<int[]> PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
     {
-        List<int[]> result = new();
+        MiniGridPositions result = new(miniRow, miniCol);
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
             {
                 var realRow = miniRow * 3 + i;
                 var realCol = miniCol * 3 + j;
-                
-                if (Sudoku[realRow, realCol] == number) return new List<int[]>();
-                if (Possibilities[realRow, realCol].Peek(number)) result.Add(new[]{realRow, realCol});
+
+                if (Sudoku[realRow, realCol] == number) return new MiniGridPositions(miniRow, miniCol);
+                if (Possibilities[realRow, realCol].Peek(number)) result.Add(i, j);
             }
         }
 

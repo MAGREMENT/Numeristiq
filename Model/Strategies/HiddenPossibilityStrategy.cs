@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Positions;
 
 namespace Model.Strategies;
 
@@ -16,7 +17,7 @@ public class HiddenPossibilityStrategy : IStrategy
         //Rows
         for (int row = 0; row < 9; row++)
         {
-            Dictionary<Positions, List<int>> possibilitiesToExamine = new();
+            Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
                 var positions = solver.PossibilityPositionsInRow(row, number);
@@ -44,7 +45,7 @@ public class HiddenPossibilityStrategy : IStrategy
         //Columns
         for (int col = 0; col < 9; col++)
         {
-            Dictionary<Positions, List<int>> possibilitiesToExamine = new();
+            Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
                 var positions = solver.PossibilityPositionsInColumn(col, number);
@@ -74,7 +75,7 @@ public class HiddenPossibilityStrategy : IStrategy
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                Dictionary<Positions, List<int>> possibilitiesToExamine = new();
+                Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
                 for (int number = 1; number <= 9; number++)
                 {
                     var positions = PossiblePositionsInMiniGrid(solver, miniRow, miniCol, number);
@@ -104,15 +105,15 @@ public class HiddenPossibilityStrategy : IStrategy
         }
     }
 
-    private Positions PossiblePositionsInMiniGrid(ISolver solver, int miniRow, int miniCol, int number)
+    private LinePositions PossiblePositionsInMiniGrid(ISolver solver, int miniRow, int miniCol, int number)
     {
-        Positions result = new();
+        LinePositions result = new();
         for (int gridNumber = 0; gridNumber < 9; gridNumber++)
         {
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
             
-            if (solver.Sudoku[row, col] == number) return new Positions();
+            if (solver.Sudoku[row, col] == number) return new LinePositions();
             if (solver.Sudoku[row, col] == 0 &&
                 solver.Possibilities[row, col].Peek(number)) result.Add(gridNumber);
         }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Strategies.ChainingStrategiesUtil;
+using Model.Strategies.StrategiesUtil;
 
 namespace Model.Strategies;
 

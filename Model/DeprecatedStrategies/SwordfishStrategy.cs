@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Positions;
 
 namespace Model.Strategies;
 
@@ -12,7 +13,7 @@ public class SwordfishStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                Positions p = solver.PossibilityPositionsInRow(row, number);
+                LinePositions p = solver.PossibilityPositionsInRow(row, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, row));
             }
 
@@ -23,7 +24,7 @@ public class SwordfishStrategy : IStrategy
                 while (copyOne.Count > 0)
                 {
                     ValuePositions second = copyOne.Dequeue();
-                    Positions mashed = first.Positions.Mash(second.Positions);
+                    LinePositions mashed = first.Positions.Mash(second.Positions);
                     if (mashed.Count == 3)
                     {
                         Queue<ValuePositions> copyTwo = new Queue<ValuePositions>(copyOne);
@@ -41,7 +42,7 @@ public class SwordfishStrategy : IStrategy
             //Columns
             for (int col = 0; col < 9; col++)
             {
-                Positions p = solver.PossibilityPositionsInColumn(col, number);
+                LinePositions p = solver.PossibilityPositionsInColumn(col, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, col));
             }
 
@@ -52,7 +53,7 @@ public class SwordfishStrategy : IStrategy
                 while (copyOne.Count > 0)
                 {
                     ValuePositions second = copyOne.Dequeue();
-                    Positions mashed = first.Positions.Mash(second.Positions);
+                    LinePositions mashed = first.Positions.Mash(second.Positions);
                     if (mashed.Count == 3)
                     {
                         Queue<ValuePositions> copyTwo = new Queue<ValuePositions>(copyOne);
@@ -69,7 +70,7 @@ public class SwordfishStrategy : IStrategy
         }
     }
 
-    private void ProcessSwordfishInRows(ISolver solver, int row1, int row2, int row3, Positions cols, int number)
+    private void ProcessSwordfishInRows(ISolver solver, int row1, int row2, int row3, LinePositions cols, int number)
     {
         foreach (var col in cols)
         {
@@ -83,7 +84,7 @@ public class SwordfishStrategy : IStrategy
         }
     }
 
-    private void ProcessSwordfishInColumns(ISolver solver, int col1, int col2, int col3, Positions rows, int number)
+    private void ProcessSwordfishInColumns(ISolver solver, int col1, int col2, int col3, LinePositions rows, int number)
     {
         foreach (var row in rows)
         {
@@ -100,13 +101,13 @@ public class SwordfishStrategy : IStrategy
 
 public class ValuePositions
 {
-    public ValuePositions(Positions positions, int value)
+    public ValuePositions(LinePositions positions, int value)
     {
         Positions = positions;
         Value = value;
     }
 
-    public Positions Positions { get; }
+    public LinePositions Positions { get; }
     public int Value { get; }
 }
 

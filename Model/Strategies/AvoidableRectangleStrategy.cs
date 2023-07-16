@@ -1,6 +1,4 @@
-﻿using Model.Strategies.ChainingStrategiesUtil;
-
-namespace Model.Strategies;
+﻿namespace Model.Strategies;
 
 public class AvoidableRectangleStrategy : IStrategy
 {

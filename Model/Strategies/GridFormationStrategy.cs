@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Positions;
 
 namespace Model.Strategies;
 
@@ -24,7 +25,7 @@ public class GridFormationStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                Positions p = solver.PossibilityPositionsInRow(row, number);
+                LinePositions p = solver.PossibilityPositionsInRow(row, number);
                 if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, row));
             }
             Search(solver, toSearch, number, _type);
@@ -34,7 +35,7 @@ public class GridFormationStrategy : IStrategy
             _lookingAtRows = false;
             for (int col = 0; col < 9; col++)
             {
-                Positions p = solver.PossibilityPositionsInColumn(col, number);
+                LinePositions p = solver.PossibilityPositionsInColumn(col, number);
                 if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, col));
             }
             Search(solver, toSearch, number, _type);
@@ -47,20 +48,20 @@ public class GridFormationStrategy : IStrategy
         while (toSearch.Count > 0)
         {
             ValuePositions first = toSearch.Dequeue();
-            Positions visited = new();
+            LinePositions visited = new();
             visited.Add(first.Value);
             RecursiveSearch(solver, new Queue<ValuePositions>(toSearch), visited,
                 first.Positions, number, count - 1);
         }
     }
 
-    private void RecursiveSearch(ISolver solver, Queue<ValuePositions> toSearch, Positions visited, Positions current,
+    private void RecursiveSearch(ISolver solver, Queue<ValuePositions> toSearch, LinePositions visited, LinePositions current,
         int number, int count)
     {
         while (toSearch.Count > 0)
         {
             ValuePositions dequeue = toSearch.Dequeue();
-            Positions newCurrent = current.Mash(dequeue.Positions);
+            LinePositions newCurrent = current.Mash(dequeue.Positions);
             visited.Add(dequeue.Value);
             if (count - 1 == 0)
             {
@@ -75,7 +76,7 @@ public class GridFormationStrategy : IStrategy
         }
     }
 
-    private void Process(ISolver solver, Positions visited, Positions toRemove, int number)
+    private void Process(ISolver solver, LinePositions visited, LinePositions toRemove, int number)
     {
         foreach (var first in toRemove)
         {

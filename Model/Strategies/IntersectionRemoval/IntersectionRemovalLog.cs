@@ -7,7 +7,7 @@ public class IntersectionRemovalLog : ISolverLog
 
     public IntersectionRemovalLog(int number, int row, int col)
     {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of localized possibilities";
+        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of intersection removal";
     }
 
 }

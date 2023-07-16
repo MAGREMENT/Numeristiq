@@ -1,4 +1,4 @@
-﻿namespace Model.Strategies.ChainingStrategiesUtil;
+﻿namespace Model.Strategies.StrategiesUtil;
 
 public enum Coloring
 {

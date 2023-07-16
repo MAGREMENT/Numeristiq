@@ -4,8 +4,6 @@ public class ColumnSinglePossibilityStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
     {
-        bool wasProgressMade = false;
-        
         for (int col = 0; col < 9; col++)
         {
             for (int n = 1; n <= 9; n++)
@@ -14,7 +12,6 @@ public class ColumnSinglePossibilityStrategy : IStrategy
                 if (pos != -1)
                 {
                     solver.AddDefinitiveNumber(n, pos, col, new SinglePossibilityLog(n, pos, col));
-                    wasProgressMade = true;
                 }
             } 
         }

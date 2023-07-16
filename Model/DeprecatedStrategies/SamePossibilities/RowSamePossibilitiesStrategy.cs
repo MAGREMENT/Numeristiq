@@ -6,14 +6,12 @@ public class RowSamePossibilitiesStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
     {
-        bool wasProgressMade = false;
-        
         for (int row = 0; row < 9; row++)
         {
             foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, row))
             {
                 if (keyValuePair.Key.Count == keyValuePair.Value)
-                    wasProgressMade = RemovePossibilitiesFromRow(solver, row, keyValuePair.Key);
+                    RemovePossibilitiesFromRow(solver, row, keyValuePair.Key);
             }
         }
     }
@@ -33,23 +31,19 @@ public class RowSamePossibilitiesStrategy : IStrategy
         return result;
     }
 
-    private bool RemovePossibilitiesFromRow(ISolver solver, int row, IPossibilities toRemove)
+    private void RemovePossibilitiesFromRow(ISolver solver, int row, IPossibilities toRemove)
     {
-        bool wasProgressMade = false;
-        
         for (int col = 0; col < 9; col++)
         {
             if (solver.Sudoku[row, col] == 0 && !solver.Possibilities[row, col].Equals(toRemove))
             {
                 foreach (var number in toRemove)
                 {
-                    if (solver.RemovePossibility(number, row, col,
-                            new SamePossibilitiesLog(number, row, col))) wasProgressMade = true;
+                    solver.RemovePossibility(number, row, col,
+                            new SamePossibilitiesLog(number, row, col));
                 }
             }
         }
-
-        return wasProgressMade;
     }
 
 }

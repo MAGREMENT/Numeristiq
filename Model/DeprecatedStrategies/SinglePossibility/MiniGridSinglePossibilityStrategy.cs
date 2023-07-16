@@ -4,8 +4,6 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
     {
-        bool wasProgressMade = false;
-        
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
             for (int gridCol = 0; gridCol < 3; gridCol++)
@@ -17,7 +15,6 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
                     {
                         solver.AddDefinitiveNumber(n, pos[0], pos[1],
                             new SinglePossibilityLog(n, pos[0], pos[1]));
-                        wasProgressMade = true;
                     }
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Positions;
 
 namespace Model.Strategies;
 
@@ -6,7 +7,7 @@ public class XWingStrategy : IStrategy
 {
     public void ApplyOnce(ISolver solver)
     {
-        Dictionary<Positions, int> dict = new();
+        Dictionary<LinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)
         {
             //Rows

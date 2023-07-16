@@ -1,21 +1,58 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using Model.Strategies.ChainingStrategiesUtil;
+using Model.Positions;
+using Model.Possibilities;
+using Model.Strategies.StrategiesUtil;
 
 namespace Model;
 
-public class Testing
+public static class Testing
 {
     public static void Main(string[] args)
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
+        
         FullSudokuBankTest();
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {end - start}ms");
+    }
+
+    private static void CompareIPossibilitiesImplementation(IPossibilities one, IPossibilities two)
+    {
+        Console.WriteLine(one.Count);
+        Console.WriteLine(two.Count);
+        Console.WriteLine(one);
+        Console.WriteLine(two);
+
+        one.Remove(1);
+        one.Remove(9);
+        one.Remove(5);
+        
+        two.Remove(1);
+        two.Remove(9);
+        two.Remove(5);
+
+        Console.WriteLine(one.Count);
+        Console.WriteLine(two.Count);
+        Console.WriteLine(one);
+        Console.WriteLine(two);
+        
+        Console.WriteLine(one.Peek(2));
+        Console.WriteLine(one.Peek(5));
+        Console.WriteLine(one.Remove(1));
+        Console.WriteLine(one.Remove(3));
+        Console.WriteLine(two.Peek(2));
+        Console.WriteLine(two.Peek(5));
+        Console.WriteLine(two.Remove(1));
+        Console.WriteLine(two.Remove(3));
+        
+        Console.WriteLine(one.Count);
+        Console.WriteLine(two.Count);
+        Console.WriteLine(one);
+        Console.WriteLine(two);
     }
 
     private static void FullSudokuBankTest()
@@ -49,14 +86,14 @@ public class Testing
 
     private static void PositionsTest()
     {
-        Positions one = new()
+        LinePositions one = new()
         {
             0,
             8,
             5
         };
 
-        Positions two = new()
+        LinePositions two = new()
         {
             2,
             3,
@@ -64,12 +101,19 @@ public class Testing
             5
         };
 
+        MiniGridPositions three = new(1, 2);
+        three.Add(0, 0); //3, 6
+        three.Add(2, 2); //5, 8
+        three.Add(1, 1); //4, 7
+        three.Add(0, 2); //3, 8
+
         PrintPositions(one);
         PrintPositions(two);
         PrintPositions(one.Mash(two));
+        PrintPositions(three);
     }
 
-    private static void PrintPositions(Positions pos)
+    private static void PrintPositions(LinePositions pos)
     {
         Console.WriteLine("Count : " + pos.Count);
         foreach (var n in pos)
@@ -78,7 +122,16 @@ public class Testing
         }
     }
 
-    private void SudokuResolutionTest(String asString)
+    private static void PrintPositions(MiniGridPositions pos)
+    {
+        Console.WriteLine("Count : " + pos.Count);
+        foreach (var n in pos)
+        {
+            Console.WriteLine("Has : " + n[0] + ", " + n[1]);
+        }
+    }
+
+    private static void SudokuResolutionTest(string asString)
     {
         var sud = new Sudoku(asString);
         Console.WriteLine("Sudoku initial : ");

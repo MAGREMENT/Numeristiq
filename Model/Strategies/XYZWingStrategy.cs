@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Positions;
 
 namespace Model.Strategies;
 
@@ -25,9 +26,9 @@ public class XYZWingStrategy : IStrategy
                 {
                     IPossibilities hinge = solver.Possibilities[row, col];
 
-                    Positions rowCandidates = CandidateForXyzWingInRow(solver, row, hinge);
-                    Positions colCandidates = CandidateForXyzWingInColumn(solver, col, hinge);
-                    List<int[]> miniGridCandidates = CandidateForXyzWingInMiniGrid(solver, row / 3, col / 3, hinge);
+                    LinePositions rowCandidates = CandidateForXyzWingInRow(solver, row, hinge);
+                    LinePositions colCandidates = CandidateForXyzWingInColumn(solver, col, hinge);
+                    MiniGridPositions miniGridCandidates = CandidateForXyzWingInMiniGrid(solver, row / 3, col / 3, hinge);
                     
                     //Rows
                     foreach (var candidateCol in rowCandidates)
@@ -61,9 +62,9 @@ public class XYZWingStrategy : IStrategy
         }
     }
 
-    private Positions CandidateForXyzWingInRow(ISolver solver, int row, IPossibilities hinge)
+    private LinePositions CandidateForXyzWingInRow(ISolver solver, int row, IPossibilities hinge)
     {
-        Positions result = new();
+        LinePositions result = new();
         for (int col = 0; col < 9; col++)
         {
             if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], hinge))
@@ -75,9 +76,9 @@ public class XYZWingStrategy : IStrategy
         return result;
     }
     
-    private Positions CandidateForXyzWingInColumn(ISolver solver, int col, IPossibilities hinge)
+    private LinePositions CandidateForXyzWingInColumn(ISolver solver, int col, IPossibilities hinge)
     {
-        Positions result = new();
+        LinePositions result = new();
         for (int row = 0; row < 9; row++)
         {
             if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], hinge))
@@ -89,9 +90,9 @@ public class XYZWingStrategy : IStrategy
         return result;
     }
 
-    private List<int[]> CandidateForXyzWingInMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities hinge)
+    private MiniGridPositions CandidateForXyzWingInMiniGrid(ISolver solver, int miniRow, int miniCol, IPossibilities hinge)
     {
-        List<int[]> result = new();
+        MiniGridPositions result = new(miniRow, miniCol);
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
             for (int gridCol = 0; gridCol < 3; gridCol++)
@@ -101,7 +102,7 @@ public class XYZWingStrategy : IStrategy
                 
                 if (solver.Possibilities[row, col].Count == 2 && IsSubset(solver.Possibilities[row, col], hinge))
                 {
-                    result.Add(new[] {row, col});
+                    result.Add(gridRow, gridCol);
                 }
             }
         }

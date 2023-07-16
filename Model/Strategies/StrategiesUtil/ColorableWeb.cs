@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Model.Strategies.ChainingStrategiesUtil;
+namespace Model.Strategies.StrategiesUtil;
 
 public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable
 {
