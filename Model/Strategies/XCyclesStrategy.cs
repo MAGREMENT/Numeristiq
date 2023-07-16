@@ -60,7 +60,7 @@ public class XCyclesStrategy : IStrategy
                     List<Coordinate> visited = new() { start };
                     var next = strongLinks[type][start];
                     visited.Add(next);
-                    foreach (var coord in SearchForWeakLink(solver, strongLinks, next, type, n))
+                    foreach (var coord in SearchForWeakLink(solver, strongLinks, next, n))
                     {
                         if (!visited.Contains(coord.Coordinate))
                         {
@@ -86,7 +86,7 @@ public class XCyclesStrategy : IStrategy
         visited.Add(next);
         
         bool noMore = true;
-        foreach (var coord in SearchForWeakLink(solver, strongLinks, next, current.Type, number))
+        foreach (var coord in SearchForWeakLink(solver, strongLinks, next, number))
         {
             if (!visited.Contains(coord.Coordinate))
             {
@@ -136,31 +136,13 @@ public class XCyclesStrategy : IStrategy
     }
 
     private IEnumerable<CoordinateAndType> SearchForWeakLink(ISolver solver, Dictionary<Coordinate, Coordinate>[] strongLinks,
-        Coordinate current, int type, int number)
+        Coordinate current, int number)
     {
-        HashSet<CoordinateAndType> one = new();
-        HashSet<CoordinateAndType> two = new();
-        for (int i = 1; i <= 2; i++)
+        HashSet<CoordinateAndType> result = new();
+
+        for (int i = 0; i < 3; i++)
         {
-            int newType = (type + i) % 3;
-            foreach (var coord in strongLinks[newType].Keys)
-            {
-                /*switch (newType)
-                {
-                    case 0 :
-                        if (coord.Row == current.Row) one.Add(new CoordinateAndType(coord, newType));
-                        break;
-                    case 1 :
-                        if (coord.Col == current.Col) one.Add(new CoordinateAndType(coord, newType));
-                        break;
-                    case 2 :
-                        if (coord.Row / 3 == current.Row / 3 && coord.Col / 3 == current.Col / 3)
-                            one.Add(new CoordinateAndType(coord, newType));
-                        break;
-                }*/
-                if (coord.ShareAUnit(current)) one.Add( new CoordinateAndType(coord, newType));
-            }
-            /*switch (newType)
+            switch (i)
             {
                 case 0 :
                     var posRow = solver.PossibilityPositionsInRow(current.Row, number);
@@ -169,7 +151,9 @@ public class XCyclesStrategy : IStrategy
                         foreach (var col in posRow)
                         {
                             Coordinate coord = new Coordinate(current.Row, col);
-                            if (strongLinks[0].ContainsKey(coord)) two.Add(new CoordinateAndType(coord, 0));
+                            if (strongLinks[0].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 0));
+                            if (strongLinks[1].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 1));
+                            if (strongLinks[2].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 2));
                         } 
                     }
 
@@ -181,7 +165,9 @@ public class XCyclesStrategy : IStrategy
                         foreach (var row in posCol)
                         {
                             Coordinate coord = new Coordinate(row, current.Col);
-                            if (strongLinks[1].ContainsKey(coord)) two.Add(new CoordinateAndType(coord, 1));
+                            if (strongLinks[0].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 0));
+                            if (strongLinks[1].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 1));
+                            if (strongLinks[2].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 2));
                         } 
                     }
 
@@ -194,15 +180,20 @@ public class XCyclesStrategy : IStrategy
                         foreach (var pos in posMini)
                         {
                             Coordinate coord = new Coordinate(pos[0], pos[1]);
-                            if (strongLinks[2].ContainsKey(coord)) two.Add( new CoordinateAndType(coord, 2));
+                            if (strongLinks[0].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 0));
+                            if (strongLinks[1].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 1));
+                            if (strongLinks[2].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 2));
                         } 
                     }
 
                     break;
-            }*/
+            }
         }
 
-        return one;
+        foreach (var coord in result)
+        {
+            if (!(coord.Coordinate.Row == current.Row && coord.Coordinate.Col == current.Col)) yield return coord;
+        }
     }
 }
 
