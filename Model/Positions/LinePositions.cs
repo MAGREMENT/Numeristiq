@@ -29,10 +29,10 @@ public class LinePositions : IEnumerable<int>
 
     public bool AreAllInSameMiniGrid()
     {
-        //000 000 111
-        //000 111 000
-        //111 000 000
-        return Count < 4 && (_pos ^ 0x7) == 0 && (_pos ^ 0x38) == 0 && (_pos ^ 0x1C0) == 0;
+        //111 111 000
+        //111 000 111
+        //000 111 111
+        return Count is < 4 and > 0 && ((_pos & 0x1F8) == 0 || (_pos & 0x1C7) == 0 || (_pos & 0x3F) == 0);
     }
 
     public IEnumerator<int> GetEnumerator()

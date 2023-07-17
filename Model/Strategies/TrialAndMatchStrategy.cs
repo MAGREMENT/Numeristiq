@@ -20,8 +20,8 @@ public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7
                 if (solver.Sudoku[row, col] == 0 &&
                     solver.Possibilities[row, col].Count <= _maxNumberOfPossibility)
                 {
-                    ApplyChanges(solver, RunSimulation(solver, row, col,
-                        solver.Possibilities[row, col]));
+                    if(ApplyChanges(solver, RunSimulation(solver, row, col,
+                        solver.Possibilities[row, col]))) return;
                 }
             }
         }
@@ -71,16 +71,19 @@ public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7
         return commonChanges!;
     }
 
-    private static void ApplyChanges(ISolver solver, int[,] toApply)
+    private static bool ApplyChanges(ISolver solver, int[,] toApply)
     {
+        bool wasProgressMade = false;
         for (int r = 0; r < 9; r++)
         {
             for (int c = 0; c < 9; c++)
             {
-                if (toApply[r, c] != 0) solver.AddDefinitiveNumber(toApply[r, c], r, c,
-                    new TrialAndMatchLog(toApply[r, c], r, c));
+                if (toApply[r, c] != 0 && solver.AddDefinitiveNumber(toApply[r, c], r, c,
+                    new TrialAndMatchLog(toApply[r, c], r, c))) wasProgressMade = true;
             }
         }
+
+        return wasProgressMade;
     }
 }
 

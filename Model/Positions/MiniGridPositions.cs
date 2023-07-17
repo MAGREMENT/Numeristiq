@@ -49,18 +49,18 @@ public class MiniGridPositions : IEnumerable<int[]>
 
     public bool AreAllInSameRow()
     {
-        //000 000 111
-        //000 111 000
-        //111 000 000
-        return Count < 4 && (_pos ^ 0x7) == 0 && (_pos ^ 0x38) == 0 && (_pos ^ 0x1C0) == 0;
+        //111 111 000
+        //111 000 111
+        //000 111 111
+        return Count is < 4 and > 0 && ((_pos & 0x1F8) == 0 || (_pos & 0x1C7) == 0 || (_pos & 0x3F) == 0);
     }
 
     public bool AreAllInSameColumn()
     {
-        //001 001 001
-        //010 010 010
-        //100 100 100
-        return Count < 4 && (_pos ^ 0x9) == 0 && (_pos ^ 0x12) == 0 && (_pos ^ 0x24) == 0;
+        //110 110 110
+        //101 101 101
+        //011 011 011
+        return Count is < 4 and > 0 && ((_pos & 0x1B6) == 0 || (_pos & 0x16D) == 0 || (_pos & 0xDB) == 0);
     }
 
     public IEnumerator<int[]> GetEnumerator()

@@ -12,7 +12,7 @@ public static class Testing
     public static void Main(string[] args)
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        
+
         FullSudokuBankTest();
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();

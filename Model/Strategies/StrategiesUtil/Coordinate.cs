@@ -31,44 +31,20 @@ public class Coordinate
 
     public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)
     {
-        HashSet<Coordinate> result = new();
-        //Same MiniGrid
-        if (Row / 3 == coord.Row / 3 && Col / 3 == coord.Col / 3)
-        {
-            int rowStart = Row / 3 * 3;
-            int colStart = Col / 3 * 3;
-
-            for (int miniRow = 0; miniRow < 3; miniRow++)
-            {
-                for (int miniCol = 0; miniCol < 3; miniCol++)
-                {
-                    result.Add(new Coordinate(rowStart + miniRow, colStart + miniCol));
-                }
-            }
-        }
-        //Same Row
-        if (Row == coord.Row)
+        for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                result.Add(new Coordinate(Row, col));
+                if ((row == Row && col == Col) || (row == coord.Row && col == coord.Col)) continue;
+                
+                if (ShareAUnit(row, col, Row, Col)
+                    && ShareAUnit(row, col, coord.Row, coord.Col))
+                {
+                    yield return new Coordinate(row, col); 
+                }
+                
             }
         }
-        //Same Col
-        if (Col == coord.Col)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                result.Add(new Coordinate(row, Col));
-            }
-        }
-
-        result.Add(new Coordinate(Row, coord.Col));
-        result.Add(new Coordinate(coord.Row, Col));
-        result.Remove(new Coordinate(Row, Col));
-        result.Remove(new Coordinate(coord.Row, coord.Col));
-
-        return result;
     }
 
     public override int GetHashCode()
