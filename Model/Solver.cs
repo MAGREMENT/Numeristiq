@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Model.Positions;
 using Model.Strategies;
 using Model.Strategies.IntersectionRemoval;
+using Model.Strategies.XCycles;
 
 namespace Model;
 

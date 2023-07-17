@@ -2,7 +2,7 @@
 using System.Linq;
 using Model.Strategies.StrategiesUtil;
 
-namespace Model.Strategies;
+namespace Model.Strategies.XCycles;
 
 public class XCyclesStrategy : IStrategy
 {
