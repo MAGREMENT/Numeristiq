@@ -27,7 +27,7 @@ public partial class LogUserControl : UserControl
             StrategyLevel.Easy => Colors.Green,
             StrategyLevel.Medium => Colors.Orange,
             StrategyLevel.Hard => Colors.Red,
-            StrategyLevel.Ultimate => Colors.Black,
+            StrategyLevel.ByTrial => Colors.Black,
             _ => Colors.Gray
         });
         _title.Text = log.Level.ToString();

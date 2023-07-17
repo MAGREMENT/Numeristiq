@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Windows.Documents;
 using Model.Positions;
@@ -23,6 +24,12 @@ public interface ISolver
     public IPossibilities[,] Possibilities { get; }
     
     public List<ISolverLog> Logs { get; }
+
+    public ISolver Copy();
+
+    public void Solve();
+
+    public void ExcludeStrategy(Type type);
 }
 
 public interface IPossibilities : IEnumerable<int>

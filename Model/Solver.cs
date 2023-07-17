@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Positions;
-using Model.Possibilities;
 using Model.Strategies;
 using Model.Strategies.IntersectionRemoval;
 
@@ -74,15 +73,26 @@ public class Solver : ISolver
                 new GridFormationStrategy(4),
                 new XYChainStrategy(),
                 new ThreeDimensionMedusaStrategy(),
-                new XCyclesStrategy()
-                //new TrialAndMatchStrategy(2)
+                new XCyclesStrategy(),
+                new TrialAndMatchStrategy(2)
             };
         }
     }
 
-    public static Solver BasicSolver(Sudoku s)
+    private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t)
     {
-        return new Solver(s,
+        Sudoku = s;
+        Possibilities = p;
+        Strategies = t;
+        
+        NumberAdded += (_, _) => _changeWasMade = true;
+        PossibilityRemoved += (_, _) => _changeWasMade = true;
+    }
+
+    public static IStrategy[] BasicStrategies()
+    {
+        return new IStrategy[]
+        {
             new NakedPossibilitiesStrategy(1),
             new HiddenPossibilityStrategy(1),
             new NakedPossibilitiesStrategy(2),
@@ -91,8 +101,8 @@ public class Solver : ISolver
             new NakedPossibilitiesStrategy(3),
             new HiddenPossibilityStrategy(3),
             new NakedPossibilitiesStrategy(4),
-            new HiddenPossibilityStrategy(4)
-        );
+            new HiddenPossibilityStrategy(4) 
+        };
     }
     
     public bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null)
@@ -225,8 +235,43 @@ public class Solver : ISolver
     {
         _listOfChanges.Add(new[] {row, col});
     }
-    
-    
+
+    public bool IsWrong()
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Sudoku[row, col] == 0 && Possibilities[row, col].Count == 0) return true;
+            }
+        }
+
+        return false;
+    }
+
+    public ISolver Copy()
+    {
+        IPossibilities[,] possCopy = new IPossibilities[9, 9];
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                possCopy[row, col] = Possibilities[row, col].Copy();
+            }
+        }
+
+        IStrategy[] stratCopy = new IStrategy[Strategies.Length];
+        Array.Copy(Strategies, stratCopy, Strategies.Length);
+        return new Solver(Sudoku.Copy(), possCopy, stratCopy);
+    }
+
+    public void ExcludeStrategy(Type type)
+    {
+        for (int i = 0; i < Strategies.Length; i++)
+        {
+            if (Strategies[i].GetType() == type) Strategies[i] = new NoStrategy();
+        }
+    }
 
 }
 

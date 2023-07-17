@@ -7,5 +7,5 @@ public interface IStrategy
 
 public enum StrategyLevel
 {
-    None, Basic, Easy, Medium, Hard, Ultimate
+    None, Basic, Easy, Medium, Hard, ByTrial
 }
