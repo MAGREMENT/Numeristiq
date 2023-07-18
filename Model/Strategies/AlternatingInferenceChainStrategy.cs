@@ -21,130 +21,53 @@ public class AlternatingInferenceChainStrategy : IStrategy
                 {
                     LinkResume resume = new();
                     
-                    //Row //TODO make less braindead
+                    //Row
                     var ppir = solver.PossibilityPositionsInRow(row, possibility);
-                    switch (ppir.Count)
+                    foreach (var c in ppir)
                     {
-                        case 2:
+                        if (c != col)
                         {
-                            foreach (var c in ppir)
-                            {
-                                if (c != col)
-                                {
-                                    resume.StrongLinks.Add(new PossibilityCoordinate(row, c, possibility));
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                        case > 2:
-                        {
-                            foreach (var c in ppir)
-                            {
-                                if (c != col)
-                                {
-                                    resume.WeakLinks.Add(new PossibilityCoordinate(row, c, possibility));
-                                }
-                            }
-
-                            break;
+                            var coord = new PossibilityCoordinate(row, c, possibility);
+                            resume.WeakLinks.Add(coord);
+                            if (ppir.Count == 2) resume.StrongLinks.Add(coord);
                         }
                     }
                     
                     //Col
                     var ppic = solver.PossibilityPositionsInColumn(col, possibility);
-                    switch (ppic.Count)
+                    foreach (var r in ppic)
                     {
-                        case 2:
+                        if (r != row)
                         {
-                            foreach (var r in ppic)
-                            {
-                                if (r != row)
-                                {
-                                    resume.StrongLinks.Add(new PossibilityCoordinate(r, col, possibility));
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                        case > 2:
-                        {
-                            foreach (var r in ppic)
-                            {
-                                if (r != row)
-                                {
-                                    resume.WeakLinks.Add(new PossibilityCoordinate(r, col, possibility));
-                                }
-                            }
-
-                            break;
+                            var coord = new PossibilityCoordinate(r, col, possibility);
+                            resume.WeakLinks.Add(coord);
+                            if (ppic.Count == 2) resume.StrongLinks.Add(coord);
                         }
                     }
                     
                     //MiniGrids
                     var ppimn = solver.PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
-                    switch (ppimn.Count)
+                    foreach (var pos in ppimn)
                     {
-                        case 2:
+                        if (!(pos[0] == row && pos[1] == col))
                         {
-                            foreach (var pos in ppimn)
-                            {
-                                if (!(pos[0] == row && pos[1] == col))
-                                {
-                                    resume.StrongLinks.Add(new PossibilityCoordinate(pos[0], pos[1], possibility));
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                        case > 2:
-                        {
-                            foreach (var pos in ppimn)
-                            {
-                                if (!(pos[0] == row && pos[1] == col))
-                                {
-                                    resume.WeakLinks.Add(new PossibilityCoordinate(pos[0], pos[1], possibility));
-                                }
-                            }
-
-                            break;
-                        }
-                    }
-
-                    switch (solver.Possibilities[row, col].Count)
-                    {
-                        //Cell
-                        case 2:
-                        {
-                            foreach (var pos in solver.Possibilities[row, col])
-                            {
-                                if (pos != possibility)
-                                {
-                                    resume.StrongLinks.Add(new PossibilityCoordinate(row, col, pos));
-                                    break;
-                                }
-                            }
-
-                            break;
-                        }
-                        case > 2:
-                        {
-                            foreach (var pos in solver.Possibilities[row, col])
-                            {
-                                if (pos != possibility)
-                                {
-                                    resume.WeakLinks.Add(new PossibilityCoordinate(row, col, pos));
-                                }
-                            }
-
-                            break;
+                            var coord = new PossibilityCoordinate(pos[0], pos[1], possibility);
+                            resume.WeakLinks.Add(coord);
+                            if (ppimn.Count == 2) resume.StrongLinks.Add(coord);
                         }
                     }
                     
-                    map.Add(new PossibilityCoordinate(row, col, possibility), resume);
+                    foreach (var pos in solver.Possibilities[row, col])
+                    {
+                        if (pos != possibility)
+                        {
+                            var coord = new PossibilityCoordinate(row, col, pos);
+                            resume.WeakLinks.Add(coord);
+                            if (solver.Possibilities[row, col].Count == 2) resume.StrongLinks.Add(coord);
+                        }
+                    }
+
+                    if(resume.StrongLinks.Count > 0) map.Add(new PossibilityCoordinate(row, col, possibility), resume);
                 }
             }
         }
@@ -152,48 +75,43 @@ public class AlternatingInferenceChainStrategy : IStrategy
         foreach (var start in map.Keys)
         {
             List<PossibilityCoordinate> visited = new() { start };
-            if (Search(solver, map, visited));
+            if (Search(solver, map, visited)) return;
         }
     }
 
     private bool Search(ISolver solver, Dictionary<PossibilityCoordinate, LinkResume> map,
         List<PossibilityCoordinate> visited)
     {
-        //Always start by strong link, so if visited.Count % 2 == 1 => Strong ; == 0 => Weak, but Strong can be Weak so
-        //always look at strong link
+        //Always start by strong link, so if visited.Count % 2 == 1 => Strong ; == 0 => Weak, but Strong can be Weak
+        var last = visited[^1];
+        if (!map.TryGetValue(last, out var resume)) return false;
+        
         SearchCount++;
-        bool stopped = true;
-        foreach (var friend in map[visited[^1]].StrongLinks)
+
+        if (visited.Count % 2 == 1)
         {
-            if (!visited.Contains(friend))
-            {
-                if (Search(solver, map, new List<PossibilityCoordinate>(visited) { friend })) return true;
-                stopped = false;
-            }
-            else if (visited[0].Equals(friend))
-            {
-                if (ProcessOddLoop(solver, visited)) return true;
-            }
-        }
-        if (visited.Count % 2 == 0)
-        {
-            foreach (var friend in map[visited[^1]].WeakLinks)
+            foreach (var friend in resume.StrongLinks)
             {
                 if (!visited.Contains(friend))
                 {
                     if (Search(solver, map, new List<PossibilityCoordinate>(visited) { friend })) return true;
-                    stopped = false;
                 }
-                else if (visited[0].Equals(friend))
-                {
-                    if (ProcessFullLoop(solver, visited)) return true;
-                }
+                else if (visited.Count >= 4 && visited[0].Equals(friend) && ProcessOddLoop(solver, visited)) return true;
+                
+                if (visited.Count >= 4 && resume.WeakLinks.Contains(visited[0]) &&
+                    ProcessUnCompleteLoop(solver, last)) return true;
             }
         }
-
-        if (stopped)
+        else
         {
-            if (ProcessUnCompleteLoop(solver, visited)) return true;
+            foreach (var friend in resume.WeakLinks)
+            {
+                if (!visited.Contains(friend))
+                {
+                    if (Search(solver, map, new List<PossibilityCoordinate>(visited) { friend })) return true;
+                }
+                else if (visited.Count >= 4 && visited[0].Equals(friend) && ProcessFullLoop(solver, visited)) return true;
+            }
         }
 
         return false;
@@ -201,7 +119,6 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
     private bool ProcessFullLoop(ISolver solver, List<PossibilityCoordinate> visited)
     {
-        if (visited.Count < 4) return false;
         //Always start with a strong link
         var wasProgressMade = false;
         for (int i = 1; i < visited.Count - 1; i += 2)
@@ -237,26 +154,21 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
     }
     
-    private bool ProcessUnCompleteLoop(ISolver solver, List<PossibilityCoordinate> visited)
+    private bool ProcessUnCompleteLoop(ISolver solver, PossibilityCoordinate toRemove)
     {
-        if (visited.Count < 4 || visited.Count % 2 != 0 || visited[0].Possibility != visited[^1].Possibility) return false;
-        var wasProgressMade = false;
-        foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
+        if (solver.RemovePossibility(toRemove.Possibility, toRemove.Row, toRemove.Col,
+                new InferenceChainLog(toRemove.Possibility, toRemove.Row, toRemove.Col, 3)))
         {
-            if (solver.RemovePossibility(visited[0].Possibility, coord.Row, coord.Col,
-                    new InferenceChainLog(visited[0].Possibility, coord.Row, coord.Col, 3)))
-            {
-                ModificationCount++;
-                wasProgressMade = true;
-            }
+            ModificationCount++;
+            return true;
         }
 
-        return wasProgressMade;
+        return false;
     }
     
     private bool ProcessOddLoop(ISolver solver, List<PossibilityCoordinate> visited)
     {
-        if (visited.Count < 4 || visited.Count % 2 != 1) return false;
+        if (visited.Count % 2 != 1) return false;
         if (solver.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col,
                 new InferenceChainLog(visited[0].Possibility, visited[0].Row, visited[0].Col, 2)))
         {
