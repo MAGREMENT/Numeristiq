@@ -2,7 +2,7 @@
 using System.Linq;
 using Model.Strategies.StrategiesUtil;
 
-namespace Model.Strategies.XCycles;
+namespace Model.Strategies;
 
 public class XCyclesStrategy : IStrategy
 {
@@ -146,7 +146,7 @@ public class XCyclesStrategy : IStrategy
             {
                 case 0 :
                     var posRow = solver.PossibilityPositionsInRow(current.Row, number);
-                    if (posRow.Count > 2)
+                    if (posRow.Count >= 2)
                     {
                         foreach (var col in posRow)
                         {
@@ -160,7 +160,7 @@ public class XCyclesStrategy : IStrategy
                     break;
                 case 1 :
                     var posCol = solver.PossibilityPositionsInColumn(current.Col, number);
-                    if (posCol.Count > 2)
+                    if (posCol.Count >= 2)
                     {
                         foreach (var row in posCol)
                         {
@@ -175,7 +175,7 @@ public class XCyclesStrategy : IStrategy
                 case 2 :
                     var posMini = solver.PossibilityPositionsInMiniGrid(current.Row / 3,
                         current.Col / 3, number);
-                    if (posMini.Count > 2)
+                    if (posMini.Count >= 2)
                     {
                         foreach (var pos in posMini)
                         {

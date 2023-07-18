@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 using Model.Strategies.StrategiesUtil;
 
 namespace Model.Strategies;
 
 public class AlternatingInferenceChainStrategy : IStrategy
 {
+    public int ModificationCount { get; private set; }
+    public long SearchCount { get; private set; }
+    
     public void ApplyOnce(ISolver solver)
     {
         Dictionary<PossibilityCoordinate, LinkResume> map = new();
@@ -151,26 +152,27 @@ public class AlternatingInferenceChainStrategy : IStrategy
         foreach (var start in map.Keys)
         {
             List<PossibilityCoordinate> visited = new() { start };
-            Search(solver, map, visited);
+            if (Search(solver, map, visited));
         }
     }
 
-    private void Search(ISolver solver, Dictionary<PossibilityCoordinate, LinkResume> map,
+    private bool Search(ISolver solver, Dictionary<PossibilityCoordinate, LinkResume> map,
         List<PossibilityCoordinate> visited)
     {
         //Always start by strong link, so if visited.Count % 2 == 1 => Strong ; == 0 => Weak, but Strong can be Weak so
         //always look at strong link
+        SearchCount++;
         bool stopped = true;
         foreach (var friend in map[visited[^1]].StrongLinks)
         {
             if (!visited.Contains(friend))
             {
-                Search(solver, map, new List<PossibilityCoordinate>(visited) { friend });
+                if (Search(solver, map, new List<PossibilityCoordinate>(visited) { friend })) return true;
                 stopped = false;
             }
             else if (visited[0].Equals(friend))
             {
-                ProcessOddLoop(solver, visited);
+                if (ProcessOddLoop(solver, visited)) return true;
             }
         }
         if (visited.Count % 2 == 0)
@@ -179,76 +181,108 @@ public class AlternatingInferenceChainStrategy : IStrategy
             {
                 if (!visited.Contains(friend))
                 {
-                    Search(solver, map, new List<PossibilityCoordinate>(visited) { friend });
+                    if (Search(solver, map, new List<PossibilityCoordinate>(visited) { friend })) return true;
                     stopped = false;
                 }
                 else if (visited[0].Equals(friend))
                 {
-                    ProcessFullLoop(solver, visited);
+                    if (ProcessFullLoop(solver, visited)) return true;
                 }
             }
         }
 
         if (stopped)
         {
-            ProcessUnCompleteLoop(solver, visited);
+            if (ProcessUnCompleteLoop(solver, visited)) return true;
         }
+
+        return false;
     }
 
-    private void ProcessFullLoop(ISolver solver, List<PossibilityCoordinate> visited)
+    private bool ProcessFullLoop(ISolver solver, List<PossibilityCoordinate> visited)
     {
-        if (visited.Count <= 3) return;
+        if (visited.Count < 4) return false;
         //Always start with a strong link
+        var wasProgressMade = false;
         for (int i = 1; i < visited.Count - 1; i += 2)
         {
-            ProcessWeakLinkOfFullLoop(solver, visited[i], visited[i + 1]);
+            if (ProcessWeakLinkOfFullLoop(solver, visited[i], visited[i + 1]))
+                wasProgressMade = true;
         }
-        
-        ProcessWeakLinkOfFullLoop(solver, visited[0], visited[^1]);
+
+        if (ProcessWeakLinkOfFullLoop(solver, visited[0], visited[^1]))
+            wasProgressMade = true;
+        return wasProgressMade;
     }
 
-    private void ProcessWeakLinkOfFullLoop(ISolver solver, PossibilityCoordinate one, PossibilityCoordinate two)
+    private bool ProcessWeakLinkOfFullLoop(ISolver solver, PossibilityCoordinate one, PossibilityCoordinate two)
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
-            RemoveAllExcept(solver, one.Row, one.Col, one.Possibility, two.Possibility);
+            return RemoveAllExcept(solver, one.Row, one.Col, one.Possibility, two.Possibility);
         }
-        else
+
+        var wasProgressMade = false;
+        foreach (var coord in one.SharedSeenCells(two))
         {
-            foreach (var coord in one.SharedSeenCells(two))
+            if (solver.RemovePossibility(one.Possibility, coord.Row, coord.Col,
+                    new InferenceChainLog(one.Possibility, coord.Row, coord.Col, 1)))
             {
-                solver.RemovePossibility(one.Possibility, coord.Row, coord.Col,
-                    new InferenceChainLog(one.Possibility, coord.Row, coord.Col, 1));
+                ModificationCount++;
+                wasProgressMade = true;
             }
         }
+
+        return wasProgressMade;
+
     }
     
-    private void ProcessUnCompleteLoop(ISolver solver, List<PossibilityCoordinate> visited)
+    private bool ProcessUnCompleteLoop(ISolver solver, List<PossibilityCoordinate> visited)
     {
-        if (visited.Count <= 3 || visited.Count % 2 != 0 || visited[0].Possibility != visited[^1].Possibility) return;
+        if (visited.Count < 4 || visited.Count % 2 != 0 || visited[0].Possibility != visited[^1].Possibility) return false;
+        var wasProgressMade = false;
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            solver.RemovePossibility(visited[0].Possibility, coord.Row, coord.Col,
-                new InferenceChainLog(visited[0].Possibility, coord.Row, coord.Col, 3));
+            if (solver.RemovePossibility(visited[0].Possibility, coord.Row, coord.Col,
+                    new InferenceChainLog(visited[0].Possibility, coord.Row, coord.Col, 3)))
+            {
+                ModificationCount++;
+                wasProgressMade = true;
+            }
         }
+
+        return wasProgressMade;
     }
     
-    private void ProcessOddLoop(ISolver solver, List<PossibilityCoordinate> visited)
+    private bool ProcessOddLoop(ISolver solver, List<PossibilityCoordinate> visited)
     {
-        if (visited.Count <= 3 || visited.Count % 2 != 1) return;
-        solver.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col,
-            new InferenceChainLog(visited[0].Possibility, visited[0].Row, visited[0].Col, 2));
+        if (visited.Count < 4 || visited.Count % 2 != 1) return false;
+        if (solver.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col,
+                new InferenceChainLog(visited[0].Possibility, visited[0].Row, visited[0].Col, 2)))
+        {
+            ModificationCount++;
+            return true;
+        }
+
+        return false;
     }
 
-    private void RemoveAllExcept(ISolver solver, int row, int col, params int[] except)
+    private bool RemoveAllExcept(ISolver solver, int row, int col, params int[] except)
     {
+        var wasProgressMade = false;
         foreach (var possibility in solver.Possibilities[row, col])
         {
             if (!except.Contains(possibility))
             {
-                solver.RemovePossibility(possibility, row, col, new InferenceChainLog(possibility, row, col, 1));
+                if (solver.RemovePossibility(possibility, row, col, new InferenceChainLog(possibility, row, col, 1)))
+                {
+                    ModificationCount++;
+                    wasProgressMade = true;
+                }
             }
         }
+
+        return wasProgressMade;
     }
 }
 

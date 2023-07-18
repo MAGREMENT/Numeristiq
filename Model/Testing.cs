@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 using Model.Positions;
-using Model.Possibilities;
+using Model.Strategies;
 using Model.Strategies.StrategiesUtil;
 
 namespace Model;
@@ -13,11 +13,31 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        SudokuResolutionTest("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4");
+        CompareAicAlgorithms();
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
+        Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void CompareAicAlgorithms()
+    {
+        long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        Solver solver =
+            new Solver(new Sudoku("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4"));
+        solver.Solve();
+        AlternatingInferenceChainStrategy strat1 = (AlternatingInferenceChainStrategy)
+            solver.GetStrategy(typeof(AlternatingInferenceChainStrategy));
+
+        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        
+        Console.WriteLine("One------------------------------------------------");
+        Console.WriteLine("Sudoku solved : " + solver.Sudoku.IsCorrect());
         Console.WriteLine($"Time taken : {end - start}ms");
+        Console.WriteLine("Modification count : " + strat1.ModificationCount);
+        Console.WriteLine("Search count : " + strat1.SearchCount);
+        Console.WriteLine();
     }
 
     private static void CompareIPossibilitiesImplementation(IPossibilities one, IPossibilities two)

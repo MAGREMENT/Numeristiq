@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Model.Positions;
 using Model.Strategies;
 using Model.Strategies.IntersectionRemoval;
-using Model.Strategies.XCycles;
 
 namespace Model;
 
@@ -76,7 +75,7 @@ public class Solver : ISolver
                 new ThreeDimensionMedusaStrategy(),
                 new XCyclesStrategy(),
                 new AlternatingInferenceChainStrategy(),
-                //new TrialAndMatchStrategy(2)
+                new TrialAndMatchStrategy(2)
             };
         }
     }
@@ -273,6 +272,16 @@ public class Solver : ISolver
         {
             if (Strategies[i].GetType() == type) Strategies[i] = new NoStrategy();
         }
+    }
+
+    public IStrategy GetStrategy(Type type)
+    {
+        foreach (var t in Strategies)
+        {
+            if (t.GetType() == type) return t;
+        }
+
+        return new NoStrategy();
     }
 
 }
