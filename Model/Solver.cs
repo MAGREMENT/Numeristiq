@@ -75,7 +75,8 @@ public class Solver : ISolver
                 new XYChainStrategy(),
                 new ThreeDimensionMedusaStrategy(),
                 new XCyclesStrategy(),
-                new TrialAndMatchStrategy(2)
+                new AlternatingInferenceChainStrategy(),
+                //new TrialAndMatchStrategy(2)
             };
         }
     }

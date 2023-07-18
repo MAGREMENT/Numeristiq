@@ -77,3 +77,29 @@ public interface IColorable
 {
     public Coloring Coloring { get; set; }
 }
+
+public class PossibilityCoordinate : Coordinate
+{
+    public int Possibility { get; }
+    
+    public PossibilityCoordinate(int row, int col, int possibility) : base(row, col)
+    {
+        Possibility = possibility;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Possibility, Row, Col);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not PossibilityCoordinate pc) return false;
+        return pc.Possibility == Possibility && pc.Row == Row && pc.Col == Col;
+    }
+
+    public override string ToString()
+    {
+        return $"[{Row + 1}, {Col + 1} => {Possibility}]";
+    }
+}

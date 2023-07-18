@@ -13,7 +13,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest();
+        SudokuResolutionTest("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -61,13 +61,14 @@ public static class Testing
         {
             using TextReader reader =
                 new StreamReader("C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\SudokuBank.txt", Encoding.UTF8);
+            var counter = 1;
             while (reader.ReadLine() is { } line)
             {
                 Solver solver = new(new Sudoku(line));
                 solver.Solve();
                 
-                if(!solver.Sudoku.IsCorrect()) Console.WriteLine("WRONG ! => " + line);
-                else Console.WriteLine("OK!");
+                if(!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);
+                else Console.WriteLine(counter++ + " OK!");
             }
         }
         catch (IOException e)
