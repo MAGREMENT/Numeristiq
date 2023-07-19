@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
 namespace Model;
 
@@ -8,17 +7,10 @@ public class Sudoku
     public const int GridSize = 9;
     public const int MiniGridSize = 3;
 
-    private readonly SudokuCell[,] _grid = new SudokuCell[GridSize, GridSize];
+    private readonly int[,] _grid = new int[GridSize, GridSize];
 
     public Sudoku()
     {
-        for (int i = 0; i < GridSize; i++)
-        {
-            for (int j = 0; j < GridSize; j++)
-            {
-                _grid[i, j] = new SudokuCell();
-            }
-        }
     }
 
     /**
@@ -26,11 +18,10 @@ public class Sudoku
      * x[1-9] = Fixed digit
      * s[1-9]+s = Number of void cells
      */
-    public Sudoku(string asString, bool allFixed = false)
+    public Sudoku(string asString)
     {
         int row = 0;
         int column = 0;
-        bool nextFixed = allFixed;
         bool isCounting = false;
         string buffer = "";
 
@@ -40,9 +31,6 @@ public class Sudoku
             {
                 switch (c)
                 {
-                    case 'x':
-                        nextFixed = true;
-                        break;
                     case 's' when isCounting:
                     {
                         var newPos = FillOfVoid(row, column, int.Parse(buffer));
@@ -55,8 +43,8 @@ public class Sudoku
                     case 's':
                         isCounting = true;
                         break;
-                    case ' ':
-                        _grid[row, column] = new SudokuCell();
+                    case ' ': case '.' :
+                        _grid[row, column] = 0;
 
                         ProgressInSudoku(ref row, ref column);
                         break;
@@ -65,9 +53,7 @@ public class Sudoku
                         if (isCounting) buffer += c;
                         else
                         {
-                            _grid[row, column] = new SudokuCell(int.Parse(c.ToString()), nextFixed);
-                            nextFixed = allFixed;
-
+                            _grid[row, column] = int.Parse(c.ToString());
                             ProgressInSudoku(ref row, ref column);
                         }
 
@@ -84,7 +70,7 @@ public class Sudoku
             {
                 for (int j = 0; j < GridSize; j++)
                 {
-                    _grid[i, j] = new SudokuCell();
+                    _grid[i, j] = 0;
                 }
             }
         }
@@ -98,8 +84,8 @@ public class Sudoku
         {
             for (int j = 0; j < GridSize; j++)
             {
-                SudokuCell current = _grid[i, j];
-                if (current.Number == 0)
+                int current = _grid[i, j];
+                if (current == 0)
                 {
                     voidCount++;
                 }
@@ -111,7 +97,7 @@ public class Sudoku
                         voidCount = 0;
                     }
 
-                    result += current.IsFixed ? "x" + current.Number : current.Number;
+                    result += current;
                 }
             }
         }
@@ -123,7 +109,7 @@ public class Sudoku
     {
         while (number > 0)
         {
-            _grid[rowStart, columnStart] = new SudokuCell();
+            _grid[rowStart, columnStart] = 0;
             
             ProgressInSudoku(ref rowStart, ref columnStart);
             
@@ -142,50 +128,11 @@ public class Sudoku
         }
     }
 
-    public int[] GetRow(int row)
-    {
-        int[] result = new int[GridSize];
-        for (int i = 0; i < GridSize; i++)
-        {
-            result[i] = _grid[row, i].Number;
-        }
-
-        return result;
-    }
-    
-    public int[] GetColumn(int column)
-    {
-        int[] result = new int[GridSize];
-        for (int i = 0; i < GridSize; i++)
-        {
-            result[i] = _grid[i, column].Number;
-        }
-
-        return result;
-    }
-
-    public int[,] GetMiniGrid(int row, int column)
-    {
-        int[,] result = new int[MiniGridSize, MiniGridSize];
-        int startRow = (row / MiniGridSize) * MiniGridSize;
-        int startColumn = (column / MiniGridSize) * MiniGridSize;
-
-        for (int i = 0; i < MiniGridSize; i++)
-        {
-            for (int j = 0; j < MiniGridSize; j++)
-            {
-                result[i, j] = _grid[startRow + i, startColumn + j].Number;
-            }
-        }
-
-        return result;
-    }
-
     public bool IsComplete()
     {
         foreach (var cell in _grid)
         {
-            if (cell.Number == 0) return false;
+            if (cell == 0) return false;
         }
 
         return true;
@@ -200,9 +147,9 @@ public class Sudoku
             for (int j = 0; j < GridSize; j++)
             {
                 var cell = _grid[i, j];
-                if (cell.Number == 0) return false;
-                if (rowPresence[cell.Number]) return false;
-                rowPresence[cell.Number] = true;
+                if (cell == 0) return false;
+                if (rowPresence[cell]) return false;
+                rowPresence[cell] = true;
             }
             
             bool[] columnPresence = { false, false, false, false, false, false, false, false, false, false };
@@ -210,8 +157,8 @@ public class Sudoku
             for (int j = 0; j < GridSize; j++)
             {
                 var cell = _grid[j, i];
-                if (columnPresence[cell.Number]) return false;
-                columnPresence[cell.Number] = true;
+                if (columnPresence[cell]) return false;
+                columnPresence[cell] = true;
             }
         }
         
@@ -228,8 +175,8 @@ public class Sudoku
                     for (int l = 0; l < 3; l++)
                     {
                         var cell = _grid[i * 3 + k, j * 3 + l];
-                        if (presence[cell.Number]) return false;
-                        presence[cell.Number] = true;
+                        if (presence[cell]) return false;
+                        presence[cell] = true;
                     }
                 }
             }
@@ -240,12 +187,12 @@ public class Sudoku
 
     public int this[int row, int column]
     {
-        get => _grid[row, column].Number;
+        get => _grid[row, column];
 
         set
         {
-            if (value < 0 || value > GridSize || _grid[row, column].IsFixed) return;
-            _grid[row, column].Number = value;
+            if (value is < 0 or > GridSize) return;
+            _grid[row, column] = value;
         }
     }
 
@@ -270,7 +217,7 @@ public class Sudoku
         {
             for (int j = 0; j < GridSize; j++)
             {
-                var num = _grid[i, j].Number;
+                var num = _grid[i, j];
                 result += (num == 0 ? " " : num) + ((j + 1) % 3 == 0 && j != 8 ? "|" : " ");
             }
 
@@ -309,40 +256,5 @@ public class Sudoku
     public override int GetHashCode()
     {
         return _grid.GetHashCode();
-    }
-}
-
-
-public class SudokuCell
-{
-    private int _number;
-
-    public int Number
-    {
-        set
-        {
-            if (!IsFixed) _number = value;
-        }
-
-        get => _number;
-    }
-
-    public bool IsFixed { init; get; }
-
-    public SudokuCell()
-    {
-        _number = 0;
-        IsFixed = false;
-    }
-        
-    public SudokuCell(int number)
-    {
-        _number = number;
-        IsFixed = false;
-    }
-        
-    public SudokuCell(int number, bool isFixed){
-        _number = number;
-        IsFixed = isFixed;
     }
 }

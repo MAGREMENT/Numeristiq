@@ -13,7 +13,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        CompareAicAlgorithms();
+        FullSudokuBankTest("OnlineBank2.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -22,19 +22,14 @@ public static class Testing
 
     private static void CompareAicAlgorithms()
     {
-        long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
         Solver solver =
             new Solver(new Sudoku("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4"));
         solver.Solve();
         AlternatingInferenceChainStrategy strat1 = (AlternatingInferenceChainStrategy)
             solver.GetStrategy(typeof(AlternatingInferenceChainStrategy));
 
-        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        
         Console.WriteLine("One------------------------------------------------");
         Console.WriteLine("Sudoku solved : " + solver.Sudoku.IsCorrect());
-        Console.WriteLine($"Time taken : {end - start}ms");
         Console.WriteLine("Modification count : " + strat1.ModificationCount);
         Console.WriteLine("Search count : " + strat1.SearchCount);
         Console.WriteLine();
@@ -75,26 +70,34 @@ public static class Testing
         Console.WriteLine(two);
     }
 
-    private static void FullSudokuBankTest()
+    private static void FullSudokuBankTest(string fileNameInDataFolder)
     {
+        var counter = 1;
+        var success = 0;
         try
         {
             using TextReader reader =
-                new StreamReader("C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\SudokuBank.txt", Encoding.UTF8);
-            var counter = 1;
+                new StreamReader($"C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\{fileNameInDataFolder}", Encoding.UTF8);
             while (reader.ReadLine() is { } line)
             {
                 Solver solver = new(new Sudoku(line));
                 solver.Solve();
-                
-                if(!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);
-                else Console.WriteLine(counter++ + " OK!");
+
+                if (!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);
+                else
+                {
+                    Console.WriteLine(counter++ + " OK!");
+                    success++;
+                }
             }
         }
         catch (IOException e)
         {
             Console.WriteLine("Reader problem : " + e.Message);
         }
+        
+        Console.WriteLine("\nResult-------------------------------");
+        Console.WriteLine($"Completion rate = {success} / {counter - 1}");
     }
 
     private static void SharedSeenCellsTest()

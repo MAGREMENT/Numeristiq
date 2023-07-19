@@ -9,7 +9,7 @@ public class FireworksStrategy : IStrategy
     public void ApplyOnce(ISolver solver)
     {
 
-        List<Firework> fireworks = new();
+        //List<Firework> fireworks = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -29,7 +29,7 @@ public class FireworksStrategy : IStrategy
                             cellFireworks[2].Possibility);
                 }
                 
-                fireworks.AddRange(cellFireworks);
+                //fireworks.AddRange(cellFireworks);
             }
         }
         

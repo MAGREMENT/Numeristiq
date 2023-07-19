@@ -74,12 +74,13 @@ public class Solver : ISolver
                 new XYChainStrategy(),
                 new ThreeDimensionMedusaStrategy(),
                 new XCyclesStrategy(),
+                //new FireworksStrategy(),
                 new AlternatingInferenceChainStrategy(),
                 //new TrialAndMatchStrategy(2)
             };
         }
     }
-
+    
     private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t)
     {
         Sudoku = s;
