@@ -2,7 +2,11 @@
 
 public class NoStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "No strategy";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.None;
+
+    public void ApplyOnce(ISolverView solverView)
     {
         
     }

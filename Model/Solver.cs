@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Logs;
 using Model.Positions;
 using Model.Strategies;
 using Model.Strategies.IntersectionRemoval;
 
 namespace Model;
 
-public class Solver : ISolver
+public class Solver : ISolverView
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs { get; } = new();
@@ -107,25 +108,36 @@ public class Solver : ISolver
         };
     }
     
-    public bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null)
+    public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
     {
         if (Sudoku[row, col] != 0) return false;
+        
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        Logs.Add(log ?? new BasicNumberAddedLog(number, row, col));
+        Logs.Add(new NumberAddedLog(number, row, col, strategy));
         NumberAdded?.Invoke(row, col);
         return true;
     }
 
-    public bool RemovePossibility(int possibility, int row, int col, ISolverLog? log = null)
+    public void SetDefinitiveNumberByHand(int number, int row, int col)
+    {
+        Sudoku[row, col] = number;
+        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+    }
+
+    public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
     {
         bool buffer = Possibilities[row, col].Remove(possibility);
-        if (buffer)
-        {
-            Logs.Add(log ?? new BasicPossibilityRemovedLog(possibility, row, col));
-            PossibilityRemoved?.Invoke(row, col);
-        }
-        return buffer;
+        if (!buffer) return false;
+        
+        Logs.Add(new PossibilityRemovedLog(possibility, row, col, strategy));
+        PossibilityRemoved?.Invoke(row, col);
+        return true;
+    }
+
+    public void RemovePossibilityByHand(int possibility, int row, int col)
+    {
+        Possibilities[row, col].Remove(possibility);
     }
 
     private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)
@@ -251,7 +263,7 @@ public class Solver : ISolver
         return false;
     }
 
-    public ISolver Copy()
+    public Solver Copy()
     {
         IPossibilities[,] possCopy = new IPossibilities[9, 9];
         for (int row = 0; row < 9; row++)

@@ -5,13 +5,17 @@ namespace Model.Strategies.IntersectionRemoval;
 
 public class RowBoxLineReductionStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "Box line reduction";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Medium;
+    
+    public void ApplyOnce(ISolverView solverView)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppir = solver.PossibilityPositionsInRow(row, number);
+                var ppir = solverView.PossibilityPositionsInRow(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int miniRow = row / 3;
@@ -24,9 +28,8 @@ public class RowBoxLineReductionStrategy : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realRow != row && solver.Sudoku[realRow, realCol] == 0)
-                                solver.RemovePossibility(number, realRow, realCol,
-                                    new IntersectionRemovalLog(number, realRow, realCol));
+                            if (realRow != row && solverView.Sudoku[realRow, realCol] == 0)
+                                solverView.RemovePossibility(number, realRow, realCol, this);
                         }
                     }
                 }

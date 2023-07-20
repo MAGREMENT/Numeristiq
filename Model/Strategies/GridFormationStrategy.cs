@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.DeprecatedStrategies;
 using Model.Positions;
 
 namespace Model.Strategies;
@@ -8,15 +9,34 @@ namespace Model.Strategies;
 /// </summary>
 public class GridFormationStrategy : IStrategy
 {
+    public string Name { get; }
+
+    public StrategyLevel Difficulty { get; }
+    
     private readonly int _type;
     private bool _lookingAtRows;
 
     public GridFormationStrategy(int type)
     {
         _type = type;
+        switch (type)
+        {
+            case 2 : Name = "XWing";
+                Difficulty = StrategyLevel.Hard;
+                break;
+            case 3 : Name = "Swordfish";
+                Difficulty = StrategyLevel.Hard;
+                break;
+            case 4 : Name = "Jellyfish";
+                Difficulty = StrategyLevel.Hard;
+                break;
+            default : Name = "Grid formation unknown";
+                Difficulty = StrategyLevel.None;
+                break;
+        }
     }
 
-    public void ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolverView solverView)
     { 
         for (int number = 1; number <= 9; number++)
         {
@@ -25,37 +45,37 @@ public class GridFormationStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                LinePositions p = solver.PossibilityPositionsInRow(row, number);
+                LinePositions p = solverView.PossibilityPositionsInRow(row, number);
                 if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, row));
             }
-            Search(solver, toSearch, number, _type);
+            Search(solverView, toSearch, number, _type);
             
 
             //Columns
             _lookingAtRows = false;
             for (int col = 0; col < 9; col++)
             {
-                LinePositions p = solver.PossibilityPositionsInColumn(col, number);
+                LinePositions p = solverView.PossibilityPositionsInColumn(col, number);
                 if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, col));
             }
-            Search(solver, toSearch, number, _type);
+            Search(solverView, toSearch, number, _type);
             
         }
     }
 
-    private void Search(ISolver solver, Queue<ValuePositions> toSearch, int number, int count)
+    private void Search(ISolverView solverView, Queue<ValuePositions> toSearch, int number, int count)
     {
         while (toSearch.Count > 0)
         {
             ValuePositions first = toSearch.Dequeue();
             LinePositions visited = new();
             visited.Add(first.Value);
-            RecursiveSearch(solver, new Queue<ValuePositions>(toSearch), visited,
+            RecursiveSearch(solverView, new Queue<ValuePositions>(toSearch), visited,
                 first.Positions, number, count - 1);
         }
     }
 
-    private void RecursiveSearch(ISolver solver, Queue<ValuePositions> toSearch, LinePositions visited, LinePositions current,
+    private void RecursiveSearch(ISolverView solverView, Queue<ValuePositions> toSearch, LinePositions visited, LinePositions current,
         int number, int count)
     {
         while (toSearch.Count > 0)
@@ -65,18 +85,18 @@ public class GridFormationStrategy : IStrategy
             visited.Add(dequeue.Value);
             if (count - 1 == 0)
             {
-                if (newCurrent.Count == _type) Process(solver, visited, newCurrent, number);
+                if (newCurrent.Count == _type) Process(solverView, visited, newCurrent, number);
             }
             else
             {
                 if(newCurrent.Count <= _type)
-                    RecursiveSearch(solver, new Queue<ValuePositions>(toSearch), visited.Copy(),
+                    RecursiveSearch(solverView, new Queue<ValuePositions>(toSearch), visited.Copy(),
                         newCurrent, number, count - 1);
             }
         }
     }
 
-    private void Process(ISolver solver, LinePositions visited, LinePositions toRemove, int number)
+    private void Process(ISolverView solverView, LinePositions visited, LinePositions toRemove, int number)
     {
         foreach (var first in toRemove)
         {
@@ -85,21 +105,9 @@ public class GridFormationStrategy : IStrategy
                 if (visited.Peek(other)) continue;
                 
                 int[] pos = _lookingAtRows ? new[] { other, first } : new[] { first, other };
-                if (solver.Possibilities[pos[0], pos[1]].Peek(number))
-                    solver.RemovePossibility(number, pos[0], pos[1],
-                        new GridFormationLog(number, pos[0], pos[1], _type));
+                if (solverView.Possibilities[pos[0], pos[1]].Peek(number))
+                    solverView.RemovePossibility(number, pos[0], pos[1], this);
             }
         }
-    }
-}
-
-public class GridFormationLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; } = StrategyLevel.Hard;
-
-    public GridFormationLog(int number, int row, int col, int type)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of grid formation {type}";
     }
 }

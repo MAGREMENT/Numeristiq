@@ -5,14 +5,36 @@ namespace Model.Strategies;
 
 public class HiddenPossibilityStrategy : IStrategy
 {
+    public string Name { get; }
+
+    public StrategyLevel Difficulty { get; }
+    
     private readonly int _type;
 
     public HiddenPossibilityStrategy(int type)
     {
         _type = type;
+        switch (type)
+        {
+            case 1 : Name = "Hidden single";
+                Difficulty = StrategyLevel.Basic;
+                break;
+            case 2 : Name = "Hidden double";
+                Difficulty = StrategyLevel.Easy;
+                break;
+            case 3 : Name = "Hidden triple";
+                Difficulty = StrategyLevel.Easy;
+                break;
+            case 4 : Name = "Hidden quad";
+                Difficulty = StrategyLevel.Medium;
+                break;
+            default : Name = "Hidden unknown";
+                Difficulty = StrategyLevel.None;
+                break;
+        }
     }
     
-    public void ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolverView solverView)
     {
         //Rows
         for (int row = 0; row < 9; row++)
@@ -20,7 +42,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = solver.PossibilityPositionsInRow(row, number);
+                var positions = solverView.PossibilityPositionsInRow(row, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -36,7 +58,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     foreach (var col in entry.Key)
                     {
-                        RemoveAllPossibilitiesExcept(solver, row, col, entry.Value);
+                        RemoveAllPossibilitiesExcept(solverView, row, col, entry.Value);
                     }
                 }
             }
@@ -48,7 +70,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = solver.PossibilityPositionsInColumn(col, number);
+                var positions = solverView.PossibilityPositionsInColumn(col, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -64,7 +86,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     foreach (var row in entry.Key)
                     {
-                        RemoveAllPossibilitiesExcept(solver, row, col, entry.Value);
+                        RemoveAllPossibilitiesExcept(solverView, row, col, entry.Value);
                     }
                 }
             }
@@ -78,7 +100,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
                 for (int number = 1; number <= 9; number++)
                 {
-                    var positions = PossiblePositionsInMiniGrid(solver, miniRow, miniCol, number);
+                    var positions = PossiblePositionsInMiniGrid(solverView, miniRow, miniCol, number);
                     if (positions.Count == _type)
                     {
                         if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -97,7 +119,7 @@ public class HiddenPossibilityStrategy : IStrategy
                             int row = miniRow * 3 + gridNumber / 3;
                             int col = miniCol * 3 + gridNumber % 3;
                             
-                            RemoveAllPossibilitiesExcept(solver, row, col, entry.Value);
+                            RemoveAllPossibilitiesExcept(solverView, row, col, entry.Value);
                         }
                     }
                 }
@@ -105,7 +127,7 @@ public class HiddenPossibilityStrategy : IStrategy
         }
     }
 
-    private LinePositions PossiblePositionsInMiniGrid(ISolver solver, int miniRow, int miniCol, int number)
+    private LinePositions PossiblePositionsInMiniGrid(ISolverView solverView, int miniRow, int miniCol, int number)
     {
         LinePositions result = new();
         for (int gridNumber = 0; gridNumber < 9; gridNumber++)
@@ -113,45 +135,23 @@ public class HiddenPossibilityStrategy : IStrategy
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
             
-            if (solver.Sudoku[row, col] == number) return new LinePositions();
-            if (solver.Sudoku[row, col] == 0 &&
-                solver.Possibilities[row, col].Peek(number)) result.Add(gridNumber);
+            if (solverView.Sudoku[row, col] == number) return new LinePositions();
+            if (solverView.Sudoku[row, col] == 0 &&
+                solverView.Possibilities[row, col].Peek(number)) result.Add(gridNumber);
         }
 
         return result;
     }
 
-    private void RemoveAllPossibilitiesExcept(ISolver solver, int row, int col, List<int> except)
+    private void RemoveAllPossibilitiesExcept(ISolverView solverView, int row, int col, List<int> except)
     {
-        if (_type == 1) solver.AddDefinitiveNumber(except[0], row, col,
-            new HiddenPossibilityLog(row, col, except[0], _type));
+        if (_type == 1) solverView.AddDefinitiveNumber(except[0], row, col, this);
         for (int i = 1; i <= 9; i++)
         {
             if (!except.Contains(i))
             {
-                solver.RemovePossibility(i, row, col, new HiddenPossibilityLog(row, col, i, _type));
+                solverView.RemovePossibility(i, row, col, this);
             }
         }
-    }
-}
-
-public class HiddenPossibilityLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; }
-
-    public HiddenPossibilityLog(int row, int col, int number, int type)
-    {
-        if (type == 1)
-        {
-            AsString = AsString = $"[{row + 1}, {col + 1}] {number} added as definitive because of hidden {type}";
-            Level = StrategyLevel.Basic;
-        }
-        else
-        {
-            AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of hidden {type}";
-            Level = (StrategyLevel)type;
-        }
-        
     }
 }

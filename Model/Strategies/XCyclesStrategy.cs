@@ -1,12 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Strategies.StrategiesUtil;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
 public class XCyclesStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "XCycles";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+
+    public void ApplyOnce(ISolverView solverView)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -15,7 +19,7 @@ public class XCyclesStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                var pos = solver.PossibilityPositionsInRow(row, n);
+                var pos = solverView.PossibilityPositionsInRow(row, n);
                 if (pos.Count == 2)
                 {
                     int[] array = pos.ToArray();
@@ -27,7 +31,7 @@ public class XCyclesStrategy : IStrategy
             //Cols
             for (int col = 0; col < 9; col++)
             {
-                var pos = solver.PossibilityPositionsInColumn(col, n);
+                var pos = solverView.PossibilityPositionsInColumn(col, n);
                 if (pos.Count == 2)
                 {
                     int[] array = pos.ToArray();
@@ -41,7 +45,7 @@ public class XCyclesStrategy : IStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var pos = solver.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
+                    var pos = solverView.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
                     if (pos.Count == 2)
                     {
                         int[][] array = pos.ToArray();
@@ -60,11 +64,11 @@ public class XCyclesStrategy : IStrategy
                     List<Coordinate> visited = new() { start };
                     var next = strongLinks[type][start];
                     visited.Add(next);
-                    foreach (var coord in SearchForWeakLink(solver, strongLinks, next, n))
+                    foreach (var coord in SearchForWeakLink(solverView, strongLinks, next, n))
                     {
                         if (!visited.Contains(coord.Coordinate))
                         {
-                            Search(solver, strongLinks, coord, new List<Coordinate>(visited), n);
+                            Search(solverView, strongLinks, coord, new List<Coordinate>(visited), n);
                         }
                     }
                 }
@@ -72,7 +76,7 @@ public class XCyclesStrategy : IStrategy
         }
     }
 
-    private void Search(ISolver solver, Dictionary<Coordinate, Coordinate>[] strongLinks, CoordinateAndType current,
+    private void Search(ISolverView solverView, Dictionary<Coordinate, Coordinate>[] strongLinks, CoordinateAndType current,
         List<Coordinate> visited, int number)
     {
         visited.Add(current.Coordinate);
@@ -80,62 +84,58 @@ public class XCyclesStrategy : IStrategy
         var next = strongLinks[current.Type][current.Coordinate];
         if (visited.Contains(next))
         {
-            if (visited.Count >= 4 && visited[0].Equals(next)) ProcessOddLoop(solver, visited, number);
+            if (visited.Count >= 4 && visited[0].Equals(next)) ProcessOddLoop(solverView, visited, number);
             return;
         }
         visited.Add(next);
         
         bool noMore = true;
-        foreach (var coord in SearchForWeakLink(solver, strongLinks, next, number))
+        foreach (var coord in SearchForWeakLink(solverView, strongLinks, next, number))
         {
             if (!visited.Contains(coord.Coordinate))
             {
-                Search(solver, strongLinks, coord, new List<Coordinate>(visited), number);
+                Search(solverView, strongLinks, coord, new List<Coordinate>(visited), number);
                 noMore = false;
             }
             else if (coord.Coordinate.Equals(visited[0]))
             {
-                ProcessFullLoop(solver, visited, number);
+                ProcessFullLoop(solverView, visited, number);
                 noMore = false;
             }
         }
-        if(noMore) ProcessUnCompleteLoop(solver, visited, number);
+        if(noMore) ProcessUnCompleteLoop(solverView, visited, number);
     }
 
-    private void ProcessFullLoop(ISolver solver, List<Coordinate> visited, int number)
+    private void ProcessFullLoop(ISolverView solverView, List<Coordinate> visited, int number)
     {
         for (int i = 1; i < visited.Count - 1; i += 2)
         {
             foreach (var coord in visited[i].SharedSeenCells(visited[i + 1]))
             {
-                solver.RemovePossibility(number, coord.Row, coord.Col,
-                    new XCyclesLog(number, coord.Row, coord.Col, 1));
+                solverView.RemovePossibility(number, coord.Row, coord.Col, this);
             }
         }
         
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            solver.RemovePossibility(number, coord.Row, coord.Col,
-                new XCyclesLog(number, coord.Row, coord.Col, 1));
+            solverView.RemovePossibility(number, coord.Row, coord.Col, this);
         }
     }
 
-    private void ProcessUnCompleteLoop(ISolver solver, List<Coordinate> visited, int number)
+    private void ProcessUnCompleteLoop(ISolverView solverView, List<Coordinate> visited, int number)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            solver.RemovePossibility(number, coord.Row, coord.Col,
-                new XCyclesLog(number, coord.Row, coord.Col, 3));
+            solverView.RemovePossibility(number, coord.Row, coord.Col, this);
         }
     }
 
-    private void ProcessOddLoop(ISolver solver, List<Coordinate> visited, int number)
+    private void ProcessOddLoop(ISolverView solverView, List<Coordinate> visited, int number)
     {
-        solver.AddDefinitiveNumber(number, visited[0].Row, visited[0].Col,
-            new XCyclesLog(number, visited[0].Row, visited[0].Col, 2));
+        solverView.AddDefinitiveNumber(number, visited[0].Row, visited[0].Col, this);
     }
 
-    private IEnumerable<CoordinateAndType> SearchForWeakLink(ISolver solver, Dictionary<Coordinate, Coordinate>[] strongLinks,
+    private IEnumerable<CoordinateAndType> SearchForWeakLink(ISolverView solverView, Dictionary<Coordinate, Coordinate>[] strongLinks,
         Coordinate current, int number)
     {
         HashSet<CoordinateAndType> result = new();
@@ -145,7 +145,7 @@ public class XCyclesStrategy : IStrategy
             switch (i)
             {
                 case 0 :
-                    var posRow = solver.PossibilityPositionsInRow(current.Row, number);
+                    var posRow = solverView.PossibilityPositionsInRow(current.Row, number);
                     if (posRow.Count >= 2)
                     {
                         foreach (var col in posRow)
@@ -159,7 +159,7 @@ public class XCyclesStrategy : IStrategy
 
                     break;
                 case 1 :
-                    var posCol = solver.PossibilityPositionsInColumn(current.Col, number);
+                    var posCol = solverView.PossibilityPositionsInColumn(current.Col, number);
                     if (posCol.Count >= 2)
                     {
                         foreach (var row in posCol)
@@ -173,7 +173,7 @@ public class XCyclesStrategy : IStrategy
 
                     break;
                 case 2 :
-                    var posMini = solver.PossibilityPositionsInMiniGrid(current.Row / 3,
+                    var posMini = solverView.PossibilityPositionsInMiniGrid(current.Row / 3,
                         current.Col / 3, number);
                     if (posMini.Count >= 2)
                     {
@@ -207,15 +207,4 @@ public class CoordinateAndType
 
     public Coordinate Coordinate { get; }
     public int Type { get; }
-}
-
-public class XCyclesLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; } = StrategyLevel.Hard;
-
-    public XCyclesLog(int possibility, int row, int col, int type)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {possibility} removed from possibilities because of X-cycles type {type}";
-    }
 }

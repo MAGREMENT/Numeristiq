@@ -2,32 +2,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Strategies.StrategiesUtil;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
 public class XYChainStrategy : IStrategy
 {
+    public string Name { get; } = "XYChain";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    
     private readonly HashSet<PossibilityCoordinate> _used = new ();
     
-    public void ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolverView solverView)
     
     {
-        var map = new BiValueMap(solver);
+        var map = new BiValueMap(solverView);
         _used.Clear();
 
         foreach (var start in map)
         {
             if (_used.Contains(start)) continue;
-            Search(solver, map, new HashSet<PossibilityCoordinate>(), start, start);
+            Search(solverView, map, new HashSet<PossibilityCoordinate>(), start, start);
         }
     }
 
-    private void Search(ISolver solver, BiValueMap map, HashSet<PossibilityCoordinate> visited,
+    private void Search(ISolverView solverView, BiValueMap map, HashSet<PossibilityCoordinate> visited,
         PossibilityCoordinate start, PossibilityCoordinate current)
     {
         PossibilityCoordinate friend = map.AssociatedCoordinate(current);
-        if(friend.Possibility == start.Possibility) Process(solver, start, friend);
+        if(friend.Possibility == start.Possibility) Process(solverView, start, friend);
         
         visited.Add(current);
         visited.Add(friend);
@@ -36,17 +40,16 @@ public class XYChainStrategy : IStrategy
         {
             if (!visited.Contains(shared) && shared.ShareAUnit(current))
             {
-                Search(solver, map, new HashSet<PossibilityCoordinate>(visited), start, shared);
+                Search(solverView, map, new HashSet<PossibilityCoordinate>(visited), start, shared);
             }
         }
     }
 
-    private void Process(ISolver solver, PossibilityCoordinate start, PossibilityCoordinate end)
+    private void Process(ISolverView solverView, PossibilityCoordinate start, PossibilityCoordinate end)
     {
         foreach (var coord in start.SharedSeenCells(end))
         {
-            solver.RemovePossibility(start.Possibility, coord.Row, coord.Col,
-                new XYChainLog(start.Possibility, coord.Row, coord.Col));
+            solverView.RemovePossibility(start.Possibility, coord.Row, coord.Col, this);
         }
 
         _used.Add(end);
@@ -58,15 +61,15 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
     private readonly Dictionary<PossibilityCoordinate, PossibilityCoordinate> _cells = new();
     private readonly Dictionary<int, HashSet<PossibilityCoordinate>> _map = new();
 
-    public BiValueMap(ISolver solver)
+    public BiValueMap(ISolverView solverView)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solver.Possibilities[row, col].Count == 2)
+                if (solverView.Possibilities[row, col].Count == 2)
                 {
-                    int[] possibilities = solver.Possibilities[row, col].ToArray();
+                    int[] possibilities = solverView.Possibilities[row, col].ToArray();
                     
                     PossibilityCoordinate first = new PossibilityCoordinate(row, col, possibilities[0]);
                     PossibilityCoordinate second = new PossibilityCoordinate(row, col, possibilities[1]);
@@ -102,16 +105,5 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
     public PossibilityCoordinate AssociatedCoordinate(PossibilityCoordinate coord)
     {
         return _cells[coord];
-    }
-}
-
-public class XYChainLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; } = StrategyLevel.Hard;
-
-    public XYChainLog(int number, int row, int col)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of XYChain";
     }
 }

@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Width="300" Orientation="Vertical">
-        <TextBlock x:Name="Title" FontSize="25" FontWeight="Heavy" Width="300" TextAlignment="Center"/>
+        <TextBlock x:Name="Title" FontSize="22" FontWeight="Heavy" Width="300" TextAlignment="Center" TextWrapping="Wrap"/>
         <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
     </StackPanel>
 </UserControl>

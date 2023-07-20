@@ -2,8 +2,12 @@
 
 namespace Model.Strategies;
 
-public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7      3s4s1  3  28   4   6   89  1  5s4s2s6s6 8942   2  3  6
+public class TrialAndMatchStrategy : IStrategy
 {
+    public string Name { get; } = "Trial and match";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.ByTrial;
+
     private readonly int _maxNumberOfPossibility;
 
     public TrialAndMatchStrategy(int num)
@@ -11,31 +15,31 @@ public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7
         _maxNumberOfPossibility = num;
     }
     
-    public void ApplyOnce(ISolver solver)
+    public void ApplyOnce(ISolverView solverView)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solver.Sudoku[row, col] == 0 &&
-                    solver.Possibilities[row, col].Count <= _maxNumberOfPossibility)
+                if (solverView.Sudoku[row, col] == 0 &&
+                    solverView.Possibilities[row, col].Count <= _maxNumberOfPossibility)
                 {
-                    if(ApplyChanges(solver, RunSimulation(solver, row, col,
-                        solver.Possibilities[row, col]))) return;
+                    if(ApplyChanges(solverView, RunSimulation(solverView, row, col,
+                        solverView.Possibilities[row, col]))) return;
                 }
             }
         }
     }
 
-    private int[,] RunSimulation(ISolver solver, int row, int col, IEnumerable<int> possibilities)
+    private int[,] RunSimulation(ISolverView solverView, int row, int col, IEnumerable<int> possibilities)
     {
         int[,]? commonChanges = null;
 
         foreach (var possibility in possibilities)
         {
-            ISolver simulation = solver.Copy();
+            Solver simulation = solverView.Copy();
             simulation.ExcludeStrategy(typeof(TrialAndMatchStrategy));
-            simulation.AddDefinitiveNumber(possibility, row, col);
+            simulation.AddDefinitiveNumber(possibility, row, col, this);
             simulation.Solve();
 
             if (commonChanges is null)
@@ -46,7 +50,7 @@ public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7
                 {
                     for (int c = 0; c < 9; c++)
                     {
-                        if (solver.Sudoku[r, c] == 0 && simulation.Sudoku[r, c] != 0)
+                        if (solverView.Sudoku[r, c] == 0 && simulation.Sudoku[r, c] != 0)
                         {
                             commonChanges[r, c] = simulation.Sudoku[r, c];
                         }
@@ -71,29 +75,18 @@ public class TrialAndMatchStrategy : IStrategy //TODO fix with  4  8  9   5349 7
         return commonChanges!;
     }
 
-    private static bool ApplyChanges(ISolver solver, int[,] toApply)
+    private bool ApplyChanges(ISolverView solverView, int[,] toApply)
     {
         bool wasProgressMade = false;
         for (int r = 0; r < 9; r++)
         {
             for (int c = 0; c < 9; c++)
             {
-                if (toApply[r, c] != 0 && solver.AddDefinitiveNumber(toApply[r, c], r, c,
-                    new TrialAndMatchLog(toApply[r, c], r, c))) wasProgressMade = true;
+                if (toApply[r, c] != 0 && solverView.AddDefinitiveNumber(toApply[r, c], r, c, 
+                        this)) wasProgressMade = true;
             }
         }
 
         return wasProgressMade;
-    }
-}
-
-public class TrialAndMatchLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level => StrategyLevel.ByTrial;
-
-    public TrialAndMatchLog(int number, int row, int col)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} added as definitive by trial and match";
     }
 }

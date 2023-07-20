@@ -2,19 +2,23 @@
 
 public class CellSinglePossibilityStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "Single possibility";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
+    
+    public void ApplyOnce(ISolverView solverView)
     {
         for (int i = 0; i < 9; i++) 
         {
             for (int j = 0; j < 9; j++)
             {
-                if (solver.Sudoku[i, j] != 0) continue;
+                if (solverView.Sudoku[i, j] != 0) continue;
                 
-                if (solver.Possibilities[i, j].Count == 1)
+                if (solverView.Possibilities[i, j].Count == 1)
                 {
-                    int n = solver.Possibilities[i, j].GetFirst();
-                    solver.AddDefinitiveNumber(n,
-                        i, j, new SinglePossibilityLog(n, i, j));
+                    int n = solverView.Possibilities[i, j].GetFirst();
+                    solverView.AddDefinitiveNumber(n,
+                        i, j, this);
                 }
             }
         }

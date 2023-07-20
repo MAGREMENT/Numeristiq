@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Windows.Documents;
+﻿using System.Collections.Generic;
 using Model.Positions;
 using Model.Possibilities;
 
 namespace Model;
 
-public interface ISolver
+public interface ISolverView
 {
-    bool AddDefinitiveNumber(int number, int row, int col, ISolverLog? log = null);
+    bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy);
 
-    bool RemovePossibility(int possibility, int row, int col, ISolverLog? log = null);
+    bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
 
     LinePositions PossibilityPositionsInColumn(int col, int number);
 
@@ -22,14 +19,8 @@ public interface ISolver
     public Sudoku Sudoku { get; }
 
     public IPossibilities[,] Possibilities { get; }
-    
-    public List<ISolverLog> Logs { get; }
 
-    public ISolver Copy();
-
-    public void Solve();
-
-    public void ExcludeStrategy(Type type);
+    public Solver Copy();
 }
 
 public interface IPossibilities : IEnumerable<int>
@@ -64,32 +55,7 @@ public interface IPossibilities : IEnumerable<int>
     }
 }
 
-public interface ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; }
-}
 
-public class BasicNumberAddedLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level => StrategyLevel.None;
 
-    public BasicNumberAddedLog(int number, int row, int col)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} added as definitive";
-    }
 
-}
 
-public class BasicPossibilityRemovedLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level => StrategyLevel.None;
-
-    public BasicPossibilityRemovedLog(int number, int row, int col)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities";
-    }
-
-}

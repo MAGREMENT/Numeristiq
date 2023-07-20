@@ -1,11 +1,15 @@
 ﻿using System.Collections.Generic;
-using Model.Strategies.StrategiesUtil;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
 public class SimpleColoringStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "Simple coloring";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+
+    public void ApplyOnce(ISolverView solverView)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -14,13 +18,13 @@ public class SimpleColoringStrategy : IStrategy
             {
                 for (int col = 0; col < 9; col++)
                 {
-                    if (solver.Possibilities[row, col].Peek(number))
+                    if (solverView.Possibilities[row, col].Peek(number))
                     {
                         ColoringCoordinate current = new(row, col);
                         if (DoesAnyChainContains(chains, current)) continue;
                         
                         ColorableWeb<ColoringCoordinate> web = new();
-                        InitChain(solver, web, current, number);
+                        InitChain(solverView, web, current, number);
                         if (web.Count >= 2)
                         {
                             web.StartColoring();
@@ -32,13 +36,13 @@ public class SimpleColoringStrategy : IStrategy
 
             foreach (var chain in chains)
             {
-                SearchForTwiceInTheSameUnit(solver, number, chain);
-                SearchForTwoColorsElsewhere(solver, number, chain);
+                SearchForTwiceInTheSameUnit(solverView, number, chain);
+                SearchForTwoColorsElsewhere(solverView, number, chain);
             }
         }
     }
 
-    private void SearchForTwiceInTheSameUnit(ISolver solver, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwiceInTheSameUnit(ISolverView solverView, int number, ColorableWeb<ColoringCoordinate> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
@@ -47,11 +51,9 @@ public class SimpleColoringStrategy : IStrategy
                 foreach (var coord in web)
                 {
                     if (coord.Coloring == one.Coloring)
-                        solver.RemovePossibility(number, coord.Row, coord.Col,
-                            new SimpleColoringLog(coord.Row, coord.Col, number, false, true));
+                        solverView.RemovePossibility(number, coord.Row, coord.Col, this);
                     else
-                        solver.AddDefinitiveNumber(number, coord.Row, coord.Col,
-                            new SimpleColoringLog(coord.Row, coord.Col, number, true, true));
+                        solverView.AddDefinitiveNumber(number, coord.Row, coord.Col, this);
                 }
             }
 
@@ -59,13 +61,13 @@ public class SimpleColoringStrategy : IStrategy
         });
     }
 
-    private void SearchForTwoColorsElsewhere(ISolver solver, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwoColorsElsewhere(ISolverView solverView, int number, ColorableWeb<ColoringCoordinate> web)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solver.Possibilities[row, col].Peek(number))
+                if (solverView.Possibilities[row, col].Peek(number))
                 {
                     ColoringCoordinate current = new(row, col);
                     if (web.Contains(current)) continue;
@@ -78,8 +80,7 @@ public class SimpleColoringStrategy : IStrategy
                             onAndOff[(int)(coord.Coloring - 1)] = true;
                             if (onAndOff[0] && onAndOff[1])
                             {
-                                solver.RemovePossibility(number, row, col,
-                                    new SimpleColoringLog(row, col, number, false, false));
+                                solverView.RemovePossibility(number, row, col, this);
                                 break;
                             }
                         }
@@ -89,9 +90,9 @@ public class SimpleColoringStrategy : IStrategy
         }
     }
 
-    private void InitChain(ISolver solver, ColorableWeb<ColoringCoordinate> web, ColoringCoordinate current, int number)
+    private void InitChain(ISolverView solverView, ColorableWeb<ColoringCoordinate> web, ColoringCoordinate current, int number)
     {
-        var ppir = solver.PossibilityPositionsInRow(current.Row, number);
+        var ppir = solverView.PossibilityPositionsInRow(current.Row, number);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
@@ -99,13 +100,13 @@ public class SimpleColoringStrategy : IStrategy
                 if (col != current.Col)
                 {
                     ColoringCoordinate next = new ColoringCoordinate(current.Row, col);
-                    if(web.AddLink(current, next)) InitChain(solver, web, next, number);
+                    if(web.AddLink(current, next)) InitChain(solverView, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppic = solver.PossibilityPositionsInColumn(current.Col, number);
+        var ppic = solverView.PossibilityPositionsInColumn(current.Col, number);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
@@ -113,13 +114,13 @@ public class SimpleColoringStrategy : IStrategy
                 if (row != current.Row)
                 {
                     ColoringCoordinate next = new ColoringCoordinate(row, current.Col);
-                    if(web.AddLink(current, next)) InitChain(solver, web, next, number);
+                    if(web.AddLink(current, next)) InitChain(solverView, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppimn = solver.PossibilityPositionsInMiniGrid(current.Row / 3, current.Col / 3, number);
+        var ppimn = solverView.PossibilityPositionsInMiniGrid(current.Row / 3, current.Col / 3, number);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
@@ -127,7 +128,7 @@ public class SimpleColoringStrategy : IStrategy
                 if (pos[0] != current.Row && pos[1] != current.Col)
                 {
                     ColoringCoordinate next = new ColoringCoordinate(pos[0], pos[1]);
-                    if(web.AddLink(current, next)) InitChain(solver, web, next, number);
+                    if(web.AddLink(current, next)) InitChain(solverView, web, next, number);
                     break;
                 }
             }
@@ -142,19 +143,5 @@ public class SimpleColoringStrategy : IStrategy
         }
 
         return false;
-    }
-}
-
-public class SimpleColoringLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; } = StrategyLevel.Hard;
-
-    public SimpleColoringLog(int row, int col, int number, bool added, bool twiceInUnitRule)
-    {
-        string rule = twiceInUnitRule ? "Twice in unit rule" : "Two elsewhere rule";
-        string action = added ? "added as definitive number" : "removed from possibilities";
-        AsString = $"[{row + 1}, {col + 1}] {number} {action} because of simple coloring " +
-                   $": {rule}";
     }
 }

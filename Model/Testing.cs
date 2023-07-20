@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using Model.Positions;
 using Model.Strategies;
-using Model.Strategies.StrategiesUtil;
+using Model.StrategiesUtil;
 
 namespace Model;
 

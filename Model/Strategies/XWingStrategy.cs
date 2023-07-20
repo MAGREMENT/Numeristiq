@@ -5,7 +5,11 @@ namespace Model.Strategies;
 
 public class XWingStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "XWing";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+
+    public void ApplyOnce(ISolverView solverView)
     {
         Dictionary<LinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)
@@ -14,12 +18,12 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int row = 0; row < 9; row++)
             {
-                var ppir = solver.PossibilityPositionsInRow(row, n);
+                var ppir = solverView.PossibilityPositionsInRow(row, n);
                 if (ppir.Count == 2)
                 {
                     if (!dict.TryAdd(ppir, row))
                     {
-                        RemoveFromColumns(solver, ppir, dict[ppir], row, n);
+                        RemoveFromColumns(solverView, ppir, dict[ppir], row, n);
                     }
                 }
             }
@@ -28,19 +32,19 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int col = 0; col < 9; col++)
             {
-                var ppic = solver.PossibilityPositionsInColumn(col, n);
+                var ppic = solverView.PossibilityPositionsInColumn(col, n);
                 if (ppic.Count == 2)
                 {
                     if (!dict.TryAdd(ppic, col))
                     {
-                        RemoveFromRows(solver, ppic, dict[ppic], col, n);
+                        RemoveFromRows(solverView, ppic, dict[ppic], col, n);
                     }
                 }
             }
         }
     }
 
-    private void RemoveFromColumns(ISolver solver, IEnumerable<int> cols, int row1, int row2, int number)
+    private void RemoveFromColumns(ISolverView solverView, IEnumerable<int> cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -49,13 +53,13 @@ public class XWingStrategy : IStrategy
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var col in cols)
                 {
-                    solver.RemovePossibility(number, row, col, new XWingLog(number, row, col));
+                    solverView.RemovePossibility(number, row, col, this);
                 }
             }
         }
     }
 
-    private void RemoveFromRows(ISolver solver, IEnumerable<int> rows, int col1, int col2, int number)
+    private void RemoveFromRows(ISolverView solverView, IEnumerable<int> rows, int col1, int col2, int number)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -64,20 +68,9 @@ public class XWingStrategy : IStrategy
                 // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var row in rows)
                 {
-                    solver.RemovePossibility(number, row, col, new XWingLog(number, row, col));
+                    solverView.RemovePossibility(number, row, col, this);
                 }
             }
         }
-    }
-}
-
-public class XWingLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; } = StrategyLevel.Hard;
-
-    public XWingLog(int number, int row, int col)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of X-Wings";
     }
 }

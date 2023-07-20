@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Model.Strategies.StrategiesUtil;
+namespace Model.StrategiesUtil;
 
 public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable
 {
@@ -16,7 +16,7 @@ public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable
         return _vertices.ContainsKey(coord);
     }
 
-    public static List<ColorableWeb<T>> AllChainsFrom(ISolver solver)
+    public static List<ColorableWeb<T>> AllChainsFrom(ISolverView solverView)
     {
         return new List<ColorableWeb<T>>(); //TODO
     }

@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Strategies.StrategiesUtil;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
 // ReSharper disable once InconsistentNaming
 public class XYWingStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "XYWing";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public void ApplyOnce(ISolverView solverView)
     {
-        var toSearch = AllCellsWith2Possibilities(solver);
+        var toSearch = AllCellsWith2Possibilities(solverView);
         foreach(var current in toSearch)
         {
             var unitsDispersion = MatchingUnitDispersion(current, toSearch);
@@ -19,20 +22,20 @@ public class XYWingStrategy : IStrategy
             {
                 Coordinate one = unitsDispersion[0].Dequeue();
                 
-                if (ShareAtLeastOne(solver.Possibilities[one.Row, one.Col],
-                        solver.Possibilities[current.Row, current.Col]))
+                if (ShareAtLeastOne(solverView.Possibilities[one.Row, one.Col],
+                        solverView.Possibilities[current.Row, current.Col]))
                 {
                     foreach (var two in unitsDispersion[1])
                     {
-                        if(IsYWing(solver, current, one, two)
-                           && ProcessYWing(solver, current, one, two))
+                        if(IsYWing(solverView, current, one, two)
+                           && ProcessXYWing(solverView, current, one, two))
                             return;
                     }
                     
                     foreach (var two in unitsDispersion[2])
                     {
-                        if(IsYWing(solver, current, one, two)
-                           && ProcessYWing(solver, current, one, two))
+                        if(IsYWing(solverView, current, one, two)
+                           && ProcessXYWing(solverView, current, one, two))
                             return;
                     }
                 }
@@ -43,13 +46,13 @@ public class XYWingStrategy : IStrategy
             {
                 Coordinate one = unitsDispersion[1].Dequeue();
                 
-                if (ShareAtLeastOne(solver.Possibilities[one.Row, one.Col],
-                        solver.Possibilities[current.Row, current.Col]))
+                if (ShareAtLeastOne(solverView.Possibilities[one.Row, one.Col],
+                        solverView.Possibilities[current.Row, current.Col]))
                 {
                     foreach (var two in unitsDispersion[2])
                     {
-                        if (IsYWing(solver, current, one, two)
-                            && ProcessYWing(solver, current, one, two))
+                        if (IsYWing(solverView, current, one, two)
+                            && ProcessXYWing(solverView, current, one, two))
                             return;
                     }
                 }
@@ -95,17 +98,17 @@ public class XYWingStrategy : IStrategy
     /// 3) All coordinates cannot be in the same unit => Checked here
     /// 4) Coordinates one and two must each have one of the possibilities of opposite and share one possibility => Checked here
     /// </summary>
-    /// <param name="solver"></param>
+    /// <param name="solverView"></param>
     /// <param name="opposite"></param>
     /// <param name="one"></param>
     /// <param name="two"></param>
     /// <returns></returns>
-    private static bool IsYWing(ISolver solver, Coordinate opposite, Coordinate one, Coordinate two)
+    private static bool IsYWing(ISolverView solverView, Coordinate opposite, Coordinate one, Coordinate two)
     {
         if (AreAllInSameUnit(opposite, one, two)) return false;
-        var oppositePoss = solver.Possibilities[opposite.Row, opposite.Col];
-        var onePoss = solver.Possibilities[one.Row, one.Col];
-        var twoPoss = solver.Possibilities[two.Row, two.Col];
+        var oppositePoss = solverView.Possibilities[opposite.Row, opposite.Col];
+        var onePoss = solverView.Possibilities[one.Row, one.Col];
+        var twoPoss = solverView.Possibilities[two.Row, two.Col];
         
         foreach (var poss in oppositePoss)
         {
@@ -134,17 +137,15 @@ public class XYWingStrategy : IStrategy
                 one.Col / 3 == three.Col / 3);
     }
 
-    private static bool ProcessYWing(ISolver solver, Coordinate opposite, Coordinate one, Coordinate two)
+    private bool ProcessXYWing(ISolverView solverView, Coordinate opposite, Coordinate one, Coordinate two)
     {
         bool wasProgressMade = false;
 
-        int toRemove = Minus(solver.Possibilities[one.Row, one.Col],
-            solver.Possibilities[opposite.Row, opposite.Col]);
+        int toRemove = Minus(solverView.Possibilities[one.Row, one.Col],
+            solverView.Possibilities[opposite.Row, opposite.Col]);
         foreach (var coord in MatchingCells(one, two))
         {
-            if (solver.RemovePossibility(toRemove, coord.Row, coord.Col,
-                    new XYWingLog(toRemove, coord.Row, coord.Col,
-                        opposite, one, two))) wasProgressMade = true;
+            if (solverView.RemovePossibility(toRemove, coord.Row, coord.Col, this)) wasProgressMade = true;
         }
 
         return wasProgressMade;
@@ -203,30 +204,17 @@ public class XYWingStrategy : IStrategy
         }
     }
 
-    private static List<Coordinate> AllCellsWith2Possibilities(ISolver solver)
+    private static List<Coordinate> AllCellsWith2Possibilities(ISolverView solverView)
     {
         List<Coordinate> result = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solver.Possibilities[row, col].Count == 2) result.Add(new Coordinate(row, col));
+                if (solverView.Possibilities[row, col].Count == 2) result.Add(new Coordinate(row, col));
             }
         }
 
         return result;
-    }
-}
-
-// ReSharper disable once InconsistentNaming
-public class XYWingLog : ISolverLog
-{
-    public string AsString { get; }
-    public StrategyLevel Level { get; } = StrategyLevel.Hard;
-
-    public XYWingLog(int number, int row, int col, Coordinate one, Coordinate two, Coordinate three)
-    {
-        AsString = $"[{row + 1}, {col + 1}] {number} removed from possibilities because of XY-Wings" +
-                   $" at {one}, {two} and {three}";
     }
 }

@@ -2,7 +2,10 @@
 
 public interface IStrategy
 {
-    void ApplyOnce(ISolver solver);
+    public string Name { get; }
+    public StrategyLevel Difficulty { get; }
+
+    void ApplyOnce(ISolverView solverView);
 }
 
 public enum StrategyLevel

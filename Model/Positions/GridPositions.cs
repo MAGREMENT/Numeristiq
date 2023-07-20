@@ -1,4 +1,4 @@
-﻿using Model.Strategies.StrategiesUtil;
+﻿using Model.StrategiesUtil;
 
 namespace Model.Positions;
 

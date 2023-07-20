@@ -4,43 +4,46 @@ namespace Model.DeprecatedStrategies.SamePossibilities;
 
 public class ColumnSamePossibilitiesStrategy : IStrategy
 {
-    public void ApplyOnce(ISolver solver)
+    public string Name { get; } = "Same possibility";
+    
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
+
+    public void ApplyOnce(ISolverView solverView)
     {
         for (int col = 0; col < 9; col++)
         {
-            foreach (var keyValuePair in GetDictionaryOfPossibilities(solver, col))
+            foreach (var keyValuePair in GetDictionaryOfPossibilities(solverView, col))
             {
                 if (keyValuePair.Key.Count == keyValuePair.Value)
-                    RemovePossibilitiesFromColumn(solver, col, keyValuePair.Key);
+                    RemovePossibilitiesFromColumn(solverView, col, keyValuePair.Key);
             }
         }
     }
 
-    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolver solver, int col)
+    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolverView solverView, int col)
     {
         Dictionary<IPossibilities, int> result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (solver.Sudoku[row, col] == 0)
+            if (solverView.Sudoku[row, col] == 0)
             {
-                if (!result.TryAdd(solver.Possibilities[row, col], 1))
-                    result[solver.Possibilities[row, col]] += 1;
+                if (!result.TryAdd(solverView.Possibilities[row, col], 1))
+                    result[solverView.Possibilities[row, col]] += 1;
             }
         }
 
         return result;
     }
 
-    private void RemovePossibilitiesFromColumn(ISolver solver, int col, IPossibilities toRemove)
+    private void RemovePossibilitiesFromColumn(ISolverView solverView, int col, IPossibilities toRemove)
     {
         for (int row = 0; row < 9; row++)
         {
-            if (solver.Sudoku[row, col] == 0 && !solver.Possibilities[row, col].Equals(toRemove))
+            if (solverView.Sudoku[row, col] == 0 && !solverView.Possibilities[row, col].Equals(toRemove))
             {
                 foreach (var number in toRemove)
                 {
-                    solver.RemovePossibility(number, row, col,
-                            new SamePossibilitiesLog(number, row, col));
+                    solverView.RemovePossibility(number, row, col, this);
                 }
             }
         }

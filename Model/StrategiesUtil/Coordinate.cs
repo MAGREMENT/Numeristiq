@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Model.Strategies.StrategiesUtil;
+namespace Model.StrategiesUtil;
 
 public class Coordinate
 {

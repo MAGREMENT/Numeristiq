@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using Model;
+using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -95,13 +94,13 @@ public partial class SudokuUserControl : UserControl
 
     public void AddDefinitiveNumber(int number, int row, int col)
     {
-        _currentSolver.AddDefinitiveNumber(number, row, col);
+        _currentSolver.SetDefinitiveNumberByHand(number, row, col); 
         Update();
     }
     
     public void RemovePossibility(int number, int row, int col)
     {
-        _currentSolver.RemovePossibility(number, row, col);
+        _currentSolver.RemovePossibilityByHand(number, row, col);
         Update();
     }
 

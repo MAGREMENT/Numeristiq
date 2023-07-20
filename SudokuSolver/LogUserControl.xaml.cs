@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 using Model;
+using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -20,18 +21,18 @@ public partial class LogUserControl : UserControl
 
     public void InitLog(ISolverLog log)
     {
-        _title.Foreground = new SolidColorBrush(log.Level switch
+        _title.Foreground = new SolidColorBrush(log.Intensity switch
         {
-            StrategyLevel.None => Colors.Gray,
-            StrategyLevel.Basic => Colors.RoyalBlue,
-            StrategyLevel.Easy => Colors.Green,
-            StrategyLevel.Medium => Colors.Orange,
-            StrategyLevel.Hard => Colors.Red,
-            StrategyLevel.Extreme => Colors.Purple,
-            StrategyLevel.ByTrial => Colors.Black,
+            Intensity.Zero => Colors.Gray,
+            Intensity.One => Colors.RoyalBlue,
+            Intensity.Two => Colors.Green,
+            Intensity.Three => Colors.Orange,
+            Intensity.Four => Colors.Red,
+            Intensity.Five => Colors.Purple,
+            Intensity.Six => Colors.Black,
             _ => Colors.Gray
         });
-        _title.Text = log.Level.ToString();
-        _text.Text = log.AsString;
+        _title.Text = log.Title;
+        _text.Text = log.Text;
     }
 }

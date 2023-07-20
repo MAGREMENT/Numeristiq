@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Model;
+using Model.Logs;
 
 namespace SudokuSolver;
 
