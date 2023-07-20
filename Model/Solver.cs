@@ -288,7 +288,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new ThreeDimensionMedusaStrategy(),
             new AlignedPairExclusionStrategy(),
             new XCyclesStrategy(),
-            new AlternatingInferenceChainStrategy(1000000),
+            new AlternatingInferenceChainStrategyV2()
             //new TrialAndMatchStrategy(2)
         };
     }
