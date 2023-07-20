@@ -2,17 +2,20 @@
 using System.Collections.Generic;
 using Model.Logs;
 using Model.Positions;
+using Model.Possibilities;
 using Model.Strategies;
 using Model.Strategies.IntersectionRemoval;
 
 namespace Model;
 
-public class Solver : ISolverView
+public class Solver : ISolverView //TODO : Look into precomputation, improve logs, improve UI
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs { get; } = new();
-    public Sudoku Sudoku { get; }
+    public Sudoku Sudoku { get; private set; }
     private IStrategy[] Strategies { get; }
+
+    public bool LogsAdded { get; set; } = true;
 
     public delegate void OnNumberAdded(int row, int col);
     public event OnNumberAdded? NumberAdded;
@@ -23,9 +26,16 @@ public class Solver : ISolverView
     private readonly List<int[]> _listOfChanges = new();
     private bool _changeWasMade;
 
+    //private PreComputer _pre = new();
+
     public Solver(Sudoku s, params IStrategy[] strategies)
     {
+        Strategies = strategies.Length > 0 ? strategies : BasicStrategies();
+        
         Sudoku = s;
+        
+        NumberAdded += (_, _) => _changeWasMade = true;
+        PossibilityRemoved += (_, _) => _changeWasMade = true;
 
         for (int i = 0; i < 9; i++)
         {
@@ -45,44 +55,11 @@ public class Solver : ISolverView
                 }
             }
         }
-
-        NumberAdded += (_, _) => _changeWasMade = true;
-        PossibilityRemoved += (_, _) => _changeWasMade = true;
-
-        if (strategies.Length > 0)
-        {
-            Strategies = strategies;
-        }
-        else
-        {
-            Strategies = new IStrategy[]{
-                new NakedPossibilitiesStrategy(1),
-                new HiddenPossibilityStrategy(1),
-                new NakedPossibilitiesStrategy(2),
-                new HiddenPossibilityStrategy(2),
-                new IntersectionRemovalStrategyPackage(),
-                new NakedPossibilitiesStrategy(3),
-                new HiddenPossibilityStrategy(3),
-                new NakedPossibilitiesStrategy(4),
-                new HiddenPossibilityStrategy(4),
-                new XWingStrategy(),
-                new XYWingStrategy(),
-                new XYZWingStrategy(),
-                new SimpleColoringStrategy(),
-                new BugStrategy(),
-                new GridFormationStrategy(3),
-                new GridFormationStrategy(4),
-                new XYChainStrategy(),
-                new ThreeDimensionMedusaStrategy(),
-                new XCyclesStrategy(),
-                //new FireworksStrategy(),
-                new AlternatingInferenceChainStrategy(),
-                //new TrialAndMatchStrategy(2)
-            };
-        }
+        
+        //_pre.PrecomputePositions(this);
     }
     
-    private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t)
+    private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t) //TODO : Add precomputer
     {
         Sudoku = s;
         Possibilities = p;
@@ -92,29 +69,14 @@ public class Solver : ISolverView
         PossibilityRemoved += (_, _) => _changeWasMade = true;
     }
 
-    public static IStrategy[] BasicStrategies()
-    {
-        return new IStrategy[]
-        {
-            new NakedPossibilitiesStrategy(1),
-            new HiddenPossibilityStrategy(1),
-            new NakedPossibilitiesStrategy(2),
-            new HiddenPossibilityStrategy(2),
-            new IntersectionRemovalStrategyPackage(),
-            new NakedPossibilitiesStrategy(3),
-            new HiddenPossibilityStrategy(3),
-            new NakedPossibilitiesStrategy(4),
-            new HiddenPossibilityStrategy(4) 
-        };
-    }
-    
     public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
     {
         if (Sudoku[row, col] != 0) return false;
         
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        Logs.Add(new NumberAddedLog(number, row, col, strategy));
+        //_pre.DeletePosition(number, row, col);
+        if(LogsAdded) Logs.Add(new NumberAddedLog(number, row, col, strategy));
         NumberAdded?.Invoke(row, col);
         return true;
     }
@@ -129,8 +91,9 @@ public class Solver : ISolverView
     {
         bool buffer = Possibilities[row, col].Remove(possibility);
         if (!buffer) return false;
-        
-        Logs.Add(new PossibilityRemovedLog(possibility, row, col, strategy));
+
+        //_pre.RemovePosition(possibility, row, col);
+        if(LogsAdded) Logs.Add(new PossibilityRemovedLog(possibility, row, col, strategy));
         PossibilityRemoved?.Invoke(row, col);
         return true;
     }
@@ -295,6 +258,35 @@ public class Solver : ISolverView
         }
 
         return new NoStrategy();
+    }
+    
+    public static IStrategy[] BasicStrategies()
+    {
+        return new IStrategy[]{
+            new NakedPossibilitiesStrategy(1),
+            new HiddenPossibilityStrategy(1),
+            new NakedPossibilitiesStrategy(2),
+            new HiddenPossibilityStrategy(2),
+            new IntersectionRemovalStrategyPackage(),
+            new NakedPossibilitiesStrategy(3),
+            new HiddenPossibilityStrategy(3),
+            new NakedPossibilitiesStrategy(4),
+            new HiddenPossibilityStrategy(4),
+            new XWingStrategy(),
+            new XYWingStrategy(),
+            new XYZWingStrategy(),
+            new SimpleColoringStrategy(),
+            new BugStrategy(),
+            new GridFormationStrategy(3),
+            new GridFormationStrategy(4),
+            new XYChainStrategy(),
+            new ThreeDimensionMedusaStrategy(),
+            new AlignedPairExclusionStrategy(),
+            new XCyclesStrategy(),
+            //new FireworksStrategy(),
+            new AlternatingInferenceChainStrategy(1000000),
+            //new TrialAndMatchStrategy(2)
+        };
     }
 
 }

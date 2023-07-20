@@ -69,6 +69,12 @@ public class BitPossibilities : IPossibilities
         return ((_possibilities >> (number - 1)) & 1) > 0;
     }
 
+    public void Reset()
+    {
+        _possibilities = 0x1FF;
+        Count = 9;
+    }
+
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)

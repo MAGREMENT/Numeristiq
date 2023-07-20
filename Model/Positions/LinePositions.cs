@@ -27,6 +27,19 @@ public class LinePositions : IEnumerable<int>
         return ((_pos >> pos) & 1) > 0;
     }
 
+    public void Remove(int pos)
+    {
+        bool old = Peek(pos);
+        _pos &= ~(1 << pos);
+        if (old) Count--;
+    }
+    
+    public void Void()
+    {
+        _pos = 0;
+        Count = 0;
+    }
+
     public bool AreAllInSameMiniGrid()
     {
         //111 111 000

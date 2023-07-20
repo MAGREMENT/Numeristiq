@@ -55,6 +55,7 @@ public partial class LiveModificationUserControl : UserControl
 
         _current.Updated += Update;
         Update();
+        _text.Focus();
     }
 
     private void Update()
@@ -63,8 +64,6 @@ public partial class LiveModificationUserControl : UserControl
         {
             _text.FontSize = _current.IsPossibilities ? FullFontSize / 4 : FullFontSize;
             _text.Text = _current.Text;
-        
-            _text.Focus();
         }
     }
 

@@ -62,6 +62,16 @@ public class BoolArrayPossibilities : IPossibilities
         return _possibilities[i - 1];
     }
 
+    public void Reset()
+    {
+        for (int i = 0; i < _possibilities.Length; i++)
+        {
+            _possibilities[i] = true;
+        }
+
+        Count = 9;
+    }
+
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)

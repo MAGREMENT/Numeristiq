@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Positions;
+using Model.Possibilities;
 
 namespace Model.Strategies;
 

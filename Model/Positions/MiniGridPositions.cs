@@ -31,6 +31,20 @@ public class MiniGridPositions : IEnumerable<int[]>
         if (!PeekFromGridPositions(gridRow, gridCol)) Count++;
         _pos |= 1 << (gridRow * 3 + gridCol);
     }
+    
+    public void Remove(int gridRow, int gridCol)
+    {
+        int delta = gridRow * 3 + gridCol;
+        bool old = ((_pos >> delta) & 1) > 0;
+        _pos &= ~(1 << delta);
+        if (old) Count--;
+    }
+
+    public void Void()
+    {
+        _pos = 0;
+        Count = 0;
+    }
 
     public void Add(int gridNumber)
     {
@@ -61,6 +75,18 @@ public class MiniGridPositions : IEnumerable<int[]>
         //101 101 101
         //011 011 011
         return Count is < 4 and > 0 && ((_pos & 0x1B6) == 0 || (_pos & 0x16D) == 0 || (_pos & 0xDB) == 0);
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj is not MiniGridPositions pos) return false;
+        return _pos == pos._pos;
+    }
+
+    public override int GetHashCode()
+    {
+        // ReSharper disable once NonReadonlyMemberInGetHashCode
+        return _pos;
     }
 
     public IEnumerator<int[]> GetEnumerator()

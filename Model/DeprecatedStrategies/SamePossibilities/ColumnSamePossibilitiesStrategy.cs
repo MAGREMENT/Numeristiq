@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Possibilities;
 
 namespace Model.DeprecatedStrategies.SamePossibilities;
 

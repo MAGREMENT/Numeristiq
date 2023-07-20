@@ -9,8 +9,8 @@
     <StackPanel Width="350" Height="150" Margin="0, 20, 0, 0" Orientation="Horizontal">
         <TextBlock Width="150" Height="150" FontSize="100" TextAlignment="Center" x:Name="Text"
                  KeyDown="KeyPressed" VerticalAlignment="Center"/>
-        <Grid>
-            <StackPanel Width="200" Height="150" Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid Width="200" Height="150">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <RadioButton IsChecked="True" x:Name="A" >Change definitive number</RadioButton>
                 <RadioButton x:Name="B">Remove possibilities</RadioButton>
             </StackPanel>

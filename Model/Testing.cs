@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using Model.Positions;
+using Model.Possibilities;
 using Model.Strategies;
 using Model.StrategiesUtil;
 
@@ -13,7 +14,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank2.txt");
+        FullSudokuBankTest("OnlineBank3.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -78,9 +79,11 @@ public static class Testing
         {
             using TextReader reader =
                 new StreamReader($"C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\{fileNameInDataFolder}", Encoding.UTF8);
+            
             while (reader.ReadLine() is { } line)
             {
                 Solver solver = new(new Sudoku(line));
+                solver.LogsAdded = false;
                 solver.Solve();
 
                 if (!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);

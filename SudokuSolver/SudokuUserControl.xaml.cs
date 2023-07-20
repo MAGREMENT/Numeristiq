@@ -128,7 +128,7 @@ public partial class SudokuUserControl : UserControl
         IsReady?.Invoke();
     }
 
-    public async void RunUntilProgress()
+    public void RunUntilProgress()
     {
         var changes = _currentSolver.RunUntilProgress();
         
@@ -147,9 +147,7 @@ public partial class SudokuUserControl : UserControl
             current.HighLight();
         }
 
-        await Task.Delay(TimeSpan.FromSeconds(0.5));
 
-        
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)

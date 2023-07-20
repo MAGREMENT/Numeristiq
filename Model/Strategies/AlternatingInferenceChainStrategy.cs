@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Model.StrategiesUtil;
 
@@ -14,8 +13,16 @@ public class AlternatingInferenceChainStrategy : IStrategy
     public int ModificationCount { get; private set; }
     public long SearchCount { get; private set; }
 
+    private readonly int _maxSearchCount;
+
+    public AlternatingInferenceChainStrategy(int maxSearchCount)
+    {
+        _maxSearchCount = maxSearchCount;
+    }
+
     public void ApplyOnce(ISolverView solverView)
     {
+        SearchCount = 0;
         Dictionary<PossibilityCoordinate, LinkResume> map = new();
 
         SearchStrongLinks(solverView, map);
@@ -36,7 +43,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
         var last = visited[^1];
         var resume = map[last];
 
-        SearchCount++;
+        if (SearchCount++ >= _maxSearchCount) return true;
 
         if (visited.Count % 2 == 1)
         {
@@ -88,7 +95,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
-            return RemoveAllExcept(solverView, one.Row, one.Col, 1, one.Possibility, two.Possibility);
+            return RemoveAllExcept(solverView, one.Row, one.Col, one.Possibility, two.Possibility);
         }
 
         var wasProgressMade = false;
@@ -154,7 +161,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
         return false;
     }
 
-    private bool RemoveAllExcept(ISolverView solverView, int row, int col, int type, params int[] except)
+    private bool RemoveAllExcept(ISolverView solverView, int row, int col, params int[] except)
     {
         var wasProgressMade = false;
         foreach (var possibility in solverView.Possibilities[row, col])

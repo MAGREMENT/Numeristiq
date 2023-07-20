@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Positions;
+using Model.Possibilities;
 
 namespace Model.Strategies;
 
@@ -96,7 +98,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.GetFirst(), row, col, this);
+                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.First(), row, col, this);
                     else RemovePossibilitiesFromRow(solverView, row, newCurrent, newVisited);
                 }
                 else
@@ -147,7 +149,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.GetFirst(), row, col, this);
+                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.First(), row, col, this);
                     else RemovePossibilitiesFromColumn(solverView, col, newCurrent, newVisited);
                 }
                 else
@@ -204,7 +206,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.GetFirst(), row, col, this);
+                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.First(), row, col, this);
                     else RemovePossibilitiesFromMiniGrid(solverView, miniRow, miniCol, newCurrent, newVisited);
                 }
                 else

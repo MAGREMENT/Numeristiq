@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Model;
+using Model.Possibilities;
 
 namespace SudokuSolver;
 
@@ -87,6 +88,7 @@ public partial class SudokuCellUserControl : UserControl
     public void Void()
     {
         _tb.Text = "";
+        Updated?.Invoke();
     }
 
     public bool BorderTop

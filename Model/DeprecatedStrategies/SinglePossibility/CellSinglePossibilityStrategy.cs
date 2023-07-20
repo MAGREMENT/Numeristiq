@@ -1,4 +1,6 @@
-﻿namespace Model.DeprecatedStrategies.SinglePossibility;
+﻿using System.Linq;
+
+namespace Model.DeprecatedStrategies.SinglePossibility;
 
 public class CellSinglePossibilityStrategy : IStrategy
 {
@@ -16,7 +18,7 @@ public class CellSinglePossibilityStrategy : IStrategy
                 
                 if (solverView.Possibilities[i, j].Count == 1)
                 {
-                    int n = solverView.Possibilities[i, j].GetFirst();
+                    int n = solverView.Possibilities[i, j].First();
                     solverView.AddDefinitiveNumber(n,
                         i, j, this);
                 }

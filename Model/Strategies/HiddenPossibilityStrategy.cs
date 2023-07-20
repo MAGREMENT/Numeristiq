@@ -97,10 +97,10 @@ public class HiddenPossibilityStrategy : IStrategy
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
+                Dictionary<MiniGridPositions, List<int>> possibilitiesToExamine = new();
                 for (int number = 1; number <= 9; number++)
                 {
-                    var positions = PossiblePositionsInMiniGrid(solverView, miniRow, miniCol, number);
+                    var positions = solverView.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
                     if (positions.Count == _type)
                     {
                         if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -114,33 +114,14 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     if (entry.Value.Count == _type)
                     {
-                        foreach (var gridNumber in entry.Key)
+                        foreach (var pos in entry.Key)
                         {
-                            int row = miniRow * 3 + gridNumber / 3;
-                            int col = miniCol * 3 + gridNumber % 3;
-                            
-                            RemoveAllPossibilitiesExcept(solverView, row, col, entry.Value);
+                            RemoveAllPossibilitiesExcept(solverView, pos[0], pos[1], entry.Value);
                         }
                     }
                 }
             }
         }
-    }
-
-    private LinePositions PossiblePositionsInMiniGrid(ISolverView solverView, int miniRow, int miniCol, int number)
-    {
-        LinePositions result = new();
-        for (int gridNumber = 0; gridNumber < 9; gridNumber++)
-        {
-            int row = miniRow * 3 + gridNumber / 3;
-            int col = miniCol * 3 + gridNumber % 3;
-            
-            if (solverView.Sudoku[row, col] == number) return new LinePositions();
-            if (solverView.Sudoku[row, col] == 0 &&
-                solverView.Possibilities[row, col].Peek(number)) result.Add(gridNumber);
-        }
-
-        return result;
     }
 
     private void RemoveAllPossibilitiesExcept(ISolverView solverView, int row, int col, List<int> except)
