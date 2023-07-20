@@ -80,7 +80,7 @@ public class FireworksStrategy : IStrategy
         {
             if (r / 3 != miniRow && solverView.Possibilities[r, col].Peek(possibility))
             {
-                if (colRow == -1) colRow = col;
+                if (colRow == -1) colRow = r;
                 else return;
             }
         }
@@ -88,7 +88,7 @@ public class FireworksStrategy : IStrategy
         if (rowCol != -1)
         {
             if (colRow != -1) fireworks.Add(new Firework(possibility, row, col,
-                    row, rowCol, col, colRow));
+                    row, rowCol, colRow, col));
             else fireworks.Add(new Firework(possibility, row, col,
                 row, rowCol));
         }

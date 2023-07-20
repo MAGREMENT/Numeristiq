@@ -11,11 +11,11 @@ namespace Model;
 public class Solver : ISolverView //TODO : Look into precomputation, improve logs, improve UI
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
-    public List<ISolverLog> Logs { get; } = new();
-    public Sudoku Sudoku { get; private set; }
+    public List<ISolverLog> Logs => _logManager.Logs;
+    public Sudoku Sudoku { get; }
     private IStrategy[] Strategies { get; }
 
-    public bool LogsAdded { get; set; } = true;
+    public bool LogsManaged { get; set; } = true;
 
     public delegate void OnNumberAdded(int row, int col);
     public event OnNumberAdded? NumberAdded;
@@ -26,7 +26,10 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
     private readonly List<int[]> _listOfChanges = new();
     private bool _changeWasMade;
 
+    private int _strategyCount;
+
     //private PreComputer _pre = new();
+    private readonly LogManager _logManager = new();
 
     public Solver(Sudoku s, params IStrategy[] strategies)
     {
@@ -76,7 +79,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
         //_pre.DeletePosition(number, row, col);
-        if(LogsAdded) Logs.Add(new NumberAddedLog(number, row, col, strategy));
+        if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy, _strategyCount);
         NumberAdded?.Invoke(row, col);
         return true;
     }
@@ -93,7 +96,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         if (!buffer) return false;
 
         //_pre.RemovePosition(possibility, row, col);
-        if(LogsAdded) Logs.Add(new PossibilityRemovedLog(possibility, row, col, strategy));
+        if(LogsManaged) _logManager.PossibilityRemoved(possibility, row, col, strategy, _strategyCount);
         PossibilityRemoved?.Invoke(row, col);
         return true;
     }
@@ -169,21 +172,18 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         for (int i = 0; i < Strategies.Length; i++)
         {
             if (Sudoku.IsComplete()) return;
+            
             Strategies[i].ApplyOnce(this);
+            _strategyCount++;
+            
             if (_changeWasMade)
             {
                 _changeWasMade = false;
                 i = -1;
             }
         }
-    }
-
-    public void RunAllStrategiesOnce()
-    {
-        foreach (var strategy in Strategies)
-        {
-            strategy.ApplyOnce(this);
-        }
+        
+        if(LogsManaged) _logManager.Push();
     }
 
     public List<int[]> RunUntilProgress()
@@ -195,6 +195,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         foreach (var strategy in Strategies)
         {
             strategy.ApplyOnce(this);
+            _strategyCount++;
+            
             if (_changeWasMade)
             {
                 _changeWasMade = false;
@@ -204,6 +206,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         
         NumberAdded -= AddToListOfChanges;
         PossibilityRemoved -= AddToListOfChanges;
+        
+        if(LogsManaged) _logManager.Push();
         
         return _listOfChanges;
     }
@@ -279,14 +283,36 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new BugStrategy(),
             new GridFormationStrategy(3),
             new GridFormationStrategy(4),
+            new FireworksStrategy(),
             new XYChainStrategy(),
             new ThreeDimensionMedusaStrategy(),
             new AlignedPairExclusionStrategy(),
             new XCyclesStrategy(),
-            //new FireworksStrategy(),
             new AlternatingInferenceChainStrategy(1000000),
             //new TrialAndMatchStrategy(2)
         };
+    }
+
+    public string GetState()
+    {
+        string result = "";
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Sudoku[row, col] != 0) result += "d" + Sudoku[row, col];
+                else
+                {
+                    result += "p";
+                    foreach (var possibility in Possibilities[row, col])
+                    {
+                        result += possibility;
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
 }

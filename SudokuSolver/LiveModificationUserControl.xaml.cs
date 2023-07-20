@@ -7,7 +7,8 @@ namespace SudokuSolver;
 public partial class LiveModificationUserControl : UserControl
 {
     private const int FullFontSize = 100;
-    
+
+    private readonly Grid _case;
     private readonly TextBlock _text;
     private readonly RadioButton _definitiveNumber;
     private readonly RadioButton _possibilities;
@@ -21,18 +22,19 @@ public partial class LiveModificationUserControl : UserControl
     {
         InitializeComponent();
 
+        _case = (FindName("Case") as Grid)!;
         _text = (FindName("Text") as TextBlock)!;
         _text.Focusable = true;
-        _text.Background = new SolidColorBrush(Colors.Honeydew);
+        _case.Background = new SolidColorBrush(Colors.WhiteSmoke);
         _text.LostFocus += (_, _) =>
         {
-            _text.Background = new SolidColorBrush(Colors.Honeydew);
+            _case.Background = new SolidColorBrush(Colors.WhiteSmoke);
         };
         _text.GotFocus += (_, _) =>
         {
-            _text.Background = new SolidColorBrush(Colors.Lavender);
+            _case.Background = new SolidColorBrush(Colors.Aqua);
         };
-        _text.MouseDown += (_, _) =>
+        _case.MouseDown += (_, _) =>
         {
             _text.Focus();
         };
@@ -49,6 +51,11 @@ public partial class LiveModificationUserControl : UserControl
     public void SetCurrent(SudokuCellUserControl scuc, int row, int col)
     {
         if (_current is not null) _current.Updated -= Update;
+        if (_current == scuc)
+        {
+            _current = null;
+            return;
+        }
         _current = scuc;
         _currentPos[0] = row;
         _currentPos[1] = col;

@@ -7,8 +7,10 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Width="350" Height="150" Margin="0, 20, 0, 0" Orientation="Horizontal">
-        <TextBlock Width="150" Height="150" FontSize="100" TextAlignment="Center" x:Name="Text"
-                 KeyDown="KeyPressed" VerticalAlignment="Center"/>
+        <Grid Width="150" Height="150" x:Name="Case">
+            <TextBlock FontSize="100" TextAlignment="Center" x:Name="Text"
+                       KeyDown="KeyPressed" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
         <Grid Width="200" Height="150">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <RadioButton IsChecked="True" x:Name="A" >Change definitive number</RadioButton>

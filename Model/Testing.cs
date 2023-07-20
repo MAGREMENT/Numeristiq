@@ -83,7 +83,7 @@ public static class Testing
             while (reader.ReadLine() is { } line)
             {
                 Solver solver = new(new Sudoku(line));
-                solver.LogsAdded = false;
+                solver.LogsManaged = false;
                 solver.Solve();
 
                 if (!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);

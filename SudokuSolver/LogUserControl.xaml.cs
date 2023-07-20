@@ -8,6 +8,7 @@ namespace SudokuSolver;
 
 public partial class LogUserControl : UserControl
 {
+    private readonly StackPanel _main;
     private readonly TextBlock _title;
     private readonly TextBlock _text;
     
@@ -15,8 +16,18 @@ public partial class LogUserControl : UserControl
     {
         InitializeComponent();
 
+        _main = (FindName("Main") as StackPanel)!;
         _title = (FindName("Title") as TextBlock)!;
         _text = (FindName("Text") as TextBlock)!;
+
+        _main.MouseEnter += (_, _) =>
+        {
+            _main.Background = new SolidColorBrush(Colors.WhiteSmoke);
+        };
+        _main.MouseLeave += (_, _) =>
+        {
+            _main.Background = new SolidColorBrush(Colors.White);
+        };
     }
 
     public void InitLog(ISolverLog log)

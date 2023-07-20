@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using Model;
 using Model.Logs;
@@ -117,13 +115,6 @@ public partial class SudokuUserControl : UserControl
     public void SolveSudoku()
     {
         _currentSolver.Solve();
-        Update();
-        IsReady?.Invoke();
-    }
-    
-    public void RunAllStrategiesOnce()
-    {
-        _currentSolver.RunAllStrategiesOnce();
         Update();
         IsReady?.Invoke();
     }

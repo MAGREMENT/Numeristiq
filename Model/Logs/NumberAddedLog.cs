@@ -4,7 +4,7 @@ public class NumberAddedLog : ISolverLog
 {
     public string Title { get; }
     public Intensity Intensity { get; }
-    public string Text { get; }
+    public string Text { get; private set; }
 
     public NumberAddedLog(int number, int row, int col)
     {
@@ -18,6 +18,11 @@ public class NumberAddedLog : ISolverLog
         Title = strategy.Name;
         Text = $"[{row + 1}, {col + 1}] {number} added as definitive";
         Intensity = (Intensity) strategy.Difficulty;
+    }
+
+    public void Another(int number, int row, int col)
+    {
+        Text += $"\n[{row + 1}, {col + 1}] {number} added as definitive";
     }
 
     
