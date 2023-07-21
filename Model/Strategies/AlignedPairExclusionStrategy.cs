@@ -8,6 +8,8 @@ public class AlignedPairExclusionStrategy : IStrategy
 {
     public string Name => "Aligned pair exclusion";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int row = 0; row < 9; row++)

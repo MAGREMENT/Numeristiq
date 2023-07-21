@@ -7,6 +7,8 @@ public abstract class StrategyPackage : IStrategy
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.None;
     
+    public int Score { get; set; }
+
     private readonly IStrategy[] _strategies;
 
     protected StrategyPackage(params IStrategy[] strategies)

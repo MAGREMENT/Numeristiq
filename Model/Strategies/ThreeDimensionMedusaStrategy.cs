@@ -10,6 +10,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
     public string Name { get; } = "3D medusa";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public int Score { get; set; }
 
     public void ApplyOnce(ISolverView solverView)
     {

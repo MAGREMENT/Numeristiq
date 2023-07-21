@@ -9,7 +9,8 @@ public class FireworksStrategy : IStrategy
     public string Name { get; } = "Fireworks";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
 

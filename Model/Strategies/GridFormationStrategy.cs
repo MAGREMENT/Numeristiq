@@ -12,7 +12,8 @@ public class GridFormationStrategy : IStrategy
     public string Name { get; }
 
     public StrategyLevel Difficulty { get; }
-    
+    public int Score { get; set; }
+
     private readonly int _type;
     private bool _lookingAtRows;
 

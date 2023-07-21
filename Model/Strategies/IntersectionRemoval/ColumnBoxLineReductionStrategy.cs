@@ -7,7 +7,8 @@ public class ColumnBoxLineReductionStrategy : IStrategy
     public string Name { get; } = "Box line reduction";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Medium;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int col = 0; col < 9; col++)

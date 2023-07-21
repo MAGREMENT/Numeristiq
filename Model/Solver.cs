@@ -4,6 +4,7 @@ using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
 using Model.Strategies;
+using Model.Strategies.AIC;
 using Model.Strategies.IntersectionRemoval;
 
 namespace Model;
@@ -79,6 +80,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
         //_pre.DeletePosition(number, row, col);
+        strategy.Score += 1;
         if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy, _strategyCount);
         NumberAdded?.Invoke(row, col);
         return true;
@@ -96,6 +98,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         if (!buffer) return false;
 
         //_pre.RemovePosition(possibility, row, col);
+        strategy.Score += 1;
         if(LogsManaged) _logManager.PossibilityRemoved(possibility, row, col, strategy, _strategyCount);
         PossibilityRemoved?.Invoke(row, col);
         return true;
@@ -287,8 +290,11 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new XYChainStrategy(),
             new ThreeDimensionMedusaStrategy(),
             new AlignedPairExclusionStrategy(),
+            //new GroupedXCyclesStrategy(),
             new XCyclesStrategy(),
-            new AlternatingInferenceChainStrategyV2()
+            //new AlternatingInferenceChainStrategyV1(1000000000),
+            //new AlternatingInferenceChainStrategyV2(1000000000),
+            new AlternatingInferenceChainStrategyV3()
             //new TrialAndMatchStrategy(2)
         };
     }

@@ -11,7 +11,8 @@ public class XYChainStrategy : IStrategy
     public string Name { get; } = "XYChain";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
-    
+    public int Score { get; set; }
+
     private readonly HashSet<PossibilityCoordinate> _used = new ();
     
     public void ApplyOnce(ISolverView solverView)

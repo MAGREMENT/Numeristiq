@@ -11,6 +11,8 @@ public class XYZWingStrategy : IStrategy
     public string Name { get; } = "XYZWing";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public int Score { get; set; }
+
     /// <summary>
     /// Conditions for xyz wing :
     /// -One cell is a triple and two cells are doubles

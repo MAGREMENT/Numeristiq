@@ -10,6 +10,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     public string Name { get; }
 
     public StrategyLevel Difficulty { get; }
+    public int Score { get; set; }
 
     private readonly int _type;
 

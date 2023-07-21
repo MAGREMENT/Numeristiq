@@ -8,6 +8,7 @@ public class XWingStrategy : IStrategy
     public string Name { get; } = "XWing";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public int Score { get; set; }
 
     public void ApplyOnce(ISolverView solverView)
     {

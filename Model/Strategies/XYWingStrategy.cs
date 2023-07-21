@@ -11,6 +11,8 @@ public class XYWingStrategy : IStrategy
     public string Name { get; } = "XYWing";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         var toSearch = AllCellsWith2Possibilities(solverView);

@@ -5,7 +5,8 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
     public string Name { get; } = "Single possibility";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

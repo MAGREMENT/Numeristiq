@@ -5,7 +5,8 @@ public class RowSinglePossibilityStrategy : IStrategy
     public string Name { get; } = "Single possibility";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int row = 0; row < 9; row++)

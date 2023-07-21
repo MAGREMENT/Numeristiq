@@ -4,13 +4,14 @@ using System.Text;
 using Model.Positions;
 using Model.Possibilities;
 using Model.Strategies;
+using Model.Strategies.AIC;
 using Model.StrategiesUtil;
 
 namespace Model;
 
 public static class Testing
 {
-    public static void Main(string[] args)
+    public static void Main(string[] args) 
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
@@ -26,12 +27,12 @@ public static class Testing
         Solver solver =
             new Solver(new Sudoku("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4"));
         solver.Solve();
-        AlternatingInferenceChainStrategy strat1 = (AlternatingInferenceChainStrategy)
-            solver.GetStrategy(typeof(AlternatingInferenceChainStrategy));
+        IAlternatingInferenceChainStrategy strat1 = (IAlternatingInferenceChainStrategy)
+            solver.GetStrategy(typeof(AlternatingInferenceChainStrategyV3));
 
         Console.WriteLine("One------------------------------------------------");
         Console.WriteLine("Sudoku solved : " + solver.Sudoku.IsCorrect());
-        Console.WriteLine("Modification count : " + strat1.ModificationCount);
+        Console.WriteLine("Score : " + strat1.Score);
         Console.WriteLine("Search count : " + strat1.SearchCount);
         Console.WriteLine();
     }

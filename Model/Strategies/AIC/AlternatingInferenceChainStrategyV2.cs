@@ -2,14 +2,22 @@
 using System.Linq;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies;
+namespace Model.Strategies.AIC;
 
-public class AlternatingInferenceChainStrategyV2 : IStrategy //TODO fixme
+public class AlternatingInferenceChainStrategyV2 : IAlternatingInferenceChainStrategy //TODO fixme
 {
     public string Name { get; } = "Alternating inference chain";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Extreme;
+    public int Score { get; set; }
     public long SearchCount { get; private set; }
+    
+    private readonly int _maxSearchCount;
+
+    public AlternatingInferenceChainStrategyV2(int maxSearchCount)
+    {
+        _maxSearchCount = maxSearchCount;
+    }
 
     public void ApplyOnce(ISolverView solverView)
     {
@@ -24,7 +32,7 @@ public class AlternatingInferenceChainStrategyV2 : IStrategy //TODO fixme
         }
     }
 
-    private bool Search(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map,
+    private void Search(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map,
         Chain chain, HashSet<PossibilityCoordinate> explored)
     {
         var last = chain.Last();
@@ -34,7 +42,7 @@ public class AlternatingInferenceChainStrategyV2 : IStrategy //TODO fixme
         SearchCount++;
 
         var lastLink = chain.LastLink();
-        if (!(lastLink == 1 && chain.HasDoubleStrong))
+        if (!(lastLink == 1 && chain.HasDoubleLink))
         {
             foreach (var stronk in resume.StrongLinks)
             {
@@ -43,55 +51,48 @@ public class AlternatingInferenceChainStrategyV2 : IStrategy //TODO fixme
                 {
                     Chain copy = chain.Copy();
                     copy.AddLinkTo(true, stronk);
-                    if(Search(solverView, map, copy, explored))
-                        return true;
+                    Search(solverView, map, copy, explored);
                 }
                 else if(chain.Count - contains >= 4)
                 {
-                    if (ProcessChain(solverView, chain.Cut(contains), 1)) return true;
+                    ProcessChain(solverView, chain.Cut(contains), 1);
                 }
             }
         }
 
-        if (!(lastLink == 0 && chain.HasDoubleWeak))
+        if (!(lastLink == 0 && chain.HasDoubleLink))
         {
-            foreach (var wiq in resume.StrongLinks)
+            foreach (var wiq in resume.WeakLinks)
             {
                 int contains = chain.Contains(wiq);
                 if (contains == -1)
                 {
-                    if(chain.LastLink() == 0 && chain.HasDoubleWeak) continue;
                     Chain copy = chain.Copy();
                     copy.AddLinkTo(false, wiq);
-                    if(Search(solverView, map, copy, explored))
-                        return true;
+                    /*if(*lastLink != 0)*/ Search(solverView, map, copy, explored);
                 }
                 else if(chain.Count - contains >= 4)
                 {
-                    if (ProcessChain(solverView, chain.Cut(contains), 0)) return true;
+                    ProcessChain(solverView, chain.Cut(contains), 0);
                 }
             }
         }
-        
-
-        return false;
     }
 
-    private bool ProcessChain(ISolverView view, Chain chain, int lastLink)
+    private void ProcessChain(ISolverView view, Chain chain, int lastLink)
     {
         var result = chain.Process(lastLink);
         switch (result.Type)
         {
             case ChainProcessType.DoubleStrong :
-                if (RemoveAllExcept(view, result.Coordinate!.Row,
-                        result.Coordinate.Col, result.Coordinate.Possibility)) return true;
+                view.AddDefinitiveNumber(result.Coordinate!.Possibility, result.Coordinate.Row,
+                        result.Coordinate.Col, this);
                 break;
             case ChainProcessType.DoubleWeak :
-                if (view.RemovePossibility(result.Coordinate!.Possibility, result.Coordinate.Row, result.Coordinate.Col,
-                        this)) return true;
+                view.RemovePossibility(result.Coordinate!.Possibility, result.Coordinate.Row, result.Coordinate.Col,
+                        this);
                 break;
             case ChainProcessType.Perfect :
-                bool wasProgressMade = false;
                 chain.ForEachWeakLink(lastLink, (one, two) =>
                 {
                     if (one.Possibility == two.Possibility)
@@ -100,35 +101,27 @@ public class AlternatingInferenceChainStrategyV2 : IStrategy //TODO fixme
                         {
                             if ((coord.Row == one.Row && coord.Col == one.Col) ||
                                 (coord.Row == two.Row && coord.Col == two.Col)) continue;
-                            if (view.RemovePossibility(one.Possibility, coord.Row, coord.Col, this))
-                                wasProgressMade = true;
+                            view.RemovePossibility(one.Possibility, coord.Row, coord.Col, this);
                         }
                     }
                     else if (one.Row == two.Row && one.Col == two.Col)
                     {
-                        wasProgressMade = RemoveAllExcept(view, one.Row, one.Col, one.Possibility, two.Possibility);
+                        RemoveAllExcept(view, one.Row, one.Col, one.Possibility, two.Possibility);
                     }
                 });
-                if (wasProgressMade) return true;
                 break;
         }
-
-        return false;
     }
 
-    private bool RemoveAllExcept(ISolverView solverView, int row, int col, params int[] except)
+    private void RemoveAllExcept(ISolverView solverView, int row, int col, params int[] except)
     {
-        var wasProgressMade = false;
         foreach (var possibility in solverView.Possibilities[row, col])
         {
             if (!except.Contains(possibility))
             {
-                if (solverView.RemovePossibility(possibility, row, col, this))
-                    wasProgressMade = true;
+                solverView.RemovePossibility(possibility, row, col, this);
             }
         }
-
-        return wasProgressMade;
     }
 
     private void SearchLinks(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map)
@@ -203,9 +196,7 @@ public class Chain
     private readonly List<int> _chain = new();
     public int Count { get; private set; }
 
-    public bool HasDoubleWeak { get; private set; }
-
-    public bool HasDoubleStrong { get; private set; }
+    public bool HasDoubleLink { get; private set; }
 
     public Chain(PossibilityCoordinate first)
     {
@@ -215,12 +206,11 @@ public class Chain
         Count++;
     }
 
-    private Chain(List<int> chain, int count, bool doubleStrong, bool doubleWeak)
+    private Chain(List<int> chain, int count, bool doubleLink)
     {
         _chain = new List<int>(chain);
         Count = count;
-        HasDoubleStrong = doubleStrong;
-        HasDoubleWeak = doubleWeak;
+        HasDoubleLink = doubleLink;
     }
 
     public PossibilityCoordinate Last()
@@ -242,9 +232,8 @@ public class Chain
         _chain.Add(to.Col);
         _chain.Add(to.Possibility);
         Count++;
-        
-        if (stronk && lastLink == 1) HasDoubleStrong = true;
-        else if (!stronk && lastLink == 0) HasDoubleWeak = true;
+
+        if ((stronk && lastLink == 1) || (!stronk && lastLink == 0)) HasDoubleLink = true;
     }
 
     public int Contains(PossibilityCoordinate coord)
@@ -262,37 +251,57 @@ public class Chain
 
     public Chain Copy()
     {
-        return new Chain(_chain, Count, HasDoubleStrong, HasDoubleWeak);
+        return new Chain(_chain, Count, HasDoubleLink);
     }
 
     public Chain Cut(int index)
     {
         int n = index * 4;
-        return new Chain(_chain.GetRange(n, _chain.Count - n), Count - index, HasDoubleStrong, HasDoubleWeak);
+        return new Chain(_chain.GetRange(n, _chain.Count - n), Count - index, HasDoubleLink);
     }
 
     public ChainProcessResult Process(int lastLink)
     {
-        //edgecase
-        if (_chain[0] == _chain[3] && _chain[0] == lastLink) return new ChainProcessResult(ChainProcessType.Unusable);
-        
-        int last = -1;
+        int doubleStrong = -1;
+        int doubleWeak = -1;
+
+        int before = -1;
+        int last = lastLink;
         for (int i = 3; i < _chain.Count; i += 4)
         {
             int current = _chain[i];
             if (current == last)
-                return new ChainProcessResult(
-                    current == 1 ? ChainProcessType.DoubleStrong : ChainProcessType.DoubleWeak,
-                    new PossibilityCoordinate(_chain[i - 3], _chain[i - 2], _chain[i - 1]));
+            {
+                if (doubleStrong != -1 || doubleWeak != -1 || last == before)
+                    return new ChainProcessResult(ChainProcessType.Unusable);
+
+                if (current == 0) doubleWeak = i - 3;
+                else doubleStrong = i - 3;
+            }
+
+            before = last;
             last = current;
         }
-
-        if (last == lastLink)
+        
+        if (lastLink == last)
         {
-            return new ChainProcessResult(
-                last == 1 ? ChainProcessType.DoubleStrong : ChainProcessType.DoubleWeak, Last());
+            if (doubleStrong != -1 || doubleWeak != -1 || last == before)
+                return new ChainProcessResult(ChainProcessType.Unusable);
+
+            if (lastLink == 0) doubleWeak = _chain.Count - 3;
+            else doubleStrong = _chain.Count - 3;
         }
 
+        if (doubleWeak != -1)
+        {
+            return new ChainProcessResult(ChainProcessType.DoubleWeak, new PossibilityCoordinate(_chain[doubleWeak],
+                _chain[doubleWeak + 1], _chain[doubleWeak + 2]));
+        }
+        if (doubleStrong != -1)
+        {
+            return new ChainProcessResult(ChainProcessType.DoubleStrong, new PossibilityCoordinate(_chain[doubleStrong],
+                _chain[doubleStrong + 1], _chain[doubleStrong + 2]));
+        }
         return new ChainProcessResult(ChainProcessType.Perfect);
     }
 
@@ -318,7 +327,7 @@ public class Chain
         string result = "";
         for (int i = 0; i < _chain.Count - 2; i += 3)
         {
-            result += $"[{_chain[i]}, {_chain[i + 1]} => {_chain[i + 2]}]";
+            result += $"[{_chain[i] + 1}, {_chain[i + 1] + 1} => {_chain[i + 2]}]";
             if (i + 3 < _chain.Count)
             {
                 result += _chain[i + 3] == 1 ? "=" : "-";

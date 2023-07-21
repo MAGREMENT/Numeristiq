@@ -5,7 +5,8 @@ public class BugStrategy : IStrategy
     public string Name { get; } = "BUG";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Medium;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         int[]? triple = OnlyDoublesAndOneTriple(solverView);

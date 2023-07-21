@@ -8,7 +8,8 @@ public class HiddenPossibilityStrategy : IStrategy
     public string Name { get; }
 
     public StrategyLevel Difficulty { get; }
-    
+    public int Score { get; set; }
+
     private readonly int _type;
 
     public HiddenPossibilityStrategy(int type)

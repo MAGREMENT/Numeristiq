@@ -8,7 +8,8 @@ public class RowSamePossibilitiesStrategy : IStrategy
     public string Name { get; } = "Same possibility";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int row = 0; row < 9; row++)

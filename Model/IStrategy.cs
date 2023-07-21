@@ -4,6 +4,8 @@ public interface IStrategy
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
+    
+    public int Score { get; set; }
 
     void ApplyOnce(ISolverView solverView);
 }

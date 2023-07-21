@@ -8,7 +8,8 @@ public class SwordfishStrategy : IStrategy
     public string Name { get; } = "Swordfish";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int number = 1; number <= 9; number++)

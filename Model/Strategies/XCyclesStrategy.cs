@@ -9,6 +9,7 @@ public class XCyclesStrategy : IStrategy
     public string Name { get; } = "XCycles";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public int Score { get; set; }
 
     public void ApplyOnce(ISolverView solverView)
     {

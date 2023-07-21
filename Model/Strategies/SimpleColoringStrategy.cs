@@ -8,6 +8,7 @@ public class SimpleColoringStrategy : IStrategy
     public string Name { get; } = "Simple coloring";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public int Score { get; set; }
 
     public void ApplyOnce(ISolverView solverView)
     {

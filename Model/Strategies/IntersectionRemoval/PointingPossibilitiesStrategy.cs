@@ -7,7 +7,8 @@ public class PointingPossibilitiesStrategy : IStrategy
     public string Name { get; } = "Pointing possibilities";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Medium;
-    
+    public int Score { get; set; }
+
     public void ApplyOnce(ISolverView solverView)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
