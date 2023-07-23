@@ -287,14 +287,14 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new GridFormationStrategy(3),
             new GridFormationStrategy(4),
             new FireworksStrategy(),
+            new UniqueRectanglesStrategy(),
             new XYChainStrategy(),
             new ThreeDimensionMedusaStrategy(),
-            new AlignedPairExclusionStrategy(),
+            new AlignedPairExclusionStrategy(4),
             //new GroupedXCyclesStrategy(),
             new XCyclesStrategy(),
-            //new AlternatingInferenceChainStrategyV1(1000000000),
-            //new AlternatingInferenceChainStrategyV2(1000000000),
-            new AlternatingInferenceChainStrategyV3()
+            //new AlternatingInferenceChainStrategyV2()
+            new AlternatingInferenceChainStrategyV1(1000000)
             //new TrialAndMatchStrategy(2)
         };
     }

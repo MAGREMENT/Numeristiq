@@ -16,7 +16,7 @@ public class LogManager
         if (strategyCount != _lastStrategy)
         {
             Push();
-            _current = new NumberAddedLog(number, row, col, strategy);
+            _current = new NumberAddedLog(number, row, col, strategy); //TODO add flexibility if number added and possibility removed
             _lastStrategy = strategyCount;
         }
         else _current!.Another(number, row, col);

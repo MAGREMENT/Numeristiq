@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Possibilities;
 
 namespace Model.StrategiesUtil;
@@ -8,49 +9,81 @@ public class AlmostLockedSet
     private readonly Coordinate[] _coords;
     public IPossibilities Possibilities { get; }
 
-    public AlmostLockedSet(IPossibilities possibilities, params Coordinate[] coords)
+    private AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
     {
-        Possibilities = possibilities.Copy();
         _coords = coords;
+        Possibilities = poss;
     }
 
-    public List<Coordinate> SharedSeenCells(AlmostLockedSet set)
+    private AlmostLockedSet(Coordinate coord, IPossibilities poss)
     {
-        List<Coordinate> result = new();
-        for (int row = 0; row < 9; row++)
+        _coords = new[] { coord };
+        Possibilities = poss;
+    }
+
+    public bool Contains(Coordinate coord)
+    {
+        return _coords.Contains(coord);
+    }
+
+
+    public static IEnumerable<AlmostLockedSet> SearchForSingleCellAls(ISolverView solverView, List<Coordinate> coords)
+    {
+        foreach (var coord in coords)
         {
-            for (int col = 0; col < 9; col++)
-            {
-                var current = new Coordinate(row, col);
-                if (SharedSeenCell(current, this, set)) result.Add(current);
-            }
+            IPossibilities current = solverView.Possibilities[coord.Row, coord.Col];
+            if (current.Count == 2) yield return new AlmostLockedSet(coord, current);
+        }
+    }
+
+    public static IEnumerable<AlmostLockedSet> SearchForMultipleCellsAls(ISolverView view, List<Coordinate> coords, int count)
+    {
+        List<AlmostLockedSet> result = new List<AlmostLockedSet>();
+        for (int i = 0; i < coords.Count; i++)
+        {
+            SearchForMultipleCellsAls(view, result, view.Possibilities[coords[i].Row, coords[i].Col], coords,
+                i, count - 1, count + 1, new List<Coordinate> {coords[i]});
         }
 
         return result;
     }
-
-    public bool IsSeenByAll(Coordinate coord)
+    
+    private static void SearchForMultipleCellsAls(ISolverView view, List<AlmostLockedSet> result,
+        IPossibilities current, List<Coordinate> coords, int start, int count, int type, List<Coordinate> visited)
     {
-        foreach (var c in _coords)
+        for (int i = start + 1; i < coords.Count; i++)
         {
-            if (c.Equals(coord) || !c.ShareAUnit(coord)) return false;
+            if (!ShareAUnitWithAll(coords[i], visited) ||
+                !ShareAtLeastOne(view.Possibilities[coords[i].Row, coords[i].Col], current)) continue;
+            IPossibilities mashed = current.Mash(view.Possibilities[coords[i].Row, coords[i].Col]);
+            if (count - 1 == 0)
+            {
+                if(mashed.Count == type) result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+            }else if (mashed.Count <= type)
+            {
+                SearchForMultipleCellsAls(view, result, mashed, coords, i, count - 1, type,
+                    new List<Coordinate>(visited) {coords[i]});
+            }
+        }
+    }
+    
+    private static bool ShareAUnitWithAll(Coordinate current, List<Coordinate> coordinates)
+    {
+        foreach (var coord in coordinates)
+        {
+            if (!current.ShareAUnit(coord)) return false;
         }
 
         return true;
     }
 
-    private static bool SharedSeenCell(Coordinate current, AlmostLockedSet one, AlmostLockedSet two)
+    private static bool ShareAtLeastOne(IPossibilities one, IPossibilities two)
     {
-        foreach (var coord in one._coords)
+        foreach (var possibility in one)
         {
-            if (!current.ShareAUnit(coord) || coord.Equals(current)) return false;
-        }
-        
-        foreach (var coord in two._coords)
-        {
-            if (!current.ShareAUnit(coord) || coord.Equals(current)) return false;
+            if (two.Peek(possibility)) return true;
         }
 
-        return true;
+        return false;
     }
 }

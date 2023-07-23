@@ -46,6 +46,45 @@ public class Coordinate
             }
         }
     }
+    
+    public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if ((row == row1 && col == col1) || (row == row2 && col == col2)) continue;
+                
+                if (ShareAUnit(row, col, row1, col1)
+                    && ShareAUnit(row, col, row2, col2))
+                {
+                    yield return new Coordinate(row, col); 
+                }
+                
+            }
+        }
+    }
+    
+    public static List<Coordinate> SharedSeenEmptyCells(ISolverView solverView, int row1, int col1, int row2, int col2)
+    {
+        List<Coordinate> result = new();
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (solverView.Sudoku[row, col] != 0 ||
+                    (row == row1 && col == col1) || (row == row2 && col == col2)) continue;
+                
+                if (ShareAUnit(row, col, row1, col1)
+                    && ShareAUnit(row, col, row2, col2))
+                {
+                    result.Add(new Coordinate(row, col));  
+                }
+            }
+        }
+
+        return result;
+    }
 
     public override int GetHashCode()
     {

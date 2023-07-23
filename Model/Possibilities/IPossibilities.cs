@@ -14,6 +14,7 @@ public interface IPossibilities : IEnumerable<int>
     public void RemoveAll(IEnumerable<int> except);
     public IPossibilities Mash(IPossibilities possibilities);
     public bool Peek(int n);
+    public bool PeekAll(IPossibilities poss);
     public void Reset();
     public IPossibilities Copy();
 
@@ -26,6 +27,16 @@ public interface IPossibilities : IEnumerable<int>
         }
 
         return result;
+    }
+
+    public static bool DefaultPeekAll(IPossibilities poss1, IPossibilities poss2)
+    {
+        foreach (var possibility in poss2)
+        {
+            if (!poss1.Peek(possibility)) return false;
+        }
+
+        return true;
     }
 
     public static IPossibilities New()

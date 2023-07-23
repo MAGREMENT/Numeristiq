@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.AIC;
 
-public class AlternatingInferenceChainStrategyV1 : IStrategy
+public class AlternatingInferenceChainStrategyV1Bis : IStrategy //TODO
 {
     public string Name { get; } = "Alternating inference chain";
     
@@ -15,7 +15,7 @@ public class AlternatingInferenceChainStrategyV1 : IStrategy
 
     private readonly int _maxSearchCount;
 
-    public AlternatingInferenceChainStrategyV1(int maxSearchCount)
+    public AlternatingInferenceChainStrategyV1Bis(int maxSearchCount)
     {
         _maxSearchCount = maxSearchCount;
     }
@@ -281,9 +281,19 @@ public class AlternatingInferenceChainStrategyV1 : IStrategy
             }
         }
     }
+
+    private static int ToInt(int row, int col, int possibility)
+    {
+        return possibility * 81 + row * 9 + col;
+    }
+
+    private static int ToCoordinate(int asInt)
+    {
+        return 0; //TODO
+    }
 }
 
-public class LinkResume
+public class IntLinkResume
 {
     public HashSet<PossibilityCoordinate> StrongLinks { get; }= new();
     public HashSet<PossibilityCoordinate> WeakLinks { get; } = new();

@@ -62,6 +62,11 @@ public class BoolArrayPossibilities : IPossibilities
         return _possibilities[i - 1];
     }
 
+    public bool PeekAll(IPossibilities poss)
+    {
+        return IPossibilities.DefaultPeekAll(this, poss);
+    }
+
     public void Reset()
     {
         for (int i = 0; i < _possibilities.Length; i++)

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using Model.LoopFinder;
+using Model.LoopFinder.Types;
 using Model.Positions;
 using Model.Possibilities;
 using Model.Strategies;
@@ -15,11 +17,50 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("LocalBank.txt");
-
+        FullSudokuBankTest("OnlineBank3.txt");
+        
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void LoopFinderTest()
+    {
+        Graph<int> example = new();
+        example.AddLink(1, 2, LinkStrength.Weak);
+        example.AddLink(1, 4, LinkStrength.Strong);
+        example.AddLink(2, 3, LinkStrength.Strong);
+        example.AddLink(3, 4, LinkStrength.Strong);
+        example.AddLink(2, 5, LinkStrength.Strong);
+        example.AddLink(5, 6, LinkStrength.Weak);
+        example.AddLink(6, 7, LinkStrength.Strong);
+        example.AddLink(7, 8, LinkStrength.Weak);
+        example.AddLink(4, 8, LinkStrength.Strong);
+        example.AddLink(8, 11, LinkStrength.Strong);
+        example.AddLink(11, 12, LinkStrength.Weak);
+        example.AddLink(12, 13, LinkStrength.Weak);
+        example.AddLink(13, 10, LinkStrength.Strong);
+        example.AddLink(10, 11, LinkStrength.Weak);
+        example.AddLink(10, 9, LinkStrength.Strong);
+        example.AddLink(9, 14, LinkStrength.Weak);
+        example.AddLink(14, 7, LinkStrength.Weak);
+        example.AddLink(14, 15, LinkStrength.Strong);
+        example.AddLink(15, 16, LinkStrength.Weak);
+        example.AddLink(16, 19, LinkStrength.Strong);
+        example.AddLink(19, 14, LinkStrength.Weak);
+        example.AddLink(16, 17, LinkStrength.Weak);
+        example.AddLink(17, 18, LinkStrength.Weak);
+        example.AddLink(18, 19, LinkStrength.Strong);
+        example.AddLink(18, 20, LinkStrength.Strong);
+        example.AddLink(19, 20, LinkStrength.Weak);
+        example.AddLink(20, 21, LinkStrength.Strong);
+        example.AddLink(19, 21, LinkStrength.Weak);
+        example.AddLink(21, 22, LinkStrength.Strong);
+
+        LoopFinder<int> finder = new LoopFinder<int>(example,
+            new BruteAICLoops<int>(0), (_) => false);
+        finder.Run();
+        Console.WriteLine(finder.GetStats());
     }
 
     private static void CompareAicAlgorithms()
@@ -27,13 +68,12 @@ public static class Testing
         Solver solver =
             new Solver(new Sudoku("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4"));
         solver.Solve();
-        IAlternatingInferenceChainStrategy strat1 = (IAlternatingInferenceChainStrategy)
-            solver.GetStrategy(typeof(AlternatingInferenceChainStrategyV3));
+        AlternatingInferenceChainStrategyV2 strat = (AlternatingInferenceChainStrategyV2)
+            solver.GetStrategy(typeof(AlternatingInferenceChainStrategyV2));
 
         Console.WriteLine("One------------------------------------------------");
         Console.WriteLine("Sudoku solved : " + solver.Sudoku.IsCorrect());
-        Console.WriteLine("Score : " + strat1.Score);
-        Console.WriteLine("Search count : " + strat1.SearchCount);
+        Console.WriteLine("Score : " + strat.Score);
         Console.WriteLine();
     }
 

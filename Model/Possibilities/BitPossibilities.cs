@@ -69,6 +69,12 @@ public class BitPossibilities : IPossibilities
         return ((_possibilities >> (number - 1)) & 1) > 0;
     }
 
+    public bool PeekAll(IPossibilities poss)
+    {
+        if (poss is BitPossibilities bp) return (_possibilities | bp._possibilities) == _possibilities;
+        return IPossibilities.DefaultPeekAll(this, poss);
+    }
+
     public void Reset()
     {
         _possibilities = 0x1FF;
