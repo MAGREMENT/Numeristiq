@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Model.LoopFinder;
@@ -8,6 +9,7 @@ using Model.Possibilities;
 using Model.Strategies;
 using Model.Strategies.AIC;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model;
 
@@ -22,6 +24,73 @@ public static class Testing
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void CompareSharedSeenCellsAlgorithms()
+    {
+        int turns = 10000;
+        
+        long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        for(int i = 0; i < turns; i++)
+        {
+            for (int row1 = 0; row1 < 9; row1++)
+            {
+                for (int col1 = 0; col1 < 9; col1++)
+                {
+                    Coordinate one = new Coordinate(row1, col1);
+
+                    for (int row2 = row1; row2 < 9; row2++)
+                    {
+                        for (int col2 = col1 + 1; col2 < 9; col2++)
+                        {
+                            Coordinate two = new Coordinate(row2, col2);
+
+                            one.SharedSeenCells(two);
+                        }
+                    }
+                }
+            }
+        }
+        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        Console.WriteLine($"Time taken for V1 : {((double) end - start) / 1000}s");
+        
+        start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        for(int i = 0; i < turns; i++)
+        {
+            for (int row1 = 0; row1 < 9; row1++)
+            {
+                for (int col1 = 0; col1 < 9; col1++)
+                {
+                    Coordinate one = new Coordinate(row1, col1);
+
+                    for (int row2 = row1; row2 < 9; row2++)
+                    {
+                        for (int col2 = col1 + 1; col2 < 9; col2++)
+                        {
+                            Coordinate two = new Coordinate(row2, col2);
+
+                            one.SharedSeenCellsV2(two);
+                        }
+                    }
+                }
+            }
+        }
+        end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        Console.WriteLine($"Time taken for V2 : {((double) end - start) / 1000}s");
+    }
+
+    private static bool AreTheSame(IEnumerable<Coordinate> one, IEnumerable<Coordinate> two)
+    {
+        HashSet<Coordinate> h1 = new HashSet<Coordinate>(one);
+        HashSet<Coordinate> h2 = new HashSet<Coordinate>(two);
+
+        if (h1.Count != h2.Count) return false;
+        foreach (var coord in h1)
+        {
+            if (!h2.Contains(coord)) return false;
+        }
+
+        return true;
     }
 
     private static void LoopFinderTest()
@@ -58,7 +127,7 @@ public static class Testing
         example.AddLink(21, 22, LinkStrength.Strong);
 
         LoopFinder<int> finder = new LoopFinder<int>(example,
-            new BruteAICLoops<int>(0), (_) => false);
+            new AICLoopsV3<int>(), (_) => false);
         finder.Run();
         Console.WriteLine(finder.GetStats());
     }
@@ -68,8 +137,8 @@ public static class Testing
         Solver solver =
             new Solver(new Sudoku("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4"));
         solver.Solve();
-        AlternatingInferenceChainStrategyV2 strat = (AlternatingInferenceChainStrategyV2)
-            solver.GetStrategy(typeof(AlternatingInferenceChainStrategyV2));
+        AlternatingChainGeneralization<PossibilityCoordinate> strat = (AlternatingChainGeneralization<PossibilityCoordinate>)
+            solver.GetStrategy(typeof(AlternatingChainGeneralization<PossibilityCoordinate>));
 
         Console.WriteLine("One------------------------------------------------");
         Console.WriteLine("Sudoku solved : " + solver.Sudoku.IsCorrect());

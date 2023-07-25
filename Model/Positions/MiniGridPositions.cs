@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
@@ -56,7 +57,7 @@ public class MiniGridPositions : IEnumerable<int[]>
         return ((_pos >> (gridRow * 3 + gridCol)) & 1) > 0;
     }
 
-    public bool PeekFromGridPositions(int gridNumber)
+    public bool PeekFromGridNumber(int gridNumber)
     {
         return ((_pos >> gridNumber) & 1) > 0;
     }
@@ -89,6 +90,17 @@ public class MiniGridPositions : IEnumerable<int[]>
         return _pos;
     }
 
+    public override string ToString()
+    {
+        var result = "";
+        for (int i = 0; i < 9; i++)
+        {
+            if (PeekFromGridNumber(i)) result += (_startRow + i / 3) + ", " + (_startCol + i % 3) + " ";
+        }
+
+        return result;
+    }
+
     public IEnumerator<int[]> GetEnumerator()
     {
         for (int i = 0; i < 9; i++)
@@ -105,5 +117,22 @@ public class MiniGridPositions : IEnumerable<int[]>
     public MiniGridPositions Copy()
     {
         return new MiniGridPositions(_pos, Count, _startRow, _startCol);
+    }
+
+    public delegate void HandleCombination(Coordinate one, Coordinate two);
+
+    public void ForEachCombination(HandleCombination handler)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (((_pos >> i) & 1) == 0) continue;
+            for (int j = i + 1; j < 9; j++)
+            {
+                if (((_pos >> j) & 1) == 0) continue;
+                handler(new Coordinate(
+                    _startRow + i / 3, _startCol + i % 3),
+                    new Coordinate(_startRow + j / 3, _startCol + j % 3));
+            }
+        }
     }
 }

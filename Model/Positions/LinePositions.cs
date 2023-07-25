@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
@@ -73,6 +74,17 @@ public class LinePositions : IEnumerable<int>
         return _pos;
     }
 
+    public override string ToString()
+    {
+        string result = "";
+        for (int i = 0; i < 9; i++)
+        {
+            if (Peek(i)) result += i + " ";
+        }
+
+        return result;
+    }
+
     public LinePositions Mash(LinePositions pos)
     {
         int newPos = _pos | pos._pos;
@@ -82,5 +94,20 @@ public class LinePositions : IEnumerable<int>
     public LinePositions Copy()
     {
         return new LinePositions(_pos, Count);
+    }
+
+    public delegate void HandleCombination(int one, int two);
+
+    public void ForEachCombination(HandleCombination handler)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (((_pos >> i) & 1) == 0) continue;
+            for (int j = i + 1; j < 9; j++)
+            {
+                if (((_pos >> j) & 1) == 0) continue;
+                handler(i, j);
+            }
+        }
     }
 }

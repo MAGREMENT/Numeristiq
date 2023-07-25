@@ -143,8 +143,8 @@ public class UniqueRectanglesStrategy : IStrategy
 
                 //Type 3
                 IPossibilities mashed = roofOne.Mash(roofTwo);
-                List<Coordinate> shared =
-                    Coordinate.SharedSeenEmptyCells(view, row, one.Col, row, two.Col);
+                List<Coordinate> shared = new List<Coordinate>(
+                    Coordinate.SharedSeenEmptyCells(view, row, one.Col, row, two.Col));
 
                 foreach (var als in AlmostLockedSet.SearchForSingleCellAls(view, shared))
                 {
@@ -250,8 +250,8 @@ public class UniqueRectanglesStrategy : IStrategy
 
                 //Type 3
                 IPossibilities mashed = roofOne.Mash(roofTwo);
-                List<Coordinate> shared =
-                    Coordinate.SharedSeenEmptyCells(view, one.Row, col, two.Row, col);
+                List<Coordinate> shared = new List<Coordinate>(
+                    Coordinate.SharedSeenEmptyCells(view, one.Row, col, two.Row, col));
 
                 foreach (var als in AlmostLockedSet.SearchForSingleCellAls(view, shared))
                 {
@@ -345,10 +345,8 @@ public class UniqueRectanglesStrategy : IStrategy
         AlmostLockedSet except, int row1, int col1, int row2, int col2)
     {
         bool wasProgressMade = false;
-        foreach (var coord in coords)
+        foreach (var coord in except.SharedSeenCells(row1, col1, row2, col2))
         {
-            if (except.Contains(coord) || (coord.Row == row1 && coord.Col == col1) ||
-                (coord.Row == row2 && coord.Col == col2)) continue;
             foreach (var possibility in poss)
             {
                 if (view.RemovePossibility(possibility, coord.Row, coord.Col, this)) wasProgressMade = true;

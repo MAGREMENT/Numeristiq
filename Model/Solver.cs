@@ -5,7 +5,10 @@ using Model.Positions;
 using Model.Possibilities;
 using Model.Strategies;
 using Model.Strategies.AIC;
+using Model.Strategies.AlternatingChains.ChainAlgorithms;
+using Model.Strategies.AlternatingChains.ChainTypes;
 using Model.Strategies.IntersectionRemoval;
+using Model.StrategiesUtil;
 
 namespace Model;
 
@@ -292,9 +295,12 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new ThreeDimensionMedusaStrategy(),
             new AlignedPairExclusionStrategy(4),
             //new GroupedXCyclesStrategy(),
-            new XCyclesStrategy(),
-            //new AlternatingInferenceChainStrategyV2()
-            new AlternatingInferenceChainStrategyV1(1000000)
+            //new XCyclesStrategy(),
+            new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalXCycles(),
+                new AlternatingChainAlgorithmV1<PossibilityCoordinate>(200)),
+            //new AlternatingInferenceChainStrategy(int.MaxValue, 20),
+            new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
+                new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20))
             //new TrialAndMatchStrategy(2)
         };
     }

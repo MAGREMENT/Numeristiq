@@ -31,22 +31,119 @@ public class Coordinate
 
     public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)
     {
-        for (int row = 0; row < 9; row++)
+        return SharedSeenCells(Row, Col, coord.Row, coord.Col);
+    }
+
+    public IEnumerable<Coordinate> SharedSeenCellsV2(Coordinate coord)
+    {
+        if (Row == coord.Row)
         {
             for (int col = 0; col < 9; col++)
             {
-                if ((row == Row && col == Col) || (row == coord.Row && col == coord.Col)) continue;
-                
-                if (ShareAUnit(row, col, Row, Col)
-                    && ShareAUnit(row, col, coord.Row, coord.Col))
-                {
-                    yield return new Coordinate(row, col); 
-                }
-                
+                if (col == Col || col == coord.Col) continue;
+                yield return new Coordinate(Row, col);
             }
+
+            if (Col / 3 == coord.Col / 3)
+            {
+                int rowStart = Row / 3 * 3;
+                int colStart = Col / 3 * 3;
+
+                for (int gridRow = 0; gridRow < 3; gridRow++)
+                {
+                    int row = rowStart + gridRow;
+                    if (row == Row) continue;
+                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    {
+                        yield return new Coordinate(row, colStart + gridCol);
+                    }
+                }
+            }
+            
+            yield break;
         }
+        if (Col == coord.Col)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                if (row == Row || row == coord.Row) continue;
+                yield return new Coordinate(row, Col);
+            }
+            
+            if (Row / 3 == coord.Row / 3)
+            {
+                int rowStart = Row / 3 * 3;
+                int colStart = Col / 3 * 3;
+
+                for (int gridCol = 0; gridCol < 3; gridCol++)
+                {
+                    int col = colStart + gridCol;
+                    if (col == Row) continue;
+                    for (int gridRow = 0; gridRow < 3; gridRow++)
+                    {
+                        yield return new Coordinate(rowStart + gridRow, col);
+                    }
+                }
+            }
+            
+            yield break;
+        }
+        if (Row / 3 == coord.Row / 3)
+        {
+            if (Col / 3 == coord.Col / 3)
+            {
+                int rowStart = Row / 3 * 3;
+                int colStart = Col / 3 * 3;
+
+                for (int gridRow = 0; gridRow < 3; gridRow++)
+                {
+                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    {
+                        int row = rowStart + gridRow;
+                        int col = colStart + gridCol;
+                        if ((row == Row && col == Col) || (row == coord.Row && col == coord.Col)) continue;
+                        yield return new Coordinate(row, col);
+                    }
+                }
+                yield break;
+            }
+            
+            int colStart1 = Col / 3 * 3;
+            int colStart2 = coord.Col / 3 * 3;
+
+            for (int gridCol = 0; gridCol < 3; gridCol++)
+            {
+                int col1 = colStart1 + gridCol;
+                int col2 = colStart2 + gridCol;
+
+                yield return new Coordinate(coord.Row, col1);
+                yield return new Coordinate(Row, col2);
+            }
+            
+            yield break;
+        }
+
+        if (Col / 3 == coord.Col / 3)
+        {
+            int rowStart1 = Row / 3 * 3;
+            int rowStart2 = coord.Row / 3 * 3;
+
+            for (int gridRow = 0; gridRow < 3; gridRow++)
+            {
+                int row1 = rowStart1 + gridRow;
+                int row2 = rowStart2 + gridRow;
+
+                yield return new Coordinate(row1, coord.Col);
+                yield return new Coordinate(row2, Col);
+            }
+            
+            yield break;
+        }
+
+        yield return new Coordinate(Row, coord.Col);
+        yield return new Coordinate(coord.Row, Col);
     }
-    
+
     public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
         for (int row = 0; row < 9; row++)
@@ -65,9 +162,8 @@ public class Coordinate
         }
     }
     
-    public static List<Coordinate> SharedSeenEmptyCells(ISolverView solverView, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Coordinate> SharedSeenEmptyCells(ISolverView solverView, int row1, int col1, int row2, int col2)
     {
-        List<Coordinate> result = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -78,12 +174,10 @@ public class Coordinate
                 if (ShareAUnit(row, col, row1, col1)
                     && ShareAUnit(row, col, row2, col2))
                 {
-                    result.Add(new Coordinate(row, col));  
+                    yield return new Coordinate(row, col);  
                 }
             }
         }
-
-        return result;
     }
 
     public override int GetHashCode()

@@ -19,27 +19,28 @@ public class AlignedPairExclusionStrategy : IStrategy
 
     public void ApplyOnce(ISolverView solverView)
     {
-        for (int row = 0; row < 9; row++)
+        for(int i = 0; i < 81; i++)
         {
-            for (int col = 0; col < 9; col++)
-            {
-                if(solverView.Sudoku[row, col] != 0) continue;
+            int row1 = i / 9;
+            int col1 = i % 9;
+            if(solverView.Sudoku[row1, col1] != 0) continue;
 
-                for (int row2 = row; row2 < 9; row2++)
-                {
-                    for (int col2 = col + 1; col2 < 9; col2++)
-                    {
-                        if (solverView.Sudoku[row2, col2] != 0) continue;
-                        if (Search(solverView, row, col, row2, col2)) return;
-                    }
-                }
+            for (int j = i + 1; j < 81; j++)
+            {
+                int row2 = j / 9;
+                int col2 = j % 9;
+
+                if (solverView.Sudoku[row2, col2] != 0) continue;
+                if (Search(solverView, row1, col1, row2, col2)) return;
             }
         }
     }
 
     private bool Search(ISolverView solverView, int row1, int col1, int row2, int col2)
     {
-        List<Coordinate> shared = Coordinate.SharedSeenEmptyCells(solverView, row1, col1, row2, col2);
+        List<Coordinate> shared = new List<Coordinate>(
+            Coordinate.SharedSeenEmptyCells(solverView, row1, col1, row2, col2));
+        
         if (shared.Count < solverView.Possibilities[row1, col1].Count ||
             shared.Count < solverView.Possibilities[row2, col2].Count) return false;
         var inSameUnit = Coordinate.ShareAUnit(row1, col1, row2, col2);

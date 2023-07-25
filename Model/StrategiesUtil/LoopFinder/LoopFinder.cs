@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LoopFinder;
 using LoopFinder.Strategies;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.LoopFinder;
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using LoopFinder;
 using LoopFinder.Strategies;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.LoopFinder.Types;
 

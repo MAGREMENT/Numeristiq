@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.AIC;
 
-public class AlternatingInferenceChainStrategyV1Bis : IStrategy //TODO
+public class AlternatingInferenceChainStrategy : IStrategy
 {
     public string Name { get; } = "Alternating inference chain";
     
@@ -14,10 +15,18 @@ public class AlternatingInferenceChainStrategyV1Bis : IStrategy //TODO
     public long SearchCount { get; private set; }
 
     private readonly int _maxSearchCount;
+    private readonly int _maxLoopSize;
 
-    public AlternatingInferenceChainStrategyV1Bis(int maxSearchCount)
+    public AlternatingInferenceChainStrategy(int maxSearchCount, int maxLoopSize)
     {
         _maxSearchCount = maxSearchCount;
+        _maxLoopSize = maxLoopSize;
+    }
+
+    public AlternatingInferenceChainStrategy()
+    {
+        _maxSearchCount = int.MaxValue;
+        _maxLoopSize = int.MaxValue;
     }
 
     public void ApplyOnce(ISolverView solverView)
@@ -39,6 +48,7 @@ public class AlternatingInferenceChainStrategyV1Bis : IStrategy //TODO
     private void Search(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map,
         List<PossibilityCoordinate> visited)
     {
+        if (visited.Count > _maxLoopSize) return;
         //Always start by strong link, so if visited.Count % 2 == 1 => Strong ; == 0 => Weak, but Strong can be Weak
         var last = visited[^1];
         var resume = map[last];
@@ -282,21 +292,32 @@ public class AlternatingInferenceChainStrategyV1Bis : IStrategy //TODO
         }
     }
 
-    private static int ToInt(int row, int col, int possibility)
+    private int LoopToHash(List<PossibilityCoordinate> visited)
     {
-        return possibility * 81 + row * 9 + col;
-    }
+        int result = 0;
+        foreach (var coord in visited)
+        {
+            result ^= coord.GetHashCode();
+        }
 
-    private static int ToCoordinate(int asInt)
-    {
-        return 0; //TODO
+        return result;
     }
 }
 
-public class IntLinkResume
+public class LinkResume
 {
     public HashSet<PossibilityCoordinate> StrongLinks { get; }= new();
     public HashSet<PossibilityCoordinate> WeakLinks { get; } = new();
 
     public int Count => StrongLinks.Count + WeakLinks.Count;
+}
+
+public class Path<T>
+{
+    public T First { get; }
+
+    public Path(T first)
+    {
+        First = first;
+    }
 }

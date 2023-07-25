@@ -229,7 +229,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 int row = miniRow * 3 + gridNumber / 3;
                 int col = miniCol * 3 + gridNumber % 3;
                 
-                if (solverView.Sudoku[row, col] == 0 && !except.PeekFromGridPositions(gridNumber))
+                if (solverView.Sudoku[row, col] == 0 && !except.PeekFromGridNumber(gridNumber))
                     solverView.RemovePossibility(n, row, col, this);
             }
         }

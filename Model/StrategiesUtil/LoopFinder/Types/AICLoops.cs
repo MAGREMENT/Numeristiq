@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
 using LoopFinder;
 using LoopFinder.Strategies;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.LoopFinder.Types;
 
-public class BruteAICLoops<T> : ILoopType<T> where T : notnull
+public class AICLoops<T> : ILoopType<T> where T : notnull
 {
     private readonly bool _visitedExclusion = false;
     private readonly bool _oddLoopExclusion = false;
     private readonly bool _evenLoopExclusion = false;
     private readonly bool _loopFoundCancel = false;
 
-    public BruteAICLoops(params AICLoopSearchParam[] @params)
+    public AICLoops(params AICLoopSearchParam[] @params)
     {
         foreach (var p in @params)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Model.LoopFinder;
+namespace Model.StrategiesUtil.LoopFinder;
 
 public class Graph<T> : IEnumerable<T> where T : notnull
 {
@@ -38,6 +38,11 @@ public class Graph<T> : IEnumerable<T> where T : notnull
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public IEnumerable<T> EachVerticesWith(LinkStrength strength)
+    {
+        return _links[(int)strength].Keys;
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.LoopFinder;
 
@@ -31,7 +32,7 @@ public class Loop<T> where T : notnull
     {
         LoopBuilder<T> final = new(_elements[^1]);
         int otherIndex = -1;
-        for (int i = _elements.Length - 2; i >= 0 && otherIndex != -1; i--)
+        for (int i = _elements.Length - 2; i >= 0 && otherIndex == -1; i--)
         {
             final = final.Add(_elements[i], _links[i + 1]);
 
@@ -133,6 +134,16 @@ public class LoopBuilder<T> where T : notnull
         return new LoopBuilder<T>(eBuffer, lBuffer);
     }
 
+    public LoopBuilder<T> Cut(int index)
+    {
+        T[] eBuffer = new T[_elements.Length - index];
+        LinkStrength[] lBuffer = new LinkStrength[_links.Length - index];
+        Array.Copy(_elements, index, eBuffer, 0, eBuffer.Length);
+        Array.Copy(_links, index, lBuffer, 0, lBuffer.Length);
+        
+        return new LoopBuilder<T>(eBuffer, lBuffer);
+    }
+
     public Loop<T> End(LinkStrength strength)
     {
         LinkStrength[] lBuffer = new LinkStrength[_links.Length + 1];
@@ -153,9 +164,24 @@ public class LoopBuilder<T> where T : notnull
         return ContainedStatus.NotContained;
     }
 
+    public int IndexOf(T element)
+    {
+        for (int i = _elements.Length - 1; i >= 0; i--)
+        {
+            if (_elements[i].Equals(element)) return i;
+        }
+
+        return -1;
+    }
+
     public T LastElement()
     {
         return _elements[^1];
+    }
+
+    public T FirstElement()
+    {
+        return _elements[0];
     }
 
     public LinkStrength LastLink()
@@ -166,6 +192,19 @@ public class LoopBuilder<T> where T : notnull
     public LinkStrength FirstLink()
     {
         return _links.Length == 0 ? LinkStrength.None : _links[0];
+    }
+    
+    public override string ToString()
+    {
+        string result = "";
+        for (int i = 0; i < _elements.Length - 1; i++)
+        {
+            result += _elements[i] + (_links[i] == LinkStrength.Strong ? "=" : "-");
+        }
+
+        result += _elements[^1].ToString();
+
+        return result;
     }
 
 }
