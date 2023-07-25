@@ -8,6 +8,8 @@ namespace Model.Strategies.AlternatingChains.ChainTypes;
 
 public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
 {
+    public string Name => "XCycles";
+    public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
     public IEnumerable<Graph<PossibilityCoordinate>> GetGraphs(ISolverView view)
     {
@@ -40,11 +42,11 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
                 });
             }
 
-            for (int gridRow = 0; gridRow < 3; gridRow++)
+            for (int miniRow = 0; miniRow < 3; miniRow++)
             {
-                for (int gridCol = 0; gridCol < 3; gridCol++)
+                for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = view.PossibilityPositionsInMiniGrid(gridRow, gridCol, n);
+                    var ppimn = view.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
                     var strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     ppimn.ForEachCombination((one, two) =>
                     {

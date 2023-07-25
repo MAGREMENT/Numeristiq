@@ -9,6 +9,8 @@ namespace Model.Strategies.AlternatingChains.ChainTypes;
 
 public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
 {
+    public string Name => "Alternating inference chain";
+    public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public IStrategy? Strategy { get; set; }
 
     public IEnumerable<Graph<PossibilityCoordinate>> GetGraphs(ISolverView view)

@@ -8,8 +8,8 @@ namespace Model.Strategies.AIC;
 
 public class AlternatingChainGeneralization<T> : IStrategy where T : notnull
 {
-    public string Name => "Alternating chain generalization";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public string Name { get; }
+    public StrategyLevel Difficulty { get; }
     public int Score { get; set; }
 
     private readonly IAlternatingChainType<T> _chain;
@@ -19,6 +19,8 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : notnull
     {
         _chain = chainType;
         _chain.Strategy = this;
+        Name = chainType.Name;
+        Difficulty = chainType.Difficulty;
         _algorithm = algo;
     }
     
@@ -33,6 +35,9 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : notnull
 
 public interface IAlternatingChainType<T> where T : notnull
 {
+    public string Name { get; }
+    public StrategyLevel Difficulty { get; }
+    
     IStrategy? Strategy { get; set; }
     
     IEnumerable<Graph<T>> GetGraphs(ISolverView view);

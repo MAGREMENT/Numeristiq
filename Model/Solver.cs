@@ -16,8 +16,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs => _logManager.Logs;
-    public Sudoku Sudoku { get; }
-    private IStrategy[] Strategies { get; }
+    public Sudoku Sudoku { get; private set; }
+    public IStrategy[] Strategies { get; }
 
     public bool LogsManaged { get; set; } = true;
 
@@ -74,6 +74,32 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
+    }
+
+    public void SetSudoku(Sudoku s)
+    {
+        Sudoku = s;
+
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                Possibilities[i, j].Reset();
+            }
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (Sudoku[i, j] != 0)
+                {
+                    UpdatePossibilitiesAfterDefinitiveNumberAdded(s[i, j], i, j);
+                }
+            }
+        }
+        
+        //_pre.PrecomputePositions(this);
     }
 
     public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
@@ -277,7 +303,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new HiddenPossibilityStrategy(1),
             new NakedPossibilitiesStrategy(2),
             new HiddenPossibilityStrategy(2),
-            new IntersectionRemovalStrategyPackage(),
+            new BoxLineReduction(),
+            new PointingPossibilitiesStrategy(),
             new NakedPossibilitiesStrategy(3),
             new HiddenPossibilityStrategy(3),
             new NakedPossibilitiesStrategy(4),

@@ -10,7 +10,6 @@ public partial class SudokuUserControl : UserControl
     private readonly StackPanel _main;
 
     private Solver _currentSolver = new(new Sudoku());
-    private bool _seePossibilities;
 
     public delegate void OnReady();
     public event OnReady? IsReady;
@@ -105,11 +104,7 @@ public partial class SudokuUserControl : UserControl
     private void UpdateCell(SudokuCellUserControl current, int row, int col)
     {
         if(_currentSolver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_currentSolver.Sudoku[row, col]);
-        else
-        {
-            if(_seePossibilities) current.SetPossibilities(_currentSolver.Possibilities[row, col]);
-            else current.Void();
-        }
+        else current.SetPossibilities(_currentSolver.Possibilities[row, col]);
     }
 
     public void SolveSudoku()
@@ -160,15 +155,6 @@ public partial class SudokuUserControl : UserControl
     public List<ISolverLog> GetLogs()
     {
         return _currentSolver.Logs;
-    }
-
-    public bool SeePossibilities
-    {
-        set
-        {
-            _seePossibilities = value;
-            Update();
-        }
     }
 
     private SudokuCellUserControl GetTo(int row, int col)

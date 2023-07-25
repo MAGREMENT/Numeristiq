@@ -55,7 +55,7 @@ namespace SudokuSolver;
 
             SudokuUserControl suc = GetSudokuUserControl();
 
-            bool? stepByStep = ((CheckBox)_aside.Children[1]).IsChecked;
+            bool? stepByStep = ((CheckBox)_aside.Children[0]).IsChecked;
             if (stepByStep is null || (bool) !stepByStep) suc.SolveSudoku();
             else suc.RunUntilProgress();
 
@@ -70,17 +70,6 @@ namespace SudokuSolver;
             (FindName("Logs") as LogListUserControl)!.InitLogs(suc.GetLogs());
         }
 
-        private void SeePossibilities(object sender, RoutedEventArgs e)
-        {
-            GetSudokuUserControl().SeePossibilities = true;
-        }
-
-        private void UnSeePossibilities(object sender, RoutedEventArgs e)
-        {
-            GetSudokuUserControl().SeePossibilities = false;
-        }
-        
-        
         /*Gets*/
         private SudokuUserControl GetSudokuUserControl()
         {
@@ -89,6 +78,6 @@ namespace SudokuSolver;
 
         private LiveModificationUserControl GetLiveModificationUserControl()
         {
-            return (LiveModificationUserControl)_aside.Children[3];
+            return (LiveModificationUserControl)_aside.Children[2];
         }
     }

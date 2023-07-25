@@ -185,15 +185,18 @@ public static class Testing
     {
         var counter = 1;
         var success = 0;
+        Solver solver = new Solver(new Sudoku())
+        {
+            LogsManaged = false
+        };
         try
         {
             using TextReader reader =
                 new StreamReader($"C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\{fileNameInDataFolder}", Encoding.UTF8);
-            
+
             while (reader.ReadLine() is { } line)
             {
-                Solver solver = new(new Sudoku(line));
-                solver.LogsManaged = false;
+                solver.SetSudoku(new Sudoku(line));
                 solver.Solve();
 
                 if (!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);
@@ -211,6 +214,12 @@ public static class Testing
         
         Console.WriteLine("\nResult-------------------------------");
         Console.WriteLine($"Completion rate = {success} / {counter - 1}");
+        Console.WriteLine();
+        Console.WriteLine("Strategy usage : ");
+        foreach (var strategy in solver.Strategies)
+        {
+            Console.WriteLine($"-{strategy.Name} : {strategy.Score}");
+        }
     }
 
     private static void SharedSeenCellsTest()

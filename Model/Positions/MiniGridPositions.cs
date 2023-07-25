@@ -101,6 +101,22 @@ public class MiniGridPositions : IEnumerable<int[]>
         return result;
     }
 
+    public IEnumerable<int[]> OnGridRow(int gridRow) //TODO test
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if(((_pos >> (gridRow * 3 + i)) & 1) > 0) yield return new[] {_startRow + gridRow, _startCol + i};
+        }
+    }
+
+    public IEnumerable<int[]> OnGridColumn(int gridCol) //TODO test
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if(((_pos >> (i * 3 + gridCol)) & 1) > 0) yield return new[] {_startRow + i, _startCol + gridCol};
+        }
+    }
+
     public IEnumerator<int[]> GetEnumerator()
     {
         for (int i = 0; i < 9; i++)
