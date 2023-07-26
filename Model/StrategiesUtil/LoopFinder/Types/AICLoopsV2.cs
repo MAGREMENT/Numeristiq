@@ -1,10 +1,6 @@
-﻿using System;
-using LoopFinder.Strategies;
-using Model.StrategiesUtil.LoopFinder;
+﻿namespace Model.StrategiesUtil.LoopFinder.Types;
 
-namespace Model.LoopFinder.Types;
-
-public class AICLoopsV2<T> : ILoopType<T> where T : notnull
+public class AICLoopsV2<T> : ILoopType<T> where T : ILoopElement
 {
     public void Apply(LoopFinder<T> manager)
     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
 
@@ -211,7 +212,7 @@ public interface IColorable
     public Coloring Coloring { get; set; }
 }
 
-public class PossibilityCoordinate : Coordinate
+public class PossibilityCoordinate : Coordinate, ILoopElement
 {
     public int Possibility { get; }
     
@@ -234,5 +235,10 @@ public class PossibilityCoordinate : Coordinate
     public override string ToString()
     {
         return $"[{Row + 1}, {Col + 1} => {Possibility}]";
+    }
+
+    public bool IsSameLoopElement(ILoopElement other)
+    {
+        return other is PossibilityCoordinate pc && pc.Equals(this);
     }
 }

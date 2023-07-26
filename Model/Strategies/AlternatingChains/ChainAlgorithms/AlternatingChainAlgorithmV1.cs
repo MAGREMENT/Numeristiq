@@ -1,10 +1,8 @@
-﻿using Model.LoopFinder;
-using Model.Strategies.AIC;
-using Model.StrategiesUtil.LoopFinder;
+﻿using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainAlgorithms;
 
-public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : notnull
+public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement
 {
     private readonly int _maxLoopSize;
     
@@ -30,15 +28,11 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
         {
             foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
             {
-                switch (path.Contains(friend))
+                if (path.FirstElement().Equals(friend))
                 {
-                    case ContainedStatus.First :
-                        if (path.Count >= 4) chainType.ProcessStrongInference(view, path.FirstElement());
-                        break;
-                    case ContainedStatus.NotContained :
-                        Search(graph, path.Add(friend, LinkStrength.Strong), chainType, view);
-                        break;
-                } 
+                    if (path.Count >= 4) chainType.ProcessStrongInference(view, path.FirstElement());
+                }
+                else if(!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Strong), chainType, view);
             }
         }
         else
@@ -50,7 +44,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
                 {
                     if (weakFromFirst.Contains(weakFromLast))
                     {
-                        if(path.Contains(weakFromLast) == ContainedStatus.Contained) continue;
+                        if(path.IsAlreadyPresent(weakFromLast)) continue;
                         chainType.ProcessWeakInference(view, weakFromLast);
                     }
                 }
@@ -58,28 +52,20 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
             
             foreach (var friend in graph.GetLinks(last, LinkStrength.Weak))
             {
-                switch (path.Contains(friend))
+                if (path.FirstElement().Equals(friend))
                 {
-                    case ContainedStatus.First :
-                        if (path.Count >= 4) chainType.ProcessFullLoop(view, path.End(LinkStrength.Weak));
-                        break;
-                    case ContainedStatus.NotContained :
-                        Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
-                        break;
-                } 
+                    if (path.Count >= 4) chainType.ProcessFullLoop(view, path.End(LinkStrength.Weak));       
+                }
+                else if (!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
             }
             
             foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
             {
-                switch (path.Contains(friend))
+                if (path.FirstElement().Equals(friend))
                 {
-                    case ContainedStatus.First :
-                        if (path.Count >= 4) chainType.ProcessFullLoop(view, path.End(LinkStrength.Weak));
-                        break;
-                    case ContainedStatus.NotContained :
-                        Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
-                        break;
-                } 
+                    if (path.Count >= 4) chainType.ProcessFullLoop(view, path.End(LinkStrength.Weak));       
+                }
+                else if (!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
             }
         }
     }

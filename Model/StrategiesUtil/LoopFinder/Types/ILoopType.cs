@@ -1,8 +1,6 @@
-﻿using Model.LoopFinder;
+﻿namespace Model.StrategiesUtil.LoopFinder.Types;
 
-namespace LoopFinder.Strategies;
-
-public interface ILoopType<T> where T : notnull
+public interface ILoopType<T> where T : ILoopElement
 {
     void Apply(LoopFinder<T> manager);
 }

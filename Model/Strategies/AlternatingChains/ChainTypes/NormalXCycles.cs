@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.LoopFinder;
-using Model.Strategies.AIC;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 

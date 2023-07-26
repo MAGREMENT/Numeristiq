@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model.StrategiesUtil.LoopFinder;
 
-namespace Model.LoopFinder;
+namespace Model.StrategiesUtil.LoopFinder;
 
-public class Loop<T> where T : notnull
+public class Loop<T> where T : ILoopElement
 {
     private readonly T[] _elements;
     private readonly LinkStrength[] _links;
@@ -102,7 +101,7 @@ public class Loop<T> where T : notnull
     }
 }
 
-public class LoopBuilder<T> where T : notnull
+public class LoopBuilder<T> where T : ILoopElement
 {
 
     private readonly T[] _elements;
@@ -158,10 +157,15 @@ public class LoopBuilder<T> where T : notnull
         if (_elements[0].Equals(element)) return ContainedStatus.First;
         for (int i = 1; i < _elements.Length; i++)
         {
-            if (_elements[i].Equals(element)) return ContainedStatus.Contained;
+            if (_elements[i].IsSameLoopElement(element)) return ContainedStatus.Contained;
         }
 
         return ContainedStatus.NotContained;
+    }
+
+    public bool IsAlreadyPresent(T element)
+    {
+        return _elements.Any(e => e.IsSameLoopElement(element));
     }
 
     public int IndexOf(T element)
@@ -212,4 +216,9 @@ public class LoopBuilder<T> where T : notnull
 public enum ContainedStatus
 {
     First, Contained, NotContained
+}
+
+public interface ILoopElement
+{
+    bool IsSameLoopElement(ILoopElement other);
 }

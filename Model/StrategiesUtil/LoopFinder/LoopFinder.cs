@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using LoopFinder;
-using LoopFinder.Strategies;
-using Model.StrategiesUtil.LoopFinder;
+using Model.StrategiesUtil.LoopFinder.Types;
 
-namespace Model.LoopFinder;
+namespace Model.StrategiesUtil.LoopFinder;
 
-public class LoopFinder<T> : IEnumerable<T> where T : notnull
+public class LoopFinder<T> : IEnumerable<T> where T : ILoopElement
 {
     public HashSet<Loop<T>> Loops { get; }= new();
 

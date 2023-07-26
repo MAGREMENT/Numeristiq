@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Model.LoopFinder;
-using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 
-namespace Model.Strategies.AIC;
+namespace Model.Strategies.AlternatingChains;
 
-public class AlternatingChainGeneralization<T> : IStrategy where T : notnull
+public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElement
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
@@ -33,7 +30,7 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : notnull
     }
 }
 
-public interface IAlternatingChainType<T> where T : notnull
+public interface IAlternatingChainType<T> where T : ILoopElement
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
@@ -49,7 +46,7 @@ public interface IAlternatingChainType<T> where T : notnull
     bool ProcessStrongInference(ISolverView view, T inference);
 }
 
-public interface IAlternatingChainAlgorithm<T> where T : notnull
+public interface IAlternatingChainAlgorithm<T> where T : ILoopElement
 {
     void Run(ISolverView view, Graph<T> graph, IAlternatingChainType<T> chainType);
 }

@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using LoopFinder;
-using LoopFinder.Strategies;
-using Model.StrategiesUtil.LoopFinder;
 
-namespace Model.LoopFinder.Types;
+namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AICLoops<T> : ILoopType<T> where T : notnull
+public class AICLoops<T> : ILoopType<T> where T : ILoopElement
 {
     private readonly bool _visitedExclusion = false;
     private readonly bool _oddLoopExclusion = false;

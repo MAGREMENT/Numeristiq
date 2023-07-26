@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using LoopFinder.Strategies;
-using Model.StrategiesUtil.LoopFinder;
 
-namespace Model.LoopFinder.Types;
+namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AICLoopsV3<T> : ILoopType<T> where T : notnull
+public class AICLoopsV3<T> : ILoopType<T> where T : ILoopElement
 {
     public void Apply(LoopFinder<T> manager)
     {

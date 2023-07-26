@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Model.LoopFinder;
 using Model.Positions;
 using Model.Strategies.AIC;
 using Model.StrategiesUtil;
@@ -92,7 +91,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 }
 
                 var singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var pcsStrength = pcs.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
+                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
                 var current = new GroupedXCyclePointingRow(numba, list);
 
                 foreach (var single in singles)
@@ -126,7 +125,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 }
                 
                 singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var prsStrength = pcs.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
+                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
 
                 foreach (var single in singles)
                 {
@@ -165,7 +164,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 }
 
                 var singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var prsStrength = prs.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
+                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
                 var current = new GroupedXCyclePointingColumn(numba, list);
 
                 foreach (var single in singles)
@@ -199,7 +198,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 }
                 
                 singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var pcsStrength = pcs.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
+                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
 
                 foreach (var single in singles)
                 {
@@ -276,9 +275,9 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
     }
 }
 
-public interface IGroupedXCycleNode
+public interface IGroupedXCycleNode : ILoopElement
 {
-    
+    public Coordinate[] EachCoordinates();
 }
 
 public class GroupedXCycleSingle : PossibilityCoordinate, IGroupedXCycleNode
@@ -309,6 +308,17 @@ public class GroupedXCycleSingle : PossibilityCoordinate, IGroupedXCycleNode
     public override string ToString()
     {
         return $"[{Row + 1}, {Col + 1} => {Possibility}]";
+    }
+
+    public new bool IsSameLoopElement(ILoopElement other)
+    {
+        return other is IGroupedXCycleNode node &&
+               node.EachCoordinates().Any(coord => coord.Row == Row && coord.Col == Col);
+    }
+
+    public Coordinate[] EachCoordinates()
+    {
+        return new[] { new Coordinate(Row, Col) };
     }
 }
 
@@ -344,15 +354,37 @@ public class GroupedXCyclePointingRow : IGroupedXCycleNode
 
     public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCycleSingle single)
     {
-        for (int col = 0; col < 9; col++)
+        if (single.Row == Coordinates[0].Row)
         {
-            if (col == single.Col || Coordinates.Any(coord => coord.Col == col)) continue;
-            yield return new PossibilityCoordinate(Coordinates[0].Row, col, Possibility);
+            for (int col = 0; col < 9; col++)
+            {
+                if (col == single.Col || Coordinates.Any(coord => coord.Col == col)) continue;
+                yield return new PossibilityCoordinate(Coordinates[0].Row, col, Possibility);
+            }
+        }
+        if (single.Row / 3 == Coordinates[0].Row / 3 && single.Col / 3 == Coordinates[0].Col / 3)
+        {
+            int rowStart = single.Row / 3 * 3;
+            int colStart = single.Col / 3 * 3;
+
+            for (int gridRow = 0; gridRow < 3; gridRow++)
+            {
+                for (int gridCol = 0; gridCol < 3; gridCol++)
+                {
+                    int row = rowStart + gridRow;
+                    int col = colStart + gridCol;
+
+                    if ((row == single.Row && col == single.Col) ||
+                        Coordinates.Any(coord => coord.Row == row && coord.Col == col)) continue;
+                    yield return new PossibilityCoordinate(row, col, Possibility);
+                }
+            }
         }
     }
     
     public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCyclePointingRow row)
     {
+        if(Coordinates[0].Row != row.Coordinates[0].Row) yield break;
         for (int col = 0; col < 9; col++)
         {
             if (row.Coordinates.Any(coord => coord.Col == col) ||
@@ -382,6 +414,35 @@ public class GroupedXCyclePointingRow : IGroupedXCycleNode
         }
 
         return true;
+    }
+
+    public override string ToString()
+    {
+        var result = "[";
+        foreach (var coord in Coordinates)
+        {
+            result += $"{coord.Row + 1}, {coord.Col + 1} | ";
+        }
+
+        result = result[..^2];
+        return result + $"=> {Possibility}]";
+    }
+
+    public bool IsSameLoopElement(ILoopElement other)
+    {
+        if (other is not IGroupedXCycleNode node) return false;
+        foreach (var coordinate in node.EachCoordinates())
+        {
+            if (Coordinates.Any(coord => coordinate.Row == coord.Row && coordinate.Col == coord.Col))
+                return true;
+        }
+
+        return false;
+    }
+
+    public Coordinate[] EachCoordinates()
+    {
+        return Coordinates;
     }
 }
 
@@ -417,15 +478,37 @@ public class GroupedXCyclePointingColumn : IGroupedXCycleNode
     
     public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCycleSingle single)
     {
-        for (int row = 0; row < 9; row++)
+        if (single.Col == Coordinates[0].Col)
         {
-            if (row == single.Row || Coordinates.Any(coord => coord.Row == row)) continue;
-            yield return new PossibilityCoordinate(row, Coordinates[0].Col, Possibility);
+            for (int row = 0; row < 9; row++)
+            {
+                if (row == single.Row || Coordinates.Any(coord => coord.Row == row)) continue;
+                yield return new PossibilityCoordinate(row, single.Col, Possibility);
+            }
+        }
+        if (single.Row / 3 == Coordinates[0].Row / 3 && single.Col / 3 == Coordinates[0].Col / 3)
+        {
+            int rowStart = single.Row / 3 * 3;
+            int colStart = single.Col / 3 * 3;
+
+            for (int gridRow = 0; gridRow < 3; gridRow++)
+            {
+                for (int gridCol = 0; gridCol < 3; gridCol++)
+                {
+                    int row = rowStart + gridRow;
+                    int col = colStart + gridCol;
+
+                    if ((row == single.Row && col == single.Col) ||
+                        Coordinates.Any(coord => coord.Row == row && coord.Col == col)) continue;
+                    yield return new PossibilityCoordinate(row, col, Possibility);
+                }
+            }
         }
     }
     
     public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCyclePointingColumn col)
     {
+        if(col.Coordinates[0].Col != Coordinates[0].Col) yield break;
         for (int row = 0; row < 9; row++)
         {
             if (col.Coordinates.Any(coord => coord.Row == row) ||
@@ -455,5 +538,34 @@ public class GroupedXCyclePointingColumn : IGroupedXCycleNode
         }
 
         return true;
+    }
+    
+    public override string ToString()
+    {
+        var result = "[";
+        foreach (var coord in Coordinates)
+        {
+            result += $"{coord.Row + 1}, {coord.Col + 1} | ";
+        }
+
+        result = result[..^2];
+        return result + $"=> {Possibility}]";
+    }
+    
+    public bool IsSameLoopElement(ILoopElement other)
+    {
+        if (other is not IGroupedXCycleNode node) return false;
+        foreach (var coordinate in node.EachCoordinates())
+        {
+            if (Coordinates.Any(coord => coordinate.Row == coord.Row && coordinate.Col == coord.Col))
+                return true;
+        }
+
+        return false;
+    }
+
+    public Coordinate[] EachCoordinates()
+    {
+        return Coordinates;
     }
 }

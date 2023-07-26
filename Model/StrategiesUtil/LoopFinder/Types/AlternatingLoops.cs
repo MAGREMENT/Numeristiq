@@ -1,11 +1,8 @@
 ﻿using System.Collections.Generic;
-using LoopFinder;
-using LoopFinder.Strategies;
-using Model.StrategiesUtil.LoopFinder;
 
-namespace Model.LoopFinder.Types;
+namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AlternatingLoops<T> : ILoopType<T> where T : notnull
+public class AlternatingLoops<T> : ILoopType<T> where T : ILoopElement
 {
     public void Apply(LoopFinder<T> manager)
     {

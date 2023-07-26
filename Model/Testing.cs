@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Model.LoopFinder;
-using Model.LoopFinder.Types;
 using Model.Positions;
 using Model.Possibilities;
-using Model.Strategies;
 using Model.Strategies.AIC;
+using Model.Strategies.AlternatingChains;
 using Model.StrategiesUtil;
-using Model.StrategiesUtil.LoopFinder;
 
 namespace Model;
 
@@ -93,9 +90,9 @@ public static class Testing
         return true;
     }
 
-    private static void LoopFinderTest()
+    private static void LoopFinderTest() //TODO fixme
     {
-        Graph<int> example = new();
+        /*Graph<int> example = new();
         example.AddLink(1, 2, LinkStrength.Weak);
         example.AddLink(1, 4, LinkStrength.Strong);
         example.AddLink(2, 3, LinkStrength.Strong);
@@ -129,7 +126,7 @@ public static class Testing
         LoopFinder<int> finder = new LoopFinder<int>(example,
             new AICLoopsV3<int>(), (_) => false);
         finder.Run();
-        Console.WriteLine(finder.GetStats());
+        Console.WriteLine(finder.GetStats());*/
     }
 
     private static void CompareAicAlgorithms()
