@@ -16,10 +16,11 @@ public class LogManager
         if (strategyCount != _lastStrategy)
         {
             Push();
-            _current = new NumberAddedLog(number, row, col, strategy); //TODO add flexibility if number added and possibility removed
+            _current = new BasicLog(strategy);
             _lastStrategy = strategyCount;
-        }
-        else _current!.Another(number, row, col);
+        } 
+        
+        _current!.DefinitiveAdded(number, row, col);
     }
     
     public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy, int strategyCount)
@@ -27,10 +28,11 @@ public class LogManager
         if (strategyCount != _lastStrategy)
         {
             Push();
-            _current = new PossibilityRemovedLog(possibility, row, col, strategy);
+            _current = new BasicLog(strategy);
             _lastStrategy = strategyCount;
         }
-        else _current!.Another(possibility, row, col);
+        
+        _current!.PossibilityRemoved(possibility, row, col);
     }
 
     public void Push()

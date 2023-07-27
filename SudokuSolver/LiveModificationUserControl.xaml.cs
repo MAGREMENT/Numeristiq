@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -6,10 +7,7 @@ namespace SudokuSolver;
 
 public partial class LiveModificationUserControl : UserControl
 {
-    private const int FullFontSize = 100;
-
-    private readonly Grid _case;
-    private readonly TextBlock _text;
+    private readonly NumbersUserControl _numbers;
     private readonly RadioButton _definitiveNumber;
     private readonly RadioButton _possibilities;
 
@@ -21,22 +19,23 @@ public partial class LiveModificationUserControl : UserControl
     public LiveModificationUserControl()
     {
         InitializeComponent();
+        
+        _numbers = (FindName("Numbers") as NumbersUserControl)!;
 
-        _case = (FindName("Case") as Grid)!;
-        _text = (FindName("Text") as TextBlock)!;
-        _text.Focusable = true;
-        _case.Background = new SolidColorBrush(Colors.WhiteSmoke);
-        _text.LostFocus += (_, _) =>
+        _numbers.SetSize(150);
+        _numbers.Focusable = true;
+        _numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
+        _numbers.LostFocus += (_, _) =>
         {
-            _case.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            _numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
         };
-        _text.GotFocus += (_, _) =>
+        _numbers.GotFocus += (_, _) =>
         {
-            _case.Background = new SolidColorBrush(Colors.Aqua);
+            _numbers.Background = new SolidColorBrush(Colors.Aqua);
         };
-        _case.MouseDown += (_, _) =>
+        _numbers.MouseDown += (_, _) =>
         {
-            _text.Focus();
+            _numbers.Focus();
         };
 
         _definitiveNumber = (FindName("A") as RadioButton)!;
@@ -61,16 +60,16 @@ public partial class LiveModificationUserControl : UserControl
         _currentPos[1] = col;
 
         _current.Updated += Update;
-        Update();
-        _text.Focus();
+        _current.FireUpdated();
+        _numbers.Focus();
     }
 
-    private void Update()
+    private void Update(bool isPossibilities, int[] numbers)
     {
         if (_current is not null)
         {
-            _text.FontSize = _current.IsPossibilities ? FullFontSize / 4 : FullFontSize;
-            _text.Text = _current.Text;
+            if (isPossibilities) _numbers.SetSmall(numbers);
+            else _numbers.SetBig(numbers[0]);
         }
     }
 

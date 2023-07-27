@@ -36,3 +36,5 @@ C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\L
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LogUserControl.baml
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LiveModificationUserControl.g.cs
 C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\LiveModificationUserControl.baml
+C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\NumbersUserControl.g.cs
+C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\obj\Debug\net6.0-windows\NumbersUserControl.baml

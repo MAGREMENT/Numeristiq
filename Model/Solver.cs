@@ -28,9 +28,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
     public delegate void OnPossibilityRemoved(int row, int col);
     public event OnPossibilityRemoved? PossibilityRemoved;
 
-    private readonly List<int[]> _listOfChanges = new();
+    
     private bool _changeWasMade;
-
     private int _strategyCount;
 
     private PreComputer _pre;
@@ -82,6 +81,13 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
     {
         Sudoku = s;
 
+        ResetPossibilities();
+
+        _pre = new PreComputer(this);
+    }
+
+    private void ResetPossibilities()
+    {
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -96,12 +102,10 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             {
                 if (Sudoku[i, j] != 0)
                 {
-                    UpdatePossibilitiesAfterDefinitiveNumberAdded(s[i, j], i, j);
+                    UpdatePossibilitiesAfterDefinitiveNumberAdded(Sudoku[i, j], i, j);
                 }
             }
         }
-
-        _pre = new PreComputer(this);
     }
 
     public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
@@ -119,7 +123,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
     public void SetDefinitiveNumberByHand(int number, int row, int col)
     {
         Sudoku[row, col] = number;
-        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+        ResetPossibilities();
     }
 
     public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
@@ -173,7 +177,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         return _pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
     }
 
-    public void Solve()
+    public void Solve(bool stopAtProgress = false)
     {
         for (int i = 0; i < Strategies.Length; i++)
         {
@@ -185,43 +189,17 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             if (_changeWasMade)
             {
                 _changeWasMade = false;
+                if (stopAtProgress)
+                {
+                    if(LogsManaged) _logManager.Push();
+                    return;
+                }
                 i = -1;
                 _pre.PrecomputePositions();
             }
         }
         
         if(LogsManaged) _logManager.Push();
-    }
-
-    public List<int[]> RunUntilProgress()
-    {
-        _listOfChanges.Clear();
-        NumberAdded += AddToListOfChanges;
-        PossibilityRemoved += AddToListOfChanges;
-        
-        foreach (var strategy in Strategies)
-        {
-            strategy.ApplyOnce(this);
-            _strategyCount++;
-            
-            if (_changeWasMade)
-            {
-                _changeWasMade = false;
-                break;
-            }
-        }
-        
-        NumberAdded -= AddToListOfChanges;
-        PossibilityRemoved -= AddToListOfChanges;
-        
-        if(LogsManaged) _logManager.Push();
-        
-        return _listOfChanges;
-    }
-
-    private void AddToListOfChanges(int row, int col)
-    {
-        _listOfChanges.Add(new[] {row, col});
     }
 
     public bool IsWrong()

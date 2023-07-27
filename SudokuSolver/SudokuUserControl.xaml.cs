@@ -116,31 +116,22 @@ public partial class SudokuUserControl : UserControl
 
     public void RunUntilProgress()
     {
-        var changes = _currentSolver.RunUntilProgress();
+        _currentSolver.Solve(true);
         
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
             {
                 SudokuCellUserControl current = GetTo(i, j);
+                UpdateCell(current, i, j);
                 current.UnHighLight();
             }
         }
-
-        foreach (var coord in changes)
+        
+        foreach (var coord in _currentSolver.Logs[^1].AllParts())
         {
-            SudokuCellUserControl current = GetTo(coord[0], coord[1]);
-            current.HighLight();
-        }
-
-
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                SudokuCellUserControl current = GetTo(i, j);
-                UpdateCell(current, i, j);
-            }
+            SudokuCellUserControl current = GetTo(coord.Row, coord.Column);
+            current.HighLight(coord);
         }
 
         IsReady?.Invoke();

@@ -1,90 +1,72 @@
-﻿using System.Windows;
+﻿using System;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Model.Logs;
 using Model.Possibilities;
+using Action = Model.Logs.Action;
 
 namespace SudokuSolver;
 
 public partial class SudokuCellUserControl : UserControl
 {
-    private const int Size = 55;
+    private readonly NumbersUserControl _numbers;
 
-    private readonly TextBlock _tb;
-    private readonly Grid _backGround;
+    private bool _isPossibilities = false;
+    private int[] _nums = Array.Empty<int>();
 
     public delegate void OnClickedOn(SudokuCellUserControl sender);
     public event OnClickedOn? ClickedOn;
 
-    public delegate void OnUpdate();
+    public delegate void OnUpdate(bool isPossibilities, int[] numbers);
     public event OnUpdate? Updated;
 
     public SudokuCellUserControl()
     {
         InitializeComponent();
 
-        _tb = (FindName("TB") as TextBlock)!;
-        _backGround = (FindName("Background") as Grid)!;
-
-        _backGround.MouseLeftButtonDown += (_, _) =>
+        _numbers = (FindName("Numbers") as NumbersUserControl)!;
+        _numbers.SetSize(56);
+        _numbers.MouseLeftButtonDown += (_, _) =>
         {
             ClickedOn?.Invoke(this);
         };
     }
 
-    public void HighLight()
+    public void HighLight(LogPart part)
     {
-        _backGround.Background = new SolidColorBrush(Colors.Aqua);
+        if (part.Action == Action.NumberAdded) _numbers.HighLightBig();
+        else _numbers.HighLightSmall(part.Number);
     }
 
     public void UnHighLight()
     {
-        _backGround.Background = new SolidColorBrush(Colors.White);
+        _numbers.UnHighLight();
     }
 
     public void SetDefinitiveNumber(int number)
     {
-        _tb.FontSize = Size - 5;
-        _tb.Foreground = new SolidColorBrush(Colors.Black);
-        _tb.Text = number.ToString();
-        IsPossibilities = false;
+        _numbers.SetBig(number);
         
-        Updated?.Invoke();
+        _isPossibilities = false;
+        _nums = new[] { number };
+        Updated?.Invoke(false, _nums);
     }
 
     public void SetPossibilities(IPossibilities possibilities)
     {
-        if (possibilities.Count == 0)
-        {
-            Void();
-            return;
-        }
+        _isPossibilities = true;
+        _nums = possibilities.ToArray();
         
-        string result = "";
-        int counter = 0;
-        foreach (var number in possibilities)
-        {
-            counter++;
-            result += number + " ";
-            if (counter % 3 == 0) result += "\n";
-        }
-
-        result = result[^1] == '\n' ? result[..^1] : result;
-        _tb.FontSize = ((double) Size - 5) / 4;
-        _tb.Foreground = new SolidColorBrush(Colors.Red);
-        _tb.Text = result;
-        IsPossibilities = true;
+        _numbers.SetSmall(_nums);
         
-        Updated?.Invoke();
+        Updated?.Invoke(_isPossibilities, _nums);
     }
-
-    public string Text => _tb.Text;
     
-    public bool IsPossibilities { get; private set; }
-
-    public void Void()
+    public void FireUpdated()
     {
-        _tb.Text = "";
-        Updated?.Invoke();
+        Updated?.Invoke(_isPossibilities, _nums);
     }
 
     public bool BorderTop
@@ -92,9 +74,9 @@ public partial class SudokuCellUserControl : UserControl
         set
         {
             var vis = value ? Visibility.Visible : Visibility.Hidden;
-            (FindName("b00") as StackPanel)!.Visibility = vis;
-            (FindName("b01") as StackPanel)!.Visibility = vis;
-            (FindName("b02") as StackPanel)!.Visibility = vis;
+            (FindName("B00") as StackPanel)!.Visibility = vis;
+            (FindName("B01") as StackPanel)!.Visibility = vis;
+            (FindName("B02") as StackPanel)!.Visibility = vis;
         }
     }
     
@@ -103,9 +85,9 @@ public partial class SudokuCellUserControl : UserControl
         set
         {
             var vis = value ? Visibility.Visible : Visibility.Hidden;
-            (FindName("b20") as StackPanel)!.Visibility = vis;
-            (FindName("b21") as StackPanel)!.Visibility = vis;
-            (FindName("b22") as StackPanel)!.Visibility = vis;
+            (FindName("B20") as StackPanel)!.Visibility = vis;
+            (FindName("B21") as StackPanel)!.Visibility = vis;
+            (FindName("B22") as StackPanel)!.Visibility = vis;
         }
     }
     
@@ -114,9 +96,9 @@ public partial class SudokuCellUserControl : UserControl
         set
         {
             var vis = value ? Visibility.Visible : Visibility.Hidden;
-            (FindName("b00") as StackPanel)!.Visibility = vis;
-            (FindName("b10") as StackPanel)!.Visibility = vis;
-            (FindName("b20") as StackPanel)!.Visibility = vis;
+            (FindName("B00") as StackPanel)!.Visibility = vis;
+            (FindName("B10") as StackPanel)!.Visibility = vis;
+            (FindName("B20") as StackPanel)!.Visibility = vis;
         }
     }
     
@@ -125,9 +107,9 @@ public partial class SudokuCellUserControl : UserControl
         set
         {
             var vis = value ? Visibility.Visible : Visibility.Hidden;
-            (FindName("b02") as StackPanel)!.Visibility = vis;
-            (FindName("b12") as StackPanel)!.Visibility = vis;
-            (FindName("b22") as StackPanel)!.Visibility = vis;
+            (FindName("B02") as StackPanel)!.Visibility = vis;
+            (FindName("B12") as StackPanel)!.Visibility = vis;
+            (FindName("B22") as StackPanel)!.Visibility = vis;
         }
     }
 }

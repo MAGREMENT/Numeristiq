@@ -9,26 +9,22 @@
     <Grid Background="Gray" x:Name="DeepBackground" Width="60" Height="60" Margin="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="55"/>
+            <ColumnDefinition Width="56"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
-            <RowDefinition Height="55"/>
+            <RowDefinition Height="56"/>
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Grid Background="White" x:Name="Background" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"
-              Width="56" Height="56">
-            <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                       x:Name="TB"></TextBlock>
-        </Grid>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="0" x:Name="b00"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="1" x:Name="b01"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="2" x:Name="b02"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="1" Grid.Column="0" x:Name="b10"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="1" Grid.Column="2" x:Name="b12"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="0" x:Name="b20"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="1" x:Name="b21"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="2" x:Name="b22"></StackPanel>
+        <local:NumbersUserControl Grid.Row="1" Grid.Column="1" x:Name="Numbers" Background="White"/>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="0" x:Name="B00"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="1" x:Name="B01"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="2" x:Name="B02"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="1" Grid.Column="0" x:Name="B10"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="1" Grid.Column="2" x:Name="B12"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="0" x:Name="B20"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="1" x:Name="B21"></StackPanel>
+        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="2" x:Name="B22"></StackPanel>
     </Grid>
 </UserControl>

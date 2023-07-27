@@ -23,7 +23,7 @@ public class PreComputer
             int numberIndex = number - 1;
             for (int i = 0; i < 9; i++)
             {
-                _rows[i, numberIndex] = PossibilityPositionsInRow(i, number);
+                _rows[i, numberIndex] = PossibilityPositionsInRow(i, number); //TODO make less memory eating
                 _cols[i, numberIndex] = PossibilityPositionsInColumn( i, number);
             }
             

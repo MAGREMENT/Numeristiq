@@ -19,7 +19,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        CompareAicAlgorithms();
+        FullSudokuBankTest("OnlineBank1.txt");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
