@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Model.Logs;
 using Model.Possibilities;
 using Action = Model.Logs.Action;
@@ -55,6 +55,16 @@ public partial class SudokuCellUserControl : UserControl
     }
 
     public void SetPossibilities(IPossibilities possibilities)
+    {
+        _isPossibilities = true;
+        _nums = possibilities.ToArray();
+        
+        _numbers.SetSmall(_nums);
+        
+        Updated?.Invoke(_isPossibilities, _nums);
+    }
+
+    public void SetPossibilities(List<int> possibilities)
     {
         _isPossibilities = true;
         _nums = possibilities.ToArray();

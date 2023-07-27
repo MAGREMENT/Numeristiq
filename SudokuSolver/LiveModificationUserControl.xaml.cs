@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace SudokuSolver;
 
-public partial class LiveModificationUserControl : UserControl
+public partial class LiveModificationUserControl : UserControl //TODO disable when looking back at logs
 {
     private readonly NumbersUserControl _numbers;
     private readonly RadioButton _definitiveNumber;

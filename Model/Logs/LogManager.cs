@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Logs;
 
-namespace Model;
+namespace Model.Logs;
 
 public class LogManager
 {
@@ -11,25 +10,25 @@ public class LogManager
 
     private ISolverLog? _current;
 
-    public void NumberAdded(int number, int row, int col, IStrategy strategy, int strategyCount)
+    public void NumberAdded(int number, int row, int col, IStrategy strategy, Solver solver)
     {
-        if (strategyCount != _lastStrategy)
+        if (solver.StrategyCount != _lastStrategy)
         {
             Push();
-            _current = new BasicLog(strategy);
-            _lastStrategy = strategyCount;
+            _current = new BasicLog(strategy, solver.State);
+            _lastStrategy = solver.StrategyCount;
         } 
         
         _current!.DefinitiveAdded(number, row, col);
     }
     
-    public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy, int strategyCount)
+    public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy, Solver solver)
     {
-        if (strategyCount != _lastStrategy)
+        if (solver.StrategyCount != _lastStrategy)
         {
             Push();
-            _current = new BasicLog(strategy);
-            _lastStrategy = strategyCount;
+            _current = new BasicLog(strategy, solver.State);
+            _lastStrategy = solver.StrategyCount;
         }
         
         _current!.PossibilityRemoved(possibility, row, col);

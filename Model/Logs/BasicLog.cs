@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
 
 namespace Model.Logs;
 
@@ -25,10 +24,13 @@ public class BasicLog : ISolverLog
         }
     }
 
-    public BasicLog(IStrategy causedBy)
+    public string SolverState { get; }
+
+    public BasicLog(IStrategy causedBy, string solverState)
     {
         Title = causedBy.Name;
         Intensity = (Intensity) causedBy.Difficulty;
+        SolverState = solverState;
     }
 
     public void DefinitiveAdded(int n, int row, int col)

@@ -37,6 +37,9 @@ namespace SudokuSolver;
                 ((TextBox)_main.Children[1]).Text = asString;
                 _createNewSudoku = true;
             };
+
+            GetLogListUserControl().ShowCurrentClicked += () => GetSudokuUserControl().ShowCurrent();
+            GetLogListUserControl().LogClicked += (log) => GetSudokuUserControl().ShowLog(log);
             
             GetLiveModificationUserControl().Init(GetSudokuUserControl());
         }
@@ -59,7 +62,7 @@ namespace SudokuSolver;
             if (stepByStep is null || (bool) !stepByStep) suc.SolveSudoku();
             else suc.RunUntilProgress();
 
-            (FindName("Logs") as LogListUserControl)!.InitLogs(suc.GetLogs());
+            GetLogListUserControl().InitLogs(suc.GetLogs());
         }
 
         private void ClearSudoku(object sender, RoutedEventArgs e)
@@ -67,7 +70,7 @@ namespace SudokuSolver;
             SudokuUserControl suc = GetSudokuUserControl();
             suc.ClearSudoku();
             
-            (FindName("Logs") as LogListUserControl)!.InitLogs(suc.GetLogs());
+            GetLogListUserControl().InitLogs(suc.GetLogs());
         }
 
         /*Gets*/
@@ -79,5 +82,10 @@ namespace SudokuSolver;
         private LiveModificationUserControl GetLiveModificationUserControl()
         {
             return (LiveModificationUserControl)_aside.Children[2];
+        }
+
+        private LogListUserControl GetLogListUserControl()
+        {
+            return (LogListUserControl)_aside.Children[1];
         }
     }

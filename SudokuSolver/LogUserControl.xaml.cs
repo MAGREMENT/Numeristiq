@@ -11,6 +11,11 @@ public partial class LogUserControl : UserControl
     private readonly StackPanel _main;
     private readonly TextBlock _title;
     private readonly TextBlock _text;
+
+    private ISolverLog? _log;
+
+    public delegate void OnLogClicked(ISolverLog log);
+    public event OnLogClicked? LogClicked;
     
     public LogUserControl()
     {
@@ -28,10 +33,16 @@ public partial class LogUserControl : UserControl
         {
             _main.Background = new SolidColorBrush(Colors.WhiteSmoke);
         };
+        _main.MouseLeftButtonDown += (_, _) =>
+        {
+            if(_log is not null) LogClicked?.Invoke(_log);
+        };
     }
 
     public void InitLog(ISolverLog log)
     {
+        _log = log;
+        
         _title.Foreground = new SolidColorBrush(log.Intensity switch
         {
             Intensity.Zero => Colors.Gray,

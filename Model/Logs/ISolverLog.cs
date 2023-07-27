@@ -7,6 +7,7 @@ public interface ISolverLog
     public string Title { get; }
     public Intensity Intensity { get; }
     public string Text { get; }
+    public string SolverState { get; }
 
     public void DefinitiveAdded(int n, int row, int col);
     public void PossibilityRemoved(int p, int row, int col);

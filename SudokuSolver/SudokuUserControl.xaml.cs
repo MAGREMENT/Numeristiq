@@ -128,13 +128,60 @@ public partial class SudokuUserControl : UserControl
             }
         }
         
-        foreach (var coord in _currentSolver.Logs[^1].AllParts())
+        HighLightLog(_currentSolver.Logs[^1]);
+
+        IsReady?.Invoke();
+    }
+
+    private void HighLightLog(ISolverLog log)
+    {
+        foreach (var coord in log.AllParts())
         {
             SudokuCellUserControl current = GetTo(coord.Row, coord.Column);
             current.HighLight(coord);
         }
+    }
 
-        IsReady?.Invoke();
+    public void ShowCurrent()
+    {
+        RefreshSolver();
+    }
+
+    public void ShowLog(ISolverLog log)
+    {
+        int n = -1;
+        int cursor = 0;
+        bool possibility = false;
+        List<int> buffer = new();
+        while (cursor < log.SolverState.Length)
+        {
+            char current = log.SolverState[cursor];
+            if (current is 'd' or 'p')
+            {
+                if (buffer.Count > 0)
+                {
+                    var scuc = GetTo(n / 9, n % 9);
+                    if (possibility) scuc.SetPossibilities(buffer);
+                    else scuc.SetDefinitiveNumber(buffer[0]);
+                    scuc.UnHighLight();
+                    
+                    buffer.Clear();
+                }
+
+                possibility = current == 'p';
+                n++;
+            }
+            else buffer.Add(current - '0');
+
+            cursor++;
+        }
+        
+        var scuc2 = GetTo(n / 9, n % 9);
+        if (possibility) scuc2.SetPossibilities(buffer);
+        else scuc2.SetDefinitiveNumber(buffer[0]);
+        scuc2.UnHighLight();
+
+        HighLightLog(log);
     }
 
     public void ClearSudoku()

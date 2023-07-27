@@ -10,6 +10,11 @@ public partial class LogListUserControl : UserControl
 {
     private readonly StackPanel _list;
     private readonly ScrollViewer _scroll;
+
+    public event LogUserControl.OnLogClicked? LogClicked;
+    
+    public delegate void OnShowCurrentClicked();
+    public event OnShowCurrentClicked? ShowCurrentClicked;
     
     public LogListUserControl()
     {
@@ -27,9 +32,18 @@ public partial class LogListUserControl : UserControl
         {
             var luc = new LogUserControl();
             luc.InitLog(log);
+            luc.LogClicked += logClicked =>
+            {
+                LogClicked?.Invoke(logClicked);
+            };
             _list.Children.Add(luc);
         }
         
         _scroll.ScrollToBottom();
+    }
+
+    private void ShowCurrent(object sender, RoutedEventArgs e)
+    {
+        ShowCurrentClicked?.Invoke();
     }
 }

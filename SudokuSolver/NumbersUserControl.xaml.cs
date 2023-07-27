@@ -88,6 +88,7 @@ public partial class NumbersUserControl : UserControl
     public void UnHighLight()
     {
         _big.Background = new SolidColorBrush(Colors.White);
+        _small.Background = new SolidColorBrush(Colors.White);
         foreach (var child in _small.Children)
         {
             ((TextBlock)child)!.Background = new SolidColorBrush(Colors.White);
@@ -97,6 +98,17 @@ public partial class NumbersUserControl : UserControl
     public void HighLightBig()
     {
         _big.Background = new SolidColorBrush(Colors.Aqua);
+        if(_case.Children[0] is Grid) HighLightWholeSmall();
+    }
+
+    private void HighLightWholeSmall()
+    {
+        _small.Background = new SolidColorBrush(Colors.Aqua);
+        foreach (var child in _small.Children)
+        {
+            var tb = (child as TextBlock)!;
+            tb.Background = new SolidColorBrush(Colors.Aqua);
+        }
     }
 
     public void HighLightSmall(int n)
