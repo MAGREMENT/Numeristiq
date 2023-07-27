@@ -27,23 +27,6 @@ public class Loop<T> where T : ILoopElement
         return hash;
     }
 
-    public Loop<T> Merge(Loop<T> other)
-    {
-        LoopBuilder<T> final = new(_elements[^1]);
-        int otherIndex = -1;
-        for (int i = _elements.Length - 2; i >= 0 && otherIndex == -1; i--)
-        {
-            final = final.Add(_elements[i], _links[i + 1]);
-
-            for (int j = 0; j < other._elements.Length; j++)
-            {
-                if (other._elements[j].Equals(_elements[i])) otherIndex = j;
-            }
-        }
-
-        return final.End(LinkStrength.None); //TODO
-    }
-
     public override bool Equals(object? obj)
     {
         if (obj is not Loop<T> loop) return false;
@@ -183,6 +166,12 @@ public class LoopBuilder<T> where T : ILoopElement
         return _elements[^1];
     }
 
+    public T? ElementBefore()
+    {
+        if (_elements.Length < 2) return default;
+        return _elements[^2];
+    }
+
     public T FirstElement()
     {
         return _elements[0];
@@ -196,6 +185,23 @@ public class LoopBuilder<T> where T : ILoopElement
     public LinkStrength FirstLink()
     {
         return _links.Length == 0 ? LinkStrength.None : _links[0];
+    }
+    
+    public Loop<T> Merge(LoopBuilder<T> other)
+    {
+        LoopBuilder<T> final = new(_elements[^1]);
+        int otherIndex = -1;
+        for (int i = _elements.Length - 2; i >= 0 && otherIndex == -1; i--)
+        {
+            final = final.Add(_elements[i], _links[i + 1]);
+
+            for (int j = 0; j < other._elements.Length; j++)
+            {
+                if (other._elements[j].Equals(_elements[i])) otherIndex = j;
+            }
+        }
+
+        return final.End(LinkStrength.None); //TODO
     }
     
     public override string ToString()

@@ -39,7 +39,7 @@ public class AllLoopsV2<T> : ILoopType<T> where T : ILoopElement
             {
                 Search(path.Add(friend, LinkStrength.Weak), manager, explored);
             }
-            else if (path.Count - index > 4)
+            else if (path.Count - index > 2)
             { 
                 manager.AddLoop(path.Cut(index).End(LinkStrength.Weak));
             }

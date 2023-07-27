@@ -9,12 +9,14 @@ namespace SudokuSolver;
 public partial class LogListUserControl : UserControl
 {
     private readonly StackPanel _list;
+    private readonly ScrollViewer _scroll;
     
     public LogListUserControl()
     {
         InitializeComponent();
 
         _list = (FindName("List") as StackPanel)!;
+        _scroll = (FindName("Scroll") as ScrollViewer)!;
     }
 
     public void InitLogs(List<ISolverLog> logs)
@@ -27,5 +29,7 @@ public partial class LogListUserControl : UserControl
             luc.InitLog(log);
             _list.Children.Add(luc);
         }
+        
+        _scroll.ScrollToBottom();
     }
 }

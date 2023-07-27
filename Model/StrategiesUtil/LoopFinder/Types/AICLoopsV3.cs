@@ -30,23 +30,21 @@ public class AICLoopsV3<T> : ILoopType<T> where T : ILoopElement
             }
         }
 
-        var weakLinks = manager.GetLinks(last, LinkStrength.Weak);
-        if (weakLinks.Count == 0)
-        {
-            explored[last] = 1;
-            return;
-        }
-        foreach (var friend in weakLinks)
+        bool a = true;
+        foreach (var friend in manager.GetLinks(last, LinkStrength.Weak))
         {
             int index = path.IndexOf(friend);
             if (index == -1)
             {
                 if(path.Count % 2 == 0) Search(path.Add(friend, LinkStrength.Weak), manager, explored);
+                if (a && manager.GetLinks(friend, LinkStrength.Weak).Count > 0) a = false;
             }
             else if (path.Count - index >= 4)
             { 
                 if(index % 2 == 0)manager.AddLoop(path.Cut(index).End(LinkStrength.Weak));
             }
         }
+
+        if (a) explored[last] = 1;
     }
 }

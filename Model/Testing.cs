@@ -4,9 +4,12 @@ using System.IO;
 using System.Text;
 using Model.Positions;
 using Model.Possibilities;
+using Model.Strategies;
 using Model.Strategies.AIC;
 using Model.Strategies.AlternatingChains;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LoopFinder;
+using Model.StrategiesUtil.LoopFinder.Types;
 
 namespace Model;
 
@@ -16,11 +19,43 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank3.txt");
+        CompareAicAlgorithms();
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void ComparePossiblePositions(PreComputer pre)
+    {
+        for (int n = 1; n <= 9; n++)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                var rOne = pre.PrecomputedPossibilityPositionsInRow(i, n);
+                var rTwo = pre.PossibilityPositionsInRow(i, n);
+                if (!rOne.Equals(rTwo))
+                {
+                    Console.WriteLine($"WRONG ! Number : {n}, Row {i} => Pre : {rOne} | Not pre : {rTwo}");
+                }
+
+                var cOne = pre.PrecomputedPossibilityPositionsInColumn(i, n);
+                var cTwo = pre.PossibilityPositionsInColumn(i, n);
+                if (!cOne.Equals(cTwo))
+                {
+                    Console.WriteLine($"WRONG ! Number : {n}, Column {i} => Pre : {cOne} | Not pre : {cTwo}");
+                }
+
+                int miniRow = i / 3;
+                int miniCol = i % 3;
+                var mOne = pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, n);
+                var mTwo = pre.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
+                if (!mOne.Equals(mTwo))
+                {
+                    Console.WriteLine($"WRONG ! Number : {n}, MiniRow : {miniRow}, MiniCol : {miniCol} => Pre : {mOne} | Not pre : {mTwo}");
+                }
+            }
+        }
     }
 
     private static void CompareSharedSeenCellsAlgorithms()
@@ -90,43 +125,73 @@ public static class Testing
         return true;
     }
 
-    private static void LoopFinderTest() //TODO fixme
+    private static void LoopFinderTest()
     {
-        /*Graph<int> example = new();
-        example.AddLink(1, 2, LinkStrength.Weak);
-        example.AddLink(1, 4, LinkStrength.Strong);
-        example.AddLink(2, 3, LinkStrength.Strong);
-        example.AddLink(3, 4, LinkStrength.Strong);
-        example.AddLink(2, 5, LinkStrength.Strong);
-        example.AddLink(5, 6, LinkStrength.Weak);
-        example.AddLink(6, 7, LinkStrength.Strong);
-        example.AddLink(7, 8, LinkStrength.Weak);
-        example.AddLink(4, 8, LinkStrength.Strong);
-        example.AddLink(8, 11, LinkStrength.Strong);
-        example.AddLink(11, 12, LinkStrength.Weak);
-        example.AddLink(12, 13, LinkStrength.Weak);
-        example.AddLink(13, 10, LinkStrength.Strong);
-        example.AddLink(10, 11, LinkStrength.Weak);
-        example.AddLink(10, 9, LinkStrength.Strong);
-        example.AddLink(9, 14, LinkStrength.Weak);
-        example.AddLink(14, 7, LinkStrength.Weak);
-        example.AddLink(14, 15, LinkStrength.Strong);
-        example.AddLink(15, 16, LinkStrength.Weak);
-        example.AddLink(16, 19, LinkStrength.Strong);
-        example.AddLink(19, 14, LinkStrength.Weak);
-        example.AddLink(16, 17, LinkStrength.Weak);
-        example.AddLink(17, 18, LinkStrength.Weak);
-        example.AddLink(18, 19, LinkStrength.Strong);
-        example.AddLink(18, 20, LinkStrength.Strong);
-        example.AddLink(19, 20, LinkStrength.Weak);
-        example.AddLink(20, 21, LinkStrength.Strong);
-        example.AddLink(19, 21, LinkStrength.Weak);
-        example.AddLink(21, 22, LinkStrength.Strong);
+        Graph<LoopElementInt> example = new();
+        example.AddLink(new LoopElementInt(1), new LoopElementInt(2), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(1), new LoopElementInt(4), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(2), new LoopElementInt(3), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(3), new LoopElementInt(4), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(2), new LoopElementInt(5), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(5), new LoopElementInt(6), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(6), new LoopElementInt(7), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(7), new LoopElementInt(8), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(4), new LoopElementInt(8), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(8), new LoopElementInt(11), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(11), new LoopElementInt(12), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(12), new LoopElementInt(13), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(13), new LoopElementInt(10), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(10), new LoopElementInt(11), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(10), new LoopElementInt(9), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(9), new LoopElementInt(14), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(14), new LoopElementInt(7), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(14), new LoopElementInt(15), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(15), new LoopElementInt(16), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(16), new LoopElementInt(19), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(19), new LoopElementInt(14), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(16), new LoopElementInt(17), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(17), new LoopElementInt(18), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(18), new LoopElementInt(19), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(18), new LoopElementInt(20), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(19), new LoopElementInt(20), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(20), new LoopElementInt(21), LinkStrength.Strong);
+        example.AddLink(new LoopElementInt(19), new LoopElementInt(21), LinkStrength.Weak);
+        example.AddLink(new LoopElementInt(21), new LoopElementInt(22), LinkStrength.Strong);
 
-        LoopFinder<int> finder = new LoopFinder<int>(example,
-            new AICLoopsV3<int>(), (_) => false);
+        LoopFinder<LoopElementInt> finder = new LoopFinder<LoopElementInt>(example,
+            new AICLoopsV2<LoopElementInt>(), (_) => false);
         finder.Run();
-        Console.WriteLine(finder.GetStats());*/
+        Console.WriteLine(finder.GetStats());
+    }
+
+    private class LoopElementInt : ILoopElement
+    {
+        private readonly int _i;
+
+        public LoopElementInt(int i)
+        {
+            _i = i;
+        }
+        
+        public bool IsSameLoopElement(ILoopElement other)
+        {
+            return other is LoopElementInt n && n._i == _i;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is LoopElementInt n && n._i == _i;
+        }
+
+        public override int GetHashCode()
+        {
+            return _i;
+        }
+
+        public override string ToString()
+        {
+            return _i.ToString();
+        }
     }
 
     private static void CompareAicAlgorithms()
