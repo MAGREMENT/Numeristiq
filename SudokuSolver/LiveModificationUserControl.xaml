@@ -10,8 +10,8 @@
         <local:NumbersUserControl x:Name="Numbers" KeyDown="KeyPressed"/>
         <Grid Width="200" Height="150">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <RadioButton IsChecked="True" x:Name="A" >Change definitive number</RadioButton>
-                <RadioButton x:Name="B">Remove possibilities</RadioButton>
+                <RadioButton IsChecked="True" x:Name="A" Click="FocusThis">Change definitive number</RadioButton>
+                <RadioButton x:Name="B" Click="FocusThis">Remove possibilities</RadioButton>
             </StackPanel>
         </Grid>
     </StackPanel>

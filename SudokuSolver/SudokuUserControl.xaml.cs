@@ -128,7 +128,7 @@ public partial class SudokuUserControl : UserControl
             }
         }
         
-        HighLightLog(_currentSolver.Logs[^1]);
+        if(_currentSolver.Logs.Count > 0) HighLightLog(_currentSolver.Logs[^1]);
 
         IsReady?.Invoke();
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -13,7 +14,7 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     private readonly RadioButton _possibilities;
 
     private SudokuCellUserControl? _current = null;
-    private int[] _currentPos = new int[2];
+    private readonly int[] _currentPos = new int[2];
 
     public delegate void OnLiveModification(int number, int row, int col, SolverAction action);
     public event OnLiveModification? LiveModified;
@@ -99,8 +100,17 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     {
         if (_current is not null)
         {
-            LiveModified?.Invoke(i, _currentPos[0], _currentPos[1],
-                _definitiveNumber.IsChecked == true ? SolverAction.NumberAdded : SolverAction.PossibilityRemoved);
+            SolverAction action;
+            if (_definitiveNumber.IsChecked == true) action = SolverAction.NumberAdded;
+            else if (_possibilities.IsChecked == true) action = SolverAction.PossibilityRemoved;
+            else return;
+            
+            LiveModified?.Invoke(i, _currentPos[0], _currentPos[1], action);
         }
+    }
+
+    private void FocusThis(object sender, RoutedEventArgs e)
+    {
+        _numbers.Focus();
     }
 }
