@@ -48,7 +48,7 @@ namespace SudokuSolver;
                 new Solver(new Sudoku(asString)));
         }
 
-        private void SolveSudoku(object sender, RoutedEventArgs e)
+        private void SolveSudoku(object sender, RoutedEventArgs e) //TODO fix : update string value when solve
         {
             if (sender is not Button butt) return;
             butt.IsEnabled = false;
