@@ -5,7 +5,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Model.Logs;
 using Model.Possibilities;
-using Action = Model.Logs.Action;
 
 namespace SudokuSolver;
 
@@ -36,7 +35,7 @@ public partial class SudokuCellUserControl : UserControl
 
     public void HighLight(LogPart part)
     {
-        if (part.Action == Action.NumberAdded) _numbers.HighLightBig();
+        if (part.Action == SolverAction.NumberAdded) _numbers.HighLightBig();
         else _numbers.HighLightSmall(part.Number);
     }
 

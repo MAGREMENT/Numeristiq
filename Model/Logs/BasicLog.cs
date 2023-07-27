@@ -49,7 +49,7 @@ public class BasicLog : ISolverLog
         {
             int abs = Math.Abs(n);
             int a = abs % 81;
-            yield return new LogPart(n > 0 ? Action.NumberAdded : Action.PossibilityRemoved,
+            yield return new LogPart(n > 0 ? SolverAction.NumberAdded : SolverAction.PossibilityRemoved,
                 abs / 81 + 1, a / 9, a % 9);
         }
     }

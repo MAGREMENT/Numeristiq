@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -14,7 +15,8 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     private SudokuCellUserControl? _current = null;
     private int[] _currentPos = new int[2];
 
-    private SudokuUserControl? _solverAccess = null;
+    public delegate void OnLiveModification(int number, int row, int col, SolverAction action);
+    public event OnLiveModification? LiveModified;
 
     public LiveModificationUserControl()
     {
@@ -40,11 +42,6 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
 
         _definitiveNumber = (FindName("A") as RadioButton)!;
         _possibilities = (FindName("B") as RadioButton)!;
-    }
-
-    public void Init(SudokuUserControl suc)
-    {
-        _solverAccess = suc;
     }
 
     public void SetCurrent(SudokuCellUserControl scuc, int row, int col)
@@ -100,12 +97,10 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
 
     private void LiveModification(int i)
     {
-        if (_solverAccess is not null && _current is not null)
+        if (_current is not null)
         {
-            if (_definitiveNumber.IsChecked == true)
-                _solverAccess.AddDefinitiveNumber(i, _currentPos[0], _currentPos[1]);
-            if (_possibilities.IsChecked == true)
-                _solverAccess.RemovePossibility(i, _currentPos[0], _currentPos[1]); 
+            LiveModified?.Invoke(i, _currentPos[0], _currentPos[1],
+                _definitiveNumber.IsChecked == true ? SolverAction.NumberAdded : SolverAction.PossibilityRemoved);
         }
     }
 }

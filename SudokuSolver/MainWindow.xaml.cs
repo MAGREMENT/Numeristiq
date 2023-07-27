@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Model;
+using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -41,7 +42,12 @@ namespace SudokuSolver;
             GetLogListUserControl().ShowCurrentClicked += () => GetSudokuUserControl().ShowCurrent();
             GetLogListUserControl().LogClicked += (log) => GetSudokuUserControl().ShowLog(log);
             
-            GetLiveModificationUserControl().Init(GetSudokuUserControl());
+            GetLiveModificationUserControl().LiveModified += (number, row, col, action) =>
+            {
+                if (action == SolverAction.NumberAdded) GetSudokuUserControl().AddDefinitiveNumber(number, row, col);
+                else if(action == SolverAction.PossibilityRemoved) GetSudokuUserControl().RemovePossibility(number, row, col);
+                GetLogListUserControl().InitLogs(GetSudokuUserControl().GetLogs());
+            };
         }
 
         private void NewSudoku(object sender, TextChangedEventArgs e)

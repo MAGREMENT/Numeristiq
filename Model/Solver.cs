@@ -133,6 +133,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
     {
         Sudoku[row, col] = number;
         ResetPossibilities();
+        if(LogsManaged) Logs.Clear();
     }
 
     public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
@@ -153,6 +154,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
         Possibilities[row, col].Remove(possibility);
+        if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col, this);
     }
 
     private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)

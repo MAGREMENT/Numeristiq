@@ -34,6 +34,11 @@ public class LogManager
         _current!.PossibilityRemoved(possibility, row, col);
     }
 
+    public void PossibilityRemovedByHand(int possibility, int row, int col, Solver solver)
+    {
+        Logs.Add(new ByHandRemovedLog(possibility, row, col, solver.State));
+    }
+
     public void Push()
     {
         if (_current is not null)

@@ -20,14 +20,14 @@ public enum Intensity
     Zero, One, Two, Three, Four, Five, Six
 }
 
-public enum Action
+public enum SolverAction
 {
     PossibilityRemoved, NumberAdded
 }
 
 public class LogPart
 {
-    public LogPart(Action action, int number, int row, int column)
+    public LogPart(SolverAction action, int number, int row, int column)
     {
         Action = action;
         Number = number;
@@ -35,7 +35,7 @@ public class LogPart
         Column = column;
     }
 
-    public Action Action { get; }
+    public SolverAction Action { get; }
     public int Number { get; }
     public int Row { get; }
     public int Column { get; }
