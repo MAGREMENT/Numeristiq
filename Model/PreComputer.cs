@@ -5,6 +5,9 @@ namespace Model;
 
 public class PreComputer
 {
+    public const int PositionsTresHold = 1;
+    public const int GraphTresHold = 100; //TODO
+    
     private readonly ISolverView _view;
     
     private readonly LinePositions?[,] _rows = new LinePositions[9, 9];
@@ -14,6 +17,22 @@ public class PreComputer
     public PreComputer(ISolverView view)
     {
         _view = view;
+    }
+
+    public void CheckPreComputationTresHold(int strategyNumber)
+    {
+        switch (strategyNumber)
+        {
+            case PositionsTresHold : PrecomputePositions();
+                break;
+            case GraphTresHold : PrecomputeGraph();
+                break;
+        }
+    }
+
+    public void PrecomputeGraph()
+    {
+        //TODO
     }
 
     public void PrecomputePositions()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
@@ -7,8 +8,10 @@ using Model.Strategies;
 using Model.Strategies.AlternatingChains;
 using Model.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Strategies.AlternatingChains.ChainTypes;
+using Model.Strategies.ForcingChains;
 using Model.Strategies.IntersectionRemoval;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model;
 
@@ -62,7 +65,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             }
         }
         
-        State = UpdateState();
+        State = GetState();
         
         _pre = new PreComputer(this);
     }
@@ -74,7 +77,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         Strategies = t;
         _pre = pre;
         
-        State = UpdateState();
+        State = GetState();
         
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
@@ -86,7 +89,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
 
         ResetPossibilities();
 
-        if (LogsManaged) State = UpdateState();
+        if (LogsManaged) State = GetState();
 
         _pre = new PreComputer(this);
     }
@@ -123,7 +126,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         if (LogsManaged)
         {
             _logManager.NumberAdded(number, row, col, strategy, this);
-            State = UpdateState();
+            State = GetState();
         }
         NumberAdded?.Invoke(row, col);
         return true;
@@ -145,7 +148,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         if (LogsManaged)
         {
             _logManager.PossibilityRemoved(possibility, row, col, strategy, this);
-            State = UpdateState();
+            State = GetState();
         }
         PossibilityRemoved?.Invoke(row, col);
         return true;
@@ -192,12 +195,74 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         return _pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
     }
 
+    public Graph<PossibilityCoordinate> LinkGraph()
+    {
+        Graph<PossibilityCoordinate> graph = new();
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                foreach (var possibility in Possibilities[row, col])
+                {
+                    PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
+                    
+                    //Row
+                    var ppir = PossibilityPositionsInRow(row, possibility);
+                    var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
+                    foreach (var c in ppir)
+                    {
+                        if (c != col)
+                        {
+                            graph.AddLink(current, new PossibilityCoordinate(row, c, possibility), strength);
+                        }
+                    }
+
+
+                    //Col
+                    var ppic = PossibilityPositionsInColumn(col, possibility);
+                    strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
+                    foreach (var r in ppic)
+                    {
+                        if (r != row)
+                        {
+                            graph.AddLink(current, new PossibilityCoordinate(r, col, possibility), strength);
+                        }
+                    }
+
+
+                    //MiniGrids
+                    var ppimn = PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
+                    strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
+                    foreach (var pos in ppimn)
+                    {
+                        if (!(pos[0] == row && pos[1] == col))
+                        {
+                            graph.AddLink(current, new PossibilityCoordinate(pos[0], pos[1], possibility), strength);
+                        }
+                    }
+
+                    strength = Possibilities[row, col].Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
+                    foreach (var pos in Possibilities[row, col])
+                    {
+                        if (pos != possibility)
+                        {
+                            graph.AddLink(current, new PossibilityCoordinate(row, col, pos), strength);
+                        }
+                    }
+                }
+            }
+        }
+
+        return graph;
+    }
+
     public void Solve(bool stopAtProgress = false)
     {
         for (int i = 0; i < Strategies.Length; i++)
         {
             if (Sudoku.IsComplete()) return;
-            
+
+            _pre.CheckPreComputationTresHold(i);
             Strategies[i].ApplyOnce(this);
             StrategyCount++;
             
@@ -210,11 +275,15 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
                     return;
                 }
                 i = -1;
-                _pre.PrecomputePositions();
             }
         }
         
         if(LogsManaged) _logManager.Push();
+    }
+
+    public Task SolveAsync(bool stopAtProgress = false)
+    {
+        return Task.Run(() => Solve(stopAtProgress));
     }
 
     public bool IsWrong()
@@ -264,7 +333,7 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         return new NoStrategy();
     }
     
-    public static IStrategy[] BasicStrategies()
+    private static IStrategy[] BasicStrategies()
     {
         return new IStrategy[]{
             new NakedPossibilitiesStrategy(1),
@@ -289,17 +358,16 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             new XYChainStrategy(),
             new ThreeDimensionMedusaStrategy(),
             new AlignedPairExclusionStrategy(4),
-            //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalXCycles(),
-                //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
             new AlternatingChainGeneralization<IGroupedXCycleNode>(new GroupedXCycles(),
                 new AlternatingChainAlgorithmV1<IGroupedXCycleNode>(20)),
-            new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
-                new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20))
+            //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
+                //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
+            new DigitForcingChainStrategy()
             //new TrialAndMatchStrategy(2)
         };
     }
 
-    private string UpdateState()
+    private string GetState()
     {
         string result = "";
         for (int row = 0; row < 9; row++)

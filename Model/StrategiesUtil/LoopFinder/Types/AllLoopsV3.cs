@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Model.StrategiesUtil.LoopFinder.Types;
 
@@ -6,31 +7,38 @@ public class AllLoopsV3<T> : ILoopType<T> where T : ILoopElement
 {
     public void Apply(LoopFinder<T> manager)
     {
-        Dictionary<T, LoopBuilder<T>> paths = new();
+        HashSet<T> visited = new();
         foreach (var start in manager)
         {
-            Search(manager, new LoopBuilder<T>(start), paths);
+            DepthFirstSearch(manager, new LoopBuilder<T>(start), visited);
         }
     }
 
-    private void Search(LoopFinder<T> manager, LoopBuilder<T> currentPath, Dictionary<T, LoopBuilder<T>> paths)
+    private void DepthFirstSearch(LoopFinder<T> manager, LoopBuilder<T> path, HashSet<T> visited)
     {
-        var last = currentPath.LastElement();
-        if (!paths.TryAdd(last, currentPath)) return;
+        var last = path.LastElement();
+        if (visited.Contains(last)) return;
 
-        var before = currentPath.ElementBefore();
         foreach (var friend in manager.GetLinks(last, LinkStrength.Strong))
         {
-            if(!paths.ContainsKey(friend)) Search(manager, currentPath.Add(friend, LinkStrength.Strong), paths);
-            else if (!(before is not null && before.Equals(friend)))
+            int index = path.IndexOf(friend);
+            if(index == -1) DepthFirstSearch(manager, path.Add(friend, LinkStrength.Strong), visited);
+            else if (path.Count - index > 2)
             {
-                
+                manager.AddLoop(path.Cut(index).End(LinkStrength.Strong));
             }
         }
         
         foreach (var friend in manager.GetLinks(last, LinkStrength.Weak))
         {
-            if(!paths.ContainsKey(friend)) Search(manager, currentPath.Add(friend, LinkStrength.Weak), paths);
+            int index = path.IndexOf(friend);
+            if(index == -1) DepthFirstSearch(manager, path.Add(friend, LinkStrength.Weak), visited);
+            else if (path.Count - index > 2)
+            {
+                manager.AddLoop(path.Cut(index).End(LinkStrength.Weak));
+            }
         }
+
+        visited.Add(last);
     }
 }

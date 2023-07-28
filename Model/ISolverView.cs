@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Positions;
 using Model.Possibilities;
+using Model.StrategiesUtil;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model;
 
@@ -15,6 +17,8 @@ public interface ISolverView
     LinePositions PossibilityPositionsInRow(int row, int number);
 
     MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
+    
+    public Graph<PossibilityCoordinate> LinkGraph();
 
     public Sudoku Sudoku { get; }
 

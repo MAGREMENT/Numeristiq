@@ -82,6 +82,29 @@ public class Loop<T> where T : ILoopElement
         value = default!;
         return LinkStrength.None;
     }
+
+    public static Loop<T>? operator ^(Loop<T> one, Loop<T> two)
+    {
+        LoopBuilder<T> result = new LoopBuilder<T>(one._elements[0]);
+
+        for (int i = 0; i < one._elements.Length - 1; i++)
+        {
+            for (int j = 0; j < two._elements.Length; j++)
+            {
+                if (one._elements[i].Equals(two._elements[j]))
+                {
+                    T firstLink = j == two._elements.Length - 1 ? two._elements[0] : two._elements[j + 1];
+                    T secondLink = j == 0 ? two._elements[^1] : two._elements[j + 1];
+                    
+                    //TODO
+                    
+                    break;
+                }
+            }
+        }
+
+        return new Loop<T>(one._elements, two._links); //TODO
+    }
 }
 
 public class LoopBuilder<T> where T : ILoopElement
@@ -186,24 +209,7 @@ public class LoopBuilder<T> where T : ILoopElement
     {
         return _links.Length == 0 ? LinkStrength.None : _links[0];
     }
-    
-    public Loop<T> Merge(LoopBuilder<T> other)
-    {
-        LoopBuilder<T> final = new(_elements[^1]);
-        int otherIndex = -1;
-        for (int i = _elements.Length - 2; i >= 0 && otherIndex == -1; i--)
-        {
-            final = final.Add(_elements[i], _links[i + 1]);
 
-            for (int j = 0; j < other._elements.Length; j++)
-            {
-                if (other._elements[j].Equals(_elements[i])) otherIndex = j;
-            }
-        }
-
-        return final.End(LinkStrength.None); //TODO
-    }
-    
     public override string ToString()
     {
         string result = "";

@@ -159,7 +159,7 @@ public static class Testing
         example.AddLink(new LoopElementInt(21), new LoopElementInt(22), LinkStrength.Strong);
 
         LoopFinder<LoopElementInt> finder = new LoopFinder<LoopElementInt>(example,
-            new AICLoopsV2<LoopElementInt>(), (_) => false);
+            new AllLoopsV3<LoopElementInt>(), (_) => false);
         finder.Run();
         Console.WriteLine(finder.GetStats());
     }

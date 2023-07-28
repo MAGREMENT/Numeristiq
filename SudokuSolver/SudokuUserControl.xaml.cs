@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using Model;
 using Model.Logs;
@@ -114,21 +116,29 @@ public partial class SudokuUserControl : UserControl
         IsReady?.Invoke();
     }
 
-    public void RunUntilProgress()
-    {
+    public async void RunUntilProgress()
+    { 
         _currentSolver.Solve(true);
         
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
             {
-                SudokuCellUserControl current = GetTo(i, j);
-                UpdateCell(current, i, j);
-                current.UnHighLight();
+                GetTo(i, j).UnHighLight();
             }
         }
         
         if(_currentSolver.Logs.Count > 0) HighLightLog(_currentSolver.Logs[^1]);
+
+        await Task.Delay(TimeSpan.FromMilliseconds(500));
+        
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                UpdateCell(GetTo(i, j), i, j);
+            }
+        }
 
         IsReady?.Invoke();
     }
