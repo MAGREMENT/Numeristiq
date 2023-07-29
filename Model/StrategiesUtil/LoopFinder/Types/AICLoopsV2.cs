@@ -1,13 +1,17 @@
-﻿namespace Model.StrategiesUtil.LoopFinder.Types;
+﻿using System.Linq;
 
-public class AICLoopsV2<T> : ILoopType<T> where T : ILoopElement
+namespace Model.StrategiesUtil.LoopFinder.Types;
+
+public class AICLoopsV2<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement
 {
     public void Apply(LoopFinder<T> manager)
     {
         foreach (var start in manager)
         {
-            if (manager.GetLinks(start, LinkStrength.Strong).Count == 0) continue;
+            var strongLinks = manager.GetLinks(start, LinkStrength.Strong);
+            if (strongLinks.Count == 0) continue;
             LoopBuilder<T> path = new LoopBuilder<T>(start);
+            path.Add(strongLinks.First(), LinkStrength.Strong);
             Search(path, manager);
         }
     }

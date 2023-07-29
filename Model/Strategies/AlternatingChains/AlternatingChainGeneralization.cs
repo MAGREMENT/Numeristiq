@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains;
 
-public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElement
+public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElement, ILinkGraphElement
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
@@ -30,14 +31,14 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElemen
     }
 }
 
-public interface IAlternatingChainType<T> where T : ILoopElement
+public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElement
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
     
     IStrategy? Strategy { get; set; }
     
-    IEnumerable<Graph<T>> GetGraphs(ISolverView view);
+    IEnumerable<LinkGraph<T>> GetGraphs(ISolverView view);
 
     bool ProcessFullLoop(ISolverView view, Loop<T> loop);
 
@@ -46,8 +47,8 @@ public interface IAlternatingChainType<T> where T : ILoopElement
     bool ProcessStrongInference(ISolverView view, T inference);
 }
 
-public interface IAlternatingChainAlgorithm<T> where T : ILoopElement
+public interface IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
 {
-    void Run(ISolverView view, Graph<T> graph, IAlternatingChainType<T> chainType);
+    void Run(ISolverView view, LinkGraph<T> graph, IAlternatingChainType<T> chainType);
 }
 

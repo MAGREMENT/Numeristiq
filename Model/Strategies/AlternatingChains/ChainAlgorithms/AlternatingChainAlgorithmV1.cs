@@ -1,8 +1,9 @@
-﻿using Model.StrategiesUtil.LoopFinder;
+﻿using Model.StrategiesUtil;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainAlgorithms;
 
-public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement
+public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
 {
     private readonly int _maxLoopSize;
     
@@ -11,7 +12,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(ISolverView view, Graph<T> graph, IAlternatingChainType<T> chainType)
+    public void Run(ISolverView view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         foreach (var start in graph.EachVerticesWith(LinkStrength.Strong))
         {
@@ -19,7 +20,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
         }
     }
 
-    private void Search(Graph<T> graph, LoopBuilder<T> path, IAlternatingChainType<T> chainType, ISolverView view)
+    private void Search(LinkGraph<T> graph, LoopBuilder<T> path, IAlternatingChainType<T> chainType, ISolverView view)
     {
         if (path.Count > _maxLoopSize) return;
         var last = path.LastElement();

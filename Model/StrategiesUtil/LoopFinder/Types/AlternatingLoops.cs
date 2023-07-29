@@ -2,7 +2,7 @@
 
 namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AlternatingLoops<T> : ILoopType<T> where T : ILoopElement
+public class AlternatingLoops<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement
 {
     public void Apply(LoopFinder<T> manager)
     {

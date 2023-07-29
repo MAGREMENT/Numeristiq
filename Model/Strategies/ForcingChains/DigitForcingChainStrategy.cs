@@ -11,8 +11,8 @@ public class DigitForcingChainStrategy : IStrategy
     public int Score { get; set; }
     public void ApplyOnce(ISolverView solverView)
     {
-        Graph<PossibilityCoordinate> graph = solverView.LinkGraph();
-        HashSet<PossibilityCoordinate> visited = new();
+        LinkGraph<ILinkGraphElement> graph = solverView.LinkGraph();
+        HashSet<ILinkGraphElement> visited = new();
 
         for (int row = 0; row < 9; row++)
         {
@@ -23,13 +23,13 @@ public class DigitForcingChainStrategy : IStrategy
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
                     if (visited.Contains(current)) continue;
 
-                    Dictionary<PossibilityCoordinate, Coloring> onColoring = new();
-                    Dictionary<PossibilityCoordinate, Coloring> offColoring = new();
+                    Dictionary<ILinkGraphElement, Coloring> onColoring = new();
+                    Dictionary<ILinkGraphElement, Coloring> offColoring = new();
 
                     onColoring[current] = Coloring.On;
                     offColoring[current] = Coloring.Off;
-                    Color(graph, onColoring, current);
-                    Color(graph, offColoring, current);
+                    ForcingChainUtil.Color(graph, onColoring, current);
+                    ForcingChainUtil.Color(graph, offColoring, current);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
                     if (Process(solverView, onColoring, offColoring, visited)) /*return*/;
@@ -38,35 +38,36 @@ public class DigitForcingChainStrategy : IStrategy
         }
     }
 
-    private bool Process(ISolverView view, Dictionary<PossibilityCoordinate, Coloring> onColoring,
-        Dictionary<PossibilityCoordinate, Coloring> offColoring, HashSet<PossibilityCoordinate> visited)
+    private bool Process(ISolverView view, Dictionary<ILinkGraphElement, Coloring> onColoring,
+        Dictionary<ILinkGraphElement, Coloring> offColoring, HashSet<ILinkGraphElement> visited)
     {
         bool wasProgressMade = false;
-        foreach (var possOn in onColoring)
+        foreach (var on in onColoring)
         {
-            if (offColoring.TryGetValue(possOn.Key, out var other))
+            if (on.Key is not PossibilityCoordinate possOn) continue;
+            if (offColoring.TryGetValue(possOn, out var other))
             {
-                if (other != possOn.Value) visited.Add(possOn.Key);
-                else if (other == Coloring.On && possOn.Value == Coloring.On &&
-                         view.AddDefinitiveNumber(possOn.Key.Possibility, possOn.Key.Row, possOn.Key.Col, this))
+                if (other != on.Value) /*visited.Add(possOn)*/;
+                else if (other == Coloring.On && on.Value == Coloring.On &&
+                         view.AddDefinitiveNumber(possOn.Possibility, possOn.Row, possOn.Col, this))
                     wasProgressMade = true;
-                else if(view.RemovePossibility(possOn.Key.Possibility, possOn.Key.Row, possOn.Key.Col, this))
+                else if(view.RemovePossibility(possOn.Possibility, possOn.Row, possOn.Col, this))
                     wasProgressMade = true;
             }
 
-            if (possOn.Value != Coloring.On) continue;
-            foreach (var possOff in offColoring)
+            if (on.Value != Coloring.On) continue;
+            foreach (var off in offColoring)
             {
-                if (possOff.Value != Coloring.On) continue;
-                if (possOff.Key.Row == possOn.Key.Row && possOn.Key.Col == possOff.Key.Col &&
-                    RemoveAll(view, possOn.Key.Row, possOn.Key.Col, possOn.Key.Possibility, possOff.Key.Possibility))
+                if (off.Value != Coloring.On || off.Key is not PossibilityCoordinate possOff) continue;
+                if (possOff.Row == possOn.Row && possOn.Col == possOff.Col &&
+                    RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility))
                     wasProgressMade = true;
-                else if (possOff.Key.Possibility == possOn.Key.Possibility &&
-                         possOn.Key.ShareAUnit(possOff.Key))
+                else if (possOff.Possibility == possOn.Possibility &&
+                         possOn.ShareAUnit(possOff))
                 {
-                    foreach (var coord in possOn.Key.SharedSeenCells(possOff.Key))
+                    foreach (var coord in possOn.SharedSeenCells(possOff))
                     {
-                        if (view.RemovePossibility(possOn.Key.Possibility, coord.Row, coord.Col, this))
+                        if (view.RemovePossibility(possOn.Possibility, coord.Row, coord.Col, this))
                             wasProgressMade = true;
                     }
                 }
@@ -88,30 +89,5 @@ public class DigitForcingChainStrategy : IStrategy
         return wasProgressMade;
     }
 
-    private void Color(Graph<PossibilityCoordinate> graph, Dictionary<PossibilityCoordinate, Coloring> result,
-        PossibilityCoordinate current)
-    {
-        Coloring opposite = result[current] == Coloring.On ? Coloring.Off : Coloring.On;
-
-        foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
-        {
-            if (!result.ContainsKey(friend))
-            {
-                result[friend] = opposite;
-                Color(graph, result, friend);
-            }
-        }
-
-        if (opposite == Coloring.Off)
-        {
-            foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
-            {
-                if (!result.ContainsKey(friend))
-                {
-                    result[friend] = opposite;
-                    Color(graph, result, friend);
-                }
-            }
-        }
-    }
+    
 }

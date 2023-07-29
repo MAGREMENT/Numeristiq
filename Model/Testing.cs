@@ -19,7 +19,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("LocalBank.txt");
+        FullSudokuBankTest("OnlineBank3.txt");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -127,7 +127,7 @@ public static class Testing
 
     private static void LoopFinderTest()
     {
-        Graph<LoopElementInt> example = new();
+        LinkGraph<LoopElementInt> example = new();
         example.AddLink(new LoopElementInt(1), new LoopElementInt(2), LinkStrength.Weak);
         example.AddLink(new LoopElementInt(1), new LoopElementInt(4), LinkStrength.Strong);
         example.AddLink(new LoopElementInt(2), new LoopElementInt(3), LinkStrength.Strong);
@@ -159,12 +159,12 @@ public static class Testing
         example.AddLink(new LoopElementInt(21), new LoopElementInt(22), LinkStrength.Strong);
 
         LoopFinder<LoopElementInt> finder = new LoopFinder<LoopElementInt>(example,
-            new AllLoopsV3<LoopElementInt>(), (_) => false);
+            new SinglePointCycle<LoopElementInt>(new LoopElementInt(1)), (_) => false);
         finder.Run();
         Console.WriteLine(finder.GetStats());
     }
 
-    private class LoopElementInt : ILoopElement
+    private class LoopElementInt : ILoopElement, ILinkGraphElement
     {
         private readonly int _i;
 

@@ -9,11 +9,11 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
     public string Name => "XCycles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<Graph<PossibilityCoordinate>> GetGraphs(ISolverView view)
+    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(ISolverView view)
     {
         for (int n = 1; n <= 9; n++)
         {
-            Graph<PossibilityCoordinate> graph = new();
+            LinkGraph<PossibilityCoordinate> graph = new();
             int number = n;
 
             for (int row = 0; row < 9; row++)

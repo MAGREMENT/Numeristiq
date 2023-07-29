@@ -13,11 +13,11 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
     public string Name => "XCycles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<Graph<IGroupedXCycleNode>> GetGraphs(ISolverView view)
+    public IEnumerable<LinkGraph<IGroupedXCycleNode>> GetGraphs(ISolverView view)
     {
         for (int n = 1; n <= 9; n++)
         {
-            Graph<IGroupedXCycleNode> graph = new();
+            LinkGraph<IGroupedXCycleNode> graph = new();
             int number = n;
 
             for (int row = 0; row < 9; row++)
@@ -63,7 +63,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         }
     }
 
-    private void SearchForPointingInMiniGrid(ISolverView view, Graph<IGroupedXCycleNode> graph, MiniGridPositions ppimn, int miniRow,
+    private void SearchForPointingInMiniGrid(ISolverView view, LinkGraph<IGroupedXCycleNode> graph, MiniGridPositions ppimn, int miniRow,
         int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -275,7 +275,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
     }
 }
 
-public interface IGroupedXCycleNode : ILoopElement
+public interface IGroupedXCycleNode : ILoopElement, ILinkGraphElement
 {
     public Coordinate[] EachCoordinates();
 }

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainAlgorithms;
 
-public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement
+public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
 {
     private readonly int _maxLoopSize;
 
@@ -12,7 +13,7 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(ISolverView view, Graph<T> graph, IAlternatingChainType<T> chainType)
+    public void Run(ISolverView view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         HashSet<T> explored = new();
         HashSet<Loop<T>> loopsProcessed = new();
@@ -23,7 +24,7 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
         }
     }
 
-    private void Search(ISolverView view, LoopBuilder<T> path, Graph<T> graph, IAlternatingChainType<T> chainType,
+    private void Search(ISolverView view, LoopBuilder<T> path, LinkGraph<T> graph, IAlternatingChainType<T> chainType,
         HashSet<T> explored, HashSet<Loop<T>> loopsProcessed)
     {
         if (path.Count > _maxLoopSize) return;

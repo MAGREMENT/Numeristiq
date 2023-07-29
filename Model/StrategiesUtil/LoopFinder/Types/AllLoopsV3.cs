@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AllLoopsV3<T> : ILoopType<T> where T : ILoopElement
+public class AllLoopsV3<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement
 {
     public void Apply(LoopFinder<T> manager)
     {

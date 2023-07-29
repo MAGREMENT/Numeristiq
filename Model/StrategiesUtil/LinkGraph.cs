@@ -1,38 +1,42 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Model.StrategiesUtil.LoopFinder;
+namespace Model.StrategiesUtil;
 
-public class Graph<T> : IEnumerable<T> where T : notnull
+public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 {
-    private readonly HashSet<T> _vertices = new();
     private readonly Dictionary<T, HashSet<T>>[] _links = { new(), new() };
 
     public void AddLink(T one, T two, LinkStrength strength)
     {
-        _vertices.Add(one);
-        _vertices.Add(two);
-
-        int index = (int)strength;
+        var index = (int)strength;
         if (!_links[index].TryAdd(one, new HashSet<T> { two })) _links[index][one].Add(two);
         if (!_links[index].TryAdd(two, new HashSet<T> { one })) _links[index][two].Add(one);
     }
 
     public HashSet<T> GetLinks(T from, LinkStrength strength)
     {
-        if (!_links[(int)strength].TryGetValue(from, out var result)) return new HashSet<T>();
-        return result;
+        return !_links[(int)strength].TryGetValue(from, out var result) ? new HashSet<T>() : result;
     }
 
     public bool IsOfStrength(T one, T two, LinkStrength strength)
     {
-        if (!_links[(int)strength].TryGetValue(one, out var set)) return false;
-        return set.Contains(two);
+        return _links[(int)strength].TryGetValue(one, out var set) && set.Contains(two);
     }
 
     public IEnumerator<T> GetEnumerator()
     {
-        return _vertices.GetEnumerator();
+        HashSet<T> alreadyEnumerated = new();
+        foreach (var value in _links[0].Keys)
+        {
+            yield return value;
+            alreadyEnumerated.Add(value);
+        }
+
+        foreach (var value in _links[1].Keys)
+        {
+            if (!alreadyEnumerated.Contains(value)) yield return value;
+        }
     }
 
     IEnumerator IEnumerable.GetEnumerator()

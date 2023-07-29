@@ -2,7 +2,7 @@
 
 namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AllLoops<T> : ILoopType<T> where T : ILoopElement
+public class AllLoops<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement
 {
     public void Apply(LoopFinder<T> manager)
     {

@@ -4,20 +4,20 @@ using Model.StrategiesUtil.LoopFinder.Types;
 
 namespace Model.StrategiesUtil.LoopFinder;
 
-public class LoopFinder<T> : IEnumerable<T> where T : ILoopElement
+public class LoopFinder<T> : IEnumerable<T> where T : ILoopElement, ILinkGraphElement
 {
     public HashSet<Loop<T>> Loops { get; }= new();
 
     public int RepeatLoopAdd { get; private set; }
     public int GetLinksCall { get; private set; }
 
-    public Graph<T> Graph { get; }
+    public LinkGraph<T> Graph { get; }
     private readonly ILoopType<T> _type;
     private readonly LoopHandler _handler;
 
     public delegate bool LoopHandler(Loop<T> loop);
 
-    public LoopFinder(Graph<T> graph, ILoopType<T> type, LoopHandler handler)
+    public LoopFinder(LinkGraph<T> graph, ILoopType<T> type, LoopHandler handler)
     {
         Graph = graph;
         _type = type;

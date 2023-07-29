@@ -195,9 +195,9 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         return _pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
     }
 
-    public Graph<PossibilityCoordinate> LinkGraph()
+    public LinkGraph<ILinkGraphElement> LinkGraph()
     {
-        Graph<PossibilityCoordinate> graph = new();
+        LinkGraph<ILinkGraphElement> graph = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -362,7 +362,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
                 new AlternatingChainAlgorithmV1<IGroupedXCycleNode>(20)),
             //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
                 //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
-            new DigitForcingChainStrategy()
+            new DigitForcingChainStrategy(),
+            new NishioForcingChainStrategy()
             //new TrialAndMatchStrategy(2)
         };
     }

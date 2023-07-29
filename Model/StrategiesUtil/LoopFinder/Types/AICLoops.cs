@@ -2,7 +2,7 @@
 
 namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AICLoops<T> : ILoopType<T> where T : ILoopElement
+public class AICLoops<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement
 {
     private readonly bool _visitedExclusion = false;
     private readonly bool _oddLoopExclusion = false;

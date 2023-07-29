@@ -18,7 +18,7 @@ public interface ISolverView
 
     MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
     
-    public Graph<PossibilityCoordinate> LinkGraph();
+    public LinkGraph<ILinkGraphElement> LinkGraph();
 
     public Sudoku Sudoku { get; }
 

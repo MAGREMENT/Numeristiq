@@ -212,7 +212,7 @@ public interface IColorable
     public Coloring Coloring { get; set; }
 }
 
-public class PossibilityCoordinate : Coordinate, ILoopElement
+public class PossibilityCoordinate : Coordinate, ILoopElement, ILinkGraphElement
 {
     public int Possibility { get; }
     
