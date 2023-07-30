@@ -149,7 +149,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 foreach (var als in AlmostLockedSet.SearchForSingleCellAls(view, shared))
                 {
                     if (als.Possibilities.Equals(mashed) && RemovePossibilitiesInAllExcept(view,
-                            mashed, shared, als, row, one.Col, row, two.Col)) return;
+                            mashed, shared, als)) return;
                 }
 
                 for (int i = 2; i <= 4; i++)
@@ -157,7 +157,7 @@ public class UniqueRectanglesStrategy : IStrategy
                     foreach (var als in AlmostLockedSet.SearchForMultipleCellsAls(view, shared, i))
                     {
                         if (als.Possibilities.PeekAll(mashed) && RemovePossibilitiesInAllExcept(view,
-                                mashed, shared, als, row, one.Col, row, two.Col)) return;
+                                mashed, shared, als)) return;
                     }
                 }
             }
@@ -256,7 +256,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 foreach (var als in AlmostLockedSet.SearchForSingleCellAls(view, shared))
                 {
                     if (als.Possibilities.Equals(mashed) && RemovePossibilitiesInAllExcept(view,
-                            mashed, shared, als, one.Row, col, two.Row, col)) return;
+                            mashed, shared, als)) return;
                 }
 
                 for (int i = 2; i <= 4; i++)
@@ -264,7 +264,7 @@ public class UniqueRectanglesStrategy : IStrategy
                     foreach (var als in AlmostLockedSet.SearchForMultipleCellsAls(view, shared, i))
                     {
                         if (als.Possibilities.PeekAll(mashed) && RemovePossibilitiesInAllExcept(view,
-                                mashed, shared, als, one.Row, col, two.Row, col)) return;
+                                mashed, shared, als)) return;
                     }
                 }
             }
@@ -273,8 +273,8 @@ public class UniqueRectanglesStrategy : IStrategy
 
     private void ProcessDiagonal(ISolverView view, BiValue bi, Coordinate one, Coordinate two)
     {
-        if (view.Possibilities[one.Row, two.Col].Peek(bi.One) && view.Possibilities[one.Row, two.Col].Peek(bi.One) &&
-            view.Possibilities[two.Row, one.Col].Peek(bi.Two) && view.Possibilities[two.Row, one.Col].Peek(bi.Two) &&
+        if (view.Possibilities[one.Row, two.Col].Peek(bi.One) && view.Possibilities[one.Row, two.Col].Peek(bi.Two) &&
+            view.Possibilities[two.Row, one.Col].Peek(bi.One) && view.Possibilities[two.Row, one.Col].Peek(bi.Two) &&
             AreSpreadOverOnlyTwoBoxes(one.Row, one.Col, two.Row,
                 two.Col, one.Row, two.Col, two.Row, one.Col))
         {
@@ -342,11 +342,12 @@ public class UniqueRectanglesStrategy : IStrategy
     }
 
     private bool RemovePossibilitiesInAllExcept(ISolverView view, IPossibilities poss, List<Coordinate> coords,
-        AlmostLockedSet except, int row1, int col1, int row2, int col2)
+        AlmostLockedSet except)
     {
         bool wasProgressMade = false;
-        foreach (var coord in except.SharedSeenCells(row1, col1, row2, col2))
+        foreach (var coord in coords)
         {
+            if(except.Contains(coord) || !except.ShareAUnit(coord)) continue;
             foreach (var possibility in poss)
             {
                 if (view.RemovePossibility(possibility, coord.Row, coord.Col, this)) wasProgressMade = true;

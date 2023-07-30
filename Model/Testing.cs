@@ -4,8 +4,6 @@ using System.IO;
 using System.Text;
 using Model.Positions;
 using Model.Possibilities;
-using Model.Strategies;
-using Model.Strategies.AIC;
 using Model.Strategies.AlternatingChains;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
@@ -247,6 +245,7 @@ public static class Testing
     {
         var counter = 1;
         var success = 0;
+        var solverIsTrash = 0;
         Solver solver = new Solver(new Sudoku())
         {
             LogsManaged = false
@@ -261,7 +260,15 @@ public static class Testing
                 solver.SetSudoku(new Sudoku(line));
                 solver.Solve();
 
-                if (!solver.Sudoku.IsCorrect()) Console.WriteLine(counter++ + " WRONG ! => " + line);
+                if (!solver.Sudoku.IsCorrect())
+                {
+                    if (solver.IsWrong())
+                    {
+                        Console.WriteLine(counter++ + " WRONG, Solver is trash ! => " + line);
+                        solverIsTrash++;
+                    }
+                    else Console.WriteLine(counter++ + " WRONG, did not find solution ! => " + line);
+                }
                 else
                 {
                     Console.WriteLine(counter++ + " OK!");
@@ -276,6 +283,7 @@ public static class Testing
         
         Console.WriteLine("\nResult-------------------------------");
         Console.WriteLine($"Completion rate = {success} / {counter - 1}");
+        Console.WriteLine($"Solver fuck ups : {solverIsTrash}");
         Console.WriteLine();
         Console.WriteLine("Strategy usage : ");
         foreach (var strategy in solver.Strategies)

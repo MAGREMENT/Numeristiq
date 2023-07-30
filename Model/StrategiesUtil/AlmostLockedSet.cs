@@ -9,7 +9,7 @@ public class AlmostLockedSet
     private readonly Coordinate[] _coords;
     public IPossibilities Possibilities { get; }
 
-    private AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
+    public AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
     {
         _coords = coords;
         Possibilities = poss;
@@ -68,7 +68,7 @@ public class AlmostLockedSet
         }
     }
     
-    private static bool ShareAUnitWithAll(Coordinate current, List<Coordinate> coordinates)
+    private static bool ShareAUnitWithAll(Coordinate current, IEnumerable<Coordinate> coordinates)
     {
         foreach (var coord in coordinates)
         {
@@ -88,56 +88,26 @@ public class AlmostLockedSet
         return false;
     }
 
-    public IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public IEnumerable<Coordinate> SharedSeenCells()
     {
-        bool isRow = true;
-        bool isCol = true;
-        bool isMini = true;
-
-        foreach (var coord in _coords)
+        for (int row = 0; row < 9; row++)
         {
-            if (!(coord.Row == row1 && coord.Row == row2)) isRow = false;
-            if (!(coord.Col == col1 && coord.Col == col2)) isCol = false;
-            if (!(coord.Row / 3 == row1 / 3 && coord.Col / 3 == col1 / 3 &&
-                  coord.Row / 3 == row2 / 3 && coord.Col / 3 == col2 / 3)) isMini = false;
-
-            if (isRow && !isCol && !isMini)
+            for (int col = 0; col < 9; col++)
             {
-                for (int col = 0; col < 9; col++)
-                {
-                    if(col == col2 || col == col1 || _coords.Any(coordinate => coordinate.Col == col)) continue;
-                    yield return new Coordinate(row1, col);
-                }
-                yield break;
-            }
+                Coordinate current = new Coordinate(row, col);
 
-            if (!isRow && isCol && !isMini)
-            {
-                for (int row = 0; row < 9; row++)
-                {
-                    if (row == row1 || row == row2 || _coords.Any(coordinate => coordinate.Row == row)) continue;
-                    yield return new Coordinate(row, col1);
-                }
-                yield break;
-            }
-
-            if (!isRow && !isCol && isMini)
-            {
-                int miniRow = row1 / 3;
-                int miniCol = row2 / 3;
-                for (int gridRow = 0; gridRow < 3; gridRow++)
-                {
-                    for (int gridCol = 0; gridCol < 3; gridCol++)
-                    {
-                        int row = miniRow + gridRow;
-                        int col = miniCol + gridCol;
-                        if ((row == row1 && col == col1) || (row == row2 && col == col2) ||
-                            _coords.Any(coordinate => row == coordinate.Row && col == coordinate.Col)) continue;
-                        yield return new Coordinate(row, col);
-                    }
-                }
-                yield break;
+                if (ShareAUnitWithAll(current, _coords)) yield return current;
             }
         }
+    }
+
+    public bool ShareAUnit(Coordinate coord)
+    {
+        foreach (var c in _coords)
+        {
+            if (!c.ShareAUnit(coord)) return false;
+        }
+
+        return true;
     }
 }

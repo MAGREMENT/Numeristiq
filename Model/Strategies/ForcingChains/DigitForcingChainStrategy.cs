@@ -3,7 +3,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingChains;
 
-public class DigitForcingChainStrategy : IStrategy
+public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......5.....78...3......7..5...6......1.....4.........67.5.2.....4..3........"
 {
     public string Name => "Digit forcing chain";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
@@ -11,7 +11,6 @@ public class DigitForcingChainStrategy : IStrategy
     public void ApplyOnce(ISolverView solverView)
     {
         LinkGraph<ILinkGraphElement> graph = solverView.LinkGraph();
-        HashSet<ILinkGraphElement> visited = new();
 
         for (int row = 0; row < 9; row++)
         {
@@ -20,7 +19,6 @@ public class DigitForcingChainStrategy : IStrategy
                 foreach (var possibility in solverView.Possibilities[row, col])
                 {
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
-                    if (visited.Contains(current)) continue;
 
                     Dictionary<ILinkGraphElement, Coloring> onColoring = new();
                     Dictionary<ILinkGraphElement, Coloring> offColoring = new();
@@ -31,14 +29,14 @@ public class DigitForcingChainStrategy : IStrategy
                     ForcingChainUtil.Color(graph, offColoring, current);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
-                    Process(solverView, onColoring, offColoring, visited);
+                    Process(solverView, onColoring, offColoring);
                 }
             }
         }
     }
 
     private bool Process(ISolverView view, Dictionary<ILinkGraphElement, Coloring> onColoring,
-        Dictionary<ILinkGraphElement, Coloring> offColoring, HashSet<ILinkGraphElement> visited)
+        Dictionary<ILinkGraphElement, Coloring> offColoring)
     {
         bool wasProgressMade = false;
         foreach (var on in onColoring)
@@ -46,12 +44,15 @@ public class DigitForcingChainStrategy : IStrategy
             if (on.Key is not PossibilityCoordinate possOn) continue;
             if (offColoring.TryGetValue(possOn, out var other))
             {
-                if (other != on.Value) /*visited.Add(possOn)*/;
-                else if (other == Coloring.On && on.Value == Coloring.On &&
-                         view.AddDefinitiveNumber(possOn.Possibility, possOn.Row, possOn.Col, this))
-                    wasProgressMade = true;
-                else if(view.RemovePossibility(possOn.Possibility, possOn.Row, possOn.Col, this))
-                    wasProgressMade = true;
+                switch (other)
+                {
+                    case Coloring.Off when on.Value == Coloring.Off &&
+                                           view.RemovePossibility(possOn.Possibility, possOn.Row, possOn.Col, this):
+                    case Coloring.On when on.Value == Coloring.On &&
+                                          view.AddDefinitiveNumber(possOn.Possibility, possOn.Row, possOn.Col, this):
+                        wasProgressMade = true;
+                        break;
+                }
             }
 
             if (on.Value != Coloring.On) continue;
