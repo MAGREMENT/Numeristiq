@@ -108,6 +108,17 @@ public class MiniGridPositions : IEnumerable<int[]>
             if(((_pos >> (gridRow * 3 + i)) & 1) > 0) yield return new[] {_startRow + gridRow, _startCol + i};
         }
     }
+    
+    public LinePositions OnGridRowAsLine(int gridRow) //TODO test
+    {
+        LinePositions pos = new();
+        for (int i = 0; i < 3; i++)
+        {
+            if (((_pos >> (gridRow * 3 + i)) & 1) > 0) pos.Add(_startCol + i);
+        }
+
+        return pos;
+    }
 
     public IEnumerable<int[]> OnGridColumn(int gridCol) //TODO test
     {
@@ -115,6 +126,17 @@ public class MiniGridPositions : IEnumerable<int[]>
         {
             if(((_pos >> (i * 3 + gridCol)) & 1) > 0) yield return new[] {_startRow + i, _startCol + gridCol};
         }
+    }
+    
+    public LinePositions OnGridColumnAsLine(int gridCol) //TODO test
+    {
+        LinePositions pos = new();
+        for (int i = 0; i < 3; i++)
+        {
+            if (((_pos >> (i * 3 + gridCol)) & 1) > 0) pos.Add(_startRow + i);
+        }
+
+        return pos;
     }
 
     public IEnumerator<int[]> GetEnumerator()

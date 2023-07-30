@@ -322,7 +322,7 @@ public class GroupedXCycleSingle : PossibilityCoordinate, IGroupedXCycleNode
     }
 }
 
-public class GroupedXCyclePointingRow : IGroupedXCycleNode
+public class GroupedXCyclePointingRow : IGroupedXCycleNode //TODO use for global graph too
 {
     public int Possibility { get; }
     public Coordinate[] Coordinates { get; } //TODO make array of int

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Model.StrategiesUtil;
-using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.ForcingChains;
 
@@ -32,7 +31,7 @@ public class DigitForcingChainStrategy : IStrategy
                     ForcingChainUtil.Color(graph, offColoring, current);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
-                    if (Process(solverView, onColoring, offColoring, visited)) /*return*/;
+                    Process(solverView, onColoring, offColoring, visited);
                 }
             }
         }
