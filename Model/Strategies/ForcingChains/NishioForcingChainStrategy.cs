@@ -1,4 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using Model.Positions;
+using Model.Possibilities;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingChains;
@@ -11,6 +15,7 @@ public class NishioForcingChainStrategy : IStrategy
     public void ApplyOnce(ISolverView solverView)
     {
         LinkGraph<ILinkGraphElement> graph = solverView.LinkGraph();
+        ContradictionSearcher cs = new ContradictionSearcher(solverView);
 
         for (int row = 0; row < 9; row++)
         {
@@ -23,18 +28,18 @@ public class NishioForcingChainStrategy : IStrategy
                     Dictionary<ILinkGraphElement, Coloring> coloring = new();
                     coloring[current] = Coloring.On;
 
-                    if (Search(solverView, graph, coloring, current))
-                    {
-                        solverView.RemovePossibility(possibility, row, col, this);
+                    if (Search(cs, graph, coloring, current) 
+                        && solverView.RemovePossibility(possibility, row, col, this))
                         return;
-                    }
+                    
+                    cs.Reset();
                 }
             }
         }
     }
     
-    private bool Search(ISolverView view, LinkGraph<ILinkGraphElement> graph, Dictionary<ILinkGraphElement, Coloring> result,
-        ILinkGraphElement current) //TODO other types
+    private bool Search(ContradictionSearcher cs, LinkGraph<ILinkGraphElement> graph, Dictionary<ILinkGraphElement, Coloring> result,
+        ILinkGraphElement current)
     {
         Coloring opposite = result[current] == Coloring.On ? Coloring.Off : Coloring.On;
 
@@ -42,8 +47,9 @@ public class NishioForcingChainStrategy : IStrategy
         {
             if (!result.ContainsKey(friend))
             {
+                if (opposite == Coloring.Off && friend is PossibilityCoordinate pos && cs.AddedOff(pos)) return true;
                 result[friend] = opposite;
-                if (Search(view, graph, result, friend)) return true;
+                if (Search(cs, graph, result, friend)) return true;
             }
             else if (result[friend] != opposite) return true;
         }
@@ -54,13 +60,96 @@ public class NishioForcingChainStrategy : IStrategy
             {
                 if (!result.ContainsKey(friend))
                 {
+                    if (friend is PossibilityCoordinate pos && cs.AddedOff(pos)) return true;
                     result[friend] = opposite;
-                    if (Search(view, graph, result, friend)) return true;
+                    if (Search(cs, graph, result, friend)) return true;
                 }
                 else if (result[friend] != opposite) return true;
             }
         }
 
         return false;
+    }
+}
+
+public class ContradictionSearcher
+{
+    private readonly Dictionary<int, IPossibilities> _cells = new();
+    private readonly Dictionary<int, LinePositions> _rows = new();
+    private readonly Dictionary<int, LinePositions> _cols = new();
+    private readonly Dictionary<int, MiniGridPositions> _minis = new();
+
+    private readonly ISolverView _view;
+
+    public ContradictionSearcher(ISolverView view)
+    {
+        _view = view;
+    }
+
+    //returns true if contradiction
+    public bool AddedOff(PossibilityCoordinate coord)
+    {
+        var cellInt = coord.Row * 9 + coord.Col;
+        if (!_cells.TryGetValue(cellInt, out var poss))
+        {
+            var copy = _view.Possibilities[coord.Row, coord.Col].Copy();
+            copy.Remove(coord.Possibility);
+            _cells[cellInt] = copy;
+        }
+        else
+        {
+            poss.Remove(coord.Possibility);
+            if (poss.Count == 0) return true;
+        }
+
+        var rowInt = coord.Row * 9 + coord.Possibility;
+        if (!_rows.TryGetValue(rowInt, out var rowPos))
+        {
+            var copy = _view.PossibilityPositionsInRow(coord.Row, coord.Possibility).Copy();
+            copy.Remove(coord.Col);
+            _rows[rowInt] = copy;
+        }
+        else
+        {
+            rowPos.Remove(coord.Possibility);
+            if (rowPos.Count == 0){ return true;}
+        }
+
+        var colInt = coord.Col * 9 + coord.Possibility;
+        if (!_cols.TryGetValue(colInt, out var colPos))
+        {
+            var copy = _view.PossibilityPositionsInColumn(coord.Col, coord.Possibility).Copy();
+            copy.Remove(coord.Row);
+            _cols[colInt] = copy;
+        }
+        else
+        {
+            colPos.Remove(coord.Row);
+            if (colPos.Count == 0) return true;
+        }
+
+        var miniInt = coord.Row / 3 + coord.Col / 3 * 3 + coord.Possibility * 9;
+        if (!_minis.TryGetValue(miniInt, out var miniPos))
+        {
+            var copy = _view.PossibilityPositionsInMiniGrid(coord.Row / 3,
+                coord.Col / 3, coord.Possibility).Copy();
+            copy.Remove(coord.Row % 3, coord.Col % 3);
+            _minis[miniInt] = copy;
+        }
+        else
+        {
+            miniPos.Remove(coord.Row % 3, coord.Col % 3);
+            if (miniPos.Count == 0) return true;
+        }
+
+        return false;
+    }
+
+    public void Reset()
+    {
+        _cells.Clear();
+        _rows.Clear();
+        _cols.Clear();
+        _minis.Clear();
     }
 }

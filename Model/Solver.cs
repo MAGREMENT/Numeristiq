@@ -307,8 +307,9 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
             //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
                 //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
             new DigitForcingChainStrategy(),
-            new NishioForcingChainStrategy(),
-            new CellForcingChainStrategy(4)
+            new CellForcingChainStrategy(4),
+            new UnitForcingChainStrategy(4),
+            new NishioForcingChainStrategy()
             //new TrialAndMatchStrategy(2)
         };
     }

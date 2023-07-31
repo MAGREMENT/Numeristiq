@@ -9,7 +9,7 @@ public class AlmostLockedSet
     private readonly Coordinate[] _coords;
     public IPossibilities Possibilities { get; }
 
-    public AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
+    private AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
     {
         _coords = coords;
         Possibilities = poss;
