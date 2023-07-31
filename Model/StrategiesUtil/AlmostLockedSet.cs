@@ -1,21 +1,22 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.Possibilities;
 
 namespace Model.StrategiesUtil;
 
-public class AlmostLockedSet
+public class AlmostLockedSet : ILinkGraphElement
 {
     private readonly Coordinate[] _coords;
     public IPossibilities Possibilities { get; }
 
-    private AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
+    public AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
     {
         _coords = coords;
         Possibilities = poss;
     }
 
-    private AlmostLockedSet(Coordinate coord, IPossibilities poss)
+    public AlmostLockedSet(Coordinate coord, IPossibilities poss)
     {
         _coords = new[] { coord };
         Possibilities = poss;
@@ -109,5 +110,45 @@ public class AlmostLockedSet
         }
 
         return true;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not AlmostLockedSet als) return false;
+        if (!Possibilities.Equals(als.Possibilities) || _coords.Length != als._coords.Length) return false;
+        foreach (var coord in _coords)
+        {
+            if (!als.Contains(coord)) return false;
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        int coordHashCode = 0;
+        foreach (var coord in _coords)
+        {
+            coordHashCode ^= coord.GetHashCode();
+        }
+
+        return HashCode.Combine(Possibilities.GetHashCode(), coordHashCode);
+    }
+
+    public override string ToString()
+    {
+        var result = $"[ALS : {_coords[0].Row + 1}, {_coords[0].Col + 1} ";
+        for (int i = 1; i < _coords.Length; i++)
+        {
+            result += $"| {_coords[i].Row + 1}, {_coords[i].Col + 1} ";
+        }
+
+        result += "=> ";
+        foreach (var possibility in Possibilities)
+        {
+            result += $"{possibility}, ";
+        }
+
+        return result[..^2] + "]";
     }
 }

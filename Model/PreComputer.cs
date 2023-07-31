@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Positions;
+using Model.Possibilities;
 using Model.StrategiesUtil;
 
 namespace Model;
@@ -191,9 +192,149 @@ public class PreComputer
                 }
             }
         }
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (_view.Possibilities[row, col].Count != 2) continue;
+                SearchForUsableAls(graph, new Coordinate(row, col), _view.Possibilities[row, col]);
+            }
+        }
         
 
         return graph;
+    }
+
+    private void SearchForUsableAls(LinkGraph<ILinkGraphElement> graph, Coordinate biValueCell, IPossibilities biValue) //TODO take mini grid into account
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            IPossibilities evaluated = _view.Possibilities[row, biValueCell.Col];
+            if (evaluated.Count != 3) continue;
+            
+            int buffer = -1;
+            bool yes = true;
+            foreach (var possibility in evaluated)
+            {
+                if (!biValue.Peek(possibility))
+                {
+                    if (buffer == -1) buffer = possibility;
+                    else
+                    {
+                        yes = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!yes && buffer != -1) continue;
+            //Usable ALS found
+            AlmostLockedSet als = new AlmostLockedSet(new[] { biValueCell, new Coordinate(row, biValueCell.Col) },
+                evaluated.Mash(biValue));
+
+            graph.AddLink(new PossibilityCoordinate(row, biValueCell.Col, buffer),
+                als, LinkStrength.Strong, LinkType.MonoDirectional);
+
+            for (int r = 0; r < 9; r++)
+            {
+                if (r == row || r == biValueCell.Row) continue;
+                foreach (var possibility in biValue)
+                {
+                    if(_view.Possibilities[r, biValueCell.Col].Peek(possibility))
+                        graph.AddLink(als, new PossibilityCoordinate(r, biValueCell.Col, possibility),
+                            LinkStrength.Weak, LinkType.MonoDirectional);
+                }
+            }
+
+            //Same mini grid
+            if (row / 3 == biValueCell.Row / 3)
+            {
+                int startRow = row / 3 * 3;
+                int startCol = biValueCell.Col / 3 * 3;
+
+                for (int gridRow = 0; gridRow < 3; gridRow++)
+                {
+                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    {
+                        int r = startRow + gridRow;
+                        int c = startCol + gridCol;
+
+                        if (c == biValueCell.Col && (r == row || r == biValueCell.Row)) continue;
+                        foreach (var possibility in biValue)
+                        {
+                            if(_view.Possibilities[r, c].Peek(possibility))
+                                graph.AddLink(als, new PossibilityCoordinate(r, c, possibility),
+                                    LinkStrength.Weak, LinkType.MonoDirectional);
+                        }
+                    }
+                }
+            }
+        }
+        
+        for (int col = 0; col < 9; col++)
+        {
+            IPossibilities evaluated = _view.Possibilities[biValueCell.Row, col];
+            if (evaluated.Count != 3) continue;
+            
+            int buffer = -1;
+            bool yes = true;
+            foreach (var possibility in evaluated)
+            {
+                if (!biValue.Peek(possibility))
+                {
+                    if (buffer == -1) buffer = possibility;
+                    else
+                    {
+                        yes = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!yes && buffer != -1) continue;
+            //Usable ALS found
+            AlmostLockedSet als = new AlmostLockedSet(new[] { biValueCell, new Coordinate(biValueCell.Row, col) },
+                evaluated.Mash(biValue));
+
+            graph.AddLink(new PossibilityCoordinate(biValueCell.Row, col, buffer),
+                als, LinkStrength.Strong, LinkType.MonoDirectional);
+
+            for (int c = 0; c < 9; c++)
+            {
+                if (c == col || c == biValueCell.Col) continue;
+                foreach (var possibility in biValue)
+                {
+                    if(_view.Possibilities[biValueCell.Row, c].Peek(possibility))
+                        graph.AddLink(als, new PossibilityCoordinate(biValueCell.Row, c, possibility),
+                            LinkStrength.Weak, LinkType.MonoDirectional);
+                }
+            }
+            
+            //Same mini grid
+            if (col / 3 == biValueCell.Col / 3)
+            {
+                int startRow = biValueCell.Row / 3 * 3;
+                int startCol = col / 3 * 3;
+
+                for (int gridRow = 0; gridRow < 3; gridRow++)
+                {
+                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    {
+                        int r = startRow + gridRow;
+                        int c = startCol + gridCol;
+
+                        if (r == biValueCell.Row && (c == col || c == biValueCell.Col)) continue;
+                        foreach (var possibility in biValue)
+                        {
+                            if(_view.Possibilities[r, c].Peek(possibility))
+                                graph.AddLink(als, new PossibilityCoordinate(r, c, possibility),
+                                    LinkStrength.Weak, LinkType.MonoDirectional);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     private void SearchForPointingInMiniGrid(ISolverView view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,

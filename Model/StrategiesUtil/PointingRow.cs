@@ -110,7 +110,7 @@ public class PointingRow : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = "[";
+        var result = "[PR : ";
         foreach (var col in _pos)
         {
             result += $"{Row + 1}, {col + 1} | ";

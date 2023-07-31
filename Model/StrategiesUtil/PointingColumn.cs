@@ -110,7 +110,7 @@ public class PointingColumn : ILinkGraphElement
     
     public override string ToString()
     {
-        var result = "[";
+        var result = "[PC : ";
         foreach (var row in _pos)
         {
             result += $"{row + 1}, {Column + 1} | ";

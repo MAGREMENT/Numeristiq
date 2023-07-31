@@ -7,10 +7,11 @@ public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 {
     private readonly Dictionary<T, HashSet<T>>[] _links = { new(), new() };
 
-    public void AddLink(T one, T two, LinkStrength strength)
+    public void AddLink(T one, T two, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
         var index = (int)strength;
         if (!_links[index].TryAdd(one, new HashSet<T> { two })) _links[index][one].Add(two);
+        if (type != LinkType.BiDirectional) return;
         if (!_links[index].TryAdd(two, new HashSet<T> { one })) _links[index][two].Add(one);
     }
 
@@ -53,4 +54,9 @@ public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 public enum LinkStrength
 {
     None = -1, Strong = 0, Weak = 1
+}
+
+public enum LinkType
+{
+    BiDirectional, MonoDirectional
 }
