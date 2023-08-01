@@ -12,6 +12,7 @@ public partial class SudokuUserControl : UserControl
     private readonly StackPanel _main;
 
     private Solver _currentSolver = new(new Sudoku());
+    private int _logBuffer = -1;
 
     public delegate void OnReady();
     public event OnReady? IsReady;
@@ -112,6 +113,7 @@ public partial class SudokuUserControl : UserControl
     public void SolveSudoku()
     {
         _currentSolver.Solve();
+        if (_currentSolver.Logs.Count > 0) _logBuffer = _currentSolver.Logs[^1].Id;
         Update();
         IsReady?.Invoke();
     }
@@ -127,8 +129,16 @@ public partial class SudokuUserControl : UserControl
                 GetTo(i, j).UnHighLight();
             }
         }
-        
-        if(_currentSolver.Logs.Count > 0) HighLightLog(_currentSolver.Logs[^1]);
+
+        if (_currentSolver.Logs.Count > 0)
+        {
+            var current = _currentSolver.Logs[^1];
+            if (current.Id != _logBuffer)
+            {
+                HighLightLog(current);
+                _logBuffer = current.Id;
+            }
+        }
 
         await Task.Delay(TimeSpan.FromMilliseconds(500));
         

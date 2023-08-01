@@ -6,7 +6,8 @@ namespace Model.Logs;
 public class BasicLog : ISolverLog
 {
     private List<int> _changes = new();
-    
+
+    public int Id { get; }
     public string Title { get; }
     public Intensity Intensity { get; }
 
@@ -26,8 +27,9 @@ public class BasicLog : ISolverLog
 
     public string SolverState { get; }
 
-    public BasicLog(IStrategy causedBy, string solverState)
+    public BasicLog(int id, IStrategy causedBy, string solverState)
     {
+        Id = id;
         Title = causedBy.Name;
         Intensity = (Intensity) causedBy.Difficulty;
         SolverState = solverState;

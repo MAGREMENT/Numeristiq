@@ -4,6 +4,7 @@ namespace Model.Logs;
 
 public class ByHandRemovedLog : ISolverLog
 {
+    public int Id { get; }
     public string Title => "Removed by hand";
     public Intensity Intensity => Intensity.Six;
     public string Text { get; }
@@ -11,8 +12,9 @@ public class ByHandRemovedLog : ISolverLog
 
     private readonly LogPart _asPart;
 
-    public ByHandRemovedLog(int possibility, int row, int col, string solverState)
+    public ByHandRemovedLog(int id, int possibility, int row, int col, string solverState)
     {
+        Id = id;
         Text = $"[{row + 1}, {col + 1}] {possibility} removed by hand";
         SolverState = solverState;
         _asPart = new LogPart(SolverAction.PossibilityRemoved, possibility, row, col);

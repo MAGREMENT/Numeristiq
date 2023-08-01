@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using Model.Possibilities;
 using Model.StrategiesUtil;
 
@@ -35,6 +36,44 @@ public class UniqueRectanglesStrategy : IStrategy
                     else
                     {
                         map[bi] = new List<Coordinate> { current };
+                    }
+                }
+            }
+        }
+
+        //Hidden type 1
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (solverView.Possibilities[row, col].Count <= 2) continue;
+                
+                foreach (var bi in solverView.Possibilities[row, col].EachBiValue())
+                {
+                    if (!map.TryGetValue(bi, out var potentialOpposites)) continue;
+                    foreach (var potentialOpposite in potentialOpposites)
+                    {
+                        if (potentialOpposite.Row == row || potentialOpposite.Col == col ||
+                            !AreSpreadOverOnlyTwoBoxes(row, col, potentialOpposite.Row, potentialOpposite.Col,
+                                potentialOpposite.Row, col, row, potentialOpposite.Col)) continue;
+                        
+                        if (solverView.Possibilities[row, potentialOpposite.Col].Peek(bi.One)
+                            && solverView.Possibilities[row, potentialOpposite.Col].Peek(bi.Two)
+                            && solverView.Possibilities[potentialOpposite.Row, col].Peek(bi.One)
+                            && solverView.Possibilities[potentialOpposite.Row, col].Peek(bi.Two))
+                        {
+                            if (solverView.PossibilityPositionsInRow(row, bi.One).Count == 2
+                                && solverView.PossibilityPositionsInColumn(col, bi.One).Count == 2)
+                            {
+                                solverView.RemovePossibility(bi.Two, row, col, this);
+                            }
+                            
+                            if (solverView.PossibilityPositionsInRow(row, bi.Two).Count == 2
+                                && solverView.PossibilityPositionsInColumn(col, bi.Two).Count == 2)
+                            {
+                                solverView.RemovePossibility(bi.One, row, col, this);
+                            }
+                        }
                     }
                 }
             }
@@ -100,6 +139,28 @@ public class UniqueRectanglesStrategy : IStrategy
                         view.RemovePossibility(possibility, coord.Row, coord.Col, this);
                     }
 
+                    return;
+                }
+                
+                //Hidden type 2
+                if (view.PossibilityPositionsInColumn(one.Col, bi.One).Count == 2)
+                {
+                    view.RemovePossibility(bi.Two, row, two.Col, this);
+                    return;
+                }
+                if (view.PossibilityPositionsInColumn(one.Col, bi.Two).Count == 2)
+                {
+                    view.RemovePossibility(bi.One, row, two.Col, this);
+                    return;
+                }
+                if (view.PossibilityPositionsInColumn(two.Col, bi.One).Count == 2)
+                {
+                    view.RemovePossibility(bi.Two, row, one.Col, this);
+                    return;
+                }
+                if (view.PossibilityPositionsInColumn(two.Col, bi.Two).Count == 2)
+                {
+                    view.RemovePossibility(bi.One, row, one.Col, this);
                     return;
                 }
                 
@@ -207,6 +268,28 @@ public class UniqueRectanglesStrategy : IStrategy
                         view.RemovePossibility(possibility, coord.Row, coord.Col, this);
                     }
 
+                    return;
+                }
+                
+                //Hidden type 2
+                if (view.PossibilityPositionsInRow(one.Row, bi.One).Count == 2)
+                {
+                    view.RemovePossibility(bi.Two, two.Row, col, this);
+                    return;
+                }
+                if (view.PossibilityPositionsInRow(one.Row, bi.Two).Count == 2)
+                {
+                    view.RemovePossibility(bi.One, two.Row, col, this);
+                    return;
+                }
+                if (view.PossibilityPositionsInRow(two.Row, bi.One).Count == 2)
+                {
+                    view.RemovePossibility(bi.Two, one.Row, col, this);
+                    return;
+                }
+                if (view.PossibilityPositionsInRow(two.Row, bi.Two).Count == 2)
+                {
+                    view.RemovePossibility(bi.One, one.Row, col, this);
                     return;
                 }
                 

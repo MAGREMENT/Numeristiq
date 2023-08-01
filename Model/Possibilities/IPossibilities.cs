@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Strategies;
 
 namespace Model.Possibilities;
 
@@ -17,6 +18,7 @@ public interface IPossibilities : IEnumerable<int>
     public bool PeekAll(IPossibilities poss);
     public void Reset();
     public IPossibilities Copy();
+    public IEnumerable<BiValue> EachBiValue();
 
     public static IPossibilities DefaultMash(IPossibilities poss1, IPossibilities poss2)
     {

@@ -10,12 +10,14 @@ public class LogManager
 
     private ISolverLog? _current;
 
+    private int _idCount = 1;
+
     public void NumberAdded(int number, int row, int col, IStrategy strategy, Solver solver)
     {
         if (solver.StrategyCount != _lastStrategy)
         {
             Push();
-            _current = new BasicLog(strategy, solver.State);
+            _current = new BasicLog(_idCount++, strategy, solver.State);
             _lastStrategy = solver.StrategyCount;
         } 
         
@@ -27,7 +29,7 @@ public class LogManager
         if (solver.StrategyCount != _lastStrategy)
         {
             Push();
-            _current = new BasicLog(strategy, solver.State);
+            _current = new BasicLog(_idCount++, strategy, solver.State);
             _lastStrategy = solver.StrategyCount;
         }
         
@@ -36,7 +38,7 @@ public class LogManager
 
     public void PossibilityRemovedByHand(int possibility, int row, int col, Solver solver)
     {
-        Logs.Add(new ByHandRemovedLog(possibility, row, col, solver.State));
+        Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, solver.State));
     }
 
     public void Push()

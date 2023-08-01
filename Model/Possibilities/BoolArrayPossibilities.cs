@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Model.Strategies;
 
 namespace Model.Possibilities;
 
@@ -90,6 +91,11 @@ public class BoolArrayPossibilities : IPossibilities
     public IPossibilities Copy()
     {
         return new BoolArrayPossibilities(this);
+    }
+
+    public IEnumerable<BiValue> EachBiValue()
+    {
+        yield break; //TODO
     }
 
     public IEnumerator<int> GetEnumerator()

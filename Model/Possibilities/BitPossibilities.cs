@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Model.Strategies;
 
 namespace Model.Possibilities;
 
@@ -94,6 +95,18 @@ public class BitPossibilities : IPossibilities
     public IPossibilities Copy()
     {
         return new BitPossibilities(_possibilities, Count);
+    }
+
+    public IEnumerable<BiValue> EachBiValue()
+    {
+        for (int i = 1; i <= 9; i++)
+        {
+            if (!Peek(i)) continue;
+            for (int j = i + 1; j <= 9; j++)
+            {
+                if (Peek(j)) yield return new BiValue(i, j);
+            }
+        }
     }
 
     public override int GetHashCode()
