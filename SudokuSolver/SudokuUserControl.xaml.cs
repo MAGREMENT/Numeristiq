@@ -155,10 +155,14 @@ public partial class SudokuUserControl : UserControl
 
     private void HighLightLog(ISolverLog log)
     {
-        foreach (var coord in log.AllChanges())
+        foreach (var change in log.AllChanges())
         {
-            SudokuCellUserControl current = GetTo(coord.Row, coord.Column);
-            current.HighLight(coord);
+            GetTo(change.Row, change.Column).HighLight(change);
+        }
+
+        foreach (var cause in log.AllCauses())
+        {
+            GetTo(cause.Row, cause.Column).HighLight(cause);
         }
     }
 

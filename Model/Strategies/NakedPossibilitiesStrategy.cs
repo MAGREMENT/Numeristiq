@@ -117,7 +117,7 @@ public class NakedPossibilitiesStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Sudoku[row, col] == 0 && !except.Peek(col))
+                if (strategyManager.Possibilities[row, col].Peek(n) && !except.Peek(col))
                     strategyManager.RemovePossibility(n, row, col, this);
             }
         }
@@ -168,7 +168,7 @@ public class NakedPossibilitiesStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                if (strategyManager.Sudoku[row, col] == 0 && !except.Peek(row))
+                if (strategyManager.Possibilities[row, col].Peek(n) && !except.Peek(row))
                     strategyManager.RemovePossibility(n, row, col, this);
             }
         }
@@ -229,7 +229,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 int row = miniRow * 3 + gridNumber / 3;
                 int col = miniCol * 3 + gridNumber % 3;
                 
-                if (strategyManager.Sudoku[row, col] == 0 && !except.PeekFromGridNumber(gridNumber))
+                if (strategyManager.Possibilities[row, col].Peek(n) && !except.PeekFromGridNumber(gridNumber))
                     strategyManager.RemovePossibility(n, row, col, this);
             }
         }

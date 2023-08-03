@@ -97,27 +97,37 @@ public partial class NumbersUserControl : UserControl
 
     public void HighLightBig()
     {
-        _big.Background = new SolidColorBrush(Colors.Aqua);
-        if(_case.Children[0] is Grid) HighLightWholeSmall();
+        HighLightBig(Colors.Aqua);
     }
 
-    private void HighLightWholeSmall()
+    public void HighLightBig(Color color)
     {
-        _small.Background = new SolidColorBrush(Colors.Aqua);
+        _big.Background = new SolidColorBrush(color);
+        if(_case.Children[0] is Grid) HighLightWholeSmall(color);
+    }
+
+    private void HighLightWholeSmall(Color color)
+    {
+        _small.Background = new SolidColorBrush(color);
         foreach (var child in _small.Children)
         {
             var tb = (child as TextBlock)!;
-            tb.Background = new SolidColorBrush(Colors.Aqua);
+            tb.Background = new SolidColorBrush(color);
         }
     }
 
     public void HighLightSmall(int n)
     {
+        HighLightSmall(n, Colors.Aqua);
+    }
+    
+    public void HighLightSmall(int n, Color color)
+    {
         foreach (var child in _small.Children)
         {
             var tb = (child as TextBlock)!;
             int a = Grid.GetRow(tb) * 3 + Grid.GetColumn(tb) + 1;
-            if(a == n) tb.Background = new SolidColorBrush(Colors.Aqua);
+            if(a == n) tb.Background = new SolidColorBrush(color);
         }
     }
 }

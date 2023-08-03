@@ -41,6 +41,12 @@ public class LogChange
     public int Number { get; }
     public int Row { get; }
     public int Column { get; }
+
+    public override string ToString()
+    {
+        string action = NumberType == SolverNumberType.Definitive ? "added as definitive" : "removed from possibilities";
+        return $"[{Row + 1}, {Column + 1}] {Number} {action}";
+    }
 }
 
 public class LogCause : LogChange

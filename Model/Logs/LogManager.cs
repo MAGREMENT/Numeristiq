@@ -2,7 +2,7 @@
 
 namespace Model.Logs;
 
-public class LogManager
+public class LogManager  //TODO work around the strategy count thingy with push()
 {
     public List<ISolverLog> Logs { get; } = new();
 
@@ -17,7 +17,7 @@ public class LogManager
         if (solver.StrategyCount != _lastStrategy)
         {
             Push();
-            _current = new BasicLog(_idCount++, strategy, solver.State);
+            _current = new BuildUpLog(_idCount++, strategy, solver.State);
             _lastStrategy = solver.StrategyCount;
         } 
         
@@ -29,7 +29,7 @@ public class LogManager
         if (solver.StrategyCount != _lastStrategy)
         {
             Push();
-            _current = new BasicLog(_idCount++, strategy, solver.State);
+            _current = new BuildUpLog(_idCount++, strategy, solver.State);
             _lastStrategy = solver.StrategyCount;
         }
         
@@ -39,6 +39,12 @@ public class LogManager
     public void PossibilityRemovedByHand(int possibility, int row, int col, Solver solver)
     {
         Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, solver.State));
+    }
+
+    public void ChangePushed(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, IStrategy strategy, string solverState)
+    {
+        Push();
+        Logs.Add(new ChangePushedLog(_idCount++, strategy, changes, causes, solverState));
     }
 
     public void Push()

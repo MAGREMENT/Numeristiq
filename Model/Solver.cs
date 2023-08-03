@@ -249,17 +249,34 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     
     public bool AddDefinitive(int number, int row, int col)
     {
-        throw new NotImplementedException();
+        if (Sudoku[row, col] != 0) return false;
+        
+        Sudoku[row, col] = number;
+        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+        //strategy.Score += 1; //TODO
+        
+        NumberAdded?.Invoke(row, col);
+        return true;
     }
 
     public bool RemovePossibility(int possibility, int row, int col)
     {
-        throw new NotImplementedException();
+        bool buffer = Possibilities[row, col].Remove(possibility);
+        if (!buffer) return false;
+        
+        //strategy.Score += 1; //TODO
+        
+        PossibilityRemoved?.Invoke(row, col);
+        return true;
     }
 
-    public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes)
+    public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, IStrategy strategy)
     {
-        throw new NotImplementedException();
+        if (LogsManaged)
+        {
+            _logManager.ChangePushed(changes, causes, strategy, State);
+            State = GetState();
+        }
     }
     
     //Private-----------------------------------------------------------------------------------------------------------

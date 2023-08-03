@@ -11,11 +11,13 @@ public class ChangeBuffer
 
     private readonly IChangeManager _m;
     private readonly IChangeCauseFactory _causeFactory;
+    private readonly IStrategy _strategy;
 
     public ChangeBuffer(IChangeManager changeManager, IStrategy strategy, IChangeCauseFactory causesFactory)
     {
         _m = changeManager;
         _causeFactory = causesFactory;
+        _strategy = strategy;
     }
 
     public void AddPossibilityToRemove(int possibility, int row, int col)
@@ -46,7 +48,7 @@ public class ChangeBuffer
                 new LogChange(SolverNumberType.Definitive, definitive / 81, n / 9, n % 9));
         }
 
-        if(changes.Count > 0) _m.PushLog(changes, _causeFactory.CreateCauses());
+        if(changes.Count > 0) _m.PushLog(changes, _causeFactory.CreateCauses(), _strategy);
     }
 }
 

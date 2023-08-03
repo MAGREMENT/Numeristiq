@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Model.Logs;
 
-public class BasicLog : ISolverLog
+public class BuildUpLog : ISolverLog
 {
     private List<int> _changes = new();
 
@@ -27,7 +27,7 @@ public class BasicLog : ISolverLog
 
     public string SolverState { get; }
 
-    public BasicLog(int id, IStrategy causedBy, string solverState)
+    public BuildUpLog(int id, IStrategy causedBy, string solverState)
     {
         Id = id;
         Title = causedBy.Name;

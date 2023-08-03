@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model.Logs;
 using Model.Possibilities;
 
@@ -37,6 +38,18 @@ public partial class SudokuCellUserControl : UserControl
     {
         if (change.NumberType == SolverNumberType.Definitive) _numbers.HighLightBig();
         else _numbers.HighLightSmall(change.Number);
+    }
+
+    public void HighLight(LogCause cause)
+    {
+        var color = cause.Coloration switch
+        {
+            CauseColoration.One => Colors.Coral,
+            CauseColoration.Two => Colors.Green,
+            _ => throw new ArgumentException("Wtf is your fucking problem you moron")
+        };
+        if (cause.NumberType == SolverNumberType.Definitive) _numbers.HighLightBig(color);
+        else _numbers.HighLightSmall(cause.Number, color);
     }
 
     public void UnHighLight()
