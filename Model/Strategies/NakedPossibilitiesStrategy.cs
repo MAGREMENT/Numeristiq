@@ -113,14 +113,18 @@ public class NakedPossibilitiesStrategy : IStrategy
 
     private void RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, IPossibilities toRemove, LinePositions except)
     {
+        ChangeBuffer changeBuffer =
+            strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(row, except, toRemove));
         foreach (var n in toRemove)
         {
             for (int col = 0; col < 9; col++)
             {
                 if (strategyManager.Possibilities[row, col].Peek(n) && !except.Peek(col))
-                    strategyManager.RemovePossibility(n, row, col, this);
+                    changeBuffer.AddPossibilityToRemove(n, row, col);
             }
         }
+        
+        changeBuffer.Push();
     }
     
     private Queue<int> EveryColumnCellWithLessPossibilities(IStrategyManager strategyManager, int col, int than)
@@ -164,14 +168,19 @@ public class NakedPossibilitiesStrategy : IStrategy
 
     private void RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove, LinePositions except)
     {
+        var changeBuffer =
+            strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(col, except, toRemove));
+        
         foreach (var n in toRemove)
         {
             for (int row = 0; row < 9; row++)
             {
                 if (strategyManager.Possibilities[row, col].Peek(n) && !except.Peek(row))
-                    strategyManager.RemovePossibility(n, row, col, this);
+                    changeBuffer.AddPossibilityToRemove(n, row, col);
             }
         }
+        
+        changeBuffer.Push();
     }
     
     private Queue<int> EveryMiniGridCellWithLessPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol, int than)
@@ -222,6 +231,9 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove,
         MiniGridPositions except)
     {
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridPositionsCauseFactory(miniRow,
+            miniCol, except, toRemove));
+        
         foreach (var n in toRemove)
         {
             for (int gridNumber = 0; gridNumber < 9; gridNumber++)
@@ -230,8 +242,10 @@ public class NakedPossibilitiesStrategy : IStrategy
                 int col = miniCol * 3 + gridNumber % 3;
                 
                 if (strategyManager.Possibilities[row, col].Peek(n) && !except.PeekFromGridNumber(gridNumber))
-                    strategyManager.RemovePossibility(n, row, col, this);
+                    changeBuffer.AddPossibilityToRemove(n, row, col);
             }
         }
+        
+        changeBuffer.Push();
     }
 }

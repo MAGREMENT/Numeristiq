@@ -9,10 +9,6 @@ public interface ISolverLog
     public Intensity Intensity { get; }
     public string Text { get; }
     public string SolverState { get; }
-
-    public void DefinitiveAdded(int n, int row, int col);
-    public void PossibilityRemoved(int p, int row, int col);
-
     public IEnumerable<LogChange> AllChanges();
     public IEnumerable<LogCause> AllCauses();
 }

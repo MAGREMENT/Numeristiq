@@ -39,16 +39,6 @@ public class ChangePushedLog : ISolverLog
         _causes = causes;
     }
 
-    public void DefinitiveAdded(int n, int row, int col)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void PossibilityRemoved(int p, int row, int col)
-    {
-        throw new System.NotImplementedException();
-    }
-
     public IEnumerable<LogChange> AllChanges()
     {
         return _changes;

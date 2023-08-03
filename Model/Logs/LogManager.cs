@@ -14,26 +14,26 @@ public class LogManager  //TODO work around the strategy count thingy with push(
 
     public void NumberAdded(int number, int row, int col, IStrategy strategy, Solver solver)
     {
-        if (solver.StrategyCount != _lastStrategy)
+        if (solver.StrategyCount != _lastStrategy || _current is not BuildUpLog)
         {
             Push();
             _current = new BuildUpLog(_idCount++, strategy, solver.State);
             _lastStrategy = solver.StrategyCount;
         } 
         
-        _current!.DefinitiveAdded(number, row, col);
+        ((BuildUpLog)_current).DefinitiveAdded(number, row, col);
     }
     
     public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy, Solver solver)
     {
-        if (solver.StrategyCount != _lastStrategy)
+        if (solver.StrategyCount != _lastStrategy || _current is not BuildUpLog)
         {
             Push();
             _current = new BuildUpLog(_idCount++, strategy, solver.State);
             _lastStrategy = solver.StrategyCount;
         }
         
-        _current!.PossibilityRemoved(possibility, row, col);
+        ((BuildUpLog)_current).PossibilityRemoved(possibility, row, col);
     }
 
     public void PossibilityRemovedByHand(int possibility, int row, int col, Solver solver)

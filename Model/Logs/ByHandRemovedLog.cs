@@ -19,16 +19,6 @@ public class ByHandRemovedLog : ISolverLog
         SolverState = solverState;
         _asChange = new LogChange(SolverNumberType.Possibility, possibility, row, col);
     }
-    
-    public void DefinitiveAdded(int n, int row, int col)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void PossibilityRemoved(int p, int row, int col)
-    {
-        throw new System.NotImplementedException();
-    }
 
     public IEnumerable<LogChange> AllChanges()
     {

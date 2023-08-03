@@ -46,4 +46,11 @@ public interface IPossibilities : IEnumerable<int>
     {
         return new BitPossibilities();
     }
+
+    public static IPossibilities NewEmpty()
+    {
+        var buffer = new BitPossibilities();
+        buffer.RemoveAll();
+        return buffer;
+    }
 }
