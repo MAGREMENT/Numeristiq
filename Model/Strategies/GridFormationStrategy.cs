@@ -37,7 +37,7 @@ public class GridFormationStrategy : IStrategy
         }
     }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     { 
         for (int number = 1; number <= 9; number++)
         {
@@ -46,37 +46,37 @@ public class GridFormationStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                LinePositions p = solverView.PossibilityPositionsInRow(row, number);
+                LinePositions p = strategyManager.PossibilityPositionsInRow(row, number);
                 if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, row));
             }
-            Search(solverView, toSearch, number, _type);
+            Search(strategyManager, toSearch, number, _type);
             
 
             //Columns
             _lookingAtRows = false;
             for (int col = 0; col < 9; col++)
             {
-                LinePositions p = solverView.PossibilityPositionsInColumn(col, number);
+                LinePositions p = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, col));
             }
-            Search(solverView, toSearch, number, _type);
+            Search(strategyManager, toSearch, number, _type);
             
         }
     }
 
-    private void Search(ISolverView solverView, Queue<ValuePositions> toSearch, int number, int count)
+    private void Search(IStrategyManager strategyManager, Queue<ValuePositions> toSearch, int number, int count)
     {
         while (toSearch.Count > 0)
         {
             ValuePositions first = toSearch.Dequeue();
             LinePositions visited = new();
             visited.Add(first.Value);
-            RecursiveSearch(solverView, new Queue<ValuePositions>(toSearch), visited,
+            RecursiveSearch(strategyManager, new Queue<ValuePositions>(toSearch), visited,
                 first.Positions, number, count - 1);
         }
     }
 
-    private void RecursiveSearch(ISolverView solverView, Queue<ValuePositions> toSearch, LinePositions visited, LinePositions current,
+    private void RecursiveSearch(IStrategyManager strategyManager, Queue<ValuePositions> toSearch, LinePositions visited, LinePositions current,
         int number, int count)
     {
         while (toSearch.Count > 0)
@@ -86,18 +86,18 @@ public class GridFormationStrategy : IStrategy
             visited.Add(dequeue.Value);
             if (count - 1 == 0)
             {
-                if (newCurrent.Count == _type) Process(solverView, visited, newCurrent, number);
+                if (newCurrent.Count == _type) Process(strategyManager, visited, newCurrent, number);
             }
             else
             {
                 if(newCurrent.Count <= _type)
-                    RecursiveSearch(solverView, new Queue<ValuePositions>(toSearch), visited.Copy(),
+                    RecursiveSearch(strategyManager, new Queue<ValuePositions>(toSearch), visited.Copy(),
                         newCurrent, number, count - 1);
             }
         }
     }
 
-    private void Process(ISolverView solverView, LinePositions visited, LinePositions toRemove, int number)
+    private void Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number)
     {
         foreach (var first in toRemove)
         {
@@ -106,8 +106,8 @@ public class GridFormationStrategy : IStrategy
                 if (visited.Peek(other)) continue;
                 
                 int[] pos = _lookingAtRows ? new[] { other, first } : new[] { first, other };
-                if (solverView.Possibilities[pos[0], pos[1]].Peek(number))
-                    solverView.RemovePossibility(number, pos[0], pos[1], this);
+                if (strategyManager.Possibilities[pos[0], pos[1]].Peek(number))
+                    strategyManager.RemovePossibility(number, pos[0], pos[1], this);
             }
         }
     }

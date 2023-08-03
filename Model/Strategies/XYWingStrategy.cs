@@ -13,9 +13,9 @@ public class XYWingStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
-        var toSearch = AllCellsWith2Possibilities(solverView);
+        var toSearch = AllCellsWith2Possibilities(strategyManager);
         foreach(var current in toSearch)
         {
             var unitsDispersion = MatchingUnitDispersion(current, toSearch);
@@ -25,20 +25,20 @@ public class XYWingStrategy : IStrategy
             {
                 Coordinate one = unitsDispersion[0].Dequeue();
                 
-                if (ShareAtLeastOne(solverView.Possibilities[one.Row, one.Col],
-                        solverView.Possibilities[current.Row, current.Col]))
+                if (ShareAtLeastOne(strategyManager.Possibilities[one.Row, one.Col],
+                        strategyManager.Possibilities[current.Row, current.Col]))
                 {
                     foreach (var two in unitsDispersion[1])
                     {
-                        if(IsYWing(solverView, current, one, two)
-                           && ProcessXYWing(solverView, current, one, two))
+                        if(IsYWing(strategyManager, current, one, two)
+                           && ProcessXYWing(strategyManager, current, one, two))
                             return;
                     }
                     
                     foreach (var two in unitsDispersion[2])
                     {
-                        if(IsYWing(solverView, current, one, two)
-                           && ProcessXYWing(solverView, current, one, two))
+                        if(IsYWing(strategyManager, current, one, two)
+                           && ProcessXYWing(strategyManager, current, one, two))
                             return;
                     }
                 }
@@ -49,13 +49,13 @@ public class XYWingStrategy : IStrategy
             {
                 Coordinate one = unitsDispersion[1].Dequeue();
                 
-                if (ShareAtLeastOne(solverView.Possibilities[one.Row, one.Col],
-                        solverView.Possibilities[current.Row, current.Col]))
+                if (ShareAtLeastOne(strategyManager.Possibilities[one.Row, one.Col],
+                        strategyManager.Possibilities[current.Row, current.Col]))
                 {
                     foreach (var two in unitsDispersion[2])
                     {
-                        if (IsYWing(solverView, current, one, two)
-                            && ProcessXYWing(solverView, current, one, two))
+                        if (IsYWing(strategyManager, current, one, two)
+                            && ProcessXYWing(strategyManager, current, one, two))
                             return;
                     }
                 }
@@ -101,17 +101,17 @@ public class XYWingStrategy : IStrategy
     /// 3) All coordinates cannot be in the same unit => Checked here
     /// 4) Coordinates one and two must each have one of the possibilities of opposite and share one possibility => Checked here
     /// </summary>
-    /// <param name="solverView"></param>
+    /// <param name="strategyManager"></param>
     /// <param name="opposite"></param>
     /// <param name="one"></param>
     /// <param name="two"></param>
     /// <returns></returns>
-    private static bool IsYWing(ISolverView solverView, Coordinate opposite, Coordinate one, Coordinate two)
+    private static bool IsYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
     {
         if (AreAllInSameUnit(opposite, one, two)) return false;
-        var oppositePoss = solverView.Possibilities[opposite.Row, opposite.Col];
-        var onePoss = solverView.Possibilities[one.Row, one.Col];
-        var twoPoss = solverView.Possibilities[two.Row, two.Col];
+        var oppositePoss = strategyManager.Possibilities[opposite.Row, opposite.Col];
+        var onePoss = strategyManager.Possibilities[one.Row, one.Col];
+        var twoPoss = strategyManager.Possibilities[two.Row, two.Col];
         
         foreach (var poss in oppositePoss)
         {
@@ -140,15 +140,15 @@ public class XYWingStrategy : IStrategy
                 one.Col / 3 == three.Col / 3);
     }
 
-    private bool ProcessXYWing(ISolverView solverView, Coordinate opposite, Coordinate one, Coordinate two)
+    private bool ProcessXYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
     {
         bool wasProgressMade = false;
 
-        int toRemove = Minus(solverView.Possibilities[one.Row, one.Col],
-            solverView.Possibilities[opposite.Row, opposite.Col]);
+        int toRemove = Minus(strategyManager.Possibilities[one.Row, one.Col],
+            strategyManager.Possibilities[opposite.Row, opposite.Col]);
         foreach (var coord in MatchingCells(one, two))
         {
-            if (solverView.RemovePossibility(toRemove, coord.Row, coord.Col, this)) wasProgressMade = true;
+            if (strategyManager.RemovePossibility(toRemove, coord.Row, coord.Col, this)) wasProgressMade = true;
         }
 
         return wasProgressMade;
@@ -207,14 +207,14 @@ public class XYWingStrategy : IStrategy
         }
     }
 
-    private static List<Coordinate> AllCellsWith2Possibilities(ISolverView solverView)
+    private static List<Coordinate> AllCellsWith2Possibilities(IStrategyManager strategyManager)
     {
         List<Coordinate> result = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Count == 2) result.Add(new Coordinate(row, col));
+                if (strategyManager.Possibilities[row, col].Count == 2) result.Add(new Coordinate(row, col));
             }
         }
 

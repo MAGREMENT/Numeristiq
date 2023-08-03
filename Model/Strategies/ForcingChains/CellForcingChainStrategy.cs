@@ -17,16 +17,16 @@ public class CellForcingChainStrategy : IStrategy
         _max = maxPossibilities;
     }
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
-        var graph = solverView.LinkGraph();
+        var graph = strategyManager.LinkGraph();
         
         for (int row = 0; row < 9; row++)
         {
             for(int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Count < 2|| solverView.Possibilities[row, col].Count > _max) continue;
-                var possAsArray = solverView.Possibilities[row, col].ToArray();
+                if (strategyManager.Possibilities[row, col].Count < 2|| strategyManager.Possibilities[row, col].Count > _max) continue;
+                var possAsArray = strategyManager.Possibilities[row, col].ToArray();
 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
                     new Dictionary<ILinkGraphElement, Coloring>[possAsArray.Length];
@@ -41,12 +41,12 @@ public class CellForcingChainStrategy : IStrategy
                     colorings[i] = currentColoring;
                 }
 
-                Process(solverView, colorings);
+                Process(strategyManager, colorings);
             }
         }
     }
 
-    private void Process(ISolverView view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
+    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
     {
         foreach (var element in colorings[0])
         {

@@ -16,29 +16,29 @@ public class TrialAndMatchStrategy : IStrategy
         _maxNumberOfPossibility = num;
     }
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Sudoku[row, col] == 0 &&
-                    solverView.Possibilities[row, col].Count <= _maxNumberOfPossibility)
+                if (strategyManager.Sudoku[row, col] == 0 &&
+                    strategyManager.Possibilities[row, col].Count <= _maxNumberOfPossibility)
                 {
-                    if(ApplyChanges(solverView, RunSimulation(solverView, row, col,
-                        solverView.Possibilities[row, col]))) return;
+                    if(ApplyChanges(strategyManager, RunSimulation(strategyManager, row, col,
+                        strategyManager.Possibilities[row, col]))) return;
                 }
             }
         }
     }
 
-    private int[,] RunSimulation(ISolverView solverView, int row, int col, IEnumerable<int> possibilities)
+    private int[,] RunSimulation(IStrategyManager strategyManager, int row, int col, IEnumerable<int> possibilities)
     {
         int[,]? commonChanges = null;
 
         foreach (var possibility in possibilities)
         {
-            Solver simulation = solverView.Copy();
+            Solver simulation = strategyManager.Copy();
             simulation.ExcludeStrategy(typeof(TrialAndMatchStrategy));
             simulation.AddDefinitiveNumber(possibility, row, col, this);
             simulation.Solve();
@@ -51,7 +51,7 @@ public class TrialAndMatchStrategy : IStrategy
                 {
                     for (int c = 0; c < 9; c++)
                     {
-                        if (solverView.Sudoku[r, c] == 0 && simulation.Sudoku[r, c] != 0)
+                        if (strategyManager.Sudoku[r, c] == 0 && simulation.Sudoku[r, c] != 0)
                         {
                             commonChanges[r, c] = simulation.Sudoku[r, c];
                         }
@@ -76,14 +76,14 @@ public class TrialAndMatchStrategy : IStrategy
         return commonChanges!;
     }
 
-    private bool ApplyChanges(ISolverView solverView, int[,] toApply)
+    private bool ApplyChanges(IStrategyManager strategyManager, int[,] toApply)
     {
         bool wasProgressMade = false;
         for (int r = 0; r < 9; r++)
         {
             for (int c = 0; c < 9; c++)
             {
-                if (toApply[r, c] != 0 && solverView.AddDefinitiveNumber(toApply[r, c], r, c, 
+                if (toApply[r, c] != 0 && strategyManager.AddDefinitiveNumber(toApply[r, c], r, c, 
                         this)) wasProgressMade = true;
             }
         }

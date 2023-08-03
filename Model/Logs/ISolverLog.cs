@@ -13,7 +13,8 @@ public interface ISolverLog
     public void DefinitiveAdded(int n, int row, int col);
     public void PossibilityRemoved(int p, int row, int col);
 
-    public IEnumerable<LogPart> AllParts();
+    public IEnumerable<LogChange> AllChanges();
+    public IEnumerable<LogCause> AllCauses();
 }
 
 public enum Intensity
@@ -21,23 +22,39 @@ public enum Intensity
     Zero, One, Two, Three, Four, Five, Six
 }
 
-public enum SolverAction
+public enum SolverNumberType
 {
-    PossibilityRemoved, NumberAdded
+    Possibility, Definitive
 }
 
-public class LogPart
+public class LogChange
 {
-    public LogPart(SolverAction action, int number, int row, int column)
+    public LogChange(SolverNumberType numberType, int number, int row, int column)
     {
-        Action = action;
+        NumberType = numberType;
         Number = number;
         Row = row;
         Column = column;
     }
 
-    public SolverAction Action { get; }
+    public SolverNumberType NumberType { get; }
     public int Number { get; }
     public int Row { get; }
     public int Column { get; }
+}
+
+public class LogCause : LogChange
+{
+    public CauseColoration Coloration { get; }
+    
+    public LogCause(SolverNumberType numberType, int number, int row, int column, CauseColoration coloration)
+        : base(numberType, number, row, column)
+    {
+        Coloration = coloration;
+    }
+}
+
+public enum CauseColoration
+{
+    One, Two
 }

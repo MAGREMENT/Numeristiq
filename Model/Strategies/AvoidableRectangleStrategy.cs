@@ -11,7 +11,7 @@ public class AvoidableRectangleStrategy : IStrategy
     {
     }
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         throw new System.NotImplementedException();
         

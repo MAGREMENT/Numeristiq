@@ -11,7 +11,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public IStrategy? Strategy { get; set; }
 
-    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(ISolverView view)
+    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(IStrategyManager view)
     {
         LinkGraph<PossibilityCoordinate> graph = new();
         for (int row = 0; row < 9; row++)
@@ -72,7 +72,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
         yield return graph;
     }
 
-    public bool ProcessFullLoop(ISolverView view, Loop<PossibilityCoordinate> loop)
+    public bool ProcessFullLoop(IStrategyManager view, Loop<PossibilityCoordinate> loop)
     {
         bool wasProgressMade = false;
         
@@ -81,7 +81,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
         return wasProgressMade;
     }
 
-    private void ProcessWeakLink(ISolverView view, PossibilityCoordinate one, PossibilityCoordinate two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, PossibilityCoordinate one, PossibilityCoordinate two, out bool wasProgressMade)
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
@@ -98,26 +98,26 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
         wasProgressMade = false;
     }
     
-    private bool RemoveAllExcept(ISolverView solverView, int row, int col, params int[] except)
+    private bool RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
     {
         bool wasProgressMade = false;
-        foreach (var possibility in solverView.Possibilities[row, col])
+        foreach (var possibility in strategyManager.Possibilities[row, col])
         {
             if (!except.Contains(possibility))
             {
-                if (solverView.RemovePossibility(possibility, row, col, Strategy!)) wasProgressMade = true;
+                if (strategyManager.RemovePossibility(possibility, row, col, Strategy!)) wasProgressMade = true;
             }
         }
 
         return wasProgressMade;
     }
 
-    public bool ProcessWeakInference(ISolverView view, PossibilityCoordinate inference)
+    public bool ProcessWeakInference(IStrategyManager view, PossibilityCoordinate inference)
     {
         return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(ISolverView view, PossibilityCoordinate inference)
+    public bool ProcessStrongInference(IStrategyManager view, PossibilityCoordinate inference)
     {
         return view.AddDefinitiveNumber(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }

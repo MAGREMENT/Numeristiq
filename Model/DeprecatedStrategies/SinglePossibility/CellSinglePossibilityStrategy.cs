@@ -9,18 +9,18 @@ public class CellSinglePossibilityStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int i = 0; i < 9; i++) 
         {
             for (int j = 0; j < 9; j++)
             {
-                if (solverView.Sudoku[i, j] != 0) continue;
+                if (strategyManager.Sudoku[i, j] != 0) continue;
                 
-                if (solverView.Possibilities[i, j].Count == 1)
+                if (strategyManager.Possibilities[i, j].Count == 1)
                 {
-                    int n = solverView.Possibilities[i, j].First();
-                    solverView.AddDefinitiveNumber(n,
+                    int n = strategyManager.Possibilities[i, j].First();
+                    strategyManager.AddDefinitiveNumber(n,
                         i, j, this);
                 }
             }

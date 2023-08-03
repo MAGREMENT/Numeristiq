@@ -16,7 +16,7 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     private SudokuCellUserControl? _current = null;
     private readonly int[] _currentPos = new int[2];
 
-    public delegate void OnLiveModification(int number, int row, int col, SolverAction action);
+    public delegate void OnLiveModification(int number, int row, int col, SolverNumberType numberType);
     public event OnLiveModification? LiveModified;
 
     public LiveModificationUserControl()
@@ -100,12 +100,12 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     {
         if (_current is not null)
         {
-            SolverAction action;
-            if (_definitiveNumber.IsChecked == true) action = SolverAction.NumberAdded;
-            else if (_possibilities.IsChecked == true) action = SolverAction.PossibilityRemoved;
+            SolverNumberType numberType;
+            if (_definitiveNumber.IsChecked == true) numberType = SolverNumberType.Definitive;
+            else if (_possibilities.IsChecked == true) numberType = SolverNumberType.Possibility;
             else return;
             
-            LiveModified?.Invoke(i, _currentPos[0], _currentPos[1], action);
+            LiveModified?.Invoke(i, _currentPos[0], _currentPos[1], numberType);
         }
     }
 

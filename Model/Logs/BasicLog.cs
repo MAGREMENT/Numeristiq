@@ -45,15 +45,20 @@ public class BasicLog : ISolverLog
         _changes.Add((col + row * 9 + (p - 1) * 81) * -1);
     }
 
-    public IEnumerable<LogPart> AllParts()
+    public IEnumerable<LogChange> AllChanges()
     {
         foreach (var n in _changes)
         {
             int abs = Math.Abs(n);
             int a = abs % 81;
-            yield return new LogPart(n > 0 ? SolverAction.NumberAdded : SolverAction.PossibilityRemoved,
+            yield return new LogChange(n > 0 ? SolverNumberType.Definitive : SolverNumberType.Possibility,
                 abs / 81 + 1, a / 9, a % 9);
         }
+    }
+
+    public IEnumerable<LogCause> AllCauses()
+    {
+        yield break;
     }
 
     private string ChangeAsString(int n)

@@ -9,7 +9,7 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
     public string Name => "XCycles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(ISolverView view)
+    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(IStrategyManager view)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -58,7 +58,7 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         }
     }
 
-    public bool ProcessFullLoop(ISolverView view, Loop<PossibilityCoordinate> loop)
+    public bool ProcessFullLoop(IStrategyManager view, Loop<PossibilityCoordinate> loop)
     {
         bool wasProgressMade = false;
         loop.ForEachLink((one, two)
@@ -67,7 +67,7 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         return wasProgressMade;
     }
 
-    private void ProcessWeakLink(ISolverView view, PossibilityCoordinate one, PossibilityCoordinate two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, PossibilityCoordinate one, PossibilityCoordinate two, out bool wasProgressMade)
     {
         foreach (var coord in one.SharedSeenCells(two))
         {
@@ -77,12 +77,12 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         wasProgressMade = false;
     }
 
-    public bool ProcessWeakInference(ISolverView view, PossibilityCoordinate inference)
+    public bool ProcessWeakInference(IStrategyManager view, PossibilityCoordinate inference)
     {
         return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(ISolverView view, PossibilityCoordinate inference)
+    public bool ProcessStrongInference(IStrategyManager view, PossibilityCoordinate inference)
     {
         return view.AddDefinitiveNumber(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }

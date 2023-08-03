@@ -7,7 +7,7 @@ public class NoStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.None;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         
     }

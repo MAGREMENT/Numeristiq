@@ -78,6 +78,11 @@ public class BoolArrayPossibilities : IPossibilities
         Count = 9;
     }
 
+    public void Add(int n)
+    {
+        throw new NotImplementedException();
+    }
+
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)

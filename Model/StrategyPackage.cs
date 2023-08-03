@@ -16,11 +16,11 @@ public abstract class StrategyPackage : IStrategy
         _strategies = strategies;
     }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         foreach (var strategy in _strategies)
         {
-            strategy.ApplyOnce(solverView);
+            strategy.ApplyOnce(strategyManager);
         }
     }
 }

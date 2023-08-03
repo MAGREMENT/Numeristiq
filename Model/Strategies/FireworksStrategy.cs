@@ -11,7 +11,7 @@ public class FireworksStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
 
         //List<Firework> fireworks = new();
@@ -20,16 +20,16 @@ public class FireworksStrategy : IStrategy
             for (int col = 0; col < 9; col++)
             {
                 List<Firework> cellFireworks = new();
-                foreach (var possibility in solverView.Possibilities[row, col])
+                foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    AddIfFirework(solverView, cellFireworks, row, col, possibility);
+                    AddIfFirework(strategyManager, cellFireworks, row, col, possibility);
                 }
 
                 if (cellFireworks.Count == 3)
                 {
                     var sharedWings = cellFireworks[0].MashWings(cellFireworks[1], cellFireworks[2]);
                     if (sharedWings.Count == 2)
-                        ProcessTripleFirework(solverView, row, col, sharedWings,
+                        ProcessTripleFirework(strategyManager, row, col, sharedWings,
                             cellFireworks[0].Possibility, cellFireworks[1].Possibility,
                             cellFireworks[2].Possibility);
                 }
@@ -41,24 +41,24 @@ public class FireworksStrategy : IStrategy
         //TODO other elimintations
     }
 
-    private void ProcessTripleFirework(ISolverView solverView, int crossRow, int crossCol, IEnumerable<Coordinate> wings,
+    private void ProcessTripleFirework(IStrategyManager strategyManager, int crossRow, int crossCol, IEnumerable<Coordinate> wings,
         params int[] possibilities)
     {
-        foreach (var possibility in solverView.Possibilities[crossRow, crossCol])
+        foreach (var possibility in strategyManager.Possibilities[crossRow, crossCol])
         {
-            if (!possibilities.Contains(possibility)) solverView.RemovePossibility(possibility, crossRow, crossCol, this);
+            if (!possibilities.Contains(possibility)) strategyManager.RemovePossibility(possibility, crossRow, crossCol, this);
         }
 
         foreach (var wing in wings)
         {
-            foreach (var possibility in solverView.Possibilities[wing.Row, wing.Col])
+            foreach (var possibility in strategyManager.Possibilities[wing.Row, wing.Col])
             {
-                if (!possibilities.Contains(possibility)) solverView.RemovePossibility(possibility, wing.Row, wing.Col, this);
+                if (!possibilities.Contains(possibility)) strategyManager.RemovePossibility(possibility, wing.Row, wing.Col, this);
             }
         }
     }
 
-    private void AddIfFirework(ISolverView solverView, List<Firework> fireworks, int row, int col, int possibility)
+    private void AddIfFirework(IStrategyManager strategyManager, List<Firework> fireworks, int row, int col, int possibility)
     {
         int miniRow = row / 3;
         int miniCol = col / 3;
@@ -69,7 +69,7 @@ public class FireworksStrategy : IStrategy
         //Check row
         for (int c = 0; c < 9; c++)
         {
-            if (c / 3 != miniCol && solverView.Possibilities[row, c].Peek(possibility))
+            if (c / 3 != miniCol && strategyManager.Possibilities[row, c].Peek(possibility))
             {
                 if (rowCol == -1) rowCol = c;
                 else return;
@@ -79,7 +79,7 @@ public class FireworksStrategy : IStrategy
         //Check col
         for (int r = 0; r < 9; r++)
         {
-            if (r / 3 != miniRow && solverView.Possibilities[r, col].Peek(possibility))
+            if (r / 3 != miniRow && strategyManager.Possibilities[r, col].Peek(possibility))
             {
                 if (colRow == -1) colRow = r;
                 else return;

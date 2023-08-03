@@ -10,7 +10,7 @@ public class PreComputer
     private const int PositionsTresHold = 1;
     private const int GraphTresHold = 23;
     
-    private readonly ISolverView _view;
+    private readonly IStrategyManager _view;
     
     private readonly LinePositions?[,] _rows = new LinePositions[9, 9];
     private readonly LinePositions?[,] _cols = new LinePositions[9, 9];
@@ -18,7 +18,7 @@ public class PreComputer
 
     private LinkGraph<ILinkGraphElement>? _graph;
 
-    public PreComputer(ISolverView view)
+    public PreComputer(IStrategyManager view)
     {
         _view = view;
     }
@@ -337,7 +337,7 @@ public class PreComputer
         }
     }
     
-    private void SearchForPointingInMiniGrid(ISolverView view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,
+    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,
         int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

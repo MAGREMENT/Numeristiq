@@ -29,23 +29,23 @@ public class AlternatingInferenceChainStrategy : IStrategy
         _maxLoopSize = int.MaxValue;
     }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         SearchCount = 0;
         Dictionary<PossibilityCoordinate, LinkResume> map = new();
 
-        SearchStrongLinks(solverView, map);
-        SearchWeakLinks(solverView, map);
+        SearchStrongLinks(strategyManager, map);
+        SearchWeakLinks(strategyManager, map);
 
         foreach (var start in map)
         {
             if (start.Value.StrongLinks.Count == 0) continue;
             List<PossibilityCoordinate> visited = new() { start.Key };
-            Search(solverView, map, visited);
+            Search(strategyManager, map, visited);
         }
     }
 
-    private void Search(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map,
+    private void Search(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map,
         List<PossibilityCoordinate> visited)
     {
         if (visited.Count > _maxLoopSize) return;
@@ -59,56 +59,56 @@ public class AlternatingInferenceChainStrategy : IStrategy
         {
             foreach (var friend in resume.StrongLinks)
             {
-                if (visited.Count >= 4 && visited[0].Equals(friend)) ProcessOddLoop(solverView, visited);
+                if (visited.Count >= 4 && visited[0].Equals(friend)) ProcessOddLoop(strategyManager, visited);
                 if (!visited.Contains(friend))
                 {
-                   Search(solverView, map, new List<PossibilityCoordinate>(visited) { friend });
+                   Search(strategyManager, map, new List<PossibilityCoordinate>(visited) { friend });
                 }
             }
         }
         else
         {
             if (visited.Count >= 4)
-                ProcessUnCompleteLoop(solverView, visited);
+                ProcessUnCompleteLoop(strategyManager, visited);
             
             foreach (var friend in resume.WeakLinks)
             {
-                if (visited.Count >= 4 && visited[0].Equals(friend)) ProcessFullLoop(solverView, visited);
+                if (visited.Count >= 4 && visited[0].Equals(friend)) ProcessFullLoop(strategyManager, visited);
                 if (!visited.Contains(friend))
                 {
-                    Search(solverView, map, new List<PossibilityCoordinate>(visited) { friend });
+                    Search(strategyManager, map, new List<PossibilityCoordinate>(visited) { friend });
                 }
             }
         }
     }
 
-    private void ProcessFullLoop(ISolverView solverView, List<PossibilityCoordinate> visited)
+    private void ProcessFullLoop(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
     {
         //Always start with a strong link
         for (int i = 1; i < visited.Count - 1; i += 2)
         {
-            ProcessWeakLinkOfFullLoop(solverView, visited[i], visited[i + 1]);
+            ProcessWeakLinkOfFullLoop(strategyManager, visited[i], visited[i + 1]);
         }
 
-        ProcessWeakLinkOfFullLoop(solverView, visited[0], visited[^1]);
+        ProcessWeakLinkOfFullLoop(strategyManager, visited[0], visited[^1]);
     }
 
-    private void ProcessWeakLinkOfFullLoop(ISolverView solverView, PossibilityCoordinate one, PossibilityCoordinate two)
+    private void ProcessWeakLinkOfFullLoop(IStrategyManager strategyManager, PossibilityCoordinate one, PossibilityCoordinate two)
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
-            RemoveAllExcept(solverView, one.Row, one.Col, one.Possibility, two.Possibility);
+            RemoveAllExcept(strategyManager, one.Row, one.Col, one.Possibility, two.Possibility);
         }
         else
         {
             foreach (var coord in one.SharedSeenCells(two))
             {
-                solverView.RemovePossibility(one.Possibility, coord.Row, coord.Col, this);
+                strategyManager.RemovePossibility(one.Possibility, coord.Row, coord.Col, this);
             }   
         }
     }
 
-    private void ProcessUnCompleteLoop(ISolverView solverView, List<PossibilityCoordinate> visited)
+    private void ProcessUnCompleteLoop(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
     {
         PossibilityCoordinate first = visited[0];
         PossibilityCoordinate last = visited[^1];
@@ -118,48 +118,48 @@ public class AlternatingInferenceChainStrategy : IStrategy
             foreach (var coord in first.SharedSeenCells(last))
             {
                 if (!visited.Contains(new PossibilityCoordinate(coord.Row, coord.Col, first.Possibility)))
-                    solverView.RemovePossibility(first.Possibility, coord.Row, coord.Col, this);
+                    strategyManager.RemovePossibility(first.Possibility, coord.Row, coord.Col, this);
             }
         }
         else if (first.ShareAUnit(last))
         {
             if (!visited.Contains(new PossibilityCoordinate(last.Row, last.Col, first.Possibility)))
-                solverView.RemovePossibility(first.Possibility,last.Row, last.Col, this);
+                strategyManager.RemovePossibility(first.Possibility,last.Row, last.Col, this);
 
             if (!visited.Contains(new PossibilityCoordinate(first.Row, first.Col, last.Possibility)))
-                solverView.RemovePossibility(last.Possibility, first.Row, first.Col, this);
+                strategyManager.RemovePossibility(last.Possibility, first.Row, first.Col, this);
         }
     }
 
-    private void ProcessOddLoop(ISolverView solverView, List<PossibilityCoordinate> visited)
+    private void ProcessOddLoop(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
     {
         if (visited.Count % 2 != 1) return;
-        solverView.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col, this);
+        strategyManager.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col, this);
     }
 
-    private void RemoveAllExcept(ISolverView solverView, int row, int col, params int[] except)
+    private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
     {
-        foreach (var possibility in solverView.Possibilities[row, col])
+        foreach (var possibility in strategyManager.Possibilities[row, col])
         {
             if (!except.Contains(possibility))
             {
-                solverView.RemovePossibility(possibility, row, col, this);
+                strategyManager.RemovePossibility(possibility, row, col, this);
             }
         }
     }
 
-    private void SearchStrongLinks(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map)
+    private void SearchStrongLinks(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in solverView.Possibilities[row, col])
+                foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
                     LinkResume resume = new();
 
                     //Row
-                    var ppir = solverView.PossibilityPositionsInRow(row, possibility);
+                    var ppir = strategyManager.PossibilityPositionsInRow(row, possibility);
                     if (ppir.Count == 2)
                     {
                         foreach (var c in ppir)
@@ -174,7 +174,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //Col
-                    var ppic = solverView.PossibilityPositionsInColumn(col, possibility);
+                    var ppic = strategyManager.PossibilityPositionsInColumn(col, possibility);
                     if (ppic.Count == 2)
                     {
                         foreach (var r in ppic)
@@ -189,7 +189,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //MiniGrids
-                    var ppimn = solverView.PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
+                    var ppimn = strategyManager.PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
                     if (ppimn.Count == 2)
                     {
                         foreach (var pos in ppimn)
@@ -202,9 +202,9 @@ public class AlternatingInferenceChainStrategy : IStrategy
                         }
                     }
 
-                    if (solverView.Possibilities[row, col].Count == 2)
+                    if (strategyManager.Possibilities[row, col].Count == 2)
                     {
-                        foreach (var pos in solverView.Possibilities[row, col])
+                        foreach (var pos in strategyManager.Possibilities[row, col])
                         {
                             if (pos != possibility)
                             {
@@ -220,19 +220,19 @@ public class AlternatingInferenceChainStrategy : IStrategy
         }
     }
 
-    private void SearchWeakLinks(ISolverView solverView, Dictionary<PossibilityCoordinate, LinkResume> map)
+    private void SearchWeakLinks(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in solverView.Possibilities[row, col])
+                foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
                     bool alreadyThere = map.TryGetValue(new PossibilityCoordinate(row, col, possibility), out var resume);
                     if (!alreadyThere) resume = new LinkResume();
 
                     //Row
-                    var ppir = solverView.PossibilityPositionsInRow(row, possibility);
+                    var ppir = strategyManager.PossibilityPositionsInRow(row, possibility);
                     foreach (var c in ppir)
                     {
                         if (c != col)
@@ -246,7 +246,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //Col
-                    var ppic = solverView.PossibilityPositionsInColumn(col, possibility);
+                    var ppic = strategyManager.PossibilityPositionsInColumn(col, possibility);
                     
                     foreach (var r in ppic)
                     {
@@ -261,7 +261,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //MiniGrids
-                    var ppimn = solverView.PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
+                    var ppimn = strategyManager.PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
                     
                     foreach (var pos in ppimn)
                     {
@@ -275,7 +275,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     
 
                     
-                    foreach (var pos in solverView.Possibilities[row, col])
+                    foreach (var pos in strategyManager.Possibilities[row, col])
                     {
                         if (pos != possibility)
                         {

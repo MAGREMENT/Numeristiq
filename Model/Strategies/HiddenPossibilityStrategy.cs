@@ -35,7 +35,7 @@ public class HiddenPossibilityStrategy : IStrategy
         }
     }
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         //Rows
         for (int row = 0; row < 9; row++)
@@ -43,7 +43,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = solverView.PossibilityPositionsInRow(row, number);
+                var positions = strategyManager.PossibilityPositionsInRow(row, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -59,7 +59,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     foreach (var col in entry.Key)
                     {
-                        RemoveAllPossibilitiesExcept(solverView, row, col, entry.Value);
+                        RemoveAllPossibilitiesExcept(strategyManager, row, col, entry.Value);
                     }
                 }
             }
@@ -71,7 +71,7 @@ public class HiddenPossibilityStrategy : IStrategy
             Dictionary<LinePositions, List<int>> possibilitiesToExamine = new();
             for (int number = 1; number <= 9; number++)
             {
-                var positions = solverView.PossibilityPositionsInColumn(col, number);
+                var positions = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (positions.Count == _type)
                 {
                     if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -87,7 +87,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     foreach (var row in entry.Key)
                     {
-                        RemoveAllPossibilitiesExcept(solverView, row, col, entry.Value);
+                        RemoveAllPossibilitiesExcept(strategyManager, row, col, entry.Value);
                     }
                 }
             }
@@ -101,7 +101,7 @@ public class HiddenPossibilityStrategy : IStrategy
                 Dictionary<MiniGridPositions, List<int>> possibilitiesToExamine = new();
                 for (int number = 1; number <= 9; number++)
                 {
-                    var positions = solverView.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+                    var positions = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
                     if (positions.Count == _type)
                     {
                         if (!possibilitiesToExamine.TryAdd(positions, new List<int> { number }))
@@ -117,7 +117,7 @@ public class HiddenPossibilityStrategy : IStrategy
                     {
                         foreach (var pos in entry.Key)
                         {
-                            RemoveAllPossibilitiesExcept(solverView, pos[0], pos[1], entry.Value);
+                            RemoveAllPossibilitiesExcept(strategyManager, pos[0], pos[1], entry.Value);
                         }
                     }
                 }
@@ -125,14 +125,14 @@ public class HiddenPossibilityStrategy : IStrategy
         }
     }
 
-    private void RemoveAllPossibilitiesExcept(ISolverView solverView, int row, int col, List<int> except)
+    private void RemoveAllPossibilitiesExcept(IStrategyManager strategyManager, int row, int col, List<int> except)
     {
-        if (_type == 1) solverView.AddDefinitiveNumber(except[0], row, col, this);
+        if (_type == 1) strategyManager.AddDefinitiveNumber(except[0], row, col, this);
         for (int i = 1; i <= 9; i++)
         {
             if (!except.Contains(i))
             {
-                solverView.RemovePossibility(i, row, col, this);
+                strategyManager.RemovePossibility(i, row, col, this);
             }
         }
     }

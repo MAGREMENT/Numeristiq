@@ -16,15 +16,15 @@ public class UnitForcingChainStrategy : IStrategy
         _max = maxPossibilities;
     }
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
-        var graph = solverView.LinkGraph();
+        var graph = strategyManager.LinkGraph();
         
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = solverView.PossibilityPositionsInRow(row, number);
+                var ppir = strategyManager.PossibilityPositionsInRow(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -43,12 +43,12 @@ public class UnitForcingChainStrategy : IStrategy
                     cursor++;
                 }
                 
-                Process(solverView, colorings);
+                Process(strategyManager, colorings);
             }
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = solverView.PossibilityPositionsInColumn(col, number);
+                var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -67,14 +67,14 @@ public class UnitForcingChainStrategy : IStrategy
                     cursor++;
                 }
                 
-                Process(solverView, colorings);
+                Process(strategyManager, colorings);
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = solverView.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+                    var ppimn = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
                     Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -93,13 +93,13 @@ public class UnitForcingChainStrategy : IStrategy
                         cursor++;
                     }
                 
-                    Process(solverView, colorings);
+                    Process(strategyManager, colorings);
                 }
             }
         }
     }
 
-    private void Process(ISolverView view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
+    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
     {
         foreach (var element in colorings[0])
         {

@@ -13,7 +13,7 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(ISolverView view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
+    public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         HashSet<T> explored = new();
         HashSet<Loop<T>> loopsProcessed = new();
@@ -24,7 +24,7 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
         }
     }
 
-    private void Search(ISolverView view, LoopBuilder<T> path, LinkGraph<T> graph, IAlternatingChainType<T> chainType,
+    private void Search(IStrategyManager view, LoopBuilder<T> path, LinkGraph<T> graph, IAlternatingChainType<T> chainType,
         HashSet<T> explored, HashSet<Loop<T>> loopsProcessed)
     {
         if (path.Count > _maxLoopSize) return;

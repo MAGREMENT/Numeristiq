@@ -12,7 +12,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(ISolverView view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
+    public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         foreach (var start in graph.EachVerticesWith(LinkStrength.Strong))
         {
@@ -20,7 +20,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
         }
     }
 
-    private void Search(LinkGraph<T> graph, LoopBuilder<T> path, IAlternatingChainType<T> chainType, ISolverView view)
+    private void Search(LinkGraph<T> graph, LoopBuilder<T> path, IAlternatingChainType<T> chainType, IStrategyManager view)
     {
         if (path.Count > _maxLoopSize) return;
         var last = path.LastElement();

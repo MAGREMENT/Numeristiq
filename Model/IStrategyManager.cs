@@ -6,11 +6,13 @@ using Model.StrategiesUtil.LoopFinder;
 
 namespace Model;
 
-public interface ISolverView
+public interface IStrategyManager
 {
     bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy);
 
     bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
+
+    ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeCauseFactory causeFactory);
 
     LinePositions PossibilityPositionsInColumn(int col, int number);
 

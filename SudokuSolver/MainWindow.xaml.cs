@@ -10,7 +10,9 @@ namespace SudokuSolver;
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly StackPanel _main;
+        private readonly StackPanel _mainPanel;
+        private readonly StackPanel _optionsPanel;
+        private readonly StackPanel _modificationsPanel;
         private readonly StackPanel _aside;
 
         private bool _createNewSudoku = true;
@@ -19,12 +21,14 @@ namespace SudokuSolver;
         {
             InitializeComponent();
 
-            _main = (FindName("Main") as StackPanel)!;
+            _mainPanel = (FindName("MainPanel") as StackPanel)!;
+            _optionsPanel = (FindName("OptionsPanel") as StackPanel)!;
+            _modificationsPanel = (FindName("ModificationsPanel") as StackPanel)!;
             _aside = (FindName("Aside") as StackPanel)!;
 
             GetSudokuUserControl().IsReady += () =>
             {
-                ((Button)((StackPanel)_main.Children[2]).Children[0]).IsEnabled = true;
+                GetSolveButton().IsEnabled = true;
             };
 
             GetSudokuUserControl().CellClickedOn += (sender, row, col) =>
@@ -32,10 +36,10 @@ namespace SudokuSolver;
                 GetLiveModificationUserControl().SetCurrent(sender, row, col);
             };
 
-            GetSudokuUserControl().SolverUpdated += (asString) =>
+            GetSudokuUserControl().SolverUpdated += asString =>
             {
                 _createNewSudoku = false;
-                ((TextBox)_main.Children[1]).Text = asString;
+                GetSudokuString().Text = asString;
                 _createNewSudoku = true;
             };
 
@@ -44,17 +48,16 @@ namespace SudokuSolver;
             
             GetLiveModificationUserControl().LiveModified += (number, row, col, action) =>
             {
-                if (action == SolverAction.NumberAdded) GetSudokuUserControl().AddDefinitiveNumber(number, row, col);
-                else if(action == SolverAction.PossibilityRemoved) GetSudokuUserControl().RemovePossibility(number, row, col);
+                if (action == SolverNumberType.Definitive) GetSudokuUserControl().AddDefinitiveNumber(number, row, col);
+                else if(action == SolverNumberType.Possibility) GetSudokuUserControl().RemovePossibility(number, row, col);
                 GetLogListUserControl().InitLogs(GetSudokuUserControl().GetLogs());
             };
         }
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
         {
-            string asString = ((TextBox) _main.Children[1]).Text;
             if (_createNewSudoku) GetSudokuUserControl().NewSolver(
-                new Solver(new Sudoku(asString)));
+                new Solver(new Sudoku(GetSudokuString().Text)));
         }
 
         private void SolveSudoku(object sender, RoutedEventArgs e) //TODO fix : update string value when solve
@@ -64,7 +67,7 @@ namespace SudokuSolver;
 
             SudokuUserControl suc = GetSudokuUserControl();
 
-            bool? stepByStep = ((CheckBox)_aside.Children[0]).IsChecked;
+            bool? stepByStep = GetStepByStepOption().IsChecked;
             if (stepByStep is null || (bool) !stepByStep) suc.SolveSudoku();
             else suc.RunUntilProgress();
 
@@ -82,16 +85,31 @@ namespace SudokuSolver;
         /*Gets*/
         private SudokuUserControl GetSudokuUserControl()
         {
-            return (SudokuUserControl)_main.Children[0];
+            return (SudokuUserControl)_mainPanel.Children[0];
         }
 
         private LiveModificationUserControl GetLiveModificationUserControl()
         {
-            return (LiveModificationUserControl)_aside.Children[2];
+            return (LiveModificationUserControl)_modificationsPanel.Children[1];
         }
 
         private LogListUserControl GetLogListUserControl()
         {
-            return (LogListUserControl)_aside.Children[1];
+            return (LogListUserControl)_aside.Children[0];
+        }
+
+        private Button GetSolveButton()
+        {
+            return (Button)((StackPanel)_mainPanel.Children[2]).Children[0];
+        }
+
+        private TextBox GetSudokuString()
+        {
+            return (TextBox)_mainPanel.Children[1];
+        }
+
+        private CheckBox GetStepByStepOption()
+        {
+            return (CheckBox)_optionsPanel.Children[1];
         }
     }

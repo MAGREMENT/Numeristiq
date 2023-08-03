@@ -8,15 +8,15 @@ public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......
     public string Name => "Digit forcing chain";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
-        LinkGraph<ILinkGraphElement> graph = solverView.LinkGraph();
+        LinkGraph<ILinkGraphElement> graph = strategyManager.LinkGraph();
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in solverView.Possibilities[row, col])
+                foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
 
@@ -29,13 +29,13 @@ public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......
                     ForcingChainUtil.Color(graph, offColoring, current);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
-                    Process(solverView, onColoring, offColoring);
+                    Process(strategyManager, onColoring, offColoring);
                 }
             }
         }
     }
 
-    private bool Process(ISolverView view, Dictionary<ILinkGraphElement, Coloring> onColoring,
+    private bool Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring> onColoring,
         Dictionary<ILinkGraphElement, Coloring> offColoring)
     {
         bool wasProgressMade = false;
@@ -77,7 +77,7 @@ public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......
         return wasProgressMade;
     }
 
-    private bool RemoveAll(ISolverView view, int row, int col, int except1, int except2)
+    private bool RemoveAll(IStrategyManager view, int row, int col, int except1, int except2)
     {
         bool wasProgressMade = false;
         foreach (var possibility in view.Possibilities[row, col])

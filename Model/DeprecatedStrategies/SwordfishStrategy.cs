@@ -10,7 +10,7 @@ public class SwordfishStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -18,7 +18,7 @@ public class SwordfishStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                LinePositions p = solverView.PossibilityPositionsInRow(row, number);
+                LinePositions p = strategyManager.PossibilityPositionsInRow(row, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, row));
             }
 
@@ -37,7 +37,7 @@ public class SwordfishStrategy : IStrategy
                         {
                             ValuePositions third = copyTwo.Dequeue();
                             if(mashed.Mash(third.Positions).Count == 3)
-                                ProcessSwordfishInRows(solverView, first.Value,
+                                ProcessSwordfishInRows(strategyManager, first.Value,
                                     second.Value, third.Value, mashed, number);
                         }
                     }
@@ -47,7 +47,7 @@ public class SwordfishStrategy : IStrategy
             //Columns
             for (int col = 0; col < 9; col++)
             {
-                LinePositions p = solverView.PossibilityPositionsInColumn(col, number);
+                LinePositions p = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, col));
             }
 
@@ -66,7 +66,7 @@ public class SwordfishStrategy : IStrategy
                         {
                             ValuePositions third = copyTwo.Dequeue();
                             if(mashed.Mash(third.Positions).Count == 3)
-                                ProcessSwordfishInColumns(solverView, first.Value,
+                                ProcessSwordfishInColumns(strategyManager, first.Value,
                                     second.Value, third.Value, mashed, number);
                         }
                     }
@@ -75,29 +75,29 @@ public class SwordfishStrategy : IStrategy
         }
     }
 
-    private void ProcessSwordfishInRows(ISolverView solverView, int row1, int row2, int row3, LinePositions cols, int number)
+    private void ProcessSwordfishInRows(IStrategyManager strategyManager, int row1, int row2, int row3, LinePositions cols, int number)
     {
         foreach (var col in cols)
         {
             for (int row = 0; row < 9; row++)
             {
-                if (row != row1 && row != row2 && row != row3 && solverView.Possibilities[row, col].Peek(number))
+                if (row != row1 && row != row2 && row != row3 && strategyManager.Possibilities[row, col].Peek(number))
                 {
-                    solverView.RemovePossibility(number, row, col, this);
+                    strategyManager.RemovePossibility(number, row, col, this);
                 }
             }
         }
     }
 
-    private void ProcessSwordfishInColumns(ISolverView solverView, int col1, int col2, int col3, LinePositions rows, int number)
+    private void ProcessSwordfishInColumns(IStrategyManager strategyManager, int col1, int col2, int col3, LinePositions rows, int number)
     {
         foreach (var row in rows)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (col != col1 && col != col2 && col != col3 && solverView.Possibilities[row, col].Peek(number))
+                if (col != col1 && col != col2 && col != col3 && strategyManager.Possibilities[row, col].Peek(number))
                 {
-                    solverView.RemovePossibility(number, row, col, this);
+                    strategyManager.RemovePossibility(number, row, col, this);
                 }
             }
         }

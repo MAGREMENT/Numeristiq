@@ -12,16 +12,16 @@ public class NishioForcingChainStrategy : IStrategy
     public string Name => "Nishio forcing chain";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
-        LinkGraph<ILinkGraphElement> graph = solverView.LinkGraph();
-        ContradictionSearcher cs = new ContradictionSearcher(solverView);
+        LinkGraph<ILinkGraphElement> graph = strategyManager.LinkGraph();
+        ContradictionSearcher cs = new ContradictionSearcher(strategyManager);
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in solverView.Possibilities[row, col])
+                foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
 
@@ -29,7 +29,7 @@ public class NishioForcingChainStrategy : IStrategy
                     coloring[current] = Coloring.On;
 
                     if (Search(cs, graph, coloring, current) 
-                        && solverView.RemovePossibility(possibility, row, col, this))
+                        && strategyManager.RemovePossibility(possibility, row, col, this))
                         return;
                     
                     cs.Reset();
@@ -150,9 +150,9 @@ public class ContradictionSearcher
     private readonly Dictionary<int, LinePositions> _cols = new();
     private readonly Dictionary<int, MiniGridPositions> _minis = new();
 
-    private readonly ISolverView _view;
+    private readonly IStrategyManager _view;
 
-    public ContradictionSearcher(ISolverView view)
+    public ContradictionSearcher(IStrategyManager view)
     {
         _view = view;
     }

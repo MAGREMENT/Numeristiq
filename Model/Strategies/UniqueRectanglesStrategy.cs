@@ -11,16 +11,16 @@ public class UniqueRectanglesStrategy : IStrategy
     public string Name => "Unique rectangles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         Dictionary<BiValue, List<Coordinate>> map = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Count == 2)
+                if (strategyManager.Possibilities[row, col].Count == 2)
                 {
-                    var asArray = solverView.Possibilities[row, col].ToArray();
+                    var asArray = strategyManager.Possibilities[row, col].ToArray();
                     BiValue bi = new BiValue(asArray[0], asArray[1]);
                     Coordinate current = new(row, col);
 
@@ -28,7 +28,7 @@ public class UniqueRectanglesStrategy : IStrategy
                     {
                         foreach (var b in value)
                         {
-                            Process(solverView, bi, current, b);
+                            Process(strategyManager, bi, current, b);
                         }
 
                         value.Add(current);
@@ -46,9 +46,9 @@ public class UniqueRectanglesStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Count <= 2) continue;
+                if (strategyManager.Possibilities[row, col].Count <= 2) continue;
                 
-                foreach (var bi in solverView.Possibilities[row, col].EachBiValue())
+                foreach (var bi in strategyManager.Possibilities[row, col].EachBiValue())
                 {
                     if (!map.TryGetValue(bi, out var potentialOpposites)) continue;
                     foreach (var potentialOpposite in potentialOpposites)
@@ -57,21 +57,21 @@ public class UniqueRectanglesStrategy : IStrategy
                             !AreSpreadOverOnlyTwoBoxes(row, col, potentialOpposite.Row, potentialOpposite.Col,
                                 potentialOpposite.Row, col, row, potentialOpposite.Col)) continue;
                         
-                        if (solverView.Possibilities[row, potentialOpposite.Col].Peek(bi.One)
-                            && solverView.Possibilities[row, potentialOpposite.Col].Peek(bi.Two)
-                            && solverView.Possibilities[potentialOpposite.Row, col].Peek(bi.One)
-                            && solverView.Possibilities[potentialOpposite.Row, col].Peek(bi.Two))
+                        if (strategyManager.Possibilities[row, potentialOpposite.Col].Peek(bi.One)
+                            && strategyManager.Possibilities[row, potentialOpposite.Col].Peek(bi.Two)
+                            && strategyManager.Possibilities[potentialOpposite.Row, col].Peek(bi.One)
+                            && strategyManager.Possibilities[potentialOpposite.Row, col].Peek(bi.Two))
                         {
-                            if (solverView.PossibilityPositionsInRow(row, bi.One).Count == 2
-                                && solverView.PossibilityPositionsInColumn(col, bi.One).Count == 2)
+                            if (strategyManager.PossibilityPositionsInRow(row, bi.One).Count == 2
+                                && strategyManager.PossibilityPositionsInColumn(col, bi.One).Count == 2)
                             {
-                                solverView.RemovePossibility(bi.Two, row, col, this);
+                                strategyManager.RemovePossibility(bi.Two, row, col, this);
                             }
                             
-                            if (solverView.PossibilityPositionsInRow(row, bi.Two).Count == 2
-                                && solverView.PossibilityPositionsInColumn(col, bi.Two).Count == 2)
+                            if (strategyManager.PossibilityPositionsInRow(row, bi.Two).Count == 2
+                                && strategyManager.PossibilityPositionsInColumn(col, bi.Two).Count == 2)
                             {
-                                solverView.RemovePossibility(bi.One, row, col, this);
+                                strategyManager.RemovePossibility(bi.One, row, col, this);
                             }
                         }
                     }
@@ -80,7 +80,7 @@ public class UniqueRectanglesStrategy : IStrategy
         }
     }
 
-    private void Process(ISolverView view, BiValue bi, Coordinate one, Coordinate two)
+    private void Process(IStrategyManager view, BiValue bi, Coordinate one, Coordinate two)
     {
         if (one.Row == two.Row)
         {
@@ -96,7 +96,7 @@ public class UniqueRectanglesStrategy : IStrategy
         }
     }
 
-    private void ProcessSameRow(ISolverView view, BiValue bi, Coordinate one, Coordinate two)
+    private void ProcessSameRow(IStrategyManager view, BiValue bi, Coordinate one, Coordinate two)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -225,7 +225,7 @@ public class UniqueRectanglesStrategy : IStrategy
         }
     }
 
-    private void ProcessSameColumn(ISolverView view, BiValue bi, Coordinate one, Coordinate two)
+    private void ProcessSameColumn(IStrategyManager view, BiValue bi, Coordinate one, Coordinate two)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -354,7 +354,7 @@ public class UniqueRectanglesStrategy : IStrategy
         }
     }
 
-    private void ProcessDiagonal(ISolverView view, BiValue bi, Coordinate one, Coordinate two)
+    private void ProcessDiagonal(IStrategyManager view, BiValue bi, Coordinate one, Coordinate two)
     {
         if (view.Possibilities[one.Row, two.Col].Peek(bi.One) && view.Possibilities[one.Row, two.Col].Peek(bi.Two) &&
             view.Possibilities[two.Row, one.Col].Peek(bi.One) && view.Possibilities[two.Row, one.Col].Peek(bi.Two) &&
@@ -424,7 +424,7 @@ public class UniqueRectanglesStrategy : IStrategy
         return (rows.Count == 2 && cols.Count == 1) || (rows.Count == 1 && cols.Count == 2);
     }
 
-    private bool RemovePossibilitiesInAllExcept(ISolverView view, IPossibilities poss, List<Coordinate> coords,
+    private bool RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Coordinate> coords,
         AlmostLockedSet except)
     {
         bool wasProgressMade = false;

@@ -82,6 +82,13 @@ public class BitPossibilities : IPossibilities
         Count = 9;
     }
 
+    public void Add(int n)
+    {
+        if (Peek(n)) return;
+        _possibilities |= 1 << (n - 1);
+        Count++;
+    }
+
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)

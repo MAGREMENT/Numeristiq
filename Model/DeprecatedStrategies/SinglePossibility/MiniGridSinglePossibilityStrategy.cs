@@ -7,7 +7,7 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
@@ -15,17 +15,17 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
             {
                 for (int n = 1; n <= 9; n++)
                 {
-                    int[]? pos = CheckMiniGridForUnique(solverView, gridRow, gridCol, n);
+                    int[]? pos = CheckMiniGridForUnique(strategyManager, gridRow, gridCol, n);
                     if (pos is not null)
                     {
-                        solverView.AddDefinitiveNumber(n, pos[0], pos[1], this);
+                        strategyManager.AddDefinitiveNumber(n, pos[0], pos[1], this);
                     }
                 }
             }
         }
     }
     
-    private int[]? CheckMiniGridForUnique(ISolverView solverView, int gridRow, int gridCol, int number)
+    private int[]? CheckMiniGridForUnique(IStrategyManager strategyManager, int gridRow, int gridCol, int number)
     {
         int[]? pos = null;
 
@@ -36,8 +36,8 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
                 var realRow = gridRow * 3 + row;
                 var realCol = gridCol * 3 + col;
 
-                if (solverView.Sudoku[realRow, realCol] == number) return null;
-                if (solverView.Possibilities[realRow, realCol].Peek(number) && solverView.Sudoku[realRow, realCol] == 0)
+                if (strategyManager.Sudoku[realRow, realCol] == number) return null;
+                if (strategyManager.Possibilities[realRow, realCol].Peek(number) && strategyManager.Sudoku[realRow, realCol] == 0)
                 {
                     if (pos is not null) return null;
                     pos = new[] { realRow, realCol };

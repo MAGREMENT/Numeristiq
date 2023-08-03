@@ -22,11 +22,11 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElemen
         _algorithm = algo;
     }
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
-        foreach (var graph in _chain.GetGraphs(solverView))
+        foreach (var graph in _chain.GetGraphs(strategyManager))
         {
-            _algorithm.Run(solverView, graph, _chain);
+            _algorithm.Run(strategyManager, graph, _chain);
         }
     }
 }
@@ -38,17 +38,17 @@ public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElem
     
     IStrategy? Strategy { get; set; }
     
-    IEnumerable<LinkGraph<T>> GetGraphs(ISolverView view);
+    IEnumerable<LinkGraph<T>> GetGraphs(IStrategyManager view);
 
-    bool ProcessFullLoop(ISolverView view, Loop<T> loop);
+    bool ProcessFullLoop(IStrategyManager view, Loop<T> loop);
 
-    bool ProcessWeakInference(ISolverView view, T inference);
+    bool ProcessWeakInference(IStrategyManager view, T inference);
 
-    bool ProcessStrongInference(ISolverView view, T inference);
+    bool ProcessStrongInference(IStrategyManager view, T inference);
 }
 
 public interface IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
 {
-    void Run(ISolverView view, LinkGraph<T> graph, IAlternatingChainType<T> chainType);
+    void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType);
 }
 

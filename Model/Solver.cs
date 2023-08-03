@@ -14,7 +14,7 @@ using Model.StrategiesUtil;
 
 namespace Model;
 
-public class Solver : ISolverView //TODO : Look into precomputation, improve logs, improve UI
+public class Solver : IStrategyManager, IChangeManager //TODO : Look into precomputation, improve logs, improve UI
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs => _logManager.Logs;
@@ -82,7 +82,9 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
     }
-
+    
+    //Solver------------------------------------------------------------------------------------------------------------
+    
     public void SetSudoku(Sudoku s)
     {
         Sudoku = s;
@@ -93,45 +95,8 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
 
         _pre = new PreComputer(this);
     }
-
-    private void ResetPossibilities()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                Possibilities[i, j].Reset();
-            }
-        }
-        
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                if (Sudoku[i, j] != 0)
-                {
-                    UpdatePossibilitiesAfterDefinitiveNumberAdded(Sudoku[i, j], i, j);
-                }
-            }
-        }
-    }
-
-    public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
-    {
-        if (Sudoku[row, col] != 0) return false;
-        
-        Sudoku[row, col] = number;
-        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        strategy.Score += 1;
-        if (LogsManaged)
-        {
-            _logManager.NumberAdded(number, row, col, strategy, this);
-            State = GetState();
-        }
-        NumberAdded?.Invoke(row, col);
-        return true;
-    }
-
+    
+    
     public void SetDefinitiveNumberByHand(int number, int row, int col)
     {
         Sudoku[row, col] = number;
@@ -139,67 +104,12 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         if(LogsManaged) Logs.Clear();
     }
 
-    public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
-    {
-        bool buffer = Possibilities[row, col].Remove(possibility);
-        if (!buffer) return false;
-        
-        strategy.Score += 1;
-        if (LogsManaged)
-        {
-            _logManager.PossibilityRemoved(possibility, row, col, strategy, this);
-            State = GetState();
-        }
-        PossibilityRemoved?.Invoke(row, col);
-        return true;
-    }
-
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
         Possibilities[row, col].Remove(possibility);
         if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col, this);
     }
-
-    private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)
-    {
-        Possibilities[row, col].RemoveAll();
-        for (int i = 0; i < 9; i++)
-        {
-            Possibilities[row, i].Remove(number);
-            Possibilities[i, col].Remove(number);
-        }
-        
-        int startRow = row / 3 * 3;
-        int startColumn = col / 3 * 3;
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                Possibilities[startRow + i, startColumn + j].Remove(number);
-            }
-        }
-    }
-
-    public LinePositions PossibilityPositionsInRow(int row, int number)
-    {
-        return _pre.PrecomputedPossibilityPositionsInRow(row, number);
-    }
     
-    public LinePositions PossibilityPositionsInColumn(int col, int number)
-    {
-        return _pre.PrecomputedPossibilityPositionsInColumn(col, number);
-    }
-    
-    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
-    {
-        return _pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
-    }
-
-    public LinkGraph<ILinkGraphElement> LinkGraph()
-    {
-        return _pre.PrecomputedLinkGraph();
-    }
-
     public void Solve(bool stopAtProgress = false)
     {
         for (int i = 0; i < Strategies.Length; i++)
@@ -242,7 +152,83 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
 
         return false;
     }
+    
+    public void ExcludeStrategy(Type type) //TODO improve
+    {
+        for (int i = 0; i < Strategies.Length; i++)
+        {
+            if (Strategies[i].GetType() == type) Strategies[i] = new NoStrategy();
+        }
+    }
 
+    public IStrategy GetStrategy(Type type) //TODO improve
+    {
+        foreach (var t in Strategies)
+        {
+            if (t.GetType() == type) return t;
+        }
+
+        return new NoStrategy();
+    }
+
+    //StrategyManager---------------------------------------------------------------------------------------------------
+    
+    public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
+    {
+        if (Sudoku[row, col] != 0) return false;
+        
+        Sudoku[row, col] = number;
+        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+        strategy.Score += 1;
+        if (LogsManaged)
+        {
+            _logManager.NumberAdded(number, row, col, strategy, this);
+            State = GetState();
+        }
+        NumberAdded?.Invoke(row, col);
+        return true;
+    }
+    
+    public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
+    {
+        bool buffer = Possibilities[row, col].Remove(possibility);
+        if (!buffer) return false;
+        
+        strategy.Score += 1;
+        if (LogsManaged)
+        {
+            _logManager.PossibilityRemoved(possibility, row, col, strategy, this);
+            State = GetState();
+        }
+        PossibilityRemoved?.Invoke(row, col);
+        return true;
+    }
+    
+    public ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeCauseFactory causeFactory)
+    {
+        return new ChangeBuffer(this, current, causeFactory);
+    }
+    
+    public LinePositions PossibilityPositionsInRow(int row, int number)
+    {
+        return _pre.PrecomputedPossibilityPositionsInRow(row, number);
+    }
+    
+    public LinePositions PossibilityPositionsInColumn(int col, int number)
+    {
+        return _pre.PrecomputedPossibilityPositionsInColumn(col, number);
+    }
+    
+    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    {
+        return _pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+    }
+
+    public LinkGraph<ILinkGraphElement> LinkGraph()
+    {
+        return _pre.PrecomputedLinkGraph();
+    }
+    
     public Solver Copy()
     {
         IPossibilities[,] possCopy = new IPossibilities[9, 9];
@@ -258,25 +244,68 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
         Array.Copy(Strategies, stratCopy, Strategies.Length);
         return new Solver(Sudoku.Copy(), possCopy, stratCopy, _pre);
     }
-
-    public void ExcludeStrategy(Type type)
+    
+    //ChangeManager-----------------------------------------------------------------------------------------------------
+    
+    public bool AddDefinitive(int number, int row, int col)
     {
-        for (int i = 0; i < Strategies.Length; i++)
-        {
-            if (Strategies[i].GetType() == type) Strategies[i] = new NoStrategy();
-        }
+        throw new NotImplementedException();
     }
 
-    public IStrategy GetStrategy(Type type)
+    public bool RemovePossibility(int possibility, int row, int col)
     {
-        foreach (var t in Strategies)
-        {
-            if (t.GetType() == type) return t;
-        }
+        throw new NotImplementedException();
+    }
 
-        return new NoStrategy();
+    public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes)
+    {
+        throw new NotImplementedException();
     }
     
+    //Private-----------------------------------------------------------------------------------------------------------
+
+    private void ResetPossibilities()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                Possibilities[i, j].Reset();
+            }
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (Sudoku[i, j] != 0)
+                {
+                    UpdatePossibilitiesAfterDefinitiveNumberAdded(Sudoku[i, j], i, j);
+                }
+            }
+        }
+    }
+
+    private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)
+    {
+        Possibilities[row, col].RemoveAll();
+        for (int i = 0; i < 9; i++)
+        {
+            Possibilities[row, i].Remove(number);
+            Possibilities[i, col].Remove(number);
+        }
+        
+        int startRow = row / 3 * 3;
+        int startColumn = col / 3 * 3;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                Possibilities[startRow + i, startColumn + j].Remove(number);
+            }
+        }
+    }
+
     private static IStrategy[] BasicStrategies()
     {
         return new IStrategy[]{
@@ -335,6 +364,5 @@ public class Solver : ISolverView //TODO : Look into precomputation, improve log
 
         return result;
     }
-
 }
 

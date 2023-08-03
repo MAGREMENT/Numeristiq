@@ -7,7 +7,7 @@ public interface IStrategy
     
     public int Score { get; set; }
 
-    void ApplyOnce(ISolverView solverView);
+    void ApplyOnce(IStrategyManager strategyManager);
 }
 
 public enum StrategyLevel

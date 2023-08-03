@@ -10,7 +10,7 @@ public class SimpleColoringStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -19,13 +19,13 @@ public class SimpleColoringStrategy : IStrategy
             {
                 for (int col = 0; col < 9; col++)
                 {
-                    if (solverView.Possibilities[row, col].Peek(number))
+                    if (strategyManager.Possibilities[row, col].Peek(number))
                     {
                         ColoringCoordinate current = new(row, col);
                         if (DoesAnyChainContains(chains, current)) continue;
                         
                         ColorableWeb<ColoringCoordinate> web = new();
-                        InitChain(solverView, web, current, number);
+                        InitChain(strategyManager, web, current, number);
                         if (web.Count >= 2)
                         {
                             web.StartColoring();
@@ -37,13 +37,13 @@ public class SimpleColoringStrategy : IStrategy
 
             foreach (var chain in chains)
             {
-                SearchForTwiceInTheSameUnit(solverView, number, chain);
-                SearchForTwoColorsElsewhere(solverView, number, chain);
+                SearchForTwiceInTheSameUnit(strategyManager, number, chain);
+                SearchForTwoColorsElsewhere(strategyManager, number, chain);
             }
         }
     }
 
-    private void SearchForTwiceInTheSameUnit(ISolverView solverView, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<ColoringCoordinate> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
@@ -52,9 +52,9 @@ public class SimpleColoringStrategy : IStrategy
                 foreach (var coord in web)
                 {
                     if (coord.Coloring == one.Coloring)
-                        solverView.RemovePossibility(number, coord.Row, coord.Col, this);
+                        strategyManager.RemovePossibility(number, coord.Row, coord.Col, this);
                     else
-                        solverView.AddDefinitiveNumber(number, coord.Row, coord.Col, this);
+                        strategyManager.AddDefinitiveNumber(number, coord.Row, coord.Col, this);
                 }
             }
 
@@ -62,13 +62,13 @@ public class SimpleColoringStrategy : IStrategy
         });
     }
 
-    private void SearchForTwoColorsElsewhere(ISolverView solverView, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager, int number, ColorableWeb<ColoringCoordinate> web)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Peek(number))
+                if (strategyManager.Possibilities[row, col].Peek(number))
                 {
                     ColoringCoordinate current = new(row, col);
                     if (web.Contains(current)) continue;
@@ -81,7 +81,7 @@ public class SimpleColoringStrategy : IStrategy
                             onAndOff[(int)(coord.Coloring - 1)] = true;
                             if (onAndOff[0] && onAndOff[1])
                             {
-                                solverView.RemovePossibility(number, row, col, this);
+                                strategyManager.RemovePossibility(number, row, col, this);
                                 break;
                             }
                         }
@@ -91,9 +91,9 @@ public class SimpleColoringStrategy : IStrategy
         }
     }
 
-    private void InitChain(ISolverView solverView, ColorableWeb<ColoringCoordinate> web, ColoringCoordinate current, int number)
+    private void InitChain(IStrategyManager strategyManager, ColorableWeb<ColoringCoordinate> web, ColoringCoordinate current, int number)
     {
-        var ppir = solverView.PossibilityPositionsInRow(current.Row, number);
+        var ppir = strategyManager.PossibilityPositionsInRow(current.Row, number);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
@@ -101,13 +101,13 @@ public class SimpleColoringStrategy : IStrategy
                 if (col != current.Col)
                 {
                     ColoringCoordinate next = new ColoringCoordinate(current.Row, col);
-                    if(web.AddLink(current, next)) InitChain(solverView, web, next, number);
+                    if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppic = solverView.PossibilityPositionsInColumn(current.Col, number);
+        var ppic = strategyManager.PossibilityPositionsInColumn(current.Col, number);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
@@ -115,13 +115,13 @@ public class SimpleColoringStrategy : IStrategy
                 if (row != current.Row)
                 {
                     ColoringCoordinate next = new ColoringCoordinate(row, current.Col);
-                    if(web.AddLink(current, next)) InitChain(solverView, web, next, number);
+                    if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppimn = solverView.PossibilityPositionsInMiniGrid(current.Row / 3, current.Col / 3, number);
+        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.Row / 3, current.Col / 3, number);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
@@ -129,7 +129,7 @@ public class SimpleColoringStrategy : IStrategy
                 if (pos[0] != current.Row && pos[1] != current.Col)
                 {
                     ColoringCoordinate next = new ColoringCoordinate(pos[0], pos[1]);
-                    if(web.AddLink(current, next)) InitChain(solverView, web, next, number);
+                    if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }

@@ -10,6 +10,8 @@ public class AlmostLockedSet : ILinkGraphElement
     private readonly Coordinate[] _coords;
     public IPossibilities Possibilities { get; }
 
+    public int Size => _coords.Length;
+
     public AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
     {
         _coords = coords;
@@ -25,68 +27,6 @@ public class AlmostLockedSet : ILinkGraphElement
     public bool Contains(Coordinate coord)
     {
         return _coords.Contains(coord);
-    }
-
-
-    public static IEnumerable<AlmostLockedSet> SearchForSingleCellAls(ISolverView solverView, List<Coordinate> coords)
-    {
-        foreach (var coord in coords)
-        {
-            IPossibilities current = solverView.Possibilities[coord.Row, coord.Col];
-            if (current.Count == 2) yield return new AlmostLockedSet(coord, current);
-        }
-    }
-
-    public static IEnumerable<AlmostLockedSet> SearchForMultipleCellsAls(ISolverView view, List<Coordinate> coords, int count)
-    {
-        List<AlmostLockedSet> result = new List<AlmostLockedSet>();
-        for (int i = 0; i < coords.Count; i++)
-        {
-            SearchForMultipleCellsAls(view, result, view.Possibilities[coords[i].Row, coords[i].Col], coords,
-                i, count - 1, count + 1, new List<Coordinate> {coords[i]});
-        }
-
-        return result;
-    }
-    
-    private static void SearchForMultipleCellsAls(ISolverView view, List<AlmostLockedSet> result,
-        IPossibilities current, List<Coordinate> coords, int start, int count, int type, List<Coordinate> visited)
-    {
-        for (int i = start + 1; i < coords.Count; i++)
-        {
-            if (!ShareAUnitWithAll(coords[i], visited) ||
-                !ShareAtLeastOne(view.Possibilities[coords[i].Row, coords[i].Col], current)) continue;
-            IPossibilities mashed = current.Mash(view.Possibilities[coords[i].Row, coords[i].Col]);
-            var next = new List<Coordinate>(visited) {coords[i]};
-            if (count - 1 == 0)
-            {
-                if(mashed.Count == type) result.Add(new AlmostLockedSet(next.ToArray(), mashed));
-            }else if (mashed.Count <= type)
-            {
-                SearchForMultipleCellsAls(view, result, mashed, coords, i, count - 1, type,
-                    next);
-            }
-        }
-    }
-    
-    private static bool ShareAUnitWithAll(Coordinate current, IEnumerable<Coordinate> coordinates)
-    {
-        foreach (var coord in coordinates)
-        {
-            if (!current.ShareAUnit(coord)) return false;
-        }
-
-        return true;
-    }
-
-    private static bool ShareAtLeastOne(IPossibilities one, IPossibilities two)
-    {
-        foreach (var possibility in one)
-        {
-            if (two.Peek(possibility)) return true;
-        }
-
-        return false;
     }
 
     public IEnumerable<Coordinate> SharedSeenCells()
@@ -150,5 +90,107 @@ public class AlmostLockedSet : ILinkGraphElement
         }
 
         return result[..^2] + "]";
+    }
+
+    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)
+    {
+        List<AlmostLockedSet> result = new();
+        if (max < 1) return result;
+        for(int i = 0; i < coords.Count; i++){
+            IPossibilities current = view.Possibilities[coords[i].Row, coords[i].Col];
+            if (current.Count == 2) result.Add(new AlmostLockedSet(coords[i], current));
+            if (max > 1) SearchForAls(view, coords, new List<Coordinate> { coords[i] },
+                current, i + 1, 2, max, result);
+        }
+
+        return result;
+    }
+
+    private static void SearchForAls(IStrategyManager view, List<Coordinate> coords, List<Coordinate> visited,
+        IPossibilities current, int start, int count, int max, List<AlmostLockedSet> result)
+    {
+        for (int i = start; i < coords.Count; i++)
+        {
+            if (!ShareAUnitWithAll(coords[i], visited)) continue;
+
+            IPossibilities mashed = current.Mash(view.Possibilities[coords[i].Row, coords[i].Col]);
+            if (mashed.Count == current.Count + view.Possibilities[coords[i].Row, coords[i].Col].Count) continue;
+            
+            if (mashed.Count == count + 1)
+            {
+                Coordinate[] final = new Coordinate[visited.Count + 1];
+                for (int j = 0; j < visited.Count; j++)
+                {
+                    final[j] = visited[j];
+                }
+
+                final[^1] = coords[i];
+                result.Add(new AlmostLockedSet(final, mashed));
+            }
+
+            if (max > count) SearchForAls(view, coords, new List<Coordinate>(visited) { coords[i] },
+                    mashed, i + 1, count + 1, max, result);
+        }
+    }
+
+    public static IEnumerable<AlmostLockedSet> SearchForSingleCellAls(IStrategyManager strategyManager, List<Coordinate> coords)
+    {
+        foreach (var coord in coords)
+        {
+            IPossibilities current = strategyManager.Possibilities[coord.Row, coord.Col];
+            if (current.Count == 2) yield return new AlmostLockedSet(coord, current);
+        }
+    }
+
+    public static IEnumerable<AlmostLockedSet> SearchForMultipleCellsAls(IStrategyManager view, List<Coordinate> coords, int count)
+    {
+        List<AlmostLockedSet> result = new List<AlmostLockedSet>();
+        for (int i = 0; i < coords.Count; i++)
+        {
+            SearchForMultipleCellsAls(view, result, view.Possibilities[coords[i].Row, coords[i].Col], coords,
+                i, count - 1, count + 1, new List<Coordinate> {coords[i]});
+        }
+
+        return result;
+    }
+    
+    private static void SearchForMultipleCellsAls(IStrategyManager view, List<AlmostLockedSet> result,
+        IPossibilities current, List<Coordinate> coords, int start, int count, int type, List<Coordinate> visited)
+    {
+        for (int i = start + 1; i < coords.Count; i++)
+        {
+            if (!ShareAUnitWithAll(coords[i], visited) ||
+                !ShareAtLeastOne(view.Possibilities[coords[i].Row, coords[i].Col], current)) continue;
+            IPossibilities mashed = current.Mash(view.Possibilities[coords[i].Row, coords[i].Col]);
+            var next = new List<Coordinate>(visited) {coords[i]};
+            if (count - 1 == 0)
+            {
+                if(mashed.Count == type) result.Add(new AlmostLockedSet(next.ToArray(), mashed));
+            }else if (mashed.Count <= type)
+            {
+                SearchForMultipleCellsAls(view, result, mashed, coords, i, count - 1, type,
+                    next);
+            }
+        }
+    }
+    
+    private static bool ShareAUnitWithAll(Coordinate current, IEnumerable<Coordinate> coordinates)
+    {
+        foreach (var coord in coordinates)
+        {
+            if (!current.ShareAUnit(coord)) return false;
+        }
+
+        return true;
+    }
+
+    private static bool ShareAtLeastOne(IPossibilities one, IPossibilities two)
+    {
+        foreach (var possibility in one)
+        {
+            if (two.Peek(possibility)) return true;
+        }
+
+        return false;
     }
 }

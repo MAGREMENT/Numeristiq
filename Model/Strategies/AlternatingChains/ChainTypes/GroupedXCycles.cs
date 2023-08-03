@@ -13,7 +13,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
     public string Name => "XCycles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<LinkGraph<IGroupedXCycleNode>> GetGraphs(ISolverView view)
+    public IEnumerable<LinkGraph<IGroupedXCycleNode>> GetGraphs(IStrategyManager view)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -63,7 +63,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         }
     }
 
-    private void SearchForPointingInMiniGrid(ISolverView view, LinkGraph<IGroupedXCycleNode> graph, MiniGridPositions ppimn, int miniRow,
+    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<IGroupedXCycleNode> graph, MiniGridPositions ppimn, int miniRow,
         int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -213,7 +213,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         }
     }
 
-    public bool ProcessFullLoop(ISolverView view, Loop<IGroupedXCycleNode> loop)
+    public bool ProcessFullLoop(IStrategyManager view, Loop<IGroupedXCycleNode> loop)
     {
         bool wasProgressMade = false;
         loop.ForEachLink((one, two)
@@ -222,7 +222,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         return wasProgressMade;
     }
     
-    private void ProcessWeakLink(ISolverView view, IGroupedXCycleNode one, IGroupedXCycleNode two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, IGroupedXCycleNode one, IGroupedXCycleNode two, out bool wasProgressMade)
     {
         if (one is GroupedXCyclePointingRow rOne)
         {
@@ -251,7 +251,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         wasProgressMade = false;
     }
 
-    private bool RemovePossibilityInAll(ISolverView view, IEnumerable<PossibilityCoordinate> coords)
+    private bool RemovePossibilityInAll(IStrategyManager view, IEnumerable<PossibilityCoordinate> coords)
     {
         bool wasProgressMade = false;
         foreach (var coord in coords)
@@ -262,13 +262,13 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         return wasProgressMade;
     }
 
-    public bool ProcessWeakInference(ISolverView view, IGroupedXCycleNode inference)
+    public bool ProcessWeakInference(IStrategyManager view, IGroupedXCycleNode inference)
     {
         if (inference is not GroupedXCycleSingle single) return false;
         return view.RemovePossibility(single.Possibility, single.Row, single.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(ISolverView view, IGroupedXCycleNode inference)
+    public bool ProcessStrongInference(IStrategyManager view, IGroupedXCycleNode inference)
     {
         if (inference is not GroupedXCycleSingle single) return false;
         return view.AddDefinitiveNumber(single.Possibility, single.Row, single.Col, Strategy!);

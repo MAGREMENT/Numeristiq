@@ -17,6 +17,7 @@ public interface IPossibilities : IEnumerable<int>
     public bool Peek(int n);
     public bool PeekAll(IPossibilities poss);
     public void Reset();
+    public void Add(int n);
     public IPossibilities Copy();
     public IEnumerable<BiValue> EachBiValue();
 

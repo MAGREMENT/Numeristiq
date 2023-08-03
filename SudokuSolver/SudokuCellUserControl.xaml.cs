@@ -33,10 +33,10 @@ public partial class SudokuCellUserControl : UserControl
         };
     }
 
-    public void HighLight(LogPart part)
+    public void HighLight(LogChange change)
     {
-        if (part.Action == SolverAction.NumberAdded) _numbers.HighLightBig();
-        else _numbers.HighLightSmall(part.Number);
+        if (change.NumberType == SolverNumberType.Definitive) _numbers.HighLightBig();
+        else _numbers.HighLightSmall(change.Number);
     }
 
     public void UnHighLight()

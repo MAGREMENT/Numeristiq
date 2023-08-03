@@ -38,15 +38,15 @@ public class NakedPossibilitiesStrategy : IStrategy
     }
     
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         //Rows
         for (int row = 0; row < 9; row++)
         {
             IPossibilities empty = IPossibilities.New();
             empty.RemoveAll();
-            var possibleCols = EveryRowCellWithLessPossibilities(solverView, row, _type + 1);
-            RecursiveRowMashing(solverView, empty, possibleCols, row, _type, new LinePositions());
+            var possibleCols = EveryRowCellWithLessPossibilities(strategyManager, row, _type + 1);
+            RecursiveRowMashing(strategyManager, empty, possibleCols, row, _type, new LinePositions());
         }
         
         //Cols
@@ -54,8 +54,8 @@ public class NakedPossibilitiesStrategy : IStrategy
         {
             IPossibilities empty = IPossibilities.New();
             empty.RemoveAll();
-            var possibleRows = EveryColumnCellWithLessPossibilities(solverView, col, _type + 1);
-            RecursiveColumnMashing(solverView, empty, possibleRows, col, _type, new LinePositions());
+            var possibleRows = EveryColumnCellWithLessPossibilities(strategyManager, col, _type + 1);
+            RecursiveColumnMashing(strategyManager, empty, possibleRows, col, _type, new LinePositions());
         }
         
         //MiniGrid
@@ -65,33 +65,33 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 IPossibilities empty = IPossibilities.New();
                 empty.RemoveAll();
-                var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(solverView, miniRow, miniCol, _type + 1);
-                RecursiveMiniGridMashing(solverView, empty, possibleGridNumbers, miniRow, miniCol,
+                var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(strategyManager, miniRow, miniCol, _type + 1);
+                RecursiveMiniGridMashing(strategyManager, empty, possibleGridNumbers, miniRow, miniCol,
                     _type, new MiniGridPositions(miniRow, miniCol));
             }
         }
     }
     
-    private Queue<int> EveryRowCellWithLessPossibilities(ISolverView solverView, int row, int than)
+    private Queue<int> EveryRowCellWithLessPossibilities(IStrategyManager strategyManager, int row, int than)
     {
         Queue<int> result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (solverView.Sudoku[row, col] == 0 && solverView.Possibilities[row, col].Count < than) 
+            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.Possibilities[row, col].Count < than) 
                 result.Enqueue(col);
         }
 
         return result;
     }
 
-    private void RecursiveRowMashing(ISolverView solverView, IPossibilities current,
+    private void RecursiveRowMashing(IStrategyManager strategyManager, IPossibilities current,
         Queue<int> possibleCols, int row, int count, LinePositions visited)
     {
         while (possibleCols.Count > 0)
         {
             int col = possibleCols.Dequeue();
 
-            IPossibilities newCurrent = current.Mash(solverView.Possibilities[row, col]);
+            IPossibilities newCurrent = current.Mash(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
             newVisited.Add(col);
             
@@ -99,50 +99,50 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.First(), row, col, this);
-                    else RemovePossibilitiesFromRow(solverView, row, newCurrent, newVisited);
+                    if (_type == 1) strategyManager.AddDefinitiveNumber(newCurrent.First(), row, col, this);
+                    else RemovePossibilitiesFromRow(strategyManager, row, newCurrent, newVisited);
                 }
                 else
                 {
-                    RecursiveRowMashing(solverView, newCurrent,
+                    RecursiveRowMashing(strategyManager, newCurrent,
                         new Queue<int>(possibleCols), row, count - 1, newVisited);
                 }
             }
         }
     }
 
-    private void RemovePossibilitiesFromRow(ISolverView solverView, int row, IPossibilities toRemove, LinePositions except)
+    private void RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, IPossibilities toRemove, LinePositions except)
     {
         foreach (var n in toRemove)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Sudoku[row, col] == 0 && !except.Peek(col))
-                    solverView.RemovePossibility(n, row, col, this);
+                if (strategyManager.Sudoku[row, col] == 0 && !except.Peek(col))
+                    strategyManager.RemovePossibility(n, row, col, this);
             }
         }
     }
     
-    private Queue<int> EveryColumnCellWithLessPossibilities(ISolverView solverView, int col, int than)
+    private Queue<int> EveryColumnCellWithLessPossibilities(IStrategyManager strategyManager, int col, int than)
     {
         Queue<int> result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (solverView.Sudoku[row, col] == 0 && solverView.Possibilities[row, col].Count < than) 
+            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.Possibilities[row, col].Count < than) 
                 result.Enqueue(row);
         }
 
         return result;
     }
     
-    private void RecursiveColumnMashing(ISolverView solverView, IPossibilities current,
+    private void RecursiveColumnMashing(IStrategyManager strategyManager, IPossibilities current,
         Queue<int> possibleRows, int col, int count, LinePositions visited)
     {
         while(possibleRows.Count > 0)
         {
             int row = possibleRows.Dequeue();
 
-            IPossibilities newCurrent = current.Mash(solverView.Possibilities[row, col]);
+            IPossibilities newCurrent = current.Mash(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
             newVisited.Add(row);
             
@@ -150,31 +150,31 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.First(), row, col, this);
-                    else RemovePossibilitiesFromColumn(solverView, col, newCurrent, newVisited);
+                    if (_type == 1) strategyManager.AddDefinitiveNumber(newCurrent.First(), row, col, this);
+                    else RemovePossibilitiesFromColumn(strategyManager, col, newCurrent, newVisited);
                 }
                 else
                 {
-                    RecursiveColumnMashing(solverView, newCurrent, new Queue<int>(possibleRows),
+                    RecursiveColumnMashing(strategyManager, newCurrent, new Queue<int>(possibleRows),
                         col, count - 1, newVisited);
                 }
             }
         }
     }
 
-    private void RemovePossibilitiesFromColumn(ISolverView solverView, int col, IPossibilities toRemove, LinePositions except)
+    private void RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove, LinePositions except)
     {
         foreach (var n in toRemove)
         {
             for (int row = 0; row < 9; row++)
             {
-                if (solverView.Sudoku[row, col] == 0 && !except.Peek(row))
-                    solverView.RemovePossibility(n, row, col, this);
+                if (strategyManager.Sudoku[row, col] == 0 && !except.Peek(row))
+                    strategyManager.RemovePossibility(n, row, col, this);
             }
         }
     }
     
-    private Queue<int> EveryMiniGridCellWithLessPossibilities(ISolverView solverView, int miniRow, int miniCol, int than)
+    private Queue<int> EveryMiniGridCellWithLessPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol, int than)
     {
         Queue<int> result = new();
         for (int gridNumber = 0; gridNumber < 9; gridNumber++)
@@ -182,14 +182,14 @@ public class NakedPossibilitiesStrategy : IStrategy
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
             
-            if (solverView.Sudoku[row, col] == 0 && solverView.Possibilities[row, col].Count < than) 
+            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.Possibilities[row, col].Count < than) 
                 result.Enqueue(gridNumber);
         }
         
         return result;
     }
     
-    private void RecursiveMiniGridMashing(ISolverView solverView, IPossibilities current,
+    private void RecursiveMiniGridMashing(IStrategyManager strategyManager, IPossibilities current,
         Queue<int> possibleGridNumbers, int miniRow, int miniCol, int count, MiniGridPositions visited)
     {
         while(possibleGridNumbers.Count > 0)
@@ -199,7 +199,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
             
-            IPossibilities newCurrent = current.Mash(solverView.Possibilities[row, col]);
+            IPossibilities newCurrent = current.Mash(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
             newVisited.Add(gridNumber);
 
@@ -207,19 +207,19 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) solverView.AddDefinitiveNumber(newCurrent.First(), row, col, this);
-                    else RemovePossibilitiesFromMiniGrid(solverView, miniRow, miniCol, newCurrent, newVisited);
+                    if (_type == 1) strategyManager.AddDefinitiveNumber(newCurrent.First(), row, col, this);
+                    else RemovePossibilitiesFromMiniGrid(strategyManager, miniRow, miniCol, newCurrent, newVisited);
                 }
                 else
                 {
-                    RecursiveMiniGridMashing(solverView, newCurrent, new Queue<int>(possibleGridNumbers),
+                    RecursiveMiniGridMashing(strategyManager, newCurrent, new Queue<int>(possibleGridNumbers),
                         miniRow, miniCol, count - 1, newVisited);
                 }
             }
         }
     }
     
-    private void RemovePossibilitiesFromMiniGrid(ISolverView solverView, int miniRow, int miniCol, IPossibilities toRemove,
+    private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove,
         MiniGridPositions except)
     {
         foreach (var n in toRemove)
@@ -229,8 +229,8 @@ public class NakedPossibilitiesStrategy : IStrategy
                 int row = miniRow * 3 + gridNumber / 3;
                 int col = miniCol * 3 + gridNumber % 3;
                 
-                if (solverView.Sudoku[row, col] == 0 && !except.PeekFromGridNumber(gridNumber))
-                    solverView.RemovePossibility(n, row, col, this);
+                if (strategyManager.Sudoku[row, col] == 0 && !except.PeekFromGridNumber(gridNumber))
+                    strategyManager.RemovePossibility(n, row, col, this);
             }
         }
     }

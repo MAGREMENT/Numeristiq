@@ -163,13 +163,13 @@ public class Coordinate
         }
     }
     
-    public static IEnumerable<Coordinate> SharedSeenEmptyCells(ISolverView solverView, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Sudoku[row, col] != 0 ||
+                if (strategyManager.Sudoku[row, col] != 0 ||
                     (row == row1 && col == col1) || (row == row2 && col == col2)) continue;
                 
                 if (ShareAUnit(row, col, row1, col1)

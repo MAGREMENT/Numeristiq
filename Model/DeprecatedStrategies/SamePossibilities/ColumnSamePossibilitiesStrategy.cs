@@ -10,42 +10,42 @@ public class ColumnSamePossibilitiesStrategy : IStrategy
     public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
     public int Score { get; set; }
 
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int col = 0; col < 9; col++)
         {
-            foreach (var keyValuePair in GetDictionaryOfPossibilities(solverView, col))
+            foreach (var keyValuePair in GetDictionaryOfPossibilities(strategyManager, col))
             {
                 if (keyValuePair.Key.Count == keyValuePair.Value)
-                    RemovePossibilitiesFromColumn(solverView, col, keyValuePair.Key);
+                    RemovePossibilitiesFromColumn(strategyManager, col, keyValuePair.Key);
             }
         }
     }
 
-    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(ISolverView solverView, int col)
+    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int col)
     {
         Dictionary<IPossibilities, int> result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (solverView.Sudoku[row, col] == 0)
+            if (strategyManager.Sudoku[row, col] == 0)
             {
-                if (!result.TryAdd(solverView.Possibilities[row, col], 1))
-                    result[solverView.Possibilities[row, col]] += 1;
+                if (!result.TryAdd(strategyManager.Possibilities[row, col], 1))
+                    result[strategyManager.Possibilities[row, col]] += 1;
             }
         }
 
         return result;
     }
 
-    private void RemovePossibilitiesFromColumn(ISolverView solverView, int col, IPossibilities toRemove)
+    private void RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove)
     {
         for (int row = 0; row < 9; row++)
         {
-            if (solverView.Sudoku[row, col] == 0 && !solverView.Possibilities[row, col].Equals(toRemove))
+            if (strategyManager.Sudoku[row, col] == 0 && !strategyManager.Possibilities[row, col].Equals(toRemove))
             {
                 foreach (var number in toRemove)
                 {
-                    solverView.RemovePossibility(number, row, col, this);
+                    strategyManager.RemovePossibility(number, row, col, this);
                 }
             }
         }

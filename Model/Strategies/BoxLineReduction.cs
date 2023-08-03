@@ -7,13 +7,13 @@ public class BoxLineReduction : IStrategy
     public string Name => "Box line reduction";
     public StrategyLevel Difficulty => StrategyLevel.Medium;
     public int Score { get; set; }
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppir = solverView.PossibilityPositionsInRow(row, number);
+                var ppir = strategyManager.PossibilityPositionsInRow(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int miniRow = row / 3;
@@ -26,8 +26,8 @@ public class BoxLineReduction : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realRow != row && solverView.Sudoku[realRow, realCol] == 0)
-                                solverView.RemovePossibility(number, realRow, realCol, this);
+                            if (realRow != row && strategyManager.Sudoku[realRow, realCol] == 0)
+                                strategyManager.RemovePossibility(number, realRow, realCol, this);
                         }
                     }
                 }
@@ -38,7 +38,7 @@ public class BoxLineReduction : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppic = solverView.PossibilityPositionsInColumn(col, number);
+                var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
                     int miniRow = ppic.First() / 3;
@@ -51,8 +51,8 @@ public class BoxLineReduction : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realCol != col && solverView.Sudoku[realRow, realCol] == 0)
-                                solverView.RemovePossibility(number, realRow, realCol, this);
+                            if (realCol != col && strategyManager.Sudoku[realRow, realCol] == 0)
+                                strategyManager.RemovePossibility(number, realRow, realCol, this);
                         }
                     }
                 }

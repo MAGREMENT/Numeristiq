@@ -20,32 +20,32 @@ public class XYZWingStrategy : IStrategy
     /// -Not all in the same unit
     /// -Each double share a unit with the triple
     /// </summary>
-    /// <param name="solverView"></param>
+    /// <param name="strategyManager"></param>
     /// <exception cref="NotImplementedException"></exception>
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Count == 3)
+                if (strategyManager.Possibilities[row, col].Count == 3)
                 {
-                    IPossibilities hinge = solverView.Possibilities[row, col];
+                    IPossibilities hinge = strategyManager.Possibilities[row, col];
 
-                    LinePositions rowCandidates = CandidateForXyzWingInRow(solverView, row, hinge);
-                    LinePositions colCandidates = CandidateForXyzWingInColumn(solverView, col, hinge);
-                    MiniGridPositions miniGridCandidates = CandidateForXyzWingInMiniGrid(solverView, row / 3, col / 3, hinge);
+                    LinePositions rowCandidates = CandidateForXyzWingInRow(strategyManager, row, hinge);
+                    LinePositions colCandidates = CandidateForXyzWingInColumn(strategyManager, col, hinge);
+                    MiniGridPositions miniGridCandidates = CandidateForXyzWingInMiniGrid(strategyManager, row / 3, col / 3, hinge);
                     
                     //Rows
                     foreach (var candidateCol in rowCandidates)
                     {
                         foreach (var pos in miniGridCandidates)
                         {
-                            if (ShareOnlyOne(solverView.Possibilities[row, candidateCol],
-                                    solverView.Possibilities[pos[0], pos[1]]) &&
+                            if (ShareOnlyOne(strategyManager.Possibilities[row, candidateCol],
+                                    strategyManager.Possibilities[pos[0], pos[1]]) &&
                                 !AreAllInSameUnit(row, col, row,
                                     candidateCol, pos[0], pos[1]) &&
-                                Process(solverView, row, col, row,
+                                Process(strategyManager, row, col, row,
                                     candidateCol, pos[0], pos[1])) return;
                         }
                     }
@@ -55,11 +55,11 @@ public class XYZWingStrategy : IStrategy
                     {
                         foreach (var pos in miniGridCandidates)
                         {
-                            if (ShareOnlyOne(solverView.Possibilities[candidateRow, col],
-                                    solverView.Possibilities[pos[0], pos[1]]) &&
+                            if (ShareOnlyOne(strategyManager.Possibilities[candidateRow, col],
+                                    strategyManager.Possibilities[pos[0], pos[1]]) &&
                                 !AreAllInSameUnit(row, col, candidateRow,
                                     col, pos[0], pos[1]) &&
-                                Process(solverView, row, col, candidateRow,
+                                Process(strategyManager, row, col, candidateRow,
                                     col, pos[0], pos[1])) return;
                         }
                     }
@@ -68,12 +68,12 @@ public class XYZWingStrategy : IStrategy
         }
     }
 
-    private LinePositions CandidateForXyzWingInRow(ISolverView solverView, int row, IPossibilities hinge)
+    private LinePositions CandidateForXyzWingInRow(IStrategyManager strategyManager, int row, IPossibilities hinge)
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (solverView.Possibilities[row, col].Count == 2 && IsSubset(solverView.Possibilities[row, col], hinge))
+            if (strategyManager.Possibilities[row, col].Count == 2 && IsSubset(strategyManager.Possibilities[row, col], hinge))
             {
                 result.Add(col);
             }
@@ -82,12 +82,12 @@ public class XYZWingStrategy : IStrategy
         return result;
     }
     
-    private LinePositions CandidateForXyzWingInColumn(ISolverView solverView, int col, IPossibilities hinge)
+    private LinePositions CandidateForXyzWingInColumn(IStrategyManager strategyManager, int col, IPossibilities hinge)
     {
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (solverView.Possibilities[row, col].Count == 2 && IsSubset(solverView.Possibilities[row, col], hinge))
+            if (strategyManager.Possibilities[row, col].Count == 2 && IsSubset(strategyManager.Possibilities[row, col], hinge))
             {
                 result.Add(row);
             }
@@ -96,7 +96,7 @@ public class XYZWingStrategy : IStrategy
         return result;
     }
 
-    private MiniGridPositions CandidateForXyzWingInMiniGrid(ISolverView solverView, int miniRow, int miniCol, IPossibilities hinge)
+    private MiniGridPositions CandidateForXyzWingInMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities hinge)
     {
         MiniGridPositions result = new(miniRow, miniCol);
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -106,7 +106,7 @@ public class XYZWingStrategy : IStrategy
                 int row = miniRow * 3 + gridRow;
                 int col = miniCol * 3 + gridCol;
                 
-                if (solverView.Possibilities[row, col].Count == 2 && IsSubset(solverView.Possibilities[row, col], hinge))
+                if (strategyManager.Possibilities[row, col].Count == 2 && IsSubset(strategyManager.Possibilities[row, col], hinge))
                 {
                     result.Add(gridRow, gridCol);
                 }
@@ -148,15 +148,15 @@ public class XYZWingStrategy : IStrategy
                 col1 / 3 == col3 / 3);
     }
 
-    private bool Process(ISolverView solverView, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
+    private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
         bool wasProgressMade = false;
 
-        int toRemove = OneInCommon(solverView.Possibilities[hingeRow, hingeCol], solverView.Possibilities[row1, col1],
-            solverView.Possibilities[row2, col2]);
+        int toRemove = OneInCommon(strategyManager.Possibilities[hingeRow, hingeCol], strategyManager.Possibilities[row1, col1],
+            strategyManager.Possibilities[row2, col2]);
         foreach (var pos in MatchingCells(hingeRow, hingeCol, row1, col1, row2, col2))
         {
-            if (solverView.RemovePossibility(toRemove, pos[0], pos[1], this)) wasProgressMade = true;
+            if (strategyManager.RemovePossibility(toRemove, pos[0], pos[1], this)) wasProgressMade = true;
         }
 
         return wasProgressMade;

@@ -15,24 +15,24 @@ public class XYChainStrategy : IStrategy
 
     private readonly HashSet<PossibilityCoordinate> _used = new ();
     
-    public void ApplyOnce(ISolverView solverView)
+    public void ApplyOnce(IStrategyManager strategyManager)
     
     {
-        var map = new BiValueMap(solverView);
+        var map = new BiValueMap(strategyManager);
         _used.Clear();
 
         foreach (var start in map)
         {
             if (_used.Contains(start)) continue;
-            Search(solverView, map, new HashSet<PossibilityCoordinate>(), start, start);
+            Search(strategyManager, map, new HashSet<PossibilityCoordinate>(), start, start);
         }
     }
 
-    private void Search(ISolverView solverView, BiValueMap map, HashSet<PossibilityCoordinate> visited,
+    private void Search(IStrategyManager strategyManager, BiValueMap map, HashSet<PossibilityCoordinate> visited,
         PossibilityCoordinate start, PossibilityCoordinate current)
     {
         PossibilityCoordinate friend = map.AssociatedCoordinate(current);
-        if(friend.Possibility == start.Possibility) Process(solverView, start, friend);
+        if(friend.Possibility == start.Possibility) Process(strategyManager, start, friend);
         
         visited.Add(current);
         visited.Add(friend);
@@ -41,16 +41,16 @@ public class XYChainStrategy : IStrategy
         {
             if (!visited.Contains(shared) && shared.ShareAUnit(current))
             {
-                Search(solverView, map, new HashSet<PossibilityCoordinate>(visited), start, shared);
+                Search(strategyManager, map, new HashSet<PossibilityCoordinate>(visited), start, shared);
             }
         }
     }
 
-    private void Process(ISolverView solverView, PossibilityCoordinate start, PossibilityCoordinate end)
+    private void Process(IStrategyManager strategyManager, PossibilityCoordinate start, PossibilityCoordinate end)
     {
         foreach (var coord in start.SharedSeenCells(end))
         {
-            solverView.RemovePossibility(start.Possibility, coord.Row, coord.Col, this);
+            strategyManager.RemovePossibility(start.Possibility, coord.Row, coord.Col, this);
         }
 
         _used.Add(end);
@@ -62,15 +62,15 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
     private readonly Dictionary<PossibilityCoordinate, PossibilityCoordinate> _cells = new();
     private readonly Dictionary<int, HashSet<PossibilityCoordinate>> _map = new();
 
-    public BiValueMap(ISolverView solverView)
+    public BiValueMap(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (solverView.Possibilities[row, col].Count == 2)
+                if (strategyManager.Possibilities[row, col].Count == 2)
                 {
-                    int[] possibilities = solverView.Possibilities[row, col].ToArray();
+                    int[] possibilities = strategyManager.Possibilities[row, col].ToArray();
                     
                     PossibilityCoordinate first = new PossibilityCoordinate(row, col, possibilities[0]);
                     PossibilityCoordinate second = new PossibilityCoordinate(row, col, possibilities[1]);
