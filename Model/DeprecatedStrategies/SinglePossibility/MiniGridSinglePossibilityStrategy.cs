@@ -27,7 +27,7 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
 
     public string GetExplanation(IChangeCauseFactory factory)
     {
-        throw new System.NotImplementedException();
+        return "";
     }
 
     private int[]? CheckMiniGridForUnique(IStrategyManager strategyManager, int gridRow, int gridCol, int number)

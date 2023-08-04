@@ -24,7 +24,7 @@ public class RowSinglePossibilityStrategy : IStrategy
 
     public string GetExplanation(IChangeCauseFactory factory)
     {
-        throw new System.NotImplementedException();
+        return "";
     }
 
     private int CheckRowForUnique(IStrategyManager strategyManager, int row, int number)

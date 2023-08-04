@@ -24,7 +24,7 @@ public class RowSamePossibilitiesStrategy : IStrategy
 
     public string GetExplanation(IChangeCauseFactory factory)
     {
-        throw new System.NotImplementedException();
+        return "";
     }
 
     private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int row)

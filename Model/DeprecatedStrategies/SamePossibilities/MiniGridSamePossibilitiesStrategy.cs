@@ -27,7 +27,7 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
 
     public string GetExplanation(IChangeCauseFactory factory)
     {
-        throw new System.NotImplementedException();
+        return "";
     }
 
     private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol)

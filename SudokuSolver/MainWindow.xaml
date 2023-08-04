@@ -30,7 +30,7 @@
         </StackPanel>
         <StackPanel x:Name="AsidePanel" Width="400">
             <local:LogListUserControl x:Name = "Logs"/>
-            <TextBox Width="380" Height="300" Background="WhiteSmoke" Margin="0, 20, 0, 0"
+            <TextBox Width="380" Height="300" Background="WhiteSmoke" Margin="0, 20, 0, 0" TextWrapping="Wrap"
                      HorizontalAlignment="Center"/>
         </StackPanel>
     </StackPanel>

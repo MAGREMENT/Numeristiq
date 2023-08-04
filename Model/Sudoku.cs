@@ -4,8 +4,7 @@ namespace Model;
 
 public class Sudoku
 {
-    public const int GridSize = 9;
-    public const int MiniGridSize = 3;
+    private const int GridSize = 9;
 
     private readonly int[,] _grid = new int[GridSize, GridSize];
 
@@ -142,41 +141,41 @@ public class Sudoku
     {
         for (int i = 0; i < GridSize; i++)
         {
-            bool[] rowPresence = { false, false, false, false, false, false, false, false, false, false };
+            int rowPresence = 0;
 
             for (int j = 0; j < GridSize; j++)
             {
                 var cell = _grid[i, j];
                 if (cell == 0) return false;
-                if (rowPresence[cell]) return false;
-                rowPresence[cell] = true;
+                if (((rowPresence >> cell) & 1) > 0) return false;
+                rowPresence |= 1 << cell;
             }
-            
-            bool[] columnPresence = { false, false, false, false, false, false, false, false, false, false };
+
+            int colPresence = 0;
             
             for (int j = 0; j < GridSize; j++)
             {
                 var cell = _grid[j, i];
-                if (columnPresence[cell]) return false;
-                columnPresence[cell] = true;
+                if (((colPresence >> cell) & 1) > 0) return false;
+                colPresence |= 1 << cell;
             }
         }
         
-        //This is disgusting but whatever
         for(int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
             {
-
-                bool[] presence = { false, false, false, false, false, false, false, false, false, false };
+                int miniPresence = 0;
+                int startRow = i * 3;
+                int startCol = j * 3;
                 
                 for (int k = 0; k < 3; k++)
                 {
                     for (int l = 0; l < 3; l++)
                     {
-                        var cell = _grid[i * 3 + k, j * 3 + l];
-                        if (presence[cell]) return false;
-                        presence[cell] = true;
+                        var cell = _grid[startRow + k, startCol + l];
+                        if (((miniPresence >> cell) & 1) > 0) return false;
+                        miniPresence |= 1 << cell;
                     }
                 }
             }
@@ -203,7 +202,7 @@ public class Sudoku
         {
             for (int j = 0; j < GridSize; j++)
             {
-                result[i, j] = this[i, j]; //TODO à faire avec sudoku cell
+                result[i, j] = this[i, j];
             }
         }
 

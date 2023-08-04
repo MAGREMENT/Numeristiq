@@ -5,9 +5,9 @@ namespace Model.Strategies;
 
 public class XWingStrategy : IStrategy
 {
-    public string Name { get; } = "XWing";
+    public string Name => "XWing";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -50,33 +50,41 @@ public class XWingStrategy : IStrategy
         return "";
     }
 
-    private void RemoveFromColumns(IStrategyManager strategyManager, IEnumerable<int> cols, int row1, int row2, int number)
+    private void RemoveFromColumns(IStrategyManager strategyManager, LinePositions cols, int row1, int row2, int number)
     {
+        var changeBuffer = 
+            strategyManager.CreateChangeBuffer(this, new RowXWingCauseFactory(cols, row1, row2, number));
+        
         for (int row = 0; row < 9; row++)
         {
             if (row != row1 && row != row2)
             {
-                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var col in cols)
                 {
-                    strategyManager.RemovePossibility(number, row, col, this);
+                    changeBuffer.AddPossibilityToRemove(number, row, col);
                 }
             }
         }
+        
+        changeBuffer.Push();
     }
 
-    private void RemoveFromRows(IStrategyManager strategyManager, IEnumerable<int> rows, int col1, int col2, int number)
+    private void RemoveFromRows(IStrategyManager strategyManager, LinePositions rows, int col1, int col2, int number)
     {
+        var changeBuffer =
+            strategyManager.CreateChangeBuffer(this, new ColumnXWingCauseFactory(rows, col1, col2, number));
+        
         for (int col = 0; col < 9; col++)
         {
             if (col != col1 && col != col2)
             {
-                // ReSharper disable once PossibleMultipleEnumeration
                 foreach (var row in rows)
                 {
-                    strategyManager.RemovePossibility(number, row, col, this);
+                    changeBuffer.AddPossibilityToRemove(number, row, col);
                 }
             }
         }
+        
+        changeBuffer.Push();
     }
 }

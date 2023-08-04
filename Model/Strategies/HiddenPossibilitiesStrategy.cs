@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Model.Positions;
 using Model.Possibilities;
 
@@ -146,7 +145,39 @@ public class HiddenPossibilitiesStrategy : IStrategy
 
     public string GetExplanation(IChangeCauseFactory factory)
     {
-        return "";
+        switch (factory)
+        {
+            case RowLinePositionsCauseFactory r:
+                var cellsR = "";
+                foreach (var col in r.Columns)
+                {
+                    cellsR += $"[{r.Row + 1}, {col + 1}] ";
+                }
+                return $"The numbers {r.Mashed} are only present on the cells {cellsR} in row {r.Row + 1}.\n" +
+                       "Therefore any other possibility can be removed on those cells.";
+            
+            case ColumnLinePositionsCauseFactory c:
+                var cellsC = "";
+                foreach (var row in c.Rows)
+                {
+                    cellsC += $"[{row + 1}, {c.Col + 1}] ";
+                }
+
+                return $"The numbers {c.Mashed} are only present on the cells {cellsC} in column {c.Col + 1}.\n" +
+                       "Therefore any other possibility can be removed on those cells.";
+            
+            case MiniGridPositionsCauseFactory m :
+                var cellsM = "";
+                foreach (var pos in m.GridPositions)
+                {
+                    cellsM += $"[{pos[0] + 1}, {pos[1] + 1}] ";
+                }
+
+                return $"The numbers {m.Mashed} are only present on the cells {cellsM} in mini grid {m.GridPositions.GetMiniGridNumber()}.\n" +
+                       "Therefore any other possibility can be removed on those cells.";
+            
+            default: return "";
+        }
     }
 
     private void RemoveAllPossibilitiesExcept(int row, int col, IPossibilities except,

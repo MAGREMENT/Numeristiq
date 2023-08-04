@@ -173,4 +173,9 @@ public class MiniGridPositions : IEnumerable<int[]>
             }
         }
     }
+
+    public int GetMiniGridNumber()
+    {
+        return _startRow + _startRow / 3 + 1;
+    }
 }
