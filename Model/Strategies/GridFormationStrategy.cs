@@ -64,6 +64,11 @@ public class GridFormationStrategy : IStrategy
         }
     }
 
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private void Search(IStrategyManager strategyManager, Queue<ValuePositions> toSearch, int number, int count)
     {
         while (toSearch.Count > 0)

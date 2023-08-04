@@ -85,6 +85,11 @@ public partial class NumbersUserControl : UserControl
         }
     }
 
+    public void Void()
+    {
+        _case.Children.Clear();
+    }
+
     public void UnHighLight()
     {
         _big.Background = new SolidColorBrush(Colors.White);

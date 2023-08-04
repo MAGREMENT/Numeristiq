@@ -68,6 +68,11 @@ public class XYZWingStrategy : IStrategy
         }
     }
 
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private LinePositions CandidateForXyzWingInRow(IStrategyManager strategyManager, int row, IPossibilities hinge)
     {
         LinePositions result = new();

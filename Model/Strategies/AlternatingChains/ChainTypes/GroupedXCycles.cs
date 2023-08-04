@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Positions;
-using Model.Strategies.AIC;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 

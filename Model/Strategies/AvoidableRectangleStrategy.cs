@@ -9,11 +9,16 @@ public class AvoidableRectangleStrategy : IStrategy
 
     public AvoidableRectangleStrategy(Sudoku initialState)
     {
+        
     }
     
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        throw new System.NotImplementedException();
-        
+
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
     }
 }

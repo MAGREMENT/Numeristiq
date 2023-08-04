@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.Design;
 
 namespace Model.Logs;
 
@@ -23,17 +22,20 @@ public class ChangePushedLog : ISolverLog
         }
     }
 
+    public string Explanation { get; }
+
     public string SolverState { get; }
 
     private readonly IEnumerable<LogChange> _changes;
     private readonly IEnumerable<LogCause> _causes;
 
     public ChangePushedLog(int id, IStrategy strategy, IEnumerable<LogChange> changes, IEnumerable<LogCause> causes,
-        string solverState)
+        string explanation, string solverState)
     {
         Id = id;
         Title = strategy.Name;
         Intensity = (Intensity)strategy.Difficulty;
+        Explanation = explanation;
         SolverState = solverState;
         _changes = changes;
         _causes = causes;

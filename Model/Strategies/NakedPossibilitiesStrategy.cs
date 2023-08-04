@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Model.Positions;
 using Model.Possibilities;
 
@@ -19,9 +18,6 @@ public class NakedPossibilitiesStrategy : IStrategy
         _type = type;
         switch (type)
         {
-            case 1 : Name = "Naked single";
-                Difficulty = StrategyLevel.Basic;
-                break;
             case 2 : Name = "Naked double";
                 Difficulty = StrategyLevel.Easy;
                 break;
@@ -71,7 +67,12 @@ public class NakedPossibilitiesStrategy : IStrategy
             }
         }
     }
-    
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private Queue<int> EveryRowCellWithLessPossibilities(IStrategyManager strategyManager, int row, int than)
     {
         Queue<int> result = new();
@@ -99,8 +100,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) strategyManager.AddDefinitiveNumber(newCurrent.First(), row, col, this);
-                    else RemovePossibilitiesFromRow(strategyManager, row, newCurrent, newVisited);
+                    RemovePossibilitiesFromRow(strategyManager, row, newCurrent, newVisited);
                 }
                 else
                 {
@@ -153,8 +153,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) strategyManager.AddDefinitiveNumber(newCurrent.First(), row, col, this);
-                    else RemovePossibilitiesFromColumn(strategyManager, col, newCurrent, newVisited);
+                    RemovePossibilitiesFromColumn(strategyManager, col, newCurrent, newVisited);
                 }
                 else
                 {
@@ -214,8 +213,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             {
                 if (count - 1 == 0 && newCurrent.Count == _type)
                 {
-                    if (_type == 1) strategyManager.AddDefinitiveNumber(newCurrent.First(), row, col, this);
-                    else RemovePossibilitiesFromMiniGrid(strategyManager, miniRow, miniCol, newCurrent, newVisited);
+                    RemovePossibilitiesFromMiniGrid(strategyManager, miniRow, miniCol, newCurrent, newVisited);
                 }
                 else
                 {

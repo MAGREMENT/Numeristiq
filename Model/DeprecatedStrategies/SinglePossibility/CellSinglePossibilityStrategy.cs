@@ -26,4 +26,9 @@ public class CellSinglePossibilityStrategy : IStrategy
             }
         }
     }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        throw new System.NotImplementedException();
+    }
 }

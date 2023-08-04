@@ -2,13 +2,18 @@
 
 public class NoStrategy : IStrategy
 {
-    public string Name { get; } = "No strategy";
+    public string Name => "No strategy";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.None;
+    public StrategyLevel Difficulty => StrategyLevel.None;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
     }
 }

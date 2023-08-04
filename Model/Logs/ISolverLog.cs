@@ -8,6 +8,7 @@ public interface ISolverLog
     public string Title { get; }
     public Intensity Intensity { get; }
     public string Text { get; }
+    public string Explanation { get; }
     public string SolverState { get; }
     public IEnumerable<LogChange> AllChanges();
     public IEnumerable<LogCause> AllCauses();

@@ -5,7 +5,7 @@ using Model.Possibilities;
 
 namespace Model.Strategies;
 
-public class HiddenPossibilityStrategy : IStrategy
+public class HiddenPossibilitiesStrategy : IStrategy
 {
     public string Name { get; }
 
@@ -14,14 +14,11 @@ public class HiddenPossibilityStrategy : IStrategy
 
     private readonly int _type;
 
-    public HiddenPossibilityStrategy(int type)
+    public HiddenPossibilitiesStrategy(int type)
     {
         _type = type;
         switch (type)
         {
-            case 1 : Name = "Hidden single";
-                Difficulty = StrategyLevel.Basic;
-                break;
             case 2 : Name = "Hidden double";
                 Difficulty = StrategyLevel.Easy;
                 break;
@@ -62,18 +59,14 @@ public class HiddenPossibilityStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    if(_type == 1)
-                        strategyManager.AddDefinitiveNumber(entry.Value.First(), row, entry.Key.First(), this);
-                    else
-                    {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(
+                    var changeBuffer = strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(
                             row, entry.Key, entry.Value));
-                        foreach (var col in entry.Key)
-                        {
-                            RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
-                        }
-                        changeBuffer.Push();
+                    foreach (var col in entry.Key)
+                    {
+                        RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
                     }
+                    changeBuffer.Push();
+                    
                 }
             }
         }
@@ -101,18 +94,14 @@ public class HiddenPossibilityStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    if(_type == 1)
-                        strategyManager.AddDefinitiveNumber(entry.Value.First(), entry.Key.First(), col, this);
-                    else
-                    {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(
+                    var changeBuffer = strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(
                             col, entry.Key, entry.Value));
-                        foreach (var row in entry.Key)
-                        {
-                            RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
-                        }
-                        changeBuffer.Push();
+                    foreach (var row in entry.Key)
+                    {
+                        RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
                     }
+                    changeBuffer.Push();
+                    
                 }
             }
         }
@@ -142,25 +131,22 @@ public class HiddenPossibilityStrategy : IStrategy
                 {
                     if (entry.Value.Count == _type)
                     {
-                        if (_type == 1)
-                        {
-                            var first = entry.Key.First();
-                            strategyManager.AddDefinitiveNumber(entry.Value.First(), first[0], first[1], this);
-                        }
-                        else
-                        {
-                            var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridPositionsCauseFactory(
+                        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridPositionsCauseFactory(
                                 entry.Key, entry.Value));
-                            foreach (var pos in entry.Key)
-                            {
-                                RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);
-                            }
-                            changeBuffer.Push();
+                        foreach (var pos in entry.Key)
+                        {
+                            RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);
                         }
+                        changeBuffer.Push();
                     }
                 }
             }
         }
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
     }
 
     private void RemoveAllPossibilitiesExcept(int row, int col, IPossibilities except,

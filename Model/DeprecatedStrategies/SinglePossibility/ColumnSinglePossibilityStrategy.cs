@@ -21,7 +21,12 @@ public class ColumnSinglePossibilityStrategy : IStrategy
             } 
         }
     }
-    
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private int CheckColumnForUnique(IStrategyManager strategyManager, int col, int number)
     {
         int buffer = -1;

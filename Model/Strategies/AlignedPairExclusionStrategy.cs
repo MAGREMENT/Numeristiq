@@ -36,7 +36,12 @@ public class AlignedPairExclusionStrategy : IStrategy //TODO optimize
         }
     }
 
-    private bool SearchV2(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
+    private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         List<Coordinate> shared = new List<Coordinate>(
             Coordinate.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
@@ -54,38 +59,6 @@ public class AlignedPairExclusionStrategy : IStrategy //TODO optimize
             RemoveDoubles(doubles, als);
             if(CheckForAbsentees(strategyManager, doubles, strategyManager.Possibilities[row1, col1],
                    strategyManager.Possibilities[row2, col2], row1, col1, row2, col2)) return true;
-        }
-
-        return false;
-    }
-
-    private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
-    {
-        List<Coordinate> shared = new List<Coordinate>(
-            Coordinate.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
-        
-        if (shared.Count < strategyManager.Possibilities[row1, col1].Count ||
-            shared.Count < strategyManager.Possibilities[row2, col2].Count) return false;
-        
-        var inSameUnit = Coordinate.ShareAUnit(row1, col1, row2, col2);
-
-        List<int[]> doubles = AllDoublesCombination(strategyManager.Possibilities[row1, col1],
-                strategyManager.Possibilities[row2, col2], !inSameUnit);
-
-        foreach (var als in AlmostLockedSet.SearchForSingleCellAls(strategyManager, shared))
-        {
-            RemoveDoubles(doubles, als);
-        }
-
-        for (int i = 2; i <= _maxAlzSize; i++)
-        {
-            foreach (var als in AlmostLockedSet.SearchForMultipleCellsAls(strategyManager, shared, i))
-            {
-                RemoveDoubles(doubles, als);
-            }
-
-            if (CheckForAbsentees(strategyManager, doubles, strategyManager.Possibilities[row1, col1],
-                    strategyManager.Possibilities[row2, col2], row1, col1, row2, col2)) return true;
         }
 
         return false;

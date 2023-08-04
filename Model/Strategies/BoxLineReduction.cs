@@ -67,4 +67,9 @@ public class BoxLineReduction : IStrategy
             }
         }
     }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
 }

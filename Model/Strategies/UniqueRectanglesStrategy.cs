@@ -80,6 +80,11 @@ public class UniqueRectanglesStrategy : IStrategy
         }
     }
 
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private void Process(IStrategyManager view, BiValue bi, Coordinate one, Coordinate two)
     {
         if (one.Row == two.Row)

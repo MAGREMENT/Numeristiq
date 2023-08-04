@@ -24,7 +24,12 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
             }
         }
     }
-    
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private int[]? CheckMiniGridForUnique(IStrategyManager strategyManager, int gridRow, int gridCol, int number)
     {
         int[]? pos = null;

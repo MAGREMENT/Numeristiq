@@ -28,6 +28,11 @@ public class XYChainStrategy : IStrategy
         }
     }
 
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private void Search(IStrategyManager strategyManager, BiValueMap map, HashSet<PossibilityCoordinate> visited,
         PossibilityCoordinate start, PossibilityCoordinate current)
     {

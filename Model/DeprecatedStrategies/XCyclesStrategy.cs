@@ -2,7 +2,7 @@
 using System.Linq;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies;
+namespace Model.DeprecatedStrategies;
 
 public class XCyclesStrategy : IStrategy
 {
@@ -75,6 +75,11 @@ public class XCyclesStrategy : IStrategy
                 }
             }
         }
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        throw new System.NotImplementedException();
     }
 
     private void Search(IStrategyManager strategyManager, Dictionary<Coordinate, Coordinate>[] strongLinks, CoordinateAndType current,

@@ -5,7 +5,6 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-// ReSharper disable once InconsistentNaming
 public class XYWingStrategy : IStrategy
 {
     public string Name { get; } = "XYWing";
@@ -61,6 +60,11 @@ public class XYWingStrategy : IStrategy
                 }
             }
         }
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
     }
 
     private Queue<Coordinate>[] MatchingUnitDispersion(Coordinate coord, List<Coordinate> toSee)

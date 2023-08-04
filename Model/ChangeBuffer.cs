@@ -59,7 +59,8 @@ public class ChangeBuffer
             }  
         }
 
-        if(_m.LogsManaged && changes.Count > 0) _m.PushLog(changes, _causeFactory.CreateCauses(_m), _strategy);
+        if(_m.LogsManaged && changes.Count > 0) _m.PushLog(changes, _causeFactory.CreateCauses(_m),
+            _strategy.GetExplanation(_causeFactory), _strategy);
     }
 }
 
@@ -70,36 +71,36 @@ public interface IChangeCauseFactory
 
 public class RowLinePositionsCauseFactory : IChangeCauseFactory
 {
-    private readonly int _row;
-    private readonly LinePositions _cols;
-    private readonly IPossibilities _mashed;
+    private int Row { get; }
+    private LinePositions Columns { get; }
+    private IPossibilities Mashed { get; }
 
-    public RowLinePositionsCauseFactory(int row, LinePositions cols, IPossibilities mashed)
+    public RowLinePositionsCauseFactory(int row, LinePositions columns, IPossibilities mashed)
     {
-        _row = row;
-        _cols = cols;
-        _mashed = mashed;
+        Row = row;
+        Columns = columns;
+        Mashed = mashed;
     }
     
-    public RowLinePositionsCauseFactory(int row, LinePositions cols, int number)
+    public RowLinePositionsCauseFactory(int row, LinePositions columns, int number)
     {
-        _row = row;
-        _cols = cols;
-        _mashed = IPossibilities.New();
-        _mashed.RemoveAll(number);
+        Row = row;
+        Columns = columns;
+        Mashed = IPossibilities.New();
+        Mashed.RemoveAll(number);
     }
 
     public IEnumerable<LogCause> CreateCauses(IChangeManager manager)
     {
         List<LogCause> result = new();
         
-        foreach (var col in _cols)
+        foreach (var col in Columns)
         {
-            foreach (var possibility in _mashed)
+            foreach (var possibility in Mashed)
             {
-                if (manager.Possibilities[_row, col].Peek(possibility))
+                if (manager.Possibilities[Row, col].Peek(possibility))
                     result.Add(new LogCause(SolverNumberType.Possibility,
-                        possibility, _row, col, CauseColoration.One));
+                        possibility, Row, col, CauseColoration.One));
             }
         }
 
@@ -109,35 +110,35 @@ public class RowLinePositionsCauseFactory : IChangeCauseFactory
 
 public class ColumnLinePositionsCauseFactory : IChangeCauseFactory
 {
-    private readonly int _col;
-    private readonly LinePositions _rows;
-    private readonly IPossibilities _mashed;
+    private int Col { get; }
+    private LinePositions Rows { get; }
+    private IPossibilities Mashed { get; }
 
     public ColumnLinePositionsCauseFactory(int col, LinePositions rows, IPossibilities mashed)
     {
-        _col = col;
-        _rows = rows;
-        _mashed = mashed;
+        Col = col;
+        Rows = rows;
+        Mashed = mashed;
     }
     
     public ColumnLinePositionsCauseFactory(int col, LinePositions rows, int number)
     {
-        _col = col;
-        _rows = rows;
-        _mashed = IPossibilities.New();
-        _mashed.RemoveAll(number);
+        Col = col;
+        Rows = rows;
+        Mashed = IPossibilities.New();
+        Mashed.RemoveAll(number);
     }
 
     public IEnumerable<LogCause> CreateCauses(IChangeManager manager)
     {
         List<LogCause> result = new();
-        foreach (var row in _rows)
+        foreach (var row in Rows)
         {
-            foreach (var possibility in _mashed)
+            foreach (var possibility in Mashed)
             {
-                if (manager.Possibilities[row, _col].Peek(possibility))
+                if (manager.Possibilities[row, Col].Peek(possibility))
                     result.Add(new LogCause(SolverNumberType.Possibility,
-                        possibility, row, _col, CauseColoration.One));
+                        possibility, row, Col, CauseColoration.One));
             }
         }
 
@@ -147,28 +148,28 @@ public class ColumnLinePositionsCauseFactory : IChangeCauseFactory
 
 public class MiniGridPositionsCauseFactory : IChangeCauseFactory
 {
-    private readonly MiniGridPositions _gridPos;
-    private readonly IPossibilities _mashed;
+    private MiniGridPositions GridPositions { get; }
+    private IPossibilities Mashed { get; }
 
-    public MiniGridPositionsCauseFactory(MiniGridPositions gridPos, IPossibilities mashed)
+    public MiniGridPositionsCauseFactory(MiniGridPositions gridPositions, IPossibilities mashed)
     {
-        _gridPos = gridPos;
-        _mashed = mashed;
+        GridPositions = gridPositions;
+        Mashed = mashed;
     }
     
-    public MiniGridPositionsCauseFactory(MiniGridPositions gridPos, int number)
+    public MiniGridPositionsCauseFactory(MiniGridPositions gridPositions, int number)
     {
-        _gridPos = gridPos;
-        _mashed = IPossibilities.New();
-        _mashed.RemoveAll(number);
+        GridPositions = gridPositions;
+        Mashed = IPossibilities.New();
+        Mashed.RemoveAll(number);
     }
 
     public IEnumerable<LogCause> CreateCauses(IChangeManager manager)
     {
         List<LogCause> result = new();
-        foreach (var pos in _gridPos)
+        foreach (var pos in GridPositions)
         {
-            foreach (var possibility in _mashed)
+            foreach (var possibility in Mashed)
             {
                 if (manager.Possibilities[pos[0], pos[1]].Peek(possibility))
                     result.Add(new LogCause(SolverNumberType.Possibility,

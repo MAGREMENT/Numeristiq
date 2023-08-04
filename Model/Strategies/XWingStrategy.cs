@@ -45,6 +45,11 @@ public class XWingStrategy : IStrategy
         }
     }
 
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private void RemoveFromColumns(IStrategyManager strategyManager, IEnumerable<int> cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)

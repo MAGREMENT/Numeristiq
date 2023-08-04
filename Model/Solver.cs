@@ -9,7 +9,6 @@ using Model.Strategies.AlternatingChains;
 using Model.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Strategies.AlternatingChains.ChainTypes;
 using Model.Strategies.ForcingChains;
-using Model.Strategies.IntersectionRemoval;
 using Model.StrategiesUtil;
 
 namespace Model;
@@ -270,11 +269,11 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
         return true;
     }
 
-    public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, IStrategy strategy)
+    public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, string explanation, IStrategy strategy)
     {
         if (LogsManaged)
         {
-            _logManager.ChangePushed(changes, causes, strategy, State);
+            _logManager.ChangePushed(changes, causes, explanation, strategy, State);
             State = GetState();
         }
     }
@@ -326,16 +325,16 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     private static IStrategy[] BasicStrategies()
     {
         return new IStrategy[]{
-            new NakedPossibilitiesStrategy(1),
-            new HiddenPossibilityStrategy(1),
+            new NakedSingleStrategy(),
+            new HiddenSingleStrategy(),
             new NakedPossibilitiesStrategy(2),
-            new HiddenPossibilityStrategy(2),
+            new HiddenPossibilitiesStrategy(2),
             new BoxLineReduction(),
             new PointingPossibilitiesStrategy(),
             new NakedPossibilitiesStrategy(3),
-            new HiddenPossibilityStrategy(3),
+            new HiddenPossibilitiesStrategy(3),
             new NakedPossibilitiesStrategy(4),
-            new HiddenPossibilityStrategy(4),
+            new HiddenPossibilitiesStrategy(4),
             new XWingStrategy(),
             new XYWingStrategy(),
             new XYZWingStrategy(),

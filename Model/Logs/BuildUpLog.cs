@@ -25,6 +25,8 @@ public class BuildUpLog : ISolverLog
         }
     }
 
+    public string Explanation => "";
+
     public string SolverState { get; }
 
     public BuildUpLog(int id, IStrategy causedBy, string solverState)

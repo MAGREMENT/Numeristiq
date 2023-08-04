@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 
-namespace Model.Strategies.IntersectionRemoval;
+namespace Model.Strategies;
 
 public class PointingPossibilitiesStrategy : IStrategy
 {
@@ -45,5 +45,10 @@ public class PointingPossibilitiesStrategy : IStrategy
                 }
             }
         }
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
     }
 }

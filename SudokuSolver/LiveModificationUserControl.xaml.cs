@@ -51,8 +51,15 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
         if (_current == scuc)
         {
             _current = null;
+            
+            // Kill logical and keyboard focus
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(_numbers), null);
+            Keyboard.ClearFocus();
+            
+            _numbers.Void();
             return;
         }
+        
         _current = scuc;
         _currentPos[0] = row;
         _currentPos[1] = col;

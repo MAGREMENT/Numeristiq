@@ -8,15 +8,15 @@ namespace SudokuSolver;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private readonly StackPanel _mainPanel;
         private readonly StackPanel _optionsPanel;
         private readonly StackPanel _modificationsPanel;
-        private readonly StackPanel _aside;
+        private readonly StackPanel _asidePanel;
 
         private bool _createNewSudoku = true;
-        
+
         public MainWindow()
         {
             InitializeComponent();
@@ -24,12 +24,9 @@ namespace SudokuSolver;
             _mainPanel = (FindName("MainPanel") as StackPanel)!;
             _optionsPanel = (FindName("OptionsPanel") as StackPanel)!;
             _modificationsPanel = (FindName("ModificationsPanel") as StackPanel)!;
-            _aside = (FindName("Aside") as StackPanel)!;
+            _asidePanel = (FindName("AsidePanel") as StackPanel)!;
 
-            GetSudokuUserControl().IsReady += () =>
-            {
-                GetSolveButton().IsEnabled = true;
-            };
+            GetSudokuUserControl().IsReady += () => { GetSolveButton().IsEnabled = true; };
 
             GetSudokuUserControl().CellClickedOn += (sender, row, col) =>
             {
@@ -43,8 +40,16 @@ namespace SudokuSolver;
                 _createNewSudoku = true;
             };
 
-            GetLogListUserControl().ShowCurrentClicked += () => GetSudokuUserControl().ShowCurrent();
-            GetLogListUserControl().LogClicked += (log) => GetSudokuUserControl().ShowLog(log);
+            GetLogListUserControl().ShowCurrentClicked += () =>
+            {
+                GetSudokuUserControl().ShowCurrent();
+                GetExplanationBox().Text = "";
+            };
+            GetLogListUserControl().LogClicked += log =>
+            {
+                GetSudokuUserControl().ShowLog(log);
+                GetExplanationBox().Text = log.Explanation;
+            };
             
             GetLiveModificationUserControl().LiveModified += (number, row, col, action) =>
             {
@@ -95,7 +100,7 @@ namespace SudokuSolver;
 
         private LogListUserControl GetLogListUserControl()
         {
-            return (LogListUserControl)_aside.Children[0];
+            return (LogListUserControl)_asidePanel.Children[0];
         }
 
         private Button GetSolveButton()
@@ -111,5 +116,10 @@ namespace SudokuSolver;
         private CheckBox GetStepByStepOption()
         {
             return (CheckBox)_optionsPanel.Children[1];
+        }
+
+        private TextBox GetExplanationBox()
+        {
+            return (TextBox)_asidePanel.Children[1];
         }
     }

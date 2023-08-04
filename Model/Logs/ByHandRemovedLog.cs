@@ -8,6 +8,7 @@ public class ByHandRemovedLog : ISolverLog
     public string Title => "Removed by hand";
     public Intensity Intensity => Intensity.Six;
     public string Text { get; }
+    public string Explanation => "This possibility was removed by hand";
     public string SolverState { get; }
 
     private readonly LogChange _asChange;

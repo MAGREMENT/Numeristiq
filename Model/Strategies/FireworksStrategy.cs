@@ -41,6 +41,11 @@ public class FireworksStrategy : IStrategy
         //TODO other elimintations
     }
 
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        return "";
+    }
+
     private void ProcessTripleFirework(IStrategyManager strategyManager, int crossRow, int crossCol, IEnumerable<Coordinate> wings,
         params int[] possibilities)
     {

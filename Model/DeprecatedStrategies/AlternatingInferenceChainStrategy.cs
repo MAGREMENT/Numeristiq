@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies.AIC;
+namespace Model.DeprecatedStrategies;
 
 public class AlternatingInferenceChainStrategy : IStrategy
 {
@@ -43,6 +43,11 @@ public class AlternatingInferenceChainStrategy : IStrategy
             List<PossibilityCoordinate> visited = new() { start.Key };
             Search(strategyManager, map, visited);
         }
+    }
+
+    public string GetExplanation(IChangeCauseFactory factory)
+    {
+        throw new NotImplementedException();
     }
 
     private void Search(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map,
