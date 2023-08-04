@@ -9,6 +9,7 @@ namespace SudokuSolver;
 public partial class LogUserControl : UserControl
 {
     private readonly StackPanel _main;
+    private readonly TextBlock _number;
     private readonly TextBlock _title;
     private readonly TextBlock _text;
 
@@ -22,6 +23,7 @@ public partial class LogUserControl : UserControl
         InitializeComponent();
 
         _main = (FindName("Main") as StackPanel)!;
+        _number = (FindName("Number") as TextBlock)!;
         _title = (FindName("Title") as TextBlock)!;
         _text = (FindName("Text") as TextBlock)!;
 
@@ -42,7 +44,8 @@ public partial class LogUserControl : UserControl
     public void InitLog(ISolverLog log)
     {
         _log = log;
-        
+
+        _number.Text = "#" + log.Id;
         _title.Foreground = new SolidColorBrush(log.Intensity switch
         {
             Intensity.Zero => Colors.Gray,

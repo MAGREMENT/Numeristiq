@@ -11,6 +11,7 @@ public interface IPossibilities : IEnumerable<int>
     public int Count { get; }
     public bool Remove(int n);
     public void RemoveAll();
+    public void RemoveAll(int except);
     public void RemoveAll(params int[] except);
     public void RemoveAll(IEnumerable<int> except);
     public IPossibilities Mash(IPossibilities possibilities);

@@ -35,6 +35,13 @@ public class BitPossibilities : IPossibilities
         Count = 0;
     }
 
+    public void RemoveAll(int except)
+    {
+        RemoveAll();
+        _possibilities |= 1 << (except - 1);
+        Count++;
+    }
+
     public void RemoveAll(params int[] except)
     {
         RemoveAll();

@@ -150,7 +150,7 @@ public class HiddenPossibilityStrategy : IStrategy
                         else
                         {
                             var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridPositionsCauseFactory(
-                                miniRow, miniCol, entry.Key, entry.Value));
+                                entry.Key, entry.Value));
                             foreach (var pos in entry.Key)
                             {
                                 RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);

@@ -33,6 +33,11 @@ public class BoolArrayPossibilities : IPossibilities
         Count = 0;
     }
 
+    public void RemoveAll(int except)
+    {
+        throw new NotImplementedException();
+    }
+
     public void RemoveAll(params int[] except)
     {
         RemoveAll();

@@ -32,7 +32,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     public delegate void OnPossibilityRemoved(int row, int col);
     public event OnPossibilityRemoved? PossibilityRemoved;
 
-    
+    private int _currentStrategy = -1;
     private bool _changeWasMade;
     private PreComputer _pre;
     private readonly LogManager _logManager = new();
@@ -112,12 +112,12 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     
     public void Solve(bool stopAtProgress = false)
     {
-        for (int i = 0; i < Strategies.Length; i++)
+        for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
             if (Sudoku.IsComplete()) return;
 
-            _pre.CheckPreComputationTresHold(i);
-            Strategies[i].ApplyOnce(this);
+            _pre.CheckPreComputationTresHold(_currentStrategy);
+            Strategies[_currentStrategy].ApplyOnce(this);
             StrategyCount++;
             
             if (_changeWasMade)
@@ -128,7 +128,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
                     if(LogsManaged) _logManager.Push();
                     return;
                 }
-                i = -1;
+                _currentStrategy = -1;
             }
         }
         
@@ -253,7 +253,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
         
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        //strategy.Score += 1; //TODO
+        Strategies[_currentStrategy].Score += 1;
         
         NumberAdded?.Invoke(row, col);
         return true;
@@ -263,8 +263,8 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     {
         bool buffer = Possibilities[row, col].Remove(possibility);
         if (!buffer) return false;
-        
-        //strategy.Score += 1; //TODO
+
+        Strategies[_currentStrategy].Score += 1;
         
         PossibilityRemoved?.Invoke(row, col);
         return true;

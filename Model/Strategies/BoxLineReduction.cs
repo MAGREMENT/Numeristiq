@@ -16,6 +16,9 @@ public class BoxLineReduction : IStrategy
                 var ppir = strategyManager.PossibilityPositionsInRow(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
+                    var changeBuffer =
+                        strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(row, ppir, number));
+                    
                     int miniRow = row / 3;
                     int miniCol = ppir.First() / 3;
 
@@ -26,10 +29,11 @@ public class BoxLineReduction : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realRow != row && strategyManager.Sudoku[realRow, realCol] == 0)
-                                strategyManager.RemovePossibility(number, realRow, realCol, this);
+                            if (realRow != row) changeBuffer.AddPossibilityToRemove(number, realRow, realCol);
                         }
                     }
+                    
+                    changeBuffer.Push();
                 }
             }
         }
@@ -41,6 +45,9 @@ public class BoxLineReduction : IStrategy
                 var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
+                    var changeBuffer =
+                        strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(col, ppic, number));
+                    
                     int miniRow = ppic.First() / 3;
                     int miniCol = col / 3;
 
@@ -51,10 +58,11 @@ public class BoxLineReduction : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realCol != col && strategyManager.Sudoku[realRow, realCol] == 0)
-                                strategyManager.RemovePossibility(number, realRow, realCol, this);
+                            if (realCol != col) changeBuffer.AddPossibilityToRemove(number, realRow, realCol);
                         }
                     }
+                    
+                    changeBuffer.Push();
                 }
             }
         }
