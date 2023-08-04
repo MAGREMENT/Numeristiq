@@ -13,7 +13,7 @@ using Model.StrategiesUtil;
 
 namespace Model;
 
-public class Solver : IStrategyManager, IChangeManager //TODO : Look into precomputation, improve logs, improve UI
+public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look into precomputation, improve logs, improve UI
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs => _logManager.Logs;
@@ -21,7 +21,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     public Sudoku Sudoku { get; private set; }
     public IStrategy[] Strategies { get; }
 
-    public bool LogsManaged { get; set; } = true;
+    public bool LogsManaged { get; init; } = true;
     public int StrategyCount { get; private set; }
     public string State { get; private set; }
 
@@ -33,8 +33,9 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
 
     private int _currentStrategy = -1;
     private bool _changeWasMade;
+    
     private PreComputer _pre;
-    private readonly LogManager _logManager = new();
+    private readonly LogManager _logManager;
 
     public Solver(Sudoku s, params IStrategy[] strategies)
     {
@@ -67,6 +68,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
         State = GetState();
         
         _pre = new PreComputer(this);
+        _logManager = new LogManager(this);
     }
     
     private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t, PreComputer pre)
@@ -75,6 +77,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
         Possibilities = p;
         Strategies = t;
         _pre = pre;
+        _logManager = new LogManager(this);
         
         State = GetState();
         
@@ -106,7 +109,11 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
         Possibilities[row, col].Remove(possibility);
-        if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col, this);
+        
+        if (!LogsManaged) return;
+        
+        _logManager.PossibilityRemovedByHand(possibility, row, col);
+        State = GetState();
     }
     
     public void Solve(bool stopAtProgress = false)
@@ -181,7 +188,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
         strategy.Score += 1;
         if (LogsManaged)
         {
-            _logManager.NumberAdded(number, row, col, strategy, this);
+            _logManager.NumberAdded(number, row, col, strategy);
             State = GetState();
         }
         NumberAdded?.Invoke(row, col);
@@ -196,7 +203,7 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
         strategy.Score += 1;
         if (LogsManaged)
         {
-            _logManager.PossibilityRemoved(possibility, row, col, strategy, this);
+            _logManager.PossibilityRemoved(possibility, row, col, strategy);
             State = GetState();
         }
         PossibilityRemoved?.Invoke(row, col);
@@ -271,11 +278,10 @@ public class Solver : IStrategyManager, IChangeManager //TODO : Look into precom
 
     public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, string explanation, IStrategy strategy)
     {
-        if (LogsManaged)
-        {
-            _logManager.ChangePushed(changes, causes, explanation, strategy, State);
-            State = GetState();
-        }
+        if (!LogsManaged) return;
+        
+        _logManager.ChangePushed(changes, causes, explanation, strategy);
+        State = GetState();
     }
     
     //Private-----------------------------------------------------------------------------------------------------------

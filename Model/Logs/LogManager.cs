@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.StrategiesUtil;
 
 namespace Model.Logs;
 
@@ -12,48 +13,54 @@ public class LogManager  //TODO work around the strategy count thingy with push(
 
     private int _idCount = 1;
 
-    public void NumberAdded(int number, int row, int col, IStrategy strategy, Solver solver)
+    private readonly ILogHolder _holder;
+
+    public LogManager(ILogHolder holder)
     {
-        if (solver.StrategyCount != _lastStrategy || _current is not BuildUpLog)
+        _holder = holder;
+    }
+
+    public void NumberAdded(int number, int row, int col, IStrategy strategy)
+    {
+        if (_holder.StrategyCount != _lastStrategy || _current is not BuildUpLog)
         {
             Push();
-            _current = new BuildUpLog(_idCount++, strategy, solver.State);
-            _lastStrategy = solver.StrategyCount;
+            _current = new BuildUpLog(_idCount++, strategy, _holder.State);
+            _lastStrategy = _holder.StrategyCount;
         } 
         
         ((BuildUpLog)_current).DefinitiveAdded(number, row, col);
     }
     
-    public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy, Solver solver)
+    public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy)
     {
-        if (solver.StrategyCount != _lastStrategy || _current is not BuildUpLog)
+        if (_holder.StrategyCount != _lastStrategy || _current is not BuildUpLog)
         {
             Push();
-            _current = new BuildUpLog(_idCount++, strategy, solver.State);
-            _lastStrategy = solver.StrategyCount;
+            _current = new BuildUpLog(_idCount++, strategy, _holder.State);
+            _lastStrategy = _holder.StrategyCount;
         }
         
         ((BuildUpLog)_current).PossibilityRemoved(possibility, row, col);
     }
 
-    public void PossibilityRemovedByHand(int possibility, int row, int col, Solver solver)
+    public void PossibilityRemovedByHand(int possibility, int row, int col)
     {
-        Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, solver.State));
+        Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, _holder.State));
     }
 
     public void ChangePushed(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, string explanation,
-        IStrategy strategy, string solverState)
+        IStrategy strategy)
     {
         Push();
-        Logs.Add(new ChangePushedLog(_idCount++, strategy, changes, causes, explanation, solverState));
+        Logs.Add(new ChangePushedLog(_idCount++, strategy, changes, causes, explanation, _holder.State));
     }
 
     public void Push()
     {
-        if (_current is not null)
-        {
-            Logs.Add(_current);
-            _current = null;
-        }
+        if (_current is null) return;
+        
+        Logs.Add(_current);
+        _current = null;
     }
 }
