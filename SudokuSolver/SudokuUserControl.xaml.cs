@@ -136,7 +136,7 @@ public partial class SudokuUserControl : IHighLighter
             var current = _currentSolver.Logs[^1];
             if (current.Id != _logBuffer)
             {
-                current.CauseHighLighter(this);
+                current.SolverHighLighter(this);
                 _logBuffer = current.Id;
             }
         }
@@ -193,7 +193,7 @@ public partial class SudokuUserControl : IHighLighter
         else scuc2.SetDefinitiveNumber(buffer[0]);
         scuc2.UnHighLight();
 
-        log.CauseHighLighter(this);
+        log.SolverHighLighter(this);
     }
 
     public void ClearSudoku()
@@ -214,23 +214,23 @@ public partial class SudokuUserControl : IHighLighter
 
     public void HighLightPossibility(int possibility, int row, int col, ChangeColoration coloration)
     {
-        GetTo(row, col).HighLightPossibility(possibility, coloration switch
-        {
-            ChangeColoration.Change => Colors.Aqua,
-            ChangeColoration.CauseOne => Colors.Coral,
-            ChangeColoration.CauseTwo => Colors.Red,
-            _ => throw new ArgumentException("Wtf")
-        });
+        GetTo(row, col).HighLightPossibility(possibility, AsColor(coloration));
     }
 
     public void HighLightCell(int row, int col, ChangeColoration coloration)
     {
-        GetTo(row, col).HighLight(coloration switch
+        GetTo(row, col).HighLight(AsColor(coloration));
+    }
+
+    private Color AsColor(ChangeColoration coloration)
+    {
+        return coloration switch
         {
             ChangeColoration.Change => Colors.Aqua,
             ChangeColoration.CauseOne => Colors.Coral,
             ChangeColoration.CauseTwo => Colors.Red,
+            ChangeColoration.CauseThree => Colors.Green,
             _ => throw new ArgumentException("Wtf")
-        });
+        };
     }
 }

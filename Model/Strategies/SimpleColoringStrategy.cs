@@ -37,13 +37,17 @@ public class SimpleColoringStrategy : IStrategy
 
             foreach (var chain in chains)
             {
-                SearchForTwiceInTheSameUnit(strategyManager, number, chain);
-                SearchForTwoColorsElsewhere(strategyManager, number, chain);
+                var changeBuffer = strategyManager.CreateChangeBuffer(this,
+                    new SimpleColoringReportWaiter(number, chain));
+                SearchForTwiceInTheSameUnit(changeBuffer, number, chain);
+                SearchForTwoColorsElsewhere(strategyManager, changeBuffer, number, chain);
+                
+                changeBuffer.Push();
             }
         }
     }
 
-    private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwiceInTheSameUnit(ChangeBuffer changeBuffer, int number, ColorableWeb<ColoringCoordinate> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
@@ -51,10 +55,8 @@ public class SimpleColoringStrategy : IStrategy
             {
                 foreach (var coord in web)
                 {
-                    if (coord.Coloring == one.Coloring)
-                        strategyManager.RemovePossibility(number, coord.Row, coord.Col, this);
-                    else
-                        strategyManager.AddDefinitiveNumber(number, coord.Row, coord.Col, this);
+                    if (coord.Coloring == one.Coloring) changeBuffer.AddPossibilityToRemove(number, coord.Row, coord.Col);
+                    else changeBuffer.AddPossibilityToRemove(number, coord.Row, coord.Col);
                 }
             }
 
@@ -62,7 +64,8 @@ public class SimpleColoringStrategy : IStrategy
         });
     }
 
-    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager, ChangeBuffer changeBuffer,
+        int number, ColorableWeb<ColoringCoordinate> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -81,7 +84,7 @@ public class SimpleColoringStrategy : IStrategy
                             onAndOff[(int)(coord.Coloring - 1)] = true;
                             if (onAndOff[0] && onAndOff[1])
                             {
-                                strategyManager.RemovePossibility(number, row, col, this);
+                                changeBuffer.AddPossibilityToRemove(number, row, col);
                                 break;
                             }
                         }
@@ -144,5 +147,31 @@ public class SimpleColoringStrategy : IStrategy
         }
 
         return false;
+    }
+}
+
+public class SimpleColoringReportWaiter : IChangeReportWaiter
+{
+    private readonly int _number;
+    private readonly ColorableWeb<ColoringCoordinate> _web;
+
+    public SimpleColoringReportWaiter(int number, ColorableWeb<ColoringCoordinate> web)
+    {
+        _number = number;
+        _web = web;
+    }
+
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var coord in _web)
+            {
+                lighter.HighLightPossibility(_number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
+                    ChangeColoration.CauseThree : ChangeColoration.CauseTwo);
+            }
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

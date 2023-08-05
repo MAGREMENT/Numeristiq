@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Logs;
 using Model.Positions;
 using Model.StrategiesUtil;
 

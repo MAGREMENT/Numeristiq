@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Logs;
 using Model.Positions;
 
 namespace Model.Strategies;
@@ -64,6 +63,14 @@ public class PointingPossibilitiesReportWaiter : IChangeReportWaiter
     
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var pos in _miniPos)
+            {
+                lighter.HighLightPossibility(_number, pos[0], pos[1], ChangeColoration.CauseOne);
+            }
+            
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

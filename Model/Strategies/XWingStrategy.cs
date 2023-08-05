@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Logs;
 using Model.Positions;
 
 namespace Model.Strategies;
@@ -104,6 +103,24 @@ public class XWingReportWaiter : IChangeReportWaiter
     
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var other in _linePos)
+            {
+                switch (_unit)
+                {
+                    case Unit.Row :
+                        lighter.HighLightPossibility(_number, _unit1, other, ChangeColoration.CauseOne);
+                        lighter.HighLightPossibility(_number, _unit2, other, ChangeColoration.CauseOne);
+                        break;
+                    case Unit.Column :
+                        lighter.HighLightPossibility(_number, other, _unit1, ChangeColoration.CauseOne);
+                        lighter.HighLightPossibility(_number, other, _unit2, ChangeColoration.CauseOne);
+                        break;
+                }
+            }
+            
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

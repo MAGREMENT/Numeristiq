@@ -8,7 +8,7 @@ public class ByHandRemovedLog : ISolverLog
     public string Changes { get; }
     public string Explanation => "This possibility was removed by hand";
     public string SolverState { get; }
-    public HighLightCause CauseHighLighter => HighLight;
+    public HighLightSolver SolverHighLighter => HighLight;
 
     private readonly SolverChange _asChange;
 

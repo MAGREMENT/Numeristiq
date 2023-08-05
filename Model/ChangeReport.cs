@@ -4,14 +4,14 @@ public class ChangeReport
 {
     public string Explanation { get; }
 
-    public HighLightCause CauseHighLighter { get; }
+    public HighLightSolver SolverHighLighter { get; }
     
     public string Changes { get; }
     
-    public ChangeReport(string changes, HighLightCause causeHighLighter, string explanation)
+    public ChangeReport(string changes, HighLightSolver solverHighLighter, string explanation)
     {
         Explanation = explanation;
-        CauseHighLighter = causeHighLighter;
+        SolverHighLighter = solverHighLighter;
         Changes = changes;
     }
 }

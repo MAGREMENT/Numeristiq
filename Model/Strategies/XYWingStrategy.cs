@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Logs;
 using Model.Possibilities;
 using Model.StrategiesUtil;
 
@@ -237,6 +236,13 @@ public class XYWingReportWaiter : IChangeReportWaiter
     
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            lighter.HighLightCell(_opposite.Row, _opposite.Col, ChangeColoration.CauseTwo);
+            lighter.HighLightCell(_one.Row, _one.Col, ChangeColoration.CauseOne);
+            lighter.HighLightCell(_two.Row, _two.Col, ChangeColoration.CauseOne);
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

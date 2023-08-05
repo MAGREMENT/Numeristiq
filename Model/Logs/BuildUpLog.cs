@@ -29,7 +29,7 @@ public class BuildUpLog : ISolverLog
 
     public string SolverState { get; }
 
-    public HighLightCause CauseHighLighter => HighLight;
+    public HighLightSolver SolverHighLighter => HighLight;
 
     public BuildUpLog(int id, IStrategy causedBy, string solverState)
     {

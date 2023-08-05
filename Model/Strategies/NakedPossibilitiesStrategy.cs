@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
@@ -240,7 +240,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     }
 }
 
-public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter //TODO
+public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter
 {
     private readonly IPossibilities _possibilities;
     private readonly LinePositions _linePos;
@@ -258,11 +258,44 @@ public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter //TODO
 
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        var coords = new List<PossibilityCoordinate>();
+        switch (_unit)
+        {
+            case Unit.Row :
+                foreach (var col in _linePos)
+                {
+                    foreach (var possibility in _possibilities)
+                    {
+                        if(manager.Possibilities[_unitNumber, col].Peek(possibility))
+                            coords.Add(new PossibilityCoordinate(_unitNumber, col, possibility));
+                    }
+                }
+                break;
+            case Unit.Column :
+                foreach (var row in _linePos)
+                {
+                    foreach (var possibility in _possibilities)
+                    {
+                        if(manager.Possibilities[row, _unitNumber].Peek(possibility))
+                            coords.Add(new PossibilityCoordinate(row, _unitNumber, possibility));
+                    }
+                }
+                break;
+        }
+        
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var coord in coords)
+            {
+                lighter.HighLightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOne);
+            }
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }
 
-public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter //TODO
+public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter
 {
     private readonly IPossibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
@@ -275,6 +308,24 @@ public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter //TODO
     
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        var coords = new List<PossibilityCoordinate>();
+        foreach (var pos in _miniPos)
+        {
+            foreach (var possibility in _possibilities)
+            {
+                if(manager.Possibilities[pos[0], pos[1]].Peek(possibility))
+                    coords.Add(new PossibilityCoordinate(pos[0], pos[1], possibility));
+            }
+        }
+        
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var coord in coords)
+            {
+                lighter.HighLightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOne);
+            }
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

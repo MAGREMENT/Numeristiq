@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
@@ -194,7 +194,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     }
 }
 
-public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter //TODO
+public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
 {
     private readonly IPossibilities _possibilities;
     private readonly LinePositions _linePos;
@@ -212,11 +212,39 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter //TODO
     
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        var coords = new List<Coordinate>();
+        switch (_unit)
+        {
+            case Unit.Row :
+                foreach (var col in _linePos)
+                {
+                    coords.Add(new Coordinate(_unitNumber, col));
+                }
+                break;
+            case Unit.Column :
+                foreach (var row in _linePos)
+                {
+                    coords.Add(new Coordinate(row, _unitNumber));
+                }
+                break;
+        }
+        
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var coord in coords)
+            {
+                foreach (var possibility in _possibilities)
+                {
+                    lighter.HighLightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.CauseOne);
+                }
+            }
+            
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }
 
-public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter //TODO
+public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter
 {
     private readonly IPossibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
@@ -229,6 +257,17 @@ public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter //TOD
 
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport("", lighter => { }, "");
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var pos in _miniPos)
+            {
+                foreach (var possibility in _possibilities)
+                {
+                    lighter.HighLightPossibility(possibility, pos[0], pos[1], ChangeColoration.CauseOne);
+                }
+            }
+            
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

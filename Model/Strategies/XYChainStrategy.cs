@@ -23,36 +23,38 @@ public class XYChainStrategy : IStrategy
         foreach (var start in map)
         {
             if (_used.Contains(start)) continue;
-            Search(strategyManager, map, new HashSet<PossibilityCoordinate>(), start, start);
+            Search(strategyManager, map, new List<PossibilityCoordinate>(), start);
         }
     }
 
-    private void Search(IStrategyManager strategyManager, BiValueMap map, HashSet<PossibilityCoordinate> visited,
-        PossibilityCoordinate start, PossibilityCoordinate current)
+    private void Search(IStrategyManager strategyManager, BiValueMap map, List<PossibilityCoordinate> visited,
+         PossibilityCoordinate current)
     {
         PossibilityCoordinate friend = map.AssociatedCoordinate(current);
-        if(friend.Possibility == start.Possibility) Process(strategyManager, start, friend);
-        
         visited.Add(current);
         visited.Add(friend);
         
+        if(friend.Possibility == visited[0].Possibility) Process(strategyManager, visited);
+
         foreach (var shared in map.AssociatedCoordinates(friend.Possibility))
         {
             if (!visited.Contains(shared) && shared.ShareAUnit(current))
             {
-                Search(strategyManager, map, new HashSet<PossibilityCoordinate>(visited), start, shared);
+                Search(strategyManager, map, new List<PossibilityCoordinate>(visited), shared);
             }
         }
     }
 
-    private void Process(IStrategyManager strategyManager, PossibilityCoordinate start, PossibilityCoordinate end)
+    private void Process(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
     {
-        foreach (var coord in start.SharedSeenCells(end))
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new XYChainReportWaiter(visited));
+        foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            strategyManager.RemovePossibility(start.Possibility, coord.Row, coord.Col, this);
+            changeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
         }
 
-        _used.Add(end); //TODO improve this
+        _used.Add(visited[^1]); //TODO improve this
+        changeBuffer.Push();
     }
 }
 
@@ -105,5 +107,29 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
     public PossibilityCoordinate AssociatedCoordinate(PossibilityCoordinate coord)
     {
         return _cells[coord];
+    }
+}
+
+public class XYChainReportWaiter : IChangeReportWaiter
+{
+    private readonly List<PossibilityCoordinate> _visited;
+
+    public XYChainReportWaiter(List<PossibilityCoordinate> visited)
+    {
+        _visited = visited;
+    }
+
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            for (int i = 0; i < _visited.Count; i++)
+            {
+                lighter.HighLightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Col, i % 2 == 0 ?
+                    ChangeColoration.CauseThree: ChangeColoration.CauseTwo);
+            }
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }
