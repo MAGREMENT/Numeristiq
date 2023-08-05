@@ -32,11 +32,6 @@ public class TrialAndMatchStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private int[,] RunSimulation(IStrategyManager strategyManager, int row, int col, IEnumerable<int> possibilities)
     {
         int[,]? commonChanges = null;

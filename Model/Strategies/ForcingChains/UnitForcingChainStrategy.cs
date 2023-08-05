@@ -99,11 +99,6 @@ public class UnitForcingChainStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
     {
         foreach (var element in colorings[0])

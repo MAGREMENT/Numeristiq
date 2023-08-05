@@ -49,11 +49,10 @@ public class LogManager  //TODO work around the strategy count thingy with push(
         Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, _holder.State));
     }
 
-    public void ChangePushed(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, string explanation,
-        IStrategy strategy)
+    public void ChangePushed(IChangeReport report, IStrategy strategy)
     {
         Push();
-        Logs.Add(new ChangePushedLog(_idCount++, strategy, changes, causes, explanation, _holder.State));
+        Logs.Add(new ChangePushedLog(_idCount++, strategy, report, _holder.State));
     }
 
     public void Push()

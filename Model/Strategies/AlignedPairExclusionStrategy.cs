@@ -36,11 +36,6 @@ public class AlignedPairExclusionStrategy : IStrategy //TODO optimize
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         List<Coordinate> shared = new List<Coordinate>(

@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model;
 using Model.Logs;
 
 namespace SudokuSolver;
 
-public partial class SudokuUserControl : UserControl
+public partial class SudokuUserControl : IHighLighter
 {
     private readonly StackPanel _main;
 
@@ -135,7 +136,7 @@ public partial class SudokuUserControl : UserControl
             var current = _currentSolver.Logs[^1];
             if (current.Id != _logBuffer)
             {
-                HighLightLog(current);
+                current.CauseHighLighter(this);
                 _logBuffer = current.Id;
             }
         }
@@ -151,19 +152,6 @@ public partial class SudokuUserControl : UserControl
         }
 
         IsReady?.Invoke();
-    }
-
-    private void HighLightLog(ISolverLog log)
-    {
-        foreach (var change in log.AllChanges())
-        {
-            GetTo(change.Row, change.Column).HighLight(change);
-        }
-
-        foreach (var cause in log.AllCauses())
-        {
-            GetTo(cause.Row, cause.Column).HighLight(cause);
-        }
     }
 
     public void ShowCurrent()
@@ -205,7 +193,7 @@ public partial class SudokuUserControl : UserControl
         else scuc2.SetDefinitiveNumber(buffer[0]);
         scuc2.UnHighLight();
 
-        HighLightLog(log);
+        log.CauseHighLighter(this);
     }
 
     public void ClearSudoku()
@@ -222,5 +210,27 @@ public partial class SudokuUserControl : UserControl
     private SudokuCellUserControl GetTo(int row, int col)
     {
         return (SudokuCellUserControl) ((StackPanel)_main.Children[row]).Children[col];
+    }
+
+    public void HighLightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    {
+        GetTo(row, col).HighLightPossibility(possibility, coloration switch
+        {
+            ChangeColoration.Change => Colors.Aqua,
+            ChangeColoration.CauseOne => Colors.Coral,
+            ChangeColoration.CauseTwo => Colors.Red,
+            _ => throw new ArgumentException("Wtf")
+        });
+    }
+
+    public void HighLightCell(int row, int col, ChangeColoration coloration)
+    {
+        GetTo(row, col).HighLight(coloration switch
+        {
+            ChangeColoration.Change => Colors.Aqua,
+            ChangeColoration.CauseOne => Colors.Coral,
+            ChangeColoration.CauseTwo => Colors.Red,
+            _ => throw new ArgumentException("Wtf")
+        });
     }
 }

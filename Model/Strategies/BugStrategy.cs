@@ -24,11 +24,6 @@ public class BugStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private int[]? OnlyDoublesAndOneTriple(IStrategyManager strategyManager)
     {
         int[]? triple = null;

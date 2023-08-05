@@ -7,11 +7,11 @@ public interface ISolverLog
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity { get; }
-    public string Text { get; }
+    public string Changes { get; }
     public string Explanation { get; }
     public string SolverState { get; }
-    public IEnumerable<LogChange> AllChanges();
-    public IEnumerable<LogCause> AllCauses();
+    public HighLightCause CauseHighLighter { get; }
+
 }
 
 public enum Intensity
@@ -44,20 +44,4 @@ public class LogChange
         string action = NumberType == SolverNumberType.Definitive ? "added as definitive" : "removed from possibilities";
         return $"[{Row + 1}, {Column + 1}] {Number} {action}";
     }
-}
-
-public class LogCause : LogChange
-{
-    public CauseColoration Coloration { get; }
-    
-    public LogCause(SolverNumberType numberType, int number, int row, int column, CauseColoration coloration)
-        : base(numberType, number, row, column)
-    {
-        Coloration = coloration;
-    }
-}
-
-public enum CauseColoration
-{
-    One, Two
 }

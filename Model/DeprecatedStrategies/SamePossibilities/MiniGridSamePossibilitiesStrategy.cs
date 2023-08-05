@@ -25,11 +25,6 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol)
     {
         Dictionary<IPossibilities, int> result = new();

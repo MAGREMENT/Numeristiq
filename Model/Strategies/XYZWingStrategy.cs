@@ -68,11 +68,6 @@ public class XYZWingStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private LinePositions CandidateForXyzWingInRow(IStrategyManager strategyManager, int row, IPossibilities hinge)
     {
         LinePositions result = new();
@@ -155,16 +150,17 @@ public class XYZWingStrategy : IStrategy
 
     private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
-        bool wasProgressMade = false;
+        var changeBuffer = strategyManager.CreateChangeBuffer(this,
+            new XYZWingReport(hingeRow, hingeCol, row1, col1, row2, col2));
 
         int toRemove = OneInCommon(strategyManager.Possibilities[hingeRow, hingeCol], strategyManager.Possibilities[row1, col1],
             strategyManager.Possibilities[row2, col2]);
         foreach (var pos in MatchingCells(hingeRow, hingeCol, row1, col1, row2, col2))
         {
-            if (strategyManager.RemovePossibility(toRemove, pos[0], pos[1], this)) wasProgressMade = true;
+            changeBuffer.AddPossibilityToRemove(toRemove, pos[0], pos[1]);
         }
 
-        return wasProgressMade;
+        return changeBuffer.Push();
     }
 
     private IEnumerable<int[]> MatchingCells(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
@@ -221,5 +217,35 @@ public class XYZWingStrategy : IStrategy
         }
 
         throw new Exception("Wtf big problem");
+    }
+}
+
+public class XYZWingReport : IChangeReport
+{
+    private readonly int _hingeRow;
+    private readonly int _hingeCol;
+    private readonly int _row1;
+    private readonly int _col1;
+    private readonly int _row2;
+    private readonly int _col2;
+
+    public XYZWingReport(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
+    {
+        _hingeRow = hingeRow;
+        _hingeCol = hingeCol;
+        _row1 = row1;
+        _col1 = col1;
+        _row2 = row2;
+        _col2 = col2;
+
+        Explanation = "";
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new NotImplementedException();
     }
 }

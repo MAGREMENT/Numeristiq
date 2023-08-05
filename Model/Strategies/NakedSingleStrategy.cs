@@ -18,9 +18,4 @@ public class NakedSingleStrategy : IStrategy
             }
         }
     }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
 }

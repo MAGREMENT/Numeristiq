@@ -16,9 +16,4 @@ public class AvoidableRectangleStrategy : IStrategy
     {
 
     }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
 }

@@ -58,6 +58,6 @@ public partial class LogUserControl : UserControl
             _ => Colors.Gray
         });
         _title.Text = log.Title;
-        _text.Text = log.Text;
+        _text.Text = log.Changes;
     }
 }

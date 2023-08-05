@@ -8,46 +8,27 @@ public class ChangePushedLog : ISolverLog
     public string Title { get; }
     public Intensity Intensity { get; }
 
-    public string Text
+    public string Changes
     {
         get
         {
-            var result = "";
-            foreach (var change in _changes)
-            {
-                result += change + "\n";
-            }
-
-            return result;
+            //TODO
+            return "";
         }
     }
 
     public string Explanation { get; }
 
     public string SolverState { get; }
+    public HighLightCause CauseHighLighter { get; }
 
-    private readonly IEnumerable<LogChange> _changes;
-    private readonly IEnumerable<LogCause> _causes;
-
-    public ChangePushedLog(int id, IStrategy strategy, IEnumerable<LogChange> changes, IEnumerable<LogCause> causes,
-        string explanation, string solverState)
+    public ChangePushedLog(int id, IStrategy strategy, IChangeReport report, string solverState)
     {
         Id = id;
         Title = strategy.Name;
         Intensity = (Intensity)strategy.Difficulty;
-        Explanation = explanation;
+        Explanation = report.Explanation;
         SolverState = solverState;
-        _changes = changes;
-        _causes = causes;
-    }
-
-    public IEnumerable<LogChange> AllChanges()
-    {
-        return _changes;
-    }
-
-    public IEnumerable<LogCause> AllCauses()
-    {
-        return _causes;
+        CauseHighLighter = report.CauseHighLighter;
     }
 }

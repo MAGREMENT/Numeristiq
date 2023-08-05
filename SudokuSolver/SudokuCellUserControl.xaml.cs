@@ -34,22 +34,14 @@ public partial class SudokuCellUserControl : UserControl
         };
     }
 
-    public void HighLight(LogChange change)
+    public void HighLightPossibility(int possibility, Color color)
     {
-        if (change.NumberType == SolverNumberType.Definitive) _numbers.HighLightBig();
-        else _numbers.HighLightSmall(change.Number);
+        _numbers.HighLightSmall(possibility, color);
     }
 
-    public void HighLight(LogCause cause)
+    public void HighLight(Color color)
     {
-        var color = cause.Coloration switch
-        {
-            CauseColoration.One => Colors.Coral,
-            CauseColoration.Two => Colors.Green,
-            _ => throw new ArgumentException("Wtf is your fucking problem you moron")
-        };
-        if (cause.NumberType == SolverNumberType.Definitive) _numbers.HighLightBig(color);
-        else _numbers.HighLightSmall(cause.Number, color);
+        _numbers.HighLightBig(color);
     }
 
     public void UnHighLight()

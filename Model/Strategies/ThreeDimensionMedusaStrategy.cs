@@ -43,11 +43,6 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private void SearchByCombination(IStrategyManager strategyManager, ColorableWeb<MedusaCoordinate> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>

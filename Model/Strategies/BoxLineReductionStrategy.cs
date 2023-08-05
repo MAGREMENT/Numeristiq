@@ -1,8 +1,9 @@
 ﻿using System.Linq;
+using Model.Positions;
 
 namespace Model.Strategies;
 
-public class BoxLineReduction : IStrategy
+public class BoxLineReductionStrategy : IStrategy
 {
     public string Name => "Box line reduction";
     public StrategyLevel Difficulty => StrategyLevel.Medium;
@@ -16,8 +17,8 @@ public class BoxLineReduction : IStrategy
                 var ppir = strategyManager.PossibilityPositionsInRow(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
-                    var changeBuffer =
-                        strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(row, ppir, number));
+                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
+                            new BoxLineReductionReport(row, ppir, number, Unit.Row));
                     
                     int miniRow = row / 3;
                     int miniCol = ppir.First() / 3;
@@ -45,8 +46,8 @@ public class BoxLineReduction : IStrategy
                 var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
-                    var changeBuffer =
-                        strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(col, ppic, number));
+                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
+                        new BoxLineReductionReport(col, ppic, number, Unit.Column));
                     
                     int miniRow = ppic.First() / 3;
                     int miniCol = col / 3;
@@ -67,9 +68,30 @@ public class BoxLineReduction : IStrategy
             }
         }
     }
+}
 
-    public string GetExplanation(IChangeCauseFactory factory)
+public class BoxLineReductionReport : IChangeReport //TODO
+{
+    private readonly int _unitNumber;
+    private readonly LinePositions _linePos;
+    private readonly int _number;
+    private readonly Unit _unit;
+
+    public BoxLineReductionReport(int unitNumber, LinePositions linePos, int number, Unit unit)
     {
-        return "";
+        _unitNumber = unitNumber;
+        _linePos = linePos;
+        _number = number; 
+        _unit = unit;
+        
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+        Explanation = "";
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
     }
 }

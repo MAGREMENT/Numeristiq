@@ -38,11 +38,6 @@ public class NishioForcingChainStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private bool Search(ContradictionSearcher cs, LinkGraph<ILinkGraphElement> graph, Dictionary<ILinkGraphElement, Coloring> result,
         ILinkGraphElement current)
     {

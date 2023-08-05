@@ -29,11 +29,6 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElemen
             _algorithm.Run(strategyManager, graph, _chain);
         }
     }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
 }
 
 public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElement

@@ -12,7 +12,7 @@ public interface IStrategyManager
 
     bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
 
-    ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeCauseFactory causeFactory);
+    ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeReport report);
 
     LinePositions PossibilityPositionsInColumn(int col, int number);
 

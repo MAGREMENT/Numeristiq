@@ -35,11 +35,6 @@ public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private bool Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring> onColoring,
         Dictionary<ILinkGraphElement, Coloring> offColoring)
     {

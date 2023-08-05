@@ -257,3 +257,8 @@ public class Sudoku
         return _grid.GetHashCode();
     }
 }
+
+public enum Unit
+{
+    Row, Column, MiniGrid
+}

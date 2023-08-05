@@ -45,11 +45,6 @@ public class AlternatingInferenceChainStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        throw new NotImplementedException();
-    }
-
     private void Search(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map,
         List<PossibilityCoordinate> visited)
     {

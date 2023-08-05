@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Model.StrategiesUtil;
@@ -8,9 +7,9 @@ namespace Model.Strategies;
 
 public class XYChainStrategy : IStrategy
 {
-    public string Name { get; } = "XYChain";
+    public string Name => "XYChain";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
 
     private readonly HashSet<PossibilityCoordinate> _used = new ();
@@ -26,11 +25,6 @@ public class XYChainStrategy : IStrategy
             if (_used.Contains(start)) continue;
             Search(strategyManager, map, new HashSet<PossibilityCoordinate>(), start, start);
         }
-    }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
     }
 
     private void Search(IStrategyManager strategyManager, BiValueMap map, HashSet<PossibilityCoordinate> visited,
@@ -58,7 +52,7 @@ public class XYChainStrategy : IStrategy
             strategyManager.RemovePossibility(start.Possibility, coord.Row, coord.Col, this);
         }
 
-        _used.Add(end);
+        _used.Add(end); //TODO improve this
     }
 }
 

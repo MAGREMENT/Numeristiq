@@ -5,13 +5,13 @@ namespace Model.Logs;
 
 public class BuildUpLog : ISolverLog
 {
-    private List<int> _changes = new();
+    private readonly List<int> _changes = new();
 
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity { get; }
 
-    public string Text
+    public string Changes
     {
         get
         {
@@ -28,6 +28,8 @@ public class BuildUpLog : ISolverLog
     public string Explanation => "";
 
     public string SolverState { get; }
+
+    public HighLightCause CauseHighLighter => HighLight;
 
     public BuildUpLog(int id, IStrategy causedBy, string solverState)
     {
@@ -47,27 +49,22 @@ public class BuildUpLog : ISolverLog
         _changes.Add((col + row * 9 + (p - 1) * 81) * -1);
     }
 
-    public IEnumerable<LogChange> AllChanges()
-    {
-        foreach (var n in _changes)
-        {
-            int abs = Math.Abs(n);
-            int a = abs % 81;
-            yield return new LogChange(n > 0 ? SolverNumberType.Definitive : SolverNumberType.Possibility,
-                abs / 81 + 1, a / 9, a % 9);
-        }
-    }
-
-    public IEnumerable<LogCause> AllCauses()
-    {
-        yield break;
-    }
-
     private string ChangeAsString(int n)
     {
         string action = n > 0 ? "added as definitive" : "removed from possibilities";
         int abs = Math.Abs(n);
         int a = abs % 81;
         return $"[{a / 9 + 1}, {a % 9 + 1}] {abs / 81 + 1} {action}";
+    }
+
+    private void HighLight(IHighLighter highLighter)
+    {
+        foreach (var change in _changes)
+        {
+            int abs = Math.Abs(change);
+            int a = abs % 81;
+            if(change > 0) highLighter.HighLightCell(a / 9, a % 9, ChangeColoration.Change);
+            else highLighter.HighLightPossibility(abs / 81, a / 9, a % 9, ChangeColoration.Change);
+        }
     }
 }

@@ -58,8 +58,8 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    var changeBuffer = strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(
-                            row, entry.Key, entry.Value));
+                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
+                        new LineHiddenPossibilitiesReport(entry.Value, entry.Key, row, Unit.Row));
                     foreach (var col in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
@@ -93,8 +93,8 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    var changeBuffer = strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(
-                            col, entry.Key, entry.Value));
+                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
+                        new LineHiddenPossibilitiesReport(entry.Value, entry.Key, col, Unit.Column));
                     foreach (var row in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
@@ -130,8 +130,8 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 {
                     if (entry.Value.Count == _type)
                     {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridPositionsCauseFactory(
-                                entry.Key, entry.Value));
+                        var changeBuffer = strategyManager.CreateChangeBuffer(this,
+                            new MiniGridHiddenPossibilitiesReport(entry.Value, entry.Key));
                         foreach (var pos in entry.Key)
                         {
                             RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);
@@ -143,7 +143,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
+    /*public string GetExplanation(IChangeCauseFactory factory)
     {
         switch (factory)
         {
@@ -178,7 +178,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             
             default: return "";
         }
-    }
+    }*/
 
     private void RemoveAllPossibilitiesExcept(int row, int col, IPossibilities except,
         ChangeBuffer changeBuffer)
@@ -190,5 +190,54 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 changeBuffer.AddPossibilityToRemove(number, row, col);
             }
         }
+    }
+}
+
+public class LineHiddenPossibilitiesReport : IChangeReport //TODO
+{
+    private readonly IPossibilities _possibilities;
+    private readonly LinePositions _linePos;
+    private readonly int _unitNumber;
+    private readonly Unit _unit;
+
+
+    public LineHiddenPossibilitiesReport(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    {
+        _possibilities = possibilities;
+        _linePos = linePos;
+        _unitNumber = unitNumber;
+        _unit = unit;
+        
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+        Explanation = "";
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class MiniGridHiddenPossibilitiesReport : IChangeReport //TODO
+{
+    private readonly IPossibilities _possibilities;
+    private readonly MiniGridPositions _miniPos;
+
+    public MiniGridHiddenPossibilitiesReport(IPossibilities possibilities, MiniGridPositions miniPos)
+    {
+        _possibilities = possibilities;
+        _miniPos = miniPos;
+        
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+        Explanation = "";
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
     }
 }

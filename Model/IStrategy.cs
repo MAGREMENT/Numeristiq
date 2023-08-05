@@ -8,8 +8,6 @@ public interface IStrategy
     public int Score { get; set; }
 
     void ApplyOnce(IStrategyManager strategyManager);
-
-    string GetExplanation(IChangeCauseFactory factory);
 }
 
 public enum StrategyLevel

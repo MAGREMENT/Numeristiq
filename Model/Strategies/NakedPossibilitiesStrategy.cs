@@ -68,11 +68,6 @@ public class NakedPossibilitiesStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private Queue<int> EveryRowCellWithLessPossibilities(IStrategyManager strategyManager, int row, int than)
     {
         Queue<int> result = new();
@@ -114,7 +109,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, IPossibilities toRemove, LinePositions except)
     {
         ChangeBuffer changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new RowLinePositionsCauseFactory(row, except, toRemove));
+            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReport(toRemove, except, row, Unit.Row));
         foreach (var n in toRemove)
         {
             for (int col = 0; col < 9; col++)
@@ -167,7 +162,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove, LinePositions except)
     {
         var changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new ColumnLinePositionsCauseFactory(col, except, toRemove));
+            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReport(toRemove, except, col, Unit.Column));
         
         foreach (var n in toRemove)
         {
@@ -227,7 +222,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove,
         MiniGridPositions except)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridPositionsCauseFactory(except, toRemove));
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridNakedPossibilitiesReport(toRemove, except));
         
         foreach (var n in toRemove)
         {
@@ -241,5 +236,54 @@ public class NakedPossibilitiesStrategy : IStrategy
         }
         
         changeBuffer.Push();
+    }
+}
+
+public class LineNakedPossibilitiesReport : IChangeReport //TODO
+{
+    private readonly IPossibilities _possibilities;
+    private readonly LinePositions _linePos;
+    private readonly int _unitNumber;
+    private readonly Unit _unit;
+
+
+    public LineNakedPossibilitiesReport(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    {
+        _possibilities = possibilities;
+        _linePos = linePos;
+        _unitNumber = unitNumber;
+        _unit = unit;
+        
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+        Explanation = "";
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
+    }
+}
+
+public class MiniGridNakedPossibilitiesReport : IChangeReport //TODO
+{
+    private readonly IPossibilities _possibilities;
+    private readonly MiniGridPositions _miniPos;
+
+    public MiniGridNakedPossibilitiesReport(IPossibilities possibilities, MiniGridPositions miniPos)
+    {
+        _possibilities = possibilities;
+        _miniPos = miniPos;
+        
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+        Explanation = "";
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
     }
 }

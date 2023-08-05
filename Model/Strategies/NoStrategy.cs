@@ -11,9 +11,4 @@ public class NoStrategy : IStrategy
     {
         
     }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
 }

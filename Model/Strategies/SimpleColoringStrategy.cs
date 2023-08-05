@@ -43,11 +43,6 @@ public class SimpleColoringStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<ColoringCoordinate> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>

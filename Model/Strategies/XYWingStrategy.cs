@@ -62,11 +62,6 @@ public class XYWingStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private Queue<Coordinate>[] MatchingUnitDispersion(Coordinate coord, List<Coordinate> toSee)
     {
         Queue<Coordinate>[] result = { new(), new(), new() };
@@ -146,16 +141,16 @@ public class XYWingStrategy : IStrategy
 
     private bool ProcessXYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
     {
-        bool wasProgressMade = false;
-
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new XYWingReport(opposite, one, two));
+        
         int toRemove = Minus(strategyManager.Possibilities[one.Row, one.Col],
             strategyManager.Possibilities[opposite.Row, opposite.Col]);
         foreach (var coord in MatchingCells(one, two))
         {
-            if (strategyManager.RemovePossibility(toRemove, coord.Row, coord.Col, this)) wasProgressMade = true;
+            changeBuffer.AddPossibilityToRemove(toRemove, coord.Row, coord.Col);
         }
 
-        return wasProgressMade;
+        return changeBuffer.Push();
     }
 
     private static int Minus(IPossibilities one, IPossibilities two)
@@ -223,5 +218,29 @@ public class XYWingStrategy : IStrategy
         }
 
         return result;
+    }
+}
+
+public class XYWingReport : IChangeReport
+{
+    private readonly Coordinate _opposite;
+    private readonly Coordinate _one;
+    private readonly Coordinate _two;
+
+    public XYWingReport(Coordinate opposite, Coordinate one, Coordinate two)
+    {
+        _opposite = opposite;
+        _one = one;
+        _two = two;
+        
+        Explanation = "";
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new NotImplementedException();
     }
 }

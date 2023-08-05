@@ -3,24 +3,18 @@ using Model.Strategies;
 
 namespace Model.Possibilities;
 
-public interface IPossibilities : IEnumerable<int>
+public interface IPossibilities : IReadOnlyPossibilities, IEnumerable<int>
 {
     public const int Min = 1;
     public const int Max = 9;
     
-    public int Count { get; }
     public bool Remove(int n);
     public void RemoveAll();
     public void RemoveAll(int except);
     public void RemoveAll(params int[] except);
     public void RemoveAll(IEnumerable<int> except);
-    public IPossibilities Mash(IPossibilities possibilities);
-    public bool Peek(int n);
-    public bool PeekAll(IPossibilities poss);
     public void Reset();
     public void Add(int n);
-    public IPossibilities Copy();
-    public IEnumerable<BiValue> EachBiValue();
 
     public static IPossibilities DefaultMash(IPossibilities poss1, IPossibilities poss2)
     {
@@ -54,4 +48,14 @@ public interface IPossibilities : IEnumerable<int>
         buffer.RemoveAll();
         return buffer;
     }
+}
+
+public interface IReadOnlyPossibilities
+{
+    public int Count { get; }
+    public IPossibilities Mash(IPossibilities possibilities);
+    public bool Peek(int n);
+    public bool PeekAll(IPossibilities poss);
+    public IPossibilities Copy();
+    public IEnumerable<BiValue> EachBiValue();
 }

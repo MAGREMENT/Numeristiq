@@ -26,9 +26,4 @@ public class CellSinglePossibilityStrategy : IStrategy
             }
         }
     }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
 }

@@ -210,9 +210,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
         return true;
     }
     
-    public ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeCauseFactory causeFactory)
+    public ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeReport report)
     {
-        return new ChangeBuffer(this, current, causeFactory);
+        return new ChangeBuffer(this, current, report);
     }
     
     public LinePositions PossibilityPositionsInRow(int row, int number)
@@ -276,11 +276,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
         return true;
     }
 
-    public void PushLog(IEnumerable<LogChange> changes, IEnumerable<LogCause> causes, string explanation, IStrategy strategy)
+    public void PushLog(IChangeReport report, IStrategy strategy)
     {
         if (!LogsManaged) return;
         
-        _logManager.ChangePushed(changes, causes, explanation, strategy);
+        _logManager.ChangePushed(report, strategy);
         State = GetState();
     }
     
@@ -335,7 +335,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
             new HiddenSingleStrategy(),
             new NakedPossibilitiesStrategy(2),
             new HiddenPossibilitiesStrategy(2),
-            new BoxLineReduction(),
+            new BoxLineReductionStrategy(),
             new PointingPossibilitiesStrategy(),
             new NakedPossibilitiesStrategy(3),
             new HiddenPossibilitiesStrategy(3),

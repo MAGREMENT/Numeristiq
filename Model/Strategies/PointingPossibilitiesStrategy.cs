@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Model.Positions;
 
 namespace Model.Strategies;
 
@@ -21,7 +22,7 @@ public class PointingPossibilitiesStrategy : IStrategy
                     if (ppimg.AreAllInSameRow())
                     {
                         var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new MiniGridPositionsCauseFactory(ppimg, number));
+                            new PointingPossibilitiesReport(number, ppimg));
                         int row = ppimg.First()[0];
                         for (int col = 0; col < 9; col++)
                         {
@@ -33,7 +34,7 @@ public class PointingPossibilitiesStrategy : IStrategy
                     else if (ppimg.AreAllInSameColumn())
                     {
                         var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new MiniGridPositionsCauseFactory(ppimg, number));
+                            new PointingPossibilitiesReport(number, ppimg));
                         int col = ppimg.First()[1];
                         for (int row = 0; row < 9; row++)
                         {
@@ -46,9 +47,26 @@ public class PointingPossibilitiesStrategy : IStrategy
             }
         }
     }
+}
 
-    public string GetExplanation(IChangeCauseFactory factory)
+public class PointingPossibilitiesReport : IChangeReport
+{
+    private readonly int _number;
+    private readonly MiniGridPositions _miniPos;
+
+    public PointingPossibilitiesReport(int number, MiniGridPositions miniPos)
     {
-        return "";
+        _number = number;
+        _miniPos = miniPos;
+
+        Explanation = "";
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
     }
 }

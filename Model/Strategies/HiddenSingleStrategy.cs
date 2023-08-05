@@ -37,9 +37,4 @@ public class HiddenSingleStrategy : IStrategy
             }
         }
     }
-
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
 }

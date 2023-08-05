@@ -22,11 +22,6 @@ public class RowSinglePossibilityStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private int CheckRowForUnique(IStrategyManager strategyManager, int row, int number)
     {
         int buffer = -1;

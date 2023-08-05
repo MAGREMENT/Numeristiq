@@ -45,15 +45,10 @@ public class XWingStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private void RemoveFromColumns(IStrategyManager strategyManager, LinePositions cols, int row1, int row2, int number)
     {
         var changeBuffer = 
-            strategyManager.CreateChangeBuffer(this, new RowXWingCauseFactory(cols, row1, row2, number));
+            strategyManager.CreateChangeBuffer(this, new XWingReport(cols, row1, row2, number, Unit.Row));
         
         for (int row = 0; row < 9; row++)
         {
@@ -72,7 +67,7 @@ public class XWingStrategy : IStrategy
     private void RemoveFromRows(IStrategyManager strategyManager, LinePositions rows, int col1, int col2, int number)
     {
         var changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new ColumnXWingCauseFactory(rows, col1, col2, number));
+            strategyManager.CreateChangeBuffer(this, new XWingReport(rows, col1, col2, number, Unit.Column));
         
         for (int col = 0; col < 9; col++)
         {
@@ -86,5 +81,33 @@ public class XWingStrategy : IStrategy
         }
         
         changeBuffer.Push();
+    }
+}
+
+public class XWingReport : IChangeReport
+{
+    private readonly LinePositions _linePos;
+    private readonly int _unit1;
+    private readonly int _unit2;
+    private readonly int _number;
+    private readonly Unit _unit;
+
+    public XWingReport(LinePositions linePos, int unit1, int unit2, int number, Unit unit)
+    {
+        _linePos = linePos;
+        _unit1 = unit1;
+        _unit2 = unit2;
+        _number = number;
+        _unit = unit;
+
+        Explanation = "";
+        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
+    }
+
+    public string Explanation { get; }
+    public HighLightCause CauseHighLighter { get; }
+    public void Process()
+    {
+        throw new System.NotImplementedException();
     }
 }

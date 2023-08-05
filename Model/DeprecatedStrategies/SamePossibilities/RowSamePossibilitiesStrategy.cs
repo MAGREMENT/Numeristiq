@@ -22,11 +22,6 @@ public class RowSamePossibilitiesStrategy : IStrategy
         }
     }
 
-    public string GetExplanation(IChangeCauseFactory factory)
-    {
-        return "";
-    }
-
     private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int row)
     {
         Dictionary<IPossibilities, int> result = new();
