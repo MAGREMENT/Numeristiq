@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
 
@@ -59,7 +60,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 if (entry.Value.Count == _type)
                 {
                     var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                        new LineHiddenPossibilitiesReport(entry.Value, entry.Key, row, Unit.Row));
+                        new LineHiddenPossibilitiesReportWaiter(entry.Value, entry.Key, row, Unit.Row));
                     foreach (var col in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
@@ -94,7 +95,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 if (entry.Value.Count == _type)
                 {
                     var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                        new LineHiddenPossibilitiesReport(entry.Value, entry.Key, col, Unit.Column));
+                        new LineHiddenPossibilitiesReportWaiter(entry.Value, entry.Key, col, Unit.Column));
                     foreach (var row in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
@@ -131,7 +132,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
                     if (entry.Value.Count == _type)
                     {
                         var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new MiniGridHiddenPossibilitiesReport(entry.Value, entry.Key));
+                            new MiniGridHiddenPossibilitiesReportWaiter(entry.Value, entry.Key));
                         foreach (var pos in entry.Key)
                         {
                             RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);
@@ -193,7 +194,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     }
 }
 
-public class LineHiddenPossibilitiesReport : IChangeReport //TODO
+public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter //TODO
 {
     private readonly IPossibilities _possibilities;
     private readonly LinePositions _linePos;
@@ -201,43 +202,33 @@ public class LineHiddenPossibilitiesReport : IChangeReport //TODO
     private readonly Unit _unit;
 
 
-    public LineHiddenPossibilitiesReport(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineHiddenPossibilitiesReportWaiter(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
         _unitNumber = unitNumber;
         _unit = unit;
-        
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
-        Explanation = "";
     }
-
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new System.NotImplementedException();
+        return new ChangeReport("", lighter => { }, "");
     }
 }
 
-public class MiniGridHiddenPossibilitiesReport : IChangeReport //TODO
+public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter //TODO
 {
     private readonly IPossibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridHiddenPossibilitiesReport(IPossibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridHiddenPossibilitiesReportWaiter(IPossibilities possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;
-        
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
-        Explanation = "";
     }
 
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new System.NotImplementedException();
+        return new ChangeReport("", lighter => { }, "");
     }
 }

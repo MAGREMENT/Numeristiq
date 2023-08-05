@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Logs;
 using Model.Possibilities;
 using Model.StrategiesUtil;
 
@@ -141,7 +142,7 @@ public class XYWingStrategy : IStrategy
 
     private bool ProcessXYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new XYWingReport(opposite, one, two));
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new XYWingReportWaiter(opposite, one, two));
         
         int toRemove = Minus(strategyManager.Possibilities[one.Row, one.Col],
             strategyManager.Possibilities[opposite.Row, opposite.Col]);
@@ -221,26 +222,21 @@ public class XYWingStrategy : IStrategy
     }
 }
 
-public class XYWingReport : IChangeReport
+public class XYWingReportWaiter : IChangeReportWaiter
 {
     private readonly Coordinate _opposite;
     private readonly Coordinate _one;
     private readonly Coordinate _two;
 
-    public XYWingReport(Coordinate opposite, Coordinate one, Coordinate two)
+    public XYWingReportWaiter(Coordinate opposite, Coordinate one, Coordinate two)
     {
         _opposite = opposite;
         _one = one;
         _two = two;
-        
-        Explanation = "";
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
     }
-
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new NotImplementedException();
+        return new ChangeReport("", lighter => { }, "");
     }
 }

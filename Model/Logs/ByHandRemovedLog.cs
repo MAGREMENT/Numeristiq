@@ -10,14 +10,14 @@ public class ByHandRemovedLog : ISolverLog
     public string SolverState { get; }
     public HighLightCause CauseHighLighter => HighLight;
 
-    private readonly LogChange _asChange;
+    private readonly SolverChange _asChange;
 
     public ByHandRemovedLog(int id, int possibility, int row, int col, string solverState)
     {
         Id = id;
         Changes = $"[{row + 1}, {col + 1}] {possibility} removed by hand";
         SolverState = solverState;
-        _asChange = new LogChange(SolverNumberType.Possibility, possibility, row, col);
+        _asChange = new SolverChange(SolverNumberType.Possibility, possibility, row, col);
     }
 
     private void HighLight(IHighLighter highLighter)

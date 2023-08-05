@@ -1,5 +1,8 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Model.Logs;
 using Model.Positions;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
@@ -18,7 +21,7 @@ public class BoxLineReductionStrategy : IStrategy
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new BoxLineReductionReport(row, ppir, number, Unit.Row));
+                            new BoxLineReductionReportWaiter(row, ppir, number, Unit.Row));
                     
                     int miniRow = row / 3;
                     int miniCol = ppir.First() / 3;
@@ -47,7 +50,7 @@ public class BoxLineReductionStrategy : IStrategy
                 if (ppic.AreAllInSameMiniGrid())
                 {
                     var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                        new BoxLineReductionReport(col, ppic, number, Unit.Column));
+                        new BoxLineReductionReportWaiter(col, ppic, number, Unit.Column));
                     
                     int miniRow = ppic.First() / 3;
                     int miniCol = col / 3;
@@ -70,28 +73,48 @@ public class BoxLineReductionStrategy : IStrategy
     }
 }
 
-public class BoxLineReductionReport : IChangeReport //TODO
+public class BoxLineReductionReportWaiter : IChangeReportWaiter
 {
     private readonly int _unitNumber;
     private readonly LinePositions _linePos;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public BoxLineReductionReport(int unitNumber, LinePositions linePos, int number, Unit unit)
+    public BoxLineReductionReportWaiter(int unitNumber, LinePositions linePos, int number, Unit unit)
     {
         _unitNumber = unitNumber;
         _linePos = linePos;
         _number = number; 
         _unit = unit;
-        
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
-        Explanation = "";
     }
-
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new System.NotImplementedException();
+        List<Coordinate> causes = new();
+        switch (_unit)
+        {
+            case Unit.Row :
+                foreach (var col in _linePos)
+                {
+                    causes.Add(new Coordinate(_unitNumber, col));
+                }
+                break;
+            case Unit.Column :
+                foreach (var row in _linePos)
+                {
+                    causes.Add(new Coordinate(row, _unitNumber));
+                }
+                break;
+        }
+
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var coord in causes)
+            {
+                lighter.HighLightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOne);
+            }
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

@@ -10,5 +10,5 @@ public interface IChangeManager
     public bool LogsManaged { get; }
     public bool AddDefinitive(int number, int row, int col);
     public bool RemovePossibility(int possibility, int row, int col);
-    public void PushLog(IChangeReport report, IStrategy strategy);
+    public void PushChangeReportLog(ChangeReport report, IStrategy strategy);
 }

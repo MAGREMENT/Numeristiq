@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
 
@@ -151,7 +152,7 @@ public class XYZWingStrategy : IStrategy
     private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
         var changeBuffer = strategyManager.CreateChangeBuffer(this,
-            new XYZWingReport(hingeRow, hingeCol, row1, col1, row2, col2));
+            new XYZWingReportWaiter(hingeRow, hingeCol, row1, col1, row2, col2));
 
         int toRemove = OneInCommon(strategyManager.Possibilities[hingeRow, hingeCol], strategyManager.Possibilities[row1, col1],
             strategyManager.Possibilities[row2, col2]);
@@ -220,7 +221,7 @@ public class XYZWingStrategy : IStrategy
     }
 }
 
-public class XYZWingReport : IChangeReport
+public class XYZWingReportWaiter : IChangeReportWaiter
 {
     private readonly int _hingeRow;
     private readonly int _hingeCol;
@@ -229,7 +230,7 @@ public class XYZWingReport : IChangeReport
     private readonly int _row2;
     private readonly int _col2;
 
-    public XYZWingReport(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
+    public XYZWingReportWaiter(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
         _hingeRow = hingeRow;
         _hingeCol = hingeCol;
@@ -237,15 +238,10 @@ public class XYZWingReport : IChangeReport
         _col1 = col1;
         _row2 = row2;
         _col2 = col2;
-
-        Explanation = "";
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
     }
-
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new NotImplementedException();
+        return new ChangeReport("", lighter => { }, "");
     }
 }

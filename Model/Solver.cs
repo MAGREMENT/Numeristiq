@@ -210,9 +210,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
         return true;
     }
     
-    public ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeReport report)
+    public ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeReportWaiter reportWaiter)
     {
-        return new ChangeBuffer(this, current, report);
+        return new ChangeBuffer(this, current, reportWaiter);
     }
     
     public LinePositions PossibilityPositionsInRow(int row, int number)
@@ -276,7 +276,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
         return true;
     }
 
-    public void PushLog(IChangeReport report, IStrategy strategy)
+    public void PushChangeReportLog(ChangeReport report, IStrategy strategy)
     {
         if (!LogsManaged) return;
         

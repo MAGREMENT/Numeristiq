@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
 
@@ -109,7 +110,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, IPossibilities toRemove, LinePositions except)
     {
         ChangeBuffer changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReport(toRemove, except, row, Unit.Row));
+            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReportWaiter(toRemove, except, row, Unit.Row));
         foreach (var n in toRemove)
         {
             for (int col = 0; col < 9; col++)
@@ -162,7 +163,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove, LinePositions except)
     {
         var changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReport(toRemove, except, col, Unit.Column));
+            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReportWaiter(toRemove, except, col, Unit.Column));
         
         foreach (var n in toRemove)
         {
@@ -222,7 +223,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove,
         MiniGridPositions except)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridNakedPossibilitiesReport(toRemove, except));
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridNakedPossibilitiesReportWaiter(toRemove, except));
         
         foreach (var n in toRemove)
         {
@@ -239,7 +240,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     }
 }
 
-public class LineNakedPossibilitiesReport : IChangeReport //TODO
+public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter //TODO
 {
     private readonly IPossibilities _possibilities;
     private readonly LinePositions _linePos;
@@ -247,43 +248,33 @@ public class LineNakedPossibilitiesReport : IChangeReport //TODO
     private readonly Unit _unit;
 
 
-    public LineNakedPossibilitiesReport(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineNakedPossibilitiesReportWaiter(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
         _unitNumber = unitNumber;
         _unit = unit;
-        
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
-        Explanation = "";
     }
 
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new System.NotImplementedException();
+        return new ChangeReport("", lighter => { }, "");
     }
 }
 
-public class MiniGridNakedPossibilitiesReport : IChangeReport //TODO
+public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter //TODO
 {
     private readonly IPossibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridNakedPossibilitiesReport(IPossibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridNakedPossibilitiesReportWaiter(IPossibilities possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;
-        
-        CauseHighLighter = IChangeReport.DefaultCauseHighLighter;
-        Explanation = "";
     }
-
-    public string Explanation { get; }
-    public HighLightCause CauseHighLighter { get; }
-    public void Process()
+    
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        throw new System.NotImplementedException();
+        return new ChangeReport("", lighter => { }, "");
     }
 }

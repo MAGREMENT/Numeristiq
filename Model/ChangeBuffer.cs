@@ -12,13 +12,13 @@ public class ChangeBuffer
     private List<int>? _definitiveAdded;
 
     private readonly IChangeManager _m;
-    private readonly IChangeReport _report;
+    private readonly IChangeReportWaiter _reportWaiter;
     private readonly IStrategy _strategy;
 
-    public ChangeBuffer(IChangeManager changeManager, IStrategy strategy, IChangeReport report)
+    public ChangeBuffer(IChangeManager changeManager, IStrategy strategy, IChangeReportWaiter reportWaiter)
     {
         _m = changeManager;
-        _report = report;
+        _reportWaiter = reportWaiter;
         _strategy = strategy;
     }
 
@@ -37,14 +37,14 @@ public class ChangeBuffer
 
     public bool Push()
     {
-        List<LogChange> changes = new();
+        List<SolverChange> changes = new();
         if (_possibilityRemoved is not null)
         {
             foreach (var possibility in _possibilityRemoved)
             {
                 int n = possibility % 81;
                 if (_m.RemovePossibility(possibility / 81, n / 9, n % 9)) changes.Add(
-                    new LogChange(SolverNumberType.Possibility, possibility / 81, n / 9, n % 9));
+                    new SolverChange(SolverNumberType.Possibility, possibility / 81, n / 9, n % 9));
             
             } 
         }
@@ -55,14 +55,14 @@ public class ChangeBuffer
             {
                 int n = definitive % 81;
                 if(_m.AddDefinitive(definitive / 81, n / 9, n % 9)) changes.Add(
-                    new LogChange(SolverNumberType.Definitive, definitive / 81, n / 9, n % 9));
+                    new SolverChange(SolverNumberType.Definitive, definitive / 81, n / 9, n % 9));
             }  
         }
 
         if (_m.LogsManaged && changes.Count > 0)
         {
-            _report.Process();
-            _m.PushLog(_report, _strategy);
+            _reportWaiter.Process(changes, _m);
+            _m.PushChangeReportLog(_reportWaiter.Process(changes, _m), _strategy);
         }
 
         return changes.Count > 0;

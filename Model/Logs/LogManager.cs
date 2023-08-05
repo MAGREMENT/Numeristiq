@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.StrategiesUtil;
 
 namespace Model.Logs;
 
@@ -49,10 +48,10 @@ public class LogManager  //TODO work around the strategy count thingy with push(
         Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, _holder.State));
     }
 
-    public void ChangePushed(IChangeReport report, IStrategy strategy)
+    public void ChangePushed(ChangeReport report, IStrategy strategy)
     {
         Push();
-        Logs.Add(new ChangePushedLog(_idCount++, strategy, report, _holder.State));
+        Logs.Add(new ChangeReportLog(_idCount++, strategy, report, _holder.State));
     }
 
     public void Push()
