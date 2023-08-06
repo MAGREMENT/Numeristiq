@@ -13,7 +13,7 @@ using Model.StrategiesUtil;
 
 namespace Model;
 
-public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look into precomputation, improve logs, improve UI
+public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs => _logManager.Logs;
@@ -32,6 +32,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
     public event OnPossibilityRemoved? PossibilityRemoved;
 
     private int _currentStrategy = -1;
+    private int _excludedStrategies;
     private bool _changeWasMade;
     
     private PreComputer _pre;
@@ -121,8 +122,10 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
         for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
             if (Sudoku.IsComplete()) return;
-
-            _pre.CheckPreComputationTresHold(_currentStrategy);
+            
+            _pre.CheckPreComputationThreshold(_currentStrategy);
+            if(((_excludedStrategies >> _currentStrategy) & 1) > 0) continue;
+            
             Strategies[_currentStrategy].ApplyOnce(this);
             StrategyCount++;
             
@@ -158,23 +161,23 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : Look
 
         return false;
     }
-    
-    public void ExcludeStrategy(Type type) //TODO improve
+
+    public void ExcludeStrategy(int number)
+    {
+        _excludedStrategies |= 1 << number;
+    }
+
+    public void ExcludeStrategies(StrategyLevel level)
     {
         for (int i = 0; i < Strategies.Length; i++)
         {
-            if (Strategies[i].GetType() == type) Strategies[i] = new NoStrategy();
+            if (Strategies[i].Difficulty == level) ExcludeStrategy(i);
         }
     }
 
-    public IStrategy GetStrategy(Type type) //TODO improve
+    public void UseStrategy(int number)
     {
-        foreach (var t in Strategies)
-        {
-            if (t.GetType() == type) return t;
-        }
-
-        return new NoStrategy();
+        _excludedStrategies &= ~(1 << number);
     }
 
     //StrategyManager---------------------------------------------------------------------------------------------------

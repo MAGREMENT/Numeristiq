@@ -7,9 +7,9 @@ namespace Model.Strategies;
 
 public class XYWingStrategy : IStrategy
 {
-    public string Name { get; } = "XYWing";
+    public string Name => "XYWing";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Medium;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)

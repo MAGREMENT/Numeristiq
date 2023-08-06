@@ -7,7 +7,7 @@ public class XWingStrategy : IStrategy
 {
     public string Name => "XWing";
     
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Medium;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)

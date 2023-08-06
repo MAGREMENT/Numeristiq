@@ -12,7 +12,7 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     private readonly RadioButton _definitiveNumber;
     private readonly RadioButton _possibilities;
 
-    private SudokuCellUserControl? _current = null;
+    private CellUserControl? _current = null;
     private readonly int[] _currentPos = new int[2];
 
     public delegate void OnLiveModification(int number, int row, int col, SolverNumberType numberType);
@@ -44,7 +44,7 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
         _possibilities = (FindName("B") as RadioButton)!;
     }
 
-    public void SetCurrent(SudokuCellUserControl scuc, int row, int col)
+    public void SetCurrent(CellUserControl scuc, int row, int col)
     {
         if (_current is not null) _current.Updated -= Update;
         if (_current == scuc)

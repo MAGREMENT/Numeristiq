@@ -39,7 +39,7 @@ public class TrialAndMatchStrategy : IStrategy
         foreach (var possibility in possibilities)
         {
             Solver simulation = strategyManager.Copy();
-            simulation.ExcludeStrategy(typeof(TrialAndMatchStrategy));
+            simulation.ExcludeStrategies(StrategyLevel.ByTrial);
             simulation.AddDefinitiveNumber(possibility, row, col, this);
             simulation.Solve();
 

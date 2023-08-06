@@ -9,20 +9,20 @@ using Model.Possibilities;
 
 namespace SudokuSolver;
 
-public partial class SudokuCellUserControl : UserControl
+public partial class CellUserControl : UserControl
 {
     private readonly NumbersUserControl _numbers;
 
     private bool _isPossibilities = false;
     private int[] _nums = Array.Empty<int>();
 
-    public delegate void OnClickedOn(SudokuCellUserControl sender);
+    public delegate void OnClickedOn(CellUserControl sender);
     public event OnClickedOn? ClickedOn;
 
     public delegate void OnUpdate(bool isPossibilities, int[] numbers);
     public event OnUpdate? Updated;
 
-    public SudokuCellUserControl()
+    public CellUserControl()
     {
         InitializeComponent();
 

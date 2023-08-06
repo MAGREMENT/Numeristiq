@@ -8,7 +8,7 @@ namespace Model.Strategies;
 public class BoxLineReductionStrategy : IStrategy
 {
     public string Name => "Box line reduction";
-    public StrategyLevel Difficulty => StrategyLevel.Medium;
+    public StrategyLevel Difficulty => StrategyLevel.Easy;
     public int Score { get; set; }
     public void ApplyOnce(IStrategyManager strategyManager)
     {

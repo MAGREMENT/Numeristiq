@@ -8,7 +8,7 @@ using Model.Logs;
 
 namespace SudokuSolver;
 
-public partial class SudokuUserControl : IHighLighter
+public partial class SolverUserControl : IHighLighter
 {
     private readonly StackPanel _main;
 
@@ -18,13 +18,13 @@ public partial class SudokuUserControl : IHighLighter
     public delegate void OnReady();
     public event OnReady? IsReady;
 
-    public delegate void OnCellClicked(SudokuCellUserControl sender, int row, int col);
+    public delegate void OnCellClicked(CellUserControl sender, int row, int col);
     public event OnCellClicked? CellClickedOn;
 
     public delegate void OnSolverUpdate(string solverAsString);
     public event OnSolverUpdate? SolverUpdated;
     
-    public SudokuUserControl()
+    public SolverUserControl()
     {
         InitializeComponent();
 
@@ -35,7 +35,7 @@ public partial class SudokuUserControl : IHighLighter
             StackPanel row = (StackPanel)_main.Children[i];
             for (int j = 0; j < 9; j++)
             {
-                var toAdd = new SudokuCellUserControl();
+                var toAdd = new CellUserControl();
                 switch (i)
                 {
                     case 2 : case 5 :
@@ -85,7 +85,7 @@ public partial class SudokuUserControl : IHighLighter
         {
             for (int j = 0; j < 9; j++)
             {
-                SudokuCellUserControl current = GetTo(i, j);
+                CellUserControl current = GetTo(i, j);
                 current.UnHighLight();
                 
                 UpdateCell(current, i, j);
@@ -105,7 +105,7 @@ public partial class SudokuUserControl : IHighLighter
         Update();
     }
 
-    private void UpdateCell(SudokuCellUserControl current, int row, int col)
+    private void UpdateCell(CellUserControl current, int row, int col)
     {
         if(_currentSolver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_currentSolver.Sudoku[row, col]);
         else current.SetPossibilities(_currentSolver.Possibilities[row, col]);
@@ -201,36 +201,40 @@ public partial class SudokuUserControl : IHighLighter
         _currentSolver = new Solver(new Sudoku());
         Update();
     }
+    
+    public void HighLightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    {
+        GetTo(row, col).HighLightPossibility(possibility, ColorUtil.ToColor(coloration));
+    }
+
+    public void HighLightCell(int row, int col, ChangeColoration coloration)
+    {
+        GetTo(row, col).HighLight(ColorUtil.ToColor(coloration));
+    }
 
     public List<ISolverLog> GetLogs()
     {
         return _currentSolver.Logs;
     }
 
-    private SudokuCellUserControl GetTo(int row, int col)
+    public IStrategy[] GetStrategies()
     {
-        return (SudokuCellUserControl) ((StackPanel)_main.Children[row]).Children[col];
+        return _currentSolver.Strategies;
     }
 
-    public void HighLightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    public void ExcludeStrategy(int number)
     {
-        GetTo(row, col).HighLightPossibility(possibility, AsColor(coloration));
+        _currentSolver.ExcludeStrategy(number);
     }
 
-    public void HighLightCell(int row, int col, ChangeColoration coloration)
+    public void UseStrategy(int number)
     {
-        GetTo(row, col).HighLight(AsColor(coloration));
+        _currentSolver.UseStrategy(number);
     }
 
-    private Color AsColor(ChangeColoration coloration)
+    private CellUserControl GetTo(int row, int col)
     {
-        return coloration switch
-        {
-            ChangeColoration.Change => Colors.Aqua,
-            ChangeColoration.CauseOne => Colors.Coral,
-            ChangeColoration.CauseTwo => Colors.Red,
-            ChangeColoration.CauseThree => Colors.Green,
-            _ => throw new ArgumentException("Wtf")
-        };
+        return (CellUserControl) ((StackPanel)_main.Children[row]).Children[col];
     }
+
 }

@@ -5,10 +5,10 @@ using Model.StrategiesUtil;
 
 namespace Model;
 
-public class PreComputer
+public class PreComputer //TODO make without the threshold thingy and give direct access to this to strategies
 {
-    private const int PositionsTresHold = 1;
-    private const int GraphTresHold = 23;
+    private const int PositionsThreshold = 1;
+    private const int GraphThreshold = 23;
     
     private readonly IStrategyManager _view;
     
@@ -23,13 +23,13 @@ public class PreComputer
         _view = view;
     }
 
-    public void CheckPreComputationTresHold(int strategyNumber)
+    public void CheckPreComputationThreshold(int strategyNumber)
     {
         switch (strategyNumber)
         {
-            case PositionsTresHold : PrecomputePositions();
+            case PositionsThreshold : PrecomputePositions();
                 break;
-            case GraphTresHold : PrecomputeLinkGraph();
+            case GraphThreshold : PrecomputeLinkGraph();
                 break;
         }
     }
@@ -206,7 +206,7 @@ public class PreComputer
         return graph;
     }
 
-    private void SearchForUsableAls(LinkGraph<ILinkGraphElement> graph, Coordinate biValueCell, IPossibilities biValue) //TODO take mini grid into account
+    private void SearchForUsableAls(LinkGraph<ILinkGraphElement> graph, Coordinate biValueCell, IPossibilities biValue)
     {
         for (int row = 0; row < 9; row++)
         {

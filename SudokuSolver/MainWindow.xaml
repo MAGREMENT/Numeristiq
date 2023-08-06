@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolver"
         mc:Ignorable="d"
-        Title="MainWindow" Height="820" Width="1440">
+        Title="MainWindow" Height="720" Width="1440">
     <StackPanel Orientation="Horizontal">
         <StackPanel Width="300">
             <StackPanel Width="300" Height="410" x:Name="OptionsPanel">
@@ -18,7 +18,7 @@
             </StackPanel>
         </StackPanel>
         <StackPanel x:Name="MainPanel" Orientation="Vertical" Width="540">
-            <local:SudokuUserControl HorizontalAlignment="Center"/>
+            <local:SolverUserControl HorizontalAlignment="Center"/>
             <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="NewSudoku"
                      HorizontalAlignment="Center"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -29,9 +29,12 @@
             </StackPanel>
         </StackPanel>
         <StackPanel x:Name="AsidePanel" Width="400">
-            <local:LogListUserControl x:Name = "Logs"/>
-            <TextBox Width="380" Height="300" Background="WhiteSmoke" Margin="0, 20, 0, 0" TextWrapping="Wrap"
+            <local:LogListUserControl/>
+            <TextBox Width="380" Height="200" Background="WhiteSmoke" Margin="0, 20, 0, 0" TextWrapping="Wrap"
                      HorizontalAlignment="Center"/>
+        </StackPanel>
+        <StackPanel x:Name="AsidePanelTwo" Width="200">
+            <local:StrategyListUserControl/>
         </StackPanel>
     </StackPanel>
 </Window>

@@ -26,7 +26,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 Difficulty = StrategyLevel.Easy;
                 break;
             case 4 : Name = "Naked quad";
-                Difficulty = StrategyLevel.Medium;
+                Difficulty = StrategyLevel.Easy;
                 break;
             default : Name = "Naked unknown";
                 Difficulty = StrategyLevel.None;

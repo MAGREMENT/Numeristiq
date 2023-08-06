@@ -46,17 +46,7 @@ public partial class LogUserControl : UserControl
         _log = log;
 
         _number.Text = "#" + log.Id;
-        _title.Foreground = new SolidColorBrush(log.Intensity switch
-        {
-            Intensity.Zero => Colors.Gray,
-            Intensity.One => Colors.RoyalBlue,
-            Intensity.Two => Colors.Green,
-            Intensity.Three => Colors.Orange,
-            Intensity.Four => Colors.Red,
-            Intensity.Five => Colors.Purple,
-            Intensity.Six => Colors.Black,
-            _ => Colors.Gray
-        });
+        _title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
         _title.Text = log.Title;
         _text.Text = log.Changes;
     }

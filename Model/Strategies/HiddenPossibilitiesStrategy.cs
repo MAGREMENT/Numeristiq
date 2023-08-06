@@ -26,7 +26,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 Difficulty = StrategyLevel.Easy;
                 break;
             case 4 : Name = "Hidden quad";
-                Difficulty = StrategyLevel.Medium;
+                Difficulty = StrategyLevel.Easy;
                 break;
             default : Name = "Hidden unknown";
                 Difficulty = StrategyLevel.None;

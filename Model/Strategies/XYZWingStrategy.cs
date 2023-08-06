@@ -5,12 +5,11 @@ using Model.Possibilities;
 
 namespace Model.Strategies;
 
-// ReSharper disable once InconsistentNaming
 public class XYZWingStrategy : IStrategy
 {
-    public string Name { get; } = "XYZWing";
+    public string Name => "XYZWing";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Medium;
     public int Score { get; set; }
 
     /// <summary>

@@ -192,20 +192,6 @@ public static class Testing
         }
     }
 
-    private static void CompareAicAlgorithms()
-    {
-        Solver solver =
-            new Solver(new Sudoku("s4s7 38   628   99 8  5   7s5s8   53   42   4     5   3  6 43   267   91 4"));
-        solver.Solve();
-        AlternatingChainGeneralization<PossibilityCoordinate> strat = (AlternatingChainGeneralization<PossibilityCoordinate>)
-            solver.GetStrategy(typeof(AlternatingChainGeneralization<PossibilityCoordinate>));
-
-        Console.WriteLine("One------------------------------------------------");
-        Console.WriteLine("Sudoku solved : " + solver.Sudoku.IsCorrect());
-        Console.WriteLine("Score : " + strat.Score);
-        Console.WriteLine();
-    }
-
     private static void CompareIPossibilitiesImplementation(IPossibilities one, IPossibilities two)
     {
         Console.WriteLine(one.Count);

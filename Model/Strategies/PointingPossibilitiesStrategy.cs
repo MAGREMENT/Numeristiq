@@ -8,7 +8,7 @@ public class PointingPossibilitiesStrategy : IStrategy
 {
     public string Name { get; } = "Pointing possibilities";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Medium;
+    public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)

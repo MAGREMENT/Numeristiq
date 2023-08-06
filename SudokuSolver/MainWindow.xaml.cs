@@ -14,6 +14,7 @@ namespace SudokuSolver;
         private readonly StackPanel _optionsPanel;
         private readonly StackPanel _modificationsPanel;
         private readonly StackPanel _asidePanel;
+        private readonly StackPanel _asidePanel2;
 
         private bool _createNewSudoku = true;
 
@@ -25,15 +26,16 @@ namespace SudokuSolver;
             _optionsPanel = (FindName("OptionsPanel") as StackPanel)!;
             _modificationsPanel = (FindName("ModificationsPanel") as StackPanel)!;
             _asidePanel = (FindName("AsidePanel") as StackPanel)!;
+            _asidePanel2 = (FindName("AsidePanelTwo") as StackPanel)!;
 
-            GetSudokuUserControl().IsReady += () => { GetSolveButton().IsEnabled = true; };
+            GetSolverUserControl().IsReady += () => { GetSolveButton().IsEnabled = true; };
 
-            GetSudokuUserControl().CellClickedOn += (sender, row, col) =>
+            GetSolverUserControl().CellClickedOn += (sender, row, col) =>
             {
                 GetLiveModificationUserControl().SetCurrent(sender, row, col);
             };
 
-            GetSudokuUserControl().SolverUpdated += asString =>
+            GetSolverUserControl().SolverUpdated += asString =>
             {
                 _createNewSudoku = false;
                 GetSudokuString().Text = asString;
@@ -42,26 +44,30 @@ namespace SudokuSolver;
 
             GetLogListUserControl().ShowCurrentClicked += () =>
             {
-                GetSudokuUserControl().ShowCurrent();
+                GetSolverUserControl().ShowCurrent();
                 GetExplanationBox().Text = "";
             };
             GetLogListUserControl().LogClicked += log =>
             {
-                GetSudokuUserControl().ShowLog(log);
+                GetSolverUserControl().ShowLog(log);
                 GetExplanationBox().Text = log.Explanation;
             };
             
             GetLiveModificationUserControl().LiveModified += (number, row, col, action) =>
             {
-                if (action == SolverNumberType.Definitive) GetSudokuUserControl().AddDefinitiveNumber(number, row, col);
-                else if(action == SolverNumberType.Possibility) GetSudokuUserControl().RemovePossibility(number, row, col);
-                GetLogListUserControl().InitLogs(GetSudokuUserControl().GetLogs());
+                if (action == SolverNumberType.Definitive) GetSolverUserControl().AddDefinitiveNumber(number, row, col);
+                else if(action == SolverNumberType.Possibility) GetSolverUserControl().RemovePossibility(number, row, col);
+                GetLogListUserControl().InitLogs(GetSolverUserControl().GetLogs());
             };
+            
+            GetStrategyList().InitStrategies(GetSolverUserControl().GetStrategies());
+            GetStrategyList().StrategyExcluded += GetSolverUserControl().ExcludeStrategy;
+            GetStrategyList().StrategyUsed += GetSolverUserControl().UseStrategy;
         }
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
         {
-            if (_createNewSudoku) GetSudokuUserControl().NewSolver(
+            if (_createNewSudoku) GetSolverUserControl().NewSolver(
                 new Solver(new Sudoku(GetSudokuString().Text)));
         }
 
@@ -70,7 +76,7 @@ namespace SudokuSolver;
             if (sender is not Button butt) return;
             butt.IsEnabled = false;
 
-            SudokuUserControl suc = GetSudokuUserControl();
+            SolverUserControl suc = GetSolverUserControl();
 
             bool? stepByStep = GetStepByStepOption().IsChecked;
             if (stepByStep is null || (bool) !stepByStep) suc.SolveSudoku();
@@ -81,16 +87,16 @@ namespace SudokuSolver;
 
         private void ClearSudoku(object sender, RoutedEventArgs e)
         {
-            SudokuUserControl suc = GetSudokuUserControl();
+            SolverUserControl suc = GetSolverUserControl();
             suc.ClearSudoku();
             
             GetLogListUserControl().InitLogs(suc.GetLogs());
         }
 
         /*Gets*/
-        private SudokuUserControl GetSudokuUserControl()
+        private SolverUserControl GetSolverUserControl()
         {
-            return (SudokuUserControl)_mainPanel.Children[0];
+            return (SolverUserControl)_mainPanel.Children[0];
         }
 
         private LiveModificationUserControl GetLiveModificationUserControl()
@@ -121,5 +127,10 @@ namespace SudokuSolver;
         private TextBox GetExplanationBox()
         {
             return (TextBox)_asidePanel.Children[1];
+        }
+
+        private StrategyListUserControl GetStrategyList()
+        {
+            return (StrategyListUserControl)_asidePanel2.Children[0];
         }
     }
