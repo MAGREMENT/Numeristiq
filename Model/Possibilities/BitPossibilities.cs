@@ -37,9 +37,8 @@ public class BitPossibilities : IPossibilities
 
     public void RemoveAll(int except)
     {
-        RemoveAll();
-        _possibilities |= 1 << (except - 1);
-        Count++;
+        _possibilities &= 1 << (except - 1);
+        Count = 1;
     }
 
     public void RemoveAll(params int[] except)

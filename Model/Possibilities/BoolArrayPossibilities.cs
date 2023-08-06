@@ -35,7 +35,9 @@ public class BoolArrayPossibilities : IPossibilities
 
     public void RemoveAll(int except)
     {
-        throw new NotImplementedException();
+        RemoveAll();
+        _possibilities[except - 1] = true;
+        Count++;
     }
 
     public void RemoveAll(params int[] except)
@@ -85,7 +87,8 @@ public class BoolArrayPossibilities : IPossibilities
 
     public void Add(int n)
     {
-        throw new NotImplementedException();
+        if (Peek(n)) Count++;
+        _possibilities[n - 1] = true;
     }
 
     public int GetFirst()

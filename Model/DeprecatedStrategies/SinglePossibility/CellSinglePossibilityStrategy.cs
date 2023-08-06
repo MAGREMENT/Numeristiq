@@ -19,7 +19,7 @@ public class CellSinglePossibilityStrategy : IStrategy
                 
                 if (strategyManager.Possibilities[i, j].Count == 1)
                 {
-                    int n = strategyManager.Possibilities[i, j].First();
+                    int n = strategyManager.Possibilities[i, j].GetFirst();
                     strategyManager.AddDefinitiveNumber(n,
                         i, j, this);
                 }

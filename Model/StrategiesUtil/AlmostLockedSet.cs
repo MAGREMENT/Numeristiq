@@ -7,26 +7,26 @@ namespace Model.StrategiesUtil;
 
 public class AlmostLockedSet : ILinkGraphElement
 {
-    private readonly Coordinate[] _coords;
+    public Coordinate[] Coordinates { get; }
     public IPossibilities Possibilities { get; }
 
-    public int Size => _coords.Length;
+    public int Size => Coordinates.Length;
 
-    public AlmostLockedSet(Coordinate[] coords, IPossibilities poss)
+    public AlmostLockedSet(Coordinate[] coordinates, IPossibilities poss)
     {
-        _coords = coords;
+        Coordinates = coordinates;
         Possibilities = poss;
     }
 
     public AlmostLockedSet(Coordinate coord, IPossibilities poss)
     {
-        _coords = new[] { coord };
+        Coordinates = new[] { coord };
         Possibilities = poss;
     }
 
     public bool Contains(Coordinate coord)
     {
-        return _coords.Contains(coord);
+        return Coordinates.Contains(coord);
     }
 
     public IEnumerable<Coordinate> SharedSeenCells()
@@ -37,14 +37,14 @@ public class AlmostLockedSet : ILinkGraphElement
             {
                 Coordinate current = new Coordinate(row, col);
 
-                if (ShareAUnitWithAll(current, _coords)) yield return current;
+                if (ShareAUnitWithAll(current, Coordinates)) yield return current;
             }
         }
     }
 
     public bool ShareAUnit(Coordinate coord)
     {
-        foreach (var c in _coords)
+        foreach (var c in Coordinates)
         {
             if (!c.ShareAUnit(coord)) return false;
         }
@@ -55,8 +55,8 @@ public class AlmostLockedSet : ILinkGraphElement
     public override bool Equals(object? obj)
     {
         if (obj is not AlmostLockedSet als) return false;
-        if (!Possibilities.Equals(als.Possibilities) || _coords.Length != als._coords.Length) return false;
-        foreach (var coord in _coords)
+        if (!Possibilities.Equals(als.Possibilities) || Coordinates.Length != als.Coordinates.Length) return false;
+        foreach (var coord in Coordinates)
         {
             if (!als.Contains(coord)) return false;
         }
@@ -67,7 +67,7 @@ public class AlmostLockedSet : ILinkGraphElement
     public override int GetHashCode()
     {
         int coordHashCode = 0;
-        foreach (var coord in _coords)
+        foreach (var coord in Coordinates)
         {
             coordHashCode ^= coord.GetHashCode();
         }
@@ -77,10 +77,10 @@ public class AlmostLockedSet : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = $"[ALS : {_coords[0].Row + 1}, {_coords[0].Col + 1} ";
-        for (int i = 1; i < _coords.Length; i++)
+        var result = $"[ALS : {Coordinates[0].Row + 1}, {Coordinates[0].Col + 1} ";
+        for (int i = 1; i < Coordinates.Length; i++)
         {
-            result += $"| {_coords[i].Row + 1}, {_coords[i].Col + 1} ";
+            result += $"| {Coordinates[i].Row + 1}, {Coordinates[i].Col + 1} ";
         }
 
         result += "=> ";

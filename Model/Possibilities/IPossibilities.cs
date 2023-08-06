@@ -3,7 +3,7 @@ using Model.Strategies;
 
 namespace Model.Possibilities;
 
-public interface IPossibilities : IReadOnlyPossibilities, IEnumerable<int>
+public interface IPossibilities : IReadOnlyPossibilities
 {
     public const int Min = 1;
     public const int Max = 9;
@@ -50,9 +50,10 @@ public interface IPossibilities : IReadOnlyPossibilities, IEnumerable<int>
     }
 }
 
-public interface IReadOnlyPossibilities
+public interface IReadOnlyPossibilities : IEnumerable<int>
 {
     public int Count { get; }
+    public int GetFirst();
     public IPossibilities Mash(IPossibilities possibilities);
     public bool Peek(int n);
     public bool PeekAll(IPossibilities poss);

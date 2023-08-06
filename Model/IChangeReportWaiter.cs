@@ -43,7 +43,7 @@ public interface IHighLighter
 
 public enum ChangeColoration
 {
-    Change, CauseOne, CauseTwo, CauseThree
+    Change, CauseOffOne, CauseOffTwo, CauseOffThree, CauseOffFour, CauseOffFive, CauseOffSix, CauseOnOne, Neutral
 }
 
 public delegate void HighLightSolver(IHighLighter h);

@@ -110,12 +110,12 @@ public class XWingReportWaiter : IChangeReportWaiter
                 switch (_unit)
                 {
                     case Unit.Row :
-                        lighter.HighLightPossibility(_number, _unit1, other, ChangeColoration.CauseOne);
-                        lighter.HighLightPossibility(_number, _unit2, other, ChangeColoration.CauseOne);
+                        lighter.HighLightPossibility(_number, _unit1, other, ChangeColoration.CauseOffOne);
+                        lighter.HighLightPossibility(_number, _unit2, other, ChangeColoration.CauseOffOne);
                         break;
                     case Unit.Column :
-                        lighter.HighLightPossibility(_number, other, _unit1, ChangeColoration.CauseOne);
-                        lighter.HighLightPossibility(_number, other, _unit2, ChangeColoration.CauseOne);
+                        lighter.HighLightPossibility(_number, other, _unit1, ChangeColoration.CauseOffOne);
+                        lighter.HighLightPossibility(_number, other, _unit2, ChangeColoration.CauseOffOne);
                         break;
                 }
             }

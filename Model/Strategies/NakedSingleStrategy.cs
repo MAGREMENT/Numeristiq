@@ -14,7 +14,7 @@ public class NakedSingleStrategy : IStrategy
             for (int col = 0; col < 9; col++)
             {
                 if (strategyManager.Possibilities[row, col].Count == 1) strategyManager.AddDefinitiveNumber(
-                        strategyManager.Possibilities[row, col].First(), row, col, this);
+                        strategyManager.Possibilities[row, col].GetFirst(), row, col, this);
             }
         }
     }

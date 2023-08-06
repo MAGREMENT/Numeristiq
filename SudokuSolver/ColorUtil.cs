@@ -12,9 +12,14 @@ public static class ColorUtil
         return coloration switch
         {
             ChangeColoration.Change => Colors.Aqua,
-            ChangeColoration.CauseOne => Colors.Coral,
-            ChangeColoration.CauseTwo => Colors.Red,
-            ChangeColoration.CauseThree => Colors.Green,
+            ChangeColoration.CauseOffOne => Colors.Coral,
+            ChangeColoration.CauseOffTwo => Colors.Red,
+            ChangeColoration.CauseOffThree => Colors.Yellow,
+            ChangeColoration.CauseOffFour => Colors.Brown,
+            ChangeColoration.CauseOffFive => Colors.Chocolate,
+            ChangeColoration.CauseOffSix => Colors.Firebrick,
+            ChangeColoration.CauseOnOne => Colors.Green,
+            ChangeColoration.Neutral => Colors.Silver,
             _ => Colors.White
         };
     }

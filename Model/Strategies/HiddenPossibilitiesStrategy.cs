@@ -235,7 +235,7 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
             {
                 foreach (var possibility in _possibilities)
                 {
-                    lighter.HighLightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.CauseOne);
+                    lighter.HighLightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
                 }
             }
             
@@ -263,7 +263,7 @@ public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter
             {
                 foreach (var possibility in _possibilities)
                 {
-                    lighter.HighLightPossibility(possibility, pos[0], pos[1], ChangeColoration.CauseOne);
+                    lighter.HighLightPossibility(possibility, pos[0], pos[1], ChangeColoration.CauseOffOne);
                 }
             }
             

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+// ReSharper disable All
 
 namespace Model.StrategiesUtil.LoopFinder;
 
@@ -171,7 +172,12 @@ public class LoopBuilder<T> where T : ILoopElement
 
     public bool IsAlreadyPresent(T element)
     {
-        return _elements.Any(e => e.IsSameLoopElement(element));
+        foreach (var e in _elements)
+        {
+            if (e.IsSameLoopElement(element)) return true;
+        }
+
+        return false;
     }
 
     public int IndexOf(T element)

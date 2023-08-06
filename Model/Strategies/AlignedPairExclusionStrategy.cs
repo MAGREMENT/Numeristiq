@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class AlignedPairExclusionStrategy : IStrategy //TODO optimize
+public class AlignedPairExclusionStrategy : IStrategy
 {
     public string Name => "Aligned pair exclusion";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
@@ -40,78 +40,118 @@ public class AlignedPairExclusionStrategy : IStrategy //TODO optimize
     {
         List<Coordinate> shared = new List<Coordinate>(
             Coordinate.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
-        
-        if (shared.Count < strategyManager.Possibilities[row1, col1].Count ||
-            shared.Count < strategyManager.Possibilities[row2, col2].Count) return false;
-        
-        var inSameUnit = Coordinate.ShareAUnit(row1, col1, row2, col2);
-        
-        List<int[]> doubles = AllDoublesCombination(strategyManager.Possibilities[row1, col1],
-            strategyManager.Possibilities[row2, col2], !inSameUnit);
 
+        var poss1 = strategyManager.Possibilities[row1, col1];
+        var poss2 = strategyManager.Possibilities[row2, col2];
+        
+        if (shared.Count < poss1.Count ||
+            shared.Count < poss2.Count) return false;
+
+        var inSameUnit = Coordinate.ShareAUnit(row1, col1, row2, col2);
+
+        Dictionary<int, IPossibilities> one = new();
+        foreach (var possibility in poss1)
+        {
+            var copy = poss2.Copy();
+            if (inSameUnit) copy.Remove(possibility);
+            one[possibility] = copy;
+        }
+        
+        Dictionary<int, IPossibilities> two = new();
+        foreach (var possibility in poss2)
+        {
+            var copy = poss1.Copy();
+            if (inSameUnit) copy.Remove(possibility);
+            two[possibility] = copy;
+        }
+
+        HashSet<AlmostLockedSet> usefulAls = new();
+        var changeBuffer = strategyManager.CreateChangeBuffer(this,
+            new AlignedPairExclusionReportWaiter(usefulAls, row1, col1, row2, col2));
+        
         foreach (var als in AlmostLockedSet.SearchForAls(strategyManager, shared, _maxAlzSize))
         {
-            RemoveDoubles(doubles, als);
-            if(CheckForAbsentees(strategyManager, doubles, strategyManager.Possibilities[row1, col1],
-                   strategyManager.Possibilities[row2, col2], row1, col1, row2, col2)) return true;
+            foreach (var possibility in als.Possibilities)
+            {
+                if (one.TryGetValue(possibility, out var other1))
+                {
+                    foreach (var possibility2 in als.Possibilities)
+                    {
+                        if (possibility2 != possibility)
+                        {
+                            if(other1.Remove(possibility2)) usefulAls.Add(als);
+                        }
+                    }
+
+                    if (other1.Count == 0)
+                    {
+                        changeBuffer.AddPossibilityToRemove(possibility, row1, col1);
+                        changeBuffer.Push();
+                        return true;
+                    }
+                }
+                
+                if (two.TryGetValue(possibility, out var other2))
+                {
+                    foreach (var possibility2 in als.Possibilities)
+                    {
+                        if (possibility2 != possibility)
+                        {
+                            if(other2.Remove(possibility2)) usefulAls.Add(als);
+                        }
+                    }
+
+                    if (other2.Count == 0)
+                    {
+                        changeBuffer.AddPossibilityToRemove(possibility, row2, col2);
+                        changeBuffer.Push();
+                        return true;
+                    }
+                }
+            }
         }
 
         return false;
     }
+}
 
-    private List<int[]> AllDoublesCombination(IPossibilities one, IPossibilities two, bool countRepeats)
+public class AlignedPairExclusionReportWaiter : IChangeReportWaiter
+{
+    private readonly HashSet<AlmostLockedSet> _als;
+    private readonly int _row1;
+    private readonly int _col1;
+    private readonly int _row2;
+    private readonly int _col2;
+
+    public AlignedPairExclusionReportWaiter(HashSet<AlmostLockedSet> als, int row1, int col1, int row2, int col2)
     {
-        List<int[]> result = new();
-        foreach (var poss1 in one)
-        {
-            foreach (var poss2 in two)
-            {
-                if(!countRepeats && poss1 == poss2) continue;
-                result.Add(new []{poss1, poss2});
-            }
-        }
-
-        return result;
+        _als = als;
+        _row1 = row1;
+        _col1 = col1;
+        _row2 = row2;
+        _col2 = col2;
     }
-
-    private void RemoveDoubles(List<int[]> doubles, AlmostLockedSet toRemove)
+    
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
-        doubles.RemoveAll(ints => ints[0] != ints[1] && 
-                                  toRemove.Possibilities.Peek(ints[0]) && toRemove.Possibilities.Peek(ints[1]));
-    }
-
-    private bool CheckForAbsentees(IStrategyManager strategyManager, List<int[]> doubles, IPossibilities one, IPossibilities two,
-        int row1, int col1, int row2, int col2)
-    {
-        bool wasProgressMade = false;
-        HashSet<int> presenceOne = new();
-        HashSet<int> presenceTwo = new();
-
-        foreach (var iDouble in doubles)
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
         {
-            presenceOne.Add(iDouble[0]);
-            presenceTwo.Add(iDouble[1]);
-        }
-
-        if (presenceOne.Count != one.Count)
-        {
-            foreach (var poss in one)
+            lighter.HighLightCell(_row1, _col1, ChangeColoration.Neutral);
+            lighter.HighLightCell(_row2, _col2, ChangeColoration.Neutral);
+            
+            int color = 1;
+            foreach (var als in _als)
             {
-                if (!presenceOne.Contains(poss) && strategyManager.RemovePossibility(poss, row1, col1, this))
-                    wasProgressMade = true;
+                foreach (var coord in als.Coordinates)
+                {
+                    lighter.HighLightCell(coord.Row, coord.Col, (ChangeColoration) color);
+                }
+
+                color++;
             }
-        }
-        
-        if (presenceTwo.Count != two.Count)
-        {
-            foreach (var poss in two)
-            {
-                if (!presenceTwo.Contains(poss) && strategyManager.RemovePossibility(poss, row2, col2, this))
-                    wasProgressMade = true;
-            }
-        }
-        
-        return wasProgressMade;
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }
 

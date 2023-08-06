@@ -56,7 +56,7 @@ public class SimpleColoringStrategy : IStrategy
                 foreach (var coord in web)
                 {
                     if (coord.Coloring == one.Coloring) changeBuffer.AddPossibilityToRemove(number, coord.Row, coord.Col);
-                    else changeBuffer.AddPossibilityToRemove(number, coord.Row, coord.Col);
+                    else changeBuffer.AddDefinitiveToAdd(number, coord.Row, coord.Col);
                 }
             }
 
@@ -168,7 +168,7 @@ public class SimpleColoringReportWaiter : IChangeReportWaiter
             foreach (var coord in _web)
             {
                 lighter.HighLightPossibility(_number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
-                    ChangeColoration.CauseThree : ChangeColoration.CauseTwo);
+                    ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
             }
 
             IChangeReportWaiter.HighLightChanges(lighter, changes);
