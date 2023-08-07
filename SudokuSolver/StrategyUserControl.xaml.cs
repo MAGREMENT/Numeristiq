@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using Model;
 
@@ -7,8 +6,6 @@ namespace SudokuSolver;
 
 public partial class StrategyUserControl
 {
-    private readonly TextBlock _name;
-
     public delegate void OnStrategyExclusion();
     public event OnStrategyExclusion? Excluded;
 
@@ -18,14 +15,12 @@ public partial class StrategyUserControl
     public StrategyUserControl()
     {
         InitializeComponent();
-
-        _name = (FindName("Name") as TextBlock)!;
     }
 
     public void InitStrategy(IStrategy strategy)
     {
-        _name.Text = strategy.Name;
-        _name.Foreground = new SolidColorBrush(ColorUtil.ToColor(strategy.Difficulty));
+        StrategyName.Text = strategy.Name;
+        StrategyName.Foreground = new SolidColorBrush(ColorUtil.ToColor(strategy.Difficulty));
     }
 
     private void OnChecked(object sender, RoutedEventArgs e)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Model.Possibilities;
 using Model.StrategiesUtil;
 
@@ -37,13 +36,17 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
         foreach (var chain in chains)
         {
-            SearchByCombination(strategyManager, chain);
-            SearchOffChain(strategyManager, chain);
+            var changeBuffer = strategyManager.CreateChangeBuffer(this, new ThreeDimensionMedusaReportWaiter(chain));
+
+            SearchByCombination(changeBuffer, chain);
+            SearchOffChain(strategyManager, changeBuffer, chain);
+
+            changeBuffer.Push();
         }
         
     }
 
-    private void SearchByCombination(IStrategyManager strategyManager, ColorableWeb<MedusaCoordinate> web)
+    private void SearchByCombination(ChangeBuffer changeBuffer, ColorableWeb<MedusaCoordinate> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
@@ -52,17 +55,17 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 //Twice in a cell
                 if (one.Coloring == two.Coloring)
                 {
-                    InvalidColoring(strategyManager, web, one.Coloring, 1);
+                    InvalidColoring(changeBuffer, web, one.Coloring);
                     return true;
                 }
                 //Two colours in a cell
-                RemoveAllExcept(strategyManager, one.Row, one.Col, one.Number, two.Number);
+                RemoveAllExcept(changeBuffer, one.Row, one.Col, one.Number, two.Number);
             }
             
             //Twice in a unit
             if (one.Number == two.Number && one.ShareAUnit(two) && one.Coloring == two.Coloring)
             {
-                InvalidColoring(strategyManager, web, one.Coloring, 2);
+                InvalidColoring(changeBuffer, web, one.Coloring);
                 return true;
             }
 
@@ -70,7 +73,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         });
     }
 
-    private void SearchOffChain(IStrategyManager strategyManager, ColorableWeb<MedusaCoordinate> web)
+    private void SearchOffChain(IStrategyManager strategyManager, ChangeBuffer changeBuffer, ColorableWeb<MedusaCoordinate> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -103,13 +106,13 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                         //Note : the inCell[0] && inCell[1] should be taken care of by the SearchByCombination function
                         if (twoElsewhere[0] && twoElsewhere[1])
                         {
-                            strategyManager.RemovePossibility(possibility, row, col, this);
+                            changeBuffer.AddPossibilityToRemove(possibility, row, col);
                             break;
                         }
                         if ((twoElsewhere[0] && inCell[1]) ||
                                   (twoElsewhere[1] && inCell[0]))
                         {
-                            strategyManager.RemovePossibility(possibility, row, col, this);
+                            changeBuffer.AddPossibilityToRemove(possibility, row, col);
                             break;
                         }
                     }
@@ -132,7 +135,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
                             if (cellEmptiedByColor[0].Count == 0 || cellEmptiedByColor[1].Count == 0)
                             {
-                                InvalidColoring(strategyManager, web, coord.Coloring, 6);
+                                InvalidColoring(changeBuffer, web, coord.Coloring);
                                 return;
                             }
                         }
@@ -142,24 +145,24 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         }
     }
 
-    private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, int exceptOne, int exceptTwo)
+    private void RemoveAllExcept(ChangeBuffer changeBuffer, int row, int col, int exceptOne, int exceptTwo)
     {
         for (int i = 1; i <= 9; i++)
         {
             if (i != exceptOne && i != exceptTwo)
             {
-                strategyManager.RemovePossibility(i, row, col, this);
+                changeBuffer.AddPossibilityToRemove(i, row, col);
             }
         }
     }
 
-    private void InvalidColoring(IStrategyManager strategyManager, ColorableWeb<MedusaCoordinate> web, Coloring invalid, int type)
+    private void InvalidColoring(ChangeBuffer changeBuffer, ColorableWeb<MedusaCoordinate> web, Coloring invalid)
     {
         foreach (var coord in web)
         {
             if (coord.Coloring == invalid)
-                strategyManager.RemovePossibility(coord.Number, coord.Row, coord.Col, this);
-            else strategyManager.AddDefinitiveNumber(coord.Number, coord.Row, coord.Col, this);
+                changeBuffer.AddPossibilityToRemove(coord.Number, coord.Row, coord.Col);
+            else changeBuffer.AddDefinitiveToAdd(coord.Number, coord.Row, coord.Col);
         }
     }
 
@@ -255,5 +258,29 @@ public class MedusaCoordinate : ColoringCoordinate
     public override string ToString()
     {
         return $"[{Row + 1}, {Col + 1} => {Number}]";
+    }
+}
+
+public class ThreeDimensionMedusaReportWaiter : IChangeReportWaiter
+{
+    private readonly ColorableWeb<MedusaCoordinate> _web;
+
+    public ThreeDimensionMedusaReportWaiter(ColorableWeb<MedusaCoordinate> web)
+    {
+        _web = web;
+    }
+
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            
+            foreach (var coord in _web)
+            {
+                lighter.HighLightPossibility(coord.Number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
+                    ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
+            }
+        }, "");
     }
 }

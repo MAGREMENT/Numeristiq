@@ -39,6 +39,7 @@ public class SimpleColoringStrategy : IStrategy
             {
                 var changeBuffer = strategyManager.CreateChangeBuffer(this,
                     new SimpleColoringReportWaiter(number, chain));
+                
                 SearchForTwiceInTheSameUnit(changeBuffer, number, chain);
                 SearchForTwoColorsElsewhere(strategyManager, changeBuffer, number, chain);
                 

@@ -6,13 +6,8 @@ using Model.Logs;
 
 namespace SudokuSolver;
 
-public partial class LogUserControl : UserControl
+public partial class LogUserControl
 {
-    private readonly StackPanel _main;
-    private readonly TextBlock _number;
-    private readonly TextBlock _title;
-    private readonly TextBlock _text;
-
     private ISolverLog? _log;
 
     public delegate void OnLogClicked(ISolverLog log);
@@ -22,20 +17,15 @@ public partial class LogUserControl : UserControl
     {
         InitializeComponent();
 
-        _main = (FindName("Main") as StackPanel)!;
-        _number = (FindName("Number") as TextBlock)!;
-        _title = (FindName("Title") as TextBlock)!;
-        _text = (FindName("Text") as TextBlock)!;
-
-        _main.MouseEnter += (_, _) =>
+        Main.MouseEnter += (_, _) =>
         {
-            _main.Background = new SolidColorBrush(Colors.White);
+            Main.Background = new SolidColorBrush(Colors.White);
         };
-        _main.MouseLeave += (_, _) =>
+        Main.MouseLeave += (_, _) =>
         {
-            _main.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            Main.Background = new SolidColorBrush(Colors.WhiteSmoke);
         };
-        _main.MouseLeftButtonDown += (_, _) =>
+        Main.MouseLeftButtonDown += (_, _) =>
         {
             if(_log is not null) LogClicked?.Invoke(_log);
         };
@@ -45,9 +35,9 @@ public partial class LogUserControl : UserControl
     {
         _log = log;
 
-        _number.Text = "#" + log.Id;
-        _title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
-        _title.Text = log.Title;
-        _text.Text = log.Changes;
+        Number.Text = "#" + log.Id;
+        Title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
+        Title.Text = log.Title;
+        Text.Text = log.Changes;
     }
 }

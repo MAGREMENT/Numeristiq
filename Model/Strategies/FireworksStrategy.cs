@@ -160,7 +160,7 @@ public class FireworksReportWaiter : IChangeReportWaiter
     {
         return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
         {
-            int color = 1;
+            int color = (int) ChangeColoration.CauseOffOne;
             foreach (var firework in _fireworks)
             {
                 lighter.HighLightPossibility(firework.Possibility, firework.Cross.Row,

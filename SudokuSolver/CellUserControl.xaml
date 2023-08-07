@@ -9,12 +9,12 @@
     <Grid Background="Gray" x:Name="DeepBackground" Width="60" Height="60" Margin="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
-            <ColumnDefinition Width="56"/>
+            <ColumnDefinition Width="57"/>
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition />
-            <RowDefinition Height="56"/>
+            <RowDefinition Height="57"/>
             <RowDefinition />
         </Grid.RowDefinitions>
         <local:NumbersUserControl Grid.Row="1" Grid.Column="1" x:Name="Numbers" Background="White"/>

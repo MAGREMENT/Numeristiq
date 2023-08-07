@@ -1,18 +1,14 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Model;
 
 namespace SudokuSolver;
 
-public partial class LiveModificationUserControl : UserControl //TODO disable when looking back at logs
+public partial class LiveModificationUserControl //TODO disable when looking back at logs
 {
-    private readonly NumbersUserControl _numbers;
-    private readonly RadioButton _definitiveNumber;
-    private readonly RadioButton _possibilities;
 
-    private CellUserControl? _current = null;
+    private CellUserControl? _current;
     private readonly int[] _currentPos = new int[2];
 
     public delegate void OnLiveModification(int number, int row, int col, SolverNumberType numberType);
@@ -21,27 +17,22 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
     public LiveModificationUserControl()
     {
         InitializeComponent();
-        
-        _numbers = (FindName("Numbers") as NumbersUserControl)!;
 
-        _numbers.SetSize(150);
-        _numbers.Focusable = true;
-        _numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
-        _numbers.LostFocus += (_, _) =>
+        Numbers.SetSize(150);
+        Numbers.Focusable = true;
+        Numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
+        Numbers.LostFocus += (_, _) =>
         {
-            _numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            Numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
         };
-        _numbers.GotFocus += (_, _) =>
+        Numbers.GotFocus += (_, _) =>
         {
-            _numbers.Background = new SolidColorBrush(Colors.Aqua);
+            Numbers.Background = new SolidColorBrush(Colors.Aqua);
         };
-        _numbers.MouseDown += (_, _) =>
+        Numbers.MouseDown += (_, _) =>
         {
-            _numbers.Focus();
+            Numbers.Focus();
         };
-
-        _definitiveNumber = (FindName("A") as RadioButton)!;
-        _possibilities = (FindName("B") as RadioButton)!;
     }
 
     public void SetCurrent(CellUserControl scuc, int row, int col)
@@ -52,10 +43,10 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
             _current = null;
             
             // Kill logical and keyboard focus
-            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(_numbers), null);
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(Numbers), null);
             Keyboard.ClearFocus();
             
-            _numbers.Void();
+            Numbers.Void();
             return;
         }
         
@@ -65,15 +56,15 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
 
         _current.Updated += Update;
         _current.FireUpdated();
-        _numbers.Focus();
+        Numbers.Focus();
     }
 
     private void Update(bool isPossibilities, int[] numbers)
     {
         if (_current is not null)
         {
-            if (isPossibilities) _numbers.SetSmall(numbers);
-            else _numbers.SetBig(numbers[0]);
+            if (isPossibilities) Numbers.SetSmall(numbers);
+            else Numbers.SetBig(numbers[0]);
         }
     }
 
@@ -107,8 +98,8 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
         if (_current is not null)
         {
             SolverNumberType numberType;
-            if (_definitiveNumber.IsChecked == true) numberType = SolverNumberType.Definitive;
-            else if (_possibilities.IsChecked == true) numberType = SolverNumberType.Possibility;
+            if (A.IsChecked == true) numberType = SolverNumberType.Definitive;
+            else if (B.IsChecked == true) numberType = SolverNumberType.Possibility;
             else return;
             
             LiveModified?.Invoke(i, _currentPos[0], _currentPos[1], numberType);
@@ -117,6 +108,6 @@ public partial class LiveModificationUserControl : UserControl //TODO disable wh
 
     private void FocusThis(object sender, RoutedEventArgs e)
     {
-        _numbers.Focus();
+        Numbers.Focus();
     }
 }

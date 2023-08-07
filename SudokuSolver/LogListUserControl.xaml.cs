@@ -1,16 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
-using Model;
 using Model.Logs;
 
 namespace SudokuSolver;
 
-public partial class LogListUserControl : UserControl
-{
-    private readonly StackPanel _list;
-    private readonly ScrollViewer _scroll;
-
+public partial class LogListUserControl
+{ 
     public event LogUserControl.OnLogClicked? LogClicked;
     
     public delegate void OnShowCurrentClicked();
@@ -19,14 +14,11 @@ public partial class LogListUserControl : UserControl
     public LogListUserControl()
     {
         InitializeComponent();
-
-        _list = (FindName("List") as StackPanel)!;
-        _scroll = (FindName("Scroll") as ScrollViewer)!;
     }
 
     public void InitLogs(List<ISolverLog> logs)
     {
-        _list.Children.Clear();
+        List.Children.Clear();
 
         foreach (var log in logs)
         {
@@ -36,10 +28,10 @@ public partial class LogListUserControl : UserControl
             {
                 LogClicked?.Invoke(logClicked);
             };
-            _list.Children.Add(luc);
+            List.Children.Add(luc);
         }
         
-        _scroll.ScrollToBottom();
+        Scroll.ScrollToBottom();
     }
 
     private void ShowCurrent(object sender, RoutedEventArgs e)

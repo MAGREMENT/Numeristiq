@@ -11,7 +11,8 @@ public static class ColorUtil
     {
         return coloration switch
         {
-            ChangeColoration.Change => Colors.Aqua,
+            ChangeColoration.ChangeOne => Colors.RoyalBlue,
+            ChangeColoration.ChangeTwo => Colors.CornflowerBlue,
             ChangeColoration.CauseOffOne => Colors.Coral,
             ChangeColoration.CauseOffTwo => Colors.Red,
             ChangeColoration.CauseOffThree => Colors.Yellow,

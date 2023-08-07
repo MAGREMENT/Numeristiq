@@ -1,15 +1,12 @@
 ﻿using System.Collections.Generic;
-using Model.Logs;
-using Model.Positions;
-using Model.Possibilities;
 using Model.StrategiesUtil;
 
 namespace Model;
 
-public class ChangeBuffer
+public class ChangeBuffer //TODO move ReportWaiter to push function and creation of change buffer only on actual change
 {
-    private List<int>? _possibilityRemoved;
-    private List<int>? _definitiveAdded;
+    private HashSet<CondensedPossibilityCoordinate>? _possibilityRemoved;
+    private HashSet<CondensedPossibilityCoordinate>? _definitiveAdded;
 
     private readonly IChangeManager _m;
     private readonly IChangeReportWaiter _reportWaiter;
@@ -25,14 +22,14 @@ public class ChangeBuffer
     public void AddPossibilityToRemove(int possibility, int row, int col)
     {
         if (!_m.Possibilities[row, col].Peek(possibility)) return;
-        _possibilityRemoved ??= new List<int>();
-        _possibilityRemoved.Add(possibility * 81 + row * 9 + col);
+        _possibilityRemoved ??= new HashSet<CondensedPossibilityCoordinate>();
+        _possibilityRemoved.Add(new CondensedPossibilityCoordinate(row, col, possibility));
     }
 
     public void AddDefinitiveToAdd(int number, int row, int col)
     {
-        _definitiveAdded ??= new List<int>();
-        _definitiveAdded.Add(number * 81 + row * 9 + col);
+        _definitiveAdded ??= new HashSet<CondensedPossibilityCoordinate>();
+        _definitiveAdded.Add(new CondensedPossibilityCoordinate(row, col, number));
     }
 
     public bool Push()
@@ -42,9 +39,9 @@ public class ChangeBuffer
         {
             foreach (var possibility in _possibilityRemoved)
             {
-                int n = possibility % 81;
-                if (_m.RemovePossibility(possibility / 81, n / 9, n % 9)) changes.Add(
-                    new SolverChange(SolverNumberType.Possibility, possibility / 81, n / 9, n % 9));
+                if (_m.RemovePossibility(possibility.Possibility, possibility.Row, possibility.Column)) changes.Add(
+                    new SolverChange(SolverNumberType.Possibility,
+                        possibility.Possibility, possibility.Row, possibility.Column));
             
             } 
         }
@@ -53,9 +50,9 @@ public class ChangeBuffer
         {
             foreach (var definitive in _definitiveAdded)
             {
-                int n = definitive % 81;
-                if(_m.AddDefinitive(definitive / 81, n / 9, n % 9)) changes.Add(
-                    new SolverChange(SolverNumberType.Definitive, definitive / 81, n / 9, n % 9));
+                if(_m.AddDefinitive(definitive.Possibility, definitive.Row, definitive.Column)) changes.Add(
+                    new SolverChange(SolverNumberType.Definitive, definitive.Possibility,
+                        definitive.Row, definitive.Column));
             }  
         }
 

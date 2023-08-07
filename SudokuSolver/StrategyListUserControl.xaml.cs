@@ -1,12 +1,9 @@
-﻿using System.Windows.Controls;
-using Model;
+﻿using Model;
 
 namespace SudokuSolver;
 
-public partial class StrategyListUserControl : UserControl
+public partial class StrategyListUserControl
 {
-    private readonly StackPanel _list;
-
     public delegate void OnStrategyExclusion(int number);
     public event OnStrategyExclusion? StrategyExcluded;
 
@@ -16,8 +13,6 @@ public partial class StrategyListUserControl : UserControl
     public StrategyListUserControl()
     {
         InitializeComponent();
-
-        _list = (FindName("List") as StackPanel)!;
     }
 
     public void InitStrategies(IStrategy[] strategies)
@@ -31,7 +26,7 @@ public partial class StrategyListUserControl : UserControl
             suc.Excluded += () => StrategyExcluded?.Invoke(a);
             suc.Used += () => StrategyUsed?.Invoke(a);
             
-            _list.Children.Add(suc);
+            List.Children.Add(suc);
         }
     }
 }

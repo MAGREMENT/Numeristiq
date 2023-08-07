@@ -12,8 +12,8 @@ public interface IChangeReportWaiter
         foreach (var change in changes)
         {
             if(change.NumberType == SolverNumberType.Possibility)
-                highLighter.HighLightPossibility(change.Number, change.Row, change.Column, ChangeColoration.Change);
-            else highLighter.HighLightCell(change.Row, change.Column, ChangeColoration.Change);
+                highLighter.HighLightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
+            else highLighter.HighLightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
         }
     }
 
@@ -43,7 +43,7 @@ public interface IHighLighter
 
 public enum ChangeColoration
 {
-    Change, CauseOffOne, CauseOffTwo, CauseOffThree, CauseOffFour, CauseOffFive, CauseOffSix, CauseOnOne, Neutral
+    ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree, CauseOffFour, CauseOffFive, CauseOffSix, CauseOnOne, Neutral
 }
 
 public delegate void HighLightSolver(IHighLighter h);

@@ -36,7 +36,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     private bool _changeWasMade;
     
     private PreComputer _pre;
-    private readonly LogManager _logManager;
+    private LogManager _logManager;
 
     public Solver(Sudoku s, params IStrategy[] strategies)
     {
@@ -94,7 +94,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
 
         ResetPossibilities();
 
-        if (LogsManaged) State = GetState();
+        if (LogsManaged)
+        {
+            _logManager = new LogManager(this);
+            State = GetState();
+        }
 
         _pre = new PreComputer(this);
     }
@@ -351,6 +355,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new BUGStrategy(),
             new GridFormationStrategy(3),
             new GridFormationStrategy(4),
+            new FinnedXWingStrategy(),
             new FireworksStrategy(),
             new UniqueRectanglesStrategy(),
             new XYChainStrategy(),

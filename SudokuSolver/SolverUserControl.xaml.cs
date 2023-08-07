@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Model;
 using Model.Logs;
 
@@ -10,9 +9,7 @@ namespace SudokuSolver;
 
 public partial class SolverUserControl : IHighLighter
 {
-    private readonly StackPanel _main;
-
-    private Solver _currentSolver = new(new Sudoku());
+    private readonly Solver _solver = new(new Sudoku());
     private int _logBuffer = -1;
 
     public delegate void OnReady();
@@ -28,11 +25,9 @@ public partial class SolverUserControl : IHighLighter
     {
         InitializeComponent();
 
-        _main = (FindName("Main") as StackPanel)!;
-
         for (int i = 0; i < 9; i++)
         {
-            StackPanel row = (StackPanel)_main.Children[i];
+            StackPanel row = (StackPanel)Main.Children[i];
             for (int j = 0; j < 9; j++)
             {
                 var toAdd = new CellUserControl();
@@ -67,16 +62,16 @@ public partial class SolverUserControl : IHighLighter
         }
     }
 
-    public void NewSolver(Solver solver)
+    public void NewSudoku(Sudoku sudoku)
     {
-        _currentSolver = solver;
+        _solver.SetSudoku(sudoku);
         RefreshSolver();
     }
     
     private void Update()
     {
         RefreshSolver();
-        SolverUpdated?.Invoke(_currentSolver.Sudoku.AsString());
+        SolverUpdated?.Invoke(_solver.Sudoku.AsString());
     }
 
     private void RefreshSolver()
@@ -95,33 +90,33 @@ public partial class SolverUserControl : IHighLighter
 
     public void AddDefinitiveNumber(int number, int row, int col)
     {
-        _currentSolver.SetDefinitiveNumberByHand(number, row, col); 
+        _solver.SetDefinitiveNumberByHand(number, row, col); 
         Update();
     }
     
     public void RemovePossibility(int number, int row, int col)
     {
-        _currentSolver.RemovePossibilityByHand(number, row, col);
+        _solver.RemovePossibilityByHand(number, row, col);
         Update();
     }
 
     private void UpdateCell(CellUserControl current, int row, int col)
     {
-        if(_currentSolver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_currentSolver.Sudoku[row, col]);
-        else current.SetPossibilities(_currentSolver.Possibilities[row, col]);
+        if(_solver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_solver.Sudoku[row, col]);
+        else current.SetPossibilities(_solver.Possibilities[row, col]);
     }
 
     public void SolveSudoku()
     {
-        _currentSolver.Solve();
-        if (_currentSolver.Logs.Count > 0) _logBuffer = _currentSolver.Logs[^1].Id;
+        _solver.Solve();
+        if (_solver.Logs.Count > 0) _logBuffer = _solver.Logs[^1].Id;
         Update();
         IsReady?.Invoke();
     }
 
     public async void RunUntilProgress()
     { 
-        _currentSolver.Solve(true);
+        _solver.Solve(true);
         
         for (int i = 0; i < 9; i++)
         {
@@ -131,9 +126,9 @@ public partial class SolverUserControl : IHighLighter
             }
         }
 
-        if (_currentSolver.Logs.Count > 0)
+        if (_solver.Logs.Count > 0)
         {
-            var current = _currentSolver.Logs[^1];
+            var current = _solver.Logs[^1];
             if (current.Id != _logBuffer)
             {
                 current.SolverHighLighter(this);
@@ -198,7 +193,7 @@ public partial class SolverUserControl : IHighLighter
 
     public void ClearSudoku()
     {
-        _currentSolver = new Solver(new Sudoku());
+        _solver.SetSudoku(new Sudoku());
         Update();
     }
     
@@ -214,27 +209,27 @@ public partial class SolverUserControl : IHighLighter
 
     public List<ISolverLog> GetLogs()
     {
-        return _currentSolver.Logs;
+        return _solver.Logs;
     }
 
     public IStrategy[] GetStrategies()
     {
-        return _currentSolver.Strategies;
+        return _solver.Strategies;
     }
 
     public void ExcludeStrategy(int number)
     {
-        _currentSolver.ExcludeStrategy(number);
+        _solver.ExcludeStrategy(number);
     }
 
     public void UseStrategy(int number)
     {
-        _currentSolver.UseStrategy(number);
+        _solver.UseStrategy(number);
     }
 
     private CellUserControl GetTo(int row, int col)
     {
-        return (CellUserControl) ((StackPanel)_main.Children[row]).Children[col];
+        return (CellUserControl) ((StackPanel)Main.Children[row]).Children[col];
     }
 
 }

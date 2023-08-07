@@ -5,10 +5,8 @@ using System.Windows.Media;
 
 namespace SudokuSolver;
 
-public partial class NumbersUserControl : UserControl
+public partial class NumbersUserControl //TODO implement multicolor-highlighting
 {
-    private readonly Grid _case;
-
     private readonly Grid _small = new();
     private readonly TextBlock _big = new();
 
@@ -16,7 +14,7 @@ public partial class NumbersUserControl : UserControl
     {
         InitializeComponent();
 
-        _case = (FindName("Case") as Grid)!;
+        Case = (FindName("Case") as Grid)!;
 
         _big.TextAlignment = TextAlignment.Center;
         
@@ -48,8 +46,8 @@ public partial class NumbersUserControl : UserControl
 
     public void SetSize(int size)
     {
-        _case.Width = size;
-        _case.Height = size;
+        Case.Width = size;
+        Case.Height = size;
         
         _big.Width = size;
         _big.Height = size;
@@ -67,15 +65,15 @@ public partial class NumbersUserControl : UserControl
 
     public void SetBig(int number)
     {
-        _case.Children.Clear();
-        _case.Children.Add(_big);
+        Case.Children.Clear();
+        Case.Children.Add(_big);
         _big.Text = number.ToString();
     }
 
     public void SetSmall(int[] numbers)
     {
-        _case.Children.Clear();
-        _case.Children.Add(_small);
+        Case.Children.Clear();
+        Case.Children.Add(_small);
         foreach (var child in _small.Children)
         {
             var tb = (child as TextBlock)!;
@@ -87,7 +85,7 @@ public partial class NumbersUserControl : UserControl
 
     public void Void()
     {
-        _case.Children.Clear();
+        Case.Children.Clear();
     }
 
     public void UnHighLight()
@@ -108,7 +106,7 @@ public partial class NumbersUserControl : UserControl
     public void HighLightBig(Color color)
     {
         _big.Background = new SolidColorBrush(color);
-        if(_case.Children[0] is Grid) HighLightWholeSmall(color);
+        if(Case.Children[0] is Grid) HighLightWholeSmall(color);
     }
 
     private void HighLightWholeSmall(Color color)

@@ -242,3 +242,42 @@ public class PossibilityCoordinate : Coordinate, ILoopElement, ILinkGraphElement
         return other is PossibilityCoordinate pc && pc.Equals(this);
     }
 }
+
+public readonly struct CondensedPossibilityCoordinate
+{
+    private readonly int _n;
+
+    public int Possibility => _n >> 8;
+    public int Row => (_n >> 4) & 0xF;
+    public int Column => _n & 0xF;
+
+    public CondensedPossibilityCoordinate(int row, int col, int possibility)
+    {
+        _n = possibility << 8 | row << 4 | col;
+    }
+
+    public override int GetHashCode()
+    {
+        return _n;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CondensedPossibilityCoordinate cpc && cpc._n == _n;
+    }
+
+    public override string ToString()
+    {
+        return $"[{Row + 1}, {Column + 1}] => {Possibility}";
+    }
+
+    public static bool operator ==(CondensedPossibilityCoordinate left, CondensedPossibilityCoordinate right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(CondensedPossibilityCoordinate left, CondensedPossibilityCoordinate right)
+    {
+        return !(left == right);
+    }
+}

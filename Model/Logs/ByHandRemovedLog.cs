@@ -22,6 +22,6 @@ public class ByHandRemovedLog : ISolverLog
 
     private void HighLight(IHighLighter highLighter)
     {
-        highLighter.HighLightPossibility(_asChange.Number, _asChange.Row, _asChange.Column, ChangeColoration.Change);
+        highLighter.HighLightPossibility(_asChange.Number, _asChange.Row, _asChange.Column, ChangeColoration.ChangeOne);
     }
 }

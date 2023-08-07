@@ -63,8 +63,8 @@ public class BuildUpLog : ISolverLog
         {
             int abs = Math.Abs(change);
             int a = abs % 81;
-            if(change > 0) highLighter.HighLightCell(a / 9, a % 9, ChangeColoration.Change);
-            else highLighter.HighLightPossibility(abs / 81 + 1 , a / 9, a % 9, ChangeColoration.Change);
+            if(change > 0) highLighter.HighLightCell(a / 9, a % 9, ChangeColoration.ChangeOne);
+            else highLighter.HighLightPossibility(abs / 81 + 1 , a / 9, a % 9, ChangeColoration.ChangeOne);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Model;
-using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -10,23 +9,11 @@ namespace SudokuSolver;
     /// </summary>
     public partial class MainWindow
     {
-        private readonly StackPanel _mainPanel;
-        private readonly StackPanel _optionsPanel;
-        private readonly StackPanel _modificationsPanel;
-        private readonly StackPanel _asidePanel;
-        private readonly StackPanel _asidePanel2;
-
         private bool _createNewSudoku = true;
 
-        public MainWindow()
+        public MainWindow() //TODO replace FindName() with properties
         {
             InitializeComponent();
-
-            _mainPanel = (FindName("MainPanel") as StackPanel)!;
-            _optionsPanel = (FindName("OptionsPanel") as StackPanel)!;
-            _modificationsPanel = (FindName("ModificationsPanel") as StackPanel)!;
-            _asidePanel = (FindName("AsidePanel") as StackPanel)!;
-            _asidePanel2 = (FindName("AsidePanelTwo") as StackPanel)!;
 
             GetSolverUserControl().IsReady += () => { GetSolveButton().IsEnabled = true; };
 
@@ -67,20 +54,18 @@ namespace SudokuSolver;
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
         {
-            if (_createNewSudoku) GetSolverUserControl().NewSolver(
-                new Solver(new Sudoku(GetSudokuString().Text)));
+            if (_createNewSudoku) GetSolverUserControl().NewSudoku(new Sudoku(GetSudokuString().Text));
         }
 
-        private void SolveSudoku(object sender, RoutedEventArgs e) //TODO fix : update string value when solve
+        private void SolveSudoku(object sender, RoutedEventArgs e) //TODO fix : update string value when run until progress
         {
             if (sender is not Button butt) return;
             butt.IsEnabled = false;
 
             SolverUserControl suc = GetSolverUserControl();
-
-            bool? stepByStep = GetStepByStepOption().IsChecked;
-            if (stepByStep is null || (bool) !stepByStep) suc.SolveSudoku();
-            else suc.RunUntilProgress();
+            
+            if (GetStepByStepOption().IsChecked == true) suc.RunUntilProgress();
+            else suc.SolveSudoku();
 
             GetLogListUserControl().InitLogs(suc.GetLogs());
         }
@@ -96,41 +81,41 @@ namespace SudokuSolver;
         /*Gets*/
         private SolverUserControl GetSolverUserControl()
         {
-            return (SolverUserControl)_mainPanel.Children[0];
+            return (SolverUserControl)MainPanel.Children[0];
         }
 
         private LiveModificationUserControl GetLiveModificationUserControl()
         {
-            return (LiveModificationUserControl)_modificationsPanel.Children[1];
+            return (LiveModificationUserControl)ModificationsPanel.Children[1];
         }
 
         private LogListUserControl GetLogListUserControl()
         {
-            return (LogListUserControl)_asidePanel.Children[0];
+            return (LogListUserControl)AsidePanel.Children[0];
         }
 
         private Button GetSolveButton()
         {
-            return (Button)((StackPanel)_mainPanel.Children[2]).Children[0];
+            return (Button)((StackPanel)MainPanel.Children[2]).Children[0];
         }
 
         private TextBox GetSudokuString()
         {
-            return (TextBox)_mainPanel.Children[1];
+            return (TextBox)MainPanel.Children[1];
         }
 
         private CheckBox GetStepByStepOption()
         {
-            return (CheckBox)_optionsPanel.Children[1];
+            return (CheckBox)OptionsPanel.Children[1];
         }
 
         private TextBox GetExplanationBox()
         {
-            return (TextBox)_asidePanel.Children[1];
+            return (TextBox)AsidePanel.Children[1];
         }
 
         private StrategyListUserControl GetStrategyList()
         {
-            return (StrategyListUserControl)_asidePanel2.Children[0];
+            return (StrategyListUserControl)AsidePanelTwo.Children[0];
         }
     }

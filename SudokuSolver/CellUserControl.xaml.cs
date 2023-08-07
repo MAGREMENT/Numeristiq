@@ -27,7 +27,7 @@ public partial class CellUserControl : UserControl
         InitializeComponent();
 
         _numbers = (FindName("Numbers") as NumbersUserControl)!;
-        _numbers.SetSize(56);
+        _numbers.SetSize(57);
         _numbers.MouseLeftButtonDown += (_, _) =>
         {
             ClickedOn?.Invoke(this);

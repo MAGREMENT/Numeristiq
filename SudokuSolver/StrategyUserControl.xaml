@@ -7,6 +7,6 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Width="180" Orientation="Horizontal" Margin="0, 0, 0, 5">
         <CheckBox Margin="0, 0, 10, 0" IsChecked="True" Checked="OnChecked" Unchecked="OnUnChecked"></CheckBox>
-        <TextBlock x:Name="Name" TextWrapping="Wrap"></TextBlock>
+        <TextBlock x:Name="StrategyName" TextWrapping="Wrap"></TextBlock>
     </StackPanel>
 </UserControl>
