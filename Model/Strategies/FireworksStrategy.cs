@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
 public class FireworksStrategy : IStrategy
 {
-    public string Name { get; } = "Fireworks";
+    public string Name => "Fireworks";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -25,13 +24,22 @@ public class FireworksStrategy : IStrategy
                     AddIfFirework(strategyManager, cellFireworks, row, col, possibility);
                 }
 
-                if (cellFireworks.Count == 3)
+                if (cellFireworks.Count >= 3)
                 {
-                    var sharedWings = cellFireworks[0].MashWings(cellFireworks[1], cellFireworks[2]);
-                    if (sharedWings.Count == 2)
-                        ProcessTripleFirework(strategyManager, row, col, sharedWings,
-                            cellFireworks[0].Possibility, cellFireworks[1].Possibility,
-                            cellFireworks[2].Possibility);
+                    for (int i = 0; i < cellFireworks.Count; i++)
+                    {
+                        for (int j = i + 1; j < cellFireworks.Count; j++)
+                        {
+                            for (int k = j + 1; k < cellFireworks.Count; k++)
+                            {
+                                var sharedWings = cellFireworks[i].MashWings(cellFireworks[j], cellFireworks[k]);
+                                if (sharedWings.Count == 2)
+                                    ProcessTripleFirework(strategyManager, sharedWings,
+                                        cellFireworks[i], cellFireworks[j],
+                                        cellFireworks[k]);
+                            }
+                        }
+                    }
                 }
                 
                 //fireworks.AddRange(cellFireworks);
@@ -41,21 +49,26 @@ public class FireworksStrategy : IStrategy
         //TODO other elimintations
     }
 
-    private void ProcessTripleFirework(IStrategyManager strategyManager, int crossRow, int crossCol, IEnumerable<Coordinate> wings,
-        params int[] possibilities)
+    private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Coordinate> wings,
+        Firework one, Firework two, Firework three)
     {
-        foreach (var possibility in strategyManager.Possibilities[crossRow, crossCol])
+        var changeBuffer = strategyManager.CreateChangeBuffer(this, new FireworksReportWaiter(one, two, three));
+        foreach (var possibility in strategyManager.Possibilities[one.Cross.Row, one.Cross.Col])
         {
-            if (!possibilities.Contains(possibility)) strategyManager.RemovePossibility(possibility, crossRow, crossCol, this);
+            if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility)
+                changeBuffer.AddPossibilityToRemove(possibility, one.Cross.Row, one.Cross.Col);
         }
 
         foreach (var wing in wings)
         {
             foreach (var possibility in strategyManager.Possibilities[wing.Row, wing.Col])
             {
-                if (!possibilities.Contains(possibility)) strategyManager.RemovePossibility(possibility, wing.Row, wing.Col, this);
+                if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility) 
+                    changeBuffer.AddPossibilityToRemove(possibility, wing.Row, wing.Col);
             }
         }
+
+        changeBuffer.Push();
     }
 
     private void AddIfFirework(IStrategyManager strategyManager, List<Firework> fireworks, int row, int col, int possibility)
@@ -102,48 +115,29 @@ public class Firework
 {
     public int Possibility { get; }
 
-    private readonly int _crossRow;
-    private readonly int _crossCol;
-
-    private readonly HashSet<Coordinate> _wings = new();
+    public Coordinate Cross { get; }
+    public Coordinate[] Wings { get; }
 
     public Firework(int possibility, int crossRow, int crossCol, int wingRow, int wingCol)
     {
         Possibility = possibility;
-        _crossRow = crossRow;
-        _crossCol = crossCol;
-        _wings.Add(new Coordinate(wingRow, wingCol));
+        Cross = new Coordinate(crossRow, crossCol);
+        Wings = new Coordinate[] { new(wingRow, wingCol) };
     }
     
     public Firework(int possibility, int crossRow, int crossCol, int wingRow1, int wingCol1, int wingRow2, int wingCol2)
     {
         Possibility = possibility;
-        _crossRow = crossRow;
-        _crossCol = crossCol;
-        _wings.Add(new Coordinate(wingRow1, wingCol1));
-        _wings.Add(new Coordinate(wingRow2, wingCol2));
+        Cross = new Coordinate(crossRow, crossCol);
+        Wings = new Coordinate[] { new(wingRow1, wingCol1), new(wingRow2, wingCol2) };
     }
 
-    public HashSet<Coordinate> MashWings(IEnumerable<Firework> fireworks)
-    {
-        HashSet<Coordinate> result = new(_wings);
-        foreach (var firework in fireworks)
-        {
-            foreach (var wing in firework._wings)
-            {
-                result.Add(wing);
-            }
-        }
-
-        return result;
-    }
-    
     public HashSet<Coordinate> MashWings(params Firework[] fireworks)
     {
-        HashSet<Coordinate> result = new(_wings);
+        HashSet<Coordinate> result = new(Wings);
         foreach (var firework in fireworks)
         {
-            foreach (var wing in firework._wings)
+            foreach (var wing in firework.Wings)
             {
                 result.Add(wing);
             }
@@ -151,5 +145,35 @@ public class Firework
 
         return result;
     }
+}
 
+public class FireworksReportWaiter : IChangeReportWaiter
+{
+    private readonly Firework[] _fireworks;
+
+    public FireworksReportWaiter(params Firework[] fireworks)
+    {
+        _fireworks = fireworks;
+    }
+
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            int color = 1;
+            foreach (var firework in _fireworks)
+            {
+                lighter.HighLightPossibility(firework.Possibility, firework.Cross.Row,
+                    firework.Cross.Col, (ChangeColoration) color);
+                foreach (var coord in firework.Wings)
+                {
+                    lighter.HighLightPossibility(firework.Possibility, coord.Row, coord.Col, (ChangeColoration) color);
+                }
+
+                color++;
+            }
+
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
+    }
 }

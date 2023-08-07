@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.DeprecatedStrategies;
 using Model.Positions;
+using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
@@ -15,7 +15,6 @@ public class GridFormationStrategy : IStrategy
     public int Score { get; set; }
 
     private readonly int _type;
-    private bool _lookingAtRows;
 
     public GridFormationStrategy(int type)
     {
@@ -41,74 +40,95 @@ public class GridFormationStrategy : IStrategy
     { 
         for (int number = 1; number <= 9; number++)
         {
-            Queue<ValuePositions> toSearch = new();
-            _lookingAtRows = true;
-            //Rows
             for (int row = 0; row < 9; row++)
             {
-                LinePositions p = strategyManager.PossibilityPositionsInRow(row, number);
-                if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, row));
+                Search(strategyManager, row, number, new LinePositions(), new LinePositions(), Unit.Row);
             }
-            Search(strategyManager, toSearch, number, _type);
             
-
-            //Columns
-            _lookingAtRows = false;
             for (int col = 0; col < 9; col++)
             {
-                LinePositions p = strategyManager.PossibilityPositionsInColumn(col, number);
-                if (p.Count > 1 && p.Count <= _type) toSearch.Enqueue(new ValuePositions(p, col));
+                Search(strategyManager, col, number, new LinePositions(), new LinePositions(), Unit.Column);
             }
-            Search(strategyManager, toSearch, number, _type);
-            
         }
     }
 
-    private void Search(IStrategyManager strategyManager, Queue<ValuePositions> toSearch, int number, int count)
+    private void Search(IStrategyManager strategyManager, int unitToSearch, int number, LinePositions mashed, LinePositions visited,
+        Unit unit)
     {
-        while (toSearch.Count > 0)
+        visited.Add(unitToSearch);
+        
+        var current = unit == Unit.Row
+            ? strategyManager.PossibilityPositionsInRow(unitToSearch, number)
+            : strategyManager.PossibilityPositionsInColumn(unitToSearch, number);
+        if (current.Count > _type || current.Count < 2) return;
+
+        var newMashed = mashed.Mash(current);
+        if (newMashed.Count > _type) return;
+
+        if (visited.Count == _type)
         {
-            ValuePositions first = toSearch.Dequeue();
-            LinePositions visited = new();
-            visited.Add(first.Value);
-            RecursiveSearch(strategyManager, new Queue<ValuePositions>(toSearch), visited,
-                first.Positions, number, count - 1);
+            if(newMashed.Count == _type)Process(strategyManager, visited, newMashed, number, unit);
         }
-    }
-
-    private void RecursiveSearch(IStrategyManager strategyManager, Queue<ValuePositions> toSearch, LinePositions visited, LinePositions current,
-        int number, int count)
-    {
-        while (toSearch.Count > 0)
+        else
         {
-            ValuePositions dequeue = toSearch.Dequeue();
-            LinePositions newCurrent = current.Mash(dequeue.Positions);
-            visited.Add(dequeue.Value);
-            if (count - 1 == 0)
+            for (int i = unitToSearch + 1; i < 9; i++)
             {
-                if (newCurrent.Count == _type) Process(strategyManager, visited, newCurrent, number);
-            }
-            else
-            {
-                if(newCurrent.Count <= _type)
-                    RecursiveSearch(strategyManager, new Queue<ValuePositions>(toSearch), visited.Copy(),
-                        newCurrent, number, count - 1);
+                Search(strategyManager, i, number, newMashed, visited.Copy(), unit);
             }
         }
     }
 
-    private void Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number)
+    private void Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
+        var changeBuffer = unit == Unit.Row
+            ? strategyManager.CreateChangeBuffer(this, new GridFormationReportWaiter(visited, toRemove, number))
+            : strategyManager.CreateChangeBuffer(this, new GridFormationReportWaiter(toRemove, visited, number));
+        
         foreach (var first in toRemove)
         {
             for (int other = 0; other < 9; other++)
             {
                 if (visited.Peek(other)) continue;
-                
-                int[] pos = _lookingAtRows ? new[] { other, first } : new[] { first, other };
-                if (strategyManager.Possibilities[pos[0], pos[1]].Peek(number))
-                    strategyManager.RemovePossibility(number, pos[0], pos[1], this);
+
+                if (unit == Unit.Row) changeBuffer.AddPossibilityToRemove(number, other, first);
+                else changeBuffer.AddPossibilityToRemove(number, first, other);
             }
         }
+
+        changeBuffer.Push();
+    }
+}
+
+public class GridFormationReportWaiter : IChangeReportWaiter
+{
+    private readonly LinePositions _rows;
+    private readonly LinePositions _cols;
+    private readonly int _number;
+
+    public GridFormationReportWaiter(LinePositions rows, LinePositions cols, int number)
+    {
+        _rows = rows;
+        _cols = cols;
+        _number = number;
+    }
+
+    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    {
+        List<Coordinate> coords = new();
+        foreach (var row in _rows)
+        {
+            foreach (var col in _cols)
+            {
+                if (manager.Possibilities[row, col].Peek(_number)) coords.Add(new Coordinate(row, col));
+            }
+        }
+        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        {
+            foreach (var coord in coords)
+            {
+                lighter.HighLightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+            }
+            IChangeReportWaiter.HighLightChanges(lighter, changes);
+        }, "");
     }
 }

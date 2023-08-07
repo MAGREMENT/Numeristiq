@@ -348,7 +348,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new XYWingStrategy(),
             new XYZWingStrategy(),
             new SimpleColoringStrategy(),
-            new BugStrategy(),
+            new BUGStrategy(),
             new GridFormationStrategy(3),
             new GridFormationStrategy(4),
             new FireworksStrategy(),
