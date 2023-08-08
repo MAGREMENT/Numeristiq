@@ -66,8 +66,7 @@ public class AlignedPairExclusionStrategy : IStrategy
         }
 
         HashSet<AlmostLockedSet> usefulAls = new();
-        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-            new AlignedPairExclusionReportWaiter(usefulAls, row1, col1, row2, col2));
+        var changeBuffer = strategyManager.GetChangeBuffer();
         
         foreach (var als in AlmostLockedSet.SearchForAls(strategyManager, shared, _maxAlzSize))
         {
@@ -86,7 +85,8 @@ public class AlignedPairExclusionStrategy : IStrategy
                     if (other1.Count == 0)
                     {
                         changeBuffer.AddPossibilityToRemove(possibility, row1, col1);
-                        changeBuffer.Push();
+                        changeBuffer.Push(this, 
+                            new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
                         return true;
                     }
                 }
@@ -104,7 +104,7 @@ public class AlignedPairExclusionStrategy : IStrategy
                     if (other2.Count == 0)
                     {
                         changeBuffer.AddPossibilityToRemove(possibility, row2, col2);
-                        changeBuffer.Push();
+                        changeBuffer.Push(this, new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
                         return true;
                     }
                 }
@@ -115,7 +115,7 @@ public class AlignedPairExclusionStrategy : IStrategy
     }
 }
 
-public class AlignedPairExclusionReportWaiter : IChangeReportWaiter
+public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
 {
     private readonly HashSet<AlmostLockedSet> _als;
     private readonly int _row1;
@@ -123,7 +123,7 @@ public class AlignedPairExclusionReportWaiter : IChangeReportWaiter
     private readonly int _row2;
     private readonly int _col2;
 
-    public AlignedPairExclusionReportWaiter(HashSet<AlmostLockedSet> als, int row1, int col1, int row2, int col2)
+    public AlignedPairExclusionReportBuilder(HashSet<AlmostLockedSet> als, int row1, int col1, int row2, int col2)
     {
         _als = als;
         _row1 = row1;
@@ -132,9 +132,9 @@ public class AlignedPairExclusionReportWaiter : IChangeReportWaiter
         _col2 = col2;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);
@@ -150,7 +150,7 @@ public class AlignedPairExclusionReportWaiter : IChangeReportWaiter
                 color++;
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

@@ -59,13 +59,13 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                        new LineHiddenPossibilitiesReportWaiter(entry.Value, entry.Key, row, Unit.Row));
+                    var changeBuffer = strategyManager.GetChangeBuffer();
                     foreach (var col in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
                     }
-                    changeBuffer.Push();
+                    changeBuffer.Push(this,
+                        new LineHiddenPossibilitiesReportBuilder(entry.Value, entry.Key, row, Unit.Row));
                     
                 }
             }
@@ -94,13 +94,13 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                        new LineHiddenPossibilitiesReportWaiter(entry.Value, entry.Key, col, Unit.Column));
+                    var changeBuffer = strategyManager.GetChangeBuffer();
                     foreach (var row in entry.Key)
                     {
                         RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
                     }
-                    changeBuffer.Push();
+                    changeBuffer.Push(this,
+                        new LineHiddenPossibilitiesReportBuilder(entry.Value, entry.Key, col, Unit.Column));
                     
                 }
             }
@@ -131,13 +131,13 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 {
                     if (entry.Value.Count == _type)
                     {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new MiniGridHiddenPossibilitiesReportWaiter(entry.Value, entry.Key));
+                        var changeBuffer = strategyManager.GetChangeBuffer();
                         foreach (var pos in entry.Key)
                         {
                             RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);
                         }
-                        changeBuffer.Push();
+                        changeBuffer.Push(this,
+                            new MiniGridHiddenPossibilitiesReportBuilder(entry.Value, entry.Key));
                     }
                 }
             }
@@ -194,7 +194,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     }
 }
 
-public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
+public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 {
     private readonly IPossibilities _possibilities;
     private readonly LinePositions _linePos;
@@ -202,7 +202,7 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
     private readonly Unit _unit;
 
 
-    public LineHiddenPossibilitiesReportWaiter(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineHiddenPossibilitiesReportBuilder(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
@@ -210,7 +210,7 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
         _unit = unit;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         var coords = new List<Coordinate>();
         switch (_unit)
@@ -229,7 +229,7 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
                 break;
         }
         
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var coord in coords)
             {
@@ -239,25 +239,25 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
                 }
             }
             
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }
 
-public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter
+public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 {
     private readonly IPossibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridHiddenPossibilitiesReportWaiter(IPossibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridHiddenPossibilitiesReportBuilder(IPossibilities possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var pos in _miniPos)
             {
@@ -267,7 +267,7 @@ public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter
                 }
             }
             
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

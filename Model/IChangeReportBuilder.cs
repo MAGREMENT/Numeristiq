@@ -2,7 +2,7 @@
 
 namespace Model;
 
-public interface IChangeReportWaiter
+public interface IChangeReportBuilder
 {
     public static void HighlightChanges(IHighlighter highlighter, List<SolverChange> changes)
     {
@@ -28,7 +28,7 @@ public interface IChangeReportWaiter
         return s;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager);
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager);
 }
 
 public interface IHighlighter

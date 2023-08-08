@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Strategies.ForcingChains;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies.ForcingChains;
+namespace Model.Strategies.ForcingNets;
 
-public class CellForcingChainStrategy : IStrategy
+public class CellForcingNetStrategy : IStrategy
 {
-    public string Name => "Cell forcing chain";
+    public string Name => "Cell forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
 
     private readonly int _max;
 
-    public CellForcingChainStrategy(int maxPossibilities)
+    public CellForcingNetStrategy(int maxPossibilities)
     {
         _max = maxPossibilities;
     }
@@ -37,7 +38,7 @@ public class CellForcingChainStrategy : IStrategy
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possAsArray[i]);
 
                     currentColoring[current] = Coloring.On;
-                    ForcingChainUtil.Color(graph, currentColoring, current);
+                    ForcingNetsUtil.Color(graph, currentColoring, current);
                     colorings[i] = currentColoring;
                 }
 

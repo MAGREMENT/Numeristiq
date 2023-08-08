@@ -36,12 +36,12 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
         foreach (var chain in chains)
         {
-            var changeBuffer = strategyManager.CreateChangeBuffer(this, new ThreeDimensionMedusaReportWaiter(chain));
+            var changeBuffer = strategyManager.GetChangeBuffer();
 
             SearchByCombination(changeBuffer, chain);
             SearchOffChain(strategyManager, changeBuffer, chain);
 
-            changeBuffer.Push();
+            changeBuffer.Push(this, new ThreeDimensionMedusaReportBuilder(chain));
         }
         
     }
@@ -261,20 +261,20 @@ public class MedusaCoordinate : ColoringCoordinate
     }
 }
 
-public class ThreeDimensionMedusaReportWaiter : IChangeReportWaiter
+public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
 {
     private readonly ColorableWeb<MedusaCoordinate> _web;
 
-    public ThreeDimensionMedusaReportWaiter(ColorableWeb<MedusaCoordinate> web)
+    public ThreeDimensionMedusaReportBuilder(ColorableWeb<MedusaCoordinate> web)
     {
         _web = web;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
             
             foreach (var coord in _web)
             {

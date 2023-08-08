@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using Model.Strategies.ForcingChains;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies.ForcingChains;
+namespace Model.Strategies.ForcingNets;
 
-public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......5.....78...3......7..5...6......1.....4.........67.5.2.....4..3........"
+public class DigitForcingNetStrategy : IStrategy //TODO => fix for "4.21......5.....78...3......7..5...6......1.....4.........67.5.2.....4..3........"
 {
-    public string Name => "Digit forcing chain";
+    public string Name => "Digit forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -25,8 +26,8 @@ public class DigitForcingChainStrategy : IStrategy //TODO => fix for "4.21......
 
                     onColoring[current] = Coloring.On;
                     offColoring[current] = Coloring.Off;
-                    ForcingChainUtil.Color(graph, onColoring, current);
-                    ForcingChainUtil.Color(graph, offColoring, current);
+                    ForcingNetsUtil.Color(graph, onColoring, current);
+                    ForcingNetsUtil.Color(graph, offColoring, current);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
                     Process(strategyManager, onColoring, offColoring);

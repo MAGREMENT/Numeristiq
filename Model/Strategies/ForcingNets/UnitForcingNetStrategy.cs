@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using Model.Strategies.ForcingChains;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies.ForcingChains;
+namespace Model.Strategies.ForcingNets;
 
-public class UnitForcingChainStrategy : IStrategy
+public class UnitForcingNetStrategy : IStrategy
 {
-    public string Name => "Unit forcing chain";
+    public string Name => "Unit forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
 
     private readonly int _max;
 
-    public UnitForcingChainStrategy(int maxPossibilities)
+    public UnitForcingNetStrategy(int maxPossibilities)
     {
         _max = maxPossibilities;
     }
@@ -37,7 +38,7 @@ public class UnitForcingChainStrategy : IStrategy
                     var currentColoring = new Dictionary<ILinkGraphElement, Coloring>();
 
                     currentColoring[current] = Coloring.On;
-                    ForcingChainUtil.Color(graph, currentColoring, current);
+                    ForcingNetsUtil.Color(graph, currentColoring, current);
 
                     colorings[cursor] = currentColoring;
                     cursor++;
@@ -61,7 +62,7 @@ public class UnitForcingChainStrategy : IStrategy
                     var currentColoring = new Dictionary<ILinkGraphElement, Coloring>();
 
                     currentColoring[current] = Coloring.On;
-                    ForcingChainUtil.Color(graph, currentColoring, current);
+                    ForcingNetsUtil.Color(graph, currentColoring, current);
 
                     colorings[cursor] = currentColoring;
                     cursor++;
@@ -87,7 +88,7 @@ public class UnitForcingChainStrategy : IStrategy
                         var currentColoring = new Dictionary<ILinkGraphElement, Coloring>();
 
                         currentColoring[current] = Coloring.On;
-                        ForcingChainUtil.Color(graph, currentColoring, current);
+                        ForcingNetsUtil.Color(graph, currentColoring, current);
 
                         colorings[cursor] = currentColoring;
                         cursor++;

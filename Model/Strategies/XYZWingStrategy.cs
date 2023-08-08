@@ -149,8 +149,7 @@ public class XYZWingStrategy : IStrategy
 
     private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-            new XYZWingReportWaiter(hingeRow, hingeCol, row1, col1, row2, col2));
+        var changeBuffer = strategyManager.GetChangeBuffer();
 
         int toRemove = OneInCommon(strategyManager.Possibilities[hingeRow, hingeCol], strategyManager.Possibilities[row1, col1],
             strategyManager.Possibilities[row2, col2]);
@@ -159,7 +158,8 @@ public class XYZWingStrategy : IStrategy
             changeBuffer.AddPossibilityToRemove(toRemove, pos[0], pos[1]);
         }
 
-        return changeBuffer.Push();
+        return changeBuffer.Push(this,
+            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2));
     }
 
     private IEnumerable<int[]> MatchingCells(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
@@ -219,7 +219,7 @@ public class XYZWingStrategy : IStrategy
     }
 }
 
-public class XYZWingReportWaiter : IChangeReportWaiter
+public class XYZWingReportBuilder : IChangeReportBuilder
 {
     private readonly int _hingeRow;
     private readonly int _hingeCol;
@@ -228,7 +228,7 @@ public class XYZWingReportWaiter : IChangeReportWaiter
     private readonly int _row2;
     private readonly int _col2;
 
-    public XYZWingReportWaiter(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
+    public XYZWingReportBuilder(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
         _hingeRow = hingeRow;
         _hingeCol = hingeCol;
@@ -238,15 +238,15 @@ public class XYZWingReportWaiter : IChangeReportWaiter
         _col2 = col2;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             lighter.HighlightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.CauseOffOne);
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

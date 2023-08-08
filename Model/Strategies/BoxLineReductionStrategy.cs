@@ -19,8 +19,7 @@ public class BoxLineReductionStrategy : IStrategy
                 var ppir = strategyManager.PossibilityPositionsInRow(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
-                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new BoxLineReductionReportWaiter(row, ppir, number, Unit.Row));
+                    var changeBuffer = strategyManager.GetChangeBuffer();
                     
                     int miniRow = row / 3;
                     int miniCol = ppir.First() / 3;
@@ -36,7 +35,8 @@ public class BoxLineReductionStrategy : IStrategy
                         }
                     }
                     
-                    changeBuffer.Push();
+                    changeBuffer.Push(this,
+                        new BoxLineReductionReportBuilder(row, ppir, number, Unit.Row));
                 }
             }
         }
@@ -48,8 +48,7 @@ public class BoxLineReductionStrategy : IStrategy
                 var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
-                    var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                        new BoxLineReductionReportWaiter(col, ppic, number, Unit.Column));
+                    var changeBuffer = strategyManager.GetChangeBuffer();
                     
                     int miniRow = ppic.First() / 3;
                     int miniCol = col / 3;
@@ -65,21 +64,22 @@ public class BoxLineReductionStrategy : IStrategy
                         }
                     }
                     
-                    changeBuffer.Push();
+                    changeBuffer.Push(this, 
+                        new BoxLineReductionReportBuilder(col, ppic, number, Unit.Column));
                 }
             }
         }
     }
 }
 
-public class BoxLineReductionReportWaiter : IChangeReportWaiter
+public class BoxLineReductionReportBuilder : IChangeReportBuilder
 {
     private readonly int _unitNumber;
     private readonly LinePositions _linePos;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public BoxLineReductionReportWaiter(int unitNumber, LinePositions linePos, int number, Unit unit)
+    public BoxLineReductionReportBuilder(int unitNumber, LinePositions linePos, int number, Unit unit)
     {
         _unitNumber = unitNumber;
         _linePos = linePos;
@@ -87,7 +87,7 @@ public class BoxLineReductionReportWaiter : IChangeReportWaiter
         _unit = unit;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         List<Coordinate> causes = new();
         switch (_unit)
@@ -106,14 +106,14 @@ public class BoxLineReductionReportWaiter : IChangeReportWaiter
                 break;
         }
 
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var coord in causes)
             {
                 lighter.HighlightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

@@ -141,7 +141,7 @@ public class XYWingStrategy : IStrategy
 
     private bool ProcessXYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new XYWingReportWaiter(opposite, one, two));
+        var changeBuffer = strategyManager.GetChangeBuffer();
         
         int toRemove = Minus(strategyManager.Possibilities[one.Row, one.Col],
             strategyManager.Possibilities[opposite.Row, opposite.Col]);
@@ -150,7 +150,7 @@ public class XYWingStrategy : IStrategy
             changeBuffer.AddPossibilityToRemove(toRemove, coord.Row, coord.Col);
         }
 
-        return changeBuffer.Push();
+        return changeBuffer.Push(this, new XYWingReportBuilder(opposite, one, two));
     }
 
     private static int Minus(IPossibilities one, IPossibilities two)
@@ -221,28 +221,28 @@ public class XYWingStrategy : IStrategy
     }
 }
 
-public class XYWingReportWaiter : IChangeReportWaiter
+public class XYWingReportBuilder : IChangeReportBuilder
 {
     private readonly Coordinate _opposite;
     private readonly Coordinate _one;
     private readonly Coordinate _two;
 
-    public XYWingReportWaiter(Coordinate opposite, Coordinate one, Coordinate two)
+    public XYWingReportBuilder(Coordinate opposite, Coordinate one, Coordinate two)
     {
         _opposite = opposite;
         _one = one;
         _two = two;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             lighter.HighlightCell(_opposite.Row, _opposite.Col, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_one.Row, _one.Col, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_two.Row, _two.Col, ChangeColoration.CauseOffOne);
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

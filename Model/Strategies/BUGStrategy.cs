@@ -14,7 +14,7 @@ public class BUGStrategy : IStrategy
         int[]? triple = OnlyDoublesAndOneTriple(strategyManager);
         if (triple is not null)
         {
-            var changeBuffer = strategyManager.CreateChangeBuffer(this, new BUGReportWaiter(triple));
+            var changeBuffer = strategyManager.GetChangeBuffer();
             foreach (var possibility in strategyManager.Possibilities[triple[0], triple[1]])
             {
                 if (strategyManager.PossibilityPositionsInColumn(triple[1], possibility).Count == 3 &&
@@ -26,7 +26,7 @@ public class BUGStrategy : IStrategy
                 }
             }
 
-            changeBuffer.Push();
+            changeBuffer.Push(this, new BUGReportBuilder(triple));
         }
     }
 
@@ -49,18 +49,18 @@ public class BUGStrategy : IStrategy
     }
 }
 
-public class BUGReportWaiter : IChangeReportWaiter
+public class BUGReportBuilder : IChangeReportBuilder
 {
     private readonly int[] _triple;
 
-    public BUGReportWaiter(int[] triple)
+    public BUGReportBuilder(int[] triple)
     {
         _triple = triple;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes),
-            lighter => IChangeReportWaiter.HighlightChanges(lighter, changes), "");
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }

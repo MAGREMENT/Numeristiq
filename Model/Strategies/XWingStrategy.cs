@@ -48,7 +48,7 @@ public class XWingStrategy : IStrategy
     private void RemoveFromColumns(IStrategyManager strategyManager, LinePositions cols, int row1, int row2, int number)
     {
         var changeBuffer = 
-            strategyManager.CreateChangeBuffer(this, new XWingReportWaiter(cols, row1, row2, number, Unit.Row));
+            strategyManager.GetChangeBuffer();
         
         for (int row = 0; row < 9; row++)
         {
@@ -61,13 +61,13 @@ public class XWingStrategy : IStrategy
             }
         }
         
-        changeBuffer.Push();
+        changeBuffer.Push(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row));
     }
 
     private void RemoveFromRows(IStrategyManager strategyManager, LinePositions rows, int col1, int col2, int number)
     {
         var changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new XWingReportWaiter(rows, col1, col2, number, Unit.Column));
+            strategyManager.GetChangeBuffer();
         
         for (int col = 0; col < 9; col++)
         {
@@ -80,11 +80,11 @@ public class XWingStrategy : IStrategy
             }
         }
         
-        changeBuffer.Push();
+        changeBuffer.Push(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column));
     }
 }
 
-public class XWingReportWaiter : IChangeReportWaiter
+public class XWingReportBuilder : IChangeReportBuilder
 {
     private readonly LinePositions _linePos;
     private readonly int _unit1;
@@ -92,7 +92,7 @@ public class XWingReportWaiter : IChangeReportWaiter
     private readonly int _number;
     private readonly Unit _unit;
 
-    public XWingReportWaiter(LinePositions linePos, int unit1, int unit2, int number, Unit unit)
+    public XWingReportBuilder(LinePositions linePos, int unit1, int unit2, int number, Unit unit)
     {
         _linePos = linePos;
         _unit1 = unit1;
@@ -101,9 +101,9 @@ public class XWingReportWaiter : IChangeReportWaiter
         _unit = unit;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var other in _linePos)
             {
@@ -120,7 +120,7 @@ public class XWingReportWaiter : IChangeReportWaiter
                 }
             }
             
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

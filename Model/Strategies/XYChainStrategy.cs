@@ -47,14 +47,14 @@ public class XYChainStrategy : IStrategy
 
     private void Process(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new XYChainReportWaiter(visited));
+        var changeBuffer = strategyManager.GetChangeBuffer();
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
             changeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
         }
 
         _used.Add(visited[^1]); //TODO improve this
-        changeBuffer.Push();
+        changeBuffer.Push(this, new XYChainReportBuilder(visited));
     }
 }
 
@@ -110,18 +110,18 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
     }
 }
 
-public class XYChainReportWaiter : IChangeReportWaiter
+public class XYChainReportBuilder : IChangeReportBuilder
 {
     private readonly List<PossibilityCoordinate> _visited;
 
-    public XYChainReportWaiter(List<PossibilityCoordinate> visited)
+    public XYChainReportBuilder(List<PossibilityCoordinate> visited)
     {
         _visited = visited;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             for (int i = 0; i < _visited.Count; i++)
             {
@@ -129,7 +129,7 @@ public class XYChainReportWaiter : IChangeReportWaiter
                     ChangeColoration.CauseOnOne: ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

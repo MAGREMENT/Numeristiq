@@ -32,28 +32,28 @@ public class FinnedXWingStrategy : IStrategy
                     if (currentPpir.Peek(candidatePositions[0]) &&
                         HasSameMiniCol(currentPpir, candidatePositions[1], candidatePositions[0]))
                     {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new FinnedXWingReportWaiter(entry.Value, entry.Key, currentPpir,
-                                row, number, Unit.Row));
+                        var changeBuffer = strategyManager.GetChangeBuffer();
                         
                         ProcessRow(changeBuffer, entry.Key,row, candidatePositions[1],
                             number);
 
-                        changeBuffer.Push();
+                        changeBuffer.Push(this,
+                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpir,
+                                row, number, Unit.Row));
                     }
 
 
                     if (currentPpir.Peek(candidatePositions[1]) &&
                         HasSameMiniCol(currentPpir, candidatePositions[0], candidatePositions[1]))
                     {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new FinnedXWingReportWaiter(entry.Value, entry.Key, currentPpir,
-                                row, number, Unit.Row));
+                        var changeBuffer = strategyManager.GetChangeBuffer();
                         
                         ProcessRow(changeBuffer, entry.Key,row, candidatePositions[0],
                             number);
 
-                        changeBuffer.Push();
+                        changeBuffer.Push(this,
+                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpir,
+                                row, number, Unit.Row));
                     }
                         
                 }
@@ -78,28 +78,28 @@ public class FinnedXWingStrategy : IStrategy
                     if (currentPpic.Peek(candidatePositions[0]) &&
                         HasSameMiniRow(currentPpic, candidatePositions[1], candidatePositions[0]))
                     {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new FinnedXWingReportWaiter(entry.Value, entry.Key, currentPpic,
-                                col, number, Unit.Column));
+                        var changeBuffer = strategyManager.GetChangeBuffer();
                         
                         ProcessColumn(changeBuffer, entry.Key,col, candidatePositions[1] ,
                             number);
 
-                        changeBuffer.Push();
+                        changeBuffer.Push(this,
+                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpic,
+                                col, number, Unit.Column));
                     }
 
 
                     if (currentPpic.Peek(candidatePositions[1]) &&
                         HasSameMiniRow(currentPpic, candidatePositions[0], candidatePositions[1]))
                     {
-                        var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                            new FinnedXWingReportWaiter(entry.Value, entry.Key, currentPpic,
-                                col, number, Unit.Column));
+                        var changeBuffer = strategyManager.GetChangeBuffer();
                         
                         ProcessColumn(changeBuffer, entry.Key,col, candidatePositions[0],
                             number);
 
-                        changeBuffer.Push();
+                        changeBuffer.Push(this,
+                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpic,
+                                col, number, Unit.Column));
                     }
                 }
             }
@@ -153,7 +153,7 @@ public class FinnedXWingStrategy : IStrategy
     }
 }
 
-public class FinnedXWingReportWaiter : IChangeReportWaiter
+public class FinnedXWingReportBuilder : IChangeReportBuilder
 {
     private readonly LinePositions _normal;
     private readonly int _normalUnit;
@@ -162,7 +162,7 @@ public class FinnedXWingReportWaiter : IChangeReportWaiter
     private readonly int _number;
     private readonly Unit _unit;
 
-    public FinnedXWingReportWaiter(LinePositions normal, int normalUnit, LinePositions finned, int finnedUnit,
+    public FinnedXWingReportBuilder(LinePositions normal, int normalUnit, LinePositions finned, int finnedUnit,
         int number, Unit unit)
     {
         _normal = normal;
@@ -173,9 +173,9 @@ public class FinnedXWingReportWaiter : IChangeReportWaiter
         _unit = unit;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var normalOther in _normal)
             {
@@ -195,7 +195,7 @@ public class FinnedXWingReportWaiter : IChangeReportWaiter
                         _normal.Peek(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
             }
             
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

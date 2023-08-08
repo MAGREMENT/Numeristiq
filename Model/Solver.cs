@@ -9,6 +9,7 @@ using Model.Strategies.AlternatingChains;
 using Model.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Strategies.AlternatingChains.ChainTypes;
 using Model.Strategies.ForcingChains;
+using Model.Strategies.ForcingNets;
 using Model.StrategiesUtil;
 
 namespace Model;
@@ -37,6 +38,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     
     private PreComputer _pre;
     private LogManager _logManager;
+    private ChangeBuffer _changeBuffer;
 
     public Solver(Sudoku s, params IStrategy[] strategies)
     {
@@ -70,6 +72,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         
         _pre = new PreComputer(this);
         _logManager = new LogManager(this);
+        _changeBuffer = new ChangeBuffer(this);
     }
     
     private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t, PreComputer pre)
@@ -213,9 +216,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         return true;
     }
     
-    public ChangeBuffer CreateChangeBuffer(IStrategy current, IChangeReportWaiter reportWaiter)
+    public ChangeBuffer GetChangeBuffer()
     {
-        return new ChangeBuffer(this, current, reportWaiter);
+        return _changeBuffer;
     }
     
     public LinePositions PossibilityPositionsInRow(int row, int number)
@@ -361,10 +364,10 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
                 new AlternatingChainAlgorithmV1<IGroupedXCycleNode>(20)),
             //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
                 //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
-            new DigitForcingChainStrategy(),
-            new CellForcingChainStrategy(4),
-            new UnitForcingChainStrategy(4),
-            new NishioForcingChainStrategy()
+            new DigitForcingNetStrategy(),
+            new CellForcingNetStrategy(4),
+            new UnitForcingNetStrategy(4),
+            new NishioForcingNetStrategy()
             //new TrialAndMatchStrategy(2)
         };
     }

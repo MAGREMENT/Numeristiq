@@ -110,7 +110,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, IPossibilities toRemove, LinePositions except)
     {
         ChangeBuffer changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReportWaiter(toRemove, except, row, Unit.Row));
+            strategyManager.GetChangeBuffer();
         foreach (var n in toRemove)
         {
             for (int col = 0; col < 9; col++)
@@ -119,7 +119,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             }
         }
         
-        changeBuffer.Push();
+        changeBuffer.Push(this, new LineNakedPossibilitiesReportBuilder(toRemove, except, row, Unit.Row));
     }
     
     private Queue<int> EveryColumnCellWithLessPossibilities(IStrategyManager strategyManager, int col, int than)
@@ -163,7 +163,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove, LinePositions except)
     {
         var changeBuffer =
-            strategyManager.CreateChangeBuffer(this, new LineNakedPossibilitiesReportWaiter(toRemove, except, col, Unit.Column));
+            strategyManager.GetChangeBuffer();
         
         foreach (var n in toRemove)
         {
@@ -173,7 +173,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             }
         }
         
-        changeBuffer.Push();
+        changeBuffer.Push(this, new LineNakedPossibilitiesReportBuilder(toRemove, except, col, Unit.Column));
     }
     
     private Queue<int> EveryMiniGridCellWithLessPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol, int than)
@@ -223,7 +223,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove,
         MiniGridPositions except)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new MiniGridNakedPossibilitiesReportWaiter(toRemove, except));
+        var changeBuffer = strategyManager.GetChangeBuffer();
         
         foreach (var n in toRemove)
         {
@@ -236,11 +236,11 @@ public class NakedPossibilitiesStrategy : IStrategy
             }
         }
         
-        changeBuffer.Push();
+        changeBuffer.Push(this, new MiniGridNakedPossibilitiesReportBuilder(toRemove, except));
     }
 }
 
-public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter
+public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 {
     private readonly IPossibilities _possibilities;
     private readonly LinePositions _linePos;
@@ -248,7 +248,7 @@ public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter
     private readonly Unit _unit;
 
 
-    public LineNakedPossibilitiesReportWaiter(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineNakedPossibilitiesReportBuilder(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
@@ -256,7 +256,7 @@ public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter
         _unit = unit;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         var coords = new List<PossibilityCoordinate>();
         switch (_unit)
@@ -283,30 +283,30 @@ public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter
                 break;
         }
         
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var coord in coords)
             {
                 lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }
 
-public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter
+public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
 {
     private readonly IPossibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridNakedPossibilitiesReportWaiter(IPossibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridNakedPossibilitiesReportBuilder(IPossibilities possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;
     }
     
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         var coords = new List<PossibilityCoordinate>();
         foreach (var pos in _miniPos)
@@ -318,14 +318,14 @@ public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter
             }
         }
         
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var coord in coords)
             {
                 lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

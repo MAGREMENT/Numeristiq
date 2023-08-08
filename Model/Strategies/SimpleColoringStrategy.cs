@@ -37,13 +37,13 @@ public class SimpleColoringStrategy : IStrategy
 
             foreach (var chain in chains)
             {
-                var changeBuffer = strategyManager.CreateChangeBuffer(this,
-                    new SimpleColoringReportWaiter(number, chain));
+                var changeBuffer = strategyManager.GetChangeBuffer();
                 
                 SearchForTwiceInTheSameUnit(changeBuffer, number, chain);
                 SearchForTwoColorsElsewhere(strategyManager, changeBuffer, number, chain);
                 
-                changeBuffer.Push();
+                changeBuffer.Push(this,
+                    new SimpleColoringReportBuilder(number, chain));
             }
         }
     }
@@ -151,20 +151,20 @@ public class SimpleColoringStrategy : IStrategy
     }
 }
 
-public class SimpleColoringReportWaiter : IChangeReportWaiter
+public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
     private readonly int _number;
     private readonly ColorableWeb<ColoringCoordinate> _web;
 
-    public SimpleColoringReportWaiter(int number, ColorableWeb<ColoringCoordinate> web)
+    public SimpleColoringReportBuilder(int number, ColorableWeb<ColoringCoordinate> web)
     {
         _number = number;
         _web = web;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var coord in _web)
             {
@@ -172,7 +172,7 @@ public class SimpleColoringReportWaiter : IChangeReportWaiter
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

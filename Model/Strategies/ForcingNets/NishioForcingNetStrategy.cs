@@ -3,11 +3,11 @@ using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;
 
-namespace Model.Strategies.ForcingChains;
+namespace Model.Strategies.ForcingNets;
 
-public class NishioForcingChainStrategy : IStrategy
+public class NishioForcingNetStrategy : IStrategy
 {
-    public string Name => "Nishio forcing chain";
+    public string Name => "Nishio forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
     public void ApplyOnce(IStrategyManager strategyManager)

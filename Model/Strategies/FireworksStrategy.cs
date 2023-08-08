@@ -52,7 +52,7 @@ public class FireworksStrategy : IStrategy
     private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Coordinate> wings,
         Firework one, Firework two, Firework three)
     {
-        var changeBuffer = strategyManager.CreateChangeBuffer(this, new FireworksReportWaiter(one, two, three));
+        var changeBuffer = strategyManager.GetChangeBuffer();
         foreach (var possibility in strategyManager.Possibilities[one.Cross.Row, one.Cross.Col])
         {
             if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility)
@@ -68,7 +68,7 @@ public class FireworksStrategy : IStrategy
             }
         }
 
-        changeBuffer.Push();
+        changeBuffer.Push(this, new FireworksReportBuilder(one, two, three));
     }
 
     private void AddIfFirework(IStrategyManager strategyManager, List<Firework> fireworks, int row, int col, int possibility)
@@ -147,18 +147,18 @@ public class Firework
     }
 }
 
-public class FireworksReportWaiter : IChangeReportWaiter
+public class FireworksReportBuilder : IChangeReportBuilder
 {
     private readonly Firework[] _fireworks;
 
-    public FireworksReportWaiter(params Firework[] fireworks)
+    public FireworksReportBuilder(params Firework[] fireworks)
     {
         _fireworks = fireworks;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var firework in _fireworks)
@@ -173,7 +173,7 @@ public class FireworksReportWaiter : IChangeReportWaiter
                 color++;
             }
 
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }

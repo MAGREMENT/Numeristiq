@@ -80,9 +80,7 @@ public class GridFormationStrategy : IStrategy
 
     private void Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
-        var changeBuffer = unit == Unit.Row
-            ? strategyManager.CreateChangeBuffer(this, new GridFormationReportWaiter(visited, toRemove, number))
-            : strategyManager.CreateChangeBuffer(this, new GridFormationReportWaiter(toRemove, visited, number));
+        var changeBuffer = strategyManager.GetChangeBuffer();
         
         foreach (var first in toRemove)
         {
@@ -95,24 +93,27 @@ public class GridFormationStrategy : IStrategy
             }
         }
 
-        changeBuffer.Push();
+        changeBuffer.Push(this,
+            unit == Unit.Row
+                ? new GridFormationReportBuilder(visited, toRemove, number)
+                : new GridFormationReportBuilder(toRemove, visited, number));
     }
 }
 
-public class GridFormationReportWaiter : IChangeReportWaiter
+public class GridFormationReportBuilder : IChangeReportBuilder
 {
     private readonly LinePositions _rows;
     private readonly LinePositions _cols;
     private readonly int _number;
 
-    public GridFormationReportWaiter(LinePositions rows, LinePositions cols, int number)
+    public GridFormationReportBuilder(LinePositions rows, LinePositions cols, int number)
     {
         _rows = rows;
         _cols = cols;
         _number = number;
     }
 
-    public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         List<Coordinate> coords = new();
         foreach (var row in _rows)
@@ -122,13 +123,13 @@ public class GridFormationReportWaiter : IChangeReportWaiter
                 if (manager.Possibilities[row, col].Peek(_number)) coords.Add(new Coordinate(row, col));
             }
         }
-        return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
             foreach (var coord in coords)
             {
                 lighter.HighlightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
-            IChangeReportWaiter.HighlightChanges(lighter, changes);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, "");
     }
 }
