@@ -5,16 +5,14 @@ using Model.StrategiesUtil;
 
 namespace Model;
 
-public class PreComputer //TODO make without the threshold thingy and give direct access to this to strategies
+public class PreComputer
 {
-    private const int PositionsThreshold = 1;
-    private const int GraphThreshold = 23;
-    
     private readonly IStrategyManager _view;
     
     private readonly LinePositions?[,] _rows = new LinePositions[9, 9];
     private readonly LinePositions?[,] _cols = new LinePositions[9, 9];
     private readonly MiniGridPositions?[,,] _miniGrids = new MiniGridPositions[3, 3, 9];
+    private bool _wasPrePosUsed;
 
     private LinkGraph<ILinkGraphElement>? _graph;
 
@@ -23,65 +21,59 @@ public class PreComputer //TODO make without the threshold thingy and give direc
         _view = view;
     }
 
-    public void CheckPreComputationThreshold(int strategyNumber)
+    public void Reset()
     {
-        switch (strategyNumber)
-        {
-            case PositionsThreshold : PrecomputePositions();
-                break;
-            case GraphThreshold : PrecomputeLinkGraph();
-                break;
-        }
-    }
+        _graph = null;
 
-    private void PrecomputeLinkGraph()
-    {
-        _graph = LinkGraph();
-    }
-
-    private void PrecomputePositions()
-    {
-        for (int number = 1; number <= 9; number++)
+        if (!_wasPrePosUsed) return;
+        for (int i = 0; i < 3; i++)
         {
-            int numberIndex = number - 1;
-            for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 3; j++)
             {
-                _rows[i, numberIndex] = PossibilityPositionsInRow(i, number);
-                _cols[i, numberIndex] = PossibilityPositionsInColumn( i, number);
-            }
-            
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
+                for (int k = 0; k < 9; k++)
                 {
-                    _miniGrids[i, j, numberIndex] = PossibilityPositionsInMiniGrid( i, j, number);
+                    _miniGrids[i, j, k] = null;
+
+                    int l = i * 3 + j;
+                    _rows[l, k] = null;
+                    _cols[l, k] = null;
                 }
             }
         }
+        _wasPrePosUsed = false;
     }
 
-    public LinePositions PrecomputedPossibilityPositionsInRow(int row, int number)
+    public LinePositions PossibilityPositionsInRow(int row, int number)
     {
-        return _rows[row, number - 1] ?? PossibilityPositionsInRow(row, number);
+        _wasPrePosUsed = true;
+        
+        _rows[row, number - 1] ??= DoPossibilityPositionsInRow(row, number);
+        return _rows[row, number - 1]!;
     }
     
-    public LinePositions PrecomputedPossibilityPositionsInColumn(int col, int number)
+    public LinePositions PossibilityPositionsInColumn(int col, int number)
     {
-        return _cols[col, number - 1] ?? PossibilityPositionsInColumn(col, number);
+        _wasPrePosUsed = true;
+        
+        _cols[col, number - 1] ??= DoPossibilityPositionsInColumn(col, number);
+        return _cols[col, number - 1]!; 
     }
     
-    public MiniGridPositions PrecomputedPossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
     {
-        return _miniGrids[miniRow, miniCol, number - 1] ??
-               PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+        _wasPrePosUsed = true;
+        
+        _miniGrids[miniRow, miniCol, number - 1] ??= DoPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+        return _miniGrids[miniRow, miniCol, number - 1]!;
     }
 
     public LinkGraph<ILinkGraphElement> PrecomputedLinkGraph()
     {
-        return _graph ?? LinkGraph();
+        _graph ??= DoLinkGraph();
+        return _graph;
     }
 
-    public LinePositions PossibilityPositionsInRow(int row, int number)
+    private LinePositions DoPossibilityPositionsInRow(int row, int number)
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
@@ -92,7 +84,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
         return result;
     }
     
-    public LinePositions PossibilityPositionsInColumn(int col, int number)
+    private LinePositions DoPossibilityPositionsInColumn(int col, int number)
     {
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
@@ -104,7 +96,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
         return result;
     }
     
-    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    private MiniGridPositions DoPossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
     {
         MiniGridPositions result = new(miniRow, miniCol);
         for (int i = 0; i < 3; i++)
@@ -122,7 +114,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
         return result;
     }
 
-    private LinkGraph<ILinkGraphElement> LinkGraph()
+    private LinkGraph<ILinkGraphElement> DoLinkGraph()
     {
         LinkGraph<ILinkGraphElement> graph = new();
         for (int row = 0; row < 9; row++)
@@ -134,7 +126,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
                     
                     //Row
-                    var ppir = PossibilityPositionsInRow(row, possibility);
+                    var ppir = DoPossibilityPositionsInRow(row, possibility);
                     var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var c in ppir)
                     {
@@ -146,7 +138,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
 
 
                     //Col
-                    var ppic = PossibilityPositionsInColumn(col, possibility);
+                    var ppic = DoPossibilityPositionsInColumn(col, possibility);
                     strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var r in ppic)
                     {
@@ -158,7 +150,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
 
 
                     //MiniGrids
-                    var ppimn = PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
+                    var ppimn = DoPossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
                     strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var pos in ppimn)
                     {
@@ -186,7 +178,7 @@ public class PreComputer //TODO make without the threshold thingy and give direc
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
+                    var ppimn = DoPossibilityPositionsInMiniGrid(miniRow, miniCol, n);
                     if (ppimn.Count < 3) continue;
                     SearchForPointingInMiniGrid(_view, graph, ppimn, miniRow, miniCol, n);
                 }

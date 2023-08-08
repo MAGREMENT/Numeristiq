@@ -274,11 +274,11 @@ public class ThreeDimensionMedusaReportWaiter : IChangeReportWaiter
     {
         return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
         {
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
             
             foreach (var coord in _web)
             {
-                lighter.HighLightPossibility(coord.Number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
+                lighter.HighlightPossibility(coord.Number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
             }
         }, "");

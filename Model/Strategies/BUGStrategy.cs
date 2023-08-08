@@ -61,6 +61,6 @@ public class BUGReportWaiter : IChangeReportWaiter
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager)
     {
         return new ChangeReport(IChangeReportWaiter.ChangesToString(changes),
-            lighter => IChangeReportWaiter.HighLightChanges(lighter, changes), "");
+            lighter => IChangeReportWaiter.HighlightChanges(lighter, changes), "");
     }
 }

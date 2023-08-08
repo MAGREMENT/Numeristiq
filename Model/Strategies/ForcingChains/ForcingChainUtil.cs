@@ -3,7 +3,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingChains;
 
-public static class ForcingChainUtil
+public static class ForcingChainUtil //TODO implement into precomputer
 {
     public static void Color(LinkGraph<ILinkGraphElement> graph, Dictionary<ILinkGraphElement, Coloring> result,
         ILinkGraphElement current)

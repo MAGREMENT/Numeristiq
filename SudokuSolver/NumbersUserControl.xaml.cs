@@ -5,10 +5,10 @@ using System.Windows.Media;
 
 namespace SudokuSolver;
 
-public partial class NumbersUserControl //TODO implement multicolor-highlighting
+public partial class NumbersUserControl
 {
     private readonly Grid _small = new();
-    private readonly TextBlock _big = new();
+    private readonly HighlightableTextBlock _big = new();
 
     public NumbersUserControl()
     {
@@ -28,7 +28,7 @@ public partial class NumbersUserControl //TODO implement multicolor-highlighting
         {
             for (int j = 0; j < 3; j++)
             {
-                TextBlock tb = new TextBlock
+                HighlightableTextBlock tb = new HighlightableTextBlock
                 {
                     TextAlignment = TextAlignment.Center
                 };
@@ -56,7 +56,7 @@ public partial class NumbersUserControl //TODO implement multicolor-highlighting
         double smallSize = (double)size / 3;
         foreach (var child in _small.Children)
         {
-            var tb = (child as TextBlock)!;
+            var tb = (child as HighlightableTextBlock)!;
             tb.Height = smallSize;
             tb.Width = smallSize;
             tb.FontSize = smallSize * 2 / 3;
@@ -76,7 +76,7 @@ public partial class NumbersUserControl //TODO implement multicolor-highlighting
         Case.Children.Add(_small);
         foreach (var child in _small.Children)
         {
-            var tb = (child as TextBlock)!;
+            var tb = (child as HighlightableTextBlock)!;
             int n = Grid.GetRow(tb) * 3 + Grid.GetColumn(tb) + 1;
             if (numbers.Contains(n)) tb.Text = n.ToString();
             else tb.Text = "";
@@ -90,22 +90,17 @@ public partial class NumbersUserControl //TODO implement multicolor-highlighting
 
     public void UnHighLight()
     {
-        _big.Background = new SolidColorBrush(Colors.White);
+        _big.UnHighlight();
         _small.Background = new SolidColorBrush(Colors.White);
         foreach (var child in _small.Children)
         {
-            ((TextBlock)child)!.Background = new SolidColorBrush(Colors.White);
+            ((HighlightableTextBlock)child)!.UnHighlight();
         }
-    }
-
-    public void HighLightBig()
-    {
-        HighLightBig(Colors.Aqua);
     }
 
     public void HighLightBig(Color color)
     {
-        _big.Background = new SolidColorBrush(color);
+        _big.Highlight(color);
         if(Case.Children[0] is Grid) HighLightWholeSmall(color);
     }
 
@@ -114,23 +109,18 @@ public partial class NumbersUserControl //TODO implement multicolor-highlighting
         _small.Background = new SolidColorBrush(color);
         foreach (var child in _small.Children)
         {
-            var tb = (child as TextBlock)!;
-            tb.Background = new SolidColorBrush(color);
+            var tb = (child as HighlightableTextBlock)!;
+            tb.Highlight(color);
         }
     }
 
-    public void HighLightSmall(int n)
-    {
-        HighLightSmall(n, Colors.Aqua);
-    }
-    
     public void HighLightSmall(int n, Color color)
     {
         foreach (var child in _small.Children)
         {
-            var tb = (child as TextBlock)!;
+            var tb = (child as HighlightableTextBlock)!;
             int a = Grid.GetRow(tb) * 3 + Grid.GetColumn(tb) + 1;
-            if(a == n) tb.Background = new SolidColorBrush(color);
+            if (a == n) tb.Highlight(color);
         }
     }
 }

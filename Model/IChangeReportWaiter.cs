@@ -1,19 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Printing;
-using System.Windows.Documents;
-using Model.Logs;
 
 namespace Model;
 
 public interface IChangeReportWaiter
 {
-    public static void HighLightChanges(IHighLighter highLighter, List<SolverChange> changes)
+    public static void HighlightChanges(IHighlighter highlighter, List<SolverChange> changes)
     {
         foreach (var change in changes)
         {
             if(change.NumberType == SolverNumberType.Possibility)
-                highLighter.HighLightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
-            else highLighter.HighLightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
+                highlighter.HighlightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
+            else highlighter.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
         }
     }
 
@@ -34,11 +31,11 @@ public interface IChangeReportWaiter
     public ChangeReport Process(List<SolverChange> changes, IChangeManager manager);
 }
 
-public interface IHighLighter
+public interface IHighlighter
 {
-    public void HighLightPossibility(int possibility, int row, int col, ChangeColoration coloration);
+    public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration);
 
-    public void HighLightCell(int row, int col, ChangeColoration coloration);
+    public void HighlightCell(int row, int col, ChangeColoration coloration);
 }
 
 public enum ChangeColoration
@@ -46,4 +43,4 @@ public enum ChangeColoration
     ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree, CauseOffFour, CauseOffFive, CauseOffSix, CauseOnOne, Neutral
 }
 
-public delegate void HighLightSolver(IHighLighter h);
+public delegate void HighlightSolver(IHighlighter h);

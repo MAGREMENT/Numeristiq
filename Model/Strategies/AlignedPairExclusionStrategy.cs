@@ -136,21 +136,21 @@ public class AlignedPairExclusionReportWaiter : IChangeReportWaiter
     {
         return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
         {
-            lighter.HighLightCell(_row1, _col1, ChangeColoration.Neutral);
-            lighter.HighLightCell(_row2, _col2, ChangeColoration.Neutral);
+            lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
+            lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);
             
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var als in _als)
             {
                 foreach (var coord in als.Coordinates)
                 {
-                    lighter.HighLightCell(coord.Row, coord.Col, (ChangeColoration) color);
+                    lighter.HighlightCell(coord.Row, coord.Col, (ChangeColoration) color);
                 }
 
                 color++;
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

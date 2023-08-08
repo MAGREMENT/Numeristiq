@@ -125,11 +125,11 @@ public class XYChainReportWaiter : IChangeReportWaiter
         {
             for (int i = 0; i < _visited.Count; i++)
             {
-                lighter.HighLightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Col, i % 2 == 0 ?
+                lighter.HighlightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Col, i % 2 == 0 ?
                     ChangeColoration.CauseOnOne: ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

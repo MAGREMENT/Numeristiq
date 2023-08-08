@@ -67,10 +67,10 @@ public class PointingPossibilitiesReportWaiter : IChangeReportWaiter
         {
             foreach (var pos in _miniPos)
             {
-                lighter.HighLightPossibility(_number, pos[0], pos[1], ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, pos[0], pos[1], ChangeColoration.CauseOffOne);
             }
             
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

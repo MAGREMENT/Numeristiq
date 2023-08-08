@@ -110,10 +110,10 @@ public class BoxLineReductionReportWaiter : IChangeReportWaiter
         {
             foreach (var coord in causes)
             {
-                lighter.HighLightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

@@ -34,17 +34,17 @@ public partial class CellUserControl : UserControl
         };
     }
 
-    public void HighLightPossibility(int possibility, Color color)
+    public void HighlightPossibility(int possibility, Color color)
     {
         _numbers.HighLightSmall(possibility, color);
     }
 
-    public void HighLight(Color color)
+    public void Highlight(Color color)
     {
         _numbers.HighLightBig(color);
     }
 
-    public void UnHighLight()
+    public void UnHighlight()
     {
         _numbers.UnHighLight();
     }

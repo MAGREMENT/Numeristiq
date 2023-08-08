@@ -163,17 +163,17 @@ public class FireworksReportWaiter : IChangeReportWaiter
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var firework in _fireworks)
             {
-                lighter.HighLightPossibility(firework.Possibility, firework.Cross.Row,
+                lighter.HighlightPossibility(firework.Possibility, firework.Cross.Row,
                     firework.Cross.Col, (ChangeColoration) color);
                 foreach (var coord in firework.Wings)
                 {
-                    lighter.HighLightPossibility(firework.Possibility, coord.Row, coord.Col, (ChangeColoration) color);
+                    lighter.HighlightPossibility(firework.Possibility, coord.Row, coord.Col, (ChangeColoration) color);
                 }
 
                 color++;
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

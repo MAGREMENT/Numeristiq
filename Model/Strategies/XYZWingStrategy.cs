@@ -242,11 +242,11 @@ public class XYZWingReportWaiter : IChangeReportWaiter
     {
         return new ChangeReport(IChangeReportWaiter.ChangesToString(changes), lighter =>
         {
-            lighter.HighLightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
-            lighter.HighLightCell(_row1, _col1, ChangeColoration.CauseOffOne);
-            lighter.HighLightCell(_row2, _col2, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_row2, _col2, ChangeColoration.CauseOffOne);
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

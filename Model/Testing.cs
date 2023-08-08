@@ -24,38 +24,6 @@ public static class Testing
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
     }
 
-    private static void ComparePossiblePositions(PreComputer pre)
-    {
-        for (int n = 1; n <= 9; n++)
-        {
-            for (int i = 0; i < 9; i++)
-            {
-                var rOne = pre.PrecomputedPossibilityPositionsInRow(i, n);
-                var rTwo = pre.PossibilityPositionsInRow(i, n);
-                if (!rOne.Equals(rTwo))
-                {
-                    Console.WriteLine($"WRONG ! Number : {n}, Row {i} => Pre : {rOne} | Not pre : {rTwo}");
-                }
-
-                var cOne = pre.PrecomputedPossibilityPositionsInColumn(i, n);
-                var cTwo = pre.PossibilityPositionsInColumn(i, n);
-                if (!cOne.Equals(cTwo))
-                {
-                    Console.WriteLine($"WRONG ! Number : {n}, Column {i} => Pre : {cOne} | Not pre : {cTwo}");
-                }
-
-                int miniRow = i / 3;
-                int miniCol = i % 3;
-                var mOne = pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, n);
-                var mTwo = pre.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
-                if (!mOne.Equals(mTwo))
-                {
-                    Console.WriteLine($"WRONG ! Number : {n}, MiniRow : {miniRow}, MiniCol : {miniCol} => Pre : {mOne} | Not pre : {mTwo}");
-                }
-            }
-        }
-    }
-
     private static void CompareSharedSeenCellsAlgorithms()
     {
         int turns = 10000;

@@ -168,11 +168,11 @@ public class SimpleColoringReportWaiter : IChangeReportWaiter
         {
             foreach (var coord in _web)
             {
-                lighter.HighLightPossibility(_number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
+                lighter.HighlightPossibility(_number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

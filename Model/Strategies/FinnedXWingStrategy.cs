@@ -179,23 +179,23 @@ public class FinnedXWingReportWaiter : IChangeReportWaiter
         {
             foreach (var normalOther in _normal)
             {
-                if(_unit == Unit.Row) lighter.HighLightPossibility(_number, _normalUnit,
+                if(_unit == Unit.Row) lighter.HighlightPossibility(_number, _normalUnit,
                     normalOther, ChangeColoration.CauseOffOne);
-                else lighter.HighLightPossibility(_number, normalOther,
+                else lighter.HighlightPossibility(_number, normalOther,
                     _normalUnit, ChangeColoration.CauseOffOne);
             }
 
             foreach (var finnedOther in _finned)
             {
                 if (_unit == Unit.Row)
-                    lighter.HighLightPossibility(_number, _finnedUnit, finnedOther,
+                    lighter.HighlightPossibility(_number, _finnedUnit, finnedOther,
                         _normal.Peek(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
                 else
-                    lighter.HighLightPossibility(_number, finnedOther, _finnedUnit,
+                    lighter.HighlightPossibility(_number, finnedOther, _finnedUnit,
                         _normal.Peek(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
             }
             
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

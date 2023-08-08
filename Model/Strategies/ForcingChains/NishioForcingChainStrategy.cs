@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;

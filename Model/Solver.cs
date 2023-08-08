@@ -126,23 +126,19 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
             if (Sudoku.IsComplete()) return;
-            
-            _pre.CheckPreComputationThreshold(_currentStrategy);
             if(((_excludedStrategies >> _currentStrategy) & 1) > 0) continue;
             
             Strategies[_currentStrategy].ApplyOnce(this);
             StrategyCount++;
-            
-            if (_changeWasMade)
-            {
-                _changeWasMade = false;
-                if (stopAtProgress)
-                {
-                    if(LogsManaged) _logManager.Push();
-                    return;
-                }
-                _currentStrategy = -1;
-            }
+
+            if (!_changeWasMade) continue;
+            _changeWasMade = false;
+            _currentStrategy = -1;
+            _pre.Reset();
+
+            if (!stopAtProgress) continue;
+            if(LogsManaged) _logManager.Push();
+            return;
         }
         
         if(LogsManaged) _logManager.Push();
@@ -224,17 +220,17 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     
     public LinePositions PossibilityPositionsInRow(int row, int number)
     {
-        return _pre.PrecomputedPossibilityPositionsInRow(row, number);
+        return _pre.PossibilityPositionsInRow(row, number);
     }
     
     public LinePositions PossibilityPositionsInColumn(int col, int number)
     {
-        return _pre.PrecomputedPossibilityPositionsInColumn(col, number);
+        return _pre.PossibilityPositionsInColumn(col, number);
     }
     
     public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
     {
-        return _pre.PrecomputedPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+        return _pre.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
     }
 
     public LinkGraph<ILinkGraphElement> LinkGraph()

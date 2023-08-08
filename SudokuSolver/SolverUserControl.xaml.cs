@@ -7,7 +7,7 @@ using Model.Logs;
 
 namespace SudokuSolver;
 
-public partial class SolverUserControl : IHighLighter
+public partial class SolverUserControl : IHighlighter
 {
     private readonly Solver _solver = new(new Sudoku());
     private int _logBuffer = -1;
@@ -81,7 +81,7 @@ public partial class SolverUserControl : IHighLighter
             for (int j = 0; j < 9; j++)
             {
                 CellUserControl current = GetTo(i, j);
-                current.UnHighLight();
+                current.UnHighlight();
                 
                 UpdateCell(current, i, j);
             }
@@ -122,7 +122,7 @@ public partial class SolverUserControl : IHighLighter
         {
             for (int j = 0; j < 9; j++)
             {
-                GetTo(i, j).UnHighLight();
+                GetTo(i, j).UnHighlight();
             }
         }
 
@@ -170,7 +170,7 @@ public partial class SolverUserControl : IHighLighter
                     var scuc = GetTo(n / 9, n % 9);
                     if (possibility) scuc.SetPossibilities(buffer);
                     else scuc.SetDefinitiveNumber(buffer[0]);
-                    scuc.UnHighLight();
+                    scuc.UnHighlight();
                     
                     buffer.Clear();
                 }
@@ -186,7 +186,7 @@ public partial class SolverUserControl : IHighLighter
         var scuc2 = GetTo(n / 9, n % 9);
         if (possibility) scuc2.SetPossibilities(buffer);
         else scuc2.SetDefinitiveNumber(buffer[0]);
-        scuc2.UnHighLight();
+        scuc2.UnHighlight();
 
         log.SolverHighLighter(this);
     }
@@ -197,14 +197,14 @@ public partial class SolverUserControl : IHighLighter
         Update();
     }
     
-    public void HighLightPossibility(int possibility, int row, int col, ChangeColoration coloration)
+    public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
     {
-        GetTo(row, col).HighLightPossibility(possibility, ColorUtil.ToColor(coloration));
+        GetTo(row, col).HighlightPossibility(possibility, ColorUtil.ToColor(coloration));
     }
 
-    public void HighLightCell(int row, int col, ChangeColoration coloration)
+    public void HighlightCell(int row, int col, ChangeColoration coloration)
     {
-        GetTo(row, col).HighLight(ColorUtil.ToColor(coloration));
+        GetTo(row, col).Highlight(ColorUtil.ToColor(coloration));
     }
 
     public List<ISolverLog> GetLogs()

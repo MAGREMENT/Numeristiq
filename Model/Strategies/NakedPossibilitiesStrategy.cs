@@ -287,10 +287,10 @@ public class LineNakedPossibilitiesReportWaiter : IChangeReportWaiter
         {
             foreach (var coord in coords)
             {
-                lighter.HighLightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }
@@ -322,10 +322,10 @@ public class MiniGridNakedPossibilitiesReportWaiter : IChangeReportWaiter
         {
             foreach (var coord in coords)
             {
-                lighter.HighLightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }

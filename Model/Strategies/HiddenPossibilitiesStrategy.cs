@@ -235,11 +235,11 @@ public class LineHiddenPossibilitiesReportWaiter : IChangeReportWaiter
             {
                 foreach (var possibility in _possibilities)
                 {
-                    lighter.HighLightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
                 }
             }
             
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }
@@ -263,11 +263,11 @@ public class MiniGridHiddenPossibilitiesReportWaiter : IChangeReportWaiter
             {
                 foreach (var possibility in _possibilities)
                 {
-                    lighter.HighLightPossibility(possibility, pos[0], pos[1], ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(possibility, pos[0], pos[1], ChangeColoration.CauseOffOne);
                 }
             }
             
-            IChangeReportWaiter.HighLightChanges(lighter, changes);
+            IChangeReportWaiter.HighlightChanges(lighter, changes);
         }, "");
     }
 }
