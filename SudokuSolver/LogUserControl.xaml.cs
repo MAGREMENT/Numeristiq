@@ -1,7 +1,4 @@
-﻿using System;
-using System.Windows.Controls;
-using System.Windows.Media;
-using Model;
+﻿using System.Windows.Media;
 using Model.Logs;
 
 namespace SudokuSolver;

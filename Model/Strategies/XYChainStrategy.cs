@@ -12,35 +12,35 @@ public class XYChainStrategy : IStrategy
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
 
-    private readonly HashSet<PossibilityCoordinate> _used = new ();
-    
     public void ApplyOnce(IStrategyManager strategyManager)
     
     {
         var map = new BiValueMap(strategyManager);
-        _used.Clear();
 
         foreach (var start in map)
         {
-            if (_used.Contains(start)) continue;
-            Search(strategyManager, map, new List<PossibilityCoordinate>(), start);
+            Search(strategyManager, map, start, new List<PossibilityCoordinate>(), new HashSet<PossibilityCoordinate>());
         }
     }
 
-    private void Search(IStrategyManager strategyManager, BiValueMap map, List<PossibilityCoordinate> visited,
-         PossibilityCoordinate current)
+    private void Search(IStrategyManager strategyManager, BiValueMap map, PossibilityCoordinate current,
+        List<PossibilityCoordinate> route, HashSet<PossibilityCoordinate> visited)
+
     {
         PossibilityCoordinate friend = map.AssociatedCoordinate(current);
+
+        route.Add(current);
+        route.Add(friend);
         visited.Add(current);
         visited.Add(friend);
         
-        if(friend.Possibility == visited[0].Possibility) Process(strategyManager, visited);
+        if(friend.Possibility == route[0].Possibility) Process(strategyManager, route);
 
         foreach (var shared in map.AssociatedCoordinates(friend.Possibility))
         {
             if (!visited.Contains(shared) && shared.ShareAUnit(current))
             {
-                Search(strategyManager, map, new List<PossibilityCoordinate>(visited), shared);
+                Search(strategyManager, map, shared, new List<PossibilityCoordinate>(route), visited);
             }
         }
     }
@@ -52,8 +52,7 @@ public class XYChainStrategy : IStrategy
         {
             changeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
         }
-
-        _used.Add(visited[^1]); //TODO improve this
+        
         changeBuffer.Push(this, new XYChainReportBuilder(visited));
     }
 }

@@ -21,14 +21,15 @@ public class NishioForcingNetStrategy : IStrategy
             {
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
-
-                    Dictionary<ILinkGraphElement, Coloring> coloring = new();
-                    coloring[current] = Coloring.On;
-
-                    if (Search(cs, graph, coloring, current) 
-                        && strategyManager.RemovePossibility(possibility, row, col, this))
-                        return;
+                    foreach (var entry in strategyManager.OnColoring(row, col, possibility))
+                    {
+                        if (entry.Value != Coloring.Off || entry.Key is not PossibilityCoordinate coord) continue;
+                        if (cs.AddOff(coord))
+                        {
+                            strategyManager.RemovePossibility(possibility, row, col, this);
+                            break;
+                        }
+                    }
                     
                     cs.Reset();
                 }
@@ -45,7 +46,7 @@ public class NishioForcingNetStrategy : IStrategy
         {
             if (!result.ContainsKey(friend))
             {
-                if (opposite == Coloring.Off && friend is PossibilityCoordinate pos && cs.AddedOff(pos)) return true;
+                if (opposite == Coloring.Off && friend is PossibilityCoordinate pos && cs.AddOff(pos)) return true;
                 result[friend] = opposite;
                 if (Search(cs, graph, result, friend)) return true;
             }
@@ -58,7 +59,7 @@ public class NishioForcingNetStrategy : IStrategy
             {
                 if (!result.ContainsKey(friend))
                 {
-                    if (friend is PossibilityCoordinate pos && cs.AddedOff(pos)) return true;
+                    if (friend is PossibilityCoordinate pos && cs.AddOff(pos)) return true;
                     result[friend] = opposite;
                     if (Search(cs, graph, result, friend)) return true;
                 }
@@ -156,7 +157,7 @@ public class ContradictionSearcher
     }
 
     //returns true if contradiction
-    public bool AddedOff(PossibilityCoordinate coord)
+    public bool AddOff(PossibilityCoordinate coord)
     {
         var cellInt = coord.Row * 9 + coord.Col;
         if (!_cells.TryGetValue(cellInt, out var poss))

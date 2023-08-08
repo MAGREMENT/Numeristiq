@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Strategies.ForcingChains;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingNets;
@@ -19,8 +18,6 @@ public class UnitForcingNetStrategy : IStrategy
     
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        var graph = strategyManager.LinkGraph();
-        
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
@@ -34,13 +31,7 @@ public class UnitForcingNetStrategy : IStrategy
                 var cursor = 0;
                 foreach (var col in ppir)
                 {
-                    var current = new PossibilityCoordinate(row, col, number);
-                    var currentColoring = new Dictionary<ILinkGraphElement, Coloring>();
-
-                    currentColoring[current] = Coloring.On;
-                    ForcingNetsUtil.Color(graph, currentColoring, current);
-
-                    colorings[cursor] = currentColoring;
+                    colorings[cursor] = strategyManager.OnColoring(row, col, number);
                     cursor++;
                 }
                 
@@ -58,13 +49,7 @@ public class UnitForcingNetStrategy : IStrategy
                 var cursor = 0;
                 foreach (var row in ppic)
                 {
-                    var current = new PossibilityCoordinate(row, col, number);
-                    var currentColoring = new Dictionary<ILinkGraphElement, Coloring>();
-
-                    currentColoring[current] = Coloring.On;
-                    ForcingNetsUtil.Color(graph, currentColoring, current);
-
-                    colorings[cursor] = currentColoring;
+                    colorings[cursor] = strategyManager.OnColoring(row, col, number);
                     cursor++;
                 }
                 
@@ -84,13 +69,7 @@ public class UnitForcingNetStrategy : IStrategy
                     var cursor = 0;
                     foreach (var pos in ppimn)
                     {
-                        var current = new PossibilityCoordinate(pos[0], pos[1], number);
-                        var currentColoring = new Dictionary<ILinkGraphElement, Coloring>();
-
-                        currentColoring[current] = Coloring.On;
-                        ForcingNetsUtil.Color(graph, currentColoring, current);
-
-                        colorings[cursor] = currentColoring;
+                        colorings[cursor] = strategyManager.OnColoring(pos[0], pos[1], number);
                         cursor++;
                     }
                 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Strategies.ForcingChains;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingNets;
@@ -11,23 +10,16 @@ public class DigitForcingNetStrategy : IStrategy //TODO => fix for "4.21......5.
     public int Score { get; set; }
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        LinkGraph<ILinkGraphElement> graph = strategyManager.LinkGraph();
-
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
-
-                    Dictionary<ILinkGraphElement, Coloring> onColoring = new();
-                    Dictionary<ILinkGraphElement, Coloring> offColoring = new();
-
-                    onColoring[current] = Coloring.On;
-                    offColoring[current] = Coloring.Off;
-                    ForcingNetsUtil.Color(graph, onColoring, current);
-                    ForcingNetsUtil.Color(graph, offColoring, current);
+                    Dictionary<ILinkGraphElement, Coloring> onColoring =
+                        strategyManager.OnColoring(row, col, possibility);
+                    Dictionary<ILinkGraphElement, Coloring> offColoring =
+                        strategyManager.OffColoring(row, col, possibility);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
                     Process(strategyManager, onColoring, offColoring);

@@ -4,16 +4,15 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Model.Logs;
 using Model.Possibilities;
 
 namespace SudokuSolver;
 
-public partial class CellUserControl : UserControl
+public partial class CellUserControl 
 {
     private readonly NumbersUserControl _numbers;
 
-    private bool _isPossibilities = false;
+    private bool _isPossibilities;
     private int[] _nums = Array.Empty<int>();
 
     public delegate void OnClickedOn(CellUserControl sender);

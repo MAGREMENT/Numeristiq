@@ -8,7 +8,6 @@ using Model.Strategies;
 using Model.Strategies.AlternatingChains;
 using Model.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Strategies.AlternatingChains.ChainTypes;
-using Model.Strategies.ForcingChains;
 using Model.Strategies.ForcingNets;
 using Model.StrategiesUtil;
 
@@ -82,6 +81,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         Strategies = t;
         _pre = pre;
         _logManager = new LogManager(this);
+        _changeBuffer = new ChangeBuffer(this);
         
         State = GetState();
         
@@ -238,7 +238,17 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
 
     public LinkGraph<ILinkGraphElement> LinkGraph()
     {
-        return _pre.PrecomputedLinkGraph();
+        return _pre.LinkGraph();
+    }
+
+    public Dictionary<ILinkGraphElement, Coloring> OnColoring(int row, int col, int possibility)
+    {
+        return _pre.OnColoring(row, col, possibility);
+    }
+
+    public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility)
+    {
+        return _pre.OffColoring(row, col, possibility);
     }
     
     public Solver Copy()

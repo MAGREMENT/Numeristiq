@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Model.Logs;
-using Model.Possibilities;
+﻿using Model.Possibilities;
 
 namespace Model;
 

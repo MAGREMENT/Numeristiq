@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Strategies.ForcingChains;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingNets;
@@ -20,8 +19,6 @@ public class CellForcingNetStrategy : IStrategy
     
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        var graph = strategyManager.LinkGraph();
-        
         for (int row = 0; row < 9; row++)
         {
             for(int col = 0; col < 9; col++)
@@ -34,12 +31,7 @@ public class CellForcingNetStrategy : IStrategy
 
                 for (int i = 0; i < possAsArray.Length; i++)
                 {
-                    Dictionary<ILinkGraphElement, Coloring> currentColoring = new();
-                    PossibilityCoordinate current = new PossibilityCoordinate(row, col, possAsArray[i]);
-
-                    currentColoring[current] = Coloring.On;
-                    ForcingNetsUtil.Color(graph, currentColoring, current);
-                    colorings[i] = currentColoring;
+                    colorings[i] = strategyManager.OnColoring(row, col, possAsArray[i]);
                 }
 
                 Process(strategyManager, colorings);

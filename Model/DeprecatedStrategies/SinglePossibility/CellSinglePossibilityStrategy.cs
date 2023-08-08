@@ -1,5 +1,4 @@
-﻿using System.Linq;
-
+﻿
 namespace Model.DeprecatedStrategies.SinglePossibility;
 
 public class CellSinglePossibilityStrategy : IStrategy
