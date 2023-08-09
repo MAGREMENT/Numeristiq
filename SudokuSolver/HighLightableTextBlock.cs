@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -23,7 +24,7 @@ public class HighlightableTextBlock : TextBlock
                 coll.Add(new GradientStop(_currentColors[i], i * part / Width));
             }
 
-            Background = new LinearGradientBrush(coll);
+            Background = new LinearGradientBrush(coll, new Point(0, 0.5), new Point(1, 0.5));
         }
     }
 

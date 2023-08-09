@@ -83,29 +83,6 @@ public class Loop<T> where T : ILoopElement
         value = default!;
         return LinkStrength.None;
     }
-
-    public static Loop<T>? operator ^(Loop<T> one, Loop<T> two)
-    {
-        LoopBuilder<T> result = new LoopBuilder<T>(one._elements[0]);
-
-        for (int i = 0; i < one._elements.Length - 1; i++)
-        {
-            for (int j = 0; j < two._elements.Length; j++)
-            {
-                if (one._elements[i].Equals(two._elements[j]))
-                {
-                    T firstLink = j == two._elements.Length - 1 ? two._elements[0] : two._elements[j + 1];
-                    T secondLink = j == 0 ? two._elements[^1] : two._elements[j + 1];
-                    
-                    //TODO
-                    
-                    break;
-                }
-            }
-        }
-
-        return new Loop<T>(one._elements, two._links); //TODO
-    }
 }
 
 public class LoopBuilder<T> where T : ILoopElement
@@ -174,7 +151,7 @@ public class LoopBuilder<T> where T : ILoopElement
     {
         foreach (var e in _elements)
         {
-            if (e.IsSameLoopElement(element)) return true;
+            if (e.Equals(element)) return true;
         }
 
         return false;

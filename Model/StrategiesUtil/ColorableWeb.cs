@@ -16,11 +16,6 @@ public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable
         return _vertices.ContainsKey(coord);
     }
 
-    public static List<ColorableWeb<T>> AllChainsFrom(IStrategyManager strategyManager)
-    {
-        return new List<ColorableWeb<T>>(); //TODO
-    }
-
     public bool AddLink(T one, T two)
     {
         if (_isColored) return false;

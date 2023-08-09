@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Possibilities;
+using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
 
@@ -9,8 +10,6 @@ public class AlmostLockedSet : ILinkGraphElement
 {
     public Coordinate[] Coordinates { get; }
     public IPossibilities Possibilities { get; }
-
-    public int Size => Coordinates.Length;
 
     public AlmostLockedSet(Coordinate[] coordinates, IPossibilities poss)
     {
@@ -29,17 +28,17 @@ public class AlmostLockedSet : ILinkGraphElement
         return Coordinates.Contains(coord);
     }
 
-    public IEnumerable<Coordinate> SharedSeenCells()
+    public bool HasAtLeastOneCoordinateInCommon(AlmostLockedSet als)
     {
-        for (int row = 0; row < 9; row++)
+        foreach (var coord in Coordinates)
         {
-            for (int col = 0; col < 9; col++)
+            foreach (var alsCoord in als.Coordinates)
             {
-                Coordinate current = new Coordinate(row, col);
-
-                if (ShareAUnitWithAll(current, Coordinates)) yield return current;
+                if (coord.Equals(alsCoord)) return true;
             }
         }
+
+        return false;
     }
 
     public bool ShareAUnit(Coordinate coord)
@@ -92,7 +91,12 @@ public class AlmostLockedSet : ILinkGraphElement
         return result[..^2] + "]";
     }
 
-    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)
+    public bool IsSameLoopElement(ILoopElement other)
+    {
+        throw new NotImplementedException();
+    }
+
+    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max) //TODO LOOK IF NOT TRASH
     {
         List<AlmostLockedSet> result = new();
         if (max < 1) return result;
@@ -174,7 +178,7 @@ public class AlmostLockedSet : ILinkGraphElement
         }
     }
     
-    private static bool ShareAUnitWithAll(Coordinate current, IEnumerable<Coordinate> coordinates)
+    private static bool ShareAUnitWithAll(Coordinate current, List<Coordinate> coordinates)
     {
         foreach (var coord in coordinates)
         {

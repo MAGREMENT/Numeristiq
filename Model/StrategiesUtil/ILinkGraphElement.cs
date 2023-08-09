@@ -1,6 +1,8 @@
-﻿namespace Model.StrategiesUtil;
+﻿using Model.StrategiesUtil.LoopFinder;
 
-public interface ILinkGraphElement
+namespace Model.StrategiesUtil;
+
+public interface ILinkGraphElement : ILoopElement
 {
     
 }

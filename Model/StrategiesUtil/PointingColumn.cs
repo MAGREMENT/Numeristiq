@@ -127,6 +127,14 @@ public class PointingColumn : ILinkGraphElement
 
     public Coordinate[] EachCoordinates()
     {
-        return new Coordinate[1]; //TODO
+        Coordinate[] result = new Coordinate[_pos.Count];
+        
+        int cursor = 0;
+        foreach (var row in _pos)
+        {
+            result[cursor] = new Coordinate(row, Column);
+        }
+
+        return result;
     }
 }

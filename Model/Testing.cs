@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using Model.Positions;
 using Model.Possibilities;
-using Model.Strategies.AlternatingChains;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 using Model.StrategiesUtil.LoopFinder.Types;
@@ -17,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank3.txt");
+        FullSudokuBankTest("LocalBank.txt");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

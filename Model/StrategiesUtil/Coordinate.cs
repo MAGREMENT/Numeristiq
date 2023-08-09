@@ -4,7 +4,7 @@ using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
 
-public class Coordinate
+public class Coordinate //Reorganise this
 {
     public int Row { get; }
     public int Col { get; }
@@ -279,5 +279,31 @@ public readonly struct CondensedPossibilityCoordinate
     public static bool operator !=(CondensedPossibilityCoordinate left, CondensedPossibilityCoordinate right)
     {
         return !(left == right);
+    }
+}
+
+public class MedusaCoordinate : ColoringCoordinate
+{
+    public int Number { get; }
+    
+    public MedusaCoordinate(int row, int col, int number) : base(row, col)
+    {
+        Number = number;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Row, Col, Number);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not MedusaCoordinate coord) return false;
+        return coord.Row == Row && coord.Col == Col && coord.Number == Number;
+    }
+
+    public override string ToString()
+    {
+        return $"[{Row + 1}, {Col + 1} => {Number}]";
     }
 }

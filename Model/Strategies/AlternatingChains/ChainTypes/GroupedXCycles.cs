@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Model.Positions;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainTypes;
 
-public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
+public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 {
     public string Name => "XCycles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<LinkGraph<IGroupedXCycleNode>> GetGraphs(IStrategyManager view)
+    
+    public IEnumerable<LinkGraph<ILinkGraphElement>> GetGraphs(IStrategyManager view)
     {
         for (int n = 1; n <= 9; n++)
         {
-            LinkGraph<IGroupedXCycleNode> graph = new();
+            LinkGraph<ILinkGraphElement> graph = new();
             int number = n;
 
             for (int row = 0; row < 9; row++)
@@ -26,8 +25,8 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 var rowFinal = row;
                 ppir.ForEachCombination((one, two) =>
                 {
-                    graph.AddLink(new GroupedXCycleSingle(rowFinal, one, number),
-                        new GroupedXCycleSingle(rowFinal, two, number), strength);
+                    graph.AddLink(new PossibilityCoordinate(rowFinal, one, number),
+                        new PossibilityCoordinate(rowFinal, two, number), strength);
                 });
             }
 
@@ -38,8 +37,8 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 var colFinal = col;
                 ppic.ForEachCombination((one, two) =>
                 {
-                    graph.AddLink(new GroupedXCycleSingle(one, colFinal, number),
-                        new GroupedXCycleSingle(two, colFinal, number), strength);
+                    graph.AddLink(new PossibilityCoordinate(one, colFinal, number),
+                        new PossibilityCoordinate(two, colFinal, number), strength);
                 });
             }
 
@@ -51,8 +50,8 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                     var strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     ppimn.ForEachCombination((one, two) =>
                     {
-                        graph.AddLink(new GroupedXCycleSingle(one.Row, one.Col, number),
-                            new GroupedXCycleSingle(two.Row, two.Col, number), strength);
+                        graph.AddLink(new PossibilityCoordinate(one.Row, one.Col, number),
+                            new PossibilityCoordinate(two.Row, two.Col, number), strength);
                     });
                     SearchForPointingInMiniGrid(view, graph, ppimn, miniRow, miniCol, n);
                 }
@@ -62,16 +61,16 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         }
     }
 
-    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<IGroupedXCycleNode> graph, MiniGridPositions ppimn, int miniRow,
+    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,
         int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
-            var list = new List<int[]>(ppimn.OnGridRow(gridRow));
-            if (list.Count > 1)
+            var colPos = ppimn.OnGridRowAsLine(gridRow);
+            if (colPos.Count > 1)
             {
-                List<GroupedXCycleSingle> singles = new();
-                List<GroupedXCyclePointingColumn> pcs = new();
+                List<PossibilityCoordinate> singles = new();
+                List<PointingColumn> pcs = new();
                 for (int gridCol = 0; gridCol < 3; gridCol++)
                 {
                     int buffer = -1;
@@ -80,18 +79,17 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                         if (a == gridRow) continue;
                         if (ppimn.PeekFromGridPositions(a, gridCol))
                         {
-                            singles.Add(new GroupedXCycleSingle(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
+                            singles.Add(new PossibilityCoordinate(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
                             if (buffer == -1) buffer = a;
-                            else pcs.Add(new GroupedXCyclePointingColumn(numba,
-                                new Coordinate(miniRow * 3 + a, miniCol * 3 + gridCol),
-                                new Coordinate(miniRow * 3 + buffer, miniCol * 3 + gridCol)));
+                            else pcs.Add(new PointingColumn(numba, miniCol * 3 + gridCol,
+                                miniRow * 3 + a, miniRow * 3 + buffer));
                         }
                     }
                 }
 
                 var singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
-                var current = new GroupedXCyclePointingRow(numba, list);
+                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
+                var current = new PointingRow(numba, miniRow * 3 + gridRow, colPos);
 
                 foreach (var single in singles)
                 {
@@ -104,27 +102,27 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 }
                 
                 singles.Clear();
-                var prs = new List<GroupedXCyclePointingRow>();
+                var prs = new List<PointingRow>();
 
                 for (int miniCol2 = 0; miniCol2 < 3; miniCol2++)
                 {
                     if (miniCol == miniCol2) continue;
 
-                    List<GroupedXCycleSingle> aligned = new();
+                    List<PossibilityCoordinate> aligned = new();
                     for (int gridCol = 0; gridCol < 3; gridCol++)
                     {
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new GroupedXCycleSingle(row, col, numba));
+                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
-                    if(aligned.Count > 1) prs.Add(new GroupedXCyclePointingRow(numba, aligned));
+                    if(aligned.Count > 1) prs.Add(new PointingRow(numba, aligned));
                 }
                 
                 singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
+                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
 
                 foreach (var single in singles)
                 {
@@ -140,11 +138,11 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
-            var list = new List<int[]>(ppimn.OnGridColumn(gridCol));
-            if (list.Count > 1)
+            var rowPos = ppimn.OnGridColumnAsLine(gridCol);
+            if (rowPos.Count > 1)
             {
-                List<GroupedXCycleSingle> singles = new();
-                List<GroupedXCyclePointingRow> prs = new();
+                List<PossibilityCoordinate> singles = new();
+                List<PointingRow> prs = new();
                 for (int gridRow = 0; gridRow < 3; gridRow++)
                 {
                     int buffer = -1;
@@ -153,18 +151,17 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                         if (a == gridCol) continue;
                         if (ppimn.PeekFromGridPositions(gridRow, a))
                         {
-                            singles.Add(new GroupedXCycleSingle(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
+                            singles.Add(new PossibilityCoordinate(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
                             if (buffer == -1) buffer = a;
-                            else prs.Add(new GroupedXCyclePointingRow(numba,
-                                new Coordinate(miniRow * 3 + gridRow, miniCol * 3 + a),
-                                new Coordinate(miniRow * 3 + gridRow, miniCol * 3 + buffer)));
+                            else prs.Add(new PointingRow(numba, miniRow * 3 + gridRow,
+                                miniCol * 3 + a, miniCol * 3 + buffer));
                         }
                     }
                 }
 
                 var singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
-                var current = new GroupedXCyclePointingColumn(numba, list);
+                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
+                var current = new PointingColumn(numba, miniCol * 3 + gridCol, rowPos);
 
                 foreach (var single in singles)
                 {
@@ -177,27 +174,27 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
                 }
                 
                 singles.Clear();
-                var pcs = new List<GroupedXCyclePointingColumn>();
+                var pcs = new List<PointingColumn>();
 
                 for (int miniRow2 = 0; miniRow2 < 3; miniRow2++)
                 {
                     if (miniRow == miniRow2) continue;
 
-                    List<GroupedXCycleSingle> aligned = new();
+                    List<PossibilityCoordinate> aligned = new();
                     for (int gridRow = 0; gridRow < 3; gridRow++)
                     {
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new GroupedXCycleSingle(row, col, numba));
+                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
-                    if(aligned.Count > 1) pcs.Add(new GroupedXCyclePointingColumn(numba, aligned));
+                    if(aligned.Count > 1) pcs.Add(new PointingColumn(numba, aligned));
                 }
                 
                 singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Coordinates.Length ? LinkStrength.Strong : LinkStrength.Weak;
+                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
 
                 foreach (var single in singles)
                 {
@@ -212,7 +209,7 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         }
     }
 
-    public bool ProcessFullLoop(IStrategyManager view, Loop<IGroupedXCycleNode> loop)
+    public bool ProcessFullLoop(IStrategyManager view, Loop<ILinkGraphElement> loop)
     {
         bool wasProgressMade = false;
         loop.ForEachLink((one, two)
@@ -221,29 +218,30 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
         return wasProgressMade;
     }
     
-    private void ProcessWeakLink(IStrategyManager view, IGroupedXCycleNode one, IGroupedXCycleNode two, out bool wasProgressMade)
+    //TODO make this bullshit better for the eyes
+    private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two, out bool wasProgressMade)
     {
-        if (one is GroupedXCyclePointingRow rOne)
+        if (one is PointingRow rOne)
         {
-            if (two is GroupedXCyclePointingRow rTwo &&
+            if (two is PointingRow rTwo &&
                 RemovePossibilityInAll(view, rOne.SharedSeenCells(rTwo))) wasProgressMade = true;
-            else if(two is GroupedXCycleSingle sTwo &&
+            else if(two is PossibilityCoordinate sTwo &&
                     RemovePossibilityInAll(view, rOne.SharedSeenCells(sTwo))) wasProgressMade = true;
         }
-        else if (one is GroupedXCycleSingle sOne)
+        else if (one is PossibilityCoordinate sOne)
         {
-            if (two is GroupedXCyclePointingRow rTwo &&
+            if (two is PointingRow rTwo &&
                 RemovePossibilityInAll(view, rTwo.SharedSeenCells(sOne))) wasProgressMade = true;
-            else if(two is GroupedXCycleSingle sTwo &&
-                    RemovePossibilityInAll(view, sOne.SharedSeenCells(sTwo))) wasProgressMade = true;
-            else if (two is GroupedXCyclePointingColumn cTwo &&
+            else if(two is PossibilityCoordinate sTwo &&
+                    RemovePossibilityInAll(view, sOne.SharedSeenCells(sTwo), sOne.Possibility)) wasProgressMade = true;
+            else if (two is PointingColumn cTwo &&
                      RemovePossibilityInAll(view, cTwo.SharedSeenCells(sOne))) wasProgressMade = true;
         }
-        else if (one is GroupedXCyclePointingColumn cOne)
+        else if (one is PointingColumn cOne)
         {
-            if (two is GroupedXCyclePointingColumn cTwo &&
+            if (two is PointingColumn cTwo &&
                 RemovePossibilityInAll(view, cOne.SharedSeenCells(cTwo))) wasProgressMade = true;
-            else if(two is GroupedXCycleSingle sTwo &&
+            else if(two is PossibilityCoordinate sTwo &&
                     RemovePossibilityInAll(view, cOne.SharedSeenCells(sTwo))) wasProgressMade = true;
         }
 
@@ -260,311 +258,27 @@ public class GroupedXCycles : IAlternatingChainType<IGroupedXCycleNode>
 
         return wasProgressMade;
     }
-
-    public bool ProcessWeakInference(IStrategyManager view, IGroupedXCycleNode inference)
+    
+    private bool RemovePossibilityInAll(IStrategyManager view, IEnumerable<Coordinate> coords, int possibility)
     {
-        if (inference is not GroupedXCycleSingle single) return false;
+        bool wasProgressMade = false;
+        foreach (var coord in coords)
+        {
+            if (view.RemovePossibility(possibility, coord.Row, coord.Col, Strategy!)) wasProgressMade = true;
+        }
+
+        return wasProgressMade;
+    }
+
+    public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference)
+    {
+        if (inference is not PossibilityCoordinate single) return false;
         return view.RemovePossibility(single.Possibility, single.Row, single.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, IGroupedXCycleNode inference)
+    public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference)
     {
-        if (inference is not GroupedXCycleSingle single) return false;
+        if (inference is not PossibilityCoordinate single) return false;
         return view.AddDefinitiveNumber(single.Possibility, single.Row, single.Col, Strategy!);
-    }
-}
-
-public interface IGroupedXCycleNode : ILoopElement, ILinkGraphElement
-{
-    public Coordinate[] EachCoordinates();
-}
-
-public class GroupedXCycleSingle : PossibilityCoordinate, IGroupedXCycleNode
-{
-    public GroupedXCycleSingle(int row, int col, int possibility) : base(row, col, possibility)
-    {
-    }
-
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCycleSingle s)
-    {
-        foreach (var coord in base.SharedSeenCells(s))
-        {
-            yield return new PossibilityCoordinate(coord.Row, coord.Col, Possibility);
-        }
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Possibility, Row, Col);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not GroupedXCycleSingle pc) return false;
-        return pc.Possibility == Possibility && pc.Row == Row && pc.Col == Col;
-    }
-
-    public override string ToString()
-    {
-        return $"[{Row + 1}, {Col + 1} => {Possibility}]";
-    }
-
-    public new bool IsSameLoopElement(ILoopElement other)
-    {
-        return other is IGroupedXCycleNode node &&
-               node.EachCoordinates().Any(coord => coord.Row == Row && coord.Col == Col);
-    }
-
-    public Coordinate[] EachCoordinates()
-    {
-        return new[] { new Coordinate(Row, Col) };
-    }
-}
-
-public class GroupedXCyclePointingRow : IGroupedXCycleNode //TODO use for global graph too
-{
-    public int Possibility { get; }
-    public Coordinate[] Coordinates { get; } //TODO make array of int
-
-    public GroupedXCyclePointingRow(int possibility, params Coordinate[] coords)
-    {
-        Possibility = possibility;
-        Coordinates = coords;
-    }
-
-    public GroupedXCyclePointingRow(int possibility, IEnumerable<int[]> coords)
-    {
-        Possibility = possibility;
-        var intsEnumerable = coords as int[][] ?? coords.ToArray();
-        Coordinates = new Coordinate[intsEnumerable.Count()];
-        int cursor = 0;
-        foreach (var coord in intsEnumerable)
-        {
-            Coordinates[cursor] = new Coordinate(coord[0], coord[1]);
-            cursor++;
-        }
-    }
-    
-    public GroupedXCyclePointingRow(int possibility, IEnumerable<Coordinate> coords)
-    {
-        Possibility = possibility;
-        Coordinates = coords.ToArray();
-    }
-
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCycleSingle single)
-    {
-        if (single.Row == Coordinates[0].Row)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (col == single.Col || Coordinates.Any(coord => coord.Col == col)) continue;
-                yield return new PossibilityCoordinate(Coordinates[0].Row, col, Possibility);
-            }
-        }
-        if (single.Row / 3 == Coordinates[0].Row / 3 && single.Col / 3 == Coordinates[0].Col / 3)
-        {
-            int rowStart = single.Row / 3 * 3;
-            int colStart = single.Col / 3 * 3;
-
-            for (int gridRow = 0; gridRow < 3; gridRow++)
-            {
-                for (int gridCol = 0; gridCol < 3; gridCol++)
-                {
-                    int row = rowStart + gridRow;
-                    int col = colStart + gridCol;
-
-                    if ((row == single.Row && col == single.Col) ||
-                        Coordinates.Any(coord => coord.Row == row && coord.Col == col)) continue;
-                    yield return new PossibilityCoordinate(row, col, Possibility);
-                }
-            }
-        }
-    }
-    
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCyclePointingRow row)
-    {
-        if(Coordinates[0].Row != row.Coordinates[0].Row) yield break;
-        for (int col = 0; col < 9; col++)
-        {
-            if (row.Coordinates.Any(coord => coord.Col == col) ||
-                Coordinates.Any(coord => coord.Col == col)) continue;
-            yield return new PossibilityCoordinate(Coordinates[0].Row, col, Possibility);
-        }
-    }
-
-    public override int GetHashCode()
-    {
-        int coordsHash = 0;
-        foreach (var coord in Coordinates)
-        {
-            coordsHash ^= coord.GetHashCode();
-        }
-
-        return HashCode.Combine(Possibility, coordsHash);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not GroupedXCyclePointingRow pr) return false;
-        if (pr.Possibility != Possibility || Coordinates.Length != pr.Coordinates.Length) return false;
-        foreach (var coord in Coordinates)
-        {
-            if (!pr.Coordinates.Contains(coord)) return false;
-        }
-
-        return true;
-    }
-
-    public override string ToString()
-    {
-        var result = "[";
-        foreach (var coord in Coordinates)
-        {
-            result += $"{coord.Row + 1}, {coord.Col + 1} | ";
-        }
-
-        result = result[..^2];
-        return result + $"=> {Possibility}]";
-    }
-
-    public bool IsSameLoopElement(ILoopElement other)
-    {
-        if (other is not IGroupedXCycleNode node) return false;
-        foreach (var coordinate in node.EachCoordinates())
-        {
-            if (Coordinates.Any(coord => coordinate.Row == coord.Row && coordinate.Col == coord.Col))
-                return true;
-        }
-
-        return false;
-    }
-
-    public Coordinate[] EachCoordinates()
-    {
-        return Coordinates;
-    }
-}
-
-public class GroupedXCyclePointingColumn : IGroupedXCycleNode
-{
-    public int Possibility { get; }
-    public Coordinate[] Coordinates { get; }
-
-    public GroupedXCyclePointingColumn(int possibility, params Coordinate[] coords)
-    {
-        Possibility = possibility;
-        Coordinates = coords;
-    }
-    
-    public GroupedXCyclePointingColumn(int possibility, IEnumerable<int[]> coords)
-    {
-        Possibility = possibility;
-        var intsEnumerable = coords as int[][] ?? coords.ToArray();
-        Coordinates = new Coordinate[intsEnumerable.Count()];
-        int cursor = 0;
-        foreach (var coord in intsEnumerable)
-        {
-            Coordinates[cursor] = new Coordinate(coord[0], coord[1]);
-            cursor++;
-        }
-    }
-    
-    public GroupedXCyclePointingColumn(int possibility, IEnumerable<Coordinate> coords)
-    {
-        Possibility = possibility;
-        Coordinates = coords.ToArray();
-    }
-    
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCycleSingle single)
-    {
-        if (single.Col == Coordinates[0].Col)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                if (row == single.Row || Coordinates.Any(coord => coord.Row == row)) continue;
-                yield return new PossibilityCoordinate(row, single.Col, Possibility);
-            }
-        }
-        if (single.Row / 3 == Coordinates[0].Row / 3 && single.Col / 3 == Coordinates[0].Col / 3)
-        {
-            int rowStart = single.Row / 3 * 3;
-            int colStart = single.Col / 3 * 3;
-
-            for (int gridRow = 0; gridRow < 3; gridRow++)
-            {
-                for (int gridCol = 0; gridCol < 3; gridCol++)
-                {
-                    int row = rowStart + gridRow;
-                    int col = colStart + gridCol;
-
-                    if ((row == single.Row && col == single.Col) ||
-                        Coordinates.Any(coord => coord.Row == row && coord.Col == col)) continue;
-                    yield return new PossibilityCoordinate(row, col, Possibility);
-                }
-            }
-        }
-    }
-    
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(GroupedXCyclePointingColumn col)
-    {
-        if(col.Coordinates[0].Col != Coordinates[0].Col) yield break;
-        for (int row = 0; row < 9; row++)
-        {
-            if (col.Coordinates.Any(coord => coord.Row == row) ||
-                Coordinates.Any(coord => coord.Row == row)) continue;
-            yield return new PossibilityCoordinate(row, Coordinates[0].Col, Possibility);
-        }
-    }
-
-    public override int GetHashCode()
-    {
-        int coordsHash = 0;
-        foreach (var coord in Coordinates)
-        {
-            coordsHash ^= coord.GetHashCode();
-        }
-
-        return HashCode.Combine(Possibility, coordsHash);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not GroupedXCyclePointingColumn pc) return false;
-        if (pc.Possibility != Possibility || Coordinates.Length != pc.Coordinates.Length) return false;
-        foreach (var coord in Coordinates)
-        {
-            if (!pc.Coordinates.Contains(coord)) return false;
-        }
-
-        return true;
-    }
-    
-    public override string ToString()
-    {
-        var result = "[";
-        foreach (var coord in Coordinates)
-        {
-            result += $"{coord.Row + 1}, {coord.Col + 1} | ";
-        }
-
-        result = result[..^2];
-        return result + $"=> {Possibility}]";
-    }
-    
-    public bool IsSameLoopElement(ILoopElement other)
-    {
-        if (other is not IGroupedXCycleNode node) return false;
-        foreach (var coordinate in node.EachCoordinates())
-        {
-            if (Coordinates.Any(coord => coordinate.Row == coord.Row && coordinate.Col == coord.Col))
-                return true;
-        }
-
-        return false;
-    }
-
-    public Coordinate[] EachCoordinates()
-    {
-        return Coordinates;
     }
 }

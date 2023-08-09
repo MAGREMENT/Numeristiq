@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using Color = System.Windows.Media.Color;
 
 namespace SudokuSolver;
 
@@ -122,5 +123,21 @@ public partial class NumbersUserControl
             int a = Grid.GetRow(tb) * 3 + Grid.GetColumn(tb) + 1;
             if (a == n) tb.Highlight(color);
         }
+    }
+
+    public void Test() //TODO look into
+    {
+        DrawingBrush brush = new DrawingBrush();
+
+        GeometryDrawing drawing = new()
+        {
+            Geometry = new RectangleGeometry(new Rect(0, 0, 57, 57)),
+            Brush = Brushes.RoyalBlue
+        };
+
+        DrawingGroup collection = new();
+        collection.Children.Add(drawing);
+
+        brush.Drawing = collection;
     }
 }

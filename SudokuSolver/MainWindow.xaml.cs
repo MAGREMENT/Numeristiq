@@ -11,7 +11,7 @@ namespace SudokuSolver;
     {
         private bool _createNewSudoku = true;
 
-        public MainWindow() //TODO replace FindName() with properties
+        public MainWindow()
         {
             InitializeComponent();
 
