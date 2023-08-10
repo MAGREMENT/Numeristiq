@@ -56,11 +56,85 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
 
                 if (restrictedCommons.Count == 2)
                 {
-                    //TODO
+                    foreach (var possibility in one.Possibilities)
+                    {
+                        if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
+
+                        List<Coordinate> where = new();
+                        foreach (var coord in one.Coordinates)
+                        {
+                            if (strategyManager.Possibilities[coord.Row, coord.Col].Peek(possibility)) where.Add(coord);
+                        }
+                        
+                        ProcessTwoRestrictedCommon(strategyManager, where, possibility);
+                    }
+                    
+                    foreach (var possibility in two.Possibilities)
+                    {
+                        if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
+
+                        List<Coordinate> where = new();
+                        foreach (var coord in two.Coordinates)
+                        {
+                            if (strategyManager.Possibilities[coord.Row, coord.Col].Peek(possibility)) where.Add(coord);
+                        }
+                        
+                        ProcessTwoRestrictedCommon(strategyManager, where, possibility);
+                    }
                 }
 
-                strategyManager.GetChangeBuffer().Push(this, new AlmostLockedSetsReportBuilder(one, two));
-                return;
+                if(strategyManager.GetChangeBuffer().Push(this, new AlmostLockedSetsReportBuilder(one, two))) return;
+            }
+        }
+    }
+
+    private void ProcessTwoRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility)
+    {
+        bool shareRow = true;
+        bool shareCol = true;
+        bool shareMini = true;
+
+        var first = coords[0];
+        foreach (var coord in coords)
+        {
+            if (coord.Row != first.Row) shareRow = false;
+            if (coord.Col != first.Col) shareCol = false;
+            if (!(coord.Row / 3 == first.Row / 3 && coord.Col / 3 == first.Col / 3)) shareMini = false;
+        }
+
+        if (shareRow)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                Coordinate current = new Coordinate(first.Row, col);
+                if(coords.Contains(current)) continue;
+                strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, first.Row, col);
+            }
+        }
+        
+        if (shareCol)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                Coordinate current = new Coordinate(row, first.Col);
+                if(coords.Contains(current)) continue;
+                strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, row, first.Col);
+            }
+        }
+        
+        if (shareMini)
+        {
+            for (int gridRow = 0; gridRow < 3; gridRow++)
+            {
+                for (int gridCol = 0; gridCol < 3; gridCol++)
+                {
+                    int row = first.Row / 3 * 3 + gridRow;
+                    int col = first.Col / 3 * 3 + gridCol;
+                    
+                    Coordinate current = new Coordinate(row, col);
+                    if(coords.Contains(current)) continue;
+                    strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, row, col);
+                }
             }
         }
     }
@@ -145,14 +219,14 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
             IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
             if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
 
-            visited.Add(new Coordinate(row, col));
+            var copy = new List<Coordinate>(visited) { new (row, col) };
 
-            if (mashed.Count == visited.Count + 1)
+            if (mashed.Count == copy.Count + 1)
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+                result.Add(new AlmostLockedSet(copy.ToArray(), mashed));
             }
 
-            SearchRow(strategyManager, row, col + 1, mashed, new List<Coordinate>(visited), result);
+            SearchRow(strategyManager, row, col + 1, mashed, copy, result);
         }
     }
 
@@ -166,14 +240,14 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
             IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
             if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
 
-            visited.Add(new Coordinate(row, col));
+            var copy = new List<Coordinate>(visited) { new (row, col) };
 
-            if (mashed.Count == visited.Count + 1)
+            if (mashed.Count == copy.Count + 1)
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+                result.Add(new AlmostLockedSet(copy.ToArray(), mashed));
             }
 
-            SearchColumn(strategyManager, col, row + 1, mashed, new List<Coordinate>(visited), result);
+            SearchColumn(strategyManager, col, row + 1, mashed, copy, result);
         }
     }
 
@@ -190,15 +264,15 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
             IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
             if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
 
-            visited.Add(new Coordinate(row, col));
+            var copy = new List<Coordinate>(visited) { new (row, col) };
 
-            if (mashed.Count == visited.Count + 1 && NotInSameRowOrColumn(visited))
+            if (mashed.Count == copy.Count + 1 && NotInSameRowOrColumn(copy))
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+                result.Add(new AlmostLockedSet(copy.ToArray(), mashed));
             }
 
             SearchMiniGrid(strategyManager, miniRow, miniCol, n + 1, mashed,
-                new List<Coordinate>(visited), result);
+                copy, result);
         }
     }
 

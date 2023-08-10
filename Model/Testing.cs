@@ -16,11 +16,22 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("LocalBank.txt");
-        
+        FullSudokuBankTest("OnlineBank3.txt");
+
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void AlsSearch(int[] ints, List<IPossibilities> list, int start, IPossibilities current)
+    {
+        for (int i = start; i < ints.Length; i++)
+        {
+            var copy = current.Copy();
+            copy.Add(ints[i]);
+            list.Add(copy);
+            AlsSearch(ints, list, i + 1, copy);
+        }
     }
 
     private static void CompareSharedSeenCellsAlgorithms()

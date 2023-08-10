@@ -374,11 +374,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
                 new AlternatingChainAlgorithmV1<ILinkGraphElement>(20)),
             //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
                 //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
-            new AlmostLockedSetsStrategy(),
-            new DigitForcingNetStrategy(),
+                new DigitForcingNetStrategy(),
             new CellForcingNetStrategy(4),
             new UnitForcingNetStrategy(4),
-            new NishioForcingNetStrategy()
+            new NishioForcingNetStrategy(),
+            new AlmostLockedSetsStrategy()
             //new TrialAndMatchStrategy(2)
         };
     }
