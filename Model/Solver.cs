@@ -363,7 +363,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new BUGStrategy(),
             new FinnedXWingStrategy(),
             new FinnedGridFormationStrategy(3),
-            //new FinnedGridFormationStrategy(4),
+            new FinnedGridFormationStrategy(4),
             new FireworksStrategy(),
             new UniqueRectanglesStrategy(),
             new XYChainStrategy(),

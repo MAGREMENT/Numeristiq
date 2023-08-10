@@ -57,9 +57,13 @@ public class FinnedGridFormationStrategy : IStrategy
 
             var newMashed = mashed.Mash(ppic);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppic.Count) continue;
+            
+            var newVisited = visited.Copy();
+            newVisited.Add(row);
 
-            if (visited.Count == newMashed.Count - 1 && newMashed.Count == _type)
-                SearchRowFinned(strategyManager, newMashed, visited, number);
+            if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
+                SearchRowFinned(strategyManager, newMashed, newVisited, number);
+            else if(newVisited.Count < _type) SearchRowCandidate(strategyManager, row + 1, newMashed, newVisited, number);
         }
     }
 
@@ -77,8 +81,8 @@ public class FinnedGridFormationStrategy : IStrategy
             foreach (var col in ppic)
             {
                 if (mashed.Peek(col)) continue;
-                if (miniCol == -1) miniCol = col;
-                else
+                if (miniCol == -1) miniCol = col / 3;
+                else if(col / 3 != miniCol)
                 {
                     miniCol = -1;
                     break;
@@ -95,7 +99,7 @@ public class FinnedGridFormationStrategy : IStrategy
                 for (int gridRow = 0; gridRow < 3; gridRow++)
                 {
                     int eliminationRow = startRow + gridRow;
-                    if (visited.Peek(eliminationRow)) continue;
+                    if (visited.Peek(eliminationRow) || row == eliminationRow) continue;
 
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(number, eliminationRow, col);
                 }
@@ -118,8 +122,12 @@ public class FinnedGridFormationStrategy : IStrategy
             var newMashed = mashed.Mash(ppir);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppir.Count) continue;
 
-            if (visited.Count == newMashed.Count - 1 && newMashed.Count == _type)
-                SearchColumnFinned(strategyManager, newMashed, visited, number);
+            var newVisited = visited.Copy();
+            newVisited.Add(col);
+
+            if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
+                SearchColumnFinned(strategyManager, newMashed, newVisited, number);
+            else if(newVisited.Count < _type) SearchColumnCandidate(strategyManager, col + 1, newMashed, newVisited, number);
         }
     }
     
@@ -130,15 +138,15 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             if (visited.Peek(col)) continue;
 
-            var ppir = strategyManager.PossibilityPositionsInRow(col, number);
+            var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
 
             int miniRow = -1;
 
-            foreach (var row in ppir)
+            foreach (var row in ppic)
             {
-                if (mashed.Peek(col)) continue;
-                if (miniRow == -1) miniRow = row;
-                else
+                if (mashed.Peek(row)) continue;
+                if (miniRow == -1) miniRow = row / 3;
+                else if(row / 3 != miniRow)
                 {
                     miniRow = -1;
                     break;
@@ -155,7 +163,7 @@ public class FinnedGridFormationStrategy : IStrategy
                 for (int gridCol = 0; gridCol < 3; gridCol++)
                 {
                     int eliminationCol = startCol + gridCol;
-                    if (visited.Peek(eliminationCol)) continue;
+                    if (visited.Peek(eliminationCol) || col == eliminationCol) continue;
 
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, eliminationCol);
                 }
@@ -195,8 +203,8 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
         {
             foreach (var mashed in _mashed)
             {
-                int row = _unit == Unit.Row ? mashed : visited;
-                int col = _unit == Unit.Column ? visited : mashed;
+                int row = _unit == Unit.Row ? visited : mashed;
+                int col = _unit == Unit.Row ? mashed : visited;
 
                 if (manager.Possibilities[row, col].Peek(_number)) normal.Add(new Coordinate(row, col));
             }
@@ -204,8 +212,8 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
 
         for (int n = 0; n < 9; n++)
         {
-            int row = _unit == Unit.Row ? n : _fin;
-            int col = _unit == Unit.Column ? _fin : n;
+            int row = _unit == Unit.Row ? _fin : n;
+            int col = _unit == Unit.Row ? n : _fin;
 
             if (manager.Possibilities[row, col].Peek(_number))
             {
