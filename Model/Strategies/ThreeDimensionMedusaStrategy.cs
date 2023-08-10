@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Possibilities;
 using Model.StrategiesUtil;
 
@@ -13,17 +12,17 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        List<ColorableWeb<MedusaCoordinate>> chains = new();
+        List<ColorableWeb<PossibilityCoordinateColoring>> chains = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    MedusaCoordinate start = new MedusaCoordinate(row, col, possibility);
+                    PossibilityCoordinateColoring start = new PossibilityCoordinateColoring(row, col, possibility);
                     if (DoesAnyChainContains(chains, start)) continue;
                     
-                    ColorableWeb<MedusaCoordinate> web = new();
+                    ColorableWeb<PossibilityCoordinateColoring> web = new();
                     InitChain(strategyManager, web, start);
                     if (web.Count >= 2)
                     {
@@ -36,36 +35,36 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
         foreach (var chain in chains)
         {
-            var changeBuffer = strategyManager.GetChangeBuffer();
+            SearchByCombination(strategyManager, chain);
+            SearchOffChain(strategyManager, chain);
 
-            SearchByCombination(changeBuffer, chain);
-            SearchOffChain(strategyManager, changeBuffer, chain);
-
-            changeBuffer.Push(this, new ThreeDimensionMedusaReportBuilder(chain));
+            strategyManager.ChangeBuffer.Push(this, new ThreeDimensionMedusaReportBuilder(chain));
         }
         
     }
 
-    private void SearchByCombination(ChangeBuffer changeBuffer, ColorableWeb<MedusaCoordinate> web)
+    private void SearchByCombination(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
-            if (one.Row == two.Row && one.Col == two.Col)
+            if (one.PossibilityCoordinate.Row == two.PossibilityCoordinate.Row && one.PossibilityCoordinate.Col == two.PossibilityCoordinate.Col)
             {
                 //Twice in a cell
                 if (one.Coloring == two.Coloring)
                 {
-                    InvalidColoring(changeBuffer, web, one.Coloring);
+                    InvalidColoring(strategyManager.ChangeBuffer, web, one.Coloring);
                     return true;
                 }
                 //Two colours in a cell
-                RemoveAllExcept(changeBuffer, one.Row, one.Col, one.Number, two.Number);
+                RemoveAllExcept(strategyManager.ChangeBuffer, one.PossibilityCoordinate.Row, one.PossibilityCoordinate.Col,
+                    one.PossibilityCoordinate.Possibility, two.PossibilityCoordinate.Possibility);
             }
             
             //Twice in a unit
-            if (one.Number == two.Number && one.ShareAUnit(two) && one.Coloring == two.Coloring)
+            if (one.PossibilityCoordinate.Possibility == two.PossibilityCoordinate.Possibility &&
+                one.PossibilityCoordinate.ShareAUnit(two.PossibilityCoordinate) && one.Coloring == two.Coloring)
             {
-                InvalidColoring(changeBuffer, web, one.Coloring);
+                InvalidColoring(strategyManager.ChangeBuffer, web, one.Coloring);
                 return true;
             }
 
@@ -73,7 +72,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         });
     }
 
-    private void SearchOffChain(IStrategyManager strategyManager, ChangeBuffer changeBuffer, ColorableWeb<MedusaCoordinate> web)
+    private void SearchOffChain(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -83,7 +82,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                 bool cellTotallyOfChain = true;
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    MedusaCoordinate current = new MedusaCoordinate(row, col, possibility);
+                    PossibilityCoordinateColoring current = new PossibilityCoordinateColoring(row, col, possibility);
                     if (web.Contains(current))
                     {
                         cellTotallyOfChain = false;
@@ -95,24 +94,24 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
                     foreach (var coord in web)
                     {
                         //Two X & Colours sharing a unit
-                        if (coord.Number == possibility && coord.ShareAUnit(current)) 
+                        if (coord.PossibilityCoordinate.Possibility == possibility && coord.PossibilityCoordinate.ShareAUnit(current.PossibilityCoordinate)) 
                             twoElsewhere[(int)(coord.Coloring - 1)] = true;
 
                         //Colour in cell
-                        if (coord.Row == current.Row && coord.Col == current.Col)
+                        if (coord.PossibilityCoordinate.Row == current.PossibilityCoordinate.Row && coord.PossibilityCoordinate.Col == current.PossibilityCoordinate.Col)
                             inCell[(int)(coord.Coloring - 1)] = true;
                             
                         
                         //Note : the inCell[0] && inCell[1] should be taken care of by the SearchByCombination function
                         if (twoElsewhere[0] && twoElsewhere[1])
                         {
-                            changeBuffer.AddPossibilityToRemove(possibility, row, col);
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                             break;
                         }
                         if ((twoElsewhere[0] && inCell[1]) ||
                                   (twoElsewhere[1] && inCell[0]))
                         {
-                            changeBuffer.AddPossibilityToRemove(possibility, row, col);
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                             break;
                         }
                     }
@@ -129,13 +128,13 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
                     foreach (var coord in web)
                     {
-                        if (coord.ShareAUnit(here))
+                        if (coord.PossibilityCoordinate.ShareAUnit(here))
                         {
-                            cellEmptiedByColor[(int)(coord.Coloring - 1)].Remove(coord.Number);
+                            cellEmptiedByColor[(int)(coord.Coloring - 1)].Remove(coord.PossibilityCoordinate.Possibility);
 
                             if (cellEmptiedByColor[0].Count == 0 || cellEmptiedByColor[1].Count == 0)
                             {
-                                InvalidColoring(changeBuffer, web, coord.Coloring);
+                                InvalidColoring(strategyManager.ChangeBuffer, web, coord.Coloring);
                                 return;
                             }
                         }
@@ -156,17 +155,17 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         }
     }
 
-    private void InvalidColoring(ChangeBuffer changeBuffer, ColorableWeb<MedusaCoordinate> web, Coloring invalid)
+    private void InvalidColoring(ChangeBuffer changeBuffer, ColorableWeb<PossibilityCoordinateColoring> web, Coloring invalid)
     {
         foreach (var coord in web)
         {
             if (coord.Coloring == invalid)
-                changeBuffer.AddPossibilityToRemove(coord.Number, coord.Row, coord.Col);
-            else changeBuffer.AddDefinitiveToAdd(coord.Number, coord.Row, coord.Col);
+                changeBuffer.AddPossibilityToRemove(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col);
+            else changeBuffer.AddDefinitiveToAdd(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col);
         }
     }
 
-    private bool DoesAnyChainContains(List<ColorableWeb<MedusaCoordinate>> chains, MedusaCoordinate coord)
+    private bool DoesAnyChainContains(List<ColorableWeb<PossibilityCoordinateColoring>> chains, PossibilityCoordinateColoring coord)
     {
         foreach (var chain in chains)
         {
@@ -176,57 +175,57 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
         return false;
     }
     
-    private void InitChain(IStrategyManager strategyManager, ColorableWeb<MedusaCoordinate> web, MedusaCoordinate current)
+    private void InitChain(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web, PossibilityCoordinateColoring current)
     {
-        var ppir = strategyManager.PossibilityPositionsInRow(current.Row, current.Number);
+        var ppir = strategyManager.PossibilityPositionsInRow(current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Possibility);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
             {
-                if (col != current.Col)
+                if (col != current.PossibilityCoordinate.Col)
                 {
-                    MedusaCoordinate next = new MedusaCoordinate(current.Row, col, current.Number);
+                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(current.PossibilityCoordinate.Row, col, current.PossibilityCoordinate.Possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
             }
         }
         
-        var ppic = strategyManager.PossibilityPositionsInColumn(current.Col, current.Number);
+        var ppic = strategyManager.PossibilityPositionsInColumn(current.PossibilityCoordinate.Col, current.PossibilityCoordinate.Possibility);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
             {
-                if (row != current.Row)
+                if (row != current.PossibilityCoordinate.Row)
                 {
-                    MedusaCoordinate next = new MedusaCoordinate(row, current.Col, current.Number);
+                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(row, current.PossibilityCoordinate.Col, current.PossibilityCoordinate.Possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
             }
         }
         
-        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.Row / 3, current.Col / 3, current.Number);
+        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.PossibilityCoordinate.Row / 3, current.PossibilityCoordinate.Col / 3, current.PossibilityCoordinate.Possibility);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
             {
-                if (pos[0] != current.Row && pos[1] != current.Col)
+                if (pos[0] != current.PossibilityCoordinate.Row && pos[1] != current.PossibilityCoordinate.Col)
                 {
-                    MedusaCoordinate next = new MedusaCoordinate(pos[0], pos[1], current.Number);
+                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(pos[0], pos[1], current.PossibilityCoordinate.Possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
             }
         }
 
-        if (strategyManager.Possibilities[current.Row, current.Col].Count == 2)
+        if (strategyManager.Possibilities[current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Col].Count == 2)
         {
-            foreach (var possibility in strategyManager.Possibilities[current.Row, current.Col])
+            foreach (var possibility in strategyManager.Possibilities[current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Col])
             {
-                if (possibility != current.Number)
+                if (possibility != current.PossibilityCoordinate.Possibility)
                 {
-                    MedusaCoordinate next = new MedusaCoordinate(current.Row, current.Col, possibility);
+                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Col, possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
@@ -237,9 +236,9 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
 
 public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
 {
-    private readonly ColorableWeb<MedusaCoordinate> _web;
+    private readonly ColorableWeb<PossibilityCoordinateColoring> _web;
 
-    public ThreeDimensionMedusaReportBuilder(ColorableWeb<MedusaCoordinate> web)
+    public ThreeDimensionMedusaReportBuilder(ColorableWeb<PossibilityCoordinateColoring> web)
     {
         _web = web;
     }
@@ -252,7 +251,8 @@ public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
             
             foreach (var coord in _web)
             {
-                lighter.HighlightPossibility(coord.Number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
+                lighter.HighlightPossibility(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row,
+                    coord.PossibilityCoordinate.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
             }
         }, "");

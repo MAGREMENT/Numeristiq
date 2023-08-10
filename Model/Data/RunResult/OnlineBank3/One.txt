@@ -1,0 +1,37 @@
+﻿Result-------------------------------
+Completion rate = 1371 / 1465
+Solver fuck ups : 0
+
+Strategy usage :
+-Naked single : 54075
+-Hidden single : 20095
+-Naked double : 12549
+-Hidden double : 11729
+-Box line reduction : 10174
+-Pointing possibilities : 2702
+-Naked triple : 1421
+-Hidden triple : 93
+-Naked quad : 1045
+-Hidden quad : 0
+-XWing : 501
+-XYWing : 470
+-XYZWing : 244
+-Simple coloring : 1256
+-BUG : 8
+-Swordfish : 191
+-Jellyfish : 6
+-Finned XWing : 1288
+-Fireworks : 41
+-Unique rectangles : 1440
+-XYChain : 2718
+-3D medusa : 1087
+-Aligned pair exclusion : 944
+-XCycles : 813
+-Digit forcing net : 27694
+-Cell forcing net : 2769
+-Unit forcing net : 1544
+-Nishio forcing net : 571
+-Almost locked sets : 17
+Time taken : 121,788s
+
+

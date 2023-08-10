@@ -39,7 +39,7 @@ public class AlignedPairExclusionStrategy : IStrategy
     private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         List<Coordinate> shared = new List<Coordinate>(
-            Coordinate.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
+            CoordinateUtils.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
 
         var poss1 = strategyManager.Possibilities[row1, col1];
         var poss2 = strategyManager.Possibilities[row2, col2];
@@ -47,7 +47,7 @@ public class AlignedPairExclusionStrategy : IStrategy
         if (shared.Count < poss1.Count ||
             shared.Count < poss2.Count) return false;
 
-        var inSameUnit = Coordinate.ShareAUnit(row1, col1, row2, col2);
+        var inSameUnit = CoordinateUtils.ShareAUnit(row1, col1, row2, col2);
 
         Dictionary<int, IPossibilities> one = new();
         foreach (var possibility in poss1)
@@ -66,8 +66,7 @@ public class AlignedPairExclusionStrategy : IStrategy
         }
 
         HashSet<AlmostLockedSet> usefulAls = new();
-        var changeBuffer = strategyManager.GetChangeBuffer();
-        
+
         foreach (var als in AlmostLockedSet.SearchForAls(strategyManager, shared, _maxAlzSize))
         {
             foreach (var possibility in als.Possibilities)
@@ -84,8 +83,8 @@ public class AlignedPairExclusionStrategy : IStrategy
 
                     if (other1.Count == 0)
                     {
-                        changeBuffer.AddPossibilityToRemove(possibility, row1, col1);
-                        changeBuffer.Push(this, 
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row1, col1);
+                        strategyManager.ChangeBuffer.Push(this, 
                             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
                         return true;
                     }
@@ -103,8 +102,9 @@ public class AlignedPairExclusionStrategy : IStrategy
 
                     if (other2.Count == 0)
                     {
-                        changeBuffer.AddPossibilityToRemove(possibility, row2, col2);
-                        changeBuffer.Push(this, new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row2, col2);
+                        strategyManager.ChangeBuffer.Push(this,
+                            new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
                         return true;
                     }
                 }

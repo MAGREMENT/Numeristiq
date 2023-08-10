@@ -47,13 +47,12 @@ public class XYChainStrategy : IStrategy
 
     private void Process(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
     {
-        var changeBuffer = strategyManager.GetChangeBuffer();
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            changeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
         }
         
-        changeBuffer.Push(this, new XYChainReportBuilder(visited));
+        strategyManager.ChangeBuffer.Push(this, new XYChainReportBuilder(visited));
     }
 }
 

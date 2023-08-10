@@ -83,7 +83,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
                     }
                 }
 
-                if(strategyManager.GetChangeBuffer().Push(this, new AlmostLockedSetsReportBuilder(one, two))) return;
+                if(strategyManager.ChangeBuffer.Push(this, new AlmostLockedSetsReportBuilder(one, two))) return;
             }
         }
     }
@@ -108,7 +108,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
             {
                 Coordinate current = new Coordinate(first.Row, col);
                 if(coords.Contains(current)) continue;
-                strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, first.Row, col);
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, first.Row, col);
             }
         }
         
@@ -118,7 +118,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
             {
                 Coordinate current = new Coordinate(row, first.Col);
                 if(coords.Contains(current)) continue;
-                strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, row, first.Col);
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, first.Col);
             }
         }
         
@@ -133,7 +133,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
                     
                     Coordinate current = new Coordinate(row, col);
                     if(coords.Contains(current)) continue;
-                    strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, row, col);
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                 }
             }
         }
@@ -157,7 +157,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO IMPROVE !!!!
                     }
                 }
 
-                if (ok) strategyManager.GetChangeBuffer().AddPossibilityToRemove(possibility, row, col);
+                if (ok) strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
             }
         }
     }

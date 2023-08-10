@@ -215,12 +215,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         PossibilityRemoved?.Invoke(row, col);
         return true;
     }
-    
-    public ChangeBuffer GetChangeBuffer()
-    {
-        return _changeBuffer;
-    }
-    
+
+    public ChangeBuffer ChangeBuffer => _changeBuffer;
+
     public LinePositions PossibilityPositionsInRow(int row, int number)
     {
         return _pre.PossibilityPositionsInRow(row, number);

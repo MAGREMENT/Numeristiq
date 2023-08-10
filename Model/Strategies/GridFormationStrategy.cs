@@ -80,20 +80,18 @@ public class GridFormationStrategy : IStrategy
 
     private void Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
-        var changeBuffer = strategyManager.GetChangeBuffer();
-        
         foreach (var first in toRemove)
         {
             for (int other = 0; other < 9; other++)
             {
                 if (visited.Peek(other)) continue;
 
-                if (unit == Unit.Row) changeBuffer.AddPossibilityToRemove(number, other, first);
-                else changeBuffer.AddPossibilityToRemove(number, first, other);
+                if (unit == Unit.Row) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, other, first);
+                else strategyManager.ChangeBuffer.AddPossibilityToRemove(number, first, other);
             }
         }
 
-        changeBuffer.Push(this,
+        strategyManager.ChangeBuffer.Push(this,
             unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number));

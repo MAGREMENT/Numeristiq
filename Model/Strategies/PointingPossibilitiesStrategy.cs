@@ -22,26 +22,24 @@ public class PointingPossibilitiesStrategy : IStrategy
                     var ppimg = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
                         int row = ppimg.First()[0];
                         for (int col = 0; col < 9; col++)
                         {
-                            if (col / 3 != miniCol) changeBuffer.AddPossibilityToRemove(number, row, col);
+                            if (col / 3 != miniCol) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                         }
                         
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new PointingPossibilitiesReportBuilder(number, ppimg));
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
                         int col = ppimg.First()[1];
                         for (int row = 0; row < 9; row++)
                         {
-                            if (row / 3 != miniRow) changeBuffer.AddPossibilityToRemove(number, row, col);
+                            if (row / 3 != miniRow) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                         }
                         
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new PointingPossibilitiesReportBuilder(number, ppimg));
                     }
                 }

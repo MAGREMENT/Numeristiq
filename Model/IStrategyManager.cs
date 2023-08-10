@@ -11,7 +11,7 @@ public interface IStrategyManager
 
     bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
 
-    ChangeBuffer GetChangeBuffer();
+    ChangeBuffer ChangeBuffer { get; }
 
     LinePositions PossibilityPositionsInColumn(int col, int number);
 

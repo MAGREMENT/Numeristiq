@@ -5,8 +5,8 @@ namespace Model;
 
 public class ChangeBuffer
 {
-    private readonly HashSet<CondensedPossibilityCoordinate> _possibilityRemoved = new();
-    private readonly HashSet<CondensedPossibilityCoordinate> _definitiveAdded = new();
+    private readonly HashSet<PossibilityCoordinate> _possibilityRemoved = new();
+    private readonly HashSet<PossibilityCoordinate> _definitiveAdded = new();
 
     private readonly IChangeManager _m;
 
@@ -18,12 +18,17 @@ public class ChangeBuffer
     public void AddPossibilityToRemove(int possibility, int row, int col)
     {
         if (!_m.Possibilities[row, col].Peek(possibility)) return;
-        _possibilityRemoved.Add(new CondensedPossibilityCoordinate(row, col, possibility));
+        _possibilityRemoved.Add(new PossibilityCoordinate(row, col, possibility));
     }
 
     public void AddDefinitiveToAdd(int number, int row, int col)
     {
-        _definitiveAdded.Add(new CondensedPossibilityCoordinate(row, col, number));
+        _definitiveAdded.Add(new PossibilityCoordinate(row, col, number));
+    }
+
+    public bool NotEmpty()
+    {
+        return _possibilityRemoved.Count > 0 || _definitiveAdded.Count > 0;
     }
 
     public bool Push(IStrategy strategy, IChangeReportBuilder builder)
@@ -33,17 +38,17 @@ public class ChangeBuffer
         List<SolverChange> changes = new();
         foreach (var possibility in _possibilityRemoved)
         {
-            if (_m.RemovePossibility(possibility.Possibility, possibility.Row, possibility.Column)) changes.Add(
+            if (_m.RemovePossibility(possibility.Possibility, possibility.Row, possibility.Col)) changes.Add(
                 new SolverChange(SolverNumberType.Possibility,
-                    possibility.Possibility, possibility.Row, possibility.Column));
+                    possibility.Possibility, possibility.Row, possibility.Col));
             
         }
         
         foreach (var definitive in _definitiveAdded)
         {
-            if(_m.AddDefinitive(definitive.Possibility, definitive.Row, definitive.Column)) changes.Add(
+            if(_m.AddDefinitive(definitive.Possibility, definitive.Row, definitive.Col)) changes.Add(
                 new SolverChange(SolverNumberType.Definitive, definitive.Possibility,
-                    definitive.Row, definitive.Column));
+                    definitive.Row, definitive.Col));
         }
 
         if (_m.LogsManaged && changes.Count > 0)

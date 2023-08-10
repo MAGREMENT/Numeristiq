@@ -141,16 +141,14 @@ public class XYWingStrategy : IStrategy
 
     private bool ProcessXYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
     {
-        var changeBuffer = strategyManager.GetChangeBuffer();
-        
         int toRemove = Minus(strategyManager.Possibilities[one.Row, one.Col],
             strategyManager.Possibilities[opposite.Row, opposite.Col]);
         foreach (var coord in MatchingCells(one, two))
         {
-            changeBuffer.AddPossibilityToRemove(toRemove, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(toRemove, coord.Row, coord.Col);
         }
 
-        return changeBuffer.Push(this, new XYWingReportBuilder(opposite, one, two));
+        return strategyManager.ChangeBuffer.Push(this, new XYWingReportBuilder(opposite, one, two));
     }
 
     private static int Minus(IPossibilities one, IPossibilities two)

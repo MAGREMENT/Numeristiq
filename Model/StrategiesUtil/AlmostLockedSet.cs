@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Model.Possibilities;
 using Model.StrategiesUtil.LoopFinder;
 
@@ -25,7 +24,12 @@ public class AlmostLockedSet : ILinkGraphElement
 
     public bool Contains(Coordinate coord)
     {
-        return Coordinates.Contains(coord);
+        foreach (var c in Coordinates)
+        {
+            if (c == coord) return true;
+        }
+
+        return false;
     }
 
     public bool HasAtLeastOneCoordinateInCommon(AlmostLockedSet als)
@@ -34,7 +38,7 @@ public class AlmostLockedSet : ILinkGraphElement
         {
             foreach (var alsCoord in als.Coordinates)
             {
-                if (coord.Equals(alsCoord)) return true;
+                if (coord == alsCoord) return true;
             }
         }
 
@@ -96,7 +100,7 @@ public class AlmostLockedSet : ILinkGraphElement
         throw new NotImplementedException();
     }
 
-    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max) //TODO LOOK IF NOT TRASH
+    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)
     {
         List<AlmostLockedSet> result = new();
         if (max < 1) return result;
@@ -104,14 +108,14 @@ public class AlmostLockedSet : ILinkGraphElement
             IPossibilities current = view.Possibilities[coords[i].Row, coords[i].Col];
             if (current.Count == 2) result.Add(new AlmostLockedSet(coords[i], current));
             if (max > 1) SearchForAls(view, coords, new List<Coordinate> { coords[i] },
-                current, i + 1, 2, max, result);
+                current, i + 1, max, result);
         }
 
         return result;
     }
 
     private static void SearchForAls(IStrategyManager view, List<Coordinate> coords, List<Coordinate> visited,
-        IPossibilities current, int start, int count, int max, List<AlmostLockedSet> result)
+        IPossibilities current, int start, int max, List<AlmostLockedSet> result)
     {
         for (int i = start; i < coords.Count; i++)
         {
@@ -119,6 +123,7 @@ public class AlmostLockedSet : ILinkGraphElement
 
             IPossibilities mashed = current.Mash(view.Possibilities[coords[i].Row, coords[i].Col]);
             if (mashed.Count == current.Count + view.Possibilities[coords[i].Row, coords[i].Col].Count) continue;
+            int count = result.Count + 1;
             
             if (mashed.Count == count + 1)
             {
@@ -132,8 +137,8 @@ public class AlmostLockedSet : ILinkGraphElement
                 result.Add(new AlmostLockedSet(final, mashed));
             }
 
-            if (max > count) SearchForAls(view, coords, new List<Coordinate>(visited) { coords[i] },
-                    mashed, i + 1, count + 1, max, result);
+            if (max >= count) SearchForAls(view, coords, new List<Coordinate>(visited) { coords[i] },
+                    mashed, i + 1, max, result);
         }
     }
 

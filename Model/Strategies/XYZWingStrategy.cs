@@ -149,16 +149,14 @@ public class XYZWingStrategy : IStrategy
 
     private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
-        var changeBuffer = strategyManager.GetChangeBuffer();
-
         int toRemove = OneInCommon(strategyManager.Possibilities[hingeRow, hingeCol], strategyManager.Possibilities[row1, col1],
             strategyManager.Possibilities[row2, col2]);
         foreach (var pos in MatchingCells(hingeRow, hingeCol, row1, col1, row2, col2))
         {
-            changeBuffer.AddPossibilityToRemove(toRemove, pos[0], pos[1]);
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(toRemove, pos[0], pos[1]);
         }
 
-        return changeBuffer.Push(this,
+        return strategyManager.ChangeBuffer.Push(this,
             new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2));
     }
 

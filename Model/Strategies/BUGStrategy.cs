@@ -14,19 +14,18 @@ public class BUGStrategy : IStrategy
         int[]? triple = OnlyDoublesAndOneTriple(strategyManager);
         if (triple is not null)
         {
-            var changeBuffer = strategyManager.GetChangeBuffer();
             foreach (var possibility in strategyManager.Possibilities[triple[0], triple[1]])
             {
                 if (strategyManager.PossibilityPositionsInColumn(triple[1], possibility).Count == 3 &&
                     strategyManager.PossibilityPositionsInRow(triple[0], possibility).Count == 3 &&
                     strategyManager.PossibilityPositionsInMiniGrid(triple[0] / 3, triple[1] / 3, possibility).Count == 3)
                 {
-                    changeBuffer.AddDefinitiveToAdd(possibility, triple[0], triple[1]);
+                    strategyManager.ChangeBuffer.AddDefinitiveToAdd(possibility, triple[0], triple[1]);
                     break;
                 }
             }
 
-            changeBuffer.Push(this, new BUGReportBuilder(triple));
+            strategyManager.ChangeBuffer.Push(this, new BUGReportBuilder(triple));
         }
     }
 

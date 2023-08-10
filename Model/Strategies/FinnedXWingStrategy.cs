@@ -32,12 +32,10 @@ public class FinnedXWingStrategy : IStrategy
                     if (currentPpir.Peek(candidatePositions[0]) &&
                         HasSameMiniCol(currentPpir, candidatePositions[1], candidatePositions[0]))
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
-                        
-                        ProcessRow(changeBuffer, entry.Key,row, candidatePositions[1],
+                        ProcessRow(strategyManager, entry.Key,row, candidatePositions[1],
                             number);
 
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpir,
                                 row, number, Unit.Row));
                     }
@@ -46,12 +44,10 @@ public class FinnedXWingStrategy : IStrategy
                     if (currentPpir.Peek(candidatePositions[1]) &&
                         HasSameMiniCol(currentPpir, candidatePositions[0], candidatePositions[1]))
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
-                        
-                        ProcessRow(changeBuffer, entry.Key,row, candidatePositions[0],
+                        ProcessRow(strategyManager, entry.Key,row, candidatePositions[0],
                             number);
 
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpir,
                                 row, number, Unit.Row));
                     }
@@ -78,12 +74,10 @@ public class FinnedXWingStrategy : IStrategy
                     if (currentPpic.Peek(candidatePositions[0]) &&
                         HasSameMiniRow(currentPpic, candidatePositions[1], candidatePositions[0]))
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
-                        
-                        ProcessColumn(changeBuffer, entry.Key,col, candidatePositions[1] ,
+                        ProcessColumn(strategyManager, entry.Key,col, candidatePositions[1] ,
                             number);
 
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpic,
                                 col, number, Unit.Column));
                     }
@@ -92,12 +86,10 @@ public class FinnedXWingStrategy : IStrategy
                     if (currentPpic.Peek(candidatePositions[1]) &&
                         HasSameMiniRow(currentPpic, candidatePositions[0], candidatePositions[1]))
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
-                        
-                        ProcessColumn(changeBuffer, entry.Key,col, candidatePositions[0],
+                        ProcessColumn(strategyManager, entry.Key,col, candidatePositions[0],
                             number);
 
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpic,
                                 col, number, Unit.Column));
                     }
@@ -118,14 +110,14 @@ public class FinnedXWingStrategy : IStrategy
         return true;
     }
 
-    private void ProcessRow(ChangeBuffer changeBuffer, int normalRow, int finnedRow, int finnedCol, int number)
+    private void ProcessRow(IStrategyManager strategyManager, int normalRow, int finnedRow, int finnedCol, int number)
     {
         var startRow = finnedRow / 3 * 3;
         for (int i = 0; i < 3; i++)
         {
             int row = startRow + i;
             if (row == normalRow || row == finnedRow) continue;
-            changeBuffer.AddPossibilityToRemove(number, row, finnedCol);
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, finnedCol);
         }
     }
     
@@ -141,14 +133,14 @@ public class FinnedXWingStrategy : IStrategy
         return true;
     }
     
-    private void ProcessColumn(ChangeBuffer changeBuffer, int normalCol, int finnedCol, int finnedRow, int number)
+    private void ProcessColumn(IStrategyManager strategyManager, int normalCol, int finnedCol, int finnedRow, int number)
     {
         var startCol = finnedCol / 3 * 3;
         for (int i = 0; i < 3; i++)
         {
             int col = startCol + i;
             if (col == finnedCol || col == normalCol) continue;
-            changeBuffer.AddPossibilityToRemove(number, finnedRow, col);
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(number, finnedRow, col);
         }
     }
 }

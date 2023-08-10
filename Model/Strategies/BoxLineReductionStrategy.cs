@@ -19,8 +19,6 @@ public class BoxLineReductionStrategy : IStrategy
                 var ppir = strategyManager.PossibilityPositionsInRow(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
-                    var changeBuffer = strategyManager.GetChangeBuffer();
-                    
                     int miniRow = row / 3;
                     int miniCol = ppir.First() / 3;
 
@@ -31,11 +29,11 @@ public class BoxLineReductionStrategy : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realRow != row) changeBuffer.AddPossibilityToRemove(number, realRow, realCol);
+                            if (realRow != row) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, realRow, realCol);
                         }
                     }
                     
-                    changeBuffer.Push(this,
+                    strategyManager.ChangeBuffer.Push(this,
                         new BoxLineReductionReportBuilder(row, ppir, number, Unit.Row));
                 }
             }
@@ -48,8 +46,6 @@ public class BoxLineReductionStrategy : IStrategy
                 var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
-                    var changeBuffer = strategyManager.GetChangeBuffer();
-                    
                     int miniRow = ppic.First() / 3;
                     int miniCol = col / 3;
 
@@ -60,11 +56,11 @@ public class BoxLineReductionStrategy : IStrategy
                             int realRow = miniRow * 3 + r;
                             int realCol = miniCol * 3 + c;
 
-                            if (realCol != col) changeBuffer.AddPossibilityToRemove(number, realRow, realCol);
+                            if (realCol != col) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, realRow, realCol);
                         }
                     }
                     
-                    changeBuffer.Push(this, 
+                    strategyManager.ChangeBuffer.Push(this, 
                         new BoxLineReductionReportBuilder(col, ppic, number, Unit.Column));
                 }
             }

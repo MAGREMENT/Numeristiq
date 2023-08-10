@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Model.StrategiesUtil;
 
-public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable
+public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable //Refactor this bullshit
 {
     private readonly Dictionary<T, HashSet<T>> _vertices = new();
     private bool _isColored = false;

@@ -52,11 +52,10 @@ public class FireworksStrategy : IStrategy
     private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Coordinate> wings,
         Firework one, Firework two, Firework three)
     {
-        var changeBuffer = strategyManager.GetChangeBuffer();
         foreach (var possibility in strategyManager.Possibilities[one.Cross.Row, one.Cross.Col])
         {
             if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility)
-                changeBuffer.AddPossibilityToRemove(possibility, one.Cross.Row, one.Cross.Col);
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, one.Cross.Row, one.Cross.Col);
         }
 
         foreach (var wing in wings)
@@ -64,11 +63,11 @@ public class FireworksStrategy : IStrategy
             foreach (var possibility in strategyManager.Possibilities[wing.Row, wing.Col])
             {
                 if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility) 
-                    changeBuffer.AddPossibilityToRemove(possibility, wing.Row, wing.Col);
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, wing.Row, wing.Col);
             }
         }
 
-        changeBuffer.Push(this, new FireworksReportBuilder(one, two, three));
+        strategyManager.ChangeBuffer.Push(this, new FireworksReportBuilder(one, two, three));
     }
 
     private void AddIfFirework(IStrategyManager strategyManager, List<Firework> fireworks, int row, int col, int possibility)

@@ -43,6 +43,18 @@ public class PointingColumn : ILinkGraphElement
             _pos.Add(coord.Row);
         }
     }
+    
+    public PointingColumn(int possibility, IEnumerable<PossibilityCoordinate> coords)
+    {
+        Possibility = possibility;
+        Column = coords.First().Col;
+        _pos = new LinePositions();
+        foreach (var coord in coords)
+        {
+            if (coord.Col != Column) throw new ArgumentException("Not on same column");
+            _pos.Add(coord.Row);
+        }
+    }
 
     public IEnumerable<PossibilityCoordinate> SharedSeenCells(PossibilityCoordinate single)
     {

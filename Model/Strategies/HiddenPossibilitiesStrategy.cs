@@ -59,12 +59,11 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    var changeBuffer = strategyManager.GetChangeBuffer();
                     foreach (var col in entry.Key)
                     {
-                        RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
+                        RemoveAllPossibilitiesExcept(row, col, entry.Value, strategyManager.ChangeBuffer);
                     }
-                    changeBuffer.Push(this,
+                    strategyManager.ChangeBuffer.Push(this,
                         new LineHiddenPossibilitiesReportBuilder(entry.Value, entry.Key, row, Unit.Row));
                     
                 }
@@ -94,12 +93,11 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 if (entry.Value.Count == _type)
                 {
-                    var changeBuffer = strategyManager.GetChangeBuffer();
                     foreach (var row in entry.Key)
                     {
-                        RemoveAllPossibilitiesExcept(row, col, entry.Value, changeBuffer);
+                        RemoveAllPossibilitiesExcept(row, col, entry.Value, strategyManager.ChangeBuffer);
                     }
-                    changeBuffer.Push(this,
+                    strategyManager.ChangeBuffer.Push(this,
                         new LineHiddenPossibilitiesReportBuilder(entry.Value, entry.Key, col, Unit.Column));
                     
                 }
@@ -131,12 +129,11 @@ public class HiddenPossibilitiesStrategy : IStrategy
                 {
                     if (entry.Value.Count == _type)
                     {
-                        var changeBuffer = strategyManager.GetChangeBuffer();
                         foreach (var pos in entry.Key)
                         {
-                            RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, changeBuffer);
+                            RemoveAllPossibilitiesExcept(pos[0], pos[1], entry.Value, strategyManager.ChangeBuffer);
                         }
-                        changeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Push(this,
                             new MiniGridHiddenPossibilitiesReportBuilder(entry.Value, entry.Key));
                     }
                 }

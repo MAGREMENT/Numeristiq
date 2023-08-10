@@ -47,40 +47,34 @@ public class XWingStrategy : IStrategy
 
     private void RemoveFromColumns(IStrategyManager strategyManager, LinePositions cols, int row1, int row2, int number)
     {
-        var changeBuffer = 
-            strategyManager.GetChangeBuffer();
-        
         for (int row = 0; row < 9; row++)
         {
             if (row != row1 && row != row2)
             {
                 foreach (var col in cols)
                 {
-                    changeBuffer.AddPossibilityToRemove(number, row, col);
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                 }
             }
         }
         
-        changeBuffer.Push(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row));
+        strategyManager.ChangeBuffer.Push(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row));
     }
 
     private void RemoveFromRows(IStrategyManager strategyManager, LinePositions rows, int col1, int col2, int number)
     {
-        var changeBuffer =
-            strategyManager.GetChangeBuffer();
-        
         for (int col = 0; col < 9; col++)
         {
             if (col != col1 && col != col2)
             {
                 foreach (var row in rows)
                 {
-                    changeBuffer.AddPossibilityToRemove(number, row, col);
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                 }
             }
         }
         
-        changeBuffer.Push(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column));
+        strategyManager.ChangeBuffer.Push(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column));
     }
 }
 

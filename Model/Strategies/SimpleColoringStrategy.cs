@@ -14,17 +14,17 @@ public class SimpleColoringStrategy : IStrategy
     {
         for (int number = 1; number <= 9; number++)
         {
-            List<ColorableWeb<ColoringCoordinate>> chains = new();
+            List<ColorableWeb<CoordinateColoring>> chains = new();
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
                 {
                     if (strategyManager.Possibilities[row, col].Peek(number))
                     {
-                        ColoringCoordinate current = new(row, col);
+                        CoordinateColoring current = new(row, col);
                         if (DoesAnyChainContains(chains, current)) continue;
                         
-                        ColorableWeb<ColoringCoordinate> web = new();
+                        ColorableWeb<CoordinateColoring> web = new();
                         InitChain(strategyManager, web, current, number);
                         if (web.Count >= 2)
                         {
@@ -37,27 +37,25 @@ public class SimpleColoringStrategy : IStrategy
 
             foreach (var chain in chains)
             {
-                var changeBuffer = strategyManager.GetChangeBuffer();
+                SearchForTwiceInTheSameUnit(strategyManager, number, chain);
+                SearchForTwoColorsElsewhere(strategyManager, number, chain);
                 
-                SearchForTwiceInTheSameUnit(changeBuffer, number, chain);
-                SearchForTwoColorsElsewhere(strategyManager, changeBuffer, number, chain);
-                
-                changeBuffer.Push(this,
+                strategyManager.ChangeBuffer.Push(this,
                     new SimpleColoringReportBuilder(number, chain));
             }
         }
     }
 
-    private void SearchForTwiceInTheSameUnit(ChangeBuffer changeBuffer, int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<CoordinateColoring> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
-            if (one.ShareAUnit(two) && one.Coloring == two.Coloring)
+            if (one.Coordinate.ShareAUnit(two.Coordinate) && one.Coloring == two.Coloring)
             {
                 foreach (var coord in web)
                 {
-                    if (coord.Coloring == one.Coloring) changeBuffer.AddPossibilityToRemove(number, coord.Row, coord.Col);
-                    else changeBuffer.AddDefinitiveToAdd(number, coord.Row, coord.Col);
+                    if (coord.Coloring == one.Coloring) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, coord.Coordinate.Row, coord.Coordinate.Col);
+                    else strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, coord.Coordinate.Row, coord.Coordinate.Col);
                 }
             }
 
@@ -65,8 +63,8 @@ public class SimpleColoringStrategy : IStrategy
         });
     }
 
-    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager, ChangeBuffer changeBuffer,
-        int number, ColorableWeb<ColoringCoordinate> web)
+    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
+        int number, ColorableWeb<CoordinateColoring> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -74,18 +72,18 @@ public class SimpleColoringStrategy : IStrategy
             {
                 if (strategyManager.Possibilities[row, col].Peek(number))
                 {
-                    ColoringCoordinate current = new(row, col);
+                    CoordinateColoring current = new(row, col);
                     if (web.Contains(current)) continue;
 
                     bool[] onAndOff = new bool[2];
                     foreach (var coord in web)
                     {
-                        if (coord.ShareAUnit(current))
+                        if (coord.Coordinate.ShareAUnit(current.Coordinate))
                         {
                             onAndOff[(int)(coord.Coloring - 1)] = true;
                             if (onAndOff[0] && onAndOff[1])
                             {
-                                changeBuffer.AddPossibilityToRemove(number, row, col);
+                                strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                                 break;
                             }
                         }
@@ -95,44 +93,44 @@ public class SimpleColoringStrategy : IStrategy
         }
     }
 
-    private void InitChain(IStrategyManager strategyManager, ColorableWeb<ColoringCoordinate> web, ColoringCoordinate current, int number)
+    private void InitChain(IStrategyManager strategyManager, ColorableWeb<CoordinateColoring> web, CoordinateColoring current, int number)
     {
-        var ppir = strategyManager.PossibilityPositionsInRow(current.Row, number);
+        var ppir = strategyManager.PossibilityPositionsInRow(current.Coordinate.Row, number);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
             {
-                if (col != current.Col)
+                if (col != current.Coordinate.Col)
                 {
-                    ColoringCoordinate next = new ColoringCoordinate(current.Row, col);
+                    CoordinateColoring next = new CoordinateColoring(current.Coordinate.Row, col);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppic = strategyManager.PossibilityPositionsInColumn(current.Col, number);
+        var ppic = strategyManager.PossibilityPositionsInColumn(current.Coordinate.Col, number);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
             {
-                if (row != current.Row)
+                if (row != current.Coordinate.Row)
                 {
-                    ColoringCoordinate next = new ColoringCoordinate(row, current.Col);
+                    CoordinateColoring next = new CoordinateColoring(row, current.Coordinate.Col);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.Row / 3, current.Col / 3, number);
+        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.Coordinate.Row / 3, current.Coordinate.Col / 3, number);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
             {
-                if (pos[0] != current.Row && pos[1] != current.Col)
+                if (pos[0] != current.Coordinate.Row && pos[1] != current.Coordinate.Col)
                 {
-                    ColoringCoordinate next = new ColoringCoordinate(pos[0], pos[1]);
+                    CoordinateColoring next = new CoordinateColoring(pos[0], pos[1]);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
@@ -140,7 +138,7 @@ public class SimpleColoringStrategy : IStrategy
         }
     }
 
-    private static bool DoesAnyChainContains(IEnumerable<ColorableWeb<ColoringCoordinate>> chains, ColoringCoordinate coord)
+    private static bool DoesAnyChainContains(IEnumerable<ColorableWeb<CoordinateColoring>> chains, CoordinateColoring coord)
     {
         foreach (var chain in chains)
         {
@@ -154,9 +152,9 @@ public class SimpleColoringStrategy : IStrategy
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
     private readonly int _number;
-    private readonly ColorableWeb<ColoringCoordinate> _web;
+    private readonly ColorableWeb<CoordinateColoring> _web;
 
-    public SimpleColoringReportBuilder(int number, ColorableWeb<ColoringCoordinate> web)
+    public SimpleColoringReportBuilder(int number, ColorableWeb<CoordinateColoring> web)
     {
         _number = number;
         _web = web;
@@ -168,7 +166,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         {
             foreach (var coord in _web)
             {
-                lighter.HighlightPossibility(_number, coord.Row, coord.Col, coord.Coloring == Coloring.On ?
+                lighter.HighlightPossibility(_number, coord.Coordinate.Row, coord.Coordinate.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
             }
 

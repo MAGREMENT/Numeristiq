@@ -64,13 +64,21 @@ public class UniqueRectanglesStrategy : IStrategy
                             if (strategyManager.PossibilityPositionsInRow(row, bi.One).Count == 2
                                 && strategyManager.PossibilityPositionsInColumn(col, bi.One).Count == 2)
                             {
-                                strategyManager.RemovePossibility(bi.Two, row, col, this);
+                                strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, col);
+                                strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
+                                    new Coordinate(row, col), potentialOpposite,
+                                    new Coordinate(row, potentialOpposite.Col),
+                                    new Coordinate(potentialOpposite.Row, col)));
                             }
                             
                             if (strategyManager.PossibilityPositionsInRow(row, bi.Two).Count == 2
                                 && strategyManager.PossibilityPositionsInColumn(col, bi.Two).Count == 2)
                             {
-                                strategyManager.RemovePossibility(bi.One, row, col, this);
+                                strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.One, row, col);
+                                strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
+                                    new Coordinate(row, col), potentialOpposite,
+                                    new Coordinate(row, potentialOpposite.Col),
+                                    new Coordinate(potentialOpposite.Row, col)));
                             }
                         }
                     }
@@ -116,15 +124,21 @@ public class UniqueRectanglesStrategy : IStrategy
                 //Type 1
                 if (roofOne.Count == 0)
                 {
-                    view.RemovePossibility(bi.One, row, two.Col, this);
-                    view.RemovePossibility(bi.Two, row, two.Col, this);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                    
                     return;
                 }
 
                 if (roofTwo.Count == 0)
                 {
-                    view.RemovePossibility(bi.One, row, one.Col, this);
-                    view.RemovePossibility(bi.Two, row, one.Col, this);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                    
                     return;
                 }
 
@@ -133,52 +147,38 @@ public class UniqueRectanglesStrategy : IStrategy
                 {
                     int possibility = roofOne.GetFirst();
                     foreach (var coord in 
-                             Coordinate.SharedSeenCells(row, one.Col, row, two.Col))
+                             CoordinateUtils.SharedSeenCells(row, one.Col, row, two.Col))
                     {
-                        view.RemovePossibility(possibility, coord.Row, coord.Col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
                     }
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
 
                     return;
                 }
-                
-                //Hidden type 2
-                if (view.PossibilityPositionsInColumn(one.Col, bi.One).Count == 2)
-                {
-                    view.RemovePossibility(bi.Two, row, two.Col, this);
-                    return;
-                }
-                if (view.PossibilityPositionsInColumn(one.Col, bi.Two).Count == 2)
-                {
-                    view.RemovePossibility(bi.One, row, two.Col, this);
-                    return;
-                }
-                if (view.PossibilityPositionsInColumn(two.Col, bi.One).Count == 2)
-                {
-                    view.RemovePossibility(bi.Two, row, one.Col, this);
-                    return;
-                }
-                if (view.PossibilityPositionsInColumn(two.Col, bi.Two).Count == 2)
-                {
-                    view.RemovePossibility(bi.One, row, one.Col, this);
-                    return;
-                }
-                
+
                 //Type 4
                 if (one.Col / 3 == two.Col / 3)
                 {
                     var ppimn = view.PossibilityPositionsInMiniGrid(row / 3, one.Col / 3, bi.One);
                     if (ppimn.Count == 2)
                     {
-                        view.RemovePossibility(bi.Two, row, one.Col, this);
-                        view.RemovePossibility(bi.Two, row, two.Col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                        
                         return;
                     }
                     
                     ppimn = view.PossibilityPositionsInMiniGrid(row / 3, one.Col / 3, bi.Two);
                     if (ppimn.Count == 2)
                     {
-                        view.RemovePossibility(bi.One, row, one.Col, this);
-                        view.RemovePossibility(bi.One, row, two.Col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                        
                         return;
                     }
                 }
@@ -187,37 +187,71 @@ public class UniqueRectanglesStrategy : IStrategy
                     var ppir = view.PossibilityPositionsInRow(row, bi.One);
                     if (ppir.Count == 2)
                     {
-                        view.RemovePossibility(bi.Two, row, one.Col, this);
-                        view.RemovePossibility(bi.Two, row, two.Col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                        
                         return;
                     }
                     
                     ppir = view.PossibilityPositionsInRow(row, bi.Two);
                     if (ppir.Count == 2)
                     {
-                        view.RemovePossibility(bi.One, row, one.Col, this);
-                        view.RemovePossibility(bi.One, row, two.Col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                        
                         return;
                     }
+                }
+                
+                //Hidden type 2
+                if (view.PossibilityPositionsInColumn(one.Col, bi.One).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                    return;
+                }
+                if (view.PossibilityPositionsInColumn(one.Col, bi.Two).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                    return;
+                }
+                if (view.PossibilityPositionsInColumn(two.Col, bi.One).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                    return;
+                }
+                if (view.PossibilityPositionsInColumn(two.Col, bi.Two).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(row, one.Col), new Coordinate(row, two.Col)));
+                    return;
                 }
 
                 //Type 3
                 IPossibilities mashed = roofOne.Mash(roofTwo);
                 List<Coordinate> shared = new List<Coordinate>(
-                    Coordinate.SharedSeenEmptyCells(view, row, one.Col, row, two.Col));
+                    CoordinateUtils.SharedSeenEmptyCells(view, row, one.Col, row, two.Col));
 
-                foreach (var als in AlmostLockedSet.SearchForSingleCellAls(view, shared))
+                foreach (var als in AlmostLockedSet.SearchForAls(view, shared, 4))
                 {
-                    if (als.Possibilities.Equals(mashed) && RemovePossibilitiesInAllExcept(view,
-                            mashed, shared, als)) return;
-                }
-
-                for (int i = 2; i <= 4; i++)
-                {
-                    foreach (var als in AlmostLockedSet.SearchForMultipleCellsAls(view, shared, i))
+                    if (als.Possibilities.Equals(mashed))
                     {
-                        if (als.Possibilities.PeekAll(mashed) && RemovePossibilitiesInAllExcept(view,
-                                mashed, shared, als)) return;
+                        RemovePossibilitiesInAllExcept(view, mashed, shared, als);
+                        if (!view.ChangeBuffer.NotEmpty()) continue;
+
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
+                            new Coordinate(row, one.Col), new Coordinate(row, two.Col), als));
+                        return;
                     }
                 }
             }
@@ -245,15 +279,21 @@ public class UniqueRectanglesStrategy : IStrategy
                 //Type 1
                 if (roofOne.Count == 0)
                 {
-                    view.RemovePossibility(bi.One, two.Row, col, this);
-                    view.RemovePossibility(bi.Two, two.Row, col, this);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                    
                     return;
                 }
 
                 if (roofTwo.Count == 0)
                 {
-                    view.RemovePossibility(bi.One, one.Row, col, this);
-                    view.RemovePossibility(bi.Two, one.Row, col, this);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                    
                     return;
                 }
 
@@ -262,52 +302,38 @@ public class UniqueRectanglesStrategy : IStrategy
                 {
                     int possibility = roofOne.GetFirst();
                     foreach (var coord in 
-                             Coordinate.SharedSeenCells(one.Row, col, two.Row, col))
+                             CoordinateUtils.SharedSeenCells(one.Row, col, two.Row, col))
                     {
-                        view.RemovePossibility(possibility, coord.Row, coord.Col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
                     }
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
 
                     return;
                 }
-                
-                //Hidden type 2
-                if (view.PossibilityPositionsInRow(one.Row, bi.One).Count == 2)
-                {
-                    view.RemovePossibility(bi.Two, two.Row, col, this);
-                    return;
-                }
-                if (view.PossibilityPositionsInRow(one.Row, bi.Two).Count == 2)
-                {
-                    view.RemovePossibility(bi.One, two.Row, col, this);
-                    return;
-                }
-                if (view.PossibilityPositionsInRow(two.Row, bi.One).Count == 2)
-                {
-                    view.RemovePossibility(bi.Two, one.Row, col, this);
-                    return;
-                }
-                if (view.PossibilityPositionsInRow(two.Row, bi.Two).Count == 2)
-                {
-                    view.RemovePossibility(bi.One, one.Row, col, this);
-                    return;
-                }
-                
+
                 //Type 4
                 if (one.Row / 3 == two.Row / 3)
                 {
                     var ppimn = view.PossibilityPositionsInMiniGrid(one.Row / 3, col / 3, bi.One);
                     if (ppimn.Count == 2)
                     {
-                        view.RemovePossibility(bi.Two, one.Row, col, this);
-                        view.RemovePossibility(bi.Two, two.Row, col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                        
                         return;
                     }
                     
                     ppimn = view.PossibilityPositionsInMiniGrid(one.Row / 3, col / 3, bi.Two);
                     if (ppimn.Count == 2)
                     {
-                        view.RemovePossibility(bi.One, one.Row, col, this);
-                        view.RemovePossibility(bi.One, two.Row, col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                        
                         return;
                     }
                 }
@@ -316,38 +342,77 @@ public class UniqueRectanglesStrategy : IStrategy
                     var ppic = view.PossibilityPositionsInColumn(col, bi.One);
                     if (ppic.Count == 2)
                     {
-                        view.RemovePossibility(bi.Two, one.Row, col, this);
-                        view.RemovePossibility(bi.Two, two.Row, col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                        
                         return;
                     }
                     
                     ppic = view.PossibilityPositionsInColumn(col, bi.Two);
                     if (ppic.Count == 2)
                     {
-                        view.RemovePossibility(bi.One, one.Row, col, this);
-                        view.RemovePossibility(bi.One, two.Row, col, this);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
+                        view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                            new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                        
                         return;
                     }
+                }
+                
+                //Hidden type 2
+                if (view.PossibilityPositionsInRow(one.Row, bi.One).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                    
+                    return;
+                }
+                if (view.PossibilityPositionsInRow(one.Row, bi.Two).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                    
+                    return;
+                }
+                if (view.PossibilityPositionsInRow(two.Row, bi.One).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                    
+                    return;
+                }
+                if (view.PossibilityPositionsInRow(two.Row, bi.Two).Count == 2)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
+                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        new Coordinate(one.Row, col), new Coordinate(two.Row, col)));
+                    
+                    return;
                 }
 
                 //Type 3
                 IPossibilities mashed = roofOne.Mash(roofTwo);
                 List<Coordinate> shared = new List<Coordinate>(
-                    Coordinate.SharedSeenEmptyCells(view, one.Row, col, two.Row, col));
+                    CoordinateUtils.SharedSeenEmptyCells(view, one.Row, col, two.Row, col));
 
-                foreach (var als in AlmostLockedSet.SearchForSingleCellAls(view, shared))
+                foreach (var als in AlmostLockedSet.SearchForAls(view, shared, 4))
                 {
-                    if (als.Possibilities.Equals(mashed) && RemovePossibilitiesInAllExcept(view,
-                            mashed, shared, als)) return;
-                }
-
-                for (int i = 2; i <= 4; i++)
-                {
-                    foreach (var als in AlmostLockedSet.SearchForMultipleCellsAls(view, shared, i))
+                    if (als.Possibilities.Equals(mashed))
                     {
-                        if (als.Possibilities.PeekAll(mashed) && RemovePossibilitiesInAllExcept(view,
-                                mashed, shared, als)) return;
+                        RemovePossibilitiesInAllExcept(view, mashed, shared, als);
+                        if (!view.ChangeBuffer.NotEmpty()) continue;
+                        
+                        view.ChangeBuffer.Push(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
+                            new Coordinate(one.Row, col), new Coordinate(two.Row, col), als));
+                        return;
                     }
+                        
                 }
             }
         }
@@ -372,12 +437,14 @@ public class UniqueRectanglesStrategy : IStrategy
             {
                 int possibility = roofOne.GetFirst();
                 foreach (var coord in 
-                         Coordinate.SharedSeenCells(one.Row, two.Col, two.Row, one.Col))
+                         CoordinateUtils.SharedSeenCells(one.Row, two.Col, two.Row, one.Col))
                 {
                     if ((coord.Row == one.Row && coord.Col == one.Col) ||
                         (coord.Row == two.Row && coord.Col == two.Col)) continue;
-                    view.RemovePossibility(possibility, coord.Row, coord.Col, this);
+                    view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
                 }
+                view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    new Coordinate(one.Row, two.Col), new Coordinate(two.Row, one.Col)));
 
                 return;
             }
@@ -388,8 +455,11 @@ public class UniqueRectanglesStrategy : IStrategy
                 view.PossibilityPositionsInColumn(one.Col, bi.One).Count == 2 &&
                 view.PossibilityPositionsInColumn(two.Col, bi.One).Count == 2)
             {
-                view.RemovePossibility(bi.Two, one.Row, one.Col, this);
-                view.RemovePossibility(bi.Two, two.Row, two.Col, this);
+                view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, one.Col);
+                view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, two.Col);
+                view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    new Coordinate(one.Row, two.Col), new Coordinate(two.Row, one.Col)));
+                
                 return;
             }
             
@@ -398,8 +468,10 @@ public class UniqueRectanglesStrategy : IStrategy
                 view.PossibilityPositionsInColumn(one.Col, bi.Two).Count == 2 &&
                 view.PossibilityPositionsInColumn(two.Col, bi.Two).Count == 2)
             {
-                view.RemovePossibility(bi.One, one.Row, one.Col, this);
-                view.RemovePossibility(bi.One, two.Row, two.Col, this);
+                view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, one.Col);
+                view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, two.Col);
+                view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    new Coordinate(one.Row, two.Col), new Coordinate(two.Row, one.Col)));
             }
         }
     }
@@ -423,20 +495,17 @@ public class UniqueRectanglesStrategy : IStrategy
         return (rows.Count == 2 && cols.Count == 1) || (rows.Count == 1 && cols.Count == 2);
     }
 
-    private bool RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Coordinate> coords,
+    private void RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Coordinate> coords,
         AlmostLockedSet except)
     {
-        bool wasProgressMade = false;
         foreach (var coord in coords)
         {
             if(except.Contains(coord) || !except.ShareAUnit(coord)) continue;
             foreach (var possibility in poss)
             {
-                if (view.RemovePossibility(possibility, coord.Row, coord.Col, this)) wasProgressMade = true;
+                view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
             }
         }
-
-        return wasProgressMade;
     }
 }
 
@@ -460,5 +529,71 @@ public class BiValue
     {
         if (obj is not BiValue bi) return false;
         return (bi.One == One && bi.Two == Two) || (bi.One == Two && bi.Two == One);
+    }
+}
+
+public class UniqueRectanglesReportBuilder : IChangeReportBuilder
+{
+    private readonly Coordinate _floorOne;
+    private readonly Coordinate _floorTwo;
+    private readonly Coordinate _roofOne;
+    private readonly Coordinate _roofTwo;
+
+    public UniqueRectanglesReportBuilder(Coordinate floorOne, Coordinate floorTwo, Coordinate roofOne, Coordinate roofTwo)
+    {
+        _floorOne = floorOne;
+        _floorTwo = floorTwo;
+        _roofOne = roofOne;
+        _roofTwo = roofTwo;
+    }
+    
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        {
+            lighter.HighlightCell(_floorOne.Row, _floorOne.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_floorTwo.Row, _floorTwo.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_roofOne.Row, _roofOne.Col, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_roofTwo.Row, _roofTwo.Col, ChangeColoration.CauseOffTwo);
+            
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        }, "");
+    }
+}
+
+public class UniqueRectanglesWithAlsReportBuilder : IChangeReportBuilder
+{
+    private readonly Coordinate _floorOne;
+    private readonly Coordinate _floorTwo;
+    private readonly Coordinate _roofOne;
+    private readonly Coordinate _roofTwo;
+    private readonly AlmostLockedSet _als;
+
+    public UniqueRectanglesWithAlsReportBuilder(Coordinate floorOne, Coordinate floorTwo, Coordinate roofOne,
+        Coordinate roofTwo, AlmostLockedSet als)
+    {
+        _floorOne = floorOne;
+        _floorTwo = floorTwo;
+        _roofOne = roofOne;
+        _roofTwo = roofTwo;
+        _als = als;
+    }
+    
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        {
+            lighter.HighlightCell(_floorOne.Row, _floorOne.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_floorTwo.Row, _floorTwo.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_roofOne.Row, _roofOne.Col, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_roofTwo.Row, _roofTwo.Col, ChangeColoration.CauseOffTwo);
+
+            foreach (var coord in _als.Coordinates)
+            {
+                lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffThree);
+            }
+            
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        }, "");
     }
 }
