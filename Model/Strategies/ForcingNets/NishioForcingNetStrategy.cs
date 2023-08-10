@@ -10,6 +10,7 @@ public class NishioForcingNetStrategy : IStrategy
     public string Name => "Nishio forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public int Score { get; set; }
+
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         LinkGraph<ILinkGraphElement> graph = strategyManager.LinkGraph();
@@ -26,119 +27,17 @@ public class NishioForcingNetStrategy : IStrategy
                         if (entry.Value != Coloring.Off || entry.Key is not PossibilityCoordinate coord) continue;
                         if (cs.AddOff(coord))
                         {
-                            strategyManager.RemovePossibility(possibility, row, col, this);
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                             break;
                         }
                     }
-                    
+
+                    if (strategyManager.ChangeBuffer.NotEmpty())
+                        strategyManager.ChangeBuffer.Push(this, new NishioForcingNetReportBuilder());
                     cs.Reset();
                 }
             }
         }
-    }
-
-    private bool Search(ContradictionSearcher cs, LinkGraph<ILinkGraphElement> graph, Dictionary<ILinkGraphElement, Coloring> result,
-        ILinkGraphElement current)
-    {
-        Coloring opposite = result[current] == Coloring.On ? Coloring.Off : Coloring.On;
-
-        foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
-        {
-            if (!result.ContainsKey(friend))
-            {
-                if (opposite == Coloring.Off && friend is PossibilityCoordinate pos && cs.AddOff(pos)) return true;
-                result[friend] = opposite;
-                if (Search(cs, graph, result, friend)) return true;
-            }
-            else if (result[friend] != opposite) return true;
-        }
-
-        if (opposite == Coloring.Off)
-        {
-            foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
-            {
-                if (!result.ContainsKey(friend))
-                {
-                    if (friend is PossibilityCoordinate pos && cs.AddOff(pos)) return true;
-                    result[friend] = opposite;
-                    if (Search(cs, graph, result, friend)) return true;
-                }
-                else if (result[friend] != opposite) return true;
-            }
-        }
-        else if (current is PossibilityCoordinate pos)
-        {
-            PossibilityCoordinate? row = null;
-            bool rowB = true;
-            PossibilityCoordinate? col = null;
-            bool colB = true;
-            PossibilityCoordinate? mini = null;
-            bool miniB = true;
-            
-            foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
-            {
-                if (friend is not PossibilityCoordinate friendPos) continue;
-                if (rowB && friendPos.Row == pos.Row)
-                {
-                    if (result.TryGetValue(friend, out var coloring))
-                    {
-                        if (coloring == Coloring.On) rowB = false;
-                    }
-                    else
-                    {
-                        if (row is null) row = friendPos;
-                        else rowB = false;  
-                    }
-                    
-                }
-
-                if (colB && friendPos.Col == pos.Col)
-                {
-                    if (result.TryGetValue(friend, out var coloring))
-                    {
-                        if (coloring == Coloring.On) colB = false;
-                    }
-                    else
-                    {
-                        if (col is null) col = friendPos;
-                        else colB = false;
-                    }
-                }
-
-                if (miniB && friendPos.Row / 3 == pos.Row / 3 && friendPos.Col / 3 == pos.Col / 3)
-                {
-                    if (result.TryGetValue(friend, out var coloring))
-                    {
-                        if (coloring == Coloring.On) miniB = false;
-                    }
-                    else
-                    {
-                        if (mini is null) mini = friendPos;
-                        else miniB = false;
-                    }
-                }
-            }
-
-            if (row is not null && rowB)
-            {
-                result[row] = Coloring.On;
-                Search(cs, graph, result, row);
-            }
-
-            if (col is not null && colB)
-            {
-                result[col] = Coloring.On;
-                Search(cs, graph, result, col);
-            }
-
-            if (mini is not null && miniB)
-            {
-                result[mini] = Coloring.On;
-                Search(cs, graph, result, mini);
-            }
-        }
-
-        return false;
     }
 }
 
@@ -221,5 +120,14 @@ public class ContradictionSearcher
         _rows.Clear();
         _cols.Clear();
         _minis.Clear();
+    }
+}
+
+public class NishioForcingNetReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }

@@ -36,6 +36,8 @@ public class UnitForcingNetStrategy : IStrategy
                 }
                 
                 Process(strategyManager, colorings);
+                if (strategyManager.ChangeBuffer.NotEmpty())
+                    strategyManager.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder());
             }
 
             for (int col = 0; col < 9; col++)
@@ -54,6 +56,8 @@ public class UnitForcingNetStrategy : IStrategy
                 }
                 
                 Process(strategyManager, colorings);
+                if (strategyManager.ChangeBuffer.NotEmpty())
+                    strategyManager.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder());
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -74,6 +78,8 @@ public class UnitForcingNetStrategy : IStrategy
                     }
                 
                     Process(strategyManager, colorings);
+                    if (strategyManager.ChangeBuffer.NotEmpty())
+                        strategyManager.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder());
                 }
             }
         }
@@ -95,9 +101,18 @@ public class UnitForcingNetStrategy : IStrategy
 
             if (sameInAll)
             {
-                if (col == Coloring.On) view.AddDefinitiveNumber(current.Possibility, current.Row, current.Col, this);
-                else view.RemovePossibility(current.Possibility, current.Row, current.Col, this);
+                if (col == Coloring.On) view.ChangeBuffer.AddDefinitiveToAdd(current.Possibility, current.Row, current.Col);
+                else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
             }
         }
+    }
+}
+
+public class UnitForcingNetReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }

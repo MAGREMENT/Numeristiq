@@ -22,13 +22,13 @@ public class GridFormationStrategy : IStrategy
         switch (type)
         {
             case 2 : Name = "XWing";
-                Difficulty = StrategyLevel.Hard;
+                Difficulty = StrategyLevel.Medium;
                 break;
             case 3 : Name = "Swordfish";
-                Difficulty = StrategyLevel.Hard;
+                Difficulty = StrategyLevel.Medium;
                 break;
             case 4 : Name = "Jellyfish";
-                Difficulty = StrategyLevel.Hard;
+                Difficulty = StrategyLevel.Medium;
                 break;
             default : Name = "Grid formation unknown";
                 Difficulty = StrategyLevel.None;

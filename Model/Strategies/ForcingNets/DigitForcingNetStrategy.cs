@@ -23,15 +23,17 @@ public class DigitForcingNetStrategy : IStrategy //TODO => fix for "4.21......5.
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
                     Process(strategyManager, onColoring, offColoring);
+
+                    if (strategyManager.ChangeBuffer.NotEmpty())
+                        strategyManager.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder());
                 }
             }
         }
     }
 
-    private bool Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring> onColoring,
+    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring> onColoring,
         Dictionary<ILinkGraphElement, Coloring> offColoring)
     {
-        bool wasProgressMade = false;
         foreach (var on in onColoring)
         {
             if (on.Key is not PossibilityCoordinate possOn) continue;
@@ -39,11 +41,11 @@ public class DigitForcingNetStrategy : IStrategy //TODO => fix for "4.21......5.
             {
                 switch (other)
                 {
-                    case Coloring.Off when on.Value == Coloring.Off &&
-                                           view.RemovePossibility(possOn.Possibility, possOn.Row, possOn.Col, this):
-                    case Coloring.On when on.Value == Coloring.On &&
-                                          view.AddDefinitiveNumber(possOn.Possibility, possOn.Row, possOn.Col, this):
-                        wasProgressMade = true;
+                    case Coloring.Off when on.Value == Coloring.Off :
+                        view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, possOn.Row, possOn.Col);
+                        break;
+                    case Coloring.On when on.Value == Coloring.On :
+                        view.ChangeBuffer.AddDefinitiveToAdd(possOn.Possibility, possOn.Row, possOn.Col);
                         break;
                 }
             }
@@ -52,35 +54,35 @@ public class DigitForcingNetStrategy : IStrategy //TODO => fix for "4.21......5.
             foreach (var off in offColoring)
             {
                 if (off.Value != Coloring.On || off.Key is not PossibilityCoordinate possOff) continue;
-                if (possOff.Row == possOn.Row && possOn.Col == possOff.Col &&
-                    RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility))
-                    wasProgressMade = true;
-                else if (possOff.Possibility == possOn.Possibility &&
-                         possOn.ShareAUnit(possOff))
+                if (possOff.Row == possOn.Row && possOn.Col == possOff.Col)
+                    RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility);
+
+                else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
                     foreach (var coord in possOn.SharedSeenCells(possOff))
                     {
-                        if (view.RemovePossibility(possOn.Possibility, coord.Row, coord.Col, this))
-                            wasProgressMade = true;
+                        view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, coord.Row, coord.Col);
                     }
                 }
             }
         }
-
-        return wasProgressMade;
     }
 
-    private bool RemoveAll(IStrategyManager view, int row, int col, int except1, int except2)
+    private void RemoveAll(IStrategyManager view, int row, int col, int except1, int except2)
     {
-        bool wasProgressMade = false;
         foreach (var possibility in view.Possibilities[row, col])
         {
             if (possibility == except1 || possibility == except2) continue;
-            if (view.RemovePossibility(possibility, row, col, this)) wasProgressMade = true;
+            view.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
         }
-
-        return wasProgressMade;
     }
+}
 
-    
+public class DigitForcingNetReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+    }
 }

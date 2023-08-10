@@ -35,6 +35,9 @@ public class CellForcingNetStrategy : IStrategy
                 }
 
                 Process(strategyManager, colorings);
+
+                if (strategyManager.ChangeBuffer.NotEmpty())
+                    strategyManager.ChangeBuffer.Push(this, new CellForcingNetReportBuilder());
             }
         }
     }
@@ -55,11 +58,20 @@ public class CellForcingNetStrategy : IStrategy
             if (isSameInAll)
             {
                 if (currentColoring == Coloring.On)
-                    view.AddDefinitiveNumber(current.Possibility, current.Row, current.Col, this);
-                else view.RemovePossibility(current.Possibility, current.Row, current.Col, this);
+                    view.ChangeBuffer.AddDefinitiveToAdd(current.Possibility, current.Row, current.Col);
+                else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
             }
         }
         
         //TODO type 3 and 4
+    }
+}
+
+public class CellForcingNetReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }
