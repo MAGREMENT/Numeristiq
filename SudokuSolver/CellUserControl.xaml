@@ -3,28 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:SudokuSolver"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Gray" x:Name="DeepBackground" Width="60" Height="60" Margin="0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition Width="57"/>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition Height="57"/>
-            <RowDefinition />
-        </Grid.RowDefinitions>
-        <local:NumbersUserControl Grid.Row="1" Grid.Column="1" x:Name="Numbers" Background="White"/>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="0" x:Name="B00"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="1" x:Name="B01"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="0" Grid.Column="2" x:Name="B02"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="1" Grid.Column="0" x:Name="B10"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="1" Grid.Column="2" x:Name="B12"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="0" x:Name="B20"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="1" x:Name="B21"></StackPanel>
-        <StackPanel Background="Black" Visibility="Hidden" Grid.Row="2" Grid.Column="2" x:Name="B22"></StackPanel>
-    </Grid>
+    <Grid x:Name="Case"/>
 </UserControl>

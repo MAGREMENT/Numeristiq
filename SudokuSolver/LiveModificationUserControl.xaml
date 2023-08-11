@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Width="300" Height="150" Margin="0, 20, 0, 0" Orientation="Horizontal">
-        <local:NumbersUserControl x:Name="Numbers" KeyDown="KeyPressed"/>
+        <local:CellUserControl x:Name="Cell" KeyDown="KeyPressed"/>
         <Grid Width="150" Height="150">
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <RadioButton IsChecked="True" x:Name="A" Click="FocusThis" FontSize="15">Definitive</RadioButton>

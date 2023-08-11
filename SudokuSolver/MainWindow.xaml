@@ -17,7 +17,7 @@
                 <local:LiveModificationUserControl/>
             </StackPanel>
         </StackPanel>
-        <StackPanel x:Name="MainPanel" Orientation="Vertical" Width="540">
+        <StackPanel x:Name="MainPanel" Orientation="Vertical" Width="543">
             <local:SolverUserControl HorizontalAlignment="Center"/>
             <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="NewSudoku"
                      HorizontalAlignment="Center"/>

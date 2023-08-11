@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model;
 using Model.Logs;
+using Model.Possibilities;
+using Model.StrategiesUtil;
 
 namespace SudokuSolver;
 
@@ -11,6 +15,8 @@ public partial class SolverUserControl : IHighlighter
 {
     private readonly Solver _solver = new(new Sudoku());
     private int _logBuffer = -1;
+
+    private readonly SolverBackgroundManager _backgroundManager;
 
     public delegate void OnReady();
     public event OnReady? IsReady;
@@ -25,41 +31,31 @@ public partial class SolverUserControl : IHighlighter
     {
         InitializeComponent();
 
+        _backgroundManager = new SolverBackgroundManager(57, 3);
+        Main.Width = _backgroundManager.Size;
+        Main.Height = _backgroundManager.Size;
+        
         for (int i = 0; i < 9; i++)
         {
             StackPanel row = (StackPanel)Main.Children[i];
             for (int j = 0; j < 9; j++)
             {
                 var toAdd = new CellUserControl();
-                switch (i)
-                {
-                    case 2 : case 5 :
-                        toAdd.BorderBottom = true;
-                        break;
-                    case 3 : case 6 :
-                        toAdd.BorderTop = true;
-                        break;
-                }
-
-                switch (j)
-                {
-                    case 2 : case 5 :
-                        toAdd.BorderRight = true;
-                        break;
-                    case 3 : case 6 :
-                        toAdd.BorderLeft = true;
-                        break;
-                }
+                toAdd.SetMargin(3, 3, 0, 0);
                 row.Children.Add(toAdd);
 
                 int rowForEvent = i;
                 int colForEvent = j;
-                    toAdd.ClickedOn += (sender) =>
+                toAdd.ClickedOn += sender =>
                 {
                     CellClickedOn?.Invoke(sender, rowForEvent, colForEvent);
+                    _backgroundManager.PutCursorOn(rowForEvent, colForEvent);
+                    Main.Background = _backgroundManager.Background;
                 };
             }
         }
+        
+        RefreshSolver();
     }
 
     public void NewSudoku(Sudoku sudoku)
@@ -80,12 +76,12 @@ public partial class SolverUserControl : IHighlighter
         {
             for (int j = 0; j < 9; j++)
             {
-                CellUserControl current = GetTo(i, j);
-                current.UnHighlight();
-                
-                UpdateCell(current, i, j);
+                UpdateCell(GetTo(i, j), i, j);
             }
         }
+        
+        _backgroundManager.Reset();
+        Main.Background = _backgroundManager.Background;
     }
 
     public void AddDefinitiveNumber(int number, int row, int col)
@@ -105,6 +101,12 @@ public partial class SolverUserControl : IHighlighter
         if(_solver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_solver.Sudoku[row, col]);
         else current.SetPossibilities(_solver.Possibilities[row, col]);
     }
+    
+    public void ClearSudoku()
+    {
+        _solver.SetSudoku(new Sudoku());
+        Update();
+    }
 
     public void SolveSudoku()
     {
@@ -118,20 +120,14 @@ public partial class SolverUserControl : IHighlighter
     { 
         _solver.Solve(true);
         
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                GetTo(i, j).UnHighlight();
-            }
-        }
+        _backgroundManager.Reset();
 
         if (_solver.Logs.Count > 0)
         {
             var current = _solver.Logs[^1];
             if (current.Id != _logBuffer)
             {
-                current.SolverHighLighter(this);
+                Highlight(current);
                 _logBuffer = current.Id;
             }
         }
@@ -149,17 +145,14 @@ public partial class SolverUserControl : IHighlighter
         IsReady?.Invoke();
     }
 
-    public void ShowCurrent()
-    {
-        RefreshSolver();
-    }
-
     public void ShowLog(ISolverLog log)
     {
+        _backgroundManager.Reset();
+        
         int n = -1;
         int cursor = 0;
         bool possibility = false;
-        List<int> buffer = new();
+        IPossibilities buffer = IPossibilities.NewEmpty();
         while (cursor < log.SolverState.Length)
         {
             char current = log.SolverState[cursor];
@@ -169,10 +162,9 @@ public partial class SolverUserControl : IHighlighter
                 {
                     var scuc = GetTo(n / 9, n % 9);
                     if (possibility) scuc.SetPossibilities(buffer);
-                    else scuc.SetDefinitiveNumber(buffer[0]);
-                    scuc.UnHighlight();
-                    
-                    buffer.Clear();
+                    else scuc.SetDefinitiveNumber(buffer.GetFirst());
+
+                    buffer.RemoveAll();
                 }
 
                 possibility = current == 'p';
@@ -185,26 +177,30 @@ public partial class SolverUserControl : IHighlighter
         
         var scuc2 = GetTo(n / 9, n % 9);
         if (possibility) scuc2.SetPossibilities(buffer);
-        else scuc2.SetDefinitiveNumber(buffer[0]);
-        scuc2.UnHighlight();
+        else scuc2.SetDefinitiveNumber(buffer.GetFirst());
 
-        log.SolverHighLighter(this);
-    }
-
-    public void ClearSudoku()
-    {
-        _solver.SetSudoku(new Sudoku());
-        Update();
+        Highlight(log);
     }
     
+    public void ShowCurrent()
+    {
+        RefreshSolver();
+    }
+
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
     {
-        GetTo(row, col).HighlightPossibility(possibility, ColorUtil.ToColor(coloration));
+        _backgroundManager.HighlightPossibility(row, col, possibility, ColorUtil.ToColor(coloration));
     }
 
     public void HighlightCell(int row, int col, ChangeColoration coloration)
     {
-        GetTo(row, col).Highlight(ColorUtil.ToColor(coloration));
+        _backgroundManager.HighlightCell(row, col, ColorUtil.ToColor(coloration));
+    }
+
+    private void Highlight(ISolverLog log)
+    {
+        log.SolverHighLighter(this);
+        Main.Background = _backgroundManager.Background;
     }
 
     public List<ISolverLog> GetLogs()
@@ -232,4 +228,182 @@ public partial class SolverUserControl : IHighlighter
         return (CellUserControl) ((StackPanel)Main.Children[row]).Children[col];
     }
 
+}
+
+public class SolverBackgroundManager
+{
+    public int Size { get; }
+    public int CellSize { get; }
+    public int Margin { get; }
+
+    public Brush Background
+    {
+        get
+        {
+            DrawingGroup current = new DrawingGroup();
+            current.Children.Add(_grid);
+            current.Children.Add(_cells);
+            current.Children.Add(_cursor);
+
+            return new DrawingBrush(current);
+        }
+    }
+
+    private readonly DrawingGroup _grid = new();
+    private readonly DrawingGroup _cells = new();
+    private readonly DrawingGroup _cursor = new();
+
+    private Coordinate? _currentCursor;
+
+    public SolverBackgroundManager(int cellSize, int margin)
+    {
+        CellSize = cellSize;
+        Margin = margin;
+        Size = cellSize * 9 + margin * 10;
+
+        List<GeometryDrawing> after = new();
+        int start = 0;
+        for (int i = 0; i < 10; i++)
+        {
+            if (i is 3 or 6)
+            {
+                after.Add(new GeometryDrawing()
+                {
+                    Geometry = new RectangleGeometry(new Rect(start, 0, margin, Size)),
+                    Brush = Brushes.Black
+                });
+            
+                after.Add(new GeometryDrawing()
+                {
+                    Geometry = new RectangleGeometry(new Rect(0, start, Size, margin)),
+                    Brush = Brushes.Black
+                }); 
+            }
+            else
+            {
+                _grid.Children.Add(new GeometryDrawing()
+                {
+                    Geometry = new RectangleGeometry(new Rect(start, 0, margin, Size)),
+                    Brush = Brushes.Gray
+                });
+            
+                _grid.Children.Add(new GeometryDrawing()
+                {
+                    Geometry = new RectangleGeometry(new Rect(0, start, Size, margin)),
+                    Brush = Brushes.Gray
+                }); 
+            }
+
+            foreach (var a in after)
+            {
+                _grid.Children.Add(a);
+            }
+
+            start += margin + cellSize;
+        }
+    }
+
+    public void Reset()
+    {
+        _cells.Children.Clear();
+    }
+
+    public void HighlightCell(int row, int col, Color color)
+    {
+        int startCol = row * CellSize + (row + 1) * Margin;
+        int startRow = col * CellSize + (col + 1) * Margin;
+        
+        _cells.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow, startCol, CellSize, CellSize)),
+            Brush = new SolidColorBrush(color)
+        });
+    }
+
+    public void HighlightPossibility(int row, int col, int possibility, Color color)
+    {
+        int oneThird = CellSize / 3;
+        
+        int startCol = row * CellSize + (row + 1) * Margin + (possibility - 1) / 3 * oneThird;
+        int startRow = col * CellSize + (col + 1) * Margin + (possibility - 1) % 3 * oneThird;
+        
+        _cells.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow, startCol, oneThird, oneThird)),
+            Brush = new SolidColorBrush(color)
+        });
+    }
+
+    public void PutCursorOn(int row, int col)
+    {
+        _cursor.Children.Clear();
+        
+        if (_currentCursor is not null && _currentCursor == new Coordinate(row, col))
+        {
+            _currentCursor = null;
+            return;
+        }
+
+        _currentCursor = new Coordinate(row, col);
+        int startCol = row * CellSize + (row + 1) * Margin;
+        int startRow = col * CellSize + (col + 1) * Margin;
+        
+        int oneFourth = CellSize / 4;
+        
+        //Top left corner
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol - Margin,
+                oneFourth, Margin)),
+            Brush = Brushes.Aqua
+        });
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol - Margin,
+                Margin, oneFourth)),
+            Brush = Brushes.Aqua
+        });
+        
+        //Top right corner
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow + CellSize + Margin - oneFourth, startCol - Margin,
+                oneFourth, Margin)),
+            Brush = Brushes.Aqua
+        });
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow + CellSize, startCol - Margin,
+                Margin, oneFourth)),
+            Brush = Brushes.Aqua
+        });
+        
+        //Bottom left corner
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol + CellSize,
+                oneFourth, Margin)),
+            Brush = Brushes.Aqua
+        });
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol + CellSize + Margin - oneFourth,
+                Margin, oneFourth)),
+            Brush = Brushes.Aqua
+        });
+        
+        //Bottom right corner
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow + CellSize + Margin - oneFourth, startCol + CellSize,
+                oneFourth, Margin)),
+            Brush = Brushes.Aqua
+        });
+        _cursor.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(startRow + CellSize, startCol + CellSize + Margin - oneFourth,
+                Margin, oneFourth)),
+            Brush = Brushes.Aqua
+        });
+    }
 }

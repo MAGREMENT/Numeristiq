@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Media;
 using Model;
+using Model.Possibilities;
 
 namespace SudokuSolver;
 
@@ -18,20 +19,20 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
     {
         InitializeComponent();
 
-        Numbers.SetSize(150);
-        Numbers.Focusable = true;
-        Numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
-        Numbers.LostFocus += (_, _) =>
+        Cell.SetSize(150);
+        Cell.Focusable = true;
+        Cell.Background = new SolidColorBrush(Colors.WhiteSmoke);
+        Cell.LostFocus += (_, _) =>
         {
-            Numbers.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            Cell.Background = new SolidColorBrush(Colors.WhiteSmoke);
         };
-        Numbers.GotFocus += (_, _) =>
+        Cell.GotFocus += (_, _) =>
         {
-            Numbers.Background = new SolidColorBrush(Colors.Aqua);
+            Cell.Background = new SolidColorBrush(Colors.Aqua);
         };
-        Numbers.MouseDown += (_, _) =>
+        Cell.MouseDown += (_, _) =>
         {
-            Numbers.Focus();
+            Cell.Focus();
         };
     }
 
@@ -43,10 +44,10 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
             _current = null;
             
             // Kill logical and keyboard focus
-            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(Numbers), null);
+            FocusManager.SetFocusedElement(FocusManager.GetFocusScope(Cell), null);
             Keyboard.ClearFocus();
             
-            Numbers.Void();
+            Cell.Void();
             return;
         }
         
@@ -56,15 +57,15 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
 
         _current.Updated += Update;
         _current.FireUpdated();
-        Numbers.Focus();
+        Cell.Focus();
     }
 
-    private void Update(bool isPossibilities, int[] numbers)
+    private void Update(bool isPossibilities, IPossibilities numbers)
     {
         if (_current is not null)
         {
-            if (isPossibilities) Numbers.SetSmall(numbers);
-            else Numbers.SetBig(numbers[0]);
+            if (isPossibilities) Cell.SetPossibilities(numbers);
+            else Cell.SetDefinitiveNumber(numbers.GetFirst());
         }
     }
 
@@ -108,6 +109,6 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
 
     private void FocusThis(object sender, RoutedEventArgs e)
     {
-        Numbers.Focus();
+        Cell.Focus();
     }
 }
