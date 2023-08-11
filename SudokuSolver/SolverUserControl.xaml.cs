@@ -13,6 +13,9 @@ namespace SudokuSolver;
 
 public partial class SolverUserControl : IHighlighter
 {
+    private const int CellSize = 57;
+    private const int LineWidth = 3;
+    
     private readonly Solver _solver = new(new Sudoku());
     private int _logBuffer = -1;
 
@@ -31,17 +34,61 @@ public partial class SolverUserControl : IHighlighter
     {
         InitializeComponent();
 
-        _backgroundManager = new SolverBackgroundManager(57, 3);
+        //Init background
+        _backgroundManager = new SolverBackgroundManager(CellSize, LineWidth);
         Main.Width = _backgroundManager.Size;
         Main.Height = _backgroundManager.Size;
         
+        //Init numbers
+        for (int i = 0; i < 9; i++)
+        {
+            HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition()
+            {
+                Width = new GridLength(LineWidth)
+            });
+            HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition()
+            {
+                Width = new GridLength(CellSize)
+            });
+            var horizontal = new TextBlock()
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = (i + 1).ToString(),
+                FontSize = 15,
+                FontWeight = FontWeights.Bold
+            };
+            Grid.SetColumn(horizontal, 1 + i * 2);
+            HorizontalNumbers.Children.Add(horizontal);
+            
+            VerticalNumbers.RowDefinitions.Add(new RowDefinition()
+            {
+                Height = new GridLength(LineWidth)
+            });
+            VerticalNumbers.RowDefinitions.Add(new RowDefinition()
+            {
+                Height = new GridLength(CellSize)
+            });
+            var vertical = new TextBlock()
+            {
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Text = (i + 1).ToString(),
+                FontSize = 15,
+                FontWeight = FontWeights.Bold
+            };
+            Grid.SetRow(vertical, 1 + i * 2);
+            VerticalNumbers.Children.Add(vertical);
+        }
+        
+        //Init cells
         for (int i = 0; i < 9; i++)
         {
             StackPanel row = (StackPanel)Main.Children[i];
             for (int j = 0; j < 9; j++)
             {
                 var toAdd = new CellUserControl();
-                toAdd.SetMargin(3, 3, 0, 0);
+                toAdd.SetMargin(LineWidth, LineWidth, 0, 0);
                 row.Children.Add(toAdd);
 
                 int rowForEvent = i;
@@ -54,7 +101,7 @@ public partial class SolverUserControl : IHighlighter
                 };
             }
         }
-        
+
         RefreshSolver();
     }
 
@@ -83,6 +130,13 @@ public partial class SolverUserControl : IHighlighter
         _backgroundManager.Reset();
         Main.Background = _backgroundManager.Background;
     }
+    
+    private void UpdateCell(CellUserControl current, int row, int col)
+    {
+        if(_solver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_solver.Sudoku[row, col]);
+        else current.SetPossibilities(_solver.Possibilities[row, col]);
+    }
+
 
     public void AddDefinitiveNumber(int number, int row, int col)
     {
@@ -94,12 +148,6 @@ public partial class SolverUserControl : IHighlighter
     {
         _solver.RemovePossibilityByHand(number, row, col);
         Update();
-    }
-
-    private void UpdateCell(CellUserControl current, int row, int col)
-    {
-        if(_solver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_solver.Sudoku[row, col]);
-        else current.SetPossibilities(_solver.Possibilities[row, col]);
     }
     
     public void ClearSudoku()

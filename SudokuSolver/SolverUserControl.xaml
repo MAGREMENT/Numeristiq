@@ -5,15 +5,29 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Orientation="Vertical" x:Name="Main">
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
-        <StackPanel Orientation="Horizontal"></StackPanel>
+    <StackPanel Orientation="Vertical">
+        <Grid Margin="20, 0, 0, 0" Height="20" x:Name="HorizontalNumbers">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"></RowDefinition>
+            </Grid.RowDefinitions>
+        </Grid>
+        <StackPanel Orientation="Horizontal">
+            <Grid Width="20" x:Name="VerticalNumbers">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="20"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+            </Grid>
+            <StackPanel Orientation="Vertical" x:Name="Main">
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+                <StackPanel Orientation="Horizontal"></StackPanel>
+            </StackPanel>
+        </StackPanel>
     </StackPanel>
 </UserControl>

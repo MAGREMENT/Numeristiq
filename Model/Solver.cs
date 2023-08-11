@@ -35,9 +35,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     private int _excludedStrategies;
     private bool _changeWasMade;
     
-    private PreComputer _pre;
-    private LogManager _logManager;
-    private ChangeBuffer _changeBuffer;
+    private readonly PreComputer _pre;
+    private readonly LogManager _logManager;
 
     public Solver(Sudoku s, params IStrategy[] strategies)
     {
@@ -71,7 +70,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         
         _pre = new PreComputer(this);
         _logManager = new LogManager(this);
-        _changeBuffer = new ChangeBuffer(this);
+        ChangeBuffer = new ChangeBuffer(this);
     }
     
     private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t, PreComputer pre)
@@ -81,7 +80,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         Strategies = t;
         _pre = pre;
         _logManager = new LogManager(this);
-        _changeBuffer = new ChangeBuffer(this);
+        ChangeBuffer = new ChangeBuffer(this);
         
         State = GetState();
         
@@ -99,11 +98,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
 
         if (LogsManaged)
         {
-            _logManager = new LogManager(this);
+            _logManager.Clear();
             State = GetState();
         }
 
-        _pre = new PreComputer(this);
+        _pre.Reset();
     }
     
     
@@ -111,12 +110,12 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     {
         Sudoku[row, col] = number;
         ResetPossibilities();
-        if(LogsManaged) Logs.Clear();
+        if(LogsManaged) _logManager.Clear();
     }
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
-        Possibilities[row, col].Remove(possibility);
+        if (!Possibilities[row, col].Remove(possibility)) return;
         
         if (!LogsManaged) return;
         
@@ -216,7 +215,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         return true;
     }
 
-    public ChangeBuffer ChangeBuffer => _changeBuffer;
+    public ChangeBuffer ChangeBuffer { get; }
 
     public LinePositions PossibilityPositionsInRow(int row, int number)
     {
@@ -348,12 +347,12 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new HiddenSingleStrategy(),
             new NakedPossibilitiesStrategy(2),
             new HiddenPossibilitiesStrategy(2),
-            new BoxLineReductionStrategy(),
-            new PointingPossibilitiesStrategy(),
             new NakedPossibilitiesStrategy(3),
             new HiddenPossibilitiesStrategy(3),
             new NakedPossibilitiesStrategy(4),
             new HiddenPossibilitiesStrategy(4),
+            new BoxLineReductionStrategy(),
+            new PointingPossibilitiesStrategy(),
             new XWingStrategy(),
             new XYWingStrategy(),
             new XYZWingStrategy(),

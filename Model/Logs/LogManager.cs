@@ -61,4 +61,10 @@ public class LogManager  //TODO work around the strategy count thingy with push(
         Logs.Add(_current);
         _current = null;
     }
+
+    public void Clear()
+    {
+        Logs.Clear();
+        _idCount = 1;
+    }
 }

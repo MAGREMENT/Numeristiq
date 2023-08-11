@@ -5,7 +5,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class HiddenPossibilitiesStrategy : IStrategy
+public class HiddenPossibilitiesStrategy : IStrategy //TODO remake like naked where the is no need for every possibility to be found in each cell
 {
     public string Name { get; }
 
