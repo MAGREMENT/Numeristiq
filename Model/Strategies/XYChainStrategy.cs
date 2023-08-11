@@ -125,6 +125,8 @@ public class XYChainReportBuilder : IChangeReportBuilder
             {
                 lighter.HighlightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Col, i % 2 == 0 ?
                     ChangeColoration.CauseOnOne: ChangeColoration.CauseOffTwo);
+                if (i > _visited.Count - 2) continue;
+                lighter.CreateLink(_visited[i], _visited[i + 1], i % 2 == 0 ? LinkStrength.Weak : LinkStrength.Strong);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

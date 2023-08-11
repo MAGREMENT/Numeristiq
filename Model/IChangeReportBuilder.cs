@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.StrategiesUtil;
 
 namespace Model;
 
@@ -36,6 +37,8 @@ public interface IHighlighter
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration);
 
     public void HighlightCell(int row, int col, ChangeColoration coloration);
+
+    public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength);
 }
 
 public enum ChangeColoration

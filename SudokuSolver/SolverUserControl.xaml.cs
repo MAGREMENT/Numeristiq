@@ -245,6 +245,11 @@ public partial class SolverUserControl : IHighlighter
         _backgroundManager.HighlightCell(row, col, ColorUtil.ToColor(coloration));
     }
 
+    public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength)
+    {
+        _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+    }
+
     private void Highlight(ISolverLog log)
     {
         log.SolverHighLighter(this);
@@ -280,6 +285,9 @@ public partial class SolverUserControl : IHighlighter
 
 public class SolverBackgroundManager
 {
+    private readonly Brush _linkBrush = Brushes.Indigo;
+    private const double LinkOffset = 20;
+
     public int Size { get; }
     public int CellSize { get; }
     public int Margin { get; }
@@ -292,6 +300,7 @@ public class SolverBackgroundManager
             current.Children.Add(_grid);
             current.Children.Add(_cells);
             current.Children.Add(_cursor);
+            current.Children.Add(_links);
 
             return new DrawingBrush(current);
         }
@@ -300,6 +309,7 @@ public class SolverBackgroundManager
     private readonly DrawingGroup _grid = new();
     private readonly DrawingGroup _cells = new();
     private readonly DrawingGroup _cursor = new();
+    private readonly DrawingGroup _links = new();
 
     private Coordinate? _currentCursor;
 
@@ -354,6 +364,7 @@ public class SolverBackgroundManager
     public void Reset()
     {
         _cells.Children.Clear();
+        _links.Children.Clear();
     }
 
     public void HighlightCell(int row, int col, Color color)
@@ -379,6 +390,99 @@ public class SolverBackgroundManager
         {
             Geometry = new RectangleGeometry(new Rect(startRow, startCol, oneThird, oneThird)),
             Brush = new SolidColorBrush(color)
+        });
+    }
+
+    public void CreateLink(PossibilityCoordinate one, PossibilityCoordinate two, DashStyle dashStyle)
+    {
+        double oneThird = (double)CellSize / 3; 
+
+        var from = new Point(one.Col * CellSize + (one.Col + 1) * Margin + (one.Possibility - 1) % 3 * oneThird + oneThird / 2,
+            one.Row * CellSize + (one.Row + 1) * Margin + (one.Possibility - 1) / 3 * oneThird + oneThird / 2);
+        var to = new Point(two.Col * CellSize + (two.Col + 1) * Margin + (two.Possibility - 1) % 3 * oneThird + oneThird / 2,
+            two.Row * CellSize + (two.Row + 1) * Margin + (two.Possibility - 1) / 3 * oneThird + oneThird / 2);
+        var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
+
+        double angle = Math.Atan((to.Y - from.Y) / (to.X - from.X));
+        double reverseAngle = Math.PI - angle;
+
+        var deltaX = LinkOffset * Math.Sin(reverseAngle);
+        var deltaY = LinkOffset * Math.Cos(reverseAngle);
+        var offsetOne = new Point(middle.X - deltaX,
+            middle.Y - deltaY);
+        if (offsetOne.X > 0 && offsetOne.X < Size && offsetOne.Y > 0 && offsetOne.Y < Size)
+        {
+            AddSpacedLine(from, offsetOne, to, dashStyle);
+            return;
+        }
+        
+        var offsetTwo = new Point(middle.X + deltaX,
+            middle.Y + deltaY);
+        if (offsetTwo.X > 0 && offsetTwo.X < Size && offsetTwo.Y > 0 && offsetTwo.Y < Size)
+        {
+            AddSpacedLine(from, offsetTwo, to, dashStyle);
+            return;
+        }
+
+        AddSpacedLine(from, to, dashStyle);
+    }
+
+    private void AddSpacedLine(Point from, Point to, DashStyle dashStyle)
+    {
+        var space = CellSize / 6;
+        var angle = Math.Atan((to.Y - from.Y) / (to.X - from.X));
+        var deltaX = space * Math.Sin(angle);
+        var deltaY = space * Math.Cos(angle);
+
+        var newFrom = new Point(from.X + deltaX, from.Y + deltaY);
+        var newTo = new Point(to.X - deltaX, to.Y - deltaY);
+        
+        _links.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new LineGeometry(newFrom, newTo),
+            Pen = new Pen()
+            {
+                Thickness = 3.0,
+                Brush = _linkBrush,
+                DashStyle = dashStyle
+            }
+        });
+    }
+    
+    private void AddSpacedLine(Point from, Point middle, Point to, DashStyle dashStyle) //TODO make this work
+    {
+        var space = CellSize / 6;
+        var angleToMiddle = Math.Atan((middle.Y - from.Y) / (middle.X - from.X));
+        var angleFromMiddle = Math.Atan((to.Y - middle.Y) / (to.X - middle.X));
+        
+        var deltaX = space * Math.Cos(angleToMiddle);
+        var deltaY = space * Math.Sin(angleToMiddle);
+        var newFrom = new Point(from.X, from.Y);
+        
+        deltaX = space * Math.Sin(angleFromMiddle);
+        deltaY = space * Math.Cos(angleFromMiddle);
+        var newTo = new Point(to.X, to.Y);
+        
+        _links.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new LineGeometry(newFrom, middle),
+            Pen = new Pen()
+            {
+                Thickness = 3.0,
+                Brush = _linkBrush,
+                DashStyle = dashStyle
+            }
+        });
+        
+        _links.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new LineGeometry(middle, newTo),
+            Pen = new Pen()
+            {
+                Thickness = 3.0,
+                Brush = _linkBrush,
+                DashStyle = dashStyle
+            }
         });
     }
 
