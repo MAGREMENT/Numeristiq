@@ -160,7 +160,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         _web = web;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager) //TODO why double links vertically ?
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {
@@ -168,6 +168,12 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
             {
                 lighter.HighlightPossibility(_number, coord.Coordinate.Row, coord.Coordinate.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
+
+                foreach (var friend in _web.GetLinkedVertices(coord))
+                {
+                    lighter.CreateLink(new PossibilityCoordinate(friend.Coordinate.Row, friend.Coordinate.Col, _number),
+                        new PossibilityCoordinate(coord.Coordinate.Row, coord.Coordinate.Col, _number), LinkStrength.Strong);
+                }
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

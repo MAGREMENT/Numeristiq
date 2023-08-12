@@ -23,6 +23,14 @@ public static class Testing
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
     }
 
+    private static Coordinate LineBullshit(Coordinate from, Coordinate to)
+    {
+        var space = 10;
+        var proportion = space / Math.Sqrt(Math.Pow(to.Row - from.Row, 2) + Math.Pow(to.Col - from.Col, 2));
+
+        return new Coordinate((int) (from.Row + proportion * (to.Row - from.Row)), (int) (from.Col +proportion * (to.Col - from.Col)));
+    }
+
     private static void AlsSearch(int[] ints, List<IPossibilities> list, int start, IPossibilities current)
     {
         for (int i = start; i < ints.Length; i++)

@@ -17,7 +17,7 @@ public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 
     public HashSet<T> GetLinks(T from, LinkStrength strength)
     {
-        return !_links[(int)strength].TryGetValue(from, out var result) ? new HashSet<T>() : result;
+        return !_links[(int)strength].TryGetValue(from, out var result) ? new HashSet<T>(0) : result;
     }
 
     public bool IsOfStrength(T one, T two, LinkStrength strength)

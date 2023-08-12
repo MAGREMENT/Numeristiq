@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Model.Strategies;
 
@@ -14,13 +15,13 @@ public class HiddenSingleStrategy : IStrategy
             for (int row = 0; row < 9; row++)
             {
                 var ppir = strategyManager.PossibilityPositionsInRow(row, number);
-                if (ppir.Count == 1) strategyManager.AddDefinitiveNumber(number, row, ppir.First(), this);
+                if (ppir.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, row, ppir.First());
             }
 
             for (int col = 0; col < 9; col++)
             {
                 var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
-                if (ppic.Count == 1) strategyManager.AddDefinitiveNumber(number, ppic.First(), col, this);
+                if (ppic.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, ppic.First(), col);
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -31,10 +32,21 @@ public class HiddenSingleStrategy : IStrategy
                     if (ppimn.Count == 1)
                     {
                         var pos = ppimn.First();
-                        strategyManager.AddDefinitiveNumber(number, pos[0], pos[1], this);
+                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, pos[0], pos[1]);
                     }
                 }
             }
         }
+
+        strategyManager.ChangeBuffer.Push(this, new HiddenSingleReportBuilder());
+    }
+}
+
+public class HiddenSingleReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }

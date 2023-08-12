@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 
 namespace Model.Strategies;
 
@@ -13,9 +13,20 @@ public class NakedSingleStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Possibilities[row, col].Count == 1) strategyManager.AddDefinitiveNumber(
-                        strategyManager.Possibilities[row, col].GetFirst(), row, col, this);
+                if (strategyManager.Possibilities[row, col].Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(
+                        strategyManager.Possibilities[row, col].GetFirst(), row, col);
             }
         }
+
+        strategyManager.ChangeBuffer.Push(this, new NakedSingleReportBuilder());
+    }
+}
+
+public class NakedSingleReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }

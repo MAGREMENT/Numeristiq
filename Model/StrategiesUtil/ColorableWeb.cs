@@ -83,4 +83,9 @@ public class ColorableWeb<T> : IEnumerable<T> where T : class, IColorable //Refa
             }
         }
     }
+
+    public HashSet<T> GetLinkedVertices(T vertex)
+    {
+        return _vertices[vertex];
+    }
 }

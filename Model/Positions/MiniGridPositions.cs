@@ -178,4 +178,11 @@ public class MiniGridPositions : IEnumerable<int[]>
     {
         return _startRow + _startRow / 3 + 1;
     }
+    
+    public MiniGridPositions Mash(MiniGridPositions pos)
+    {
+        int newPos = _pos | pos._pos;
+        return new MiniGridPositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos), _startRow,
+            _startCol);
+    }
 }
