@@ -4,8 +4,16 @@ namespace Model.Positions;
 
 public class GridPositions
 {
-    private int _first = 0; //0 to 62
-    private int _second = 0; // 63 to 80
+    private int _first; //0 to 62
+    private int _second; // 63 to 80
+    
+    public GridPositions() {}
+
+    private GridPositions(int first, int second)
+    {
+        _first = first;
+        _second = second;
+    }
 
     public void Add(int row, int col)
     {
@@ -28,5 +36,46 @@ public class GridPositions
     public bool Peek(Coordinate coord)
     {
         return Peek(coord.Row, coord.Col);
+    }
+
+    public int RowCount(int row)
+    {
+        int result = 0;
+        for (int col = 0; col < 9; col++)
+        {
+            if (Peek(row, col)) result++;
+        }
+
+        return result;
+    }
+
+    public int ColumnCount(int column)
+    {
+        int result = 0;
+        for (int row = 0; row < 9; row++)
+        {
+            if (Peek(row, column)) result++;
+        }
+
+        return result;
+    }
+
+    public int MiniGridCount(int miniRow, int miniCol)
+    {
+        int result = 0;
+        for (int gridRow = 0; gridRow < 3; gridRow++)
+        {
+            for (int gridCol = 0; gridCol < 3; gridCol++)
+            {
+                if (Peek(miniRow * 3 + gridRow, miniCol * 3 + gridCol)) result++;
+            }
+        }
+
+        return result;
+    }
+
+    public GridPositions Copy()
+    {
+        return new GridPositions(_first, _second);
     }
 }

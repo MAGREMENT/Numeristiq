@@ -69,18 +69,73 @@ public class SueDeCoqStrategy : IStrategy
                         foreach (var mAls in miniAls)
                         {
                             if (rAls.Possibilities.Mash(mAls.Possibilities).Equals(possibilities))
-                                ProcessSueDeCoq(strategyManager, row, cols, possibilities, rAls, mAls, Unit.Row);
+                                ProcessSueDeCoq(strategyManager, row, cols, rAls, mAls, Unit.Row);
                         }
                     }
                 }
                 
-                //TODO columns
+                for (int gridCol = 0; gridCol < 3; gridCol++)
+                {
+                    int col = miniCol * 3 + gridCol;
+                    IPossibilities possibilities = IPossibilities.NewEmpty();
+                    LinePositions rows = new LinePositions();
+
+                    for (int gridRow = 0; gridRow < 3; gridRow++)
+                    {
+                        int row = miniRow * 3 + gridRow;
+                        if (strategyManager.Sudoku[row, col] != 0) continue;
+                        
+                        rows.Add(row);
+                        foreach (var possibility in strategyManager.Possibilities[row, col])
+                        {
+                            possibilities.Add(possibility);
+                        }
+                    }
+
+                    if (rows.Count < 2) continue;
+                    if(possibilities.Count - 2 < rows.Count) continue;
+
+                    List<Coordinate> colCoords = new();
+                    List<Coordinate> miniCoords = new();
+                    for (int row = 0; row < 9; row++)
+                    {
+                        if (row / 3 == miniRow) continue;
+                        if (strategyManager.Sudoku[row, col] != 0) continue;
+
+                        colCoords.Add(new Coordinate(row, col));
+                    }
+
+                    for (int gridCol2 = 0; gridCol2 < 3; gridCol2++)
+                    {
+                        if (gridCol2 == gridCol) continue;
+                        for (int gridRow = 0; gridRow < 3; gridRow++)
+                        {
+                            int col2 = miniCol * 3 + gridCol2;
+                            int row = miniRow * 3 + gridRow;
+                            if (strategyManager.Sudoku[row, col2] != 0) continue;
+
+                            miniCoords.Add(new Coordinate(row, col2));
+                        }
+                    }
+
+                    var colAls = AlmostLockedSet.SearchForAls(strategyManager, colCoords, 4);
+                    var miniAls = AlmostLockedSet.SearchForAls(strategyManager, miniCoords, 4);
+
+                    foreach (var cAls in colAls)
+                    {
+                        foreach (var mAls in miniAls)
+                        {
+                            if (cAls.Possibilities.Mash(mAls.Possibilities).Equals(possibilities))
+                                ProcessSueDeCoq(strategyManager, col, rows, cAls, mAls, Unit.Column);
+                        }
+                    }
+                }
             }
         }
     }
 
     private void ProcessSueDeCoq(IStrategyManager strategyManager, int unitNumber, LinePositions center,
-        IPossibilities centerPossibilities, AlmostLockedSet unitAls, AlmostLockedSet miniAls, Unit unit)
+       AlmostLockedSet unitAls, AlmostLockedSet miniAls, Unit unit)
     {
         for (int other = 0; other < 9; other++)
         {
@@ -114,15 +169,55 @@ public class SueDeCoqStrategy : IStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new SueDeCoqReportBuilder());
+        strategyManager.ChangeBuffer.Push(this, new SueDeCoqReportBuilder(unitNumber, center, miniAls, unitAls, unit));
     }
 }
 
 public class SueDeCoqReportBuilder : IChangeReportBuilder
 {
+    private readonly int _unitNumber;
+    private readonly LinePositions _positions;
+    private readonly AlmostLockedSet _miniAls;
+    private readonly AlmostLockedSet _unitAls;
+    private readonly Unit _unit;
+
+    public SueDeCoqReportBuilder(int unitNumber, LinePositions positions, AlmostLockedSet miniAls,
+        AlmostLockedSet unitAls, Unit unit)
+    {
+        _unitNumber = unitNumber;
+        _positions = positions;
+        _miniAls = miniAls;
+        _unitAls = unitAls;
+        _unit = unit;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
+        List<Coordinate> center = new(_positions.Count);
+        foreach (var other in _positions)
+        {
+            center.Add(_unit == Unit.Row ?
+                new Coordinate(_unitNumber, other) :
+                new Coordinate(other, _unitNumber));
+        }
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+            lighter =>
+            {
+                foreach (var coord in center)
+                {
+                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.Neutral);
+                }
+
+                foreach (var coord in _unitAls.Coordinates)
+                {
+                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                }
+
+                foreach (var coord in _miniAls.Coordinates)
+                {
+                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
+                }
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+            }, "");
     }
 }
