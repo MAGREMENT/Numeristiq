@@ -90,7 +90,7 @@ public readonly struct Coordinate
 
     public static bool operator ==(Coordinate left, Coordinate right)
     {
-        return left.Equals(right);
+        return left.Row == right.Row && left.Col == right.Col;
     }
 
     public static bool operator !=(Coordinate left, Coordinate right)
@@ -176,7 +176,7 @@ public readonly struct PossibilityCoordinate : ILinkGraphElement
 
     public static bool operator ==(PossibilityCoordinate left, PossibilityCoordinate right)
     {
-        return left.Equals(right);
+        return left.Possibility == right.Possibility && left.Row == right.Row && left.Col == right.Col;
     }
 
     public static bool operator !=(PossibilityCoordinate left, PossibilityCoordinate right)
