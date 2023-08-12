@@ -19,6 +19,8 @@ public partial class SolverUserControl : IHighlighter
     private readonly Solver _solver = new(new Sudoku());
     private int _logBuffer = -1;
 
+    private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
+
     private readonly SolverBackgroundManager _backgroundManager;
 
     public delegate void OnReady();
@@ -114,7 +116,7 @@ public partial class SolverUserControl : IHighlighter
     private void Update()
     {
         RefreshSolver();
-        SolverUpdated?.Invoke(_solver.Sudoku.AsString());
+        SolverUpdated?.Invoke(_solver.Sudoku.AsString(_translationType));
     }
 
     private void RefreshSolver()
@@ -190,6 +192,7 @@ public partial class SolverUserControl : IHighlighter
             }
         }
 
+        SolverUpdated?.Invoke(_solver.Sudoku.AsString(_translationType));
         IsReady?.Invoke();
     }
 
@@ -274,6 +277,12 @@ public partial class SolverUserControl : IHighlighter
     public void UseStrategy(int number)
     {
         _solver.UseStrategy(number);
+    }
+
+    public void SetTranslationType(SudokuTranslationType type)
+    {
+        _translationType = type;
+        SolverUpdated?.Invoke(_solver.Sudoku.AsString(type));
     }
 
     private CellUserControl GetTo(int row, int col)

@@ -57,7 +57,7 @@ namespace SudokuSolver;
             if (_createNewSudoku) GetSolverUserControl().NewSudoku(new Sudoku(GetSudokuString().Text));
         }
 
-        private void SolveSudoku(object sender, RoutedEventArgs e) //TODO fix : update string value when run until progress
+        private void SolveSudoku(object sender, RoutedEventArgs e)
         {
             if (sender is not Button butt) return;
             butt.IsEnabled = false;
@@ -77,8 +77,15 @@ namespace SudokuSolver;
             
             GetLogListUserControl().InitLogs(suc.GetLogs());
         }
+        
+        private void SelectedTranslationType(object sender, RoutedEventArgs e)
+        {
+            if (sender is not ComboBox box) return;
+            if (MainPanel is null) return;
+            GetSolverUserControl().SetTranslationType((SudokuTranslationType) box.SelectedIndex);
+        }
 
-        /*Gets*/
+        //Gets => Should probably make properties but i'm lazy
         private SolverUserControl GetSolverUserControl()
         {
             return (SolverUserControl)MainPanel.Children[0];

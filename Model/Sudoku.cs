@@ -75,7 +75,7 @@ public class Sudoku
         }
     }
 
-    public string AsString()
+    public string AsString(SudokuTranslationType type = SudokuTranslationType.Shortcuts)
     {
         string result = "";
         int voidCount = 0;
@@ -86,7 +86,18 @@ public class Sudoku
                 int current = _grid[i, j];
                 if (current == 0)
                 {
-                    voidCount++;
+                    switch (type)
+                    {
+                        case SudokuTranslationType.Shortcuts :
+                            voidCount++;
+                            break;
+                        case SudokuTranslationType.Zeros :
+                            result += "0";
+                            break;
+                        case SudokuTranslationType.Points :
+                            result += ".";
+                            break;
+                    }
                 }
                 else
                 {
@@ -261,4 +272,9 @@ public class Sudoku
 public enum Unit
 {
     Row, Column, MiniGrid
+}
+
+public enum SudokuTranslationType
+{
+    Shortcuts, Zeros, Points
 }
