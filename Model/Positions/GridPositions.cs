@@ -4,12 +4,12 @@ namespace Model.Positions;
 
 public class GridPositions
 {
-    private int _first; //0 to 62
-    private int _second; // 63 to 80
+    private ulong _first; //0 to 62
+    private ulong _second; // 63 to 80
     
     public GridPositions() {}
 
-    private GridPositions(int first, int second)
+    private GridPositions(ulong first, ulong second)
     {
         _first = first;
         _second = second;
@@ -18,8 +18,8 @@ public class GridPositions
     public void Add(int row, int col)
     {
         int n = row * 9 + col;
-        if (n > 62) _second |= 1 << n;
-        else _first |= 1 << n;
+        if (n > 62) _second |= 1ul << n;
+        else _first |= 1ul << n;
     }
 
     public void Add(Coordinate coord)
@@ -77,5 +77,19 @@ public class GridPositions
     public GridPositions Copy()
     {
         return new GridPositions(_first, _second);
+    }
+
+    public override string ToString()
+    {
+        var result = "";
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Peek(row, col)) result += $"[{row + 1}, {col + 1}] ";
+            }
+        }
+
+        return result;
     }
 }

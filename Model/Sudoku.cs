@@ -206,6 +206,42 @@ public class Sudoku
         }
     }
 
+    public int RowCount(int row, int number)
+    {
+        int result = 0;
+        for (int col = 0; col < 9; col++)
+        {
+            if (_grid[row, col] == number) result++;
+        }
+
+        return result;
+    }
+
+    public int ColumnCount(int col, int number)
+    {
+        int result = 0;
+        for (int row = 0; row < 9; row++)
+        {
+            if (_grid[row, col] == number) result++;
+        }
+
+        return result;
+    }
+
+    public int MiniGridCount(int miniRow, int miniCol, int number)
+    {
+        int result = 0;
+        for (int gridRow = 0; gridRow < 3; gridRow++)
+        {
+            for (int gridCol = 0; gridCol < 3; gridCol++)
+            {
+                if (_grid[miniRow * 3 + gridRow, miniCol * 3 + gridCol] == number) result++;
+            }
+        }
+
+        return result;
+    }
+
     public Sudoku Copy()
     {
         Sudoku result = new Sudoku();

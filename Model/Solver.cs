@@ -43,6 +43,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         Strategies = strategies.Length > 0 ? strategies : BasicStrategies();
         
         Sudoku = s;
+        SetOriginalBoard();
 
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
@@ -76,6 +77,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t, PreComputer pre)
     {
         Sudoku = s;
+        SetOriginalBoard();
         Possibilities = p;
         Strategies = t;
         _pre = pre;
@@ -93,6 +95,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     public void SetSudoku(Sudoku s)
     {
         Sudoku = s;
+        SetOriginalBoard();
 
         ResetPossibilities();
 
@@ -340,6 +343,17 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         }
     }
 
+    private void SetOriginalBoard()
+    {
+        foreach (var strategy in Strategies)
+        {
+            if (strategy is IOriginalBoardNeededStrategy originalBoardNeededStrategy)
+            {
+                originalBoardNeededStrategy.SetOriginalBoard(Sudoku.Copy());
+            }
+        }
+    }
+
     private static IStrategy[] BasicStrategies()
     {
         return new IStrategy[]{
@@ -365,6 +379,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new FinnedGridFormationStrategy(4),
             new FireworksStrategy(),
             new UniqueRectanglesStrategy(),
+            new AvoidableRectangleStrategy(),
             new XYChainStrategy(),
             new ThreeDimensionMedusaStrategy(),
             new AlignedPairExclusionStrategy(4),
@@ -377,7 +392,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new CellForcingNetStrategy(4),
             new UnitForcingNetStrategy(4),
             new NishioForcingNetStrategy(),
-            new AlmostLockedSetsStrategy()
+            new AlmostLockedSetsStrategy(),
+            //new PatternOverlayStrategy()
             //new TrialAndMatchStrategy(2)
         };
     }

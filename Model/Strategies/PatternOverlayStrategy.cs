@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class PatternOverlayStrategy : IStrategy //TODO rest
+public class PatternOverlayStrategy : IStrategy //TODO debug pattern detection
 {
     public string Name => "Pattern Overlay";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
@@ -19,6 +19,26 @@ public class PatternOverlayStrategy : IStrategy //TODO rest
         {
             patterns[i] = Patterns(strategyManager, all[i], i + 1);
         }
+
+        for (int i = 0; i < all.Length; i++)
+        {
+            foreach (var coord in all[i])
+            {
+                int count = 0;
+                foreach (var pattern in patterns[i])
+                {
+                    if (pattern.Peek(coord)) count++;
+                }
+                
+                if(count == 0) strategyManager.ChangeBuffer.AddPossibilityToRemove(i + 1, coord.Row, coord.Col);
+                else if(count == patterns[i].Count) strategyManager.ChangeBuffer.AddDefinitiveToAdd(i + 1, coord.Row, coord.Col);
+            }
+
+            if (strategyManager.ChangeBuffer.NotEmpty())
+                strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder());
+        }
+        
+        //TODO add rule 2
     }
 
     private List<Coordinate>[] AllPositionsOfAllNumbers(IStrategyManager strategyManager)
@@ -70,21 +90,19 @@ public class PatternOverlayStrategy : IStrategy //TODO rest
             {
                 for (int row = 0; row < 9; row++)
                 {
-                    if (strategyManager.PossibilityPositionsInRow(row, number).Count + buildup.RowCount(row) !=
-                        1) return;
+                    if (strategyManager.Sudoku.RowCount(row, number) + buildup.RowCount(row) != 1) return;
                 }
 
                 for (int col = 0; col < 9; col++)
                 {
-                    if (strategyManager.PossibilityPositionsInColumn(col, number).Count + buildup.ColumnCount(col) !=
-                        1) return;
+                    if (strategyManager.Sudoku.ColumnCount(col, number) + buildup.ColumnCount(col) != 1) return;
                 }
 
                 for (int miniRow = 0; miniRow < 3; miniRow++)
                 {
                     for (int miniCol = 0; miniCol < 3; miniCol++)
                     {
-                        if (strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number).Count +
+                        if (strategyManager.Sudoku.MiniGridCount(miniRow, miniCol, number) +
                             buildup.MiniGridCount(miniRow, miniCol) != 1) return;
                     }
                 }
@@ -102,8 +120,23 @@ public class PatternOverlayStrategy : IStrategy //TODO rest
 
 public class Pattern
 {
+    private readonly GridPositions _pattern;
     public Pattern(GridPositions positions)
     {
-        
+        _pattern = positions;
+    }
+
+    public bool Peek(Coordinate coordinate)
+    {
+        return _pattern.Peek(coordinate);
+    }
+}
+
+public class PatternOverlayReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
 }
