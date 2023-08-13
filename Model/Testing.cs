@@ -109,6 +109,11 @@ public static class Testing
         {
             return _i.ToString();
         }
+
+        public PossibilityCoordinate[] EachElement()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     private static void CompareIPossibilitiesImplementation(IPossibilities one, IPossibilities two)

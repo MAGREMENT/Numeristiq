@@ -129,7 +129,7 @@ public partial class SolverUserControl : IHighlighter
             }
         }
         
-        _backgroundManager.Reset();
+        _backgroundManager.Clear();
         Main.Background = _backgroundManager.Background;
     }
     
@@ -170,7 +170,7 @@ public partial class SolverUserControl : IHighlighter
     { 
         _solver.Solve(true);
         
-        _backgroundManager.Reset();
+        _backgroundManager.Clear();
 
         if (_solver.Logs.Count > 0)
         {
@@ -198,7 +198,7 @@ public partial class SolverUserControl : IHighlighter
 
     public void ShowLog(ISolverLog log)
     {
-        _backgroundManager.Reset();
+        _backgroundManager.Clear();
         
         int n = -1;
         int cursor = 0;
@@ -248,9 +248,53 @@ public partial class SolverUserControl : IHighlighter
         _backgroundManager.HighlightCell(row, col, ColorUtil.ToColor(coloration));
     }
 
+    public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
+    {
+        switch (element)
+        {
+            case PossibilityCoordinate coord :
+                _backgroundManager.HighlightPossibility(coord.Row, coord.Col, coord.Possibility, ColorUtil.ToColor(coloration));
+                break;
+            case PointingRow pr :
+                _backgroundManager.HighlightGroup(pr, ColorUtil.ToColor(coloration));
+                break;
+            case PointingColumn pc :
+                _backgroundManager.HighlightGroup(pc, ColorUtil.ToColor(coloration));
+                break;
+        }
+    }
+
     public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength)
     {
         _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+    }
+
+    public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
+    {
+        if(from is PossibilityCoordinate one && to is PossibilityCoordinate two)
+            _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+        else
+        {
+            PossibilityCoordinate[] winners = new PossibilityCoordinate[2];
+            double winningDistance = int.MaxValue;
+
+            foreach (var c1 in from.EachElement())
+            {
+                foreach (var c2 in to.EachElement())
+                {
+                    var distance = Math.Sqrt(Math.Pow(c1.Row - c2.Row, 2) + Math.Pow(c1.Col - c2.Col, 2));
+
+                    if (distance < winningDistance)
+                    {
+                        winningDistance = distance;
+                        winners[0] = c1;
+                        winners[1] = c2;
+                    }
+                }
+            }
+            
+            _backgroundManager.CreateLink(winners[0], winners[1], linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+        }
     }
 
     private void Highlight(ISolverLog log)
@@ -309,6 +353,7 @@ public class SolverBackgroundManager
             current.Children.Add(_grid);
             current.Children.Add(_cells);
             current.Children.Add(_cursor);
+            current.Children.Add(_groups);
             current.Children.Add(_links);
 
             return new DrawingBrush(current);
@@ -318,6 +363,7 @@ public class SolverBackgroundManager
     private readonly DrawingGroup _grid = new();
     private readonly DrawingGroup _cells = new();
     private readonly DrawingGroup _cursor = new();
+    private readonly DrawingGroup _groups = new();
     private readonly DrawingGroup _links = new();
 
     private Coordinate? _currentCursor;
@@ -370,9 +416,10 @@ public class SolverBackgroundManager
         }
     }
 
-    public void Reset()
+    public void Clear()
     {
         _cells.Children.Clear();
+        _groups.Children.Clear();
         _links.Children.Clear();
     }
 
@@ -400,6 +447,68 @@ public class SolverBackgroundManager
             Geometry = new RectangleGeometry(new Rect(startRow, startCol, oneThird, oneThird)),
             Brush = new SolidColorBrush(color)
         });
+    }
+    
+    public void HighlightGroup(PointingRow pr, Color color)
+    {
+        var coords = pr.EachElement();
+        var mostLeft = coords[0];
+        var mostRight = coords[0];
+        for (int i = 1; i < coords.Length; i++)
+        {
+            if (coords[i].Col < mostLeft.Col) mostLeft = coords[i];
+            if (coords[i].Col > mostRight.Col) mostRight = coords[i];
+        }
+
+        int oneThird = CellSize / 3;
+        _groups.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Col, pr.Possibility),
+                TopLeftY(mostLeft.Row, pr.Possibility),
+                (CellSize + Margin) * (mostRight.Col - mostLeft.Col) + oneThird, oneThird)),
+            Pen = new Pen()
+            {
+            Thickness = 3.0,
+            Brush = _linkBrush,
+            DashStyle = DashStyles.DashDot
+            }          
+        });
+
+        foreach (var coord in coords)
+        {
+            HighlightPossibility(coord.Row, coord.Col, pr.Possibility, color);
+        }
+    }
+
+    public void HighlightGroup(PointingColumn pc, Color color)
+    {
+        var coords = pc.EachElement();
+        var mostUp = coords[0];
+        var mostDown = coords[0];
+        for (int i = 1; i < coords.Length; i++)
+        {
+            if (coords[i].Row < mostUp.Row) mostUp = coords[i];
+            if (coords[i].Row > mostDown.Row) mostDown = coords[i];
+        }
+
+        int oneThird = CellSize / 3;
+        _groups.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Col, pc.Possibility),
+                TopLeftY(mostUp.Row, pc.Possibility), oneThird,
+                (CellSize + Margin) * (mostDown.Row - mostUp.Row) + oneThird)),
+            Pen = new Pen()
+            {
+                Thickness = 3.0,
+                Brush = _linkBrush,
+                DashStyle = DashStyles.DashDot
+            }          
+        });
+        
+        foreach (var coord in coords)
+        {
+            HighlightPossibility(coord.Row, coord.Col, pc.Possibility, color);
+        }
     }
 
     public void CreateLink(PossibilityCoordinate one, PossibilityCoordinate two, DashStyle dashStyle)
@@ -436,7 +545,7 @@ public class SolverBackgroundManager
 
     private void AddShortenedLine(Point from, Point to, DashStyle dashStyle)
     {
-        var space = CellSize / 6;
+        var space = CellSize / 5.5;
         var proportion = space / Math.Sqrt(Math.Pow(to.X - from.X, 2) + Math.Pow(to.Y - from.Y, 2));
         var newFrom = new Point(from.X + proportion * (to.X - from.X), from.Y + proportion * (to.Y - from.Y));
         
@@ -445,7 +554,7 @@ public class SolverBackgroundManager
     
     private void AddShortenedLine(Point from, Point middle, Point to, DashStyle dashStyle)
     {
-        var space = CellSize / 6;
+        var space = CellSize / 5.5;
         var proportion = space / Math.Sqrt(Math.Pow(to.X - from.X, 2) + Math.Pow(to.Y - from.Y, 2));
         var newFrom = new Point(from.X + proportion * (middle.X - from.X), from.Y + proportion * (middle.Y - from.Y));
         var newTo = new Point(to.X + proportion * (middle.X - to.X), to.Y + proportion * (middle.Y - to.Y));
@@ -539,5 +648,27 @@ public class SolverBackgroundManager
                 Margin, oneFourth)),
             Brush = Brushes.Aqua
         });
+    }
+
+    private int TopLeftX(int col)
+    {
+        return col * CellSize + (col + 1) * Margin;
+    }
+
+    private int TopLeftX(int col, int possibility)
+    {
+        int oneThird = CellSize / 3;
+        return col * CellSize + (col + 1) * Margin + (possibility - 1) % 3 * oneThird;
+    }
+
+    private int TopLeftY(int row)
+    {
+        return row * CellSize + (row + 1) * Margin;  
+    }
+
+    private int TopLeftY(int row, int possibility)
+    {
+        int oneThird = CellSize / 3; 
+        return row * CellSize + (row + 1) * Margin + (possibility - 1) / 3 * oneThird;
     }
 }

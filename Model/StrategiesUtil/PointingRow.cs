@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Positions;
-using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
 
@@ -132,19 +131,15 @@ public class PointingRow : ILinkGraphElement
         return result + $"=> {Possibility}]";
     }
 
-    public bool IsSameLoopElement(ILoopElement other)
+    public PossibilityCoordinate[] EachElement()
     {
-        return false; //TODO
-    }
-
-    public Coordinate[] EachCoordinates()
-    {
-        Coordinate[] result = new Coordinate[_pos.Count];
+        PossibilityCoordinate[] result = new PossibilityCoordinate[_pos.Count];
         
         int cursor = 0;
         foreach (var col in _pos)
         {
-            result[cursor] = new Coordinate(Row, col);
+            result[cursor] = new PossibilityCoordinate(Row, col, Possibility);
+            cursor++;
         }
 
         return result;

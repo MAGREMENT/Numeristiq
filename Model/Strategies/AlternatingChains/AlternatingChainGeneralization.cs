@@ -35,20 +35,48 @@ public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElem
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
-    
-    IStrategy? Strategy { get; set; }
+    IStrategy? Strategy { set; }
     
     IEnumerable<LinkGraph<T>> GetGraphs(IStrategyManager view);
 
     bool ProcessFullLoop(IStrategyManager view, Loop<T> loop);
 
-    bool ProcessWeakInference(IStrategyManager view, T inference);
+    bool ProcessWeakInference(IStrategyManager view, T inference, Loop<T> loop);
 
-    bool ProcessStrongInference(IStrategyManager view, T inference);
+    bool ProcessStrongInference(IStrategyManager view, T inference, Loop<T> loop);
 }
 
 public interface IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
 {
     void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType);
+}
+
+public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : ILinkGraphElement
+{
+    private readonly Loop<T> _loop;
+
+    public AlternatingChainReportBuilder(Loop<T> loop)
+    {
+        _loop = loop;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter =>
+            {
+                int counter = 0;
+                foreach (var element in _loop)
+                {
+                    lighter.HighlightLinkGraphElement(element, counter % 2 == 0 ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
+                    counter++;
+                }
+                
+                _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
+                _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
+                
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+            }, "");
+    }
 }
 

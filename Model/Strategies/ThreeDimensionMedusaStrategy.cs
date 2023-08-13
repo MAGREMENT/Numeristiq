@@ -5,9 +5,9 @@ using Model.StrategiesUtil;
 namespace Model.Strategies;
 
 public class ThreeDimensionMedusaStrategy : IStrategy {
-    public string Name { get; } = "3D medusa";
+    public string Name => "3D Medusa";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
+    public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
 
     public void ApplyOnce(IStrategyManager strategyManager)

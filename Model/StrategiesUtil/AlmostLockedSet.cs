@@ -96,9 +96,10 @@ public class AlmostLockedSet : ILinkGraphElement
         return result[..^2] + "]";
     }
 
-    public bool IsSameLoopElement(ILoopElement other)
+    public PossibilityCoordinate[] EachElement()
     {
-        throw new NotImplementedException();
+        //TODO
+        return Array.Empty<PossibilityCoordinate>();
     }
 
     public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)

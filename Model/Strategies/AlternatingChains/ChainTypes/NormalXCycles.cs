@@ -77,12 +77,12 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         wasProgressMade = false;
     }
 
-    public bool ProcessWeakInference(IStrategyManager view, PossibilityCoordinate inference)
+    public bool ProcessWeakInference(IStrategyManager view, PossibilityCoordinate inference, Loop<PossibilityCoordinate> loop)
     {
         return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, PossibilityCoordinate inference)
+    public bool ProcessStrongInference(IStrategyManager view, PossibilityCoordinate inference, Loop<PossibilityCoordinate> loop)
     {
         return view.AddDefinitiveNumber(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }

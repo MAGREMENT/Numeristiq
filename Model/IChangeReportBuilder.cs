@@ -38,7 +38,11 @@ public interface IHighlighter
 
     public void HighlightCell(int row, int col, ChangeColoration coloration);
 
+    public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration);
+
     public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength);
+
+    public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength);
 }
 
 public enum ChangeColoration

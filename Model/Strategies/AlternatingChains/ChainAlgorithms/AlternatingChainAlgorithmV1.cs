@@ -31,7 +31,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
             {
                 if (path.FirstElement().Equals(friend))
                 {
-                    if (path.Count >= 4) chainType.ProcessStrongInference(view, path.FirstElement());
+                    if (path.Count >= 4) chainType.ProcessStrongInference(view, path.FirstElement(), path.End(LinkStrength.Strong));
                 }
                 else if(!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Strong), chainType, view);
             }
@@ -46,7 +46,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
                     if (weakFromFirst.Contains(weakFromLast))
                     {
                         if(path.IsAlreadyPresent(weakFromLast)) continue;
-                        chainType.ProcessWeakInference(view, weakFromLast);
+                        chainType.ProcessWeakInference(view, weakFromLast, path.Add(weakFromLast, LinkStrength.Weak).End(LinkStrength.Weak));
                     }
                 }
             }

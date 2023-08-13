@@ -4,9 +4,9 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class AvoidableRectangleStrategy : IOriginalBoardNeededStrategy //TODO : do reports builders
+public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 {
-    public string Name => "Avoidable rectangle";
+    public string Name => "Avoidable rectangles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public int Score { get; set; }
 
@@ -77,7 +77,9 @@ public class AvoidableRectangleStrategy : IOriginalBoardNeededStrategy //TODO : 
                         }
 
                         if (strategyManager.ChangeBuffer.NotEmpty()){
-                            strategyManager.ChangeBuffer.Push(this, new AvoidableRectanglesWithBiValuesReportBuilder(pair));
+                            strategyManager.ChangeBuffer.Push(this,
+                                new AvoidableRectanglesWithBiValuesReportBuilder(pair, row, pair[0].Column,
+                                    row, pair[1].Column));
                             return;
                         }
                     }
@@ -96,7 +98,7 @@ public class AvoidableRectangleStrategy : IOriginalBoardNeededStrategy //TODO : 
                         RemovePossibilitiesInAllExcept(strategyManager, mashed, shared, als);
                     if (strategyManager.ChangeBuffer.NotEmpty())
                         strategyManager.ChangeBuffer.Push(this,
-                            new AvoidableRectanglesWithBiValuesReportBuilder(pair));
+                            new AvoidableRectanglesWithAlsReportBuilder(pair, als));
                 }
             }
         }
@@ -178,7 +180,9 @@ public class AvoidableRectangleStrategy : IOriginalBoardNeededStrategy //TODO : 
                         }
 
                         if (strategyManager.ChangeBuffer.NotEmpty()){
-                            strategyManager.ChangeBuffer.Push(this, new AvoidableRectanglesWithBiValuesReportBuilder(pair));
+                            strategyManager.ChangeBuffer.Push(this,
+                                new AvoidableRectanglesWithBiValuesReportBuilder(pair, pair[0].Row, col,
+                                    pair[1].Row, col));
                             return;
                         }
                     }
@@ -197,7 +201,7 @@ public class AvoidableRectangleStrategy : IOriginalBoardNeededStrategy //TODO : 
                         RemovePossibilitiesInAllExcept(strategyManager, mashed, shared, als);
                     if (strategyManager.ChangeBuffer.NotEmpty())
                         strategyManager.ChangeBuffer.Push(this,
-                            new AvoidableRectanglesWithBiValuesReportBuilder(pair));
+                            new AvoidableRectanglesWithAlsReportBuilder(pair, als));
                 }
             }
         }
@@ -294,10 +298,18 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
 public class AvoidableRectanglesWithBiValuesReportBuilder : IChangeReportBuilder
 {
     private readonly SolvedNumber[] _pair;
+    private readonly int _row1;
+    private readonly int _col1;
+    private readonly int _row2;
+    private readonly int _col2;
 
-    public AvoidableRectanglesWithBiValuesReportBuilder(SolvedNumber[] pair)
+    public AvoidableRectanglesWithBiValuesReportBuilder(SolvedNumber[] pair, int row1, int col1, int row2, int col2)
     {
         _pair = pair;
+        _row1 = row1;
+        _col1 = col1;
+        _row2 = row2;
+        _col2 = col2;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
@@ -308,6 +320,40 @@ public class AvoidableRectanglesWithBiValuesReportBuilder : IChangeReportBuilder
                 foreach (var single in _pair)
                 {
                     lighter.HighlightCell(single.Row, single.Column, ChangeColoration.CauseOffOne);
+                }
+                
+                lighter.HighlightPossibility(_pair[1].Number, _row1, _col1, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_pair[0].Number, _row2, _col2, ChangeColoration.CauseOffOne);
+                
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+            }, "");
+    }
+}
+
+public class AvoidableRectanglesWithAlsReportBuilder : IChangeReportBuilder
+{
+    private readonly SolvedNumber[] _pair;
+    private readonly AlmostLockedSet _als;
+
+    public AvoidableRectanglesWithAlsReportBuilder(SolvedNumber[] pair, AlmostLockedSet als)
+    {
+        _pair = pair;
+        _als = als;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter =>
+            {
+                foreach (var single in _pair)
+                {
+                    lighter.HighlightCell(single.Row, single.Column, ChangeColoration.CauseOffOne);
+                }
+
+                foreach (var coord in _als.Coordinates)
+                {
+                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
                 }
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);

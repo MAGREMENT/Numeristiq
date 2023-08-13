@@ -169,6 +169,11 @@ public readonly struct PossibilityCoordinate : ILinkGraphElement
         return $"[{Row + 1}, {Col + 1} => {Possibility}]";
     }
 
+    public PossibilityCoordinate[] EachElement()
+    {
+        return new[] { this };
+    }
+
     public bool IsSameLoopElement(ILoopElement other)
     {
         return other is PossibilityCoordinate pc && pc.Equals(this);

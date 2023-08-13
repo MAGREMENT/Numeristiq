@@ -211,74 +211,70 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<ILinkGraphElement> loop)
     {
-        bool wasProgressMade = false;
         loop.ForEachLink((one, two)
-            => ProcessWeakLink(view, one, two, out wasProgressMade), LinkStrength.Weak);
+            => ProcessWeakLink(view, one, two), LinkStrength.Weak);
 
-        return wasProgressMade;
+        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
     }
     
     //TODO make this bullshit better for the eyes
-    private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two)
     {
-        if (one is PointingRow rOne)
+        switch (one)
         {
-            if (two is PointingRow rTwo &&
-                RemovePossibilityInAll(view, rOne.SharedSeenCells(rTwo))) wasProgressMade = true;
-            else if(two is PossibilityCoordinate sTwo &&
-                    RemovePossibilityInAll(view, rOne.SharedSeenCells(sTwo))) wasProgressMade = true;
+            case PointingRow rOne when two is PointingRow rTwo :
+                RemovePossibilityInAll(view, rOne.SharedSeenCells(rTwo));
+                break;
+            case PointingRow rOne when two is PossibilityCoordinate sTwo :
+                RemovePossibilityInAll(view, rOne.SharedSeenCells(sTwo));
+                break;
+            case PossibilityCoordinate sOne when two is PointingRow rTwo :
+                RemovePossibilityInAll(view, rTwo.SharedSeenCells(sOne));
+                break;
+            case PossibilityCoordinate sOne when two is PossibilityCoordinate sTwo :
+                RemovePossibilityInAll(view, sOne.SharedSeenCells(sTwo), sOne.Possibility);
+                break;
+            case PossibilityCoordinate sOne when two is PointingColumn cTwo :
+                RemovePossibilityInAll(view, cTwo.SharedSeenCells(sOne));
+                break;
+            case PointingColumn cOne when two is PointingColumn cTwo :
+                RemovePossibilityInAll(view, cOne.SharedSeenCells(cTwo));
+                break;
+            case PointingColumn cOne when two is PossibilityCoordinate sTwo :
+                RemovePossibilityInAll(view, cOne.SharedSeenCells(sTwo));
+                break;
         }
-        else if (one is PossibilityCoordinate sOne)
-        {
-            if (two is PointingRow rTwo &&
-                RemovePossibilityInAll(view, rTwo.SharedSeenCells(sOne))) wasProgressMade = true;
-            else if(two is PossibilityCoordinate sTwo &&
-                    RemovePossibilityInAll(view, sOne.SharedSeenCells(sTwo), sOne.Possibility)) wasProgressMade = true;
-            else if (two is PointingColumn cTwo &&
-                     RemovePossibilityInAll(view, cTwo.SharedSeenCells(sOne))) wasProgressMade = true;
-        }
-        else if (one is PointingColumn cOne)
-        {
-            if (two is PointingColumn cTwo &&
-                RemovePossibilityInAll(view, cOne.SharedSeenCells(cTwo))) wasProgressMade = true;
-            else if(two is PossibilityCoordinate sTwo &&
-                    RemovePossibilityInAll(view, cOne.SharedSeenCells(sTwo))) wasProgressMade = true;
-        }
-
-        wasProgressMade = false;
     }
 
-    private bool RemovePossibilityInAll(IStrategyManager view, IEnumerable<PossibilityCoordinate> coords)
+    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<PossibilityCoordinate> coords)
     {
-        bool wasProgressMade = false;
         foreach (var coord in coords)
         {
-            if (view.RemovePossibility(coord.Possibility, coord.Row, coord.Col, Strategy!)) wasProgressMade = true;
+            view.ChangeBuffer.AddPossibilityToRemove(coord.Possibility, coord.Row, coord.Col);
         }
-
-        return wasProgressMade;
     }
     
-    private bool RemovePossibilityInAll(IStrategyManager view, IEnumerable<Coordinate> coords, int possibility)
+    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<Coordinate> coords, int possibility)
     {
-        bool wasProgressMade = false;
         foreach (var coord in coords)
         {
-            if (view.RemovePossibility(possibility, coord.Row, coord.Col, Strategy!)) wasProgressMade = true;
+            view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
         }
-
-        return wasProgressMade;
     }
 
-    public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference)
+    public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not PossibilityCoordinate single) return false;
-        return view.RemovePossibility(single.Possibility, single.Row, single.Col, Strategy!);
+        view.ChangeBuffer.AddPossibilityToRemove(single.Possibility, single.Row, single.Col);
+
+        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference)
+    public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not PossibilityCoordinate single) return false;
-        return view.AddDefinitiveNumber(single.Possibility, single.Row, single.Col, Strategy!);
+        view.ChangeBuffer.AddDefinitiveToAdd(single.Possibility, single.Row, single.Col);
+        
+        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
     }
 }

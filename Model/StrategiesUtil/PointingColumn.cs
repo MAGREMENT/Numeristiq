@@ -131,20 +131,16 @@ public class PointingColumn : ILinkGraphElement
         result = result[..^2];
         return result + $"=> {Possibility}]";
     }
-    
-    public bool IsSameLoopElement(ILoopElement other)
-    {
-        return false; //TODO
-    }
 
-    public Coordinate[] EachCoordinates()
+    public PossibilityCoordinate[] EachElement()
     {
-        Coordinate[] result = new Coordinate[_pos.Count];
+        PossibilityCoordinate[] result = new PossibilityCoordinate[_pos.Count];
         
         int cursor = 0;
         foreach (var row in _pos)
         {
-            result[cursor] = new Coordinate(row, Column);
+            result[cursor] = new PossibilityCoordinate(row, Column, Possibility);
+            cursor++;
         }
 
         return result;

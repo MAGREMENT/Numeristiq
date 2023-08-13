@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 // ReSharper disable All
 
 namespace Model.StrategiesUtil.LoopFinder;
 
-public class Loop<T> where T : ILoopElement
+public class Loop<T> : IEnumerable<T> where T : ILoopElement
 {
     private readonly T[] _elements;
     private readonly LinkStrength[] _links;
@@ -26,6 +27,11 @@ public class Loop<T> where T : ILoopElement
             hash ^= EqualityComparer<T>.Default.GetHashCode(element);
         }
         return hash;
+    }
+
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _elements.AsEnumerable().GetEnumerator();
     }
 
     public override bool Equals(object? obj)
@@ -49,6 +55,11 @@ public class Loop<T> where T : ILoopElement
         }
 
         return result;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 
     public delegate void LinkHandler(T one, T two);
@@ -141,7 +152,7 @@ public class LoopBuilder<T> where T : ILoopElement
         if (_elements[0].Equals(element)) return ContainedStatus.First;
         for (int i = 1; i < _elements.Length; i++)
         {
-            if (_elements[i].IsSameLoopElement(element)) return ContainedStatus.Contained;
+            if (_elements[i].Equals(element)) return ContainedStatus.Contained;
         }
 
         return ContainedStatus.NotContained;
@@ -214,6 +225,6 @@ public enum ContainedStatus
 }
 
 public interface ILoopElement
-{
-    bool IsSameLoopElement(ILoopElement other);
+{ 
+    PossibilityCoordinate[] EachElement();
 }
