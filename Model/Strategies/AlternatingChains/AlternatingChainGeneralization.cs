@@ -76,7 +76,7 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
                 _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, "");
+            }, _loop.ToString());
     }
 }
 

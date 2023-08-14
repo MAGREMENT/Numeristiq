@@ -1,4 +1,5 @@
-﻿using Model.StrategiesUtil;
+﻿using System.Collections.Generic;
+using Model.StrategiesUtil;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainAlgorithms;
@@ -6,7 +7,8 @@ namespace Model.Strategies.AlternatingChains.ChainAlgorithms;
 public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
 {
     private readonly int _maxLoopSize;
-    
+    private readonly HashSet<Loop<T>> _loopsProcessed = new();
+
     public AlternatingChainAlgorithmV1(int maxLoopSize)
     {
         _maxLoopSize = maxLoopSize;
@@ -14,6 +16,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
 
     public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
+        _loopsProcessed.Clear();
         foreach (var start in graph.EachVerticesWith(LinkStrength.Strong))
         {
             Search(graph, new LoopBuilder<T>(start), chainType, view);
@@ -55,7 +58,10 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
             {
                 if (path.FirstElement().Equals(friend))
                 {
-                    if (path.Count >= 4) chainType.ProcessFullLoop(view, path.End(LinkStrength.Weak));       
+                    var loop = path.End(LinkStrength.Weak);
+                    if (_loopsProcessed.Contains(loop)) continue;
+                    if (path.Count >= 4) chainType.ProcessFullLoop(view, loop);
+                    _loopsProcessed.Add(loop);
                 }
                 else if (!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
             }
@@ -64,7 +70,10 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
             {
                 if (path.FirstElement().Equals(friend))
                 {
-                    if (path.Count >= 4) chainType.ProcessFullLoop(view, path.End(LinkStrength.Weak));       
+                    var loop = path.End(LinkStrength.Weak);
+                    if (_loopsProcessed.Contains(loop)) continue;
+                    if (path.Count >= 4) chainType.ProcessFullLoop(view, loop);
+                    _loopsProcessed.Add(loop);
                 }
                 else if (!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
             }

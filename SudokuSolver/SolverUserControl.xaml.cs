@@ -269,7 +269,7 @@ public partial class SolverUserControl : IHighlighter
 
     public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength)
     {
-        _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+        _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dot);
     }
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
@@ -277,9 +277,8 @@ public partial class SolverUserControl : IHighlighter
         switch (from)
         {
             case PossibilityCoordinate one when to is PossibilityCoordinate two:
-                _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+                _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dot);
                 break;
-            case AlmostNakedPossibilities when to is PossibilityCoordinate:
             case PossibilityCoordinate when to is AlmostNakedPossibilities:
                 break;
             default:
@@ -308,7 +307,7 @@ public partial class SolverUserControl : IHighlighter
                 }
             
                 _backgroundManager.CreateLink(winners[0], winners[1], linkStrength == LinkStrength.Strong ?
-                    DashStyles.Solid : DashStyles.Dash);
+                    DashStyles.Solid : DashStyles.Dot);
                 break;
             
         }
