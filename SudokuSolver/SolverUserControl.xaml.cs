@@ -261,6 +261,9 @@ public partial class SolverUserControl : IHighlighter
             case PointingColumn pc :
                 _backgroundManager.HighlightGroup(pc, ColorUtil.ToColor(coloration));
                 break;
+            case AlmostNakedPossibilities anp :
+                _backgroundManager.HighlightGroup(anp, ColorUtil.ToColor(coloration));
+                break;
         }
     }
 
@@ -271,29 +274,43 @@ public partial class SolverUserControl : IHighlighter
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
     {
-        if(from is PossibilityCoordinate one && to is PossibilityCoordinate two)
-            _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
-        else
+        switch (from)
         {
-            PossibilityCoordinate[] winners = new PossibilityCoordinate[2];
-            double winningDistance = int.MaxValue;
+            case PossibilityCoordinate one when to is PossibilityCoordinate two:
+                _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+                break;
+            case AlmostNakedPossibilities when to is PossibilityCoordinate:
+            case PossibilityCoordinate when to is AlmostNakedPossibilities:
+                break;
+            default:
+                PossibilityCoordinate[] winners = new PossibilityCoordinate[2];
+                double winningDistance = int.MaxValue;
 
-            foreach (var c1 in from.EachElement())
-            {
-                foreach (var c2 in to.EachElement())
+                foreach (var c1 in from.EachElement())
                 {
-                    var distance = Math.Sqrt(Math.Pow(c1.Row - c2.Row, 2) + Math.Pow(c1.Col - c2.Col, 2));
-
-                    if (distance < winningDistance)
+                    foreach (var c2 in to.EachElement())
                     {
-                        winningDistance = distance;
-                        winners[0] = c1;
-                        winners[1] = c2;
+                        foreach (var pc1 in c1.ToPossibilityCoordinates())
+                        {
+                            foreach (var pc2 in c2.ToPossibilityCoordinates())
+                            {
+                                var distance = Math.Pow(pc1.Row - pc2.Row, 2) + Math.Pow(pc1.Col - pc2.Col, 2);
+
+                                if (distance < winningDistance)
+                                {
+                                    winningDistance = distance;
+                                    winners[0] = pc1;
+                                    winners[1] = pc2;
+                                }
+                            }
+                        }
                     }
                 }
-            }
             
-            _backgroundManager.CreateLink(winners[0], winners[1], linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dash);
+                _backgroundManager.CreateLink(winners[0], winners[1], linkStrength == LinkStrength.Strong ?
+                    DashStyles.Solid : DashStyles.Dash);
+                break;
+            
         }
     }
 
@@ -456,28 +473,23 @@ public class SolverBackgroundManager
         var mostRight = coords[0];
         for (int i = 1; i < coords.Length; i++)
         {
-            if (coords[i].Col < mostLeft.Col) mostLeft = coords[i];
-            if (coords[i].Col > mostRight.Col) mostRight = coords[i];
+            if (coords[i].Coordinate.Col < mostLeft.Coordinate.Col) mostLeft = coords[i];
+            if (coords[i].Coordinate.Col > mostRight.Coordinate.Col) mostRight = coords[i];
         }
 
         int oneThird = CellSize / 3;
         _groups.Children.Add(new GeometryDrawing()
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Col, pr.Possibility),
-                TopLeftY(mostLeft.Row, pr.Possibility),
-                (CellSize + Margin) * (mostRight.Col - mostLeft.Col) + oneThird, oneThird)),
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Coordinate.Col, pr.Possibility),
+                TopLeftY(mostLeft.Coordinate.Row, pr.Possibility),
+                (CellSize + Margin) * (mostRight.Coordinate.Col - mostLeft.Coordinate.Col) + oneThird, oneThird)),
             Pen = new Pen()
             {
             Thickness = 3.0,
-            Brush = _linkBrush,
+            Brush = new SolidColorBrush(color),
             DashStyle = DashStyles.DashDot
             }          
         });
-
-        foreach (var coord in coords)
-        {
-            HighlightPossibility(coord.Row, coord.Col, pr.Possibility, color);
-        }
     }
 
     public void HighlightGroup(PointingColumn pc, Color color)
@@ -487,27 +499,79 @@ public class SolverBackgroundManager
         var mostDown = coords[0];
         for (int i = 1; i < coords.Length; i++)
         {
-            if (coords[i].Row < mostUp.Row) mostUp = coords[i];
-            if (coords[i].Row > mostDown.Row) mostDown = coords[i];
+            if (coords[i].Coordinate.Row < mostUp.Coordinate.Row) mostUp = coords[i];
+            if (coords[i].Coordinate.Row > mostDown.Coordinate.Row) mostDown = coords[i];
         }
 
         int oneThird = CellSize / 3;
         _groups.Children.Add(new GeometryDrawing()
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Col, pc.Possibility),
-                TopLeftY(mostUp.Row, pc.Possibility), oneThird,
-                (CellSize + Margin) * (mostDown.Row - mostUp.Row) + oneThird)),
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Coordinate.Col, pc.Possibility),
+                TopLeftY(mostUp.Coordinate.Row, pc.Possibility), oneThird,
+                (CellSize + Margin) * (mostDown.Coordinate.Row - mostUp.Coordinate.Row) + oneThird)),
             Pen = new Pen()
             {
                 Thickness = 3.0,
-                Brush = _linkBrush,
+                Brush = new SolidColorBrush(color),
                 DashStyle = DashStyles.DashDot
             }          
         });
-        
-        foreach (var coord in coords)
+    }
+
+    public void HighlightGroup(AlmostNakedPossibilities anp, Color color)
+    {
+        foreach (var coord in anp.CoordinatePossibilities)
         {
-            HighlightPossibility(coord.Row, coord.Col, pc.Possibility, color);
+            var x = TopLeftX(coord.Coordinate.Col);
+            var y = TopLeftY(coord.Coordinate.Row);
+            
+            if(!anp.Contains(coord.Coordinate.Row - 1, coord.Coordinate.Col))
+                _groups.Children.Add(new GeometryDrawing()
+                {
+                    Geometry = new LineGeometry(new Point(x, y), new Point(x + CellSize, y)),
+                    Pen = new Pen()
+                    {
+                    Thickness = 3.0,
+                    Brush = new SolidColorBrush(color),
+                    DashStyle = DashStyles.DashDot 
+                    }     
+                });
+            
+            if(!anp.Contains(coord.Coordinate.Row + 1, coord.Coordinate.Col))
+                _groups.Children.Add(new GeometryDrawing()
+                {
+                    Geometry = new LineGeometry(new Point(x, y + CellSize), new Point(x + CellSize, y + CellSize)),
+                    Pen = new Pen()
+                    {
+                        Thickness = 3.0,
+                        Brush = new SolidColorBrush(color),
+                        DashStyle = DashStyles.DashDot 
+                    }     
+                });
+            
+            if(!anp.Contains(coord.Coordinate.Row, coord.Coordinate.Col - 1))
+                _groups.Children.Add(new GeometryDrawing()
+                {
+                    Geometry = new LineGeometry(new Point(x, y), new Point(x, y + CellSize)),
+                    Pen = new Pen()
+                    {
+                        Thickness = 3.0,
+                        Brush = new SolidColorBrush(color),
+                        DashStyle = DashStyles.DashDot 
+                    }     
+                });
+            
+            if(!anp.Contains(coord.Coordinate.Row, coord.Coordinate.Col + 1))
+                _groups.Children.Add(new GeometryDrawing()
+                {
+                    Geometry = new LineGeometry(new Point(x + CellSize, y), new Point(x + CellSize, y + CellSize)),
+                    Pen = new Pen()
+                    {
+                        Thickness = 3.0,
+                        Brush = new SolidColorBrush(color),
+                        DashStyle = DashStyles.DashDot 
+                    }     
+                });
         }
     }
 
@@ -545,7 +609,7 @@ public class SolverBackgroundManager
 
     private void AddShortenedLine(Point from, Point to, DashStyle dashStyle)
     {
-        var space = CellSize / 5.5;
+        var space = (double)CellSize / 3;
         var proportion = space / Math.Sqrt(Math.Pow(to.X - from.X, 2) + Math.Pow(to.Y - from.Y, 2));
         var newFrom = new Point(from.X + proportion * (to.X - from.X), from.Y + proportion * (to.Y - from.Y));
         
@@ -554,7 +618,7 @@ public class SolverBackgroundManager
     
     private void AddShortenedLine(Point from, Point middle, Point to, DashStyle dashStyle)
     {
-        var space = CellSize / 5.5;
+        var space = (double)CellSize / 3;
         var proportion = space / Math.Sqrt(Math.Pow(to.X - from.X, 2) + Math.Pow(to.Y - from.Y, 2));
         var newFrom = new Point(from.X + proportion * (middle.X - from.X), from.Y + proportion * (middle.Y - from.Y));
         var newTo = new Point(to.X + proportion * (middle.X - to.X), to.Y + proportion * (middle.Y - to.Y));

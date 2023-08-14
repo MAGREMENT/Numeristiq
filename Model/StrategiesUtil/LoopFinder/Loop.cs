@@ -226,5 +226,5 @@ public enum ContainedStatus
 
 public interface ILoopElement
 { 
-    PossibilityCoordinate[] EachElement();
+    CoordinatePossibilities[] EachElement();
 }

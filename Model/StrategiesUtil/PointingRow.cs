@@ -131,14 +131,14 @@ public class PointingRow : ILinkGraphElement
         return result + $"=> {Possibility}]";
     }
 
-    public PossibilityCoordinate[] EachElement()
+    public CoordinatePossibilities[] EachElement()
     {
-        PossibilityCoordinate[] result = new PossibilityCoordinate[_pos.Count];
+        CoordinatePossibilities[] result = new CoordinatePossibilities[_pos.Count];
         
         int cursor = 0;
         foreach (var col in _pos)
         {
-            result[cursor] = new PossibilityCoordinate(Row, col, Possibility);
+            result[cursor] = new CoordinatePossibilities(new Coordinate(Row, col), Possibility);
             cursor++;
         }
 

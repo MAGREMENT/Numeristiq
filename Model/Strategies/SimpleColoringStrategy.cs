@@ -171,6 +171,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
 
                 foreach (var friend in _web.GetLinkedVertices(coord))
                 {
+                    if (friend.Coloring == Coloring.Off) continue;
                     lighter.CreateLink(new PossibilityCoordinate(friend.Coordinate.Row, friend.Coordinate.Col, _number),
                         new PossibilityCoordinate(coord.Coordinate.Row, coord.Coordinate.Col, _number), LinkStrength.Strong);
                 }

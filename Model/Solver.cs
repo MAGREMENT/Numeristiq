@@ -390,10 +390,10 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             new AlignedPairExclusionStrategy(4),
             new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
                 new AlternatingChainAlgorithmV1<ILinkGraphElement>(20)),
-            //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
-                //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
             new SueDeCoqStrategy(),
             new AlmostLockedSetsStrategy(),
+            /*new AlternatingChainGeneralization<ILinkGraphElement>(new FullAIC(),
+                new AlternatingChainAlgorithmV1<ILinkGraphElement>(15)),*/
             new DigitForcingNetStrategy(),
             new CellForcingNetStrategy(4),
             new UnitForcingNetStrategy(4),

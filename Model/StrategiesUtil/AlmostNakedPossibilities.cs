@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.Possibilities;
 
@@ -15,11 +16,19 @@ public class AlmostNakedPossibilities : ILinkGraphElement
         OddOne = oddOne;
     }
 
-
-    public PossibilityCoordinate[] EachElement()
+    public bool Contains(int row, int col)
     {
-        //TODO
-        return Array.Empty<PossibilityCoordinate>();
+        foreach (var coord in CoordinatePossibilities)
+        {
+            if (coord.Coordinate.Row == row && coord.Coordinate.Col == col) return true;
+        }
+
+        return false;
+    }
+
+    public CoordinatePossibilities[] EachElement()
+    {
+        return CoordinatePossibilities;
     }
 
     public override bool Equals(object? obj)
@@ -54,33 +63,5 @@ public class AlmostNakedPossibilities : ILinkGraphElement
         }
 
         return result[..^2] + "]";
-    }
-}
-
-public class CoordinatePossibilities
-{
-    public CoordinatePossibilities(Coordinate coordinate, IPossibilities possibilities)
-    {
-        Coordinate = coordinate;
-        Possibilities = possibilities;
-    }
-
-    public Coordinate Coordinate { get; }
-    public IPossibilities Possibilities { get; }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not CoordinatePossibilities cp) return false;
-        return Coordinate == cp.Coordinate && Possibilities.Equals(cp.Possibilities);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Coordinate.GetHashCode(), Possibilities.GetHashCode());
-    }
-
-    public override string ToString()
-    {
-        return $"{Coordinate} => {Possibilities}";
     }
 }

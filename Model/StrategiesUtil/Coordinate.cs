@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Possibilities;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
@@ -169,9 +170,9 @@ public readonly struct PossibilityCoordinate : ILinkGraphElement
         return $"[{Row + 1}, {Col + 1} => {Possibility}]";
     }
 
-    public PossibilityCoordinate[] EachElement()
+    public CoordinatePossibilities[] EachElement()
     {
-        return new[] { this };
+        return new[] { new CoordinatePossibilities(this) };
     }
 
     public bool IsSameLoopElement(ILoopElement other)
@@ -208,5 +209,61 @@ public class PossibilityCoordinateColoring : IColorable
     public override bool Equals(object? obj)
     {
         return obj is PossibilityCoordinateColoring pcc && pcc.PossibilityCoordinate.Equals(PossibilityCoordinate);
+    }
+}
+
+public class CoordinatePossibilities
+{
+    public Coordinate Coordinate { get; }
+    public IPossibilities Possibilities { get; }
+    
+    public CoordinatePossibilities(Coordinate coordinate, IPossibilities possibilities)
+    {
+        Coordinate = coordinate;
+        Possibilities = possibilities;
+    }
+
+    public CoordinatePossibilities(Coordinate coordinate, int possibility)
+    {
+        Coordinate = coordinate;
+        Possibilities = IPossibilities.NewEmpty();
+        Possibilities.Add(possibility);
+    }
+    
+    public CoordinatePossibilities(PossibilityCoordinate coord)
+    {
+        Coordinate = new Coordinate(coord.Row, coord.Col);
+        Possibilities = IPossibilities.NewEmpty();
+        Possibilities.Add(coord.Possibility);
+    }
+
+    public PossibilityCoordinate[] ToPossibilityCoordinates()
+    {
+        var result = new PossibilityCoordinate[Possibilities.Count];
+
+        var cursor = 0;
+        foreach (var possibility in Possibilities)
+        {
+            result[cursor] = new PossibilityCoordinate(Coordinate.Row, Coordinate.Col, possibility);
+            cursor++;
+        }
+
+        return result;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not CoordinatePossibilities cp) return false;
+        return Coordinate == cp.Coordinate && Possibilities.Equals(cp.Possibilities);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Coordinate.GetHashCode(), Possibilities.GetHashCode());
+    }
+
+    public override string ToString()
+    {
+        return $"{Coordinate} => {Possibilities}";
     }
 }

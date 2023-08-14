@@ -254,6 +254,13 @@ public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row,
                     coord.PossibilityCoordinate.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
+                
+                foreach (var friend in _web.GetLinkedVertices(coord))
+                {
+                    if (friend.Coloring == Coloring.Off) continue;
+                    lighter.CreateLink(new PossibilityCoordinate(friend.PossibilityCoordinate.Row, friend.PossibilityCoordinate.Col, friend.PossibilityCoordinate.Possibility),
+                        new PossibilityCoordinate(coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col, coord.PossibilityCoordinate.Possibility), LinkStrength.Strong);
+                }
             }
         }, "");
     }

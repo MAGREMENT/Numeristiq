@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Model.Possibilities;
-using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
 
-public class AlmostLockedSet : ILinkGraphElement
+public class AlmostLockedSet
 {
     public Coordinate[] Coordinates { get; }
     public IPossibilities Possibilities { get; }
@@ -95,13 +93,7 @@ public class AlmostLockedSet : ILinkGraphElement
 
         return result[..^2] + "]";
     }
-
-    public PossibilityCoordinate[] EachElement()
-    {
-        //TODO
-        return Array.Empty<PossibilityCoordinate>();
-    }
-
+    
     public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)
     {
         List<AlmostLockedSet> result = new();
