@@ -2,7 +2,7 @@
 
 namespace Model.StrategiesUtil.LoopFinder.Types;
 
-public class AICLoopsV4<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement
+public class AICLoopsV4<T> : ILoopType<T> where T : ILoopElement, ILinkGraphElement //TODO other BFS algo with multiple paths
 {
     public void Apply(LoopFinder<T> manager)
     {

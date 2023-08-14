@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;
@@ -13,6 +14,8 @@ public class PreComputer
     private readonly LinePositions?[,] _cols = new LinePositions[9, 9];
     private readonly MiniGridPositions?[,,] _miniGrids = new MiniGridPositions[3, 3, 9];
     private bool _wasPrePosUsed;
+    
+    private List<AlmostLockedSet>? _als;
 
     private LinkGraph<ILinkGraphElement>? _graph;
 
@@ -27,37 +30,42 @@ public class PreComputer
 
     public void Reset()
     {
+        _als = null;
         _graph = null;
 
-        if (!_wasPrePosUsed) return;
-        for (int i = 0; i < 3; i++)
+        if (_wasPrePosUsed)
         {
-            for (int j = 0; j < 3; j++)
+            for (int i = 0; i < 3; i++)
             {
-                for (int k = 0; k < 9; k++)
+                for (int j = 0; j < 3; j++)
                 {
-                    _miniGrids[i, j, k] = null;
+                    for (int k = 0; k < 9; k++)
+                    {
+                        _miniGrids[i, j, k] = null;
 
-                    int l = i * 3 + j;
-                    _rows[l, k] = null;
-                    _cols[l, k] = null;
+                        int l = i * 3 + j;
+                        _rows[l, k] = null;
+                        _cols[l, k] = null;
+                    }
                 }
             }
+            _wasPrePosUsed = false;
         }
-        _wasPrePosUsed = false;
 
-        if (!_wasPreColorUsed) return;
-        for (int i = 0; i < 9; i++)
+        if (_wasPreColorUsed)
         {
-            for (int j = 0; j < 9; j++)
+            for (int i = 0; i < 9; i++)
             {
-                for (int k = 0; k < 9; k++)
+                for (int j = 0; j < 9; j++)
                 {
-                    _onColoring[i, j, k] = null;
+                    for (int k = 0; k < 9; k++)
+                    {
+                        _onColoring[i, j, k] = null;
+                    }
                 }
             }
+            _wasPreColorUsed = false;
         }
-        _wasPreColorUsed = false;
     }
 
     public LinePositions PossibilityPositionsInRow(int row, int number)
@@ -82,6 +90,12 @@ public class PreComputer
         
         _miniGrids[miniRow, miniCol, number - 1] ??= DoPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
         return _miniGrids[miniRow, miniCol, number - 1]!;
+    }
+
+    public List<AlmostLockedSet> AllAls()
+    {
+        _als ??= DoAllAls();
+        return _als;
     }
 
     public LinkGraph<ILinkGraphElement> LinkGraph()
@@ -143,6 +157,139 @@ public class PreComputer
         }
 
         return result;
+    }
+
+    private List<AlmostLockedSet> DoAllAls()
+    {
+        var result = new List<AlmostLockedSet>();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (_view.Sudoku[row, col] != 0) continue;
+
+                if (_view.Possibilities[row, col].Count == 2)
+                    result.Add(new AlmostLockedSet(new Coordinate(row, col), _view.Possibilities[row, col]));
+                SearchRow(_view, row, col + 1, _view.Possibilities[row, col], 
+                    new List<Coordinate> {new (row, col)}, result);
+            }
+        }
+        
+        for (int col = 0; col < 9; col++)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                if (_view.Sudoku[row, col] != 0) continue;
+                
+                SearchColumn(_view, col, row + 1, _view.Possibilities[row, col], 
+                    new List<Coordinate> {new (row, col)}, result);
+            }
+        }
+
+        for (int miniRow = 0; miniRow < 3; miniRow++)
+        {
+            for (int miniCol = 0; miniCol < 3; miniCol++)
+            {
+                for (int n = 0; n < 9; n++)
+                {
+                    int row = miniRow * 3 + n / 3;
+                    int col = miniCol * 3 + n % 3;
+                    if (_view.Sudoku[row, col] != 0) continue;
+                    
+                    SearchMiniGrid(_view, miniRow, miniCol, n + 1, _view.Possibilities[row, col],
+                        new List<Coordinate> {new (row, col)}, result);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void SearchRow(IStrategyManager strategyManager, int row, int start, IPossibilities current,
+        List<Coordinate> visited, List<AlmostLockedSet> result)
+    {
+        for (int col = start; col < 9; col++)
+        {
+            if (strategyManager.Sudoku[row, col] != 0) continue;
+
+            IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
+            if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
+
+            var copy = new List<Coordinate>(visited) { new (row, col) };
+
+            if (mashed.Count == copy.Count + 1)
+            {
+                result.Add(new AlmostLockedSet(copy.ToArray(), mashed));
+            }
+
+            SearchRow(strategyManager, row, col + 1, mashed, copy, result);
+        }
+    }
+
+    private void SearchColumn(IStrategyManager strategyManager, int col, int start, IPossibilities current,
+        List<Coordinate> visited, List<AlmostLockedSet> result)
+    {
+        for (int row = start; row < 9; row++)
+        {
+            if (strategyManager.Sudoku[row, col] != 0) continue;
+
+            IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
+            if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
+
+            var copy = new List<Coordinate>(visited) { new (row, col) };
+
+            if (mashed.Count == copy.Count + 1)
+            {
+                result.Add(new AlmostLockedSet(copy.ToArray(), mashed));
+            }
+
+            SearchColumn(strategyManager, col, row + 1, mashed, copy, result);
+        }
+    }
+
+    private void SearchMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, int start,
+        IPossibilities current, List<Coordinate> visited, List<AlmostLockedSet> result)
+    {
+        for (int n = start; n < 9; n++)
+        {
+            int row = miniRow * 3 + n / 3;
+            int col = miniCol * 3 + n % 3;
+                
+            if (strategyManager.Sudoku[row, col] != 0) continue;
+
+            IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
+            if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
+
+            var copy = new List<Coordinate>(visited) { new (row, col) };
+
+            if (mashed.Count == copy.Count + 1 && NotInSameRowOrColumn(copy))
+            {
+                result.Add(new AlmostLockedSet(copy.ToArray(), mashed));
+            }
+
+            SearchMiniGrid(strategyManager, miniRow, miniCol, n + 1, mashed,
+                copy, result);
+        }
+    }
+
+    private bool NotInSameRowOrColumn(List<Coordinate> coord)
+    {
+        int row = coord[0].Row;
+        int col = coord[0].Col;
+
+        bool rowOk = false;
+        bool colOk = false;
+
+        for (int i = 1; i < coord.Count; i++)
+        {
+            if (!rowOk && coord[i].Row != row) rowOk = true;
+            if (!colOk && coord[i].Col != col) colOk = true;
+
+            if (rowOk && colOk) return true;
+        }
+
+        return false;
     }
 
     private LinkGraph<ILinkGraphElement> DoLinkGraph()
@@ -215,151 +362,129 @@ public class PreComputer
                 }
             }
         }
-
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (_view.Possibilities[row, col].Count != 2) continue;
-                SearchForUsableAls(graph, new Coordinate(row, col), _view.Possibilities[row, col]);
-            }
-        }
         
+        SearchForAlmostNakedPossibilities(graph);
+
 
         return graph;
     }
 
-    private void SearchForUsableAls(LinkGraph<ILinkGraphElement> graph, Coordinate biValueCell, IPossibilities biValue)
+    private void SearchForAlmostNakedPossibilities(LinkGraph<ILinkGraphElement> graph)
     {
-        for (int row = 0; row < 9; row++)
+        foreach (var als in AllAls())
         {
-            IPossibilities evaluated = _view.Possibilities[row, biValueCell.Col];
-            if (evaluated.Count != 3) continue;
-            
-            int buffer = -1;
-            bool yes = true;
-            foreach (var possibility in evaluated)
+            if (als.Coordinates.Length is < 2 or > 4) continue;
+
+            PossibilityCoordinate buffer = default;
+            bool found = false;
+            foreach (var possibility in als.Possibilities)
             {
-                if (!biValue.Peek(possibility))
+                found = false;
+                foreach (var coord in als.Coordinates)
                 {
-                    if (buffer == -1) buffer = possibility;
+                    if (!_view.Possibilities[coord.Row, coord.Col].Peek(possibility)) continue;
+
+                    if (!found)
+                    {
+                        buffer = new PossibilityCoordinate(coord.Row, coord.Col, possibility); 
+                        found = true;
+                    }
                     else
                     {
-                        yes = false;
+                        found = false;
                         break;
                     }
                 }
-            }
 
-            if (!yes && buffer != -1) continue;
-            //Usable ALS found
-            AlmostLockedSet als = new AlmostLockedSet(new[] { biValueCell, new Coordinate(row, biValueCell.Col) },
-                evaluated.Mash(biValue));
-
-            graph.AddLink(new PossibilityCoordinate(row, biValueCell.Col, buffer),
-                als, LinkStrength.Strong, LinkType.MonoDirectional);
-
-            for (int r = 0; r < 9; r++)
-            {
-                if (r == row || r == biValueCell.Row) continue;
-                foreach (var possibility in biValue)
+                if (found)
                 {
-                    if(_view.Possibilities[r, biValueCell.Col].Peek(possibility))
-                        graph.AddLink(als, new PossibilityCoordinate(r, biValueCell.Col, possibility),
-                            LinkStrength.Weak, LinkType.MonoDirectional);
+                    break;
                 }
             }
 
-            //Same mini grid
-            if (row / 3 == biValueCell.Row / 3)
+            if (!found) continue;
+
+            //Almost naked possibility found
+            CoordinatePossibilities[] buildUp = new CoordinatePossibilities[als.Coordinates.Length];
+            for (int i = 0; i < als.Coordinates.Length; i++)
             {
-                int startRow = row / 3 * 3;
-                int startCol = biValueCell.Col / 3 * 3;
+                buildUp[i] = new CoordinatePossibilities(als.Coordinates[i],
+                    _view.Possibilities[als.Coordinates[i].Row, als.Coordinates[i].Col]);
+            }
 
-                for (int gridRow = 0; gridRow < 3; gridRow++)
+            AlmostNakedPossibilities anp = new AlmostNakedPossibilities(buildUp, buffer);
+            graph.AddLink(buffer, anp, LinkStrength.Strong, LinkType.MonoDirectional);
+
+            bool sameRow = true;
+            int sharedRow = anp.CoordinatePossibilities[0].Coordinate.Row;
+            bool sameCol = true;
+            int sharedCol = anp.CoordinatePossibilities[0].Coordinate.Col;
+            bool sameMini = true;
+            int sharedMiniRow = anp.CoordinatePossibilities[0].Coordinate.Row / 3;
+            int sharedMiniCol = anp.CoordinatePossibilities[0].Coordinate.Col / 3;
+
+            for (int i = 1; i < anp.CoordinatePossibilities.Length; i++)
+            {
+                if (anp.CoordinatePossibilities[i].Coordinate.Row != sharedRow) sameRow = false;
+                if (anp.CoordinatePossibilities[i].Coordinate.Col != sharedCol) sameCol = false;
+                if (anp.CoordinatePossibilities[i].Coordinate.Row / 3 != sharedMiniRow ||
+                    anp.CoordinatePossibilities[i].Coordinate.Col / 3 != sharedMiniCol) sameMini = false;
+            }
+
+            foreach (var possibility in als.Possibilities)
+            {
+                if (possibility == buffer.Possibility) continue;
+                if (sameRow)
                 {
-                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    for (int col = 0; col < 9; col++)
                     {
-                        int r = startRow + gridRow;
-                        int c = startCol + gridCol;
+                        if (!_view.Possibilities[sharedRow, col].Peek(possibility)) continue;
 
-                        if (c == biValueCell.Col && (r == row || r == biValueCell.Row)) continue;
-                        foreach (var possibility in biValue)
-                        {
-                            if(_view.Possibilities[r, c].Peek(possibility))
-                                graph.AddLink(als, new PossibilityCoordinate(r, c, possibility),
-                                    LinkStrength.Weak, LinkType.MonoDirectional);
-                        }
+                        Coordinate current = new Coordinate(sharedRow, col);
+                        if (als.Contains(current)) continue;
+                        
+                        graph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
+                            LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
-            }
-        }
-        
-        for (int col = 0; col < 9; col++)
-        {
-            IPossibilities evaluated = _view.Possibilities[biValueCell.Row, col];
-            if (evaluated.Count != 3) continue;
-            
-            int buffer = -1;
-            bool yes = true;
-            foreach (var possibility in evaluated)
-            {
-                if (!biValue.Peek(possibility))
+
+                if (sameCol)
                 {
-                    if (buffer == -1) buffer = possibility;
-                    else
+                    for (int row = 0; row < 9; row++)
                     {
-                        yes = false;
-                        break;
+                        if (!_view.Possibilities[row, sharedCol].Peek(possibility)) continue;
+                        
+                        Coordinate current = new Coordinate(row, sharedCol);
+                        if (als.Contains(current)) continue;
+                        
+                        graph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
+                            LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
-            }
 
-            if (!yes && buffer != -1) continue;
-            //Usable ALS found
-            AlmostLockedSet als = new AlmostLockedSet(new[] { biValueCell, new Coordinate(biValueCell.Row, col) },
-                evaluated.Mash(biValue));
-
-            graph.AddLink(new PossibilityCoordinate(biValueCell.Row, col, buffer),
-                als, LinkStrength.Strong, LinkType.MonoDirectional);
-
-            for (int c = 0; c < 9; c++)
-            {
-                if (c == col || c == biValueCell.Col) continue;
-                foreach (var possibility in biValue)
+                if (sameMini)
                 {
-                    if(_view.Possibilities[biValueCell.Row, c].Peek(possibility))
-                        graph.AddLink(als, new PossibilityCoordinate(biValueCell.Row, c, possibility),
-                            LinkStrength.Weak, LinkType.MonoDirectional);
-                }
-            }
-            
-            //Same mini grid
-            if (col / 3 == biValueCell.Col / 3)
-            {
-                int startRow = biValueCell.Row / 3 * 3;
-                int startCol = col / 3 * 3;
-
-                for (int gridRow = 0; gridRow < 3; gridRow++)
-                {
-                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    for (int gridRow = 0; gridRow < 3; gridRow++)
                     {
-                        int r = startRow + gridRow;
-                        int c = startCol + gridCol;
-
-                        if (r == biValueCell.Row && (c == col || c == biValueCell.Col)) continue;
-                        foreach (var possibility in biValue)
+                        for(int gridCol = 0; gridCol < 3; gridCol++)
                         {
-                            if(_view.Possibilities[r, c].Peek(possibility))
-                                graph.AddLink(als, new PossibilityCoordinate(r, c, possibility),
-                                    LinkStrength.Weak, LinkType.MonoDirectional);
+                            int row = sharedMiniRow * 3 + gridRow;
+                            int col = sharedMiniCol * 3 + gridCol;
+                            
+                            if (!_view.Possibilities[row, col].Peek(possibility)) continue;
+                        
+                            Coordinate current = new Coordinate(row, col);
+                            if (als.Contains(current)) continue;
+                        
+                            graph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
+                                LinkStrength.Weak, LinkType.MonoDirectional);
                         }
                     }
                 }
             }
         }
     }
-    
+
     private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,
         int miniCol, int numba)
     {

@@ -18,6 +18,8 @@ public interface IStrategyManager
     LinePositions PossibilityPositionsInRow(int row, int number);
 
     MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
+
+    public List<AlmostLockedSet> AllAls();
     
     public LinkGraph<ILinkGraphElement> LinkGraph();
 

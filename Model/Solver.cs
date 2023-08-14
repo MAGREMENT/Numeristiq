@@ -235,6 +235,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         return _pre.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
     }
 
+    public List<AlmostLockedSet> AllAls()
+    {
+        return _pre.AllAls();
+    }
+
     public LinkGraph<ILinkGraphElement> LinkGraph()
     {
         return _pre.LinkGraph();
@@ -388,11 +393,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
             //new AlternatingChainGeneralization<PossibilityCoordinate>(new NormalAIC(),
                 //new AlternatingChainAlgorithmV1<PossibilityCoordinate>(20)),
             new SueDeCoqStrategy(),
+            new AlmostLockedSetsStrategy(),
             new DigitForcingNetStrategy(),
             new CellForcingNetStrategy(4),
             new UnitForcingNetStrategy(4),
             new NishioForcingNetStrategy(),
-            new AlmostLockedSetsStrategy(),
             //new PatternOverlayStrategy()
             //new TrialAndMatchStrategy(2)
         };
