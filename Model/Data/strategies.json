@@ -1,0 +1,177 @@
+[
+  {
+    "StrategyName": "Naked single",
+    "Difficulty": 1,
+    "Used": true
+  },
+  {
+    "StrategyName": "Hidden single",
+    "Difficulty": 1,
+    "Used": true
+  },
+  {
+    "StrategyName": "Naked double",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Hidden double",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Naked triple",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Hidden triple",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Naked quad",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Hidden quad",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Box line reduction",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Pointing possibilities",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "XWing",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "XYWing",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "XYZWing",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "Swordfish",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "Jellyfish",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "Simple coloring",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "BUG",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
+    "StrategyName": "Finned XWing",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Finned Swordfish",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Finned Jellyfish",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Fireworks",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Unique rectangles",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Avoidable rectangles",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "XYChain",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "3D Medusa",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Aligned pair exclusion",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "XCycles",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
+    "StrategyName": "Sue-De-Coq",
+    "Difficulty": 5,
+    "Used": true
+  },
+  {
+    "StrategyName": "Almost locked sets",
+    "Difficulty": 5,
+    "Used": true
+  },
+  {
+    "StrategyName": "Alternating inference chain",
+    "Difficulty": 5,
+    "Used": false
+  },
+  {
+    "StrategyName": "Digit forcing net",
+    "Difficulty": 5,
+    "Used": true
+  },
+  {
+    "StrategyName": "Cell forcing net",
+    "Difficulty": 5,
+    "Used": true
+  },
+  {
+    "StrategyName": "Unit forcing net",
+    "Difficulty": 5,
+    "Used": true
+  },
+  {
+    "StrategyName": "Nishio forcing net",
+    "Difficulty": 5,
+    "Used": true
+  },
+  {
+    "StrategyName": "Trial and match",
+    "Difficulty": 6,
+    "Used": false
+  }
+]

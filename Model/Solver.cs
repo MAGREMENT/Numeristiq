@@ -4,22 +4,18 @@ using System.Threading.Tasks;
 using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
-using Model.Strategies;
-using Model.Strategies.AlternatingChains;
-using Model.Strategies.AlternatingChains.ChainAlgorithms;
-using Model.Strategies.AlternatingChains.ChainTypes;
-using Model.Strategies.ForcingNets;
 using Model.StrategiesUtil;
 
 namespace Model;
 
-public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
+public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs => _logManager.Logs;
 
     public Sudoku Sudoku { get; private set; }
-    public IStrategy[] Strategies { get; }
+    public IStrategy[] Strategies { get; private set; } = null!;
+    public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
 
     public bool LogsManaged { get; init; } = true;
     public int StrategyCount { get; private set; }
@@ -37,10 +33,12 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
     
     private readonly PreComputer _pre;
     private readonly LogManager _logManager;
+    private readonly StrategyLoader _strategyLoader;
 
-    public Solver(Sudoku s, params IStrategy[] strategies)
+    public Solver(Sudoku s)
     {
-        Strategies = strategies.Length > 0 ? strategies : BasicStrategies();
+        _strategyLoader = new StrategyLoader(this);
+        _strategyLoader.Load();
         
         Sudoku = s;
         SetOriginalBoard();
@@ -74,15 +72,16 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         ChangeBuffer = new ChangeBuffer(this);
     }
     
-    private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t, PreComputer pre)
+    private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t)
     {
         Sudoku = s;
         SetOriginalBoard();
         Possibilities = p;
         Strategies = t;
-        _pre = pre;
+        _pre = new PreComputer(this);
         _logManager = new LogManager(this);
         ChangeBuffer = new ChangeBuffer(this);
+        _strategyLoader = new StrategyLoader(this);
         
         State = GetState();
         
@@ -268,7 +267,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
 
         IStrategy[] stratCopy = new IStrategy[Strategies.Length];
         Array.Copy(Strategies, stratCopy, Strategies.Length);
-        return new Solver(Sudoku.Copy(), possCopy, stratCopy, _pre);
+        return new Solver(Sudoku.Copy(), possCopy, stratCopy);
     }
     
     //ChangeManager-----------------------------------------------------------------------------------------------------
@@ -302,6 +301,18 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
         
         _logManager.ChangePushed(report, strategy);
         State = GetState();
+    }
+    
+    //StrategyHolder----------------------------------------------------------------------------------------------------
+    
+    public void SetStrategies(IStrategy[] strategies)
+    {
+        Strategies = strategies;
+    }
+
+    public void SetExcludedStrategies(int excluded)
+    {
+        _excludedStrategies = excluded;
     }
     
     //Private-----------------------------------------------------------------------------------------------------------
@@ -357,50 +368,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder //TODO : impr
                 originalBoardNeededStrategy.SetOriginalBoard(Sudoku.Copy());
             }
         }
-    }
-
-    private static IStrategy[] BasicStrategies()
-    {
-        return new IStrategy[]{
-            new NakedSingleStrategy(),
-            new HiddenSingleStrategy(),
-            new NakedPossibilitiesStrategy(2),
-            new HiddenPossibilitiesStrategy(2),
-            new NakedPossibilitiesStrategy(3),
-            new HiddenPossibilitiesStrategy(3),
-            new NakedPossibilitiesStrategy(4),
-            new HiddenPossibilitiesStrategy(4),
-            new BoxLineReductionStrategy(),
-            new PointingPossibilitiesStrategy(),
-            new XWingStrategy(),
-            new XYWingStrategy(),
-            new XYZWingStrategy(),
-            new GridFormationStrategy(3),
-            new GridFormationStrategy(4),
-            new SimpleColoringStrategy(),
-            new BUGStrategy(),
-            new FinnedXWingStrategy(),
-            new FinnedGridFormationStrategy(3),
-            new FinnedGridFormationStrategy(4),
-            new FireworksStrategy(),
-            new UniqueRectanglesStrategy(),
-            new AvoidableRectanglesStrategy(),
-            new XYChainStrategy(),
-            new ThreeDimensionMedusaStrategy(),
-            new AlignedPairExclusionStrategy(4),
-            new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
-                new AlternatingChainAlgorithmV2<ILinkGraphElement>(20)),
-            new SueDeCoqStrategy(),
-            new AlmostLockedSetsStrategy(),
-            new AlternatingChainGeneralization<ILinkGraphElement>(new FullAIC(),
-                new AlternatingChainAlgorithmV2<ILinkGraphElement>(15)),
-            new DigitForcingNetStrategy(),
-            new CellForcingNetStrategy(4),
-            new UnitForcingNetStrategy(4),
-            new NishioForcingNetStrategy(),
-            //new PatternOverlayStrategy()
-            //new TrialAndMatchStrategy(2)
-        };
     }
 
     private string GetState()

@@ -324,9 +324,9 @@ public partial class SolverUserControl : IHighlighter
         return _solver.Logs;
     }
 
-    public IStrategy[] GetStrategies()
+    public StrategyInfo[] GetStrategies()
     {
-        return _solver.Strategies;
+        return _solver.StrategyInfos;
     }
 
     public void ExcludeStrategy(int number)

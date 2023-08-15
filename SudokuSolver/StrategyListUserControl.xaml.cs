@@ -15,7 +15,7 @@ public partial class StrategyListUserControl
         InitializeComponent();
     }
 
-    public void InitStrategies(IStrategy[] strategies)
+    public void InitStrategies(StrategyInfo[] strategies)
     {
         for (int i = 0; i < strategies.Length; i++)
         {

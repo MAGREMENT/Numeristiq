@@ -17,10 +17,11 @@ public partial class StrategyUserControl
         InitializeComponent();
     }
 
-    public void InitStrategy(IStrategy strategy)
+    public void InitStrategy(StrategyInfo strategy)
     {
-        StrategyName.Text = strategy.Name;
+        StrategyName.Text = strategy.StrategyName;
         StrategyName.Foreground = new SolidColorBrush(ColorUtil.ToColor(strategy.Difficulty));
+        StrategyUsage.IsChecked = strategy.Used;
     }
 
     private void OnChecked(object sender, RoutedEventArgs e)

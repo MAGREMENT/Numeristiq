@@ -163,7 +163,7 @@ public static class Testing
         try
         {
             using TextReader reader =
-                new StreamReader($"C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\{fileNameInDataFolder}", Encoding.UTF8);
+                new StreamReader($"C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\SudokuBanks\\{fileNameInDataFolder}", Encoding.UTF8);
 
             while (reader.ReadLine() is { } line)
             {
