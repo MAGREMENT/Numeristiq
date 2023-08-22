@@ -13,15 +13,11 @@ public class LoopFinder<T> : IEnumerable<T> where T : ILoopElement, ILinkGraphEl
 
     public LinkGraph<T> Graph { get; }
     private readonly ILoopType<T> _type;
-    private readonly LoopHandler _handler;
 
-    public delegate bool LoopHandler(Loop<T> loop);
-
-    public LoopFinder(LinkGraph<T> graph, ILoopType<T> type, LoopHandler handler)
+    public LoopFinder(LinkGraph<T> graph, ILoopType<T> type)
     {
         Graph = graph;
         _type = type;
-        _handler = handler;
     }
 
     public void Run()
@@ -39,7 +35,7 @@ public class LoopFinder<T> : IEnumerable<T> where T : ILoopElement, ILinkGraphEl
         else
         {
             Loops.Add(loop);
-            return _handler(loop);
+            return true;
         }
 
         return false;

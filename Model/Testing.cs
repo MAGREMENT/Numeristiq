@@ -16,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("LocalBank.txt");
+        FullSudokuBankTest("OnlineBank3.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -76,7 +76,7 @@ public static class Testing
         example.AddLink(new LoopElementInt(21), new LoopElementInt(22), LinkStrength.Strong);
 
         LoopFinder<LoopElementInt> finder = new LoopFinder<LoopElementInt>(example,
-            new AllLoopsV4<LoopElementInt>(), (_) => false);
+            new AICLoopsV5<LoopElementInt>());
         finder.Run();
         Console.WriteLine(finder.GetStats());
     }

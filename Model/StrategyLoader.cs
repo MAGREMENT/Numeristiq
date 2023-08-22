@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Text.Json;
 using Model.Strategies;
 using Model.Strategies.AlternatingChains;
@@ -73,24 +72,19 @@ public class StrategyLoader //TODO improve this and do relative paths
         _holder.SetExcludedStrategies(InitExcludedStrategies());
     }
 
-    private int InitExcludedStrategies()
+    private ulong InitExcludedStrategies()
     {
-        var result = 0;
+        ulong result = 0;
 
         for (int i = 0; i < Infos.Length; i++)
         {
-            if (!Infos[i].Used) result |= 1 << i;
+            if (!Infos[i].Used) result |= 1ul << i;
         }
 
         return result;
     }
 
     private StrategyInfo[] HandleIncorrectJsonFile()
-    {
-        return Array.Empty<StrategyInfo>(); //TODO
-    }
-
-    private void WriteStrategiesJson()
     {
         File.Delete(Path);
         StrategyInfo[] toWrite = new StrategyInfo[_strategies.Length];
@@ -100,6 +94,8 @@ public class StrategyLoader //TODO improve this and do relative paths
         }
         
         File.WriteAllText(Path, JsonSerializer.Serialize(toWrite, new JsonSerializerOptions {WriteIndented = true}));
+
+        return toWrite;
     }
 
 }

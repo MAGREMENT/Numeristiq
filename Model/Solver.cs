@@ -28,7 +28,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public event OnPossibilityRemoved? PossibilityRemoved;
 
     private int _currentStrategy = -1;
-    private int _excludedStrategies;
+    private ulong _excludedStrategies;
     private bool _changeWasMade;
     
     private readonly PreComputer _pre;
@@ -168,7 +168,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public void ExcludeStrategy(int number)
     {
-        _excludedStrategies |= 1 << number;
+        _excludedStrategies |= 1ul << number;
     }
 
     public void ExcludeStrategies(StrategyLevel level)
@@ -181,7 +181,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public void UseStrategy(int number)
     {
-        _excludedStrategies &= ~(1 << number);
+        _excludedStrategies &= ~(1ul << number);
     }
 
     //StrategyManager---------------------------------------------------------------------------------------------------
@@ -310,7 +310,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         Strategies = strategies;
     }
 
-    public void SetExcludedStrategies(int excluded)
+    public void SetExcludedStrategies(ulong excluded)
     {
         _excludedStrategies = excluded;
     }

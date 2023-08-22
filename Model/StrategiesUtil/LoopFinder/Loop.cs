@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+
 // ReSharper disable All
 
 namespace Model.StrategiesUtil.LoopFinder;
@@ -19,6 +20,12 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
         _links = links;
     }
 
+    public Loop()
+    {
+        _elements = Array.Empty<T>();
+        _links = Array.Empty<LinkStrength>();
+    }
+
     public override int GetHashCode()
     {
         int hash = 0;
@@ -26,6 +33,7 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
         {
             hash ^= EqualityComparer<T>.Default.GetHashCode(element);
         }
+
         return hash;
     }
 
@@ -73,6 +81,16 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
 
         if (_links[^1] == strength) handler(_elements[0], _elements[^1]);
     }
+    
+    public void ForEachLink(LinkHandler handler)
+    {
+        for (int i = 0; i < _links.Length - 1; i++)
+        {
+            handler(_elements[i], _elements[i + 1]);
+        }
+
+        handler(_elements[0], _elements[^1]);
+    }
 
     public LinkStrength FindDoubleLink(out T value)
     {
@@ -93,6 +111,68 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
 
         value = default!;
         return LinkStrength.None;
+    }
+
+    public static Loop<T> operator ^(Loop<T> left, Loop<T> right)
+    {
+        List<int> leftInts = new();
+        List<int> rightInts = new();
+        for (int i = 0; i < left._elements.Length; i++)
+        {
+            for (int j = 0; j < right._elements.Length; j++)
+            {
+                if (left._elements[i].Equals(right._elements[j]))
+                {
+                    leftInts.Add(i);
+                    rightInts.Add(j);
+                }
+            }
+        }
+        
+        if(leftInts.Count < 2 || leftInts.Count == left.Count || leftInts.Count == right.Count) return new Loop<T>();
+
+        int newTotal = left._elements.Length - leftInts.Count + right._elements.Length - leftInts.Count + 2; 
+        T[] elements = new T[newTotal]; 
+        LinkStrength[] links = new LinkStrength[newTotal];
+        
+        int elementLeftLength = leftInts[0] + 1;
+        int linkLeftLength = leftInts[0];
+        int elementCursor = elementLeftLength;
+        int linkCurosr = linkLeftLength;
+
+        Array.Copy(left._elements, 0, elements, 0, elementLeftLength);
+        Array.Copy(left._links, 0, links, 0, linkLeftLength);
+
+        bool positive = (rightInts[0] == right._elements.Length - 1 && rightInts[1] == 1) ||
+                        rightInts[0] > rightInts[1];
+        int n = rightInts[0];
+        do
+        {
+            if (positive) n = (n + 1) % right._elements.Length;
+            else
+            {
+                    n = n - 1;
+                n = n < 0 ? right._elements.Length + n : n;
+            }
+                
+            elements[elementCursor++] = right._elements[n];
+            links[linkCurosr++] = right._links[n];
+        } while (rightInts[^1] != n);
+
+        int start, length;
+        if(leftInts[^1] < left._elements.Length - 1)
+        {
+            start = leftInts[^1] + 1;
+            length = left._elements.Length - leftInts[^1] - 1;
+            Array.Copy(left._elements, start, elements,
+                elementCursor, length);
+        }
+        start = leftInts[^1];
+        length = left._elements.Length - leftInts[^1];
+        Array.Copy(left._links, start, links,
+                linkCurosr, length);
+
+        return new Loop<T>(elements, links);
     }
 }
 

@@ -3,5 +3,5 @@
 public interface IStrategyHolder
 {
     void SetStrategies(IStrategy[] strategies);
-    void SetExcludedStrategies(int excluded);
+    void SetExcludedStrategies(ulong excluded);
 }

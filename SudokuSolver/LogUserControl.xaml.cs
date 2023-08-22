@@ -1,4 +1,6 @@
-﻿using System.Windows.Media;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Model.Logs;
 
 namespace SudokuSolver;
@@ -36,5 +38,15 @@ public partial class LogUserControl
         Title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
         Title.Text = log.Title;
         Text.Text = log.Changes;
+    }
+
+    public void CurrentlyShowed()
+    {
+        Highlights.Visibility = Visibility.Visible;
+    }
+
+    public void NotShowedAnymore()
+    {
+        Highlights.Visibility = Visibility.Hidden;
     }
 }

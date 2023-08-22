@@ -10,6 +10,8 @@ public partial class LogListUserControl
     
     public delegate void OnShowCurrentClicked();
     public event OnShowCurrentClicked? ShowCurrentClicked;
+
+    private LogUserControl? _currentlyShowed;
     
     public LogListUserControl()
     {
@@ -24,18 +26,27 @@ public partial class LogListUserControl
         {
             var luc = new LogUserControl();
             luc.InitLog(log);
-            luc.LogClicked += logClicked =>
-            {
-                LogClicked?.Invoke(logClicked);
-            };
+            luc.LogClicked += logClicked => ShowLog(luc, logClicked);
             List.Children.Add(luc);
         }
         
         Scroll.ScrollToBottom();
     }
 
+    private void ShowLog(LogUserControl logUserControl, ISolverLog log)
+    {
+        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed = logUserControl;
+        logUserControl.CurrentlyShowed();
+        
+        LogClicked?.Invoke(log);
+    }
+
     private void ShowCurrent(object sender, RoutedEventArgs e)
     {
+        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed = null;
+
         ShowCurrentClicked?.Invoke();
     }
 }

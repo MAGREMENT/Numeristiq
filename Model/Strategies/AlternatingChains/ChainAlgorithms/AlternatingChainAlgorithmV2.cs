@@ -16,26 +16,30 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
 
     public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
-        Dictionary<T, HashSet<T>> searched = new();
+        Dictionary<T, HashSet<T>> globallySearched = new();
+        Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
         {
-            Search(view, graph, chainType, new LoopBuilder<T>(start), searched);
+            Search(view, graph, chainType, new LoopBuilder<T>(start), globallySearched, locallySearched);
+            locallySearched.Clear();
         }
     }
 
     private void Search(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType, LoopBuilder<T> builder,
-        Dictionary<T, HashSet<T>> searched)
+        Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return;
 
         var last = builder.LastElement();
         var before = builder.ElementBefore();
         bool isPair = builder.Count % 2 == 0;
-        HashSet<T>? alreadySearched = searched.TryGetValue(last, out var a) ? a : null;
+        HashSet<T>? globalFriends = globallySearched.TryGetValue(last, out var a) ? a : null;
+        HashSet<T>? localFriends = locallySearched.TryGetValue(last, out var b) ? b : null;
 
         foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
         {
-            if (builder.Count == 1 && alreadySearched is not null && alreadySearched.Contains(friend)) continue;
+            if (builder.Count == 1 && globalFriends is not null && globalFriends.Contains(friend)) continue;
+            if (localFriends is not null && localFriends.Contains(friend)) continue;
             if (before is not null && friend.Equals(before)) continue;
 
             var index = builder.IndexOf(friend);
@@ -43,10 +47,10 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
             
             if (index == -1)
             {
-                Search(view, graph, chainType, builder.Add(friend, linkStrength), searched);
+                Search(view, graph, chainType, builder.Add(friend, linkStrength), globallySearched, locallySearched);
 
-                if (searched.TryGetValue(last, out var to)) to.Add(friend);
-                else searched.Add(last, new HashSet<T> {friend});
+                if (globallySearched.TryGetValue(last, out var to)) to.Add(friend);
+                else globallySearched.Add(last, new HashSet<T> {friend});
             }
             else
             {
@@ -66,19 +70,22 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
                         chainType.ProcessStrongInference(view, cut.FirstElement(), cut.End(LinkStrength.Strong));
                     }
                 }
+                AddToSearched(locallySearched, cut.FirstElement(), last);
             }
         }
         
         if (builder.Count % 2 == 1 && builder.Count < 4) return;
         foreach (var friend in graph.GetLinks(last, LinkStrength.Weak))
         {
+            if (localFriends is not null && localFriends.Contains(friend)) continue;
             if (before is not null && friend.Equals(before)) continue;
             
             var index = builder.IndexOf(friend);
 
             if (index == -1)
             {
-                if(builder.Count % 2 == 0) Search(view, graph, chainType, builder.Add(friend, LinkStrength.Weak), searched);
+                if(builder.Count % 2 == 0) Search(view, graph, chainType, builder.Add(friend, LinkStrength.Weak),
+                    globallySearched, locallySearched);
             }
             else
             {
@@ -98,7 +105,15 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
                         chainType.ProcessWeakInference(view, cut.LastElement(), cut.End(LinkStrength.Weak));
                     }
                 }
+
+                AddToSearched(locallySearched, cut.FirstElement(), last);
             }
         }
+    }
+    
+    private void AddToSearched(Dictionary<T, HashSet<T>> searched, T from, T to)
+    {
+        if (searched.TryGetValue(from, out var hashSet)) hashSet.Add(to);
+        else searched.Add(from, new HashSet<T>() {to});
     }
 }

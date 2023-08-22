@@ -359,6 +359,7 @@ public class SolverBackgroundManager
 
     public int Size { get; }
     public int CellSize { get; }
+    private readonly double _oneThird;
     public int Margin { get; }
 
     public Brush Background
@@ -387,6 +388,7 @@ public class SolverBackgroundManager
     public SolverBackgroundManager(int cellSize, int margin)
     {
         CellSize = cellSize;
+        _oneThird = (double)cellSize / 3;
         Margin = margin;
         Size = cellSize * 9 + margin * 10;
 
@@ -453,14 +455,9 @@ public class SolverBackgroundManager
 
     public void HighlightPossibility(int row, int col, int possibility, Color color)
     {
-        int oneThird = CellSize / 3;
-        
-        int startCol = row * CellSize + (row + 1) * Margin + (possibility - 1) / 3 * oneThird;
-        int startRow = col * CellSize + (col + 1) * Margin + (possibility - 1) % 3 * oneThird;
-        
-        _cells.Children.Add(new GeometryDrawing()
+        _cells.Children.Add(new GeometryDrawing
         {
-            Geometry = new RectangleGeometry(new Rect(startRow, startCol, oneThird, oneThird)),
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
             Brush = new SolidColorBrush(color)
         });
     }
@@ -476,12 +473,11 @@ public class SolverBackgroundManager
             if (coords[i].Coordinate.Col > mostRight.Coordinate.Col) mostRight = coords[i];
         }
 
-        int oneThird = CellSize / 3;
         _groups.Children.Add(new GeometryDrawing()
         {
             Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Coordinate.Col, pr.Possibility),
                 TopLeftY(mostLeft.Coordinate.Row, pr.Possibility),
-                (CellSize + Margin) * (mostRight.Coordinate.Col - mostLeft.Coordinate.Col) + oneThird, oneThird)),
+                (CellSize + Margin) * (mostRight.Coordinate.Col - mostLeft.Coordinate.Col) + _oneThird, _oneThird)),
             Pen = new Pen()
             {
             Thickness = 3.0,
@@ -502,12 +498,11 @@ public class SolverBackgroundManager
             if (coords[i].Coordinate.Row > mostDown.Coordinate.Row) mostDown = coords[i];
         }
 
-        int oneThird = CellSize / 3;
         _groups.Children.Add(new GeometryDrawing()
         {
             Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Coordinate.Col, pc.Possibility),
-                TopLeftY(mostUp.Coordinate.Row, pc.Possibility), oneThird,
-                (CellSize + Margin) * (mostDown.Coordinate.Row - mostUp.Coordinate.Row) + oneThird)),
+                TopLeftY(mostUp.Coordinate.Row, pc.Possibility), _oneThird,
+                (CellSize + Margin) * (mostDown.Coordinate.Row - mostUp.Coordinate.Row) + _oneThird)),
             Pen = new Pen()
             {
                 Thickness = 3.0,
@@ -576,12 +571,10 @@ public class SolverBackgroundManager
 
     public void CreateLink(PossibilityCoordinate one, PossibilityCoordinate two, DashStyle dashStyle)
     {
-        double oneThird = (double)CellSize / 3; 
-
-        var from = new Point(one.Col * CellSize + (one.Col + 1) * Margin + (one.Possibility - 1) % 3 * oneThird + oneThird / 2,
-            one.Row * CellSize + (one.Row + 1) * Margin + (one.Possibility - 1) / 3 * oneThird + oneThird / 2);
-        var to = new Point(two.Col * CellSize + (two.Col + 1) * Margin + (two.Possibility - 1) % 3 * oneThird + oneThird / 2,
-            two.Row * CellSize + (two.Row + 1) * Margin + (two.Possibility - 1) / 3 * oneThird + oneThird / 2);
+        var from = new Point(one.Col * CellSize + (one.Col + 1) * Margin + (one.Possibility - 1) % 3 * _oneThird + _oneThird / 2,
+            one.Row * CellSize + (one.Row + 1) * Margin + (one.Possibility - 1) / 3 * _oneThird + _oneThird / 2);
+        var to = new Point(two.Col * CellSize + (two.Col + 1) * Margin + (two.Possibility - 1) % 3 * _oneThird + _oneThird / 2,
+            two.Row * CellSize + (two.Row + 1) * Margin + (two.Possibility - 1) / 3 * _oneThird + _oneThird / 2);
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
         double angle = Math.Atan((to.Y - from.Y) / (to.X - from.X));
@@ -713,25 +706,23 @@ public class SolverBackgroundManager
         });
     }
 
-    private int TopLeftX(int col)
+    private double TopLeftX(int col)
     {
         return col * CellSize + (col + 1) * Margin;
     }
 
-    private int TopLeftX(int col, int possibility)
+    private double TopLeftX(int col, int possibility)
     {
-        int oneThird = CellSize / 3;
-        return col * CellSize + (col + 1) * Margin + (possibility - 1) % 3 * oneThird;
+        return col * CellSize + (col + 1) * Margin + (possibility - 1) % 3 * _oneThird;
     }
 
-    private int TopLeftY(int row)
+    private double TopLeftY(int row)
     {
         return row * CellSize + (row + 1) * Margin;  
     }
 
-    private int TopLeftY(int row, int possibility)
+    private double TopLeftY(int row, int possibility)
     {
-        int oneThird = CellSize / 3; 
-        return row * CellSize + (row + 1) * Margin + (possibility - 1) / 3 * oneThird;
+        return row * CellSize + (row + 1) * Margin + (possibility - 1) / 3 * _oneThird;
     }
 }

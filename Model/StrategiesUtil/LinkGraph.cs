@@ -9,7 +9,7 @@ public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 
     public void AddLink(T one, T two, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
-        var index = (int)strength;
+        var index = (int)strength - 1;
         if (!_links[index].TryAdd(one, new HashSet<T> { two })) _links[index][one].Add(two);
         if (type != LinkType.BiDirectional) return;
         if (!_links[index].TryAdd(two, new HashSet<T> { one })) _links[index][two].Add(one);
@@ -17,14 +17,9 @@ public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 
     public HashSet<T> GetLinks(T from, LinkStrength strength)
     {
-        return !_links[(int)strength].TryGetValue(from, out var result) ? new HashSet<T>(0) : result;
+        return !_links[(int)strength - 1].TryGetValue(from, out var result) ? new HashSet<T>(0) : result;
     }
-
-    public bool IsOfStrength(T one, T two, LinkStrength strength)
-    {
-        return _links[(int)strength].TryGetValue(one, out var set) && set.Contains(two);
-    }
-
+    
     public IEnumerator<T> GetEnumerator()
     {
         HashSet<T> alreadyEnumerated = new();
@@ -47,13 +42,13 @@ public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
 
     public IEnumerable<T> EachVerticesWith(LinkStrength strength)
     {
-        return _links[(int)strength].Keys;
+        return _links[(int)strength - 1].Keys;
     }
 }
 
 public enum LinkStrength
 {
-    None = -1, Strong = 0, Weak = 1
+    None = 0, Strong = 1, Weak = 2
 }
 
 public enum LinkType

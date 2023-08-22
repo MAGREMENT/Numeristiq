@@ -1,42 +1,45 @@
 ﻿Result-------------------------------
-Completion rate = 1371 / 1465
+Completion rate = 1402 / 1465
 Solver fuck ups : 0
 
 Strategy usage :
--Naked single : 58723
--Hidden single : 15636
--Naked double : 12448
--Hidden double : 11806
--Naked triple : 3324
--Hidden triple : 1562
--Naked quad : 192
--Hidden quad : 46
--Box line reduction : 8544
--Pointing possibilities : 1592
--XWing : 486
--XYWing : 463
--XYZWing : 243
--Swordfish : 205
--Jellyfish : 7
--Simple coloring : 1193
--BUG : 8
--Finned XWing : 1280
--Finned Swordfish : 425
--Finned Jellyfish : 18
+-Naked single : 61197
+-Hidden single : 16624
+-Naked double : 12793
+-Hidden double : 11661
+-Naked triple : 3352
+-Hidden triple : 1559
+-Naked quad : 188
+-Hidden quad : 48
+-Box line reduction : 8992
+-Pointing possibilities : 1705
+-XWing : 508
+-XYWing : 532
+-XYZWing : 248
+-Swordfish : 251
+-Jellyfish : 10
+-Simple coloring : 1275
+-BUG : 10
+-Finned XWing : 1388
+-Finned Swordfish : 438
+-Finned Jellyfish : 21
 -Fireworks : 40
--Unique rectangles : 1408
--Avoidable rectangles : 27
--XYChain : 2672
--3D Medusa : 1152
--Aligned pair exclusion : 842
--XCycles : 474
--Sue-De-Coq : 210
--Digit forcing net : 37108
--Cell forcing net : 3294
--Unit forcing net : 1890
--Nishio forcing net : 571
--Almost locked sets : 17
-Time taken : 151,776s
+-Unique rectangles : 1525
+-Avoidable rectangles : 32
+-XYChain : 3530
+-3D Medusa : 1505
+-Aligned pair exclusion : 934
+-XCycles : 515
+-Sue-De-Coq : 234
+-Almost locked sets : 2695
+-Alternating inference chain : 0
+-Digit forcing net : 28940
+-Cell forcing net : 2297
+-Unit forcing net : 1183
+-Nishio forcing net : 402
+-Trial and match : 0
+Time taken : 214,676s
+
 
 
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Model.StrategiesUtil;
@@ -290,17 +289,6 @@ public class AlternatingInferenceChainStrategy : IStrategy
                 }
             }
         }
-    }
-
-    private int LoopToHash(List<PossibilityCoordinate> visited)
-    {
-        int result = 0;
-        foreach (var coord in visited)
-        {
-            result ^= coord.GetHashCode();
-        }
-
-        return result;
     }
 }
 
