@@ -11,8 +11,12 @@ public partial class LogListUserControl
     public delegate void OnShowCurrentClicked();
     public event OnShowCurrentClicked? ShowCurrentClicked;
 
-    private LogUserControl? _currentlyShowed;
+    public delegate void OnShowStartClicked();
+    public event OnShowStartClicked? ShowStartClicked;
     
+    
+    private LogUserControl? _currentlyShowed;
+
     public LogListUserControl()
     {
         InitializeComponent();
@@ -40,6 +44,14 @@ public partial class LogListUserControl
         logUserControl.CurrentlyShowed();
         
         LogClicked?.Invoke(log);
+    }
+    
+    private void ShowStart(object sender, RoutedEventArgs e)
+    {
+        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed = null;
+
+        ShowStartClicked?.Invoke();
     }
 
     private void ShowCurrent(object sender, RoutedEventArgs e)

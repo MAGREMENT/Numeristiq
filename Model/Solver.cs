@@ -19,13 +19,16 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public bool LogsManaged { get; init; } = true;
     public int StrategyCount { get; private set; }
-    public string State { get; private set; }
+    public string State => GetState();
+    public string StartState => _logManager.StartState;
 
     public delegate void OnNumberAdded(int row, int col);
     public event OnNumberAdded? NumberAdded;
 
     public delegate void OnPossibilityRemoved(int row, int col);
     public event OnPossibilityRemoved? PossibilityRemoved;
+
+    public event LogManager.OnLogsUpdate? LogsUpdated;
 
     private int _currentStrategy = -1;
     private ulong _excludedStrategies;
@@ -64,11 +67,10 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
                 }
             }
         }
-        
-        State = GetState();
-        
+
         _pre = new PreComputer(this);
         _logManager = new LogManager(this);
+        _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
         ChangeBuffer = new ChangeBuffer(this);
     }
     
@@ -80,11 +82,10 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         Strategies = t;
         _pre = new PreComputer(this);
         _logManager = new LogManager(this);
+        _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
         ChangeBuffer = new ChangeBuffer(this);
         _strategyLoader = new StrategyLoader(this);
-        
-        State = GetState();
-        
+
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
     }
@@ -98,11 +99,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
         ResetPossibilities();
 
-        if (LogsManaged)
-        {
-            _logManager.Clear();
-            State = GetState();
-        }
+        if (LogsManaged) _logManager.Clear();
 
         _pre.Reset();
     }
@@ -122,7 +119,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         if (!LogsManaged) return;
         
         _logManager.PossibilityRemovedByHand(possibility, row, col);
-        State = GetState();
     }
     
     public void Solve(bool stopAtProgress = false)
@@ -193,11 +189,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
         strategy.Score += 1;
-        if (LogsManaged)
-        {
-            _logManager.NumberAdded(number, row, col, strategy);
-            State = GetState();
-        }
+        if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy);
+        
         NumberAdded?.Invoke(row, col);
         return true;
     }
@@ -208,11 +201,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         if (!buffer) return false;
         
         strategy.Score += 1;
-        if (LogsManaged)
-        {
-            _logManager.PossibilityRemoved(possibility, row, col, strategy);
-            State = GetState();
-        }
+        if (LogsManaged) _logManager.PossibilityRemoved(possibility, row, col, strategy);
+        
         PossibilityRemoved?.Invoke(row, col);
         return true;
     }
@@ -300,7 +290,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         if (!LogsManaged) return;
         
         _logManager.ChangePushed(report, strategy);
-        State = GetState();
     }
     
     //StrategyHolder----------------------------------------------------------------------------------------------------

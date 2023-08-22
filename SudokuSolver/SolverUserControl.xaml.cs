@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,7 +18,7 @@ public partial class SolverUserControl : IHighlighter
     private const int LineWidth = 3;
     
     private readonly Solver _solver = new(new Sudoku());
-    private int _logBuffer = -1;
+    private int _logBuffer = 0;
 
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
 
@@ -31,10 +32,14 @@ public partial class SolverUserControl : IHighlighter
 
     public delegate void OnSolverUpdate(string solverAsString);
     public event OnSolverUpdate? SolverUpdated;
+
+    public event LogManager.OnLogsUpdate? LogsUpdated;
     
     public SolverUserControl()
     {
         InitializeComponent();
+
+        _solver.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
 
         //Init background
         _backgroundManager = new SolverBackgroundManager(CellSize, LineWidth);
@@ -111,6 +116,8 @@ public partial class SolverUserControl : IHighlighter
     {
         _solver.SetSudoku(sudoku);
         RefreshSolver();
+
+        _logBuffer = 0;
     }
     
     private void Update()
@@ -121,13 +128,7 @@ public partial class SolverUserControl : IHighlighter
 
     private void RefreshSolver()
     {
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                UpdateCell(GetTo(i, j), i, j);
-            }
-        }
+        ShowCurrentState();
         
         _backgroundManager.Clear();
         Main.Background = _backgroundManager.Background;
@@ -167,23 +168,41 @@ public partial class SolverUserControl : IHighlighter
     }
 
     public async void RunUntilProgress()
-    { 
+    {
         _solver.Solve(true);
+
+        for (int n = _logBuffer; n < _solver.Logs.Count; n++)
+        {
+            if(n != _logBuffer) await Task.Delay(TimeSpan.FromMilliseconds(400));
+            
+            _backgroundManager.Clear();
+            
+            var current = _solver.Logs[n];
+            
+            Highlight(current);
+            await Task.Delay(TimeSpan.FromMilliseconds(400));
+            
+            if(n < _solver.Logs.Count - 1) ShowState(_solver.Logs[n + 1].SolverState);
+            ShowCurrentState();
+
+            _logBuffer = current.Id;
+            SolverUpdated?.Invoke(_solver.Sudoku.AsString(_translationType));
+        }
         
+        IsReady?.Invoke();
+    }
+
+    public void ShowLog(ISolverLog log)
+    {
         _backgroundManager.Clear();
 
-        if (_solver.Logs.Count > 0)
-        {
-            var current = _solver.Logs[^1];
-            if (current.Id != _logBuffer)
-            {
-                Highlight(current);
-                _logBuffer = current.Id;
-            }
-        }
+        ShowState(log.SolverState);
 
-        await Task.Delay(TimeSpan.FromMilliseconds(500));
-        
+        Highlight(log);
+    }
+
+    private void ShowCurrentState()
+    {
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -191,22 +210,25 @@ public partial class SolverUserControl : IHighlighter
                 UpdateCell(GetTo(i, j), i, j);
             }
         }
-
-        SolverUpdated?.Invoke(_solver.Sudoku.AsString(_translationType));
-        IsReady?.Invoke();
     }
 
-    public void ShowLog(ISolverLog log)
+    public void ShowStartState()
     {
-        _backgroundManager.Clear();
+        ShowState(_solver.StartState);
         
+        _backgroundManager.Clear();
+        Main.Background = _backgroundManager.Background;
+    }
+
+    private void ShowState(string state)
+    {
         int n = -1;
         int cursor = 0;
         bool possibility = false;
         IPossibilities buffer = IPossibilities.NewEmpty();
-        while (cursor < log.SolverState.Length)
+        while (cursor < state.Length)
         {
-            char current = log.SolverState[cursor];
+            char current = state[cursor];
             if (current is 'd' or 'p')
             {
                 if (buffer.Count > 0)
@@ -229,8 +251,6 @@ public partial class SolverUserControl : IHighlighter
         var scuc2 = GetTo(n / 9, n % 9);
         if (possibility) scuc2.SetPossibilities(buffer);
         else scuc2.SetDefinitiveNumber(buffer.GetFirst());
-
-        Highlight(log);
     }
     
     public void ShowCurrent()

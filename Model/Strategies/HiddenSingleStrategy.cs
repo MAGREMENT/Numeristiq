@@ -47,6 +47,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes),
+            "The numbers were added for being the only one in their unit");
     }
 }

@@ -1,6 +1,8 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using Model;
+using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -16,17 +18,20 @@ namespace SudokuSolver;
             InitializeComponent();
 
             GetSolverUserControl().IsReady += () => { GetSolveButton().IsEnabled = true; };
-
             GetSolverUserControl().CellClickedOn += (sender, row, col) =>
             {
                 GetLiveModificationUserControl().SetCurrent(sender, row, col);
             };
-
             GetSolverUserControl().SolverUpdated += asString =>
             {
                 _createNewSudoku = false;
                 GetSudokuString().Text = asString;
                 _createNewSudoku = true;
+            };
+            GetSolverUserControl().LogsUpdated += logs =>
+            {
+                GetLogListUserControl().InitLogs(logs);
+                GetExplanationBox().Text = "";
             };
 
             GetLogListUserControl().ShowCurrentClicked += () =>
@@ -34,17 +39,21 @@ namespace SudokuSolver;
                 GetSolverUserControl().ShowCurrent();
                 GetExplanationBox().Text = "";
             };
+            GetLogListUserControl().ShowStartClicked += () =>
+            {
+                GetSolverUserControl().ShowStartState();
+                GetExplanationBox().Text = "";
+            };
             GetLogListUserControl().LogClicked += log =>
             {
                 GetSolverUserControl().ShowLog(log);
                 GetExplanationBox().Text = log.Explanation;
             };
-            
+
             GetLiveModificationUserControl().LiveModified += (number, row, col, action) =>
             {
                 if (action == SolverNumberType.Definitive) GetSolverUserControl().AddDefinitiveNumber(number, row, col);
                 else if(action == SolverNumberType.Possibility) GetSolverUserControl().RemovePossibility(number, row, col);
-                GetLogListUserControl().InitLogs(GetSolverUserControl().GetLogs());
             };
             
             GetStrategyList().InitStrategies(GetSolverUserControl().GetStrategies());
@@ -66,16 +75,12 @@ namespace SudokuSolver;
             
             if (GetStepByStepOption().IsChecked == true) suc.RunUntilProgress();
             else suc.SolveSudoku();
-
-            GetLogListUserControl().InitLogs(suc.GetLogs());
         }
 
         private void ClearSudoku(object sender, RoutedEventArgs e)
         {
             SolverUserControl suc = GetSolverUserControl();
             suc.ClearSudoku();
-            
-            GetLogListUserControl().InitLogs(suc.GetLogs());
         }
         
         private void SelectedTranslationType(object sender, RoutedEventArgs e)

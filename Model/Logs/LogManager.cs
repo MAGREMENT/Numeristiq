@@ -13,10 +13,16 @@ public class LogManager  //TODO work around the strategy count thingy with push(
     private int _idCount = 1;
 
     private readonly ILogHolder _holder;
+    
+    public delegate void OnLogsUpdate(List<ISolverLog> logs);
+    public event OnLogsUpdate? LogsUpdated;
+    
+    public string StartState { get; private set; }
 
     public LogManager(ILogHolder holder)
     {
         _holder = holder;
+        StartState = holder.State;
     }
 
     public void NumberAdded(int number, int row, int col, IStrategy strategy)
@@ -45,13 +51,12 @@ public class LogManager  //TODO work around the strategy count thingy with push(
 
     public void PossibilityRemovedByHand(int possibility, int row, int col)
     {
-        Logs.Add(new ByHandRemovedLog(_idCount++, possibility, row, col, _holder.State));
+        FastPush(new ByHandRemovedLog(_idCount++, possibility, row, col, _holder.State));
     }
 
     public void ChangePushed(ChangeReport report, IStrategy strategy)
     {
-        Push();
-        Logs.Add(new ChangeReportLog(_idCount++, strategy, report, _holder.State));
+        FastPush(new ChangeReportLog(_idCount++, strategy, report, _holder.State));
     }
 
     public void Push()
@@ -60,11 +65,23 @@ public class LogManager  //TODO work around the strategy count thingy with push(
         
         Logs.Add(_current);
         _current = null;
+        
+        LogsUpdated?.Invoke(Logs);
+    }
+
+    private void FastPush(ISolverLog log)
+    {
+        Push();
+        _current = log;
+        Push();
     }
 
     public void Clear()
     {
         Logs.Clear();
         _idCount = 1;
+        StartState = _holder.State;
+
+        LogsUpdated?.Invoke(Logs);
     }
 }
