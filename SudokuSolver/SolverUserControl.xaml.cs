@@ -21,6 +21,7 @@ public partial class SolverUserControl : IHighlighter
     private int _logBuffer = 0;
 
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
+    public int Delay { get; set; } = 400;
 
     private readonly SolverBackgroundManager _backgroundManager;
 
@@ -171,25 +172,30 @@ public partial class SolverUserControl : IHighlighter
     {
         _solver.Solve(true);
 
+        int start = _logBuffer;
         for (int n = _logBuffer; n < _solver.Logs.Count; n++)
         {
-            if(n != _logBuffer) await Task.Delay(TimeSpan.FromMilliseconds(400));
+            if(n != start) await Task.Delay(TimeSpan.FromMilliseconds(Delay));
             
             _backgroundManager.Clear();
             
             var current = _solver.Logs[n];
             
             Highlight(current);
-            await Task.Delay(TimeSpan.FromMilliseconds(400));
+            await Task.Delay(TimeSpan.FromMilliseconds(Delay));
             
-            if(n < _solver.Logs.Count - 1) ShowState(_solver.Logs[n + 1].SolverState);
-            ShowCurrentState();
+            ShowState(_solver.Logs[n].SolverState);
 
             _logBuffer = current.Id;
             SolverUpdated?.Invoke(_solver.Sudoku.AsString(_translationType));
         }
         
         IsReady?.Invoke();
+    }
+
+    private void UpdateAfterRunUntilProgress()
+    {
+        
     }
 
     public void ShowLog(ISolverLog log)
@@ -387,8 +393,8 @@ public class SolverBackgroundManager
         get
         {
             DrawingGroup current = new DrawingGroup();
-            current.Children.Add(_grid);
             current.Children.Add(_cells);
+            current.Children.Add(_grid);
             current.Children.Add(_cursor);
             current.Children.Add(_groups);
             current.Children.Add(_links);
@@ -396,9 +402,9 @@ public class SolverBackgroundManager
             return new DrawingBrush(current);
         }
     }
-
-    private readonly DrawingGroup _grid = new();
+    
     private readonly DrawingGroup _cells = new();
+    private readonly DrawingGroup _grid = new();
     private readonly DrawingGroup _cursor = new();
     private readonly DrawingGroup _groups = new();
     private readonly DrawingGroup _links = new();
@@ -421,13 +427,19 @@ public class SolverBackgroundManager
                 after.Add(new GeometryDrawing()
                 {
                     Geometry = new RectangleGeometry(new Rect(start, 0, margin, Size)),
-                    Brush = Brushes.Black
+                    Brush = Brushes.Black,
+                    Pen = new Pen(){
+                        Brush = Brushes.Black
+                    }
                 });
             
                 after.Add(new GeometryDrawing()
                 {
                     Geometry = new RectangleGeometry(new Rect(0, start, Size, margin)),
-                    Brush = Brushes.Black
+                    Brush = Brushes.Black,
+                    Pen = new Pen(){
+                        Brush = Brushes.Black
+                    }
                 }); 
             }
             else
@@ -435,13 +447,19 @@ public class SolverBackgroundManager
                 _grid.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new RectangleGeometry(new Rect(start, 0, margin, Size)),
-                    Brush = Brushes.Gray
+                    Brush = Brushes.Gray,
+                    Pen = new Pen(){
+                        Brush = Brushes.Gray
+                    }
                 });
             
                 _grid.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new RectangleGeometry(new Rect(0, start, Size, margin)),
-                    Brush = Brushes.Gray
+                    Brush = Brushes.Gray,
+                    Pen = new Pen(){
+                        Brush = Brushes.Gray
+                    }
                 }); 
             }
 
@@ -469,7 +487,11 @@ public class SolverBackgroundManager
         _cells.Children.Add(new GeometryDrawing()
         {
             Geometry = new RectangleGeometry(new Rect(startRow, startCol, CellSize, CellSize)),
-            Brush = new SolidColorBrush(color)
+            Brush = new SolidColorBrush(color),
+            Pen = new Pen()
+            {
+                Brush = new SolidColorBrush(color)
+            }
         });
     }
 
@@ -478,7 +500,11 @@ public class SolverBackgroundManager
         _cells.Children.Add(new GeometryDrawing
         {
             Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
-            Brush = new SolidColorBrush(color)
+            Brush = new SolidColorBrush(color),
+            Pen = new Pen()
+            {
+                Brush = new SolidColorBrush(color)
+            }
         });
     }
     

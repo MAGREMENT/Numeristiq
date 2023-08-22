@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using Model;
-using Model.Logs;
 
 namespace SudokuSolver;
 
@@ -17,7 +15,11 @@ namespace SudokuSolver;
         {
             InitializeComponent();
 
-            GetSolverUserControl().IsReady += () => { GetSolveButton().IsEnabled = true; };
+            GetSolverUserControl().IsReady += () =>
+            {
+                GetSolveButton().IsEnabled = true;
+                GetClearButton().IsEnabled = true;
+            };
             GetSolverUserControl().CellClickedOn += (sender, row, col) =>
             {
                 GetLiveModificationUserControl().SetCurrent(sender, row, col);
@@ -59,6 +61,8 @@ namespace SudokuSolver;
             GetStrategyList().InitStrategies(GetSolverUserControl().GetStrategies());
             GetStrategyList().StrategyExcluded += GetSolverUserControl().ExcludeStrategy;
             GetStrategyList().StrategyUsed += GetSolverUserControl().UseStrategy;
+
+            DelaySlider.Value = GetSolverUserControl().Delay;
         }
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
@@ -68,8 +72,8 @@ namespace SudokuSolver;
 
         private void SolveSudoku(object sender, RoutedEventArgs e)
         {
-            if (sender is not Button butt) return;
-            butt.IsEnabled = false;
+            GetSolveButton().IsEnabled = false;
+            GetClearButton().IsEnabled = false;
 
             SolverUserControl suc = GetSolverUserControl();
             
@@ -88,6 +92,12 @@ namespace SudokuSolver;
             if (sender is not ComboBox box) return;
             if (MainPanel is null) return;
             GetSolverUserControl().SetTranslationType((SudokuTranslationType) box.SelectedIndex);
+        }
+        
+        private void SetSolverDelay(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (sender is not Slider slider) return;
+            GetSolverUserControl().Delay = (int)slider.Value;
         }
 
         //Gets => Should probably make properties but i'm lazy
@@ -109,6 +119,11 @@ namespace SudokuSolver;
         private Button GetSolveButton()
         {
             return (Button)((StackPanel)MainPanel.Children[2]).Children[0];
+        }
+        
+        private Button GetClearButton()
+        {
+            return (Button)((StackPanel)MainPanel.Children[2]).Children[1];
         }
 
         private TextBox GetSudokuString()
