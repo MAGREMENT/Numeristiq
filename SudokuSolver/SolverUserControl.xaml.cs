@@ -14,7 +14,7 @@ namespace SudokuSolver;
 
 public partial class SolverUserControl : IHighlighter
 {
-    private const int CellSize = 57;
+    public const int CellSize = 60;
     private const int LineWidth = 3;
     
     private readonly Solver _solver = new(new Sudoku());
@@ -424,51 +424,21 @@ public class SolverBackgroundManager
         {
             if (i is 3 or 6)
             {
-                after.Add(new GeometryDrawing()
-                {
-                    Geometry = new RectangleGeometry(new Rect(start, 0, margin, Size)),
-                    Brush = Brushes.Black,
-                    Pen = new Pen(){
-                        Brush = Brushes.Black
-                    }
-                });
-            
-                after.Add(new GeometryDrawing()
-                {
-                    Geometry = new RectangleGeometry(new Rect(0, start, Size, margin)),
-                    Brush = Brushes.Black,
-                    Pen = new Pen(){
-                        Brush = Brushes.Black
-                    }
-                }); 
+                after.Add(GetRectangle(start, 0, margin, Size, Brushes.Black));
+                after.Add(GetRectangle(0, start, Size, margin, Brushes.Black));
             }
             else
             {
-                _grid.Children.Add(new GeometryDrawing()
-                {
-                    Geometry = new RectangleGeometry(new Rect(start, 0, margin, Size)),
-                    Brush = Brushes.Gray,
-                    Pen = new Pen(){
-                        Brush = Brushes.Gray
-                    }
-                });
-            
-                _grid.Children.Add(new GeometryDrawing()
-                {
-                    Geometry = new RectangleGeometry(new Rect(0, start, Size, margin)),
-                    Brush = Brushes.Gray,
-                    Pen = new Pen(){
-                        Brush = Brushes.Gray
-                    }
-                }); 
-            }
-
-            foreach (var a in after)
-            {
-                _grid.Children.Add(a);
+                _grid.Children.Add(GetRectangle(start, 0, margin, Size, Brushes.Gray));
+                _grid.Children.Add(GetRectangle(0, start, Size, margin, Brushes.Gray));
             }
 
             start += margin + cellSize;
+        }
+        
+        foreach (var a in after)
+        {
+            _grid.Children.Add(a);
         }
     }
 
@@ -481,31 +451,12 @@ public class SolverBackgroundManager
 
     public void HighlightCell(int row, int col, Color color)
     {
-        int startCol = row * CellSize + (row + 1) * Margin;
-        int startRow = col * CellSize + (col + 1) * Margin;
-        
-        _cells.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow, startCol, CellSize, CellSize)),
-            Brush = new SolidColorBrush(color),
-            Pen = new Pen()
-            {
-                Brush = new SolidColorBrush(color)
-            }
-        });
+        _cells.Children.Add(GetSquare(TopLeftX(col), TopLeftY(row), CellSize, new SolidColorBrush(color)));
     }
 
     public void HighlightPossibility(int row, int col, int possibility, Color color)
     {
-        _cells.Children.Add(new GeometryDrawing
-        {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
-            Brush = new SolidColorBrush(color),
-            Pen = new Pen()
-            {
-                Brush = new SolidColorBrush(color)
-            }
-        });
+        _cells.Children.Add(GetSquare(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, new SolidColorBrush(color)));
     }
     
     public void HighlightGroup(PointingRow pr, Color color)
@@ -696,60 +647,48 @@ public class SolverBackgroundManager
         int oneFourth = CellSize / 4;
         
         //Top left corner
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol - Margin,
-                oneFourth, Margin)),
-            Brush = Brushes.Aqua
-        });
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol - Margin,
-                Margin, oneFourth)),
-            Brush = Brushes.Aqua
-        });
-        
+        _cursor.Children.Add(GetRectangle(startRow - Margin, startCol - Margin, 
+            oneFourth, Margin, Brushes.Aqua));
+        _cursor.Children.Add(GetRectangle(startRow - Margin, startCol - Margin,
+            Margin, oneFourth, Brushes.Aqua));
+
         //Top right corner
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow + CellSize + Margin - oneFourth, startCol - Margin,
-                oneFourth, Margin)),
-            Brush = Brushes.Aqua
-        });
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow + CellSize, startCol - Margin,
-                Margin, oneFourth)),
-            Brush = Brushes.Aqua
-        });
-        
+        _cursor.Children.Add(GetRectangle(startRow + CellSize + Margin - oneFourth, startCol - Margin,
+            oneFourth, Margin, Brushes.Aqua));
+        _cursor.Children.Add(GetRectangle(startRow + CellSize, startCol - Margin,
+            Margin, oneFourth, Brushes.Aqua));
+
         //Bottom left corner
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol + CellSize,
-                oneFourth, Margin)),
-            Brush = Brushes.Aqua
-        });
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow - Margin, startCol + CellSize + Margin - oneFourth,
-                Margin, oneFourth)),
-            Brush = Brushes.Aqua
-        });
-        
+        _cursor.Children.Add(GetRectangle(startRow - Margin, startCol + CellSize,
+            oneFourth, Margin, Brushes.Aqua));
+        _cursor.Children.Add(GetRectangle(startRow - Margin, startCol + CellSize + Margin - oneFourth,
+            Margin, oneFourth, Brushes.Aqua));
+
         //Bottom right corner
-        _cursor.Children.Add(new GeometryDrawing()
+        _cursor.Children.Add(GetRectangle(startRow + CellSize + Margin - oneFourth, startCol + CellSize,
+            oneFourth, Margin, Brushes.Aqua));
+        _cursor.Children.Add(GetRectangle(startRow + CellSize, startCol + CellSize + Margin - oneFourth,
+            Margin, oneFourth, Brushes.Aqua));
+    }
+    
+    private const double PenStrokeWidth = 0.5;
+
+    private GeometryDrawing GetRectangle(double topLeftX, double topLeftY, double width, double height, Brush brush)
+    {
+        return new GeometryDrawing
         {
-            Geometry = new RectangleGeometry(new Rect(startRow + CellSize + Margin - oneFourth, startCol + CellSize,
-                oneFourth, Margin)),
-            Brush = Brushes.Aqua
-        });
-        _cursor.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(startRow + CellSize, startCol + CellSize + Margin - oneFourth,
-                Margin, oneFourth)),
-            Brush = Brushes.Aqua
-        });
+            Geometry = new RectangleGeometry(new Rect(topLeftX, topLeftY, width, height)),
+            Brush = brush,
+            Pen = new Pen{
+                Brush = brush,
+                Thickness = PenStrokeWidth
+            }
+        };
+    }
+
+    private GeometryDrawing GetSquare(double topLeftX, double topLeftY, double size, Brush brush)
+    {
+        return GetRectangle(topLeftX, topLeftY, size, size, brush);
     }
 
     private double TopLeftX(int col)

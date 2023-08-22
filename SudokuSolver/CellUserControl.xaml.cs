@@ -49,7 +49,7 @@ public partial class CellUserControl
         _big.VerticalAlignment = VerticalAlignment.Center;
         _big.HorizontalAlignment = HorizontalAlignment.Center;
 
-        SetSize(57);
+        SetSize(SolverUserControl.CellSize);
         Case.MouseLeftButtonDown += (_, _) =>
         {
             ClickedOn?.Invoke(this);
