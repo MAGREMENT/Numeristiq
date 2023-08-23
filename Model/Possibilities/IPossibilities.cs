@@ -3,7 +3,7 @@ using Model.Strategies;
 
 namespace Model.Possibilities;
 
-public interface IPossibilities : IReadOnlyPossibilities //TODO look into structs
+public interface IPossibilities : IReadOnlyPossibilities
 {
     public const int Min = 1;
     public const int Max = 9;

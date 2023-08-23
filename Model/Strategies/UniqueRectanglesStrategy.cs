@@ -509,7 +509,7 @@ public class UniqueRectanglesStrategy : IStrategy
     }
 }
 
-public class BiValue
+public readonly struct BiValue
 {
     public BiValue(int one, int two)
     {
@@ -529,6 +529,16 @@ public class BiValue
     {
         if (obj is not BiValue bi) return false;
         return (bi.One == One && bi.Two == Two) || (bi.One == Two && bi.Two == One);
+    }
+
+    public static bool operator ==(BiValue left, BiValue right)
+    {
+        return (left.One == right.One && left.Two == right.Two) || (left.One == right.Two && left.Two == right.One);
+    }
+
+    public static bool operator !=(BiValue left, BiValue right)
+    {
+        return !(left == right);
     }
 }
 

@@ -490,7 +490,7 @@ public class PreComputer
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
-            var colPos = ppimn.OnGridRowAsLine(gridRow);
+            var colPos = ppimn.OnGridRow(gridRow);
             if (colPos.Count > 1)
             {
                 List<PossibilityCoordinate> singles = new();
@@ -562,7 +562,7 @@ public class PreComputer
         
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
-            var rowPos = ppimn.OnGridColumnAsLine(gridCol);
+            var rowPos = ppimn.OnGridColumn(gridCol);
             if (rowPos.Count > 1)
             {
                 List<PossibilityCoordinate> singles = new();

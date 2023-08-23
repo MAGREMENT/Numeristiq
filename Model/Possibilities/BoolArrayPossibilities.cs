@@ -108,7 +108,15 @@ public class BoolArrayPossibilities : IPossibilities
 
     public IEnumerable<BiValue> EachBiValue()
     {
-        yield break; //TODO
+        for (int i = 0; i < _possibilities.Length; i++)
+        {
+            if (!_possibilities[i]) continue;
+            for (int j = i + 1; j < _possibilities.Length; j++)
+            {
+                if(!_possibilities[j]) continue;
+                yield return new BiValue(i + 1, j + 1);
+            }
+        }
     }
 
     public IEnumerator<int> GetEnumerator()

@@ -160,7 +160,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         _web = web;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager) //TODO why double links vertically ?
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
         {

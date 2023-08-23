@@ -5,8 +5,6 @@ using System.Text;
 using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;
-using Model.StrategiesUtil.LoopFinder;
-using Model.StrategiesUtil.LoopFinder.Types;
 
 namespace Model;
 
@@ -39,80 +37,6 @@ public static class Testing
             copy.Add(ints[i]);
             list.Add(copy);
             AlsSearch(ints, list, i + 1, copy);
-        }
-    }
-
-    private static void LoopFinderTest()
-    {
-        LinkGraph<LoopElementInt> example = new();
-        example.AddLink(new LoopElementInt(1), new LoopElementInt(2), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(1), new LoopElementInt(4), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(2), new LoopElementInt(3), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(3), new LoopElementInt(4), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(2), new LoopElementInt(5), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(5), new LoopElementInt(6), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(6), new LoopElementInt(7), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(7), new LoopElementInt(8), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(4), new LoopElementInt(8), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(8), new LoopElementInt(11), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(11), new LoopElementInt(12), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(12), new LoopElementInt(13), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(13), new LoopElementInt(10), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(10), new LoopElementInt(11), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(10), new LoopElementInt(9), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(9), new LoopElementInt(14), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(14), new LoopElementInt(7), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(14), new LoopElementInt(15), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(15), new LoopElementInt(16), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(16), new LoopElementInt(19), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(19), new LoopElementInt(14), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(16), new LoopElementInt(17), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(17), new LoopElementInt(18), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(18), new LoopElementInt(19), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(18), new LoopElementInt(20), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(19), new LoopElementInt(20), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(20), new LoopElementInt(21), LinkStrength.Strong);
-        example.AddLink(new LoopElementInt(19), new LoopElementInt(21), LinkStrength.Weak);
-        example.AddLink(new LoopElementInt(21), new LoopElementInt(22), LinkStrength.Strong);
-
-        LoopFinder<LoopElementInt> finder = new LoopFinder<LoopElementInt>(example,
-            new AICLoopsV5<LoopElementInt>());
-        finder.Run();
-        Console.WriteLine(finder.GetStats());
-    }
-
-    private class LoopElementInt : ILoopElement, ILinkGraphElement
-    {
-        private readonly int _i;
-
-        public LoopElementInt(int i)
-        {
-            _i = i;
-        }
-        
-        public bool IsSameLoopElement(ILoopElement other)
-        {
-            return other is LoopElementInt n && n._i == _i;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is LoopElementInt n && n._i == _i;
-        }
-
-        public override int GetHashCode()
-        {
-            return _i;
-        }
-
-        public override string ToString()
-        {
-            return _i.ToString();
-        }
-
-        public CoordinatePossibilities[] EachElement()
-        {
-            throw new NotImplementedException();
         }
     }
 

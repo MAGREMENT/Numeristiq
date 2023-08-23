@@ -3,7 +3,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingNets;
 
-public class DigitForcingNetStrategy : IStrategy //TODO => fix for "4.21......5.....78...3......7..5...6......1.....4.........67.5.2.....4..3........"
+public class DigitForcingNetStrategy : IStrategy
 {
     public string Name => "Digit forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
