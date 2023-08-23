@@ -8,7 +8,7 @@ public class ByHandRemovedLog : ISolverLog
     public string Changes { get; }
     public string Explanation => "This possibility was removed by hand";
     public string SolverState { get; }
-    public HighlightSolver SolverHighLighter => HighLight;
+    public HighlightManager HighlightManager => new(HighLight);
 
     private readonly SolverChange _asChange;
 
@@ -20,8 +20,8 @@ public class ByHandRemovedLog : ISolverLog
         _asChange = new SolverChange(SolverNumberType.Possibility, possibility, row, col);
     }
 
-    private void HighLight(IHighlighter highlighter)
+    private void HighLight(IHighlightable highlightable)
     {
-        highlighter.HighlightPossibility(_asChange.Number, _asChange.Row, _asChange.Column, ChangeColoration.ChangeOne);
+        highlightable.HighlightPossibility(_asChange.Number, _asChange.Row, _asChange.Column, ChangeColoration.ChangeOne);
     }
 }

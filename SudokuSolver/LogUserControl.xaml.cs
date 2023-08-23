@@ -41,11 +41,27 @@ public partial class LogUserControl
 
     public void CurrentlyShowed()
     {
-        Highlights.Visibility = Visibility.Visible;
+        if(_log is not null && _log.HighlightManager.Count > 1) Highlights.Visibility = Visibility.Visible;
     }
 
     public void NotShowedAnymore()
     {
         Highlights.Visibility = Visibility.Hidden;
+    }
+
+    private void ShiftLeft(object sender, RoutedEventArgs e)
+    {
+        if (_log is null) return;
+        
+        _log.HighlightManager.ShiftLeft();
+        LogClicked?.Invoke(_log);
+    }
+
+    private void ShiftRight(object sender, RoutedEventArgs e)
+    {
+        if (_log is null) return;
+        
+        _log.HighlightManager.ShiftRight();
+        LogClicked?.Invoke(_log);
     }
 }

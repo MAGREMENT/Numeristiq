@@ -24,8 +24,8 @@ public class DigitForcingNetStrategy : IStrategy
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
                     Process(strategyManager, onColoring, offColoring);
 
-                    if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder());
+                    if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
+                            new DigitForcingNetReportBuilder(onColoring, offColoring, row, col, possibility));
                 }
             }
         }
@@ -80,9 +80,62 @@ public class DigitForcingNetStrategy : IStrategy
 
 public class DigitForcingNetReportBuilder : IChangeReportBuilder
 {
+    private readonly Dictionary<ILinkGraphElement, Coloring> _onColoring;
+    private readonly Dictionary<ILinkGraphElement, Coloring> _offColoring;
+    private readonly int _row;
+    private readonly int _col;
+    private readonly int _possibility;
+
+    public DigitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring> onColoring,
+        Dictionary<ILinkGraphElement, Coloring> offColoring, int row, int col, int possibility)
+    {
+        _onColoring = onColoring;
+        _offColoring = offColoring;
+        _row = row;
+        _col = col;
+        _possibility = possibility;
+    }
+    
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+        var on = new Dictionary<PossibilityCoordinate, Coloring>();
+        var off = new Dictionary<PossibilityCoordinate, Coloring>();
+
+        foreach (var element in _onColoring)
+        {
+            if (element.Key is not PossibilityCoordinate coord) continue;
+            on.Add(coord, element.Value);
+        }
+        
+        foreach (var element in _offColoring)
+        {
+            if (element.Key is not PossibilityCoordinate coord) continue;
+            off.Add(coord, element.Value);
+        }
+        
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+            lighter =>
+            {
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                lighter.CirclePossibility(_possibility, _row, _col);
+            },
+            lighter =>
+            {
+                foreach (var element in on)
+                {
+                    lighter.HighlightPossibility(element.Key, element.Value == Coloring.On ? ChangeColoration.CauseOnOne :
+                        ChangeColoration.CauseOffOne);
+                }
+                lighter.CirclePossibility(_possibility, _row, _col);
+            },
+            lighter =>
+            {
+                foreach (var element in off)
+                {
+                    lighter.HighlightPossibility(element.Key, element.Value == Coloring.On ? ChangeColoration.CauseOnOne :
+                        ChangeColoration.CauseOffOne);
+                }
+                lighter.CirclePossibility(_possibility, _row, _col);
+            });
     }
 }

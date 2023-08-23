@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,13 +11,13 @@ using Model.StrategiesUtil;
 
 namespace SudokuSolver;
 
-public partial class SolverUserControl : IHighlighter
+public partial class SolverUserControl : IHighlightable
 {
     public const int CellSize = 60;
     private const int LineWidth = 3;
     
     private readonly Solver _solver = new(new Sudoku());
-    private int _logBuffer = 0;
+    private int _logBuffer;
 
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
     public int Delay { get; set; } = 400;
@@ -193,11 +192,6 @@ public partial class SolverUserControl : IHighlighter
         IsReady?.Invoke();
     }
 
-    private void UpdateAfterRunUntilProgress()
-    {
-        
-    }
-
     public void ShowLog(ISolverLog log)
     {
         _backgroundManager.Clear();
@@ -267,6 +261,11 @@ public partial class SolverUserControl : IHighlighter
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
     {
         _backgroundManager.HighlightPossibility(row, col, possibility, ColorUtil.ToColor(coloration));
+    }
+
+    public void CirclePossibility(int possibility, int row, int col)
+    {
+        _backgroundManager.CirclePossibility(row, col, possibility);
     }
 
     public void HighlightCell(int row, int col, ChangeColoration coloration)
@@ -341,7 +340,7 @@ public partial class SolverUserControl : IHighlighter
 
     private void Highlight(ISolverLog log)
     {
-        log.SolverHighLighter(this);
+        log.HighlightManager.Apply(this);
         Main.Background = _backgroundManager.Background;
     }
 
@@ -457,6 +456,20 @@ public class SolverBackgroundManager
     public void HighlightPossibility(int row, int col, int possibility, Color color)
     {
         _cells.Children.Add(GetSquare(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, new SolidColorBrush(color)));
+    }
+
+    public void CirclePossibility(int row, int col, int possibility)
+    {
+        _groups.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
+            Pen = new Pen()
+            {
+                Brush = _linkBrush,
+                Thickness = 3.0,
+                DashStyle = DashStyles.Dot
+            }
+        });
     }
     
     public void HighlightGroup(PointingRow pr, Color color)

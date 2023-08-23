@@ -29,7 +29,7 @@ public class BuildUpLog : ISolverLog
 
     public string SolverState { get; }
 
-    public HighlightSolver SolverHighLighter => HighLight;
+    public HighlightManager HighlightManager => new(HighLight);
 
     public BuildUpLog(int id, IStrategy causedBy, string solverState)
     {
@@ -57,14 +57,14 @@ public class BuildUpLog : ISolverLog
         return $"[{a / 9 + 1}, {a % 9 + 1}] {abs / 81 + 1} {action}";
     }
 
-    private void HighLight(IHighlighter highlighter)
+    private void HighLight(IHighlightable highlightable)
     {
         foreach (var change in _changes)
         {
             int abs = Math.Abs(change);
             int a = abs % 81;
-            if(change > 0) highlighter.HighlightCell(a / 9, a % 9, ChangeColoration.ChangeOne);
-            else highlighter.HighlightPossibility(abs / 81 + 1 , a / 9, a % 9, ChangeColoration.ChangeOne);
+            if(change > 0) highlightable.HighlightCell(a / 9, a % 9, ChangeColoration.ChangeOne);
+            else highlightable.HighlightPossibility(abs / 81 + 1 , a / 9, a % 9, ChangeColoration.ChangeOne);
         }
     }
 }

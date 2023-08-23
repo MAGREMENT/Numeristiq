@@ -10,7 +10,7 @@ public class ChangeReportLog : ISolverLog
     public string Changes { get; }
     public string Explanation { get; }
     public string SolverState { get; }
-    public HighlightSolver SolverHighLighter { get; }
+    public HighlightManager HighlightManager  { get; }
 
     public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, string solverState)
     {
@@ -20,6 +20,6 @@ public class ChangeReportLog : ISolverLog
         Changes = report.Changes;
         Explanation = report.Explanation;
         SolverState = solverState;
-        SolverHighLighter = report.SolverHighLighter;
+        HighlightManager = report.HighlightManager;
     }
 }

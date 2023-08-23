@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Possibilities;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingNets;
@@ -16,14 +17,15 @@ public class CellForcingNetStrategy : IStrategy
     {
         _max = maxPossibilities;
     }
-    
+
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
-            for(int col = 0; col < 9; col++)
+            for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Possibilities[row, col].Count < 2|| strategyManager.Possibilities[row, col].Count > _max) continue;
+                if (strategyManager.Possibilities[row, col].Count < 2 ||
+                    strategyManager.Possibilities[row, col].Count > _max) continue;
                 var possAsArray = strategyManager.Possibilities[row, col].ToArray();
 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -44,6 +46,8 @@ public class CellForcingNetStrategy : IStrategy
 
     private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
     {
+        PossibilityStacker?[,] cellCheck = new PossibilityStacker[9, 9];
+
         foreach (var element in colorings[0])
         {
             if (element.Key is not PossibilityCoordinate current) continue;
@@ -61,9 +65,51 @@ public class CellForcingNetStrategy : IStrategy
                     view.ChangeBuffer.AddDefinitiveToAdd(current.Possibility, current.Row, current.Col);
                 else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
             }
+
+            if(currentColoring == Coloring.On) InitStackerArray(cellCheck, current);
+        }
+
+        for (int i = 1; i < colorings.Length; i++)
+        {
+            foreach (var element in colorings[i])
+            {
+                if (element.Value != Coloring.On) continue;
+                if (element.Key is not PossibilityCoordinate current) continue;
+
+                AddToStackerArray(view, cellCheck, current, colorings.Length, i);
+            }
         }
         
-        //TODO type 3 and 4
+        //TODO do rule 4 and look into rule 3 (doesnt change anything currently)
+    }
+
+    private void InitStackerArray(PossibilityStacker?[,] array, PossibilityCoordinate coord)
+    {
+        array[coord.Row, coord.Col] ??= new PossibilityStacker();
+        array[coord.Row, coord.Col]!.Possibilities.Add(coord.Possibility);
+        array[coord.Row, coord.Col]!.ColoringCount = 1;
+    }
+    
+    private void AddToStackerArray(IStrategyManager view, PossibilityStacker?[,] array, PossibilityCoordinate coord,
+        int total, int currentColoring)
+    {
+        var current = array[coord.Row, coord.Col];
+        if (current is null) return;
+
+        current.Possibilities.Add(coord.Possibility);
+        current.ColoringCount |= 1 << currentColoring;
+
+        if (currentColoring == total - 1 && System.Numerics.BitOperations.PopCount((uint) current.ColoringCount) == total)
+            RemoveAll(view, coord.Row, coord.Col, current.Possibilities);
+    }
+
+    private void RemoveAll(IStrategyManager view, int row, int col, IPossibilities except)
+    {
+        foreach (var possibility in view.Possibilities[row, col])
+        {
+            if(except.Peek(possibility)) continue;
+            view.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+        }
     }
 }
 
@@ -74,4 +120,10 @@ public class CellForcingNetReportBuilder : IChangeReportBuilder
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }
+}
+
+public class PossibilityStacker
+{
+    public int ColoringCount { get; set; }
+    public IPossibilities Possibilities { get; } = IPossibilities.NewEmpty();
 }

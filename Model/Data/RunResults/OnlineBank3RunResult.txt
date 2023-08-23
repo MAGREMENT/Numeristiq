@@ -38,7 +38,8 @@ Strategy usage :
 -Unit forcing net : 1183
 -Nishio forcing net : 402
 -Trial and match : 0
-Time taken : 214,676s
+Time taken : 175,868s
+
 
 
 

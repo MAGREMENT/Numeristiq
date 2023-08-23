@@ -10,7 +10,7 @@ public interface ISolverLog
     public string Changes { get; }
     public string Explanation { get; }
     public string SolverState { get; }
-    public HighlightSolver SolverHighLighter { get; }
+    public HighlightManager HighlightManager { get; }
 
 }
 

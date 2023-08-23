@@ -12,9 +12,9 @@
             <TextBlock x:Name="Title" FontSize="22" FontWeight="Heavy"/>
         </StackPanel>
         <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
-        <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" Width="300">
-            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE72B;"></Button>
-            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE72A;"></Button>
+        <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" Click="ShiftLeft"></Button>
+            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="ShiftRight"></Button>
         </StackPanel>
     </StackPanel>
 </UserControl>
