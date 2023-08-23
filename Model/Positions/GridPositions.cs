@@ -1,4 +1,5 @@
-﻿using Model.StrategiesUtil;
+﻿using System;
+using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
@@ -77,6 +78,16 @@ public class GridPositions
     public GridPositions Copy()
     {
         return new GridPositions(_first, _second);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_first, _second);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is GridPositions gp && gp._second == _second && gp._first == _first;
     }
 
     public override string ToString()

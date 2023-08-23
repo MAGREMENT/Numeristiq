@@ -2,7 +2,7 @@
 
 namespace Model.Strategies;
 
-public class TrialAndMatchStrategy : IStrategy
+public class TrialAndMatchStrategy : IStrategy //TODO fixme
 {
     public string Name { get; } = "Trial and match";
     

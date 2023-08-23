@@ -51,7 +51,7 @@ public class StrategyLoader //TODO improve this and do relative paths
         new CellForcingNetStrategy(4),
         new UnitForcingNetStrategy(4),
         new NishioForcingNetStrategy(),
-        //new PatternOverlayStrategy()
+        new PatternOverlayStrategy(15),
         new TrialAndMatchStrategy(2)
     };
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Positions;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies.ForcingNets;
@@ -36,8 +37,8 @@ public class UnitForcingNetStrategy : IStrategy
                 }
                 
                 Process(strategyManager, colorings);
-                if (strategyManager.ChangeBuffer.NotEmpty())
-                    strategyManager.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder());
+                if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
+                    new LineUnitForcingNetReportBuilder(colorings, ppir, row, Unit.Row, number));
             }
 
             for (int col = 0; col < 9; col++)
@@ -56,8 +57,8 @@ public class UnitForcingNetStrategy : IStrategy
                 }
                 
                 Process(strategyManager, colorings);
-                if (strategyManager.ChangeBuffer.NotEmpty())
-                    strategyManager.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder());
+                if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
+                    new LineUnitForcingNetReportBuilder(colorings, ppic, col, Unit.Column, number));
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -78,8 +79,8 @@ public class UnitForcingNetStrategy : IStrategy
                     }
                 
                     Process(strategyManager, colorings);
-                    if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder());
+                    if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
+                        new MiniGridUnitForcingNetReportBuilder(colorings, ppimn, number));
                 }
             }
         }
@@ -108,10 +109,109 @@ public class UnitForcingNetStrategy : IStrategy
     }
 }
 
-public class UnitForcingNetReportBuilder : IChangeReportBuilder
+public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
 {
+    private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
+    private readonly LinePositions _pos;
+    private readonly int _unitNumber;
+    private readonly Unit _unit;
+    private readonly int _possibility;
+
+
+    public LineUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, LinePositions pos,
+        int unitNumber, Unit unit, int possibility)
+    {
+        _colorings = colorings;
+        _pos = pos;
+        _unitNumber = unitNumber;
+        _unit = unit;
+        _possibility = possibility;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
+        PossibilityCoordinate[] coords = new PossibilityCoordinate[_pos.Count];
+        var cursor = 0;
+        foreach (var other in _pos)
+        {
+            coords[cursor] = _unit == Unit.Row
+                ? new PossibilityCoordinate(_unitNumber, other, _possibility)
+                : new PossibilityCoordinate(other, _unitNumber, _possibility);
+            cursor++;
+        }
+        
+        HighlightSolver[] highlights = new HighlightSolver[_colorings.Length + 1];
+        highlights[0] = lighter =>
+        {
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            foreach (var coord in coords)
+            {
+                lighter.CirclePossibility(coord);
+            }
+        };
+
+        for (int i = 0; i < _colorings.Length; i++)
+        {
+            var filtered = ForcingNetsUtil.FilterPossibilityCoordinates(_colorings[i]);
+            var coord = coords[i];
+            highlights[i + 1] = lighter =>
+            {
+                ForcingNetsUtil.HighlightColoring(lighter, filtered);
+                lighter.CirclePossibility(coord);
+            };
+        }
+        
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+    }
+}
+
+public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
+{
+    private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
+    private readonly MiniGridPositions _pos;
+    private readonly int _possibility;
+
+
+    public MiniGridUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, MiniGridPositions pos,
+       int possibility)
+    {
+        _colorings = colorings;
+        _pos = pos;
+        _possibility = possibility;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        PossibilityCoordinate[] coords = new PossibilityCoordinate[_pos.Count];
+        var cursor = 0;
+        foreach (var other in _pos)
+        {
+            coords[cursor] = new PossibilityCoordinate(other[0], other[1], _possibility);
+            cursor++;
+        }
+        
+        HighlightSolver[] highlights = new HighlightSolver[_colorings.Length + 1];
+        highlights[0] = lighter =>
+        {
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            foreach (var coord in coords)
+            {
+                lighter.CirclePossibility(coord);
+            }
+        };
+
+        for (int i = 0; i < _colorings.Length; i++)
+        {
+            var filtered = ForcingNetsUtil.FilterPossibilityCoordinates(_colorings[i]);
+            var coord = coords[i];
+            highlights[i + 1] = lighter =>
+            {
+                ForcingNetsUtil.HighlightColoring(lighter, filtered);
+                lighter.CirclePossibility(coord);
+            };
+        }
+        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
     }

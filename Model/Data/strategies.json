@@ -170,6 +170,11 @@
     "Used": true
   },
   {
+    "StrategyName": "Pattern Overlay",
+    "Difficulty": 5,
+    "Used": false
+  },
+  {
     "StrategyName": "Trial and match",
     "Difficulty": 6,
     "Used": false
