@@ -98,21 +98,9 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        var on = new Dictionary<PossibilityCoordinate, Coloring>();
-        var off = new Dictionary<PossibilityCoordinate, Coloring>();
+        var on = ForcingNetsUtil.FilterPossibilityCoordinates(_onColoring);
+        var off = ForcingNetsUtil.FilterPossibilityCoordinates(_offColoring);
 
-        foreach (var element in _onColoring)
-        {
-            if (element.Key is not PossibilityCoordinate coord) continue;
-            on.Add(coord, element.Value);
-        }
-        
-        foreach (var element in _offColoring)
-        {
-            if (element.Key is not PossibilityCoordinate coord) continue;
-            off.Add(coord, element.Value);
-        }
-        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
@@ -121,20 +109,12 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
             },
             lighter =>
             {
-                foreach (var element in on)
-                {
-                    lighter.HighlightPossibility(element.Key, element.Value == Coloring.On ? ChangeColoration.CauseOnOne :
-                        ChangeColoration.CauseOffOne);
-                }
+                ForcingNetsUtil.HighlightColoring(lighter, on);
                 lighter.CirclePossibility(_possibility, _row, _col);
             },
             lighter =>
             {
-                foreach (var element in off)
-                {
-                    lighter.HighlightPossibility(element.Key, element.Value == Coloring.On ? ChangeColoration.CauseOnOne :
-                        ChangeColoration.CauseOffOne);
-                }
+                ForcingNetsUtil.HighlightColoring(lighter, off);
                 lighter.CirclePossibility(_possibility, _row, _col);
             });
     }

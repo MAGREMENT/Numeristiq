@@ -55,6 +55,13 @@ public interface IHighlightable
         HighlightCell(coord.Row, coord.Col, coloration);
     }
 
+    public void CircleCell(int row, int col);
+
+    public void CircleCell(Coordinate coord)
+    {
+        CircleCell(coord.Row, coord.Col);
+    }
+
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration);
 
     public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength);
@@ -88,6 +95,7 @@ public class HighlightManager
 
     public void Apply(IHighlightable highlightable)
     {
+        if (Count == 0) return;
         _highlights[_cursor](highlightable);
     }
 

@@ -22,7 +22,8 @@ public class NishioForcingNetStrategy : IStrategy
             {
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    foreach (var entry in strategyManager.OnColoring(row, col, possibility))
+                    var coloring = strategyManager.OnColoring(row, col, possibility);
+                    foreach (var entry in coloring)
                     {
                         if (entry.Value != Coloring.Off || entry.Key is not PossibilityCoordinate coord) continue;
                         if (cs.AddOff(coord))
@@ -32,8 +33,8 @@ public class NishioForcingNetStrategy : IStrategy
                         }
                     }
 
-                    if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this, new NishioForcingNetReportBuilder());
+                    if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
+                        new NishioForcingNetReportBuilder(coloring, row, col, possibility));
                     cs.Reset();
                 }
             }
@@ -125,9 +126,30 @@ public class ContradictionSearcher
 
 public class NishioForcingNetReportBuilder : IChangeReportBuilder
 {
+
+    private readonly Dictionary<ILinkGraphElement, Coloring> _coloring;
+    private readonly int _row;
+    private readonly int _col;
+    private readonly int _possibility;
+
+    public NishioForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring> coloring, int row, int col, int possibility)
+    {
+        _coloring = coloring;
+        _row = row;
+        _col = col;
+        _possibility = possibility;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
+        var c = ForcingNetsUtil.FilterPossibilityCoordinates(_coloring);
+        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+            lighter =>
+            {
+                ForcingNetsUtil.HighlightColoring(lighter, c);
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                lighter.CirclePossibility(_possibility, _row, _col);
+            }, "");
     }
 }

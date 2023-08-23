@@ -273,6 +273,11 @@ public partial class SolverUserControl : IHighlightable
         _backgroundManager.HighlightCell(row, col, ColorUtil.ToColor(coloration));
     }
 
+    public void CircleCell(int row, int col)
+    {
+        _backgroundManager.CircleCell(row, col);
+    }
+
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
     {
         switch (element)
@@ -463,6 +468,20 @@ public class SolverBackgroundManager
         _groups.Children.Add(new GeometryDrawing()
         {
             Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
+            Pen = new Pen()
+            {
+                Brush = _linkBrush,
+                Thickness = 3.0,
+                DashStyle = DashStyles.Dot
+            }
+        });
+    }
+
+    public void CircleCell(int row, int col)
+    {
+        _groups.Children.Add(new GeometryDrawing()
+        {
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(col), TopLeftY(row), CellSize, CellSize)),
             Pen = new Pen()
             {
                 Brush = _linkBrush,

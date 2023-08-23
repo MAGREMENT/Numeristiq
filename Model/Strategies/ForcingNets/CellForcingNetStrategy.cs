@@ -38,8 +38,8 @@ public class CellForcingNetStrategy : IStrategy
 
                 Process(strategyManager, colorings);
 
-                if (strategyManager.ChangeBuffer.NotEmpty())
-                    strategyManager.ChangeBuffer.Push(this, new CellForcingNetReportBuilder());
+                if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
+                        new CellForcingNetReportBuilder(colorings, row, col));
             }
         }
     }
@@ -115,10 +115,37 @@ public class CellForcingNetStrategy : IStrategy
 
 public class CellForcingNetReportBuilder : IChangeReportBuilder
 {
+    private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
+    private readonly int _row;
+    private readonly int _col;
+
+    public CellForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, int row, int col)
+    {
+        _colorings = colorings;
+        _row = row;
+        _col = col;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+        HighlightSolver[] highlights = new HighlightSolver[_colorings.Length + 1];
+        highlights[0] = lighter =>
+        {
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            lighter.CircleCell(_row, _col);
+        };
+
+        for (int i = 0; i < _colorings.Length; i++)
+        {
+            var filtered = ForcingNetsUtil.FilterPossibilityCoordinates(_colorings[i]);
+            highlights[i + 1] = lighter =>
+            {
+                ForcingNetsUtil.HighlightColoring(lighter, filtered);
+                lighter.CircleCell(_row, _col);
+            };
+        }
+        
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
     }
 }
 
