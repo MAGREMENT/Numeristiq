@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class PatternOverlayStrategy : IStrategy //TODO fixme : ".364.2...8......4...278.....2...873.6....49.87..6..........7.1....1..3..2....6..5"
+public class PatternOverlayStrategy : IStrategy
 {
     public string Name => "Pattern Overlay";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
@@ -24,8 +24,8 @@ public class PatternOverlayStrategy : IStrategy //TODO fixme : ".364.2...8......
         HashSet<Pattern>?[] patterns = new HashSet<Pattern>[9];
         for (int i = 0; i < patterns.Length; i++)
         {
-            if(all[i].Count > _max) continue;
-            
+            if (all[i].Count > _max) continue;
+
             patterns[i] = Patterns(strategyManager, all[i], i + 1);
         }
 
@@ -33,7 +33,7 @@ public class PatternOverlayStrategy : IStrategy //TODO fixme : ".364.2...8......
         {
             var patternsExamined = patterns[i];
             if (patternsExamined is null || patternsExamined.Count == 0) continue;
-            
+
             foreach (var coord in all[i])
             {
                 int count = 0;
@@ -41,15 +41,16 @@ public class PatternOverlayStrategy : IStrategy //TODO fixme : ".364.2...8......
                 {
                     if (pattern.Peek(coord)) count++;
                 }
-                
-                if(count == 0) strategyManager.ChangeBuffer.AddPossibilityToRemove(i + 1, coord.Row, coord.Col);
-                else if(count == patternsExamined.Count) strategyManager.ChangeBuffer.AddDefinitiveToAdd(i + 1, coord.Row, coord.Col);
+
+                if (count == 0) strategyManager.ChangeBuffer.AddPossibilityToRemove(i + 1, coord.Row, coord.Col);
+                else if (count == patternsExamined.Count)
+                    strategyManager.ChangeBuffer.AddDefinitiveToAdd(i + 1, coord.Row, coord.Col);
             }
 
             if (strategyManager.ChangeBuffer.NotEmpty())
                 strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder());
         }
-        
+
         //TODO add rule 2
     }
 
@@ -88,7 +89,7 @@ public class PatternOverlayStrategy : IStrategy //TODO fixme : ".364.2...8......
         foreach (var start in all)
         {
             if (start.Row != firstRow) break;
-            
+
             GridPositions buildup = new GridPositions();
             buildup.Add(start);
             var copy = new List<Coordinate>(all);
@@ -114,35 +115,40 @@ public class PatternOverlayStrategy : IStrategy //TODO fixme : ".364.2...8......
 
             if (copy.Count == 0)
             {
-                for (int row = 0; row < 9; row++)
-                {
-                    int total = strategyManager.Sudoku.RowCount(row, number) + buildupCopy.RowCount(row);
-                    if (total != 1) return;
-                }
-
-                for (int col = 0; col < 9; col++)
-                {
-                    int total = strategyManager.Sudoku.ColumnCount(col, number) + buildupCopy.ColumnCount(col);
-                    if (total != 1) return;
-                }
-
-                for (int miniRow = 0; miniRow < 3; miniRow++)
-                {
-                    for (int miniCol = 0; miniCol < 3; miniCol++)
-                    {
-                        int total = strategyManager.Sudoku.MiniGridCount(miniRow, miniCol, number) +
-                                    buildupCopy.MiniGridCount(miniRow, miniCol);
-                        if (total != 1) return;
-                    }
-                }
-                
-                result.Add(new Pattern(buildupCopy));
+                if(IsValid(strategyManager, buildupCopy, number)) result.Add(new Pattern(buildupCopy));
             }
             else
             {
                 SearchForPatterns(strategyManager, copy, number, buildupCopy, result);
             }
         }
+    }
+
+    private bool IsValid(IStrategyManager strategyManager, GridPositions pattern, int number)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            int total = strategyManager.Sudoku.RowCount(row, number) + pattern.RowCount(row);
+            if (total != 1) return false;
+        }
+
+        for (int col = 0; col < 9; col++)
+        {
+            int total = strategyManager.Sudoku.ColumnCount(col, number) + pattern.ColumnCount(col);
+            if (total != 1) return false;
+        }
+
+        for (int miniRow = 0; miniRow < 3; miniRow++)
+        {
+            for (int miniCol = 0; miniCol < 3; miniCol++)
+            {
+                int total = strategyManager.Sudoku.MiniGridCount(miniRow, miniCol, number) +
+                            pattern.MiniGridCount(miniRow, miniCol);
+                if (total != 1) return false;
+            }
+        }
+
+        return true;
     }
 
 }

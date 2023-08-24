@@ -172,7 +172,7 @@
   {
     "StrategyName": "Pattern Overlay",
     "Difficulty": 5,
-    "Used": false
+    "Used": true
   },
   {
     "StrategyName": "Trial and match",
