@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -40,7 +42,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var pos = strategyManager.PossibilityPositionsInRow(row, number);
+                var pos = strategyManager.RowPositions(row, number);
                 if (pos.Count > _type || pos.Count == 0) continue;
                 var possibilities = IPossibilities.NewEmpty();
                 possibilities.Add(number);
@@ -53,7 +55,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var pos = strategyManager.PossibilityPositionsInColumn(col, number);
+                var pos = strategyManager.ColumnPositions(col, number);
                 if (pos.Count > _type || pos.Count == 0) continue;
                 var possibilities = IPossibilities.NewEmpty();
                 possibilities.Add(number);
@@ -68,7 +70,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var pos = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+                    var pos = strategyManager.MiniGridPositions(miniRow, miniCol, number);
                     if (pos.Count > _type || pos.Count == 0) continue;
                     var possibilities = IPossibilities.NewEmpty();
                     possibilities.Add(number);
@@ -84,7 +86,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.PossibilityPositionsInRow(row, i);
+            var pos = strategyManager.RowPositions(row, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Mash(pos);
@@ -112,7 +114,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.PossibilityPositionsInColumn(col, i);
+            var pos = strategyManager.ColumnPositions(col, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Mash(pos);
@@ -140,7 +142,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, i);
+            var pos = strategyManager.MiniGridPositions(miniRow, miniCol, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Mash(pos);
@@ -218,7 +220,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         }
         
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in coords)
             {
@@ -226,7 +228,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }
 
@@ -253,7 +255,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in coords)
             {
@@ -262,6 +264,6 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

@@ -1,17 +1,18 @@
 ﻿using System.IO;
 using System.Text.Json;
+using Model.Solver;
 using Model.Strategies;
 using Model.Strategies.AlternatingChains;
 using Model.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Strategies.AlternatingChains.ChainTypes;
 using Model.Strategies.ForcingNets;
-using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace Model;
 
-public class StrategyLoader //TODO improve this and do relative paths
+public class StrategyLoader
 {
-    private const string Path = "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\strategies.json";
+    private readonly string _path = "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\strategies.json";
 
     private readonly IStrategy[] _strategies =
     {
@@ -61,7 +62,7 @@ public class StrategyLoader //TODO improve this and do relative paths
     public StrategyLoader(IStrategyHolder holder)
     {
         _holder = holder;
-        var buffer = JsonSerializer.Deserialize<StrategyInfo[]>(File.ReadAllText(Path));
+        var buffer = JsonSerializer.Deserialize<StrategyInfo[]>(File.ReadAllText(_path));
         if (buffer is null || buffer.Length != _strategies.Length) Infos = HandleIncorrectJsonFile();
         else Infos = buffer;
     }
@@ -86,14 +87,14 @@ public class StrategyLoader //TODO improve this and do relative paths
 
     private StrategyInfo[] HandleIncorrectJsonFile()
     {
-        File.Delete(Path);
+        File.Delete(_path);
         StrategyInfo[] toWrite = new StrategyInfo[_strategies.Length];
         for (int i = 0; i < toWrite.Length; i++)
         {
             toWrite[i] = new StrategyInfo(_strategies[i]);
         }
         
-        File.WriteAllText(Path, JsonSerializer.Serialize(toWrite, new JsonSerializerOptions {WriteIndented = true}));
+        File.WriteAllText(_path, JsonSerializer.Serialize(toWrite, new JsonSerializerOptions {WriteIndented = true}));
 
         return toWrite;
     }
@@ -108,7 +109,7 @@ public class StrategyInfo
 
     public StrategyInfo()
     {
-        StrategyName = "unknown";
+        StrategyName = "Unknown";
         Difficulty = StrategyLevel.None;
         Used = false;
     }

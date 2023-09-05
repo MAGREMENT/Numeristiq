@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using System.Windows.Media;
 using Model;
+using Model.Changes;
 using Model.Possibilities;
 
 namespace SudokuSolver;

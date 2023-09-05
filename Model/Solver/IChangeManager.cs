@@ -1,6 +1,7 @@
-﻿using Model.Possibilities;
+﻿using Model.Changes;
+using Model.Possibilities;
 
-namespace Model;
+namespace Model.Solver;
 
 public interface IChangeManager
 {

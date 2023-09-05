@@ -1,4 +1,6 @@
-﻿namespace Model.Strategies;
+﻿using Model.Solver;
+
+namespace Model.Strategies;
 
 public class NoStrategy : IStrategy
 {

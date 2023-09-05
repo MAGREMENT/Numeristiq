@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.StrategiesUtil.LinkGraph;
 
 // ReSharper disable All
 
@@ -151,7 +152,7 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
             if (positive) n = (n + 1) % right._elements.Length;
             else
             {
-                    n = n - 1;
+                n = n - 1;
                 n = n < 0 ? right._elements.Length + n : n;
             }
                 

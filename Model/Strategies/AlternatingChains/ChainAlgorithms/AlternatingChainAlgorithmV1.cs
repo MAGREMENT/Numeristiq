@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.StrategiesUtil;
+using Model.Solver;
+using Model.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainAlgorithms;
@@ -17,7 +18,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
     public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         _loopsProcessed.Clear();
-        foreach (var start in graph.EachVerticesWith(LinkStrength.Strong))
+        foreach (var start in graph.EveryVerticesWith(LinkStrength.Strong))
         {
             Search(graph, new LoopBuilder<T>(start), chainType, view);
         }
@@ -43,10 +44,9 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
         {
             if (path.Count >= 4)
             {
-                var weakFromFirst = graph.GetLinks(path.FirstElement(), LinkStrength.Weak);
                 foreach (var weakFromLast in graph.GetLinks(last, LinkStrength.Weak))
                 {
-                    if (weakFromFirst.Contains(weakFromLast))
+                    if (graph.HasLinkTo(path.FirstElement(), weakFromLast, LinkStrength.Weak))
                     {
                         if(path.IsAlreadyPresent(weakFromLast)) continue;
                         chainType.ProcessWeakInference(view, weakFromLast, path.Add(weakFromLast, LinkStrength.Weak).End(LinkStrength.Weak));

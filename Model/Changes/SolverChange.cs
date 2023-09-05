@@ -1,4 +1,4 @@
-﻿namespace Model;
+﻿namespace Model.Changes;
 
 public class SolverChange
 {

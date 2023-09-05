@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 
 namespace Model.Strategies;
 
@@ -19,7 +21,7 @@ public class PointingPossibilitiesStrategy : IStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var ppimg = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+                    var ppimg = strategyManager.MiniGridPositions(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
                         int row = ppimg.First()[0];
@@ -61,7 +63,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var pos in _miniPos)
             {
@@ -69,6 +71,6 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

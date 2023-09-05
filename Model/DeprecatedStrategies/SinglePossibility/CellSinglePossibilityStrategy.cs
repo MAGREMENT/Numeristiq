@@ -1,4 +1,6 @@
 ﻿
+using Model.Solver;
+
 namespace Model.DeprecatedStrategies.SinglePossibility;
 
 public class CellSinglePossibilityStrategy : IStrategy

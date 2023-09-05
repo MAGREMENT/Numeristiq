@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
-namespace Model;
+namespace Model.Solver;
 
 public interface IStrategyManager
 {
@@ -13,13 +15,13 @@ public interface IStrategyManager
 
     ChangeBuffer ChangeBuffer { get; }
 
-    LinePositions PossibilityPositionsInColumn(int col, int number);
+    LinePositions ColumnPositions(int col, int number);
 
-    LinePositions PossibilityPositionsInRow(int row, int number);
+    LinePositions RowPositions(int row, int number);
 
-    MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number);
+    MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number);
 
-    public List<AlmostLockedSet> AllAls();
+    public List<AlmostLockedSet> AlmostLockedSets();
     
     public LinkGraph<ILinkGraphElement> LinkGraph();
 
@@ -31,7 +33,7 @@ public interface IStrategyManager
 
     public IPossibilities[,] Possibilities { get; }
 
-    public Solver Copy();
+    public Model.Solver.Solver Copy();
 }
 
 

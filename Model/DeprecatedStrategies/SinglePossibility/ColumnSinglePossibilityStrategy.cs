@@ -1,4 +1,6 @@
-﻿namespace Model.DeprecatedStrategies.SinglePossibility;
+﻿using Model.Solver;
+
+namespace Model.DeprecatedStrategies.SinglePossibility;
 
 public class ColumnSinglePossibilityStrategy : IStrategy
 {

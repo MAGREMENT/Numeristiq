@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains;
@@ -62,7 +65,7 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _loop.ToString(),
             lighter =>
             {
                 int counter = 0;
@@ -76,7 +79,7 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
                 _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, _loop.ToString());
+            });
     }
 }
 

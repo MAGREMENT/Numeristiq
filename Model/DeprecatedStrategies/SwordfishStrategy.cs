@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Positions;
+using Model.Solver;
 
 namespace Model.DeprecatedStrategies;
 
@@ -18,7 +19,7 @@ public class SwordfishStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                LinePositions p = strategyManager.PossibilityPositionsInRow(row, number);
+                LinePositions p = strategyManager.RowPositions(row, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, row));
             }
 
@@ -47,7 +48,7 @@ public class SwordfishStrategy : IStrategy
             //Columns
             for (int col = 0; col < 9; col++)
             {
-                LinePositions p = strategyManager.PossibilityPositionsInColumn(col, number);
+                LinePositions p = strategyManager.ColumnPositions(col, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, col));
             }
 

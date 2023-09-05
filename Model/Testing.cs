@@ -10,11 +10,11 @@ namespace Model;
 
 public static class Testing
 {
-    public static void Main(string[] args) 
+    public static void Main(string[] args) //TODO : add UI for data testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank3.txt");
+        FullSudokuBankTest("LocalBank.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -80,7 +80,7 @@ public static class Testing
         var counter = 1;
         var success = 0;
         var solverIsTrash = 0;
-        Solver solver = new Solver(new Sudoku())
+        Solver.Solver solver = new Solver.Solver(new Sudoku())
         {
             LogsManaged = false
         };
@@ -187,7 +187,7 @@ public static class Testing
         Console.WriteLine("Sudoku initial : ");
         Console.WriteLine(sud);
 
-        var solver = new Solver(sud);
+        var solver = new Solver.Solver(sud);
         int numbersAdded = 0;
         solver.NumberAdded += (_, _) => numbersAdded++;
         solver.Solve();

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 
 namespace Model.Strategies;
 
@@ -16,7 +18,7 @@ public class FinnedXWingStrategy : IStrategy
             Dictionary<int, LinePositions> candidates = new();
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.PossibilityPositionsInRow(row, number);
+                var ppir = strategyManager.RowPositions(row, number);
                 if (ppir.Count == 2) candidates.Add(row, ppir);
             }
 
@@ -25,7 +27,7 @@ public class FinnedXWingStrategy : IStrategy
                 for (int row = 0; row < 9; row++)
                 {
                     if (row == entry.Key) continue;
-                    var currentPpir = strategyManager.PossibilityPositionsInRow(row, number);
+                    var currentPpir = strategyManager.RowPositions(row, number);
 
                     var candidatePositions = entry.Value.ToArray();
 
@@ -58,7 +60,7 @@ public class FinnedXWingStrategy : IStrategy
             candidates.Clear();
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
+                var ppic = strategyManager.ColumnPositions(col, number);
                 if (ppic.Count == 2) candidates.Add(col, ppic);
             }
 
@@ -67,7 +69,7 @@ public class FinnedXWingStrategy : IStrategy
                 for (int col = 0; col < 9; col++)
                 {
                     if (col == entry.Key) continue;
-                    var currentPpic = strategyManager.PossibilityPositionsInColumn(col, number);
+                    var currentPpic = strategyManager.ColumnPositions(col, number);
 
                     var candidatePositions = entry.Value.ToArray();
 
@@ -167,7 +169,7 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var normalOther in _normal)
             {
@@ -188,6 +190,6 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -200,7 +202,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
                 new Coordinate(_unitNumber, other) :
                 new Coordinate(other, _unitNumber));
         }
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
                 foreach (var coord in center)
@@ -218,6 +220,6 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
                 }
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, "");
+            });
     }
 }

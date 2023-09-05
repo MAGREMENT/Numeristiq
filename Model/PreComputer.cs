@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Model.Positions;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace Model;
 
-public class PreComputer
+public class PreComputer //TODO : Look into caching positions the same way as possibilities
 {
     private readonly IStrategyManager _view;
     
@@ -17,7 +18,8 @@ public class PreComputer
     
     private List<AlmostLockedSet>? _als;
 
-    private LinkGraph<ILinkGraphElement>? _graph;
+    private readonly LinkGraphManager _graphManager;
+    private bool _graphConstructed = false;
 
     private readonly Dictionary<ILinkGraphElement, Coloring>?[,,] _onColoring
         = new Dictionary<ILinkGraphElement, Coloring>[9, 9, 9];
@@ -26,12 +28,15 @@ public class PreComputer
     public PreComputer(IStrategyManager view)
     {
         _view = view;
+        _graphManager = new LinkGraphManager(_view);
     }
 
     public void Reset()
     {
         _als = null;
-        _graph = null;
+        
+        _graphManager.Clear();
+        _graphConstructed = false;
 
         if (_wasPrePosUsed)
         {
@@ -68,40 +73,44 @@ public class PreComputer
         }
     }
 
-    public LinePositions PossibilityPositionsInRow(int row, int number)
+    public LinePositions RowPositions(int row, int number)
     {
         _wasPrePosUsed = true;
         
-        _rows[row, number - 1] ??= DoPossibilityPositionsInRow(row, number);
+        _rows[row, number - 1] ??= DoRowPositions(row, number);
         return _rows[row, number - 1]!;
     }
     
-    public LinePositions PossibilityPositionsInColumn(int col, int number)
+    public LinePositions ColumnPositions(int col, int number)
     {
         _wasPrePosUsed = true;
         
-        _cols[col, number - 1] ??= DoPossibilityPositionsInColumn(col, number);
+        _cols[col, number - 1] ??= DoColumnPositions(col, number);
         return _cols[col, number - 1]!; 
     }
     
-    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number)
     {
         _wasPrePosUsed = true;
         
-        _miniGrids[miniRow, miniCol, number - 1] ??= DoPossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+        _miniGrids[miniRow, miniCol, number - 1] ??= DoMiniGridPositions(miniRow, miniCol, number);
         return _miniGrids[miniRow, miniCol, number - 1]!;
     }
 
-    public List<AlmostLockedSet> AllAls()
+    public List<AlmostLockedSet> AlmostLockedSets()
     {
-        _als ??= DoAllAls();
+        _als ??= DoAlmostLockedSets();
         return _als;
     }
 
     public LinkGraph<ILinkGraphElement> LinkGraph()
     {
-        _graph ??= DoLinkGraph();
-        return _graph;
+        if (!_graphConstructed)
+        {
+            _graphManager.Construct();
+            _graphConstructed = true;
+        }
+        return _graphManager.LinkGraph;
     }
 
     public Dictionary<ILinkGraphElement, Coloring> OnColoring(int row, int col, int possibility)
@@ -118,7 +127,7 @@ public class PreComputer
         return DoColor(new PossibilityCoordinate(row, col, possibility), Coloring.Off);
     }
 
-    private LinePositions DoPossibilityPositionsInRow(int row, int number)
+    private LinePositions DoRowPositions(int row, int number)
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
@@ -129,7 +138,7 @@ public class PreComputer
         return result;
     }
     
-    private LinePositions DoPossibilityPositionsInColumn(int col, int number)
+    private LinePositions DoColumnPositions(int col, int number)
     {
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
@@ -141,7 +150,7 @@ public class PreComputer
         return result;
     }
     
-    private MiniGridPositions DoPossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    private MiniGridPositions DoMiniGridPositions(int miniRow, int miniCol, int number)
     {
         MiniGridPositions result = new(miniRow, miniCol);
         for (int i = 0; i < 3; i++)
@@ -159,7 +168,7 @@ public class PreComputer
         return result;
     }
 
-    private List<AlmostLockedSet> DoAllAls()
+    private List<AlmostLockedSet> DoAlmostLockedSets()
     {
         var result = new List<AlmostLockedSet>();
 
@@ -290,347 +299,6 @@ public class PreComputer
         }
 
         return false;
-    }
-
-    private LinkGraph<ILinkGraphElement> DoLinkGraph()
-    {
-        LinkGraph<ILinkGraphElement> graph = new();
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                foreach (var possibility in _view.Possibilities[row, col])
-                {
-                    PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
-                    
-                    //Row
-                    var ppir = DoPossibilityPositionsInRow(row, possibility);
-                    var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var c in ppir)
-                    {
-                        if (c != col)
-                        {
-                            graph.AddLink(current, new PossibilityCoordinate(row, c, possibility), strength);
-                        }
-                    }
-
-
-                    //Col
-                    var ppic = DoPossibilityPositionsInColumn(col, possibility);
-                    strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var r in ppic)
-                    {
-                        if (r != row)
-                        {
-                            graph.AddLink(current, new PossibilityCoordinate(r, col, possibility), strength);
-                        }
-                    }
-
-
-                    //MiniGrids
-                    var ppimn = DoPossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
-                    strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var pos in ppimn)
-                    {
-                        if (!(pos[0] == row && pos[1] == col))
-                        {
-                            graph.AddLink(current, new PossibilityCoordinate(pos[0], pos[1], possibility), strength);
-                        }
-                    }
-
-                    strength = _view.Possibilities[row, col].Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var pos in _view.Possibilities[row, col])
-                    {
-                        if (pos != possibility)
-                        {
-                            graph.AddLink(current, new PossibilityCoordinate(row, col, pos), strength);
-                        }
-                    }
-                }
-            }
-        }
-
-        for (int n = 1; n <= 9; n++)
-        {
-            for (int miniRow = 0; miniRow < 3; miniRow++)
-            {
-                for (int miniCol = 0; miniCol < 3; miniCol++)
-                {
-                    var ppimn = DoPossibilityPositionsInMiniGrid(miniRow, miniCol, n);
-                    if (ppimn.Count < 3) continue;
-                    SearchForPointingInMiniGrid(_view, graph, ppimn, miniRow, miniCol, n);
-                }
-            }
-        }
-        
-        SearchForAlmostNakedPossibilities(graph);
-
-
-        return graph;
-    }
-
-    private void SearchForAlmostNakedPossibilities(LinkGraph<ILinkGraphElement> graph)
-    {
-        foreach (var als in AllAls())
-        {
-            if (als.Coordinates.Length is < 2 or > 4) continue;
-
-            PossibilityCoordinate buffer = default;
-            bool found = false;
-            foreach (var possibility in als.Possibilities)
-            {
-                found = false;
-                foreach (var coord in als.Coordinates)
-                {
-                    if (!_view.Possibilities[coord.Row, coord.Col].Peek(possibility)) continue;
-
-                    if (!found)
-                    {
-                        buffer = new PossibilityCoordinate(coord.Row, coord.Col, possibility); 
-                        found = true;
-                    }
-                    else
-                    {
-                        found = false;
-                        break;
-                    }
-                }
-
-                if (found)
-                {
-                    break;
-                }
-            }
-
-            if (!found) continue;
-
-            //Almost naked possibility found
-            CoordinatePossibilities[] buildUp = new CoordinatePossibilities[als.Coordinates.Length];
-            for (int i = 0; i < als.Coordinates.Length; i++)
-            {
-                buildUp[i] = new CoordinatePossibilities(als.Coordinates[i],
-                    _view.Possibilities[als.Coordinates[i].Row, als.Coordinates[i].Col]);
-            }
-
-            AlmostNakedPossibilities anp = new AlmostNakedPossibilities(buildUp, buffer);
-            graph.AddLink(buffer, anp, LinkStrength.Strong, LinkType.MonoDirectional);
-
-            bool sameRow = true;
-            int sharedRow = anp.CoordinatePossibilities[0].Coordinate.Row;
-            bool sameCol = true;
-            int sharedCol = anp.CoordinatePossibilities[0].Coordinate.Col;
-            bool sameMini = true;
-            int sharedMiniRow = anp.CoordinatePossibilities[0].Coordinate.Row / 3;
-            int sharedMiniCol = anp.CoordinatePossibilities[0].Coordinate.Col / 3;
-
-            for (int i = 1; i < anp.CoordinatePossibilities.Length; i++)
-            {
-                if (anp.CoordinatePossibilities[i].Coordinate.Row != sharedRow) sameRow = false;
-                if (anp.CoordinatePossibilities[i].Coordinate.Col != sharedCol) sameCol = false;
-                if (anp.CoordinatePossibilities[i].Coordinate.Row / 3 != sharedMiniRow ||
-                    anp.CoordinatePossibilities[i].Coordinate.Col / 3 != sharedMiniCol) sameMini = false;
-            }
-
-            foreach (var possibility in als.Possibilities)
-            {
-                if (possibility == buffer.Possibility) continue;
-                if (sameRow)
-                {
-                    for (int col = 0; col < 9; col++)
-                    {
-                        if (!_view.Possibilities[sharedRow, col].Peek(possibility)) continue;
-
-                        Coordinate current = new Coordinate(sharedRow, col);
-                        if (als.Contains(current)) continue;
-                        
-                        graph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
-                            LinkStrength.Weak, LinkType.MonoDirectional);
-                    }
-                }
-
-                if (sameCol)
-                {
-                    for (int row = 0; row < 9; row++)
-                    {
-                        if (!_view.Possibilities[row, sharedCol].Peek(possibility)) continue;
-                        
-                        Coordinate current = new Coordinate(row, sharedCol);
-                        if (als.Contains(current)) continue;
-                        
-                        graph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
-                            LinkStrength.Weak, LinkType.MonoDirectional);
-                    }
-                }
-
-                if (sameMini)
-                {
-                    for (int gridRow = 0; gridRow < 3; gridRow++)
-                    {
-                        for(int gridCol = 0; gridCol < 3; gridCol++)
-                        {
-                            int row = sharedMiniRow * 3 + gridRow;
-                            int col = sharedMiniCol * 3 + gridCol;
-                            
-                            if (!_view.Possibilities[row, col].Peek(possibility)) continue;
-                        
-                            Coordinate current = new Coordinate(row, col);
-                            if (als.Contains(current)) continue;
-                        
-                            graph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
-                                LinkStrength.Weak, LinkType.MonoDirectional);
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,
-        int miniCol, int numba)
-    {
-        for (int gridRow = 0; gridRow < 3; gridRow++)
-        {
-            var colPos = ppimn.OnGridRow(gridRow);
-            if (colPos.Count > 1)
-            {
-                List<PossibilityCoordinate> singles = new();
-                List<PointingColumn> pcs = new();
-                for (int gridCol = 0; gridCol < 3; gridCol++)
-                {
-                    int buffer = -1;
-                    for (int a = 0; a < 3; a++)
-                    {
-                        if (a == gridRow) continue;
-                        if (ppimn.PeekFromGridPositions(a, gridCol))
-                        {
-                            singles.Add(new PossibilityCoordinate(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
-                            if (buffer == -1) buffer = a;
-                            else pcs.Add(new PointingColumn(numba, miniCol * 3 + gridCol,
-                                miniRow * 3 + a, miniRow * 3 + buffer));
-                        }
-                    }
-                }
-
-                var singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
-                var current = new PointingRow(numba, miniRow * 3 + gridRow, colPos);
-
-                foreach (var single in singles)
-                {
-                    graph.AddLink(current, single, singleStrength);
-                }
-
-                foreach (var pc in pcs)
-                {
-                    graph.AddLink(current, pc, pcsStrength);
-                }
-                
-                singles.Clear();
-                var prs = new List<PointingRow>();
-
-                for (int miniCol2 = 0; miniCol2 < 3; miniCol2++)
-                {
-                    if (miniCol == miniCol2) continue;
-
-                    List<PossibilityCoordinate> aligned = new();
-                    for (int gridCol = 0; gridCol < 3; gridCol++)
-                    {
-                        int row = miniRow * 3 + gridRow;
-                        int col = miniCol2 * 3 + gridCol;
-
-                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
-                    }
-                    
-                    singles.AddRange(aligned);
-                    if(aligned.Count > 1) prs.Add(new PointingRow(numba, aligned));
-                }
-                
-                singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
-
-                foreach (var single in singles)
-                {
-                    graph.AddLink(current, single, singleStrength);
-                }
-
-                foreach (var pr in prs)
-                {
-                    graph.AddLink(current, pr, prsStrength);
-                }
-            }
-        }
-        
-        for (int gridCol = 0; gridCol < 3; gridCol++)
-        {
-            var rowPos = ppimn.OnGridColumn(gridCol);
-            if (rowPos.Count > 1)
-            {
-                List<PossibilityCoordinate> singles = new();
-                List<PointingRow> prs = new();
-                for (int gridRow = 0; gridRow < 3; gridRow++)
-                {
-                    int buffer = -1;
-                    for (int a = 0; a < 3; a++)
-                    {
-                        if (a == gridCol) continue;
-                        if (ppimn.PeekFromGridPositions(gridRow, a))
-                        {
-                            singles.Add(new PossibilityCoordinate(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
-                            if (buffer == -1) buffer = a;
-                            else prs.Add(new PointingRow(numba, miniRow * 3 + gridRow,
-                                miniCol * 3 + a, miniCol * 3 + buffer));
-                        }
-                    }
-                }
-
-                var singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var prsStrength = prs.Count == 1 && singles.Count == prs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
-                var current = new PointingColumn(numba, miniCol * 3 + gridCol, rowPos);
-
-                foreach (var single in singles)
-                {
-                    graph.AddLink(current, single, singleStrength);
-                }
-
-                foreach (var pc in prs)
-                {
-                    graph.AddLink(current, pc, prsStrength);
-                }
-                
-                singles.Clear();
-                var pcs = new List<PointingColumn>();
-
-                for (int miniRow2 = 0; miniRow2 < 3; miniRow2++)
-                {
-                    if (miniRow == miniRow2) continue;
-
-                    List<PossibilityCoordinate> aligned = new();
-                    for (int gridRow = 0; gridRow < 3; gridRow++)
-                    {
-                        int row = miniRow2 * 3 + gridRow;
-                        int col = miniCol * 3 + gridCol;
-
-                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
-                    }
-                    
-                    singles.AddRange(aligned);
-                    if(aligned.Count > 1) pcs.Add(new PointingColumn(numba, aligned));
-                }
-                
-                singleStrength = singles.Count == 1 ? LinkStrength.Strong : LinkStrength.Weak;
-                var pcsStrength = pcs.Count == 1 && singles.Count == pcs[0].Count ? LinkStrength.Strong : LinkStrength.Weak;
-
-                foreach (var single in singles)
-                {
-                    graph.AddLink(current, single, singleStrength);
-                }
-
-                foreach (var pc in pcs)
-                {
-                    graph.AddLink(current, pc, pcsStrength);
-                }
-            }
-        }
     }
 
     private Dictionary<ILinkGraphElement, Coloring> DoColor(ILinkGraphElement start, Coloring firstColor)

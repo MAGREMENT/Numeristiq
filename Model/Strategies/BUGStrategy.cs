@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
+using Model.Solver;
 
 namespace Model.Strategies;
 
@@ -16,9 +18,9 @@ public class BUGStrategy : IStrategy
         {
             foreach (var possibility in strategyManager.Possibilities[triple[0], triple[1]])
             {
-                if (strategyManager.PossibilityPositionsInColumn(triple[1], possibility).Count == 3 &&
-                    strategyManager.PossibilityPositionsInRow(triple[0], possibility).Count == 3 &&
-                    strategyManager.PossibilityPositionsInMiniGrid(triple[0] / 3, triple[1] / 3, possibility).Count == 3)
+                if (strategyManager.ColumnPositions(triple[1], possibility).Count == 3 &&
+                    strategyManager.RowPositions(triple[0], possibility).Count == 3 &&
+                    strategyManager.MiniGridPositions(triple[0] / 3, triple[1] / 3, possibility).Count == 3)
                 {
                     strategyManager.ChangeBuffer.AddDefinitiveToAdd(possibility, triple[0], triple[1]);
                     break;
@@ -59,7 +61,6 @@ public class BUGReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+        return ChangeReport.Default(changes);
     }
 }

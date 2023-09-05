@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media;
 using Model;
+using Model.Changes;
 using Model.Logs;
 
 namespace SudokuSolver;

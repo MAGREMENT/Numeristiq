@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Possibilities;
+using Model.Solver;
+using Model.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.StrategiesUtil;
@@ -14,7 +16,7 @@ public static class CoordinateUtils
                 && col1 / 3 == col2 / 3);
     }
     
-    public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO : refactor (optimize)
     {
         for (int row = 0; row < 9; row++)
         {

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -58,8 +60,8 @@ public class GridFormationStrategy : IStrategy
         visited.Add(unitToSearch);
         
         var current = unit == Unit.Row
-            ? strategyManager.PossibilityPositionsInRow(unitToSearch, number)
-            : strategyManager.PossibilityPositionsInColumn(unitToSearch, number);
+            ? strategyManager.RowPositions(unitToSearch, number)
+            : strategyManager.ColumnPositions(unitToSearch, number);
         if (current.Count > _type || current.Count < 2) return;
 
         var newMashed = mashed.Mash(current);
@@ -121,13 +123,13 @@ public class GridFormationReportBuilder : IChangeReportBuilder
                 if (manager.Possibilities[row, col].Peek(_number)) coords.Add(new Coordinate(row, col));
             }
         }
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in coords)
             {
                 lighter.HighlightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

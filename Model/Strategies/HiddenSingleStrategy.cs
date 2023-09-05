@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Changes;
+using Model.Solver;
 
 namespace Model.Strategies;
 
@@ -14,13 +16,13 @@ public class HiddenSingleStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.PossibilityPositionsInRow(row, number);
+                var ppir = strategyManager.RowPositions(row, number);
                 if (ppir.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, row, ppir.First());
             }
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
+                var ppic = strategyManager.ColumnPositions(col, number);
                 if (ppic.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, ppic.First(), col);
             }
 
@@ -28,7 +30,7 @@ public class HiddenSingleStrategy : IStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+                    var ppimn = strategyManager.MiniGridPositions(miniRow, miniCol, number);
                     if (ppimn.Count == 1)
                     {
                         var pos = ppimn.First();
@@ -47,7 +49,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes),
-            "The numbers were added for being the only one in their unit");
+            "The numbers were added for being the only one in their unit",
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Changes;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -234,13 +236,13 @@ public class XYWingReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             lighter.HighlightCell(_opposite.Row, _opposite.Col, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_one.Row, _one.Col, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_two.Row, _two.Col, ChangeColoration.CauseOffOne);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

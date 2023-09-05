@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -281,7 +283,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
                 foreach (var single in _pair)
@@ -291,7 +293,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(_row, _col, ChangeColoration.CauseOffOne);
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, "");
+            });
     }
 }
 
@@ -314,7 +316,7 @@ public class AvoidableRectanglesWithBiValuesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
                 foreach (var single in _pair)
@@ -326,7 +328,7 @@ public class AvoidableRectanglesWithBiValuesReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_pair[0].Number, _row2, _col2, ChangeColoration.CauseOffOne);
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, "");
+            });
     }
 }
 
@@ -343,7 +345,7 @@ public class AvoidableRectanglesWithAlsReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
                 foreach (var single in _pair)
@@ -357,6 +359,6 @@ public class AvoidableRectanglesWithAlsReportBuilder : IChangeReportBuilder
                 }
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, "");
+            });
     }
 }

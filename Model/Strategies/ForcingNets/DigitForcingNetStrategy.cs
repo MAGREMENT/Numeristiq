@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Strategies.ForcingNets;
 

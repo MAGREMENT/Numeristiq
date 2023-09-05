@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
+using Model.Solver;
 
 namespace Model.Logs;
 

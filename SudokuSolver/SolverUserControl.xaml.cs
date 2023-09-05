@@ -5,9 +5,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Model;
+using Model.Changes;
 using Model.Logs;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace SudokuSolver;
 

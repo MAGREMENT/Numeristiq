@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -16,7 +18,7 @@ public class BoxLineReductionStrategy : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppir = strategyManager.PossibilityPositionsInRow(row, number);
+                var ppir = strategyManager.RowPositions(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int miniRow = row / 3;
@@ -43,7 +45,7 @@ public class BoxLineReductionStrategy : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
+                var ppic = strategyManager.ColumnPositions(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
                     int miniRow = ppic.First() / 3;
@@ -102,7 +104,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
                 break;
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in causes)
             {
@@ -110,6 +112,6 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

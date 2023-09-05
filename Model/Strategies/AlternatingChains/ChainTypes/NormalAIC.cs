@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainTypes;
@@ -23,7 +25,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
                     PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
                     
                     //Row
-                    var ppir = view.PossibilityPositionsInRow(row, possibility);
+                    var ppir = view.RowPositions(row, possibility);
                     var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var c in ppir)
                     {
@@ -35,7 +37,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
 
 
                     //Col
-                    var ppic = view.PossibilityPositionsInColumn(col, possibility);
+                    var ppic = view.ColumnPositions(col, possibility);
                     strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var r in ppic)
                     {
@@ -47,7 +49,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
 
 
                     //MiniGrids
-                    var ppimn = view.PossibilityPositionsInMiniGrid(row / 3, col / 3, possibility);
+                    var ppimn = view.MiniGridPositions(row / 3, col / 3, possibility);
                     strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var pos in ppimn)
                     {

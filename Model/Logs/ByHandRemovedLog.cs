@@ -1,4 +1,6 @@
-﻿namespace Model.Logs;
+﻿using Model.Changes;
+
+namespace Model.Logs;
 
 public class ByHandRemovedLog : ISolverLog
 {

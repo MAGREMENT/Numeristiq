@@ -1,4 +1,6 @@
-﻿namespace Model;
+﻿using System.Collections.Generic;
+
+namespace Model.Changes;
 
 public class ChangeReport
 {
@@ -6,7 +8,7 @@ public class ChangeReport
     public HighlightManager HighlightManager { get; }
     public string Changes { get; }
     
-    public ChangeReport(string changes, HighlightSolver solverHighLighter, string explanation)
+    public ChangeReport(string changes,  string explanation, HighlightSolver solverHighLighter)
     {
         Explanation = explanation;
         Changes = changes;
@@ -18,5 +20,11 @@ public class ChangeReport
         Explanation = explanation;
         Changes = changes;
         HighlightManager = new HighlightManager(solverHighLighter);
+    }
+
+    public static ChangeReport Default(List<SolverChange> changes)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 }

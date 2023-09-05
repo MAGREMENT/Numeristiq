@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Positions;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainTypes;
@@ -20,7 +22,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
             for (int row = 0; row < 9; row++)
             {
-                var ppir = view.PossibilityPositionsInRow(row, n);
+                var ppir = view.RowPositions(row, n);
                 var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                 var rowFinal = row;
                 ppir.ForEachCombination((one, two) =>
@@ -32,7 +34,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = view.PossibilityPositionsInColumn(col, n);
+                var ppic = view.ColumnPositions(col, n);
                 var strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                 var colFinal = col;
                 ppic.ForEachCombination((one, two) =>
@@ -46,7 +48,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = view.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
+                    var ppimn = view.MiniGridPositions(miniRow, miniCol, n);
                     var strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     ppimn.ForEachCombination((one, two) =>
                     {
@@ -77,7 +79,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                     for (int a = 0; a < 3; a++)
                     {
                         if (a == gridRow) continue;
-                        if (ppimn.PeekFromGridPositions(a, gridCol))
+                        if (ppimn.Peek(a, gridCol))
                         {
                             singles.Add(new PossibilityCoordinate(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
                             if (buffer == -1) buffer = a;
@@ -149,7 +151,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                     for (int a = 0; a < 3; a++)
                     {
                         if (a == gridCol) continue;
-                        if (ppimn.PeekFromGridPositions(gridRow, a))
+                        if (ppimn.Peek(gridRow, a))
                         {
                             singles.Add(new PossibilityCoordinate(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
                             if (buffer == -1) buffer = a;

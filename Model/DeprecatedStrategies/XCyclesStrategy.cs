@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.DeprecatedStrategies;
@@ -20,7 +21,7 @@ public class XCyclesStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                var pos = strategyManager.PossibilityPositionsInRow(row, n);
+                var pos = strategyManager.RowPositions(row, n);
                 if (pos.Count == 2)
                 {
                     int[] array = pos.ToArray();
@@ -32,7 +33,7 @@ public class XCyclesStrategy : IStrategy
             //Cols
             for (int col = 0; col < 9; col++)
             {
-                var pos = strategyManager.PossibilityPositionsInColumn(col, n);
+                var pos = strategyManager.ColumnPositions(col, n);
                 if (pos.Count == 2)
                 {
                     int[] array = pos.ToArray();
@@ -46,7 +47,7 @@ public class XCyclesStrategy : IStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var pos = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, n);
+                    var pos = strategyManager.MiniGridPositions(miniRow, miniCol, n);
                     if (pos.Count == 2)
                     {
                         int[][] array = pos.ToArray();
@@ -146,7 +147,7 @@ public class XCyclesStrategy : IStrategy
             switch (i)
             {
                 case 0 :
-                    var posRow = strategyManager.PossibilityPositionsInRow(current.Row, number);
+                    var posRow = strategyManager.RowPositions(current.Row, number);
                     if (posRow.Count >= 2)
                     {
                         foreach (var col in posRow)
@@ -160,7 +161,7 @@ public class XCyclesStrategy : IStrategy
 
                     break;
                 case 1 :
-                    var posCol = strategyManager.PossibilityPositionsInColumn(current.Col, number);
+                    var posCol = strategyManager.ColumnPositions(current.Col, number);
                     if (posCol.Count >= 2)
                     {
                         foreach (var row in posCol)
@@ -174,7 +175,7 @@ public class XCyclesStrategy : IStrategy
 
                     break;
                 case 2 :
-                    var posMini = strategyManager.PossibilityPositionsInMiniGrid(current.Row / 3,
+                    var posMini = strategyManager.MiniGridPositions(current.Row / 3,
                         current.Col / 3, number);
                     if (posMini.Count >= 2)
                     {

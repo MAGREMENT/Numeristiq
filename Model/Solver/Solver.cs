@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Model.Changes;
 using Model.Logs;
 using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
-namespace Model;
+namespace Model.Solver;
 
 public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
 {
@@ -209,24 +211,24 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public ChangeBuffer ChangeBuffer { get; }
 
-    public LinePositions PossibilityPositionsInRow(int row, int number)
+    public LinePositions RowPositions(int row, int number)
     {
-        return _pre.PossibilityPositionsInRow(row, number);
+        return _pre.RowPositions(row, number);
     }
     
-    public LinePositions PossibilityPositionsInColumn(int col, int number)
+    public LinePositions ColumnPositions(int col, int number)
     {
-        return _pre.PossibilityPositionsInColumn(col, number);
+        return _pre.ColumnPositions(col, number);
     }
     
-    public MiniGridPositions PossibilityPositionsInMiniGrid(int miniRow, int miniCol, int number)
+    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number)
     {
-        return _pre.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+        return _pre.MiniGridPositions(miniRow, miniCol, number);
     }
 
-    public List<AlmostLockedSet> AllAls()
+    public List<AlmostLockedSet> AlmostLockedSets()
     {
-        return _pre.AllAls();
+        return _pre.AlmostLockedSets();
     }
 
     public LinkGraph<ILinkGraphElement> LinkGraph()

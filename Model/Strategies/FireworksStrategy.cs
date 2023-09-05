@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -157,7 +159,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var firework in _fireworks)
@@ -173,6 +175,6 @@ public class FireworksReportBuilder : IChangeReportBuilder
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 
 namespace Model.Strategies;
 
@@ -19,7 +21,7 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.PossibilityPositionsInRow(row, n);
+                var ppir = strategyManager.RowPositions(row, n);
                 if (ppir.Count == 2)
                 {
                     if (!dict.TryAdd(ppir, row))
@@ -33,7 +35,7 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.PossibilityPositionsInColumn(col, n);
+                var ppic = strategyManager.ColumnPositions(col, n);
                 if (ppic.Count == 2)
                 {
                     if (!dict.TryAdd(ppic, col))
@@ -97,7 +99,7 @@ public class XWingReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var other in _linePos)
             {
@@ -115,6 +117,6 @@ public class XWingReportBuilder : IChangeReportBuilder
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Model;
+﻿using Model.Solver;
+
+namespace Model;
 
 public interface IStrategy
 {

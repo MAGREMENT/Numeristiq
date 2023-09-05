@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Strategies;
 
@@ -177,7 +180,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
     
     private void InitChain(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web, PossibilityCoordinateColoring current)
     {
-        var ppir = strategyManager.PossibilityPositionsInRow(current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Possibility);
+        var ppir = strategyManager.RowPositions(current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Possibility);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
@@ -191,7 +194,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
             }
         }
         
-        var ppic = strategyManager.PossibilityPositionsInColumn(current.PossibilityCoordinate.Col, current.PossibilityCoordinate.Possibility);
+        var ppic = strategyManager.ColumnPositions(current.PossibilityCoordinate.Col, current.PossibilityCoordinate.Possibility);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
@@ -205,7 +208,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy {
             }
         }
         
-        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.PossibilityCoordinate.Row / 3, current.PossibilityCoordinate.Col / 3, current.PossibilityCoordinate.Possibility);
+        var ppimn = strategyManager.MiniGridPositions(current.PossibilityCoordinate.Row / 3, current.PossibilityCoordinate.Col / 3, current.PossibilityCoordinate.Possibility);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
@@ -245,7 +248,7 @@ public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             IChangeReportBuilder.HighlightChanges(lighter, changes);
             
@@ -262,6 +265,6 @@ public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
                         new PossibilityCoordinate(coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col, coord.PossibilityCoordinate.Possibility), LinkStrength.Strong);
                 }
             }
-        }, "");
+        });
     }
 }

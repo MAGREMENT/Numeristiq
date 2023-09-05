@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Solver;
 
 namespace Model.Strategies;
 
@@ -38,7 +39,7 @@ public class TrialAndMatchStrategy : IStrategy //TODO fixme
 
         foreach (var possibility in possibilities)
         {
-            Solver simulation = strategyManager.Copy();
+            Solver.Solver simulation = strategyManager.Copy();
             simulation.ExcludeStrategies(StrategyLevel.ByTrial);
             simulation.AddDefinitiveNumber(possibility, row, col, this);
             simulation.Solve();

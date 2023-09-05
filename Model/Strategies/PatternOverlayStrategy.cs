@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic; 
+﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -182,7 +184,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
 {
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 }

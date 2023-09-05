@@ -29,7 +29,7 @@ public class MiniGridPositions : IEnumerable<int[]>
 
     public void Add(int gridRow, int gridCol)
     {
-        if (!PeekFromGridPositions(gridRow, gridCol)) Count++;
+        if (!Peek(gridRow, gridCol)) Count++;
         _pos |= 1 << (gridRow * 3 + gridCol);
     }
     
@@ -52,12 +52,12 @@ public class MiniGridPositions : IEnumerable<int[]>
         _pos |= 1 << gridNumber;
     }
 
-    public bool PeekFromGridPositions(int gridRow, int gridCol)
+    public bool Peek(int gridRow, int gridCol)
     {
         return ((_pos >> (gridRow * 3 + gridCol)) & 1) > 0;
     }
 
-    public bool PeekFromGridNumber(int gridNumber)
+    public bool Peek(int gridNumber)
     {
         return ((_pos >> gridNumber) & 1) > 0;
     }
@@ -95,7 +95,7 @@ public class MiniGridPositions : IEnumerable<int[]>
         var result = "";
         for (int i = 0; i < 9; i++)
         {
-            if (PeekFromGridNumber(i)) result += (_startRow + i / 3) + ", " + (_startCol + i % 3) + " ";
+            if (Peek(i)) result += (_startRow + i / 3) + ", " + (_startCol + i % 3) + " ";
         }
 
         return result;
@@ -127,7 +127,7 @@ public class MiniGridPositions : IEnumerable<int[]>
     {
         for (int i = 0; i < 9; i++)
         {
-            if(((_pos >> i) & 1) > 0) yield return new[] {_startRow + i / 3, _startCol + i % 3};
+            if(Peek(i)) yield return new[] {_startRow + i / 3, _startCol + i % 3};
         }
     }
 

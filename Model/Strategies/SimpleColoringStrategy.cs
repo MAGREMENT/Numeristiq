@@ -1,183 +1,185 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Strategies;
 
 public class SimpleColoringStrategy : IStrategy
 {
     public string Name => "Simple coloring";
-    
     public StrategyLevel Difficulty => StrategyLevel.Medium;
     public int Score { get; set; }
-
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        for (int number = 1; number <= 9; number++)
-        {
-            List<ColorableWeb<CoordinateColoring>> chains = new();
-            for (int row = 0; row < 9; row++)
-            {
-                for (int col = 0; col < 9; col++)
-                {
-                    if (strategyManager.Possibilities[row, col].Peek(number))
-                    {
-                        CoordinateColoring current = new(row, col);
-                        if (DoesAnyChainContains(chains, current)) continue;
-                        
-                        ColorableWeb<CoordinateColoring> web = new();
-                        InitChain(strategyManager, web, current, number);
-                        if (web.Count >= 2)
-                        {
-                            web.StartColoring();
-                            chains.Add(web);
-                        }
-                    }
-                }
-            }
+        var manager = new LinkGraphManager(strategyManager);
+        manager.Construct(ConstructRule.UnitStrongLink);
+        var graph = manager.LinkGraph;
 
-            foreach (var chain in chains)
-            {
-                SearchForTwiceInTheSameUnit(strategyManager, number, chain);
-                SearchForTwoColorsElsewhere(strategyManager, number, chain);
-                
-                strategyManager.ChangeBuffer.Push(this,
-                    new SimpleColoringReportBuilder(number, chain));
-            }
+        foreach (var coloredVertices in Color(graph))
+        {
+            if(!SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
+                SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
+
+            if(strategyManager.ChangeBuffer.NotEmpty())
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
         }
     }
 
-    private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<CoordinateColoring> web)
+    private bool SearchForTwiceInTheSameUnit(IStrategyManager strategyManager,
+        ColoredVertices<PossibilityCoordinate> cv)
     {
-        web.ForEachCombinationOfTwo((one, two) =>
+        for (int i = 0; i < cv.On.Count; i++)
         {
-            if (one.Coordinate.ShareAUnit(two.Coordinate) && one.Coloring == two.Coloring)
+            for (int j = i + 1; j < cv.On.Count; j++)
             {
-                foreach (var coord in web)
+                if (cv.On[i].ShareAUnit(cv.On[j]))
                 {
-                    if (coord.Coloring == one.Coloring) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, coord.Coordinate.Row, coord.Coordinate.Col);
-                    else strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, coord.Coordinate.Row, coord.Coordinate.Col);
-                }
-            }
-
-            return false;
-        });
-    }
-
-    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
-        int number, ColorableWeb<CoordinateColoring> web)
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (strategyManager.Possibilities[row, col].Peek(number))
-                {
-                    CoordinateColoring current = new(row, col);
-                    if (web.Contains(current)) continue;
-
-                    bool[] onAndOff = new bool[2];
-                    foreach (var coord in web)
+                    foreach (var coord in cv.Off)
                     {
-                        if (coord.Coordinate.ShareAUnit(current.Coordinate))
-                        {
-                            onAndOff[(int)(coord.Coloring - 1)] = true;
-                            if (onAndOff[0] && onAndOff[1])
-                            {
-                                strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
-                                break;
-                            }
-                        }
+                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(coord);
                     }
-                }
-            }
-        }
-    }
 
-    private void InitChain(IStrategyManager strategyManager, ColorableWeb<CoordinateColoring> web, CoordinateColoring current, int number)
-    {
-        var ppir = strategyManager.PossibilityPositionsInRow(current.Coordinate.Row, number);
-        if (ppir.Count == 2)
-        {
-            foreach (var col in ppir)
-            {
-                if (col != current.Coordinate.Col)
-                {
-                    CoordinateColoring next = new CoordinateColoring(current.Coordinate.Row, col);
-                    if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
-                    break;
+                    return true;
                 }
             }
         }
         
-        var ppic = strategyManager.PossibilityPositionsInColumn(current.Coordinate.Col, number);
-        if (ppic.Count == 2)
+        for (int i = 0; i < cv.Off.Count; i++)
         {
-            foreach (var row in ppic)
+            for (int j = i + 1; j < cv.Off.Count; j++)
             {
-                if (row != current.Coordinate.Row)
+                if (cv.Off[i].ShareAUnit(cv.Off[j]))
                 {
-                    CoordinateColoring next = new CoordinateColoring(row, current.Coordinate.Col);
-                    if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
-                    break;
-                }
-            }
-        }
-        
-        var ppimn = strategyManager.PossibilityPositionsInMiniGrid(current.Coordinate.Row / 3, current.Coordinate.Col / 3, number);
-        if (ppimn.Count == 2)
-        {
-            foreach (var pos in ppimn)
-            {
-                if (pos[0] != current.Coordinate.Row && pos[1] != current.Coordinate.Col)
-                {
-                    CoordinateColoring next = new CoordinateColoring(pos[0], pos[1]);
-                    if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
-                    break;
-                }
-            }
-        }
-    }
+                    foreach (var coord in cv.On)
+                    {
+                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(coord);
+                    }
 
-    private static bool DoesAnyChainContains(IEnumerable<ColorableWeb<CoordinateColoring>> chains, CoordinateColoring coord)
-    {
-        foreach (var chain in chains)
-        {
-            if (chain.Contains(coord)) return true;
+                    return true;
+                }
+            }
         }
 
         return false;
     }
+    
+    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
+        ColoredVertices<PossibilityCoordinate> cv)
+    {
+        foreach (var on in cv.On)
+        {
+            foreach (var off in cv.Off)
+            {
+                if(on.Row == off.Row || on.Col == off.Col) continue;
+
+                foreach (var coord in on.SharedSeenCells(off))
+                {
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(on.Possibility, coord.Row, coord.Col);
+                }
+            }
+        }
+    }
+
+    private List<ColoredVertices<PossibilityCoordinate>> Color(LinkGraph<ILinkGraphElement> graph)
+    {
+        var result = new List<ColoredVertices<PossibilityCoordinate>>();
+        HashSet<ILinkGraphElement> visited = new();
+
+        foreach (var start in graph)
+        {
+            if (visited.Contains(start)) continue;
+
+            ColoredVertices<PossibilityCoordinate> cv = new();
+            cv.Add((PossibilityCoordinate)start, Coloring.On);
+            visited.Add(start);
+
+            Queue<ColoredElement> queue = new();
+            queue.Enqueue(new ColoredElement(start, Coloring.On));
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
+
+                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
+                {
+                    if (visited.Contains(friend)) continue;
+
+                    cv.Add((PossibilityCoordinate)friend, opposite);
+                    visited.Add(friend);
+                    queue.Enqueue(new ColoredElement(friend, opposite));
+                }
+                
+                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
+                {
+                    if (visited.Contains(friend)) continue;
+
+                    cv.Add((PossibilityCoordinate)friend, opposite);
+                    visited.Add(friend);
+                    queue.Enqueue(new ColoredElement(friend, opposite));
+                }
+            }
+
+            result.Add(cv);
+        }
+
+        return result;
+    }
+}
+
+public class ColoredElement
+{
+    public ColoredElement(ILinkGraphElement element, Coloring coloring)
+    {
+        Element = element;
+        Coloring = coloring;
+    }
+
+    public ILinkGraphElement Element { get; }
+    public Coloring Coloring { get; }
 }
 
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
-    private readonly int _number;
-    private readonly ColorableWeb<CoordinateColoring> _web;
+    private readonly ColoredVertices<PossibilityCoordinate> _vertices;
 
-    public SimpleColoringReportBuilder(int number, ColorableWeb<CoordinateColoring> web)
+    public SimpleColoringReportBuilder(ColoredVertices<PossibilityCoordinate> vertices)
     {
-        _number = number;
-        _web = web;
+        _vertices = vertices;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
-        {
-            foreach (var coord in _web)
-            {
-                lighter.HighlightPossibility(_number, coord.Coordinate.Row, coord.Coordinate.Col, coord.Coloring == Coloring.On ?
-                    ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
+        List<Link<PossibilityCoordinate>> links = new();
 
-                foreach (var friend in _web.GetLinkedVertices(coord))
-                {
-                    if (friend.Coloring == Coloring.Off) continue;
-                    lighter.CreateLink(new PossibilityCoordinate(friend.Coordinate.Row, friend.Coordinate.Col, _number),
-                        new PossibilityCoordinate(coord.Coordinate.Row, coord.Coordinate.Col, _number), LinkStrength.Strong);
-                }
+        foreach (var on in _vertices.On)
+        {
+            foreach (var off in _vertices.Off)
+            {
+                if (on.ShareAUnit(off)) links.Add(new Link<PossibilityCoordinate>(on, off));
+            }
+        }
+        
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            foreach (var link in links)
+            {
+                lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
             }
 
+            foreach (var coord in _vertices.On)
+            {
+                lighter.HighlightPossibility(coord, ChangeColoration.CauseOnOne);
+            }
+
+            foreach (var coord in _vertices.Off)
+            {
+                lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
+            }
+            
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

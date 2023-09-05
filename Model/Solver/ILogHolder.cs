@@ -1,4 +1,4 @@
-﻿namespace Model;
+﻿namespace Model.Solver;
 
 public interface ILogHolder
 {

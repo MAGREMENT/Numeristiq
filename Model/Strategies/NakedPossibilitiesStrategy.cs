@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -225,7 +227,7 @@ public class NakedPossibilitiesStrategy : IStrategy
                 int row = miniRow * 3 + gridNumber / 3;
                 int col = miniCol * 3 + gridNumber % 3;
                 
-                if (!except.PeekFromGridNumber(gridNumber)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
+                if (!except.Peek(gridNumber)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
             }
         }
         
@@ -276,7 +278,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
                 break;
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in coords)
             {
@@ -284,7 +286,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }
 
@@ -311,7 +313,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in coords)
             {
@@ -319,6 +321,6 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

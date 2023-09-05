@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Solver;
 using Model.StrategiesUtil;
 
-namespace Model;
+namespace Model.Changes;
 
 public class ChangeBuffer
 {
@@ -17,13 +18,23 @@ public class ChangeBuffer
 
     public void AddPossibilityToRemove(int possibility, int row, int col)
     {
-        if (!_m.Possibilities[row, col].Peek(possibility)) return;
-        _possibilityRemoved.Add(new PossibilityCoordinate(row, col, possibility));
+        AddPossibilityToRemove(new PossibilityCoordinate(row, col, possibility));
+    }
+
+    public void AddPossibilityToRemove(PossibilityCoordinate coord)
+    {
+        if (!_m.Possibilities[coord.Row, coord.Col].Peek(coord.Possibility)) return;
+        _possibilityRemoved.Add(coord);
     }
 
     public void AddDefinitiveToAdd(int number, int row, int col)
     {
-        _definitiveAdded.Add(new PossibilityCoordinate(row, col, number));
+        AddDefinitiveToAdd(new PossibilityCoordinate(row, col, number));
+    }
+
+    public void AddDefinitiveToAdd(PossibilityCoordinate coord)
+    {
+        _definitiveAdded.Add(coord);
     }
 
     public bool NotEmpty()

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Changes;
 using Model.Possibilities;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -13,7 +15,7 @@ public class AlmostLockedSetsStrategy : IStrategy
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        var allAls = strategyManager.AllAls();
+        var allAls = strategyManager.AlmostLockedSets();
 
         for (int i = 0; i < allAls.Count; i++)
         {
@@ -150,7 +152,7 @@ public class AlmostLockedSetsStrategy : IStrategy
                 bool ok = true;
                 foreach (var coord in coords)
                 {
-                    if (coord.Equals(current) || !coord.ShareAUnit(current))
+                    if (coord == current || !coord.ShareAUnit(current))
                     {
                         ok = false;
                         break;
@@ -209,7 +211,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var coord in _one.Coordinates)
             {
@@ -222,6 +224,6 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
-        }, "");
+        });
     }
 }

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
@@ -28,7 +30,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppic = strategyManager.PossibilityPositionsInRow(row, number);
+                var ppic = strategyManager.RowPositions(row, number);
                 if (ppic.Count == 0) continue;
 
                 var here = new LinePositions { row };
@@ -38,7 +40,7 @@ public class FinnedGridFormationStrategy : IStrategy
             
             for (int col = 0; col < 9; col++)
             {
-                var ppir = strategyManager.PossibilityPositionsInColumn(col, number);
+                var ppir = strategyManager.ColumnPositions(col, number);
                 if (ppir.Count == 0) continue;
 
                 var here = new LinePositions { col };
@@ -53,7 +55,7 @@ public class FinnedGridFormationStrategy : IStrategy
     {
         for (int row = start; row < 9; row++)
         {
-            var ppic = strategyManager.PossibilityPositionsInRow(row, number);
+            var ppic = strategyManager.RowPositions(row, number);
 
             var newMashed = mashed.Mash(ppic);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppic.Count) continue;
@@ -74,7 +76,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             if (visited.Peek(row)) continue;
 
-            var ppic = strategyManager.PossibilityPositionsInRow(row, number);
+            var ppic = strategyManager.RowPositions(row, number);
 
             int miniCol = -1;
 
@@ -117,7 +119,7 @@ public class FinnedGridFormationStrategy : IStrategy
     {
         for (int col = start; col < 9; col++)
         {
-            var ppir = strategyManager.PossibilityPositionsInColumn(col, number);
+            var ppir = strategyManager.ColumnPositions(col, number);
 
             var newMashed = mashed.Mash(ppir);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppir.Count) continue;
@@ -138,7 +140,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             if (visited.Peek(col)) continue;
 
-            var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
+            var ppic = strategyManager.ColumnPositions(col, number);
 
             int miniRow = -1;
 
@@ -222,7 +224,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
                 foreach (var coord in normal)
@@ -236,6 +238,6 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
                 }
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-            }, "");
+            });
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using Model.Changes;
 using Model.Positions;
+using Model.Solver;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Strategies.ForcingNets;
 
@@ -23,7 +26,7 @@ public class UnitForcingNetStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.PossibilityPositionsInRow(row, number);
+                var ppir = strategyManager.RowPositions(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -43,7 +46,7 @@ public class UnitForcingNetStrategy : IStrategy
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.PossibilityPositionsInColumn(col, number);
+                var ppic = strategyManager.ColumnPositions(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -65,7 +68,7 @@ public class UnitForcingNetStrategy : IStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.PossibilityPositionsInMiniGrid(miniRow, miniCol, number);
+                    var ppimn = strategyManager.MiniGridPositions(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
                     Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -161,8 +164,8 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
             };
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 }
 
@@ -212,7 +215,7 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
             };
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), "");
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 }
