@@ -13,7 +13,7 @@ public class XYChainStrategy : IStrategy
     public string Name => "XYChain";
     
     public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     

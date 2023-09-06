@@ -82,7 +82,8 @@ public static class Testing
         var solverIsTrash = 0;
         Solver.Solver solver = new Solver.Solver(new Sudoku())
         {
-            LogsManaged = false
+            LogsManaged = false,
+            StatisticsTracked = true
         };
         try
         {
@@ -122,7 +123,8 @@ public static class Testing
         Console.WriteLine("Strategy usage : ");
         foreach (var strategy in solver.Strategies)
         {
-            Console.WriteLine($"-{strategy.Name} : {strategy.Score}");
+            Console.WriteLine($"-{StringUtil.FillWithSpace(strategy.Name, 40)} => Usage : {strategy.Tracker.Usage} |" +
+                              $" Score : {strategy.Tracker.Score} | Time used : {strategy.Tracker.TimeUsed}");
         }
     }
 
@@ -177,7 +179,7 @@ public static class Testing
         Console.WriteLine("Count : " + pos.Count);
         foreach (var n in pos)
         {
-            Console.WriteLine("Has : " + n[0] + ", " + n[1]);
+            Console.WriteLine("Has : " + n.Row + ", " + n.Col);
         }
     }
 

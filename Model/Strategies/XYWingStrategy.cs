@@ -12,7 +12,7 @@ public class XYWingStrategy : IStrategy
     public string Name => "XYWing";
     
     public StrategyLevel Difficulty => StrategyLevel.Medium;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

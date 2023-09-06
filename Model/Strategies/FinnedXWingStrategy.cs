@@ -10,7 +10,7 @@ public class FinnedXWingStrategy : IStrategy
 {
     public string Name => "Finned XWing";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)

@@ -10,7 +10,7 @@ public class XCyclesStrategy : IStrategy
     public string Name { get; } = "XCycles";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -50,11 +50,11 @@ public class XCyclesStrategy : IStrategy
                     var pos = strategyManager.MiniGridPositions(miniRow, miniCol, n);
                     if (pos.Count == 2)
                     {
-                        int[][] array = pos.ToArray();
-                        strongLinks[2].Add(new Coordinate(array[0][0], array[0][1]),
-                            new Coordinate(array[1][0], array[1][1]));
-                        strongLinks[2].Add(new Coordinate(array[1][0], array[1][1]),
-                            new Coordinate(array[0][0], array[0][1]));
+                        Coordinate[] array = pos.ToArray();
+                        strongLinks[2].Add(new Coordinate(array[0].Row, array[0].Col),
+                            new Coordinate(array[1].Row, array[1].Col));
+                        strongLinks[2].Add(new Coordinate(array[1].Row, array[1].Col),
+                            new Coordinate(array[0].Row, array[0].Col));
                     }
                 }
             }
@@ -181,10 +181,9 @@ public class XCyclesStrategy : IStrategy
                     {
                         foreach (var pos in posMini)
                         {
-                            Coordinate coord = new Coordinate(pos[0], pos[1]);
-                            if (strongLinks[0].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 0));
-                            if (strongLinks[1].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 1));
-                            if (strongLinks[2].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 2));
+                            if (strongLinks[0].ContainsKey(pos)) result.Add(new CoordinateAndType(pos, 0));
+                            if (strongLinks[1].ContainsKey(pos)) result.Add(new CoordinateAndType(pos, 1));
+                            if (strongLinks[2].ContainsKey(pos)) result.Add(new CoordinateAndType(pos, 2));
                         } 
                     }
 

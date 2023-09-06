@@ -11,7 +11,7 @@ public class UniqueRectanglesStrategy : IStrategy
 {
     public string Name => "Unique rectangles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         Dictionary<BiValue, List<Coordinate>> map = new();

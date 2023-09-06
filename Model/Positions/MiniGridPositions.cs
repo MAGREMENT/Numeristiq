@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
-public class MiniGridPositions : IEnumerable<int[]>
+public class MiniGridPositions : IEnumerable<Coordinate>
 {
     private readonly int _startRow;
     private readonly int _startCol;
@@ -123,11 +123,11 @@ public class MiniGridPositions : IEnumerable<int[]>
         return pos;
     }
 
-    public IEnumerator<int[]> GetEnumerator()
+    public IEnumerator<Coordinate> GetEnumerator()
     {
         for (int i = 0; i < 9; i++)
         {
-            if(Peek(i)) yield return new[] {_startRow + i / 3, _startCol + i % 3};
+            if (Peek(i)) yield return new Coordinate(_startRow + i / 3, _startCol + i % 3);
         }
     }
 

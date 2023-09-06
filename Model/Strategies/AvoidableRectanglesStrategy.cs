@@ -10,7 +10,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 {
     public string Name => "Avoidable rectangles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private Sudoku? _originalBoard;
 

@@ -10,7 +10,7 @@ public class PatternOverlayStrategy : IStrategy
 {
     public string Name => "Pattern Overlay";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _max;
 

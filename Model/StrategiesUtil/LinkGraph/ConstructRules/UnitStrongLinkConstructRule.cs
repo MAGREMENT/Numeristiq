@@ -37,8 +37,8 @@ public class UnitStrongLinkConstructRule : IConstructRule
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();
-                    linkGraph.AddLink(new PossibilityCoordinate(asArray[0][0], asArray[0][1], number),
-                        new PossibilityCoordinate(asArray[1][0], asArray[1][1], number), LinkStrength.Strong);
+                    linkGraph.AddLink(new PossibilityCoordinate(asArray[0].Row, asArray[0].Col, number),
+                        new PossibilityCoordinate(asArray[1].Row, asArray[1].Col, number), LinkStrength.Strong);
                 }
             }
         }

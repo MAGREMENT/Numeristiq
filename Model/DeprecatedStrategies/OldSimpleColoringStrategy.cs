@@ -4,14 +4,14 @@ using Model.Solver;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LinkGraph;
 
-namespace Model.Strategies;
+namespace Model.DeprecatedStrategies;
 
 public class OldSimpleColoringStrategy : IStrategy
 {
     public string Name => "Simple coloring";
     
     public StrategyLevel Difficulty => StrategyLevel.Medium;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -131,9 +131,9 @@ public class OldSimpleColoringStrategy : IStrategy
         {
             foreach (var pos in ppimn)
             {
-                if (pos[0] != current.Coordinate.Row && pos[1] != current.Coordinate.Col)
+                if (pos.Row != current.Coordinate.Row && pos.Col != current.Coordinate.Col)
                 {
-                    CoordinateColoring next = new CoordinateColoring(pos[0], pos[1]);
+                    CoordinateColoring next = new CoordinateColoring(pos.Row, pos.Col);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }

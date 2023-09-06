@@ -9,7 +9,7 @@ public class BUGStrategy : IStrategy
     public string Name { get; } = "BUG";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Medium;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

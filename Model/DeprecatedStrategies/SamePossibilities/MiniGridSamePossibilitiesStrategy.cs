@@ -9,7 +9,7 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
     public string Name { get; } = "Same possibility";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

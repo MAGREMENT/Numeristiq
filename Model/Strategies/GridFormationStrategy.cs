@@ -14,7 +14,7 @@ public class GridFormationStrategy : IStrategy
     public string Name { get; }
 
     public StrategyLevel Difficulty { get; }
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
 

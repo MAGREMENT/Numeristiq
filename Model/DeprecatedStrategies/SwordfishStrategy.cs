@@ -9,7 +9,7 @@ public class SwordfishStrategy : IStrategy
     public string Name { get; } = "Swordfish";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

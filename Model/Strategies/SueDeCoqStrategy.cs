@@ -12,7 +12,7 @@ public class SueDeCoqStrategy : IStrategy
 {
     public string Name => "Sue-De-Coq";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)

@@ -11,7 +11,7 @@ public class BoxLineReductionStrategy : IStrategy
 {
     public string Name => "Box line reduction";
     public StrategyLevel Difficulty => StrategyLevel.Easy;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)

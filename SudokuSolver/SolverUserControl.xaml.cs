@@ -174,6 +174,13 @@ public partial class SolverUserControl : IHighlightable
     {
         _solver.Solve(true);
 
+        if (_solver.Logs.Count > 0 && _solver.Logs[^1].Id == _logBuffer)
+        {
+            RefreshSolver();
+            IsReady?.Invoke();
+            return;
+        }
+
         int start = _logBuffer;
         for (int n = _logBuffer; n < _solver.Logs.Count; n++)
         {

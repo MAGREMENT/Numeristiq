@@ -135,6 +135,13 @@ public readonly struct PossibilityCoordinate : ILinkGraphElement
         Row = row;
         Col = col;
     }
+
+    public PossibilityCoordinate(Coordinate coord, int possibility)
+    {
+        Possibility = possibility;
+        Row = coord.Row;
+        Col = coord.Col;
+    }
     
     public bool ShareAUnit(PossibilityCoordinate coord)
     {

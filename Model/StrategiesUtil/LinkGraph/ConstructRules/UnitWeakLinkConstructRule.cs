@@ -53,8 +53,8 @@ public class UnitWeakLinkConstructRule : IConstructRule
                     {
                         for (int j = i + 1; j < asArray.Length; j++)
                         {
-                            linkGraph.AddLink(new PossibilityCoordinate(asArray[i][0], asArray[i][1], number),
-                                new PossibilityCoordinate(asArray[j][0], asArray[j][1], number), LinkStrength.Weak);
+                            linkGraph.AddLink(new PossibilityCoordinate(asArray[i].Row, asArray[i].Col, number),
+                                new PossibilityCoordinate(asArray[j].Row, asArray[j].Col, number), LinkStrength.Weak);
                         }
                     }
                 }

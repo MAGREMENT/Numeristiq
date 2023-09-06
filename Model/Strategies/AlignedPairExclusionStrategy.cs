@@ -10,7 +10,7 @@ public class AlignedPairExclusionStrategy : IStrategy
 {
     public string Name => "Aligned pair exclusion";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _maxAlzSize;
 

@@ -6,10 +6,9 @@ namespace Model.DeprecatedStrategies.SamePossibilities;
 
 public class ColumnSamePossibilitiesStrategy : IStrategy
 {
-    public string Name { get; } = "Same possibility";
-    
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
-    public int Score { get; set; }
+    public string Name => "Same possibility";
+    public StrategyLevel Difficulty => StrategyLevel.Easy;
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

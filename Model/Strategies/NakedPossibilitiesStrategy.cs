@@ -12,7 +12,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     public string Name { get; }
 
     public StrategyLevel Difficulty { get; }
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
 
@@ -308,8 +308,8 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         {
             foreach (var possibility in _possibilities)
             {
-                if(manager.Possibilities[pos[0], pos[1]].Peek(possibility))
-                    coords.Add(new PossibilityCoordinate(pos[0], pos[1], possibility));
+                if(manager.Possibilities[pos.Row, pos.Col].Peek(possibility))
+                    coords.Add(new PossibilityCoordinate(pos.Row, pos.Col, possibility));
             }
         }
         

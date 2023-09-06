@@ -11,7 +11,7 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElemen
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly IAlternatingChainType<T> _chain;
     private readonly IAlternatingChainAlgorithm<T> _algorithm;

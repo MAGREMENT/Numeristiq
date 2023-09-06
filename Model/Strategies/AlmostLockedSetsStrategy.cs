@@ -11,7 +11,7 @@ public class AlmostLockedSetsStrategy : IStrategy
 {
     public string Name => "Almost locked sets";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

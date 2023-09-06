@@ -10,7 +10,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
     public string Name { get; } = "Alternating inference chain";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public long SearchCount { get; private set; }
 
@@ -194,9 +194,9 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     {
                         foreach (var pos in ppimn)
                         {
-                            if (!(pos[0] == row && pos[1] == col))
+                            if (!(pos.Row == row && pos.Col == col))
                             {
-                                resume.StrongLinks.Add(new PossibilityCoordinate(pos[0], pos[1], possibility));
+                                resume.StrongLinks.Add(new PossibilityCoordinate(pos, possibility));
                                 break;
                             }
                         }
@@ -265,9 +265,9 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     
                     foreach (var pos in ppimn)
                     {
-                        if (!(pos[0] == row && pos[1] == col))
+                        if (!(pos.Row == row && pos.Col == col))
                         {
-                            var coord = new PossibilityCoordinate(pos[0], pos[1], possibility);
+                            var coord = new PossibilityCoordinate(pos, possibility);
                             if (!map.TryGetValue(coord, out var links)) continue;
                             if (links.StrongLinks.Count > 0) resume!.WeakLinks.Add(coord);
                         }

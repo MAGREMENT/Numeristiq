@@ -8,7 +8,7 @@ public class NakedSingleStrategy : IStrategy
 {
     public string Name => "Naked single";
     public StrategyLevel Difficulty => StrategyLevel.Basic;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)

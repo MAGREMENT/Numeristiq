@@ -8,7 +8,7 @@ public class TrialAndMatchStrategy : IStrategy //TODO fixme
     public string Name { get; } = "Trial and match";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.ByTrial;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _maxNumberOfPossibility;
 

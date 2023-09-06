@@ -53,9 +53,9 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
                     strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var pos in ppimn)
                     {
-                        if (!(pos[0] == row && pos[1] == col))
+                        if (!(pos.Row == row && pos.Col == col))
                         {
-                            graph.AddLink(current, new PossibilityCoordinate(pos[0], pos[1], possibility), strength);
+                            graph.AddLink(current, new PossibilityCoordinate(pos.Row, pos.Col, possibility), strength);
                         }
                     }
 

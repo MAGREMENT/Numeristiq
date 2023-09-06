@@ -10,7 +10,7 @@ public class FireworksStrategy : IStrategy
     public string Name => "Fireworks";
     
     public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

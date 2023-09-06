@@ -19,7 +19,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
     private List<AlmostLockedSet>? _als;
 
     private readonly LinkGraphManager _graphManager;
-    private bool _graphConstructed = false;
+    private bool _graphConstructed;
 
     private readonly Dictionary<ILinkGraphElement, Coloring>?[,,] _onColoring
         = new Dictionary<ILinkGraphElement, Coloring>[9, 9, 9];

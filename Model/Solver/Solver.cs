@@ -20,7 +20,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
 
     public bool LogsManaged { get; init; } = true;
-    public int StrategyCount { get; private set; }
+    public bool StatisticsTracked { get; init; } = false;
+
     public string State => GetState();
     public string StartState => _logManager.StartState;
 
@@ -118,9 +119,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     {
         if (!Possibilities[row, col].Remove(possibility)) return;
         
-        if (!LogsManaged) return;
-        
-        _logManager.PossibilityRemovedByHand(possibility, row, col);
+        if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col);
     }
     
     public void Solve(bool stopAtProgress = false)
@@ -130,20 +129,18 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
             if (Sudoku.IsComplete()) return;
             if(((_excludedStrategies >> _currentStrategy) & 1) > 0) continue;
             
+            if(StatisticsTracked) Strategies[_currentStrategy].Tracker.StartUsing();
             Strategies[_currentStrategy].ApplyOnce(this);
-            StrategyCount++;
+            if(StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_changeWasMade);
 
             if (!_changeWasMade) continue;
             _changeWasMade = false;
             _currentStrategy = -1;
             _pre.Reset();
-
-            if (!stopAtProgress) continue;
             if(LogsManaged) _logManager.Push();
-            return;
+
+            if (stopAtProgress) return;
         }
-        
-        if(LogsManaged) _logManager.Push();
     }
 
     public Task SolveAsync(bool stopAtProgress = false)
@@ -190,7 +187,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        strategy.Score += 1;
         if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy);
         
         NumberAdded?.Invoke(row, col);
@@ -202,7 +198,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         bool buffer = Possibilities[row, col].Remove(possibility);
         if (!buffer) return false;
         
-        strategy.Score += 1;
         if (LogsManaged) _logManager.PossibilityRemoved(possibility, row, col, strategy);
         
         PossibilityRemoved?.Invoke(row, col);
@@ -270,8 +265,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         
         Sudoku[row, col] = number;
         UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
-        Strategies[_currentStrategy].Score += 1;
-        
+
         NumberAdded?.Invoke(row, col);
         return true;
     }
@@ -280,8 +274,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     {
         bool buffer = Possibilities[row, col].Remove(possibility);
         if (!buffer) return false;
-
-        Strategies[_currentStrategy].Score += 1;
         
         PossibilityRemoved?.Invoke(row, col);
         return true;

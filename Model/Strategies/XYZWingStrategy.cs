@@ -12,7 +12,7 @@ public class XYZWingStrategy : IStrategy
     public string Name => "XYZWing";
     
     public StrategyLevel Difficulty => StrategyLevel.Medium;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     /// <summary>
     /// Conditions for xyz wing :
@@ -43,11 +43,11 @@ public class XYZWingStrategy : IStrategy
                         foreach (var pos in miniGridCandidates)
                         {
                             if (ShareOnlyOne(strategyManager.Possibilities[row, candidateCol],
-                                    strategyManager.Possibilities[pos[0], pos[1]]) &&
+                                    strategyManager.Possibilities[pos.Row, pos.Col]) &&
                                 !AreAllInSameUnit(row, col, row,
-                                    candidateCol, pos[0], pos[1]) &&
+                                    candidateCol, pos.Row, pos.Col) &&
                                 Process(strategyManager, row, col, row,
-                                    candidateCol, pos[0], pos[1])) return;
+                                    candidateCol, pos.Row, pos.Col)) return;
                         }
                     }
                     
@@ -57,11 +57,11 @@ public class XYZWingStrategy : IStrategy
                         foreach (var pos in miniGridCandidates)
                         {
                             if (ShareOnlyOne(strategyManager.Possibilities[candidateRow, col],
-                                    strategyManager.Possibilities[pos[0], pos[1]]) &&
+                                    strategyManager.Possibilities[pos.Row, pos.Col]) &&
                                 !AreAllInSameUnit(row, col, candidateRow,
-                                    col, pos[0], pos[1]) &&
+                                    col, pos.Row, pos.Col) &&
                                 Process(strategyManager, row, col, candidateRow,
-                                    col, pos[0], pos[1])) return;
+                                    col, pos.Row, pos.Col)) return;
                         }
                     }
                 }

@@ -6,7 +6,7 @@ public interface IStrategy
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; }
 
     void ApplyOnce(IStrategyManager strategyManager);
 }

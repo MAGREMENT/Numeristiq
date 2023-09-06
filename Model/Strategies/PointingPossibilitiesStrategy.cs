@@ -11,7 +11,7 @@ public class PointingPossibilitiesStrategy : IStrategy
     public string Name { get; } = "Pointing possibilities";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Easy;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -24,7 +24,7 @@ public class PointingPossibilitiesStrategy : IStrategy
                     var ppimg = strategyManager.MiniGridPositions(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
-                        int row = ppimg.First()[0];
+                        int row = ppimg.First().Row;
                         for (int col = 0; col < 9; col++)
                         {
                             if (col / 3 != miniCol) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
@@ -35,7 +35,7 @@ public class PointingPossibilitiesStrategy : IStrategy
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
-                        int col = ppimg.First()[1];
+                        int col = ppimg.First().Col;
                         for (int row = 0; row < 9; row++)
                         {
                             if (row / 3 != miniRow) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
@@ -67,7 +67,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         {
             foreach (var pos in _miniPos)
             {
-                lighter.HighlightPossibility(_number, pos[0], pos[1], ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, pos.Row, pos.Col, ChangeColoration.CauseOffOne);
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);

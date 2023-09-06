@@ -12,7 +12,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     public string Name { get; }
 
     public StrategyLevel Difficulty { get; }
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
 
@@ -155,7 +155,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 foreach (var position in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(position[0], position[1], newVisited, strategyManager.ChangeBuffer);
+                    RemoveAllPossibilitiesExcept(position.Row, position.Col, newVisited, strategyManager.ChangeBuffer);
                 }
 
                 strategyManager.ChangeBuffer.Push(this,
@@ -250,8 +250,8 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         {
             foreach (var pos in _miniPos)
             {
-                if(manager.Possibilities[pos[0], pos[1]].Peek(possibility))
-                    coords.Add(new PossibilityCoordinate(pos[0], pos[1], possibility));
+                if(manager.Possibilities[pos.Row, pos.Col].Peek(possibility))
+                    coords.Add(new PossibilityCoordinate(pos, possibility));
             }
         }
         

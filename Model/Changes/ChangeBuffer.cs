@@ -62,10 +62,7 @@ public class ChangeBuffer
                     definitive.Row, definitive.Col));
         }
 
-        if (_m.LogsManaged && changes.Count > 0)
-        {
-            _m.PushChangeReportLog(builder.Build(changes, _m), strategy);
-        }
+        if (changes.Count > 0) if (_m.LogsManaged) _m.PushChangeReportLog(builder.Build(changes, _m), strategy);
 
         _possibilityRemoved.Clear();
         _definitiveAdded.Clear();

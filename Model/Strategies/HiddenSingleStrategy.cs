@@ -9,7 +9,7 @@ public class HiddenSingleStrategy : IStrategy
 {
     public string Name => "Hidden single";
     public StrategyLevel Difficulty => StrategyLevel.Basic;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
@@ -34,7 +34,7 @@ public class HiddenSingleStrategy : IStrategy
                     if (ppimn.Count == 1)
                     {
                         var pos = ppimn.First();
-                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, pos[0], pos[1]);
+                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, pos.Row, pos.Col);
                     }
                 }
             }

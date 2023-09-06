@@ -8,7 +8,7 @@ public class CellSinglePossibilityStrategy : IStrategy
     public string Name { get; } = "Single possibility";
     
     public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

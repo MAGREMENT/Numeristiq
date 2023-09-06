@@ -12,7 +12,7 @@ public class NishioForcingNetStrategy : IStrategy
 {
     public string Name => "Nishio forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {

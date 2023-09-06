@@ -10,7 +10,7 @@ public class DigitForcingNetStrategy : IStrategy
 {
     public string Name => "Digit forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)

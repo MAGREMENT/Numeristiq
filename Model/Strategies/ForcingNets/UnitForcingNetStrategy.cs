@@ -11,7 +11,7 @@ public class UnitForcingNetStrategy : IStrategy
 {
     public string Name => "Unit forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _max;
 
@@ -77,7 +77,7 @@ public class UnitForcingNetStrategy : IStrategy
                     var cursor = 0;
                     foreach (var pos in ppimn)
                     {
-                        colorings[cursor] = strategyManager.OnColoring(pos[0], pos[1], number);
+                        colorings[cursor] = strategyManager.OnColoring(pos.Row, pos.Col, number);
                         cursor++;
                     }
                 
@@ -190,7 +190,7 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
         var cursor = 0;
         foreach (var other in _pos)
         {
-            coords[cursor] = new PossibilityCoordinate(other[0], other[1], _possibility);
+            coords[cursor] = new PossibilityCoordinate(other, _possibility);
             cursor++;
         }
         

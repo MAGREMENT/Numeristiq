@@ -10,19 +10,20 @@ public class SimpleColoringStrategy : IStrategy
 {
     public string Name => "Simple coloring";
     public StrategyLevel Difficulty => StrategyLevel.Medium;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
+
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         var manager = new LinkGraphManager(strategyManager);
         manager.Construct(ConstructRule.UnitStrongLink);
         var graph = manager.LinkGraph;
 
-        foreach (var coloredVertices in Color(graph))
+        foreach (var coloredVertices in ColorHelper.Color<PossibilityCoordinate>(graph))
         {
-            if(!SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
+            if (!SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
                 SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
 
-            if(strategyManager.ChangeBuffer.NotEmpty())
+            if (strategyManager.ChangeBuffer.NotEmpty())
                 strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
         }
     }
@@ -30,29 +31,20 @@ public class SimpleColoringStrategy : IStrategy
     private bool SearchForTwiceInTheSameUnit(IStrategyManager strategyManager,
         ColoredVertices<PossibilityCoordinate> cv)
     {
-        for (int i = 0; i < cv.On.Count; i++)
-        {
-            for (int j = i + 1; j < cv.On.Count; j++)
-            {
-                if (cv.On[i].ShareAUnit(cv.On[j]))
-                {
-                    foreach (var coord in cv.Off)
-                    {
-                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(coord);
-                    }
+        return SearchColorForTwiceInTheSameUnit(strategyManager, cv.On, cv.Off) ||
+               SearchColorForTwiceInTheSameUnit(strategyManager, cv.Off, cv.On);
+    }
 
-                    return true;
-                }
-            }
-        }
-        
-        for (int i = 0; i < cv.Off.Count; i++)
+    private bool SearchColorForTwiceInTheSameUnit(IStrategyManager strategyManager,
+        List<PossibilityCoordinate> toSearch, List<PossibilityCoordinate> other)
+    {
+        for (int i = 0; i < toSearch.Count; i++)
         {
-            for (int j = i + 1; j < cv.Off.Count; j++)
+            for (int j = i + 1; j < toSearch.Count; j++)
             {
-                if (cv.Off[i].ShareAUnit(cv.Off[j]))
+                if (toSearch[i].ShareAUnit(toSearch[j]))
                 {
-                    foreach (var coord in cv.On)
+                    foreach (var coord in other)
                     {
                         strategyManager.ChangeBuffer.AddDefinitiveToAdd(coord);
                     }
@@ -64,7 +56,7 @@ public class SimpleColoringStrategy : IStrategy
 
         return false;
     }
-    
+
     private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
         ColoredVertices<PossibilityCoordinate> cv)
     {
@@ -72,7 +64,7 @@ public class SimpleColoringStrategy : IStrategy
         {
             foreach (var off in cv.Off)
             {
-                if(on.Row == off.Row || on.Col == off.Col) continue;
+                if (on.Row == off.Row || on.Col == off.Col) continue;
 
                 foreach (var coord in on.SharedSeenCells(off))
                 {
@@ -81,64 +73,6 @@ public class SimpleColoringStrategy : IStrategy
             }
         }
     }
-
-    private List<ColoredVertices<PossibilityCoordinate>> Color(LinkGraph<ILinkGraphElement> graph)
-    {
-        var result = new List<ColoredVertices<PossibilityCoordinate>>();
-        HashSet<ILinkGraphElement> visited = new();
-
-        foreach (var start in graph)
-        {
-            if (visited.Contains(start)) continue;
-
-            ColoredVertices<PossibilityCoordinate> cv = new();
-            cv.Add((PossibilityCoordinate)start, Coloring.On);
-            visited.Add(start);
-
-            Queue<ColoredElement> queue = new();
-            queue.Enqueue(new ColoredElement(start, Coloring.On));
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
-
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
-                {
-                    if (visited.Contains(friend)) continue;
-
-                    cv.Add((PossibilityCoordinate)friend, opposite);
-                    visited.Add(friend);
-                    queue.Enqueue(new ColoredElement(friend, opposite));
-                }
-                
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
-                {
-                    if (visited.Contains(friend)) continue;
-
-                    cv.Add((PossibilityCoordinate)friend, opposite);
-                    visited.Add(friend);
-                    queue.Enqueue(new ColoredElement(friend, opposite));
-                }
-            }
-
-            result.Add(cv);
-        }
-
-        return result;
-    }
-}
-
-public class ColoredElement
-{
-    public ColoredElement(ILinkGraphElement element, Coloring coloring)
-    {
-        Element = element;
-        Coloring = coloring;
-    }
-
-    public ILinkGraphElement Element { get; }
-    public Coloring Coloring { get; }
 }
 
 public class SimpleColoringReportBuilder : IChangeReportBuilder
@@ -150,15 +84,31 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         _vertices = vertices;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager) //TODO improve
     {
         List<Link<PossibilityCoordinate>> links = new();
 
+        HashSet<PossibilityCoordinate> once = new();
+        HashSet<PossibilityCoordinate> twice = new();
+
         foreach (var on in _vertices.On)
         {
+            if(twice.Contains(on)) continue;
+            
             foreach (var off in _vertices.Off)
             {
-                if (on.ShareAUnit(off)) links.Add(new Link<PossibilityCoordinate>(on, off));
+                if(twice.Contains(off) || twice.Contains(on)) continue;
+                
+                if (on.ShareAUnit(off))
+                {
+                    links.Add(new Link<PossibilityCoordinate>(on, off));
+
+                    if (once.Contains(on)) twice.Add(on);
+                    else once.Add(on);
+
+                    if (once.Contains(off)) twice.Add(off);
+                    else once.Add(off);
+                }
             }
         }
         

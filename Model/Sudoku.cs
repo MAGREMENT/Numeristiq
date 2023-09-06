@@ -103,7 +103,7 @@ public class Sudoku
                 {
                     if (voidCount != 0)
                     {
-                        result += voidCount > 3 ? "s" + voidCount + "s" : Repeat(" ", voidCount);
+                        result += voidCount > 3 ? "s" + voidCount + "s" : StringUtil.Repeat(" ", voidCount);
                         voidCount = 0;
                     }
 
@@ -268,18 +268,7 @@ public class Sudoku
             }
 
             result += "\n";
-            if ((i + 1) % 3 == 0 && i != 8) result += Repeat("-", 19) + "\n";
-        }
-
-        return result;
-    }
-
-    private static string Repeat(string s, int number)
-    {
-        string result = "";
-        for (int i = 0; i < number; i++)
-        {
-            result += s;
+            if ((i + 1) % 3 == 0 && i != 8) result += StringUtil.Repeat("-", 19) + "\n";
         }
 
         return result;

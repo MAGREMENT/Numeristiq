@@ -12,7 +12,7 @@ public class CellForcingNetStrategy : IStrategy
 {
     public string Name => "Cell forcing net";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public int Score { get; set; }
+    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _max;
 
