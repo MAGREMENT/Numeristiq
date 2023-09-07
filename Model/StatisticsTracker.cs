@@ -2,13 +2,12 @@
 
 namespace Model;
 
-public class StatisticsTracker
+public class StatisticsTracker : IReadOnlyTracker
 {
     public int Score { get; private set; }
     public int Usage { get; private set; }
-    public string TimeUsed => (double)_timeUsedMilli / 1000 + " seconds";
-
-    private long _timeUsedMilli;
+    public long TimeUsed { get; private set; }
+    
     private long _lastStartTime;
 
     public void StartUsing()
@@ -19,7 +18,26 @@ public class StatisticsTracker
     public void StopUsing(bool scored)
     {
         Usage++;
-        _timeUsedMilli += DateTimeOffset.Now.ToUnixTimeMilliseconds() - _lastStartTime;
+        TimeUsed += DateTimeOffset.Now.ToUnixTimeMilliseconds() - _lastStartTime;
         if (scored) Score++;
     }
+}
+
+public interface IReadOnlyTracker
+{
+    public int Score { get; }
+    public int Usage { get; }
+    public long TimeUsed { get; }
+
+    public double ScorePercentage()
+    {
+        if (Usage == 0) return 0;
+        return (double)Score / Usage * 100;  
+    }
+
+    public double AverageTimeUsage()
+    {
+        if (Usage == 0) return 0;
+        return (double)TimeUsed / Usage;
+    } 
 }

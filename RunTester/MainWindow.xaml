@@ -1,0 +1,16 @@
+﻿<Window x:Class="RunTester.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RunTester"
+        mc:Ignorable="d"
+        SizeToContent="WidthAndHeight">
+    <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Vertical">
+            <local:RunPickerUserControl Margin="0, 0, 0, 20" x:Name="RunPicker"/>
+            <local:RunLauncherUserControl x:Name="RunLauncher"/>
+        </StackPanel>
+        <local:RunResultUserControl Margin="20, 0, 0, 0" x:Name="RunResult"/>
+    </StackPanel>
+</Window>

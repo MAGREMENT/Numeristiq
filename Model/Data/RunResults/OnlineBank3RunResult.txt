@@ -3,43 +3,44 @@ Completion rate = 1402 / 1465
 Solver fuck ups : 0
 
 Strategy usage :
--Naked single : 22007
--Hidden single : 9206
--Naked double : 3889
--Hidden double : 2557
--Naked triple : 732
--Hidden triple : 257
--Naked quad : 34
--Hidden quad : 6
--Box line reduction : 4545
--Pointing possibilities : 765
--XWing : 193
--XYWing : 359
--XYZWing : 230
--Swordfish : 66
--Jellyfish : 3
--Simple coloring : 550
--BUG : 10
--Finned XWing : 1227
--Finned Swordfish : 348
--Finned Jellyfish : 18
--Fireworks : 13
--Unique rectangles : 1183
--Avoidable rectangles : 26
--XYChain : 2626
--3D Medusa : 315
--Aligned pair exclusion : 937
--XCycles : 502
--Sue-De-Coq : 57
--Almost locked sets : 1739
--Alternating inference chain : 0
--Digit forcing net : 6083
--Cell forcing net : 853
--Unit forcing net : 384
--Nishio forcing net : 402
--Pattern Overlay : 0
--Trial and match : 0
-Time taken : 146,078s
+-Naked single                             => Usage : 49115 | Score : 22007 | Time used : 0,12 seconds
+-Hidden single                            => Usage : 27108 | Score : 9206 | Time used : 2,169 seconds
+-Naked double                             => Usage : 17902 | Score : 2375 | Time used : 0,486 seconds
+-Hidden double                            => Usage : 15527 | Score : 1826 | Time used : 0,389 seconds
+-Naked triple                             => Usage : 13701 | Score : 588 | Time used : 0,699 seconds
+-Hidden triple                            => Usage : 13113 | Score : 248 | Time used : 0,555 seconds
+-Naked quad                               => Usage : 12865 | Score : 24 | Time used : 1,292 seconds
+-Hidden quad                              => Usage : 12841 | Score : 6 | Time used : 0,944 seconds
+-Box line reduction                       => Usage : 12835 | Score : 2443 | Time used : 0,206 seconds
+-Pointing possibilities                   => Usage : 10392 | Score : 642 | Time used : 0,129 seconds
+-XWing                                    => Usage : 9750 | Score : 179 | Time used : 0,117 seconds
+-XYWing                                   => Usage : 9571 | Score : 359 | Time used : 0,484 seconds
+-XYZWing                                  => Usage : 9212 | Score : 230 | Time used : 0,268 seconds
+-Swordfish                                => Usage : 8982 | Score : 60 | Time used : 0,413 seconds
+-Jellyfish                                => Usage : 8922 | Score : 3 | Time used : 0,625 seconds
+-Simple coloring                          => Usage : 8919 | Score : 486 | Time used : 1,06 seconds
+-BUG                                      => Usage : 8433 | Score : 10 | Time used : 0,011 seconds
+-Finned XWing                             => Usage : 8423 | Score : 815 | Time used : 0,693 seconds
+-Finned Swordfish                         => Usage : 7608 | Score : 268 | Time used : 0,459 seconds
+-Finned Jellyfish                         => Usage : 7340 | Score : 18 | Time used : 0,466 seconds
+-Fireworks                                => Usage : 7322 | Score : 13 | Time used : 0,351 seconds
+-Unique rectangles                        => Usage : 7309 | Score : 935 | Time used : 0,533 seconds
+-Avoidable rectangles                     => Usage : 6374 | Score : 24 | Time used : 0,121 seconds
+-XYChain                                  => Usage : 6350 | Score : 591 | Time used : 1,142 seconds
+-3D Medusa                                => Usage : 5759 | Score : 300 | Time used : 1,057 seconds
+-Aligned pair exclusion                   => Usage : 5459 | Score : 937 | Time used : 33,171 seconds
+-XCycles                                  => Usage : 4522 | Score : 285 | Time used : 20,063 seconds
+-Sue-De-Coq                               => Usage : 4237 | Score : 55 | Time used : 1,422 seconds
+-Almost locked sets                       => Usage : 4182 | Score : 1739 | Time used : 62,356 seconds
+-Alternating inference chain              => Usage : 0 | Score : 0 | Time used : 0 seconds
+-Digit forcing net                        => Usage : 2443 | Score : 1707 | Time used : 64,884 seconds
+-Cell forcing net                         => Usage : 736 | Score : 376 | Time used : 0,445 seconds
+-Unit forcing net                         => Usage : 360 | Score : 199 | Time used : 0,244 seconds
+-Nishio forcing net                       => Usage : 161 | Score : 98 | Time used : 0,357 seconds
+-Pattern Overlay                          => Usage : 63 | Score : 0 | Time used : 0,076 seconds
+-Trial and match                          => Usage : 0 | Score : 0 | Time used : 0 seconds
+Time taken : 198,622s
+
 
 
 
