@@ -20,11 +20,17 @@ public class SimpleColoringStrategy : IStrategy
 
         foreach (var coloredVertices in ColorHelper.Color<PossibilityCoordinate>(graph))
         {
-            if (!SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
-                SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
+            if(coloredVertices.Count <= 1) continue;
 
+            if (SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
+            {
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph, true));
+                continue;
+            }
+            
+            SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
             if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph));
         }
     }
 
@@ -78,58 +84,93 @@ public class SimpleColoringStrategy : IStrategy
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
     private readonly ColoredVertices<PossibilityCoordinate> _vertices;
+    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly bool _isInvalidColoring;
 
-    public SimpleColoringReportBuilder(ColoredVertices<PossibilityCoordinate> vertices)
+    public SimpleColoringReportBuilder(ColoredVertices<PossibilityCoordinate> vertices,
+        LinkGraph<ILinkGraphElement> graph, bool isInvalidColoring = false)
     {
         _vertices = vertices;
+        _graph = graph;
+        _isInvalidColoring = isInvalidColoring;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager) //TODO improve
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        List<Link<PossibilityCoordinate>> links = FindPath();
+
+        HighlightSolver[] highlights = new HighlightSolver[_isInvalidColoring ? 2 : 1];
+        if (_isInvalidColoring)
+        {
+            highlights[0] = lighter => IChangeReportBuilder.HighlightChanges(lighter, changes);
+            highlights[1] = lighter =>
+            {
+                foreach (var link in links)
+                {
+                    lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
+                }
+
+                foreach (var coord in _vertices.On)
+                {
+                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOnOne);
+                }
+
+                foreach (var coord in _vertices.Off)
+                {
+                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
+                }
+            };
+        }
+        else
+        {
+            highlights[0] = lighter =>
+            {
+                foreach (var link in links)
+                {
+                    lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
+                }
+
+                foreach (var coord in _vertices.On)
+                {
+                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOnOne);
+                }
+
+                foreach (var coord in _vertices.Off)
+                {
+                    lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
+                }
+            
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+            };
+        }
+
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
+    }
+
+    private List<Link<PossibilityCoordinate>> FindPath()
     {
         List<Link<PossibilityCoordinate>> links = new();
 
-        HashSet<PossibilityCoordinate> once = new();
-        HashSet<PossibilityCoordinate> twice = new();
+        Queue<PossibilityCoordinate> queue = new();
+        HashSet<PossibilityCoordinate> inGraph = new HashSet<PossibilityCoordinate>(_vertices.On);
+        inGraph.UnionWith(_vertices.Off);
+        
+        queue.Enqueue(_vertices.On[0]);
 
-        foreach (var on in _vertices.On)
+        while (queue.Count > 0 && inGraph.Count > 0)
         {
-            if(twice.Contains(on)) continue;
-            
-            foreach (var off in _vertices.Off)
+            var current = queue.Dequeue();
+
+            foreach (var friend in _graph.GetLinks(current, LinkStrength.Strong))
             {
-                if(twice.Contains(off) || twice.Contains(on)) continue;
-                
-                if (on.ShareAUnit(off))
-                {
-                    links.Add(new Link<PossibilityCoordinate>(on, off));
+                if(friend is not PossibilityCoordinate pc || !inGraph.Contains(pc)) continue;
 
-                    if (once.Contains(on)) twice.Add(on);
-                    else once.Add(on);
-
-                    if (once.Contains(off)) twice.Add(off);
-                    else once.Add(off);
-                }
+                links.Add(new Link<PossibilityCoordinate>(current, pc));
+                inGraph.Remove(pc);
+                queue.Enqueue(pc);
             }
         }
-        
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
-        {
-            foreach (var link in links)
-            {
-                lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
-            }
 
-            foreach (var coord in _vertices.On)
-            {
-                lighter.HighlightPossibility(coord, ChangeColoration.CauseOnOne);
-            }
-
-            foreach (var coord in _vertices.Off)
-            {
-                lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
-            }
-            
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
-        });
+        return links;
     }
 }

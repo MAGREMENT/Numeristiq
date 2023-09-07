@@ -18,15 +18,20 @@ public class ThreeDimensionMedusaStrategy : IStrategy
 
         foreach (var coloredVertices in ColorHelper.Color<PossibilityCoordinate>(graph))
         {
+            if(coloredVertices.Count <= 1) continue;
+            
             HashSet<PossibilityCoordinate> inGraph = new HashSet<PossibilityCoordinate>(coloredVertices.On);
             inGraph.UnionWith(coloredVertices.Off);
-            
-            if (!SearchColor(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph) &&
-                !SearchColor(strategyManager, coloredVertices.Off, coloredVertices.On, inGraph))
-                SearchMix(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph);
 
+            if (SearchColor(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph) ||
+                SearchColor(strategyManager, coloredVertices.Off, coloredVertices.On, inGraph))
+            {
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph, true));
+            }
+            
+            SearchMix(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph);
             if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph));
         }
     }
 

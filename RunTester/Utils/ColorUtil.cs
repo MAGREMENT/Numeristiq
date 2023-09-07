@@ -3,7 +3,7 @@ using Model;
 using Model.Changes;
 using Model.Logs;
 
-namespace SudokuSolver;
+namespace RunTester.Utils;
 
 public static class ColorUtil
 {

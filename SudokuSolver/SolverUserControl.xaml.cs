@@ -11,6 +11,7 @@ using Model.Possibilities;
 using Model.Solver;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LinkGraph;
+using SudokuSolver.Utils;
 
 namespace SudokuSolver;
 

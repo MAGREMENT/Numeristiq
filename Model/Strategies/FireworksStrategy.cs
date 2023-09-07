@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Changes;
 using Model.Solver;
 using Model.StrategiesUtil;
@@ -15,7 +16,7 @@ public class FireworksStrategy : IStrategy
     public void ApplyOnce(IStrategyManager strategyManager)
     {
 
-        //List<Firework> fireworks = new();
+        List<Firework[]> doubleFireworks = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -26,29 +27,68 @@ public class FireworksStrategy : IStrategy
                     AddIfFirework(strategyManager, cellFireworks, row, col, possibility);
                 }
 
-                if (cellFireworks.Count >= 3)
+                if (cellFireworks.Count < 2) continue;
+                
+                for (int i = 0; i < cellFireworks.Count; i++)
                 {
-                    for (int i = 0; i < cellFireworks.Count; i++)
+                    for (int j = i + 1; j < cellFireworks.Count; j++)
                     {
-                        for (int j = i + 1; j < cellFireworks.Count; j++)
+                        var sharedWings = cellFireworks[i].MashWings(cellFireworks[j]);
+
+                        if (sharedWings.Count <= 2) doubleFireworks.Add(new[] { cellFireworks[i], cellFireworks[j] });
+                        else continue;
+                            
+                        for (int k = j + 1; k < cellFireworks.Count; k++)
                         {
-                            for (int k = j + 1; k < cellFireworks.Count; k++)
-                            {
-                                var sharedWings = cellFireworks[i].MashWings(cellFireworks[j], cellFireworks[k]);
-                                if (sharedWings.Count == 2)
-                                    ProcessTripleFirework(strategyManager, sharedWings,
-                                        cellFireworks[i], cellFireworks[j],
-                                        cellFireworks[k]);
-                            }
+                            cellFireworks[k].MashWings(ref sharedWings);
+                            if (sharedWings.Count == 2)
+                                ProcessTripleFirework(strategyManager, sharedWings,
+                                    cellFireworks[i], cellFireworks[j],
+                                    cellFireworks[k]);
                         }
                     }
                 }
-                
-                //fireworks.AddRange(cellFireworks);
             }
         }
-        
+
+        for (int i = 0; i < doubleFireworks.Count; i++)
+        {
+            for (int j = i + 1; j < doubleFireworks.Count; j++)
+            {
+                var one = doubleFireworks[i];
+                var two = doubleFireworks[j];
+
+                if (one[0].Cross.Row == two[0].Cross.Row || one[0].Cross.Col == two[0].Cross.Col ||
+                    one[0].Possibility == two[0].Possibility || one[0].Possibility == two[1].Possibility ||
+                    one[1].Possibility == two[0].Possibility || one[1].Possibility == two[1].Possibility) continue;
+
+                var sharedWings = one[0].MashWings(one[1], two[0], two[1]);
+                if (sharedWings.Count == 2)
+                {
+                    RemoveAllExcept(strategyManager, one[0].Cross, one[0].Possibility, one[1].Possibility);
+                    RemoveAllExcept(strategyManager, two[0].Cross, two[0].Possibility, two[1].Possibility);
+
+                    foreach (var coord in sharedWings)
+                    {
+                        RemoveAllExcept(strategyManager, coord, one[0].Possibility, one[1].Possibility,
+                            two[0].Possibility, two[1].Possibility);
+                    }
+                    
+                    strategyManager.ChangeBuffer.Push(this, new FireworksReportBuilder(one[0], one[1], two[0], two[1]));
+                }
+            }
+        }
+
         //TODO other elimintations
+    }
+
+    private void RemoveAllExcept(IStrategyManager strategyManager, Coordinate coord, params int[] except)
+    {
+        foreach (var possibility in strategyManager.Possibilities[coord.Row, coord.Col])
+        {
+            if(except.Contains(possibility)) continue;
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+        }
     }
 
     private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Coordinate> wings,
@@ -115,7 +155,6 @@ public class FireworksStrategy : IStrategy
 public class Firework
 {
     public int Possibility { get; }
-
     public Coordinate Cross { get; }
     public Coordinate[] Wings { get; }
 
@@ -145,6 +184,14 @@ public class Firework
         }
 
         return result;
+    }
+
+    public void MashWings(ref HashSet<Coordinate> wings)
+    {
+        foreach (var wing in Wings)
+        {
+            wings.Add(wing);
+        }
     }
 }
 

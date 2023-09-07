@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model;
+using RunTester.Utils;
 
 namespace RunTester;
 
@@ -10,8 +12,6 @@ public partial class RunResultUserControl
     public RunResultUserControl()
     {
         InitializeComponent();
-        
-        Clear();
     }
 
     public void Update(RunResult rr)
@@ -39,9 +39,10 @@ public partial class RunResultUserControl
                     TextWrapping = TextWrapping.Wrap,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center,
+                    TextAlignment = TextAlignment.Center
                 };
 
-                Grid.SetRow(tb, i + 1);
+                Grid.SetRow(tb, i);
                 Grid.SetColumn(tb, j);
 
                 tb.Text = j switch
@@ -55,6 +56,12 @@ public partial class RunResultUserControl
                     _ => ""
                 };
 
+                if (j == 0)
+                {
+                    tb.FontWeight = FontWeights.Bold;
+                    tb.Foreground = new SolidColorBrush(ColorUtil.ToColor(current.Difficulty));
+                }
+
                 Grid.Children.Add(tb);
             }
         }
@@ -64,35 +71,5 @@ public partial class RunResultUserControl
     {
         Grid.Children.Clear();
         Grid.RowDefinitions.Clear();
-        Grid.RowDefinitions.Add(new RowDefinition()
-        {
-            Height = new GridLength(50)
-        });
-
-        for (int i = 0; i < 6; i++)
-        {
-            TextBlock tb = new TextBlock()
-            {
-                TextWrapping = TextWrapping.Wrap,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
-
-            Grid.SetRow(tb, 0);
-            Grid.SetColumn(tb, i);
-
-            tb.Text = i switch
-            {
-                0 => "Strategy name",
-                1 => "Usage",
-                2 => "Score",
-                3 => "Score percentage",
-                4 => "Time used",
-                5 => "Average time used",
-                _ => ""
-            };
-
-            Grid.Children.Add(tb);
-        }
     }
 }
