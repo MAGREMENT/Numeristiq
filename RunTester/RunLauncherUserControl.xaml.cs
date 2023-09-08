@@ -10,8 +10,6 @@ public partial class RunLauncherUserControl
 {
     private readonly Model.RunTester _runTester = new();
 
-    private int _count;
-
     public delegate void OnRunEnd(RunResult rr);
     public event OnRunEnd? RunEnded;
 
@@ -23,13 +21,14 @@ public partial class RunLauncherUserControl
 
         _runTester.SolveDone += (number, line, success) =>
         {
-            Console.Dispatcher.Invoke(() => Console.Text = _count + " done");
+            Console.Dispatcher.Invoke(() => Console.Text = number + " done");
         };
 
         _runTester.RunStatusChanged += running =>
         {
             Console.Dispatcher.Invoke(() => RunStatus.Background = running ? Brushes.Green : Brushes.Red);
             if(!running) RunEnded?.Invoke(_runTester.LastRunResult);
+            Console.Dispatcher.Invoke(() => Console.Text = $"Result = {_runTester.LastRunResult.Success} / {_runTester.LastRunResult.Count}");
         };
 
     }
@@ -42,8 +41,7 @@ public partial class RunLauncherUserControl
             Console.Text = "File not found";
             return;
         }
-
-        _count = 0;
+        
         _runTester.Path = Path;
         _runTester.Start();
     }

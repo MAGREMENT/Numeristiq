@@ -55,6 +55,14 @@ public class AlmostLockedSet
         return true;
     }
 
+    public IEnumerable<Coordinate> CoordinatesWithPossibility(IStrategyManager strategyManager, int possibility)
+    {
+        foreach (var coord in Coordinates)
+        {
+            if (strategyManager.Possibilities[coord.Row, coord.Col].Peek(possibility)) yield return coord;
+        }
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not AlmostLockedSet als) return false;
@@ -94,7 +102,7 @@ public class AlmostLockedSet
 
         return result[..^2] + "]";
     }
-    
+
     public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)
     {
         List<AlmostLockedSet> result = new();
