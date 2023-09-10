@@ -16,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        SharedSeenCellSearcherCompare(new GridPositionsSearcher(), new SeenCellCompareSearcher());
+        FullSudokuBankTest("OnlineBank2.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

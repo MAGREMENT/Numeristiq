@@ -3,6 +3,13 @@ using Model.Solver;
 
 namespace Model.StrategiesUtil.SharedCellSearcher;
 
+/// <summary>
+/// Order of fastest implementation :
+/// 1 -> InCommonFindSearcher
+/// 2 -> SeenCellCompareSearcher
+/// 3 -> GridPositionsCompareSearcher
+/// 4 -> FullGridCheckSearcher
+/// </summary>
 public interface ISharedSeenCellSearcher
 {
     IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2);

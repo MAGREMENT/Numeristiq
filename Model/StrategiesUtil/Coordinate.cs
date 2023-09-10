@@ -10,7 +10,7 @@ namespace Model.StrategiesUtil;
 
 public static class CoordinateUtils
 {
-    private static readonly ISharedSeenCellSearcher Searcher = new SeenCellCompareSearcher();
+    private static readonly ISharedSeenCellSearcher Searcher = new InCommonFindSearcher();
     
     public static bool ShareAUnit(int row1, int col1, int row2, int col2)
     {

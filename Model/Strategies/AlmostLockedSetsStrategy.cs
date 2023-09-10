@@ -12,7 +12,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public StatisticsTracker Tracker { get; } = new();
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public void ApplyOnce(IStrategyManager strategyManager) //TODO optimize
     {
         var allAls = strategyManager.AlmostLockedSets();
 
@@ -136,26 +136,11 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
         }
     }
 
-    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility) //TODO use CoordinateUtils
+    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility)
     {
-        for (int row = 0; row < 9; row++)
+        foreach (var coord in CoordinateUtils.SharedSeenCells(coords))
         {
-            for (int col = 0; col < 9; col++)
-            {
-                Coordinate current = new Coordinate(row, col);
-
-                bool ok = true;
-                foreach (var coord in coords)
-                {
-                    if (coord == current || !coord.ShareAUnit(current))
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
-
-                if (ok) strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-            }
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
         }
     }
 
