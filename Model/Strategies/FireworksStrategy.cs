@@ -488,7 +488,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
         _fireworks = fireworks;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -508,7 +508,7 @@ public class FireworksStacksReportBuilder : IChangeReportBuilder
         _stacks = fireworks;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -533,7 +533,7 @@ public class FireworksWithAlsReportBuilder : IChangeReportBuilder
         _als = als;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -571,7 +571,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
         _wing = wing;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -596,7 +596,7 @@ public class OppositeFireworksReportBuilder : IChangeReportBuilder
         _f2 = f2;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

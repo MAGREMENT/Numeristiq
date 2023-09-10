@@ -31,7 +31,7 @@ public interface IChangeReportBuilder
         return s;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager);
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot);
 }
 
 public interface IHighlightable

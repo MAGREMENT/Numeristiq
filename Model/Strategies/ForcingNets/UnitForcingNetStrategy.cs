@@ -131,7 +131,7 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;
@@ -184,7 +184,7 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;

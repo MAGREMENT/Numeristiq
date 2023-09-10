@@ -251,7 +251,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         switch (_unit)
@@ -261,7 +261,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
                 {
                     foreach (var possibility in _possibilities)
                     {
-                        if(manager.Possibilities[_unitNumber, col].Peek(possibility))
+                        if(snapshot.PossibilitiesAt(_unitNumber, col).Peek(possibility))
                             coords.Add(new CellPossibility(_unitNumber, col, possibility));
                     }
                 }
@@ -271,7 +271,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
                 {
                     foreach (var possibility in _possibilities)
                     {
-                        if(manager.Possibilities[row, _unitNumber].Peek(possibility))
+                        if(snapshot.PossibilitiesAt(row, _unitNumber).Peek(possibility))
                             coords.Add(new CellPossibility(row, _unitNumber, possibility));
                     }
                 }
@@ -301,14 +301,14 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var pos in _miniPos)
         {
             foreach (var possibility in _possibilities)
             {
-                if(manager.Possibilities[pos.Row, pos.Col].Peek(possibility))
+                if(snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
                     coords.Add(new CellPossibility(pos.Row, pos.Col, possibility));
             }
         }

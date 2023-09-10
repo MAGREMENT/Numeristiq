@@ -30,7 +30,7 @@ public class NakedSingleStrategy : IStrategy
 
 public class NakedSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), ChangesToExplanation(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
@@ -43,7 +43,7 @@ public class NakedSingleReportBuilder : IChangeReportBuilder
         foreach (var change in changes)
         {
             builder.Append($"{change.Number} is the solution to the cell [{change.Row + 1}, {change.Column + 1}]" +
-                           " because it's the only possibility in that cell\n");
+                           " because it's the only possibility in that cell.\n");
         }
 
         return builder.ToString();

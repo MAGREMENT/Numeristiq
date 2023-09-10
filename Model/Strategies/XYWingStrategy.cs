@@ -234,7 +234,7 @@ public class XYWingReportBuilder : IChangeReportBuilder
         _two = two;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

@@ -23,7 +23,7 @@ public class ChangeBuffer
 
     public void AddPossibilityToRemove(CellPossibility coord)
     {
-        if (!_m.Possibilities[coord.Row, coord.Col].Peek(coord.Possibility)) return;
+        if (!_m.PossibilitiesAt(coord.Row, coord.Col).Peek(coord.Possibility)) return;
         _possibilityRemoved.Add(coord);
     }
 
@@ -47,6 +47,9 @@ public class ChangeBuffer
         if (_possibilityRemoved.Count == 0 && _definitiveAdded.Count == 0) return false;
         
         List<SolverChange> changes = new();
+        IPossibilitiesHolder? snapshot = null;
+        if (_m.LogsManaged) snapshot = _m.TakePossibilitiesSnapshot();
+        
         foreach (var possibility in _possibilityRemoved)
         {
             if (_m.RemovePossibility(possibility.Possibility, possibility.Row, possibility.Col)) changes.Add(
@@ -62,7 +65,7 @@ public class ChangeBuffer
                     definitive.Row, definitive.Col));
         }
 
-        if (changes.Count > 0) if (_m.LogsManaged) _m.PushChangeReportLog(builder.Build(changes, _m), strategy);
+        if (changes.Count > 0 && _m.LogsManaged) _m.PushChangeReportLog(builder.Build(changes, snapshot!), strategy);
 
         _possibilityRemoved.Clear();
         _definitiveAdded.Clear();

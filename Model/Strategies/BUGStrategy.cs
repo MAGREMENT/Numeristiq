@@ -59,7 +59,7 @@ public class BUGReportBuilder : IChangeReportBuilder
         _triple = triple;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return ChangeReport.Default(changes);
     }

@@ -15,12 +15,6 @@ public interface IStrategyManager : IPossibilitiesHolder
 
     ChangeBuffer ChangeBuffer { get; }
 
-    LinePositions ColumnPositions(int col, int number);
-
-    LinePositions RowPositions(int row, int number);
-
-    MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number);
-
     public List<AlmostLockedSet> AlmostLockedSets();
     
     public LinkGraph<ILinkGraphElement> LinkGraph();

@@ -122,6 +122,16 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
         return pos;
     }
+    
+    public Cell GetFirst()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (Peek(i)) return new Cell(_startRow + i / 3, _startCol + i % 3);
+        }
+
+        return new Cell(-1, -1);
+    }
 
     public IEnumerator<Cell> GetEnumerator()
     {

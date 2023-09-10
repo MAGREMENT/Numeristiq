@@ -195,7 +195,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
@@ -205,14 +205,14 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
                 case Unit.Row :
                     foreach (var col in _linePos)
                     {
-                        if(manager.Possibilities[_unitNumber, col].Peek(possibility))
+                        if(snapshot.PossibilitiesAt(_unitNumber, col).Peek(possibility))
                             coords.Add(new CellPossibility(_unitNumber, col, possibility));
                     }
                     break;
                 case Unit.Column :
                     foreach (var row in _linePos)
                     {
-                        if(manager.Possibilities[row, _unitNumber].Peek(possibility))
+                        if(snapshot.PossibilitiesAt(row, _unitNumber).Peek(possibility))
                             coords.Add(new CellPossibility(row, _unitNumber, possibility));
                     }
                     break;
@@ -243,14 +243,14 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
         {
             foreach (var pos in _miniPos)
             {
-                if(manager.Possibilities[pos.Row, pos.Col].Peek(possibility))
+                if(snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
                     coords.Add(new CellPossibility(pos, possibility));
             }
         }

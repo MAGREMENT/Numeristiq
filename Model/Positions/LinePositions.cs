@@ -8,7 +8,7 @@ public class LinePositions : IReadOnlyLinePositions
 {
     private int _pos;
     public int Count { private set; get; }
-    
+
     public LinePositions(){}
 
     private LinePositions(int pos, int count)
@@ -48,12 +48,22 @@ public class LinePositions : IReadOnlyLinePositions
         //000 111 111
         return Count is < 4 and > 0 && ((_pos & 0x1F8) == 0 || (_pos & 0x1C7) == 0 || (_pos & 0x3F) == 0);
     }
+    
+    public int GetFirst()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if(Peek(i)) return i;
+        }
+
+        return -1;
+    }
 
     public IEnumerator<int> GetEnumerator()
     {
         for (int i = 0; i < 9; i++)
         {
-            if(((_pos >> i) & 1) > 0) yield return i;
+            if(Peek(i)) yield return i;
         }
     }
     

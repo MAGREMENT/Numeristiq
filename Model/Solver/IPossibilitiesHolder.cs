@@ -1,4 +1,5 @@
-﻿using Model.Possibilities;
+﻿using Model.Positions;
+using Model.Possibilities;
 using Model.StrategiesUtil;
 
 namespace Model.Solver;
@@ -11,4 +12,10 @@ public interface IPossibilitiesHolder
     {
         return PossibilitiesAt(cell.Row, cell.Col);
     }
+    
+    LinePositions ColumnPositions(int col, int number);
+
+    LinePositions RowPositions(int row, int number);
+
+    MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number);
 }

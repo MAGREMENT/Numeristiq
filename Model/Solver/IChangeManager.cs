@@ -3,9 +3,9 @@ using Model.Possibilities;
 
 namespace Model.Solver;
 
-public interface IChangeManager
+public interface IChangeManager : IPossibilitiesHolder
 {
-    public IPossibilities[,] Possibilities { get; }
+    public IPossibilitiesHolder TakePossibilitiesSnapshot();
     public bool LogsManaged { get; }
     public bool AddDefinitive(int number, int row, int col);
     public bool RemovePossibility(int possibility, int row, int col);

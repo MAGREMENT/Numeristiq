@@ -196,7 +196,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> normal = new();
         List<Cell> finned = new();
@@ -208,7 +208,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
                 int row = _unit == Unit.Row ? visited : mashed;
                 int col = _unit == Unit.Row ? mashed : visited;
 
-                if (manager.Possibilities[row, col].Peek(_number)) normal.Add(new Cell(row, col));
+                if (snapshot.PossibilitiesAt(row, col).Peek(_number)) normal.Add(new Cell(row, col));
             }
         }
 
@@ -217,7 +217,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
             int row = _unit == Unit.Row ? _fin : n;
             int col = _unit == Unit.Row ? n : _fin;
 
-            if (manager.Possibilities[row, col].Peek(_number))
+            if (snapshot.PossibilitiesAt(row, col).Peek(_number))
             {
                 if (_mashed.Peek(n)) normal.Add(new Cell(row, col));
                 else finned.Add(new Cell(row, col));

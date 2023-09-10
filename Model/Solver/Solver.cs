@@ -267,6 +267,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     
     //ChangeManager-----------------------------------------------------------------------------------------------------
     
+    public IPossibilitiesHolder TakePossibilitiesSnapshot()
+    {
+        return PossibilitiesSnapshot.TakeSnapshot(this);
+    }
+    
     public bool AddDefinitive(int number, int row, int col)
     {
         if (Sudoku[row, col] != 0) return false;

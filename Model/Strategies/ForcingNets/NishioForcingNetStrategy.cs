@@ -143,7 +143,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var c = ForcingNetsUtil.FilterPossibilityCoordinates(_coloring);
         

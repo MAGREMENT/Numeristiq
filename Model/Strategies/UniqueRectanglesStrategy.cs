@@ -559,7 +559,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
         _roofTwo = roofTwo;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -591,7 +591,7 @@ public class UniqueRectanglesWithAlsReportBuilder : IChangeReportBuilder
         _als = als;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

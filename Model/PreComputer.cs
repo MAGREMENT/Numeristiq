@@ -132,7 +132,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (_view.Sudoku[row, col] == number) return new LinePositions();
+            if (_view.Sudoku[row, col] == number) return result;
             if (_view.Possibilities[row, col].Peek(number)) result.Add(col);
         }
         return result;
@@ -143,7 +143,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (_view.Sudoku[row, col] == number) return new LinePositions();
+            if (_view.Sudoku[row, col] == number) return result;
             if (_view.Possibilities[row, col].Peek(number)) result.Add(row);
         }
 
@@ -160,7 +160,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
                 var realRow = miniRow * 3 + i;
                 var realCol = miniCol * 3 + j;
 
-                if (_view.Sudoku[realRow, realCol] == number) return new MiniGridPositions(miniRow, miniCol);
+                if (_view.Sudoku[realRow, realCol] == number) return result;
                 if (_view.Possibilities[realRow, realCol].Peek(number)) result.Add(i, j);
             }
         }

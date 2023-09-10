@@ -113,14 +113,14 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)
         {
             foreach (var col in _cols)
             {
-                if (manager.Possibilities[row, col].Peek(_number)) coords.Add(new Cell(row, col));
+                if (snapshot.PossibilitiesAt(row, col).Peek(_number)) coords.Add(new Cell(row, col));
             }
         }
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
