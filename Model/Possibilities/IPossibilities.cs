@@ -37,6 +37,16 @@ public interface IPossibilities : IReadOnlyPossibilities
         return true;
     }
 
+    public static bool DefaultPeekAny(IPossibilities poss1, IPossibilities poss2)
+    {
+        foreach (var possibility in poss2)
+        {
+            if (poss1.Peek(possibility)) return true;
+        }
+
+        return false;
+    }
+
     public static IPossibilities New()
     {
         return new BitPossibilities();
@@ -57,6 +67,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public IPossibilities Mash(IPossibilities possibilities);
     public bool Peek(int n);
     public bool PeekAll(IPossibilities poss);
+    public bool PeekAny(IPossibilities poss);
     public IPossibilities Copy();
     public IEnumerable<BiValue> EachBiValue();
 }

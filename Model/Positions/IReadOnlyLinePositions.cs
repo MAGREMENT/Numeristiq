@@ -1,6 +1,8 @@
-﻿namespace Model.Positions;
+﻿using System.Collections.Generic;
 
-public interface IReadOnlyLinePositions
+namespace Model.Positions;
+
+public interface IReadOnlyLinePositions : IEnumerable<int>
 {
-    //TODO
+    public int Count { get; }
 }

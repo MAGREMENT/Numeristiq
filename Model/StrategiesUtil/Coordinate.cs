@@ -4,11 +4,14 @@ using Model.Possibilities;
 using Model.Solver;
 using Model.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil.LoopFinder;
+using Model.StrategiesUtil.SharedCellSearcher;
 
 namespace Model.StrategiesUtil;
 
 public static class CoordinateUtils
 {
+    private static readonly ISharedSeenCellSearcher Searcher = new SeenCellCompareSearcher();
+    
     public static bool ShareAUnit(int row1, int col1, int row2, int col2)
     {
         return row1 == row2 || col1 == col2 ||
@@ -16,40 +19,51 @@ public static class CoordinateUtils
                 && col1 / 3 == col2 / 3);
     }
     
-    public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO : refactor (optimize)
+    public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
-        for (int row = 0; row < 9; row++)
+        return Searcher.SharedSeenCells(row1, col1, row2, col2);
+    }
+
+    public static IEnumerable<Coordinate> SharedSeenCells(Coordinate one, Coordinate two, params Coordinate[] others)
+    {
+        foreach (var coord in one.SharedSeenCells(two))
         {
-            for (int col = 0; col < 9; col++)
+            bool ok = true;
+            foreach (var other in others)
             {
-                if ((row == row1 && col == col1) || (row == row2 && col == col2)) continue;
-                
-                if (ShareAUnit(row, col, row1, col1)
-                    && ShareAUnit(row, col, row2, col2))
+                if (!other.ShareAUnit(coord) || other == coord)
                 {
-                    yield return new Coordinate(row, col); 
+                    ok = false;
+                    break;
                 }
-                
             }
+
+            if (ok) yield return coord;
         }
     }
     
-    public static IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Coordinate> SharedSeenCells(List<Coordinate> list)
     {
-        for (int row = 0; row < 9; row++)
+        if(list.Count < 2) yield break;
+        foreach (var coord in list[0].SharedSeenCells(list[1]))
         {
-            for (int col = 0; col < 9; col++)
+            bool ok = true;
+            for (int i = 2; i < list.Count; i++)
             {
-                if (strategyManager.Sudoku[row, col] != 0 ||
-                    (row == row1 && col == col1) || (row == row2 && col == col2)) continue;
-                
-                if (ShareAUnit(row, col, row1, col1)
-                    && ShareAUnit(row, col, row2, col2))
+                if (!list[i].ShareAUnit(coord) || list[i] == coord)
                 {
-                    yield return new Coordinate(row, col);  
+                    ok = false;
+                    break;
                 }
             }
+
+            if (ok) yield return coord;
         }
+    }
+
+    public static IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    {
+        return Searcher.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2);
     }
 }
 

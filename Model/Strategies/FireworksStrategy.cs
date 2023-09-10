@@ -1,12 +1,56 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.Changes;
+using Model.Possibilities;
 using Model.Solver;
 using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class FireworksStrategy : IStrategy //TODO fixme
+/// <summary>
+/// A firework is a pattern where a candidate in an intersecting row and column is limited to a box, with one exception
+/// in the row and one exception in the column. Theses exceptions are called wings and the cell at the middle of the
+/// intersection is the cross. A firework means that the candidate must appear at least once in the wings and cross cells.
+/// On its own, this pattern doesn't tell us much, but its power come from multiple fireworks on the same cells.
+///
+/// Example of a firework :
+/// +-------+-------+-------+
+/// | x . . | 1 2 3 | 4 5 x |
+/// | . . . | . . . | . . . |
+/// | . . . | . . . | . . . |
+/// +-------+-------+-------+
+/// | 6 . . | . . . | . . . |
+/// | 7 . . | . . . | . . . |
+/// | 1 . . | . . . | . . . |
+/// +-------+-------+-------+
+/// | 2 . . | . . . | . . . |
+/// | 3 . . | . . . | . . . |
+/// | x . . | . . . | . . . |
+/// +-------+-------+-------+
+///
+/// 8 and 9 must be present at least once in the x-marked cells.
+///
+/// Moreover, a firework can miss a wing and still be useful as seen below. A firework with both wings is called a
+/// strict firework. Fireworks with different possibilities but the same cross and the amount of shared wings
+/// being equal to two is called a stack. The opposite of a stack is the cell on the opposite corner to the cross on
+/// the square created by the stack.
+///
+/// Applications :
+///
+/// - Triple fireworks : This is about a non-strict stack of size 3. This works the same way as a hidden set.
+/// 3 candidates must be present at least once in 3 cells, therefore discarding any other candidates in those cells.
+///
+/// - Quad fireworks : This is about 2 non-strict stacks of size 2. They must share the same same wings and not
+/// have any possibility in common. In that case, it works, like above, like a hidden set. 4 candidates must be present
+/// at least once in 4 cells, therefore discarding any other candidates in those cells
+///
+/// - W-wing : This is about a stack of size 2. If, for both wing, there is an almost locked set on the unit shared by
+/// that wing and the opposite that contains both possibilities of the stack, then we can remove those possibilities
+/// from the opposite.
+/// 
+/// </summary>
+public class FireworksStrategy : IStrategy
 {
     public string Name => "Fireworks";
     
@@ -16,8 +60,8 @@ public class FireworksStrategy : IStrategy //TODO fixme
     public void ApplyOnce(IStrategyManager strategyManager)
     {
 
-        List<Firework[]> looseDoubles = new();
-        List<Firework[]> strictDoubles = new();
+        List<FireworkStack> looseStacks = new();
+        List<FireworkStack> strictStacks = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -34,22 +78,22 @@ public class FireworksStrategy : IStrategy //TODO fixme
                 {
                     for (int j = i + 1; j < cellFireworks.Count; j++)
                     {
-                        var sharedWings = cellFireworks[i].MashWings(cellFireworks[j]);
-
-                        if (sharedWings.Count <= 2)
+                        FireworkStack stack;
+                        try
                         {
-                            var dual = new[] { cellFireworks[i], cellFireworks[j] };
-                            
-                            looseDoubles.Add(dual);
-                            if(cellFireworks[i].Wings.Length == 2 && cellFireworks[j].Wings.Length == 2)
-                                strictDoubles.Add(dual);
+                            stack = new FireworkStack(cellFireworks[i], cellFireworks[j]);
+                            looseStacks.Add(stack);
+                            if (stack.IsStrict()) strictStacks.Add(stack);
                         }
-                        else continue;
-                            
+                        catch (ArgumentException)
+                        {
+                            continue;
+                        }
+
                         //Triple
                         for (int k = j + 1; k < cellFireworks.Count; k++)
                         {
-                            cellFireworks[k].MashWings(ref sharedWings);
+                            var sharedWings = stack.MashWings(cellFireworks[k]);
                             if (sharedWings.Count == 2)
                                 ProcessTripleFirework(strategyManager, sharedWings,
                                     cellFireworks[i], cellFireworks[j],
@@ -61,53 +105,49 @@ public class FireworksStrategy : IStrategy //TODO fixme
         }
 
         //Quad
-        for (int i = 0; i < looseDoubles.Count; i++)
+        for (int i = 0; i < looseStacks.Count; i++)
         {
-            for (int j = i + 1; j < looseDoubles.Count; j++)
+            for (int j = i + 1; j < looseStacks.Count; j++)
             {
-                var one = looseDoubles[i];
-                var two = looseDoubles[j];
+                var one = looseStacks[i];
+                var two = looseStacks[j];
 
-                if (one[0].Cross.Row == two[0].Cross.Row || one[0].Cross.Col == two[0].Cross.Col ||
-                    one[0].Possibility == two[0].Possibility || one[0].Possibility == two[1].Possibility ||
-                    one[1].Possibility == two[0].Possibility || one[1].Possibility == two[1].Possibility) continue;
+                if (one.Cross.Row == two.Cross.Row || one.Cross.Col == two.Cross.Col
+                                                   || one.Possibilities.PeekAny(two.Possibilities)) continue;
 
-                var sharedWings = one[0].MashWings(one[1], two[0], two[1]);
+                var sharedWings = one.MashWings(two);
                 if (sharedWings.Count == 2)
                 {
-                    RemoveAllExcept(strategyManager, one[0].Cross, one[0].Possibility, one[1].Possibility);
-                    RemoveAllExcept(strategyManager, two[0].Cross, two[0].Possibility, two[1].Possibility);
+                    RemoveAllExcept(strategyManager, one.Cross, one.Possibilities);
+                    RemoveAllExcept(strategyManager, two.Cross, two.Possibilities);
 
+                    var mashed = one.Possibilities.Mash(two.Possibilities);
                     foreach (var coord in sharedWings)
                     {
-                        RemoveAllExcept(strategyManager, coord, one[0].Possibility, one[1].Possibility,
-                            two[0].Possibility, two[1].Possibility);
+                        RemoveAllExcept(strategyManager, coord, mashed);
                     }
                     
-                    strategyManager.ChangeBuffer.Push(this, new FireworksReportBuilder(one[0], one[1], two[0], two[1]));
+                    strategyManager.ChangeBuffer.Push(this, new FireworksStacksReportBuilder(one, two));
                 }
             }
         }
         
-        foreach (var dual in strictDoubles)
+        //W-wing
+        foreach (var dual in strictStacks)
         {
-            int oppositeRow = dual[0].Wings[0].Row == dual[0].Cross.Row ? dual[0].Wings[1].Row : dual[0].Wings[0].Row;
-            int oppositeCol = dual[0].Wings[0].Col == dual[0].Cross.Col ? dual[0].Wings[1].Col : dual[0].Wings[0].Col;
-            if(!strategyManager.Possibilities[oppositeRow, oppositeCol].Peek(dual[0].Possibility) &&
-               !strategyManager.Possibilities[oppositeRow, oppositeCol].Peek(dual[1].Possibility)) continue;
+            var opposite = dual.Opposite();
+            if(!strategyManager.Possibilities[opposite.Row, opposite.Col].PeekAll(dual.Possibilities)) continue;
             
-            //W-wing
             List<AlmostLockedSet>[] als = new List<AlmostLockedSet>[2];
             bool nah = false;
             for (int i = 0; i < 2; i++)
             {
-                var coord = dual[0].Wings[i];
+                var coord = dual.Wings[i];
 
-                als[i] = AlmostLockedSet.SearchForAls(strategyManager, CoordinatesToSearch(dual[0].Cross,
-                    coord, new Coordinate(oppositeRow, oppositeCol)), 4);
+                als[i] = AlmostLockedSet.SearchForAls(strategyManager, CoordinatesToSearch(dual.Cross,
+                    coord, new Coordinate(opposite.Row, opposite.Col)), 4);
 
-                als[i].RemoveAll(singleAls => !singleAls.Possibilities.Peek(dual[0].Possibility) ||
-                                              !singleAls.Possibilities.Peek(dual[1].Possibility));
+                als[i].RemoveAll(singleAls => !singleAls.Possibilities.PeekAll(dual.Possibilities));
 
                 if (als[i].Count == 0)
                 {
@@ -118,46 +158,90 @@ public class FireworksStrategy : IStrategy //TODO fixme
             
             if(nah) continue;
 
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(dual[0].Possibility, oppositeRow, oppositeCol);
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(dual[1].Possibility, oppositeRow, oppositeCol);
-            strategyManager.ChangeBuffer.Push(this, new FireworksWithAlsReportBuilder(dual,
+            foreach (var possibility in dual.Possibilities)
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, opposite.Col);
+            }
+            strategyManager.ChangeBuffer.Push(this, new FireworksWithAlsReportBuilder(dual, 
                 als[0][0], als[1][0]));
         }
 
-        
-        foreach (var dual in strictDoubles)
+        //L-wing
+        foreach (var dual in strictStacks)
         {
-            int oppositeRow = dual[0].Wings[0].Row == dual[0].Cross.Row ? dual[0].Wings[1].Row : dual[0].Wings[0].Row;
-            int oppositeCol = dual[0].Wings[0].Col == dual[0].Cross.Col ? dual[0].Wings[1].Col : dual[0].Wings[0].Col;
+            var opposite = dual.Opposite();
 
-            foreach (var possibility in strategyManager.Possibilities[oppositeRow, oppositeCol])
+            foreach (var possibility in strategyManager.Possibilities[opposite.Row, opposite.Col])
             {
-                if(possibility == dual[0].Possibility || possibility == dual[1].Possibility) continue;
+                if(dual.Possibilities.Peek(possibility)) continue;
 
-                if (strategyManager.Possibilities[oppositeRow, dual[0].Cross.Col].Peek(possibility) &&
-                    strategyManager.RowPositions(oppositeRow, possibility).Count == 2)
+                if (strategyManager.Possibilities[opposite.Row, dual.Cross.Col].Peek(possibility) &&
+                    strategyManager.RowPositions(opposite.Row, possibility).Count == 2)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, dual[0].Cross.Row, oppositeCol);
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, dual.Cross.Row, opposite.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty())
                         strategyManager.ChangeBuffer.Push(this, new FireworksWithStrongLinkReportBuilder(dual, possibility,
-                                new Coordinate(oppositeRow, oppositeCol),
-                                new Coordinate(oppositeRow, dual[0].Cross.Col)));
+                                new Coordinate(opposite.Row, opposite.Col),
+                                new Coordinate(opposite.Row, dual.Cross.Col)));
                 }
 
-                if (strategyManager.Possibilities[dual[0].Cross.Row, oppositeCol].Peek(possibility) &&
-                    strategyManager.ColumnPositions(oppositeCol, possibility).Count == 2)
+                if (strategyManager.Possibilities[dual.Cross.Row, opposite.Col].Peek(possibility) &&
+                    strategyManager.ColumnPositions(opposite.Col, possibility).Count == 2)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, oppositeRow, dual[0].Cross.Col);
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, dual.Cross.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty())
                         strategyManager.ChangeBuffer.Push(this, new FireworksWithStrongLinkReportBuilder(dual, possibility,
-                            new Coordinate(oppositeRow, oppositeCol),
-                            new Coordinate(dual[0].Cross.Row, oppositeCol)));
+                            new Coordinate(opposite.Row, opposite.Col),
+                            new Coordinate(dual.Cross.Row, opposite.Col)));
                 }
-                    
             }
         }
+        
+        //Dual ALP
+        for (int i = 0; i < strictStacks.Count; i++)
+        {
+            for (int j = i + 1; j < strictStacks.Count; j++)
+            {
+                if(!strictStacks[i].Possibilities.Equals(strictStacks[j].Possibilities)) continue;
 
-        //TODO other elimintations
+                var oppositeI = strictStacks[i].Opposite();
+                var oppositeJ = strictStacks[j].Opposite();
+                
+                if(oppositeI != oppositeJ || !strategyManager.Possibilities[oppositeI.Row, oppositeI.Col]
+                       .Equals(strictStacks[i].Possibilities)) continue;
+
+                RemoveAllExcept(strategyManager, strictStacks[i].Cross, strictStacks[i].Possibilities);
+                RemoveAllExcept(strategyManager, strictStacks[j].Cross, strictStacks[j].Possibilities);
+
+                for (int unit = 0; unit < 9; unit++)
+                {
+                    foreach (var possibility in strictStacks[i].Possibilities)
+                    {
+                        if (unit != strictStacks[i].Wings[0].Row 
+                            && unit != strictStacks[i].Wings[1].Row 
+                            && unit != strictStacks[j].Wings[0].Row 
+                            && unit != strictStacks[j].Wings[1].Row)
+                        {
+                        
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, unit, oppositeI.Col);
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, unit, oppositeI.Col);
+                        }
+                    
+                        if (unit != strictStacks[i].Wings[0].Col
+                            && unit != strictStacks[i].Wings[1].Col
+                            && unit != strictStacks[j].Wings[0].Col 
+                            && unit != strictStacks[j].Wings[1].Col)
+                        {
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, oppositeI.Row, unit);
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, oppositeI.Row, unit);
+                        }    
+                    }
+                }
+
+                strategyManager.ChangeBuffer.Push(this,
+                    new OppositeFireworksReportBuilder(strictStacks[i], strictStacks[j]));
+            }
+        }
     }
 
     private List<Coordinate> CoordinatesToSearch(Coordinate cross, Coordinate wing, Coordinate opposite)
@@ -176,11 +260,11 @@ public class FireworksStrategy : IStrategy //TODO fixme
         return result;
     }
 
-    private void RemoveAllExcept(IStrategyManager strategyManager, Coordinate coord, params int[] except)
+    private void RemoveAllExcept(IStrategyManager strategyManager, Coordinate coord, IPossibilities except)
     {
         foreach (var possibility in strategyManager.Possibilities[coord.Row, coord.Col])
         {
-            if(except.Contains(possibility)) continue;
+            if(except.Peek(possibility)) continue;
             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
         }
     }
@@ -279,28 +363,113 @@ public class Firework
 
         return result;
     }
+}
 
-    public void MashWings(ref HashSet<Coordinate> wings)
+public class FireworkStack {
+    public IPossibilities Possibilities { get; }
+    public Coordinate Cross { get; }
+    public Coordinate[] Wings { get; }
+    private readonly uint _presence;
+
+    public FireworkStack(params Firework[] fireworks)
     {
-        foreach (var wing in Wings)
+        if (fireworks.Length < 1) throw new ArgumentException("Must be at least one firework");
+
+        Possibilities = IPossibilities.NewEmpty();
+        Cross = fireworks[0].Cross;
+        Wings = new Coordinate[2];
+
+        var wings = fireworks[0].MashWings(fireworks);
+        if (wings.Count != 2) throw new ArgumentException("Not matching wings");
+        var cursor = 0;
+        foreach (var wing in wings)
         {
-            wings.Add(wing);
+            Wings[cursor] = wing;
+            cursor++;
         }
+
+        foreach (var firework in fireworks)
+        {
+            if (firework.Cross != Cross) throw new ArgumentException("Not matching cross");
+            Possibilities.Add(firework.Possibility);
+            if (firework.Wings.Contains(Wings[0])) _presence |= (uint)1 << (2 * firework.Possibility);
+            if (firework.Wings.Contains(Wings[1])) _presence |= (uint)2 << (2 * firework.Possibility);
+        }
+    }
+
+    public bool IsStrict()
+    {
+        return Possibilities.Count * 2 == System.Numerics.BitOperations.PopCount(_presence);
+    }
+
+    public bool IsPresent(int wingNumber, int possibility)
+    {
+        return ((_presence >> (possibility * 2)) & 3) == wingNumber + 1;
+    }
+    
+    public HashSet<Coordinate> MashWings(params Firework[] fireworks)
+    {
+        HashSet<Coordinate> result = new(Wings);
+        foreach (var firework in fireworks)
+        {
+            foreach (var wing in firework.Wings)
+            {
+                result.Add(wing);
+            }
+        }
+
+        return result;
+    }
+    
+    public HashSet<Coordinate> MashWings(FireworkStack stack)
+    {
+        HashSet<Coordinate> result = new(Wings);
+        foreach (var wing in stack.Wings)
+        {
+            result.Add(wing);
+        }
+
+        return result;
+    }
+    
+    public Coordinate Opposite()
+    {
+        bool firstSameRow = Wings[0].Row == Cross.Row;
+        return firstSameRow ? new Coordinate(Wings[1].Row, Wings[0].Col) : new Coordinate(Wings[0].Row, Wings[1].Col);
     }
 }
 
 public static class FireworksReportBuilderHelper
 {
-    public static int HighlightFirework(IHighlightable lighter, Firework[] fireworks)
+    public static int HighlightFirework(IHighlightable lighter, Firework[] fireworks, int start = 0)
     {
-        int color = (int) ChangeColoration.CauseOffOne;
+        int color = (int)ChangeColoration.CauseOffOne + start;
         foreach (var firework in fireworks)
         {
             lighter.HighlightPossibility(firework.Possibility, firework.Cross.Row,
-                firework.Cross.Col, (ChangeColoration) color);
+                firework.Cross.Col, (ChangeColoration)color);
             foreach (var coord in firework.Wings)
             {
-                lighter.HighlightPossibility(firework.Possibility, coord.Row, coord.Col, (ChangeColoration) color);
+                lighter.HighlightPossibility(firework.Possibility, coord.Row, coord.Col, (ChangeColoration)color);
+            }
+
+            color++;
+        }
+
+        return color;
+    }
+
+    public static int HighlightFireworkStack(IHighlightable lighter, FireworkStack stack, int start = 0)
+    {
+        int color = (int)ChangeColoration.CauseOffOne + start;
+        foreach (var possibility in stack.Possibilities)
+        {
+            lighter.HighlightPossibility(possibility, stack.Cross.Row,
+                stack.Cross.Col, (ChangeColoration)color);
+            for (int i = 0; i < stack.Wings.Length; i++)
+            {
+                if(stack.IsPresent(i, possibility)) 
+                    lighter.HighlightPossibility(possibility, stack.Wings[i].Row, stack.Wings[i].Col, (ChangeColoration)color);
             }
 
             color++;
@@ -330,14 +499,37 @@ public class FireworksReportBuilder : IChangeReportBuilder
     }
 }
 
+public class FireworksStacksReportBuilder : IChangeReportBuilder
+{
+    private readonly FireworkStack[] _stacks;
+
+    public FireworksStacksReportBuilder(params FireworkStack[] fireworks)
+    {
+        _stacks = fireworks;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            foreach (var stack in _stacks)
+            {
+                FireworksReportBuilderHelper.HighlightFireworkStack(lighter, stack);
+            }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
 public class FireworksWithAlsReportBuilder : IChangeReportBuilder
 {
-    private readonly Firework[] _fireworks;
+    private readonly FireworkStack _stack;
     private readonly AlmostLockedSet[] _als;
 
-    public FireworksWithAlsReportBuilder(Firework[] fireworks, params AlmostLockedSet[] als)
+    public FireworksWithAlsReportBuilder(FireworkStack stack, params AlmostLockedSet[] als)
     {
-        _fireworks = fireworks;
+        _stack = stack;
         _als = als;
     }
 
@@ -345,7 +537,7 @@ public class FireworksWithAlsReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            int color = FireworksReportBuilderHelper.HighlightFirework(lighter, _fireworks) + 1;
+            int color = FireworksReportBuilderHelper.HighlightFireworkStack(lighter, _stack) + 1;
 
             foreach (var als in _als)
             {
@@ -366,14 +558,14 @@ public class FireworksWithAlsReportBuilder : IChangeReportBuilder
 
 public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
 {
-    private readonly Firework[] _fireworks;
+    private readonly FireworkStack _stack;
     private readonly int _possibility;
     private readonly Coordinate _opposite;
     private readonly Coordinate _wing;
 
-    public FireworksWithStrongLinkReportBuilder(Firework[] fireworks, int possibility, Coordinate opposite, Coordinate wing)
+    public FireworksWithStrongLinkReportBuilder(FireworkStack stack, int possibility, Coordinate opposite, Coordinate wing)
     {
-        _fireworks = fireworks;
+        _stack = stack;
         _possibility = possibility;
         _opposite = opposite;
         _wing = wing;
@@ -383,11 +575,34 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            FireworksReportBuilderHelper.HighlightFirework(lighter, _fireworks);
+            FireworksReportBuilderHelper.HighlightFireworkStack(lighter, _stack);
             
             lighter.HighlightPossibility(_possibility, _opposite.Row, _opposite.Col, ChangeColoration.CauseOnOne);
             lighter.HighlightPossibility(_possibility, _wing.Row, _wing.Col, ChangeColoration.CauseOnOne);
 
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
+public class OppositeFireworksReportBuilder : IChangeReportBuilder
+{
+    private readonly FireworkStack _f1;
+    private readonly FireworkStack _f2;
+
+    public OppositeFireworksReportBuilder(FireworkStack f1, FireworkStack f2)
+    {
+        _f1 = f1;
+        _f2 = f2;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            FireworksReportBuilderHelper.HighlightFireworkStack(lighter, _f2,
+                FireworksReportBuilderHelper.HighlightFireworkStack(lighter, _f1));
+            
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }

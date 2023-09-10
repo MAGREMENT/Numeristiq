@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Changes;
 using Model.Possibilities;
 using Model.Solver;
@@ -7,7 +6,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
-public class AlmostLockedSetsStrategy : IStrategy
+public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
 {
     public string Name => "Almost locked sets";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
@@ -47,11 +46,7 @@ public class AlmostLockedSetsStrategy : IStrategy
                             if (strategyManager.Possibilities[twoCoord.Row, twoCoord.Col].Peek(possibility))
                                 coords.Add(twoCoord);
                         }
-
-                        if (coords.Count < 2)
-                        {
-                            throw new Exception("Wtf");
-                        }
+                        
                         ProcessOneRestrictedCommon(strategyManager, coords, possibility);
                     }
                 }
@@ -141,7 +136,7 @@ public class AlmostLockedSetsStrategy : IStrategy
         }
     }
 
-    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility)
+    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility) //TODO use CoordinateUtils
     {
         for (int row = 0; row < 9; row++)
         {

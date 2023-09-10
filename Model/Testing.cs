@@ -1,24 +1,113 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Model.Positions;
 using Model.Possibilities;
 using Model.StrategiesUtil;
+using Model.StrategiesUtil.SharedCellSearcher;
 
 namespace Model;
 
 public static class Testing
 {
-    public static void Main(string[] args) //TODO : add UI for data testing
+    public static void Main(string[] args)
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank2.txt");
+        SharedSeenCellSearcherCompare(new GridPositionsSearcher(), new SeenCellCompareSearcher());
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void SharedSeenCellSearcherCompare(ISharedSeenCellSearcher one, ISharedSeenCellSearcher two)
+    {
+        for (int i = 0; i < 81; i++)
+        {
+            for (int j = i + 1; j < 81; j++)
+            {
+                int iRow = i / 9;
+                int iCol = i % 9;
+                int jRow = j / 9;
+                int jCol = j % 9;
+
+                var oneResult = one.SharedSeenCells(iRow, iCol, jRow, jCol).ToArray();
+                var twoResult = two.SharedSeenCells(iRow, iCol, jRow, jCol).ToArray();
+
+                bool ok = oneResult.Length == twoResult.Length;
+
+                if (ok)
+                {
+                    foreach (var oneCoord in oneResult)
+                    {
+                        if (!twoResult.Contains(oneCoord))
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }  
+                }
+
+                if (!ok)
+                {
+                    Console.WriteLine($"Different result for : [{iRow + 1}, {iCol + 1}] and [{jRow + 1}, {jCol + 1}]");
+                }
+            }
+        }
+
+        var loops = 1000;
+        
+        long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        for (int n = 0; n < loops; n++)
+        {
+            for (int i = 0; i < 81; i++)
+            {
+                for (int j = i + 1; j < 81; j++)
+                {
+                    int iRow = i / 9;
+                    int iCol = i % 9;
+                    int jRow = j / 9;
+                    int jCol = j % 9;
+
+                    foreach (var coord in one.SharedSeenCells(iRow, iCol, jRow, jCol))
+                    {
+                        int a = coord.Row;
+                    }
+                }
+            }
+        }
+        
+        
+        long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        Console.WriteLine("One time : " + (end - start) + "ms");
+        
+        start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        for (int n = 0; n < loops; n++)
+        {
+            for (int i = 0; i < 81; i++)
+            {
+                for (int j = i + 1; j < 81; j++)
+                {
+                    int iRow = i / 9;
+                    int iCol = i % 9;
+                    int jRow = j / 9;
+                    int jCol = j % 9;
+                
+                    foreach (var coord in two.SharedSeenCells(iRow, iCol, jRow, jCol))
+                    {
+                        int a = coord.Row;
+                    }
+                }
+            }
+        }
+
+        end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        Console.WriteLine("Two time : " + (end - start) + "ms");
     }
 
     private static Coordinate LineBullshit(Coordinate from, Coordinate to)
@@ -125,14 +214,6 @@ public static class Testing
         {
             Console.WriteLine($"-{StringUtil.FillWithSpace(strategy.Name, 40)} => Usage : {strategy.Tracker.Usage} |" +
                               $" Score : {strategy.Tracker.Score} | Time used : {strategy.Tracker.TimeUsed}");
-        }
-    }
-
-    private static void SharedSeenCellsTest()
-    {
-        foreach (var coord in new Coordinate(4, 2).SharedSeenCells(new Coordinate(1, 2)))
-        {
-            Console.WriteLine(coord);
         }
     }
 

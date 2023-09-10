@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
-public class MiniGridPositions : IEnumerable<Coordinate>
+public class MiniGridPositions : IReadOnlyMiniGridPositions
 {
     private readonly int _startRow;
     private readonly int _startCol;

@@ -1,6 +1,9 @@
-﻿namespace Model.Positions;
+﻿using System.Collections.Generic;
+using Model.StrategiesUtil;
 
-public interface IReadOnlyMiniGridPositions
+namespace Model.Positions;
+
+public interface IReadOnlyMiniGridPositions : IEnumerable<Coordinate>
 {
-    //TODO
+    public int Count { get; }
 }

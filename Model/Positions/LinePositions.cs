@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
-public class LinePositions : IEnumerable<int>
+public class LinePositions : IReadOnlyLinePositions
 {
     private int _pos;
     public int Count { private set; get; }

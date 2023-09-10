@@ -41,6 +41,11 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
         throw new System.NotImplementedException();
     }
 
+    public bool PeekAny(IPossibilities poss)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public IPossibilities Copy()
     {
         throw new System.NotImplementedException();

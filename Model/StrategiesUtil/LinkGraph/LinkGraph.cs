@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Model.StrategiesUtil.LinkGraph;
 
-public class LinkGraph<T> : IEnumerable<T> where T : ILinkGraphElement
+public class LinkGraph<T> : IEnumerable<T> where T : notnull
 {
     private readonly Dictionary<T, HashSet<T>>[] _links = { new(), new() };
 

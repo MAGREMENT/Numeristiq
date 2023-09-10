@@ -74,6 +74,11 @@ public class BoolArrayPossibilities : IPossibilities
     {
         return IPossibilities.DefaultPeekAll(this, poss);
     }
+    
+    public bool PeekAny(IPossibilities poss)
+    {
+        return IPossibilities.DefaultPeekAny(this, poss);
+    }
 
     public void Reset()
     {
