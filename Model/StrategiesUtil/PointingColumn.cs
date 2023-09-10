@@ -32,20 +32,8 @@ public class PointingColumn : ILinkGraphElement
             _pos.Add(row);
         }
     }
-
-    public PointingColumn(int possibility, IEnumerable<Coordinate> coords)
-    {
-        Possibility = possibility;
-        Column = coords.First().Col;
-        _pos = new LinePositions();
-        foreach (var coord in coords)
-        {
-            if (coord.Col != Column) throw new ArgumentException("Not on same column");
-            _pos.Add(coord.Row);
-        }
-    }
     
-    public PointingColumn(int possibility, IEnumerable<PossibilityCoordinate> coords)
+    public PointingColumn(int possibility, IEnumerable<CellPossibility> coords)
     {
         Possibility = possibility;
         Column = coords.First().Col;
@@ -57,14 +45,14 @@ public class PointingColumn : ILinkGraphElement
         }
     }
 
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(PossibilityCoordinate single)
+    public IEnumerable<CellPossibility> SharedSeenCells(CellPossibility single)
     {
         if (single.Col == Column)
         {
             for (int row = 0; row < 9; row++)
             {
                 if (row == single.Row || _pos.Any(posRow => posRow == row)) continue;
-                yield return new PossibilityCoordinate(row, single.Col, Possibility);
+                yield return new CellPossibility(row, single.Col, Possibility);
             }
         }
         if (single.Row / 3 == _pos.First() / 3 && single.Col / 3 == Column / 3)
@@ -81,20 +69,20 @@ public class PointingColumn : ILinkGraphElement
 
                     if ((row == single.Row && col == single.Col) ||
                         (_pos.Any(posRow => posRow == row) && col == Column)) continue;
-                    yield return new PossibilityCoordinate(row, col, Possibility);
+                    yield return new CellPossibility(row, col, Possibility);
                 }
             }
         }
     }
     
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(PointingColumn col)
+    public IEnumerable<CellPossibility> SharedSeenCells(PointingColumn col)
     {
         if(col.Column != Column) yield break;
         for (int row = 0; row < 9; row++)
         {
             if (col._pos.Any(posRow => posRow == row) ||
                 _pos.Any(posRow => posRow == row)) continue;
-            yield return new PossibilityCoordinate(row, Column, Possibility);
+            yield return new CellPossibility(row, Column, Possibility);
         }
     }
 
@@ -133,14 +121,14 @@ public class PointingColumn : ILinkGraphElement
         return result + $"=> {Possibility}]";
     }
 
-    public CoordinatePossibilities[] EachElement()
+    public CellPossibilities[] EachElement()
     {
-        CoordinatePossibilities[] result = new CoordinatePossibilities[_pos.Count];
+        CellPossibilities[] result = new CellPossibilities[_pos.Count];
         
         int cursor = 0;
         foreach (var row in _pos)
         {
-            result[cursor] = new CoordinatePossibilities(new Coordinate(row, Column), Possibility);
+            result[cursor] = new CellPossibilities(new Cell(row, Column), Possibility);
             cursor++;
         }
 

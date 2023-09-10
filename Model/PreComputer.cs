@@ -118,13 +118,13 @@ public class PreComputer //TODO : Look into caching positions the same way as po
         _wasPreColorUsed = true;
 
         _onColoring[row, col, possibility - 1] ??=
-            DoColor(new PossibilityCoordinate(row, col, possibility), Coloring.On);
+            DoColor(new CellPossibility(row, col, possibility), Coloring.On);
         return _onColoring[row, col, possibility - 1]!;
     }
     
     public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility)
     {
-        return DoColor(new PossibilityCoordinate(row, col, possibility), Coloring.Off);
+        return DoColor(new CellPossibility(row, col, possibility), Coloring.Off);
     }
 
     private LinePositions DoRowPositions(int row, int number)
@@ -179,9 +179,9 @@ public class PreComputer //TODO : Look into caching positions the same way as po
                 if (_view.Sudoku[row, col] != 0) continue;
 
                 if (_view.Possibilities[row, col].Count == 2)
-                    result.Add(new AlmostLockedSet(new Coordinate(row, col), _view.Possibilities[row, col]));
+                    result.Add(new AlmostLockedSet(new Cell(row, col), _view.Possibilities[row, col]));
                 SearchRow(_view, row, col + 1, _view.Possibilities[row, col], 
-                    new List<Coordinate> {new (row, col)}, result);
+                    new List<Cell> {new (row, col)}, result);
             }
         }
         
@@ -192,7 +192,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
                 if (_view.Sudoku[row, col] != 0) continue;
                 
                 SearchColumn(_view, col, row + 1, _view.Possibilities[row, col], 
-                    new List<Coordinate> {new (row, col)}, result);
+                    new List<Cell> {new (row, col)}, result);
             }
         }
 
@@ -207,7 +207,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
                     if (_view.Sudoku[row, col] != 0) continue;
                     
                     SearchMiniGrid(_view, miniRow, miniCol, n + 1, _view.Possibilities[row, col],
-                        new List<Coordinate> {new (row, col)}, result);
+                        new List<Cell> {new (row, col)}, result);
                 }
             }
         }
@@ -216,16 +216,16 @@ public class PreComputer //TODO : Look into caching positions the same way as po
     }
 
     private void SearchRow(IStrategyManager strategyManager, int row, int start, IPossibilities current,
-        List<Coordinate> visited, List<AlmostLockedSet> result)
+        List<Cell> visited, List<AlmostLockedSet> result)
     {
         for (int col = start; col < 9; col++)
         {
             if (strategyManager.Sudoku[row, col] != 0) continue;
 
-            IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
+            IPossibilities mashed = current.Or(strategyManager.Possibilities[row, col]);
             if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
 
-            var copy = new List<Coordinate>(visited) { new (row, col) };
+            var copy = new List<Cell>(visited) { new (row, col) };
 
             if (mashed.Count == copy.Count + 1)
             {
@@ -237,16 +237,16 @@ public class PreComputer //TODO : Look into caching positions the same way as po
     }
 
     private void SearchColumn(IStrategyManager strategyManager, int col, int start, IPossibilities current,
-        List<Coordinate> visited, List<AlmostLockedSet> result)
+        List<Cell> visited, List<AlmostLockedSet> result)
     {
         for (int row = start; row < 9; row++)
         {
             if (strategyManager.Sudoku[row, col] != 0) continue;
 
-            IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
+            IPossibilities mashed = current.Or(strategyManager.Possibilities[row, col]);
             if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
 
-            var copy = new List<Coordinate>(visited) { new (row, col) };
+            var copy = new List<Cell>(visited) { new (row, col) };
 
             if (mashed.Count == copy.Count + 1)
             {
@@ -258,7 +258,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
     }
 
     private void SearchMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, int start,
-        IPossibilities current, List<Coordinate> visited, List<AlmostLockedSet> result)
+        IPossibilities current, List<Cell> visited, List<AlmostLockedSet> result)
     {
         for (int n = start; n < 9; n++)
         {
@@ -267,10 +267,10 @@ public class PreComputer //TODO : Look into caching positions the same way as po
                 
             if (strategyManager.Sudoku[row, col] != 0) continue;
 
-            IPossibilities mashed = current.Mash(strategyManager.Possibilities[row, col]);
+            IPossibilities mashed = current.Or(strategyManager.Possibilities[row, col]);
             if (mashed.Count == current.Count + strategyManager.Possibilities[row, col].Count) continue;
 
-            var copy = new List<Coordinate>(visited) { new (row, col) };
+            var copy = new List<Cell>(visited) { new (row, col) };
 
             if (mashed.Count == copy.Count + 1 && NotInSameRowOrColumn(copy))
             {
@@ -282,7 +282,7 @@ public class PreComputer //TODO : Look into caching positions the same way as po
         }
     }
 
-    private bool NotInSameRowOrColumn(List<Coordinate> coord)
+    private bool NotInSameRowOrColumn(List<Cell> coord)
     {
         int row = coord[0].Row;
         int col = coord[0].Col;
@@ -336,18 +336,18 @@ public class PreComputer //TODO : Look into caching positions the same way as po
                     }
                 }
             }
-            else if (current is PossibilityCoordinate pos)
+            else if (current is CellPossibility pos)
             {
-                PossibilityCoordinate? row = null;
+                CellPossibility? row = null;
                 bool rowB = true;
-                PossibilityCoordinate? col = null;
+                CellPossibility? col = null;
                 bool colB = true;
-                PossibilityCoordinate? mini = null;
+                CellPossibility? mini = null;
                 bool miniB = true;
             
                 foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
                 {
-                    if (friend is not PossibilityCoordinate friendPos) continue;
+                    if (friend is not CellPossibility friendPos) continue;
                     if (rowB && friendPos.Row == pos.Row)
                     {
                         if (result.TryGetValue(friend, out var coloring))

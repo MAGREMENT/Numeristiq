@@ -16,7 +16,7 @@ public class XCyclesStrategy : IStrategy
     {
         for (int n = 1; n <= 9; n++)
         {
-            Dictionary<Coordinate, Coordinate>[] strongLinks = { new(), new(), new() };
+            Dictionary<Cell, Cell>[] strongLinks = { new(), new(), new() };
 
             //Rows
             for (int row = 0; row < 9; row++)
@@ -25,8 +25,8 @@ public class XCyclesStrategy : IStrategy
                 if (pos.Count == 2)
                 {
                     int[] array = pos.ToArray();
-                    strongLinks[0].Add(new Coordinate(row, array[0]), new Coordinate(row, array[1]));
-                    strongLinks[0].Add(new Coordinate(row, array[1]), new Coordinate(row, array[0]));
+                    strongLinks[0].Add(new Cell(row, array[0]), new Cell(row, array[1]));
+                    strongLinks[0].Add(new Cell(row, array[1]), new Cell(row, array[0]));
                 }
             }
             
@@ -37,8 +37,8 @@ public class XCyclesStrategy : IStrategy
                 if (pos.Count == 2)
                 {
                     int[] array = pos.ToArray();
-                    strongLinks[1].Add(new Coordinate(array[0], col), new Coordinate(array[1], col));
-                    strongLinks[1].Add(new Coordinate(array[1], col), new Coordinate(array[0], col));
+                    strongLinks[1].Add(new Cell(array[0], col), new Cell(array[1], col));
+                    strongLinks[1].Add(new Cell(array[1], col), new Cell(array[0], col));
                 }
             }
             
@@ -50,11 +50,11 @@ public class XCyclesStrategy : IStrategy
                     var pos = strategyManager.MiniGridPositions(miniRow, miniCol, n);
                     if (pos.Count == 2)
                     {
-                        Coordinate[] array = pos.ToArray();
-                        strongLinks[2].Add(new Coordinate(array[0].Row, array[0].Col),
-                            new Coordinate(array[1].Row, array[1].Col));
-                        strongLinks[2].Add(new Coordinate(array[1].Row, array[1].Col),
-                            new Coordinate(array[0].Row, array[0].Col));
+                        Cell[] array = pos.ToArray();
+                        strongLinks[2].Add(new Cell(array[0].Row, array[0].Col),
+                            new Cell(array[1].Row, array[1].Col));
+                        strongLinks[2].Add(new Cell(array[1].Row, array[1].Col),
+                            new Cell(array[0].Row, array[0].Col));
                     }
                 }
             }
@@ -63,14 +63,14 @@ public class XCyclesStrategy : IStrategy
             {
                 foreach (var start in strongLinks[type].Keys)
                 {
-                    List<Coordinate> visited = new() { start };
+                    List<Cell> visited = new() { start };
                     var next = strongLinks[type][start];
                     visited.Add(next);
                     foreach (var coord in SearchForWeakLink(strategyManager, strongLinks, next, n))
                     {
-                        if (!visited.Contains(coord.Coordinate))
+                        if (!visited.Contains(coord.Cell))
                         {
-                            Search(strategyManager, strongLinks, coord, new List<Coordinate>(visited), n);
+                            Search(strategyManager, strongLinks, coord, new List<Cell>(visited), n);
                         }
                     }
                 }
@@ -78,12 +78,12 @@ public class XCyclesStrategy : IStrategy
         }
     }
 
-    private void Search(IStrategyManager strategyManager, Dictionary<Coordinate, Coordinate>[] strongLinks, CoordinateAndType current,
-        List<Coordinate> visited, int number)
+    private void Search(IStrategyManager strategyManager, Dictionary<Cell, Cell>[] strongLinks, CoordinateAndType current,
+        List<Cell> visited, int number)
     {
-        visited.Add(current.Coordinate);
+        visited.Add(current.Cell);
         
-        var next = strongLinks[current.Type][current.Coordinate];
+        var next = strongLinks[current.Type][current.Cell];
         if (visited.Contains(next))
         {
             if (visited.Count >= 4 && visited[0].Equals(next)) ProcessOddLoop(strategyManager, visited, number);
@@ -94,12 +94,12 @@ public class XCyclesStrategy : IStrategy
         bool noMore = true;
         foreach (var coord in SearchForWeakLink(strategyManager, strongLinks, next, number))
         {
-            if (!visited.Contains(coord.Coordinate))
+            if (!visited.Contains(coord.Cell))
             {
-                Search(strategyManager, strongLinks, coord, new List<Coordinate>(visited), number);
+                Search(strategyManager, strongLinks, coord, new List<Cell>(visited), number);
                 noMore = false;
             }
-            else if (coord.Coordinate.Equals(visited[0]))
+            else if (coord.Cell.Equals(visited[0]))
             {
                 ProcessFullLoop(strategyManager, visited, number);
                 noMore = false;
@@ -108,7 +108,7 @@ public class XCyclesStrategy : IStrategy
         if(noMore) ProcessUnCompleteLoop(strategyManager, visited, number);
     }
 
-    private void ProcessFullLoop(IStrategyManager strategyManager, List<Coordinate> visited, int number)
+    private void ProcessFullLoop(IStrategyManager strategyManager, List<Cell> visited, int number)
     {
         for (int i = 1; i < visited.Count - 1; i += 2)
         {
@@ -124,7 +124,7 @@ public class XCyclesStrategy : IStrategy
         }
     }
 
-    private void ProcessUnCompleteLoop(IStrategyManager strategyManager, List<Coordinate> visited, int number)
+    private void ProcessUnCompleteLoop(IStrategyManager strategyManager, List<Cell> visited, int number)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
@@ -132,13 +132,13 @@ public class XCyclesStrategy : IStrategy
         }
     }
 
-    private void ProcessOddLoop(IStrategyManager strategyManager, List<Coordinate> visited, int number)
+    private void ProcessOddLoop(IStrategyManager strategyManager, List<Cell> visited, int number)
     {
         strategyManager.AddDefinitiveNumber(number, visited[0].Row, visited[0].Col, this);
     }
 
-    private IEnumerable<CoordinateAndType> SearchForWeakLink(IStrategyManager strategyManager, Dictionary<Coordinate, Coordinate>[] strongLinks,
-        Coordinate current, int number)
+    private IEnumerable<CoordinateAndType> SearchForWeakLink(IStrategyManager strategyManager, Dictionary<Cell, Cell>[] strongLinks,
+        Cell current, int number)
     {
         HashSet<CoordinateAndType> result = new();
 
@@ -152,7 +152,7 @@ public class XCyclesStrategy : IStrategy
                     {
                         foreach (var col in posRow)
                         {
-                            Coordinate coord = new Coordinate(current.Row, col);
+                            Cell coord = new Cell(current.Row, col);
                             if (strongLinks[0].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 0));
                             if (strongLinks[1].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 1));
                             if (strongLinks[2].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 2));
@@ -166,7 +166,7 @@ public class XCyclesStrategy : IStrategy
                     {
                         foreach (var row in posCol)
                         {
-                            Coordinate coord = new Coordinate(row, current.Col);
+                            Cell coord = new Cell(row, current.Col);
                             if (strongLinks[0].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 0));
                             if (strongLinks[1].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 1));
                             if (strongLinks[2].ContainsKey(coord)) result.Add(new CoordinateAndType(coord, 2));
@@ -193,19 +193,19 @@ public class XCyclesStrategy : IStrategy
 
         foreach (var coord in result)
         {
-            if (!(coord.Coordinate.Row == current.Row && coord.Coordinate.Col == current.Col)) yield return coord;
+            if (!(coord.Cell.Row == current.Row && coord.Cell.Col == current.Col)) yield return coord;
         }
     }
 }
 
 public class CoordinateAndType
 {
-    public CoordinateAndType(Coordinate coordinate, int type)
+    public CoordinateAndType(Cell cell, int type)
     {
-        Coordinate = coordinate;
+        Cell = cell;
         Type = type;
     }
 
-    public Coordinate Coordinate { get; }
+    public Cell Cell { get; }
     public int Type { get; }
 }

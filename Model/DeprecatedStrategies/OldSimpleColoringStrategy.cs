@@ -17,17 +17,17 @@ public class OldSimpleColoringStrategy : IStrategy
     {
         for (int number = 1; number <= 9; number++)
         {
-            List<ColorableWeb<CoordinateColoring>> chains = new();
+            List<ColorableWeb<CellColoring>> chains = new();
             for (int row = 0; row < 9; row++)
             {
                 for (int col = 0; col < 9; col++)
                 {
                     if (strategyManager.Possibilities[row, col].Peek(number))
                     {
-                        CoordinateColoring current = new(row, col);
+                        CellColoring current = new(row, col);
                         if (DoesAnyChainContains(chains, current)) continue;
                         
-                        ColorableWeb<CoordinateColoring> web = new();
+                        ColorableWeb<CellColoring> web = new();
                         InitChain(strategyManager, web, current, number);
                         if (web.Count >= 2)
                         {
@@ -49,16 +49,16 @@ public class OldSimpleColoringStrategy : IStrategy
         }
     }
 
-    private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<CoordinateColoring> web)
+    private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<CellColoring> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
-            if (one.Coordinate.ShareAUnit(two.Coordinate) && one.Coloring == two.Coloring)
+            if (one.Cell.ShareAUnit(two.Cell) && one.Coloring == two.Coloring)
             {
                 foreach (var coord in web)
                 {
-                    if (coord.Coloring == one.Coloring) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, coord.Coordinate.Row, coord.Coordinate.Col);
-                    else strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, coord.Coordinate.Row, coord.Coordinate.Col);
+                    if (coord.Coloring == one.Coloring) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, coord.Cell.Row, coord.Cell.Col);
+                    else strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, coord.Cell.Row, coord.Cell.Col);
                 }
             }
 
@@ -67,7 +67,7 @@ public class OldSimpleColoringStrategy : IStrategy
     }
 
     private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
-        int number, ColorableWeb<CoordinateColoring> web)
+        int number, ColorableWeb<CellColoring> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -75,13 +75,13 @@ public class OldSimpleColoringStrategy : IStrategy
             {
                 if (strategyManager.Possibilities[row, col].Peek(number))
                 {
-                    CoordinateColoring current = new(row, col);
+                    CellColoring current = new(row, col);
                     if (web.Contains(current)) continue;
 
                     bool[] onAndOff = new bool[2];
                     foreach (var coord in web)
                     {
-                        if (coord.Coordinate.ShareAUnit(current.Coordinate))
+                        if (coord.Cell.ShareAUnit(current.Cell))
                         {
                             onAndOff[(int)(coord.Coloring - 1)] = true;
                             if (onAndOff[0] && onAndOff[1])
@@ -96,44 +96,44 @@ public class OldSimpleColoringStrategy : IStrategy
         }
     }
 
-    private void InitChain(IStrategyManager strategyManager, ColorableWeb<CoordinateColoring> web, CoordinateColoring current, int number)
+    private void InitChain(IStrategyManager strategyManager, ColorableWeb<CellColoring> web, CellColoring current, int number)
     {
-        var ppir = strategyManager.RowPositions(current.Coordinate.Row, number);
+        var ppir = strategyManager.RowPositions(current.Cell.Row, number);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
             {
-                if (col != current.Coordinate.Col)
+                if (col != current.Cell.Col)
                 {
-                    CoordinateColoring next = new CoordinateColoring(current.Coordinate.Row, col);
+                    CellColoring next = new CellColoring(current.Cell.Row, col);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppic = strategyManager.ColumnPositions(current.Coordinate.Col, number);
+        var ppic = strategyManager.ColumnPositions(current.Cell.Col, number);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
             {
-                if (row != current.Coordinate.Row)
+                if (row != current.Cell.Row)
                 {
-                    CoordinateColoring next = new CoordinateColoring(row, current.Coordinate.Col);
+                    CellColoring next = new CellColoring(row, current.Cell.Col);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
             }
         }
         
-        var ppimn = strategyManager.MiniGridPositions(current.Coordinate.Row / 3, current.Coordinate.Col / 3, number);
+        var ppimn = strategyManager.MiniGridPositions(current.Cell.Row / 3, current.Cell.Col / 3, number);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
             {
-                if (pos.Row != current.Coordinate.Row && pos.Col != current.Coordinate.Col)
+                if (pos.Row != current.Cell.Row && pos.Col != current.Cell.Col)
                 {
-                    CoordinateColoring next = new CoordinateColoring(pos.Row, pos.Col);
+                    CellColoring next = new CellColoring(pos.Row, pos.Col);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next, number);
                     break;
                 }
@@ -141,7 +141,7 @@ public class OldSimpleColoringStrategy : IStrategy
         }
     }
 
-    private static bool DoesAnyChainContains(IEnumerable<ColorableWeb<CoordinateColoring>> chains, CoordinateColoring coord)
+    private static bool DoesAnyChainContains(IEnumerable<ColorableWeb<CellColoring>> chains, CellColoring coord)
     {
         foreach (var chain in chains)
         {
@@ -155,9 +155,9 @@ public class OldSimpleColoringStrategy : IStrategy
 public class OldSimpleColoringReportBuilder : IChangeReportBuilder
 {
     private readonly int _number;
-    private readonly ColorableWeb<CoordinateColoring> _web;
+    private readonly ColorableWeb<CellColoring> _web;
 
-    public OldSimpleColoringReportBuilder(int number, ColorableWeb<CoordinateColoring> web)
+    public OldSimpleColoringReportBuilder(int number, ColorableWeb<CellColoring> web)
     {
         _number = number;
         _web = web;
@@ -169,14 +169,14 @@ public class OldSimpleColoringReportBuilder : IChangeReportBuilder
         {
             foreach (var coord in _web)
             {
-                lighter.HighlightPossibility(_number, coord.Coordinate.Row, coord.Coordinate.Col, coord.Coloring == Coloring.On ?
+                lighter.HighlightPossibility(_number, coord.Cell.Row, coord.Cell.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
 
                 foreach (var friend in _web.GetLinkedVertices(coord))
                 {
                     if (friend.Coloring == Coloring.Off) continue;
-                    lighter.CreateLink(new PossibilityCoordinate(friend.Coordinate.Row, friend.Coordinate.Col, _number),
-                        new PossibilityCoordinate(coord.Coordinate.Row, coord.Coordinate.Col, _number), LinkStrength.Strong);
+                    lighter.CreateLink(new CellPossibility(friend.Cell.Row, friend.Cell.Col, _number),
+                        new CellPossibility(coord.Cell.Row, coord.Cell.Col, _number), LinkStrength.Strong);
                 }
             }
 

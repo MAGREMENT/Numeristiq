@@ -30,7 +30,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
             var colPos = ppimn.OnGridRow(gridRow);
             if (colPos.Count > 1)
             {
-                List<PossibilityCoordinate> singles = new();
+                List<CellPossibility> singles = new();
                 List<PointingColumn> pcs = new();
                 for (int gridCol = 0; gridCol < 3; gridCol++)
                 {
@@ -40,7 +40,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         if (a == gridRow) continue;
                         if (ppimn.Peek(a, gridCol))
                         {
-                            singles.Add(new PossibilityCoordinate(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
+                            singles.Add(new CellPossibility(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
                             if (buffer == -1) buffer = a;
                             else pcs.Add(new PointingColumn(numba, miniCol * 3 + gridCol,
                                 miniRow * 3 + a, miniRow * 3 + buffer));
@@ -69,13 +69,13 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                 {
                     if (miniCol == miniCol2) continue;
 
-                    List<PossibilityCoordinate> aligned = new();
+                    List<CellPossibility> aligned = new();
                     for (int gridCol = 0; gridCol < 3; gridCol++)
                     {
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (strategyManager.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
+                        if (strategyManager.Possibilities[row, col].Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -102,7 +102,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
             var rowPos = ppimn.OnGridColumn(gridCol);
             if (rowPos.Count > 1)
             {
-                List<PossibilityCoordinate> singles = new();
+                List<CellPossibility> singles = new();
                 List<PointingRow> prs = new();
                 for (int gridRow = 0; gridRow < 3; gridRow++)
                 {
@@ -112,7 +112,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         if (a == gridCol) continue;
                         if (ppimn.Peek(gridRow, a))
                         {
-                            singles.Add(new PossibilityCoordinate(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
+                            singles.Add(new CellPossibility(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
                             if (buffer == -1) buffer = a;
                             else prs.Add(new PointingRow(numba, miniRow * 3 + gridRow,
                                 miniCol * 3 + a, miniCol * 3 + buffer));
@@ -141,13 +141,13 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                 {
                     if (miniRow == miniRow2) continue;
 
-                    List<PossibilityCoordinate> aligned = new();
+                    List<CellPossibility> aligned = new();
                     for (int gridRow = 0; gridRow < 3; gridRow++)
                     {
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (strategyManager.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
+                        if (strategyManager.Possibilities[row, col].Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);

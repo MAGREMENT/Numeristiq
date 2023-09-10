@@ -8,7 +8,7 @@ using Model.StrategiesUtil.SharedCellSearcher;
 
 namespace Model.StrategiesUtil;
 
-public static class CoordinateUtils
+public static class Cells
 {
     private static readonly ISharedSeenCellSearcher Searcher = new InCommonFindSearcher();
     
@@ -19,12 +19,12 @@ public static class CoordinateUtils
                 && col1 / 3 == col2 / 3);
     }
     
-    public static IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
         return Searcher.SharedSeenCells(row1, col1, row2, col2);
     }
 
-    public static IEnumerable<Coordinate> SharedSeenCells(Coordinate one, Coordinate two, params Coordinate[] others)
+    public static IEnumerable<Cell> SharedSeenCells(Cell one, Cell two, params Cell[] others)
     {
         foreach (var coord in one.SharedSeenCells(two))
         {
@@ -42,7 +42,7 @@ public static class CoordinateUtils
         }
     }
     
-    public static IEnumerable<Coordinate> SharedSeenCells(List<Coordinate> list)
+    public static IEnumerable<Cell> SharedSeenCells(List<Cell> list)
     {
         if(list.Count < 2) yield break;
         foreach (var coord in list[0].SharedSeenCells(list[1]))
@@ -61,32 +61,32 @@ public static class CoordinateUtils
         }
     }
 
-    public static IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         return Searcher.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2);
     }
 }
 
-public readonly struct Coordinate
+public readonly struct Cell
 {
     public int Row { get; }
     public int Col { get; }
 
 
-    public Coordinate(int row, int col)
+    public Cell(int row, int col)
     {
         Row = row;
         Col = col;
     }
 
-    public bool ShareAUnit(Coordinate coord)
+    public bool ShareAUnit(Cell coord)
     {
-        return CoordinateUtils.ShareAUnit(Row, Col, coord.Row, coord.Col);
+        return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
     }
 
-    public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)
+    public IEnumerable<Cell> SharedSeenCells(Cell coord)
     {
-        return CoordinateUtils.SharedSeenCells(Row, Col, coord.Row, coord.Col);
+        return Cells.SharedSeenCells(Row, Col, coord.Row, coord.Col);
     }
 
     public override int GetHashCode()
@@ -96,7 +96,7 @@ public readonly struct Coordinate
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Coordinate coord) return false;
+        if (obj is not Cell coord) return false;
         return Row == coord.Row && Col == coord.Col;
     }
 
@@ -105,76 +105,76 @@ public readonly struct Coordinate
         return $"[{Row + 1}, {Col + 1}]";
     }
 
-    public static bool operator ==(Coordinate left, Coordinate right)
+    public static bool operator ==(Cell left, Cell right)
     {
         return left.Row == right.Row && left.Col == right.Col;
     }
 
-    public static bool operator !=(Coordinate left, Coordinate right)
+    public static bool operator !=(Cell left, Cell right)
     {
         return !(left == right);
     }
 }
 
-public class CoordinateColoring : IColorable
+public class CellColoring : IColorable
 {
-    public Coordinate Coordinate { get; }
+    public Cell Cell { get; }
     public Coloring Coloring { get; set; } = Coloring.None;
 
-    public CoordinateColoring(int row, int col)
+    public CellColoring(int row, int col)
     {
-        Coordinate = new Coordinate(row, col);
+        Cell = new Cell(row, col);
     }
 
     public override int GetHashCode()
     {
-        return Coordinate.GetHashCode();
+        return Cell.GetHashCode();
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is CoordinateColoring cc && cc.Coordinate.Equals(Coordinate);
+        return obj is CellColoring cc && cc.Cell.Equals(Cell);
     }
 }
 
-public readonly struct PossibilityCoordinate : ILinkGraphElement
+public readonly struct CellPossibility : ILinkGraphElement
 {
     public int Possibility { get; }
     public int Row { get; }
     public int Col { get; }
 
-    public PossibilityCoordinate(int row, int col, int possibility)
+    public CellPossibility(int row, int col, int possibility)
     {
         Possibility = possibility;
         Row = row;
         Col = col;
     }
 
-    public PossibilityCoordinate(Coordinate coord, int possibility)
+    public CellPossibility(Cell coord, int possibility)
     {
         Possibility = possibility;
         Row = coord.Row;
         Col = coord.Col;
     }
     
-    public bool ShareAUnit(PossibilityCoordinate coord)
+    public bool ShareAUnit(CellPossibility coord)
     {
-        return CoordinateUtils.ShareAUnit(Row, Col, coord.Row, coord.Col);
+        return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
     }
     
-    public bool ShareAUnit(Coordinate coord)
+    public bool ShareAUnit(Cell coord)
     {
-        return CoordinateUtils.ShareAUnit(Row, Col, coord.Row, coord.Col);
+        return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
     }
 
-    public IEnumerable<Coordinate> SharedSeenCells(PossibilityCoordinate coord)
+    public IEnumerable<Cell> SharedSeenCells(CellPossibility coord)
     {
-        return CoordinateUtils.SharedSeenCells(Row, Col, coord.Row, coord.Col);
+        return Cells.SharedSeenCells(Row, Col, coord.Row, coord.Col);
     }
     
-    public IEnumerable<Coordinate> SharedSeenCells(Coordinate coord)
+    public IEnumerable<Cell> SharedSeenCells(Cell coord)
     {
-        return CoordinateUtils.SharedSeenCells(Row, Col, coord.Row, coord.Col);
+        return Cells.SharedSeenCells(Row, Col, coord.Row, coord.Col);
     }
 
     public override int GetHashCode()
@@ -184,7 +184,7 @@ public readonly struct PossibilityCoordinate : ILinkGraphElement
 
     public override bool Equals(object? obj)
     {
-        if (obj is not PossibilityCoordinate pc) return false;
+        if (obj is not CellPossibility pc) return false;
         return pc.Possibility == Possibility && pc.Row == Row && pc.Col == Col;
     }
 
@@ -193,81 +193,81 @@ public readonly struct PossibilityCoordinate : ILinkGraphElement
         return $"[{Row + 1}, {Col + 1} => {Possibility}]";
     }
 
-    public CoordinatePossibilities[] EachElement()
+    public CellPossibilities[] EachElement()
     {
-        return new[] { new CoordinatePossibilities(this) };
+        return new[] { new CellPossibilities(this) };
     }
 
     public bool IsSameLoopElement(ILoopElement other)
     {
-        return other is PossibilityCoordinate pc && pc.Equals(this);
+        return other is CellPossibility pc && pc.Equals(this);
     }
 
-    public static bool operator ==(PossibilityCoordinate left, PossibilityCoordinate right)
+    public static bool operator ==(CellPossibility left, CellPossibility right)
     {
         return left.Possibility == right.Possibility && left.Row == right.Row && left.Col == right.Col;
     }
 
-    public static bool operator !=(PossibilityCoordinate left, PossibilityCoordinate right)
+    public static bool operator !=(CellPossibility left, CellPossibility right)
     {
         return !(left == right);
     }
 }
 
-public class PossibilityCoordinateColoring : IColorable
+public class CellPossibilityColoring : IColorable
 {
-    public PossibilityCoordinate PossibilityCoordinate { get; }
+    public CellPossibility CellPossibility { get; }
     public Coloring Coloring { get; set; }
     
-    public PossibilityCoordinateColoring(int row, int col, int possibility)
+    public CellPossibilityColoring(int row, int col, int possibility)
     {
-        PossibilityCoordinate = new PossibilityCoordinate(row, col, possibility);
+        CellPossibility = new CellPossibility(row, col, possibility);
     }
 
     public override int GetHashCode()
     {
-        return PossibilityCoordinate.GetHashCode();
+        return CellPossibility.GetHashCode();
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is PossibilityCoordinateColoring pcc && pcc.PossibilityCoordinate.Equals(PossibilityCoordinate);
+        return obj is CellPossibilityColoring pcc && pcc.CellPossibility.Equals(CellPossibility);
     }
 }
 
-public class CoordinatePossibilities
+public class CellPossibilities
 {
-    public Coordinate Coordinate { get; }
+    public Cell Cell { get; }
     public IPossibilities Possibilities { get; }
     
-    public CoordinatePossibilities(Coordinate coordinate, IPossibilities possibilities)
+    public CellPossibilities(Cell cell, IPossibilities possibilities)
     {
-        Coordinate = coordinate;
+        Cell = cell;
         Possibilities = possibilities;
     }
 
-    public CoordinatePossibilities(Coordinate coordinate, int possibility)
+    public CellPossibilities(Cell cell, int possibility)
     {
-        Coordinate = coordinate;
+        Cell = cell;
         Possibilities = IPossibilities.NewEmpty();
         Possibilities.Add(possibility);
     }
     
-    public CoordinatePossibilities(PossibilityCoordinate coord)
+    public CellPossibilities(CellPossibility coord)
     {
-        Coordinate = new Coordinate(coord.Row, coord.Col);
+        Cell = new Cell(coord.Row, coord.Col);
         Possibilities = IPossibilities.NewEmpty();
         Possibilities.Add(coord.Possibility);
     }
 
-    public PossibilityCoordinate[] ToPossibilityCoordinates()
+    public CellPossibility[] ToPossibilityCoordinates()
     {
-        var result = new PossibilityCoordinate[Possibilities.Count];
+        var result = new CellPossibility[Possibilities.Count];
 
         var cursor = 0;
         foreach (var possibility in Possibilities)
         {
-            result[cursor] = new PossibilityCoordinate(Coordinate.Row, Coordinate.Col, possibility);
+            result[cursor] = new CellPossibility(Cell.Row, Cell.Col, possibility);
             cursor++;
         }
 
@@ -276,17 +276,17 @@ public class CoordinatePossibilities
 
     public override bool Equals(object? obj)
     {
-        if (obj is not CoordinatePossibilities cp) return false;
-        return Coordinate == cp.Coordinate && Possibilities.Equals(cp.Possibilities);
+        if (obj is not CellPossibilities cp) return false;
+        return Cell == cp.Cell && Possibilities.Equals(cp.Possibilities);
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Coordinate.GetHashCode(), Possibilities.GetHashCode());
+        return HashCode.Combine(Cell.GetHashCode(), Possibilities.GetHashCode());
     }
 
     public override string ToString()
     {
-        return $"{Coordinate} => {Possibilities}";
+        return $"{Cell} => {Possibilities}";
     }
 }

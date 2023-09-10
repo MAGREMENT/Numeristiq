@@ -16,11 +16,11 @@ public class ThreeDimensionMedusaStrategy : IStrategy
         manager.Construct(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);
         var graph = manager.LinkGraph;
 
-        foreach (var coloredVertices in ColorHelper.Color<PossibilityCoordinate>(graph))
+        foreach (var coloredVertices in ColorHelper.Color<CellPossibility>(graph))
         {
             if(coloredVertices.Count <= 1) continue;
             
-            HashSet<PossibilityCoordinate> inGraph = new HashSet<PossibilityCoordinate>(coloredVertices.On);
+            HashSet<CellPossibility> inGraph = new HashSet<CellPossibility>(coloredVertices.On);
             inGraph.UnionWith(coloredVertices.Off);
 
             if (SearchColor(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph) ||
@@ -35,8 +35,8 @@ public class ThreeDimensionMedusaStrategy : IStrategy
         }
     }
 
-    private bool SearchColor(IStrategyManager strategyManager, List<PossibilityCoordinate> toSearch,
-        List<PossibilityCoordinate> other, HashSet<PossibilityCoordinate> inGraph)
+    private bool SearchColor(IStrategyManager strategyManager, List<CellPossibility> toSearch,
+        List<CellPossibility> other, HashSet<CellPossibility> inGraph)
     {
         for (int i = 0; i < toSearch.Count; i++)
         {
@@ -64,8 +64,8 @@ public class ThreeDimensionMedusaStrategy : IStrategy
         return false;
     }
 
-    private bool DoEmptyCell(IStrategyManager strategyManager, PossibilityCoordinate one, PossibilityCoordinate two,
-        HashSet<PossibilityCoordinate> inGraph)
+    private bool DoEmptyCell(IStrategyManager strategyManager, CellPossibility one, CellPossibility two,
+        HashSet<CellPossibility> inGraph)
     {
         if (one.Row == two.Row || one.Col == two.Col || one.Possibility == two.Possibility) return false;
 
@@ -81,18 +81,18 @@ public class ThreeDimensionMedusaStrategy : IStrategy
         return false;
     }
 
-    private bool IsTotallyOffGraph(IStrategyManager strategyManager, Coordinate coordinate, HashSet<PossibilityCoordinate> inGraph)
+    private bool IsTotallyOffGraph(IStrategyManager strategyManager, Cell cell, HashSet<CellPossibility> inGraph)
     {
-        foreach (var possibility in strategyManager.Possibilities[coordinate.Row, coordinate.Col])
+        foreach (var possibility in strategyManager.Possibilities[cell.Row, cell.Col])
         {
-            if (inGraph.Contains(new PossibilityCoordinate(coordinate.Row, coordinate.Col, possibility))) return false;
+            if (inGraph.Contains(new CellPossibility(cell.Row, cell.Col, possibility))) return false;
         }
 
         return true;
     }
 
-    private void SearchMix(IStrategyManager strategyManager, List<PossibilityCoordinate> one,
-        List<PossibilityCoordinate> two, HashSet<PossibilityCoordinate> inGraph)
+    private void SearchMix(IStrategyManager strategyManager, List<CellPossibility> one,
+        List<CellPossibility> two, HashSet<CellPossibility> inGraph)
     {
         foreach (var first in one)
         {
@@ -104,7 +104,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy
 
                     foreach (var coord in first.SharedSeenCells(second))
                     {
-                        var current = new PossibilityCoordinate(coord.Row, coord.Col, first.Possibility);
+                        var current = new CellPossibility(coord.Row, coord.Col, first.Possibility);
                         if(inGraph.Contains(current)) continue; 
                         strategyManager.ChangeBuffer.AddPossibilityToRemove(current);
                     }
@@ -116,11 +116,11 @@ public class ThreeDimensionMedusaStrategy : IStrategy
                     else if(first.ShareAUnit(second))
                     {
                         if(strategyManager.Possibilities[first.Row, first.Col].Peek(second.Possibility) &&
-                           !inGraph.Contains(new PossibilityCoordinate(first.Row, first.Col, second.Possibility)))
+                           !inGraph.Contains(new CellPossibility(first.Row, first.Col, second.Possibility)))
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(second.Possibility, first.Row, first.Col);
                         
                         if(strategyManager.Possibilities[second.Row, second.Col].Peek(first.Possibility) &&
-                           !inGraph.Contains(new PossibilityCoordinate(second.Row, second.Col, first.Possibility)))
+                           !inGraph.Contains(new CellPossibility(second.Row, second.Col, first.Possibility)))
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(first.Possibility, second.Row, second.Col);
                     }
                 }

@@ -60,9 +60,9 @@ public class BoolArrayPossibilities : IPossibilities
         }
     }
 
-    public IPossibilities Mash(IPossibilities possibilities)
+    public IPossibilities Or(IPossibilities possibilities)
     {
-        return IPossibilities.DefaultMash(this, possibilities);
+        return IPossibilities.DefaultOr(this, possibilities);
     }
 
     public bool Peek(int i)

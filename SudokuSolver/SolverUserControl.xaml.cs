@@ -293,7 +293,7 @@ public partial class SolverUserControl : IHighlightable
     {
         switch (element)
         {
-            case PossibilityCoordinate coord :
+            case CellPossibility coord :
                 _backgroundManager.HighlightPossibility(coord.Row, coord.Col, coord.Possibility, ColorUtil.ToColor(coloration));
                 break;
             case PointingRow pr :
@@ -308,7 +308,7 @@ public partial class SolverUserControl : IHighlightable
         }
     }
 
-    public void CreateLink(PossibilityCoordinate from, PossibilityCoordinate to, LinkStrength linkStrength)
+    public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
         _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dot);
     }
@@ -317,13 +317,13 @@ public partial class SolverUserControl : IHighlightable
     {
         switch (from)
         {
-            case PossibilityCoordinate one when to is PossibilityCoordinate two:
+            case CellPossibility one when to is CellPossibility two:
                 _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong ? DashStyles.Solid : DashStyles.Dot);
                 break;
-            case PossibilityCoordinate when to is AlmostNakedPossibilities:
+            case CellPossibility when to is AlmostNakedPossibilities:
                 break;
             default:
-                PossibilityCoordinate[] winners = new PossibilityCoordinate[2];
+                CellPossibility[] winners = new CellPossibility[2];
                 double winningDistance = int.MaxValue;
 
                 foreach (var c1 in from.EachElement())
@@ -424,7 +424,7 @@ public class SolverBackgroundManager
     private readonly DrawingGroup _groups = new();
     private readonly DrawingGroup _links = new();
 
-    private Coordinate? _currentCursor;
+    private Cell? _currentCursor;
 
     public SolverBackgroundManager(int cellSize, int margin)
     {
@@ -509,15 +509,15 @@ public class SolverBackgroundManager
         var mostRight = coords[0];
         for (int i = 1; i < coords.Length; i++)
         {
-            if (coords[i].Coordinate.Col < mostLeft.Coordinate.Col) mostLeft = coords[i];
-            if (coords[i].Coordinate.Col > mostRight.Coordinate.Col) mostRight = coords[i];
+            if (coords[i].Cell.Col < mostLeft.Cell.Col) mostLeft = coords[i];
+            if (coords[i].Cell.Col > mostRight.Cell.Col) mostRight = coords[i];
         }
 
         _groups.Children.Add(new GeometryDrawing()
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Coordinate.Col, pr.Possibility),
-                TopLeftY(mostLeft.Coordinate.Row, pr.Possibility),
-                (CellSize + Margin) * (mostRight.Coordinate.Col - mostLeft.Coordinate.Col) + _oneThird, _oneThird)),
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Cell.Col, pr.Possibility),
+                TopLeftY(mostLeft.Cell.Row, pr.Possibility),
+                (CellSize + Margin) * (mostRight.Cell.Col - mostLeft.Cell.Col) + _oneThird, _oneThird)),
             Pen = new Pen()
             {
             Thickness = 3.0,
@@ -534,15 +534,15 @@ public class SolverBackgroundManager
         var mostDown = coords[0];
         for (int i = 1; i < coords.Length; i++)
         {
-            if (coords[i].Coordinate.Row < mostUp.Coordinate.Row) mostUp = coords[i];
-            if (coords[i].Coordinate.Row > mostDown.Coordinate.Row) mostDown = coords[i];
+            if (coords[i].Cell.Row < mostUp.Cell.Row) mostUp = coords[i];
+            if (coords[i].Cell.Row > mostDown.Cell.Row) mostDown = coords[i];
         }
 
         _groups.Children.Add(new GeometryDrawing()
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Coordinate.Col, pc.Possibility),
-                TopLeftY(mostUp.Coordinate.Row, pc.Possibility), _oneThird,
-                (CellSize + Margin) * (mostDown.Coordinate.Row - mostUp.Coordinate.Row) + _oneThird)),
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Cell.Col, pc.Possibility),
+                TopLeftY(mostUp.Cell.Row, pc.Possibility), _oneThird,
+                (CellSize + Margin) * (mostDown.Cell.Row - mostUp.Cell.Row) + _oneThird)),
             Pen = new Pen()
             {
                 Thickness = 3.0,
@@ -556,10 +556,10 @@ public class SolverBackgroundManager
     {
         foreach (var coord in anp.CoordinatePossibilities)
         {
-            var x = TopLeftX(coord.Coordinate.Col);
-            var y = TopLeftY(coord.Coordinate.Row);
+            var x = TopLeftX(coord.Cell.Col);
+            var y = TopLeftY(coord.Cell.Row);
             
-            if(!anp.Contains(coord.Coordinate.Row - 1, coord.Coordinate.Col))
+            if(!anp.Contains(coord.Cell.Row - 1, coord.Cell.Col))
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x, y), new Point(x + CellSize, y)),
@@ -571,7 +571,7 @@ public class SolverBackgroundManager
                     }     
                 });
             
-            if(!anp.Contains(coord.Coordinate.Row + 1, coord.Coordinate.Col))
+            if(!anp.Contains(coord.Cell.Row + 1, coord.Cell.Col))
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x, y + CellSize), new Point(x + CellSize, y + CellSize)),
@@ -583,7 +583,7 @@ public class SolverBackgroundManager
                     }     
                 });
             
-            if(!anp.Contains(coord.Coordinate.Row, coord.Coordinate.Col - 1))
+            if(!anp.Contains(coord.Cell.Row, coord.Cell.Col - 1))
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x, y), new Point(x, y + CellSize)),
@@ -595,7 +595,7 @@ public class SolverBackgroundManager
                     }     
                 });
             
-            if(!anp.Contains(coord.Coordinate.Row, coord.Coordinate.Col + 1))
+            if(!anp.Contains(coord.Cell.Row, coord.Cell.Col + 1))
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x + CellSize, y), new Point(x + CellSize, y + CellSize)),
@@ -609,7 +609,7 @@ public class SolverBackgroundManager
         }
     }
 
-    public void CreateLink(PossibilityCoordinate one, PossibilityCoordinate two, DashStyle dashStyle)
+    public void CreateLink(CellPossibility one, CellPossibility two, DashStyle dashStyle)
     {
         var from = new Point(one.Col * CellSize + (one.Col + 1) * Margin + (one.Possibility - 1) % 3 * _oneThird + _oneThird / 2,
             one.Row * CellSize + (one.Row + 1) * Margin + (one.Possibility - 1) / 3 * _oneThird + _oneThird / 2);
@@ -677,13 +677,13 @@ public class SolverBackgroundManager
     {
         _cursor.Children.Clear();
         
-        if (_currentCursor is not null && _currentCursor == new Coordinate(row, col))
+        if (_currentCursor is not null && _currentCursor == new Cell(row, col))
         {
             _currentCursor = null;
             return;
         }
 
-        _currentCursor = new Coordinate(row, col);
+        _currentCursor = new Cell(row, col);
         int startCol = row * CellSize + (row + 1) * Margin;
         int startRow = col * CellSize + (col + 1) * Margin;
         

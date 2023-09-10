@@ -64,7 +64,7 @@ public class GridFormationStrategy : IStrategy
             : strategyManager.ColumnPositions(unitToSearch, number);
         if (current.Count > _type || current.Count < 2) return;
 
-        var newMashed = mashed.Mash(current);
+        var newMashed = mashed.Or(current);
         if (newMashed.Count > _type) return;
 
         if (visited.Count == _type)
@@ -115,12 +115,12 @@ public class GridFormationReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        List<Coordinate> coords = new();
+        List<Cell> coords = new();
         foreach (var row in _rows)
         {
             foreach (var col in _cols)
             {
-                if (manager.Possibilities[row, col].Peek(_number)) coords.Add(new Coordinate(row, col));
+                if (manager.Possibilities[row, col].Peek(_number)) coords.Add(new Cell(row, col));
             }
         }
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>

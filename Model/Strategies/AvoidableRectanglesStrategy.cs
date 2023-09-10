@@ -72,7 +72,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
                     {
                         if (!possTwo.Peek(possibility)) continue;
 
-                        foreach (var coord in CoordinateUtils.SharedSeenCells(row, pair[0].Column,
+                        foreach (var coord in Cells.SharedSeenCells(row, pair[0].Column,
                                      row, pair[1].Column))
                         {
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
@@ -88,9 +88,9 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
                 }
                 
                 //Type 3
-                var shared = new List<Coordinate>(CoordinateUtils.SharedSeenEmptyCells(strategyManager, row, pair[0].Column,
+                var shared = new List<Cell>(Cells.SharedSeenEmptyCells(strategyManager, row, pair[0].Column,
                     row, pair[1].Column));
-                var mashed = possOne.Mash(possTwo);
+                var mashed = possOne.Or(possTwo);
                 mashed.Remove(pair[0].Number);
                 mashed.Remove(pair[1].Number);
 
@@ -175,7 +175,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
                     {
                         if (!possTwo.Peek(possibility)) continue;
 
-                        foreach (var coord in CoordinateUtils.SharedSeenCells(pair[0].Row, col,
+                        foreach (var coord in Cells.SharedSeenCells(pair[0].Row, col,
                                      pair[1].Row, col))
                         {
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
@@ -191,9 +191,9 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
                 }
                 
                 //Type 3
-                var shared = new List<Coordinate>(CoordinateUtils.SharedSeenEmptyCells(strategyManager, pair[0].Row, col,
+                var shared = new List<Cell>(Cells.SharedSeenEmptyCells(strategyManager, pair[0].Row, col,
                     pair[1].Row, col));
-                var mashed = possOne.Mash(possTwo);
+                var mashed = possOne.Or(possTwo);
                 mashed.Remove(pair[0].Number);
                 mashed.Remove(pair[1].Number);
 
@@ -240,7 +240,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
         _originalBoard = board;
     }
     
-    private void RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Coordinate> coords,
+    private void RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Cell> coords,
         AlmostLockedSet except)
     {
         foreach (var coord in coords)

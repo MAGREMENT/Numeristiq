@@ -24,7 +24,7 @@ public class XYWingStrategy : IStrategy
             //Rows
             while (unitsDispersion[0].Count > 0)
             {
-                Coordinate one = unitsDispersion[0].Dequeue();
+                Cell one = unitsDispersion[0].Dequeue();
                 
                 if (ShareAtLeastOne(strategyManager.Possibilities[one.Row, one.Col],
                         strategyManager.Possibilities[current.Row, current.Col]))
@@ -48,7 +48,7 @@ public class XYWingStrategy : IStrategy
             //Columns
             while (unitsDispersion[1].Count > 0)
             {
-                Coordinate one = unitsDispersion[1].Dequeue();
+                Cell one = unitsDispersion[1].Dequeue();
                 
                 if (ShareAtLeastOne(strategyManager.Possibilities[one.Row, one.Col],
                         strategyManager.Possibilities[current.Row, current.Col]))
@@ -64,9 +64,9 @@ public class XYWingStrategy : IStrategy
         }
     }
 
-    private Queue<Coordinate>[] MatchingUnitDispersion(Coordinate coord, List<Coordinate> toSee)
+    private Queue<Cell>[] MatchingUnitDispersion(Cell coord, List<Cell> toSee)
     {
-        Queue<Coordinate>[] result = { new(), new(), new() };
+        Queue<Cell>[] result = { new(), new(), new() };
         foreach (var c in toSee)
         {
             if (c.Row == coord.Row)
@@ -107,7 +107,7 @@ public class XYWingStrategy : IStrategy
     /// <param name="one"></param>
     /// <param name="two"></param>
     /// <returns></returns>
-    private static bool IsYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
+    private static bool IsYWing(IStrategyManager strategyManager, Cell opposite, Cell one, Cell two)
     {
         if (AreAllInSameUnit(opposite, one, two)) return false;
         var oppositePoss = strategyManager.Possibilities[opposite.Row, opposite.Col];
@@ -134,14 +134,14 @@ public class XYWingStrategy : IStrategy
         return false;
     }
     
-    private static bool AreAllInSameUnit(Coordinate one, Coordinate two, Coordinate three)
+    private static bool AreAllInSameUnit(Cell one, Cell two, Cell three)
     {
         return (one.Row == two.Row && one.Row == three.Row) || (one.Col == two.Col && one.Col == three.Col) ||
                (one.Row / 3 == two.Row / 3 && one.Col / 3 == two.Col / 3 && one.Row / 3 == three.Row / 3 &&
                 one.Col / 3 == three.Col / 3);
     }
 
-    private bool ProcessXYWing(IStrategyManager strategyManager, Coordinate opposite, Coordinate one, Coordinate two)
+    private bool ProcessXYWing(IStrategyManager strategyManager, Cell opposite, Cell one, Cell two)
     {
         int toRemove = Minus(strategyManager.Possibilities[one.Row, one.Col],
             strategyManager.Possibilities[opposite.Row, opposite.Col]);
@@ -169,20 +169,20 @@ public class XYWingStrategy : IStrategy
     /// <param name="one"></param>
     /// <param name="two"></param>
     /// <returns></returns>
-    private static IEnumerable<Coordinate> MatchingCells(Coordinate one, Coordinate two)
+    private static IEnumerable<Cell> MatchingCells(Cell one, Cell two)
     {
         if (one.Row / 3 == two.Row / 3)
         {
             int startColOne = one.Col / 3;
             for (int i = 0; i < 3; i++)
             {
-                yield return new Coordinate(two.Row, startColOne * 3 + i);
+                yield return new Cell(two.Row, startColOne * 3 + i);
             }
 
             int startColTwo = two.Col / 3;
             for (int i = 0; i < 3; i++)
             {
-                yield return new Coordinate(one.Row, startColTwo * 3 + i);
+                yield return new Cell(one.Row, startColTwo * 3 + i);
             }
         }
         else if (one.Col / 3 == two.Col / 3)
@@ -190,30 +190,30 @@ public class XYWingStrategy : IStrategy
             int startRowOne = one.Row / 3;
             for (int i = 0; i < 3; i++)
             {
-                yield return new Coordinate(startRowOne * 3 + i, two.Col);
+                yield return new Cell(startRowOne * 3 + i, two.Col);
             }
 
             int startRowTwo = two.Row / 3;
             for (int i = 0; i < 3; i++)
             {
-                yield return new Coordinate(startRowTwo * 3 + i, one.Col);
+                yield return new Cell(startRowTwo * 3 + i, one.Col);
             }
         }
         else
         {
-            yield return new Coordinate(one.Row, two.Col);
-            yield return new Coordinate(two.Row, one.Col);
+            yield return new Cell(one.Row, two.Col);
+            yield return new Cell(two.Row, one.Col);
         }
     }
 
-    private static List<Coordinate> AllCellsWith2Possibilities(IStrategyManager strategyManager)
+    private static List<Cell> AllCellsWith2Possibilities(IStrategyManager strategyManager)
     {
-        List<Coordinate> result = new();
+        List<Cell> result = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Possibilities[row, col].Count == 2) result.Add(new Coordinate(row, col));
+                if (strategyManager.Possibilities[row, col].Count == 2) result.Add(new Cell(row, col));
             }
         }
 
@@ -223,11 +223,11 @@ public class XYWingStrategy : IStrategy
 
 public class XYWingReportBuilder : IChangeReportBuilder
 {
-    private readonly Coordinate _opposite;
-    private readonly Coordinate _one;
-    private readonly Coordinate _two;
+    private readonly Cell _opposite;
+    private readonly Cell _one;
+    private readonly Cell _two;
 
-    public XYWingReportBuilder(Coordinate opposite, Coordinate one, Coordinate two)
+    public XYWingReportBuilder(Cell opposite, Cell one, Cell two)
     {
         _opposite = opposite;
         _one = one;

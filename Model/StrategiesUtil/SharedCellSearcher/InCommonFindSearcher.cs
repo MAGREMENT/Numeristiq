@@ -5,7 +5,7 @@ namespace Model.StrategiesUtil.SharedCellSearcher;
 
 public class InCommonFindSearcher : ISharedSeenCellSearcher
 {
-    public IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
         int miniRow1 = row1 / 3;
         int miniCol1 = col1 / 3;
@@ -25,7 +25,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     var col = startCol + gridCol;
                     
                     if((row == row1 && col == col1) || (row == row2 && col == col2)) continue;
-                    yield return new Coordinate(row, col);
+                    yield return new Cell(row, col);
                 }
             }
 
@@ -38,7 +38,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     var sc = miniCol * 3;
                     for (int gridCol = 0; gridCol < 3; gridCol++)
                     {
-                        yield return new Coordinate(row1, sc + gridCol);
+                        yield return new Cell(row1, sc + gridCol);
                     }
                 }
             }
@@ -52,7 +52,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     var sr = miniRow * 3;
                     for (int gridRow = 0; gridRow < 3; gridRow++)
                     {
-                        yield return new Coordinate(sr + gridRow, col1);
+                        yield return new Cell(sr + gridRow, col1);
                     }
                 }
             }
@@ -66,7 +66,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             {
                 if(col == col1 || col == col2) continue;
 
-                yield return new Coordinate(row1, col);
+                yield return new Cell(row1, col);
             }
             
             yield break;
@@ -78,7 +78,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             {
                 if(row == row1 || row == row2) continue;
 
-                yield return new Coordinate(row, col1);
+                yield return new Cell(row, col1);
             }
 
             yield break;
@@ -91,8 +91,8 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
 
             for (int gridCol = 0; gridCol < 3; gridCol++)
             {
-                yield return new Coordinate(row2, start1 + gridCol);
-                yield return new Coordinate(row1, start2 + gridCol);
+                yield return new Cell(row2, start1 + gridCol);
+                yield return new Cell(row1, start2 + gridCol);
             }
 
             yield break;
@@ -105,18 +105,18 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
 
             for (int gridRow = 0; gridRow < 3; gridRow++)
             {
-                yield return new Coordinate(start1 + gridRow, col2);
-                yield return new Coordinate(start2 + gridRow, col1);
+                yield return new Cell(start1 + gridRow, col2);
+                yield return new Cell(start2 + gridRow, col1);
             }
 
             yield break;
         }
 
-        yield return new Coordinate(row1, col2);
-        yield return new Coordinate(row2, col1);
+        yield return new Cell(row1, col2);
+        yield return new Cell(row2, col1);
     }
 
-    public IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         return ISharedSeenCellSearcher.DefaultSharedSeenEmptyCells(this, strategyManager, row1, col1, row2, col2);
     }

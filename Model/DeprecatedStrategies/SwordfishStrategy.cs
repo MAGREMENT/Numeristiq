@@ -30,14 +30,14 @@ public class SwordfishStrategy : IStrategy
                 while (copyOne.Count > 0)
                 {
                     ValuePositions second = copyOne.Dequeue();
-                    LinePositions mashed = first.Positions.Mash(second.Positions);
+                    LinePositions mashed = first.Positions.Or(second.Positions);
                     if (mashed.Count == 3)
                     {
                         Queue<ValuePositions> copyTwo = new Queue<ValuePositions>(copyOne);
                         while (copyTwo.Count > 0)
                         {
                             ValuePositions third = copyTwo.Dequeue();
-                            if(mashed.Mash(third.Positions).Count == 3)
+                            if(mashed.Or(third.Positions).Count == 3)
                                 ProcessSwordfishInRows(strategyManager, first.Value,
                                     second.Value, third.Value, mashed, number);
                         }
@@ -59,14 +59,14 @@ public class SwordfishStrategy : IStrategy
                 while (copyOne.Count > 0)
                 {
                     ValuePositions second = copyOne.Dequeue();
-                    LinePositions mashed = first.Positions.Mash(second.Positions);
+                    LinePositions mashed = first.Positions.Or(second.Positions);
                     if (mashed.Count == 3)
                     {
                         Queue<ValuePositions> copyTwo = new Queue<ValuePositions>(copyOne);
                         while (copyTwo.Count > 0)
                         {
                             ValuePositions third = copyTwo.Dequeue();
-                            if(mashed.Mash(third.Positions).Count == 3)
+                            if(mashed.Or(third.Positions).Count == 3)
                                 ProcessSwordfishInColumns(strategyManager, first.Value,
                                     second.Value, third.Value, mashed, number);
                         }

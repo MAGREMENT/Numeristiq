@@ -7,22 +7,26 @@ namespace Model.StrategiesUtil;
 
 public class AlmostLockedSet
 {
-    public Coordinate[] Coordinates { get; }
+    public Cell[] Coordinates { get; }
     public IPossibilities Possibilities { get; }
 
-    public AlmostLockedSet(Coordinate[] coordinates, IPossibilities poss)
+    public AlmostLockedSet(Cell[] coordinates, IPossibilities poss)
     {
+        if (coordinates.Length + 1 != poss.Count)
+            throw new ArgumentException("Possibilities count not equal to cell count plus one"); 
         Coordinates = coordinates;
         Possibilities = poss;
     }
 
-    public AlmostLockedSet(Coordinate coord, IPossibilities poss)
+    public AlmostLockedSet(Cell coord, IPossibilities poss)
     {
+        if(poss.Count != 2)
+            throw new ArgumentException("Possibilities count not equal to cell count plus one"); 
         Coordinates = new[] { coord };
         Possibilities = poss;
     }
 
-    public bool Contains(Coordinate coord)
+    public bool Contains(Cell coord)
     {
         foreach (var c in Coordinates)
         {
@@ -45,7 +49,7 @@ public class AlmostLockedSet
         return false;
     }
 
-    public bool ShareAUnit(Coordinate coord)
+    public bool ShareAUnit(Cell coord)
     {
         foreach (var c in Coordinates)
         {
@@ -53,14 +57,6 @@ public class AlmostLockedSet
         }
 
         return true;
-    }
-
-    public IEnumerable<Coordinate> CoordinatesWithPossibility(IStrategyManager strategyManager, int possibility)
-    {
-        foreach (var coord in Coordinates)
-        {
-            if (strategyManager.Possibilities[coord.Row, coord.Col].Peek(possibility)) yield return coord;
-        }
     }
 
     public override bool Equals(object? obj)
@@ -103,34 +99,34 @@ public class AlmostLockedSet
         return result[..^2] + "]";
     }
 
-    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Coordinate> coords, int max)
+    public static List<AlmostLockedSet> SearchForAls(IStrategyManager view, List<Cell> coords, int max)
     {
         List<AlmostLockedSet> result = new();
         if (max < 1) return result;
         for(int i = 0; i < coords.Count; i++){
             IPossibilities current = view.Possibilities[coords[i].Row, coords[i].Col];
             if (current.Count == 2) result.Add(new AlmostLockedSet(coords[i], current));
-            if (max > 1) SearchForAls(view, coords, new List<Coordinate> { coords[i] },
+            if (max > 1) SearchForAls(view, coords, new List<Cell> { coords[i] },
                 current, i + 1, max, result);
         }
 
         return result;
     }
 
-    private static void SearchForAls(IStrategyManager view, List<Coordinate> coords, List<Coordinate> visited,
+    private static void SearchForAls(IStrategyManager view, List<Cell> coords, List<Cell> visited,
         IPossibilities current, int start, int max, List<AlmostLockedSet> result)
     {
         for (int i = start; i < coords.Count; i++)
         {
             if (!ShareAUnitWithAll(coords[i], visited)) continue;
 
-            IPossibilities mashed = current.Mash(view.Possibilities[coords[i].Row, coords[i].Col]);
+            IPossibilities mashed = current.Or(view.Possibilities[coords[i].Row, coords[i].Col]);
             if (mashed.Count == current.Count + view.Possibilities[coords[i].Row, coords[i].Col].Count) continue;
             int count = visited.Count + 1;
             
             if (mashed.Count == count + 1)
             {
-                Coordinate[] final = new Coordinate[visited.Count + 1];
+                Cell[] final = new Cell[visited.Count + 1];
                 for (int j = 0; j < visited.Count; j++)
                 {
                     final[j] = visited[j];
@@ -140,12 +136,12 @@ public class AlmostLockedSet
                 result.Add(new AlmostLockedSet(final, mashed));
             }
 
-            if (max >= count) SearchForAls(view, coords, new List<Coordinate>(visited) { coords[i] },
+            if (max >= count) SearchForAls(view, coords, new List<Cell>(visited) { coords[i] },
                     mashed, i + 1, max, result);
         }
     }
 
-    private static bool ShareAUnitWithAll(Coordinate current, List<Coordinate> coordinates)
+    private static bool ShareAUnitWithAll(Cell current, List<Cell> coordinates)
     {
         foreach (var coord in coordinates)
         {

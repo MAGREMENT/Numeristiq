@@ -32,19 +32,7 @@ public class PointingRow : ILinkGraphElement
         }
     }
 
-    public PointingRow(int possibility, IEnumerable<Coordinate> coords)
-    {
-        Possibility = possibility;
-        Row = coords.First().Row;
-        _pos = new LinePositions();
-        foreach (var coord in coords)
-        {
-            if (coord.Row != Row) throw new ArgumentException("Not on same row");
-            _pos.Add(coord.Col);
-        }
-    }
-    
-    public PointingRow(int possibility, IEnumerable<PossibilityCoordinate> coords)
+    public PointingRow(int possibility, IEnumerable<CellPossibility> coords)
     {
         Possibility = possibility;
         Row = coords.First().Row;
@@ -56,14 +44,14 @@ public class PointingRow : ILinkGraphElement
         }
     }
 
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(PossibilityCoordinate single)
+    public IEnumerable<CellPossibility> SharedSeenCells(CellPossibility single)
     {
         if (single.Row == Row)
         {
             for (int col = 0; col < 9; col++)
             {
                 if (col == single.Col || _pos.Any(posCol=> posCol == col)) continue;
-                yield return new PossibilityCoordinate(Row, col, Possibility);
+                yield return new CellPossibility(Row, col, Possibility);
             }
         }
         if (single.Row / 3 == Row / 3 && single.Col / 3 == _pos.First() / 3)
@@ -80,20 +68,20 @@ public class PointingRow : ILinkGraphElement
 
                     if ((row == single.Row && col == single.Col) ||
                         (row == Row && _pos.Any(posCol => posCol == col))) continue;
-                    yield return new PossibilityCoordinate(row, col, Possibility);
+                    yield return new CellPossibility(row, col, Possibility);
                 }
             }
         }
     }
     
-    public IEnumerable<PossibilityCoordinate> SharedSeenCells(PointingRow row)
+    public IEnumerable<CellPossibility> SharedSeenCells(PointingRow row)
     {
         if(Row != row.Row) yield break;
         for (int col = 0; col < 9; col++)
         {
             if (row._pos.Any(posCol => posCol == col) ||
                 _pos.Any(posCol => posCol == col)) continue;
-            yield return new PossibilityCoordinate(Row, col, Possibility);
+            yield return new CellPossibility(Row, col, Possibility);
         }
     }
 
@@ -132,14 +120,14 @@ public class PointingRow : ILinkGraphElement
         return result + $"=> {Possibility}]";
     }
 
-    public CoordinatePossibilities[] EachElement()
+    public CellPossibilities[] EachElement()
     {
-        CoordinatePossibilities[] result = new CoordinatePossibilities[_pos.Count];
+        CellPossibilities[] result = new CellPossibilities[_pos.Count];
         
         int cursor = 0;
         foreach (var col in _pos)
         {
-            result[cursor] = new CoordinatePossibilities(new Coordinate(Row, col), Possibility);
+            result[cursor] = new CellPossibilities(new Cell(Row, col), Possibility);
             cursor++;
         }
 

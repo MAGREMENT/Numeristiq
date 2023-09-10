@@ -6,16 +6,16 @@ using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainTypes;
 
-public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
+public class NormalXCycles : IAlternatingChainType<CellPossibility>
 {
     public string Name => "XCycles";
     public StrategyLevel Difficulty => StrategyLevel.Hard;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(IStrategyManager view)
+    public IEnumerable<LinkGraph<CellPossibility>> GetGraphs(IStrategyManager view)
     {
         for (int n = 1; n <= 9; n++)
         {
-            LinkGraph<PossibilityCoordinate> graph = new();
+            LinkGraph<CellPossibility> graph = new();
             int number = n;
 
             for (int row = 0; row < 9; row++)
@@ -25,8 +25,8 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
                 var rowFinal = row;
                 ppir.ForEachCombination((one, two) =>
                 {
-                    graph.AddLink(new PossibilityCoordinate(rowFinal, one, number),
-                        new PossibilityCoordinate(rowFinal, two, number), strength);
+                    graph.AddLink(new CellPossibility(rowFinal, one, number),
+                        new CellPossibility(rowFinal, two, number), strength);
                 });
             }
 
@@ -37,8 +37,8 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
                 var colFinal = col;
                 ppic.ForEachCombination((one, two) =>
                 {
-                    graph.AddLink(new PossibilityCoordinate(one, colFinal, number),
-                        new PossibilityCoordinate(two, colFinal, number), strength);
+                    graph.AddLink(new CellPossibility(one, colFinal, number),
+                        new CellPossibility(two, colFinal, number), strength);
                 });
             }
 
@@ -50,8 +50,8 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
                     var strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     ppimn.ForEachCombination((one, two) =>
                     {
-                        graph.AddLink(new PossibilityCoordinate(one.Row, one.Col, number),
-                            new PossibilityCoordinate(two.Row, two.Col, number), strength);
+                        graph.AddLink(new CellPossibility(one.Row, one.Col, number),
+                            new CellPossibility(two.Row, two.Col, number), strength);
                     });
                 }
             }
@@ -60,7 +60,7 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         }
     }
 
-    public bool ProcessFullLoop(IStrategyManager view, Loop<PossibilityCoordinate> loop)
+    public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)
     {
         bool wasProgressMade = false;
         loop.ForEachLink((one, two)
@@ -69,7 +69,7 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         return wasProgressMade;
     }
 
-    private void ProcessWeakLink(IStrategyManager view, PossibilityCoordinate one, PossibilityCoordinate two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two, out bool wasProgressMade)
     {
         foreach (var coord in one.SharedSeenCells(two))
         {
@@ -79,12 +79,12 @@ public class NormalXCycles : IAlternatingChainType<PossibilityCoordinate>
         wasProgressMade = false;
     }
 
-    public bool ProcessWeakInference(IStrategyManager view, PossibilityCoordinate inference, Loop<PossibilityCoordinate> loop)
+    public bool ProcessWeakInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
         return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, PossibilityCoordinate inference, Loop<PossibilityCoordinate> loop)
+    public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
         return view.AddDefinitiveNumber(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }

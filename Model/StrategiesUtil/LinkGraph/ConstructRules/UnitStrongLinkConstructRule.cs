@@ -15,8 +15,8 @@ public class UnitStrongLinkConstructRule : IConstructRule
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
-                linkGraph.AddLink(new PossibilityCoordinate(row, asArray[0], number),
-                    new PossibilityCoordinate(row, asArray[1], number), LinkStrength.Strong);
+                linkGraph.AddLink(new CellPossibility(row, asArray[0], number),
+                    new CellPossibility(row, asArray[1], number), LinkStrength.Strong);
             }
             
             for (int col = 0; col < 9; col++)
@@ -25,8 +25,8 @@ public class UnitStrongLinkConstructRule : IConstructRule
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
-                linkGraph.AddLink(new PossibilityCoordinate(asArray[0], col, number),
-                    new PossibilityCoordinate(asArray[1], col, number), LinkStrength.Strong);
+                linkGraph.AddLink(new CellPossibility(asArray[0], col, number),
+                    new CellPossibility(asArray[1], col, number), LinkStrength.Strong);
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -37,8 +37,8 @@ public class UnitStrongLinkConstructRule : IConstructRule
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();
-                    linkGraph.AddLink(new PossibilityCoordinate(asArray[0].Row, asArray[0].Col, number),
-                        new PossibilityCoordinate(asArray[1].Row, asArray[1].Col, number), LinkStrength.Strong);
+                    linkGraph.AddLink(new CellPossibility(asArray[0].Row, asArray[0].Col, number),
+                        new CellPossibility(asArray[1].Row, asArray[1].Col, number), LinkStrength.Strong);
                 }
             }
         }

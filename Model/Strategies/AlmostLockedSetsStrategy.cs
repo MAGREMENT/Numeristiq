@@ -34,7 +34,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
                     {
                         if (!two.Possibilities.Peek(possibility) || possibility == restrictedCommon) continue;
 
-                        List<Coordinate> coords = new();
+                        List<Cell> coords = new();
                         foreach (var oneCoord in one.Coordinates)
                         {
                             if (strategyManager.Possibilities[oneCoord.Row, oneCoord.Col].Peek(possibility))
@@ -57,7 +57,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
                     {
                         if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
 
-                        List<Coordinate> where = new();
+                        List<Cell> where = new();
                         foreach (var coord in one.Coordinates)
                         {
                             if (strategyManager.Possibilities[coord.Row, coord.Col].Peek(possibility)) where.Add(coord);
@@ -70,7 +70,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
                     {
                         if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
 
-                        List<Coordinate> where = new();
+                        List<Cell> where = new();
                         foreach (var coord in two.Coordinates)
                         {
                             if (strategyManager.Possibilities[coord.Row, coord.Col].Peek(possibility)) where.Add(coord);
@@ -85,7 +85,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
         }
     }
 
-    private void ProcessTwoRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility)
+    private void ProcessTwoRestrictedCommon(IStrategyManager strategyManager, List<Cell> coords, int possibility)
     {
         bool shareRow = true;
         bool shareCol = true;
@@ -103,7 +103,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
         {
             for (int col = 0; col < 9; col++)
             {
-                Coordinate current = new Coordinate(first.Row, col);
+                Cell current = new Cell(first.Row, col);
                 if(coords.Contains(current)) continue;
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, first.Row, col);
             }
@@ -113,7 +113,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
         {
             for (int row = 0; row < 9; row++)
             {
-                Coordinate current = new Coordinate(row, first.Col);
+                Cell current = new Cell(row, first.Col);
                 if(coords.Contains(current)) continue;
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, first.Col);
             }
@@ -128,7 +128,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
                     int row = first.Row / 3 * 3 + gridRow;
                     int col = first.Col / 3 * 3 + gridCol;
                     
-                    Coordinate current = new Coordinate(row, col);
+                    Cell current = new Cell(row, col);
                     if(coords.Contains(current)) continue;
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                 }
@@ -136,9 +136,9 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
         }
     }
 
-    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Coordinate> coords, int possibility)
+    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Cell> coords, int possibility)
     {
-        foreach (var coord in CoordinateUtils.SharedSeenCells(coords))
+        foreach (var coord in Cells.SharedSeenCells(coords))
         {
             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
         }

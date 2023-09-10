@@ -15,8 +15,8 @@ public class CellStrongLinkConstructRule : IConstructRule
 
                 var asArray = strategyManager.Possibilities[row, col].ToArray();
 
-                linkGraph.AddLink(new PossibilityCoordinate(row, col, asArray[0]),
-                    new PossibilityCoordinate(row, col, asArray[1]), LinkStrength.Strong);
+                linkGraph.AddLink(new CellPossibility(row, col, asArray[0]),
+                    new CellPossibility(row, col, asArray[1]), LinkStrength.Strong);
             }
         }
     }

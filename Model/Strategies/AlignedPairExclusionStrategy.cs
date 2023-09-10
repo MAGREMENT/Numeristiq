@@ -40,8 +40,8 @@ public class AlignedPairExclusionStrategy : IStrategy
 
     private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
-        List<Coordinate> shared = new List<Coordinate>(
-            CoordinateUtils.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
+        List<Cell> shared = new List<Cell>(
+            Cells.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
 
         var poss1 = strategyManager.Possibilities[row1, col1];
         var poss2 = strategyManager.Possibilities[row2, col2];
@@ -49,7 +49,7 @@ public class AlignedPairExclusionStrategy : IStrategy
         if (shared.Count < poss1.Count ||
             shared.Count < poss2.Count) return false;
 
-        var inSameUnit = CoordinateUtils.ShareAUnit(row1, col1, row2, col2);
+        var inSameUnit = Cells.ShareAUnit(row1, col1, row2, col2);
 
         Dictionary<int, IPossibilities> one = new();
         foreach (var possibility in poss1)

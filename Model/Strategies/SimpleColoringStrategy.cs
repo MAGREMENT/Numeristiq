@@ -18,7 +18,7 @@ public class SimpleColoringStrategy : IStrategy
         manager.Construct(ConstructRule.UnitStrongLink);
         var graph = manager.LinkGraph;
 
-        foreach (var coloredVertices in ColorHelper.Color<PossibilityCoordinate>(graph))
+        foreach (var coloredVertices in ColorHelper.Color<CellPossibility>(graph))
         {
             if(coloredVertices.Count <= 1) continue;
 
@@ -35,14 +35,14 @@ public class SimpleColoringStrategy : IStrategy
     }
 
     private bool SearchForTwiceInTheSameUnit(IStrategyManager strategyManager,
-        ColoredVertices<PossibilityCoordinate> cv)
+        ColoredVertices<CellPossibility> cv)
     {
         return SearchColorForTwiceInTheSameUnit(strategyManager, cv.On, cv.Off) ||
                SearchColorForTwiceInTheSameUnit(strategyManager, cv.Off, cv.On);
     }
 
     private bool SearchColorForTwiceInTheSameUnit(IStrategyManager strategyManager,
-        List<PossibilityCoordinate> toSearch, List<PossibilityCoordinate> other)
+        List<CellPossibility> toSearch, List<CellPossibility> other)
     {
         for (int i = 0; i < toSearch.Count; i++)
         {
@@ -64,7 +64,7 @@ public class SimpleColoringStrategy : IStrategy
     }
 
     private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
-        ColoredVertices<PossibilityCoordinate> cv)
+        ColoredVertices<CellPossibility> cv)
     {
         foreach (var on in cv.On)
         {
@@ -83,11 +83,11 @@ public class SimpleColoringStrategy : IStrategy
 
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoredVertices<PossibilityCoordinate> _vertices;
+    private readonly ColoredVertices<CellPossibility> _vertices;
     private readonly LinkGraph<ILinkGraphElement> _graph;
     private readonly bool _isInvalidColoring;
 
-    public SimpleColoringReportBuilder(ColoredVertices<PossibilityCoordinate> vertices,
+    public SimpleColoringReportBuilder(ColoredVertices<CellPossibility> vertices,
         LinkGraph<ILinkGraphElement> graph, bool isInvalidColoring = false)
     {
         _vertices = vertices;
@@ -97,7 +97,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        List<Link<PossibilityCoordinate>> links = FindPath();
+        List<Link<CellPossibility>> links = FindPath();
 
         HighlightSolver[] highlights = new HighlightSolver[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
@@ -147,12 +147,12 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
     }
 
-    private List<Link<PossibilityCoordinate>> FindPath()
+    private List<Link<CellPossibility>> FindPath()
     {
-        List<Link<PossibilityCoordinate>> links = new();
+        List<Link<CellPossibility>> links = new();
 
-        Queue<PossibilityCoordinate> queue = new();
-        HashSet<PossibilityCoordinate> inGraph = new HashSet<PossibilityCoordinate>(_vertices.On);
+        Queue<CellPossibility> queue = new();
+        HashSet<CellPossibility> inGraph = new HashSet<CellPossibility>(_vertices.On);
         inGraph.UnionWith(_vertices.Off);
         
         queue.Enqueue(_vertices.On[0]);
@@ -163,9 +163,9 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
 
             foreach (var friend in _graph.GetLinks(current, LinkStrength.Strong))
             {
-                if(friend is not PossibilityCoordinate pc || !inGraph.Contains(pc)) continue;
+                if(friend is not CellPossibility pc || !inGraph.Contains(pc)) continue;
 
-                links.Add(new Link<PossibilityCoordinate>(current, pc));
+                links.Add(new Link<CellPossibility>(current, pc));
                 inGraph.Remove(pc);
                 queue.Enqueue(pc);
             }

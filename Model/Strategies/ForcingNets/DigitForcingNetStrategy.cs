@@ -39,7 +39,7 @@ public class DigitForcingNetStrategy : IStrategy
     {
         foreach (var on in onColoring)
         {
-            if (on.Key is not PossibilityCoordinate possOn) continue;
+            if (on.Key is not CellPossibility possOn) continue;
             if (offColoring.TryGetValue(possOn, out var other))
             {
                 switch (other)
@@ -56,7 +56,7 @@ public class DigitForcingNetStrategy : IStrategy
             if (on.Value != Coloring.On) continue;
             foreach (var off in offColoring)
             {
-                if (off.Value != Coloring.On || off.Key is not PossibilityCoordinate possOff) continue;
+                if (off.Value != Coloring.On || off.Key is not CellPossibility possOff) continue;
                 if (possOff.Row == possOn.Row && possOn.Col == possOff.Col)
                     RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility);
 

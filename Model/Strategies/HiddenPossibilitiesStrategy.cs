@@ -89,7 +89,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             var pos = strategyManager.RowPositions(row, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
-            var newMashed = mashed.Mash(pos);
+            var newMashed = mashed.Or(pos);
             if(newMashed.Count > _type) continue;
 
             var newVisited = visited.Copy();
@@ -117,7 +117,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             var pos = strategyManager.ColumnPositions(col, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
-            var newMashed = mashed.Mash(pos);
+            var newMashed = mashed.Or(pos);
             if(newMashed.Count > _type) continue;
 
             var newVisited = visited.Copy();
@@ -145,7 +145,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             var pos = strategyManager.MiniGridPositions(miniRow, miniCol, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
-            var newMashed = mashed.Mash(pos);
+            var newMashed = mashed.Or(pos);
             if(newMashed.Count > _type) continue;
 
             var newVisited = visited.Copy();
@@ -197,7 +197,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        var coords = new List<PossibilityCoordinate>();
+        var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
         {
             switch (_unit)
@@ -206,14 +206,14 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
                     foreach (var col in _linePos)
                     {
                         if(manager.Possibilities[_unitNumber, col].Peek(possibility))
-                            coords.Add(new PossibilityCoordinate(_unitNumber, col, possibility));
+                            coords.Add(new CellPossibility(_unitNumber, col, possibility));
                     }
                     break;
                 case Unit.Column :
                     foreach (var row in _linePos)
                     {
                         if(manager.Possibilities[row, _unitNumber].Peek(possibility))
-                            coords.Add(new PossibilityCoordinate(row, _unitNumber, possibility));
+                            coords.Add(new CellPossibility(row, _unitNumber, possibility));
                     }
                     break;
             }  
@@ -245,13 +245,13 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        var coords = new List<PossibilityCoordinate>();
+        var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
         {
             foreach (var pos in _miniPos)
             {
                 if(manager.Possibilities[pos.Row, pos.Col].Peek(possibility))
-                    coords.Add(new PossibilityCoordinate(pos, possibility));
+                    coords.Add(new CellPossibility(pos, possibility));
             }
         }
         

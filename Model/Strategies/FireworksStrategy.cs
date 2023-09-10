@@ -121,7 +121,7 @@ public class FireworksStrategy : IStrategy
                     RemoveAllExcept(strategyManager, one.Cross, one.Possibilities);
                     RemoveAllExcept(strategyManager, two.Cross, two.Possibilities);
 
-                    var mashed = one.Possibilities.Mash(two.Possibilities);
+                    var mashed = one.Possibilities.Or(two.Possibilities);
                     foreach (var coord in sharedWings)
                     {
                         RemoveAllExcept(strategyManager, coord, mashed);
@@ -145,7 +145,7 @@ public class FireworksStrategy : IStrategy
                 var coord = dual.Wings[i];
 
                 als[i] = AlmostLockedSet.SearchForAls(strategyManager, CoordinatesToSearch(dual.Cross,
-                    coord, new Coordinate(opposite.Row, opposite.Col)), 4);
+                    coord, new Cell(opposite.Row, opposite.Col)), 4);
 
                 als[i].RemoveAll(singleAls => !singleAls.Possibilities.PeekAll(dual.Possibilities));
 
@@ -181,8 +181,8 @@ public class FireworksStrategy : IStrategy
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, dual.Cross.Row, opposite.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty())
                         strategyManager.ChangeBuffer.Push(this, new FireworksWithStrongLinkReportBuilder(dual, possibility,
-                                new Coordinate(opposite.Row, opposite.Col),
-                                new Coordinate(opposite.Row, dual.Cross.Col)));
+                                new Cell(opposite.Row, opposite.Col),
+                                new Cell(opposite.Row, dual.Cross.Col)));
                 }
 
                 if (strategyManager.Possibilities[dual.Cross.Row, opposite.Col].Peek(possibility) &&
@@ -191,8 +191,8 @@ public class FireworksStrategy : IStrategy
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, dual.Cross.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty())
                         strategyManager.ChangeBuffer.Push(this, new FireworksWithStrongLinkReportBuilder(dual, possibility,
-                            new Coordinate(opposite.Row, opposite.Col),
-                            new Coordinate(dual.Cross.Row, opposite.Col)));
+                            new Cell(opposite.Row, opposite.Col),
+                            new Cell(dual.Cross.Row, opposite.Col)));
                 }
             }
         }
@@ -244,14 +244,14 @@ public class FireworksStrategy : IStrategy
         }
     }
 
-    private List<Coordinate> CoordinatesToSearch(Coordinate cross, Coordinate wing, Coordinate opposite)
+    private List<Cell> CoordinatesToSearch(Cell cross, Cell wing, Cell opposite)
     {
-        List<Coordinate> result = new();
+        List<Cell> result = new();
         bool sameRow = cross.Row == wing.Row;
 
         for (int i = 0; i < 9; i++)
         {
-            result.Add(sameRow ? new Coordinate(i, wing.Col) : new Coordinate(wing.Row, i));
+            result.Add(sameRow ? new Cell(i, wing.Col) : new Cell(wing.Row, i));
         }
 
         result.Remove(wing);
@@ -260,7 +260,7 @@ public class FireworksStrategy : IStrategy
         return result;
     }
 
-    private void RemoveAllExcept(IStrategyManager strategyManager, Coordinate coord, IPossibilities except)
+    private void RemoveAllExcept(IStrategyManager strategyManager, Cell coord, IPossibilities except)
     {
         foreach (var possibility in strategyManager.Possibilities[coord.Row, coord.Col])
         {
@@ -269,7 +269,7 @@ public class FireworksStrategy : IStrategy
         }
     }
 
-    private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Coordinate> wings,
+    private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Cell> wings,
         Firework one, Firework two, Firework three)
     {
         foreach (var possibility in strategyManager.Possibilities[one.Cross.Row, one.Cross.Col])
@@ -333,26 +333,26 @@ public class FireworksStrategy : IStrategy
 public class Firework
 {
     public int Possibility { get; }
-    public Coordinate Cross { get; }
-    public Coordinate[] Wings { get; }
+    public Cell Cross { get; }
+    public Cell[] Wings { get; }
 
     public Firework(int possibility, int crossRow, int crossCol, int wingRow, int wingCol)
     {
         Possibility = possibility;
-        Cross = new Coordinate(crossRow, crossCol);
-        Wings = new Coordinate[] { new(wingRow, wingCol) };
+        Cross = new Cell(crossRow, crossCol);
+        Wings = new Cell[] { new(wingRow, wingCol) };
     }
     
     public Firework(int possibility, int crossRow, int crossCol, int wingRow1, int wingCol1, int wingRow2, int wingCol2)
     {
         Possibility = possibility;
-        Cross = new Coordinate(crossRow, crossCol);
-        Wings = new Coordinate[] { new(wingRow1, wingCol1), new(wingRow2, wingCol2) };
+        Cross = new Cell(crossRow, crossCol);
+        Wings = new Cell[] { new(wingRow1, wingCol1), new(wingRow2, wingCol2) };
     }
 
-    public HashSet<Coordinate> MashWings(params Firework[] fireworks)
+    public HashSet<Cell> MashWings(params Firework[] fireworks)
     {
-        HashSet<Coordinate> result = new(Wings);
+        HashSet<Cell> result = new(Wings);
         foreach (var firework in fireworks)
         {
             foreach (var wing in firework.Wings)
@@ -367,8 +367,8 @@ public class Firework
 
 public class FireworkStack {
     public IPossibilities Possibilities { get; }
-    public Coordinate Cross { get; }
-    public Coordinate[] Wings { get; }
+    public Cell Cross { get; }
+    public Cell[] Wings { get; }
     private readonly uint _presence;
 
     public FireworkStack(params Firework[] fireworks)
@@ -377,7 +377,7 @@ public class FireworkStack {
 
         Possibilities = IPossibilities.NewEmpty();
         Cross = fireworks[0].Cross;
-        Wings = new Coordinate[2];
+        Wings = new Cell[2];
 
         var wings = fireworks[0].MashWings(fireworks);
         if (wings.Count != 2) throw new ArgumentException("Not matching wings");
@@ -407,9 +407,9 @@ public class FireworkStack {
         return ((_presence >> (possibility * 2)) & 3) == wingNumber + 1;
     }
     
-    public HashSet<Coordinate> MashWings(params Firework[] fireworks)
+    public HashSet<Cell> MashWings(params Firework[] fireworks)
     {
-        HashSet<Coordinate> result = new(Wings);
+        HashSet<Cell> result = new(Wings);
         foreach (var firework in fireworks)
         {
             foreach (var wing in firework.Wings)
@@ -421,9 +421,9 @@ public class FireworkStack {
         return result;
     }
     
-    public HashSet<Coordinate> MashWings(FireworkStack stack)
+    public HashSet<Cell> MashWings(FireworkStack stack)
     {
-        HashSet<Coordinate> result = new(Wings);
+        HashSet<Cell> result = new(Wings);
         foreach (var wing in stack.Wings)
         {
             result.Add(wing);
@@ -432,10 +432,10 @@ public class FireworkStack {
         return result;
     }
     
-    public Coordinate Opposite()
+    public Cell Opposite()
     {
         bool firstSameRow = Wings[0].Row == Cross.Row;
-        return firstSameRow ? new Coordinate(Wings[1].Row, Wings[0].Col) : new Coordinate(Wings[0].Row, Wings[1].Col);
+        return firstSameRow ? new Cell(Wings[1].Row, Wings[0].Col) : new Cell(Wings[0].Row, Wings[1].Col);
     }
 }
 
@@ -560,10 +560,10 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
 {
     private readonly FireworkStack _stack;
     private readonly int _possibility;
-    private readonly Coordinate _opposite;
-    private readonly Coordinate _wing;
+    private readonly Cell _opposite;
+    private readonly Cell _wing;
 
-    public FireworksWithStrongLinkReportBuilder(FireworkStack stack, int possibility, Coordinate opposite, Coordinate wing)
+    public FireworksWithStrongLinkReportBuilder(FireworkStack stack, int possibility, Cell opposite, Cell wing)
     {
         _stack = stack;
         _possibility = possibility;

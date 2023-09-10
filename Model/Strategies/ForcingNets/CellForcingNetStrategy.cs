@@ -53,7 +53,7 @@ public class CellForcingNetStrategy : IStrategy
 
         foreach (var element in colorings[0])
         {
-            if (element.Key is not PossibilityCoordinate current) continue;
+            if (element.Key is not CellPossibility current) continue;
             var currentColoring = element.Value;
             bool isSameInAll = true;
 
@@ -77,7 +77,7 @@ public class CellForcingNetStrategy : IStrategy
             foreach (var element in colorings[i])
             {
                 if (element.Value != Coloring.On) continue;
-                if (element.Key is not PossibilityCoordinate current) continue;
+                if (element.Key is not CellPossibility current) continue;
 
                 AddToStackerArray(view, cellCheck, current, colorings.Length, i);
             }
@@ -86,14 +86,14 @@ public class CellForcingNetStrategy : IStrategy
         //TODO do rule 4 and look into rule 3 (doesnt change anything currently)
     }
 
-    private void InitStackerArray(PossibilityStacker?[,] array, PossibilityCoordinate coord)
+    private void InitStackerArray(PossibilityStacker?[,] array, CellPossibility coord)
     {
         array[coord.Row, coord.Col] ??= new PossibilityStacker();
         array[coord.Row, coord.Col]!.Possibilities.Add(coord.Possibility);
         array[coord.Row, coord.Col]!.ColoringCount = 1;
     }
     
-    private void AddToStackerArray(IStrategyManager view, PossibilityStacker?[,] array, PossibilityCoordinate coord,
+    private void AddToStackerArray(IStrategyManager view, PossibilityStacker?[,] array, CellPossibility coord,
         int total, int currentColoring)
     {
         var current = array[coord.Row, coord.Col];

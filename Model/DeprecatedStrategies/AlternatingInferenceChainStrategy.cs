@@ -32,7 +32,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
     public void ApplyOnce(IStrategyManager strategyManager)
     {
         SearchCount = 0;
-        Dictionary<PossibilityCoordinate, LinkResume> map = new();
+        Dictionary<CellPossibility, LinkResume> map = new();
 
         SearchStrongLinks(strategyManager, map);
         SearchWeakLinks(strategyManager, map);
@@ -40,13 +40,13 @@ public class AlternatingInferenceChainStrategy : IStrategy
         foreach (var start in map)
         {
             if (start.Value.StrongLinks.Count == 0) continue;
-            List<PossibilityCoordinate> visited = new() { start.Key };
+            List<CellPossibility> visited = new() { start.Key };
             Search(strategyManager, map, visited);
         }
     }
 
-    private void Search(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map,
-        List<PossibilityCoordinate> visited)
+    private void Search(IStrategyManager strategyManager, Dictionary<CellPossibility, LinkResume> map,
+        List<CellPossibility> visited)
     {
         if (visited.Count > _maxLoopSize) return;
         //Always start by strong link, so if visited.Count % 2 == 1 => Strong ; == 0 => Weak, but Strong can be Weak
@@ -62,7 +62,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                 if (visited.Count >= 4 && visited[0].Equals(friend)) ProcessOddLoop(strategyManager, visited);
                 if (!visited.Contains(friend))
                 {
-                   Search(strategyManager, map, new List<PossibilityCoordinate>(visited) { friend });
+                   Search(strategyManager, map, new List<CellPossibility>(visited) { friend });
                 }
             }
         }
@@ -76,13 +76,13 @@ public class AlternatingInferenceChainStrategy : IStrategy
                 if (visited.Count >= 4 && visited[0].Equals(friend)) ProcessFullLoop(strategyManager, visited);
                 if (!visited.Contains(friend))
                 {
-                    Search(strategyManager, map, new List<PossibilityCoordinate>(visited) { friend });
+                    Search(strategyManager, map, new List<CellPossibility>(visited) { friend });
                 }
             }
         }
     }
 
-    private void ProcessFullLoop(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
+    private void ProcessFullLoop(IStrategyManager strategyManager, List<CellPossibility> visited)
     {
         //Always start with a strong link
         for (int i = 1; i < visited.Count - 1; i += 2)
@@ -93,7 +93,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
         ProcessWeakLinkOfFullLoop(strategyManager, visited[0], visited[^1]);
     }
 
-    private void ProcessWeakLinkOfFullLoop(IStrategyManager strategyManager, PossibilityCoordinate one, PossibilityCoordinate two)
+    private void ProcessWeakLinkOfFullLoop(IStrategyManager strategyManager, CellPossibility one, CellPossibility two)
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
@@ -108,30 +108,30 @@ public class AlternatingInferenceChainStrategy : IStrategy
         }
     }
 
-    private void ProcessUnCompleteLoop(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
+    private void ProcessUnCompleteLoop(IStrategyManager strategyManager, List<CellPossibility> visited)
     {
-        PossibilityCoordinate first = visited[0];
-        PossibilityCoordinate last = visited[^1];
+        CellPossibility first = visited[0];
+        CellPossibility last = visited[^1];
 
         if (first.Possibility == last.Possibility)
         {
             foreach (var coord in first.SharedSeenCells(last))
             {
-                if (!visited.Contains(new PossibilityCoordinate(coord.Row, coord.Col, first.Possibility)))
+                if (!visited.Contains(new CellPossibility(coord.Row, coord.Col, first.Possibility)))
                     strategyManager.RemovePossibility(first.Possibility, coord.Row, coord.Col, this);
             }
         }
         else if (first.ShareAUnit(last))
         {
-            if (!visited.Contains(new PossibilityCoordinate(last.Row, last.Col, first.Possibility)))
+            if (!visited.Contains(new CellPossibility(last.Row, last.Col, first.Possibility)))
                 strategyManager.RemovePossibility(first.Possibility,last.Row, last.Col, this);
 
-            if (!visited.Contains(new PossibilityCoordinate(first.Row, first.Col, last.Possibility)))
+            if (!visited.Contains(new CellPossibility(first.Row, first.Col, last.Possibility)))
                 strategyManager.RemovePossibility(last.Possibility, first.Row, first.Col, this);
         }
     }
 
-    private void ProcessOddLoop(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
+    private void ProcessOddLoop(IStrategyManager strategyManager, List<CellPossibility> visited)
     {
         if (visited.Count % 2 != 1) return;
         strategyManager.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col, this);
@@ -148,7 +148,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
         }
     }
 
-    private void SearchStrongLinks(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map)
+    private void SearchStrongLinks(IStrategyManager strategyManager, Dictionary<CellPossibility, LinkResume> map)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -166,7 +166,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                         {
                             if (c != col)
                             {
-                                resume.StrongLinks.Add(new PossibilityCoordinate(row, c, possibility));
+                                resume.StrongLinks.Add(new CellPossibility(row, c, possibility));
                                 break;
                             }
                         }
@@ -181,7 +181,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                         {
                             if (r != row)
                             {
-                                resume.StrongLinks.Add(new PossibilityCoordinate(r, col, possibility));
+                                resume.StrongLinks.Add(new CellPossibility(r, col, possibility));
                                 break;
                             }
                         }
@@ -196,7 +196,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                         {
                             if (!(pos.Row == row && pos.Col == col))
                             {
-                                resume.StrongLinks.Add(new PossibilityCoordinate(pos, possibility));
+                                resume.StrongLinks.Add(new CellPossibility(pos, possibility));
                                 break;
                             }
                         }
@@ -208,19 +208,19 @@ public class AlternatingInferenceChainStrategy : IStrategy
                         {
                             if (pos != possibility)
                             {
-                                resume.StrongLinks.Add(new PossibilityCoordinate(row, col, pos));
+                                resume.StrongLinks.Add(new CellPossibility(row, col, pos));
                                 break;
                             }
                         }
                     }
 
-                    map.Add(new PossibilityCoordinate(row, col, possibility), resume);
+                    map.Add(new CellPossibility(row, col, possibility), resume);
                 }
             }
         }
     }
 
-    private void SearchWeakLinks(IStrategyManager strategyManager, Dictionary<PossibilityCoordinate, LinkResume> map)
+    private void SearchWeakLinks(IStrategyManager strategyManager, Dictionary<CellPossibility, LinkResume> map)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -228,7 +228,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
             {
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    bool alreadyThere = map.TryGetValue(new PossibilityCoordinate(row, col, possibility), out var resume);
+                    bool alreadyThere = map.TryGetValue(new CellPossibility(row, col, possibility), out var resume);
                     if (!alreadyThere) resume = new LinkResume();
 
                     //Row
@@ -237,7 +237,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     {
                         if (c != col)
                         {
-                            var coord = new PossibilityCoordinate(row, c, possibility);
+                            var coord = new CellPossibility(row, c, possibility);
                             if (!map.TryGetValue(coord, out var links)) continue;
                             if (links.StrongLinks.Count > 0) resume!.WeakLinks.Add(coord);
                         }
@@ -252,7 +252,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     {
                         if (r != row)
                         {
-                            var coord = new PossibilityCoordinate(r, col, possibility);
+                            var coord = new CellPossibility(r, col, possibility);
                             if (!map.TryGetValue(coord, out var links)) continue;
                             if (links.StrongLinks.Count > 0) resume!.WeakLinks.Add(coord);
                         }
@@ -267,7 +267,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     {
                         if (!(pos.Row == row && pos.Col == col))
                         {
-                            var coord = new PossibilityCoordinate(pos, possibility);
+                            var coord = new CellPossibility(pos, possibility);
                             if (!map.TryGetValue(coord, out var links)) continue;
                             if (links.StrongLinks.Count > 0) resume!.WeakLinks.Add(coord);
                         }
@@ -279,14 +279,14 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     {
                         if (pos != possibility)
                         {
-                            var coord = new PossibilityCoordinate(row, col, pos);
+                            var coord = new CellPossibility(row, col, pos);
                             if (!map.TryGetValue(coord, out var links)) continue;
                             if (links.StrongLinks.Count > 0) resume!.WeakLinks.Add(coord);
                         }
                     }
                     
 
-                    map[new PossibilityCoordinate(row, col, possibility)] = resume!;
+                    map[new CellPossibility(row, col, possibility)] = resume!;
                 }
             }
         }
@@ -295,8 +295,8 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 public class LinkResume
 {
-    public HashSet<PossibilityCoordinate> StrongLinks { get; }= new();
-    public HashSet<PossibilityCoordinate> WeakLinks { get; } = new();
+    public HashSet<CellPossibility> StrongLinks { get; }= new();
+    public HashSet<CellPossibility> WeakLinks { get; } = new();
 
     public int Count => StrongLinks.Count + WeakLinks.Count;
 }

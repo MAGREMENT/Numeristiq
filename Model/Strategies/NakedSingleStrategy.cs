@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Changes;
 using Model.Solver;
 
 namespace Model.Strategies;
 
+/// <summary>
+/// A naked single is a cell that contains only one possibility, therefore being the solution to that cell
+/// </summary>
 public class NakedSingleStrategy : IStrategy
 {
     public string Name => "Naked single";
@@ -15,7 +19,7 @@ public class NakedSingleStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Possibilities[row, col].Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(
+                if (strategyManager.PossibilitiesAt(row, col).Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(
                         strategyManager.Possibilities[row, col].GetFirst(), row, col);
             }
         }
@@ -28,8 +32,20 @@ public class NakedSingleReportBuilder : IChangeReportBuilder
 {
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes),
-            "The numbers were added for being the only one in their cell",
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), ChangesToExplanation(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+    }
+
+    private static string ChangesToExplanation(List<SolverChange> changes)
+    {
+        var builder = new StringBuilder();
+
+        foreach (var change in changes)
+        {
+            builder.Append($"{change.Number} is the solution to the cell [{change.Row + 1}, {change.Column + 1}]" +
+                           " because it's the only possibility in that cell\n");
+        }
+
+        return builder.ToString();
     }
 }

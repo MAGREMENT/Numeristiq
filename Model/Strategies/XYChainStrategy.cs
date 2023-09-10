@@ -22,15 +22,15 @@ public class XYChainStrategy : IStrategy
 
         foreach (var start in map)
         {
-            Search(strategyManager, map, start, new List<PossibilityCoordinate>(), new HashSet<PossibilityCoordinate>());
+            Search(strategyManager, map, start, new List<CellPossibility>(), new HashSet<CellPossibility>());
         }
     }
 
-    private void Search(IStrategyManager strategyManager, BiValueMap map, PossibilityCoordinate current,
-        List<PossibilityCoordinate> route, HashSet<PossibilityCoordinate> visited)
+    private void Search(IStrategyManager strategyManager, BiValueMap map, CellPossibility current,
+        List<CellPossibility> route, HashSet<CellPossibility> visited)
 
     {
-        PossibilityCoordinate friend = map.AssociatedCoordinate(current);
+        CellPossibility friend = map.AssociatedCoordinate(current);
 
         route.Add(current);
         route.Add(friend);
@@ -43,12 +43,12 @@ public class XYChainStrategy : IStrategy
         {
             if (!visited.Contains(shared) && shared.ShareAUnit(current))
             {
-                Search(strategyManager, map, shared, new List<PossibilityCoordinate>(route), visited);
+                Search(strategyManager, map, shared, new List<CellPossibility>(route), visited);
             }
         }
     }
 
-    private void Process(IStrategyManager strategyManager, List<PossibilityCoordinate> visited)
+    private void Process(IStrategyManager strategyManager, List<CellPossibility> visited)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
@@ -59,10 +59,10 @@ public class XYChainStrategy : IStrategy
     }
 }
 
-public class BiValueMap : IEnumerable<PossibilityCoordinate>
+public class BiValueMap : IEnumerable<CellPossibility>
 {
-    private readonly Dictionary<PossibilityCoordinate, PossibilityCoordinate> _cells = new();
-    private readonly Dictionary<int, HashSet<PossibilityCoordinate>> _map = new();
+    private readonly Dictionary<CellPossibility, CellPossibility> _cells = new();
+    private readonly Dictionary<int, HashSet<CellPossibility>> _map = new();
 
     public BiValueMap(IStrategyManager strategyManager)
     {
@@ -74,22 +74,22 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
                 {
                     int[] possibilities = strategyManager.Possibilities[row, col].ToArray();
                     
-                    PossibilityCoordinate first = new PossibilityCoordinate(row, col, possibilities[0]);
-                    PossibilityCoordinate second = new PossibilityCoordinate(row, col, possibilities[1]);
+                    CellPossibility first = new CellPossibility(row, col, possibilities[0]);
+                    CellPossibility second = new CellPossibility(row, col, possibilities[1]);
 
                     _cells.Add(first, second);
                     _cells.Add(second, first);
                     
-                    if (!_map.TryAdd(possibilities[0], new HashSet<PossibilityCoordinate> { first }))
+                    if (!_map.TryAdd(possibilities[0], new HashSet<CellPossibility> { first }))
                         _map[possibilities[0]].Add(first);
-                    if (!_map.TryAdd(possibilities[1], new HashSet<PossibilityCoordinate> { second }))
+                    if (!_map.TryAdd(possibilities[1], new HashSet<CellPossibility> { second }))
                         _map[possibilities[1]].Add(second);
                 }
             }
         }
     }
 
-    public IEnumerator<PossibilityCoordinate> GetEnumerator()
+    public IEnumerator<CellPossibility> GetEnumerator()
     {
         return _cells.Keys.GetEnumerator();
     }
@@ -99,13 +99,13 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
         return GetEnumerator();
     }
 
-    public HashSet<PossibilityCoordinate> AssociatedCoordinates(int possibility)
+    public HashSet<CellPossibility> AssociatedCoordinates(int possibility)
     {
         return _map.TryGetValue(possibility, out var result) ?
-            result : new HashSet<PossibilityCoordinate>();
+            result : new HashSet<CellPossibility>();
     }
 
-    public PossibilityCoordinate AssociatedCoordinate(PossibilityCoordinate coord)
+    public CellPossibility AssociatedCoordinate(CellPossibility coord)
     {
         return _cells[coord];
     }
@@ -113,9 +113,9 @@ public class BiValueMap : IEnumerable<PossibilityCoordinate>
 
 public class XYChainReportBuilder : IChangeReportBuilder
 {
-    private readonly List<PossibilityCoordinate> _visited;
+    private readonly List<CellPossibility> _visited;
 
-    public XYChainReportBuilder(List<PossibilityCoordinate> visited)
+    public XYChainReportBuilder(List<CellPossibility> visited)
     {
         _visited = visited;
     }

@@ -5,20 +5,20 @@ namespace Model.StrategiesUtil.SharedCellSearcher;
 
 public class SeenCellCompareSearcher : ISharedSeenCellSearcher
 {
-    public IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
         for (int unit = 0; unit < 9; unit++)
         {
             if (unit != row1)
             {
-                if (CoordinateUtils.ShareAUnit(unit, col1, row2, col2) &&
-                    !(unit == row2 && col1 == col2)) yield return new Coordinate(unit, col1);
+                if (Cells.ShareAUnit(unit, col1, row2, col2) &&
+                    !(unit == row2 && col1 == col2)) yield return new Cell(unit, col1);
             }
 
             if (unit != col1)
             {
-                if (CoordinateUtils.ShareAUnit(row1, unit, row2, col2) &&
-                    !(row1 == row2 && unit == col2)) yield return new Coordinate(row1, unit);
+                if (Cells.ShareAUnit(row1, unit, row2, col2) &&
+                    !(row1 == row2 && unit == col2)) yield return new Cell(row1, unit);
             }
         }
 
@@ -33,12 +33,12 @@ public class SeenCellCompareSearcher : ISharedSeenCellSearcher
                 
                 if(row == row1 || col == col1 || (row == row2 && col == col2)) continue;
 
-                if (CoordinateUtils.ShareAUnit(row, col, row2, col2)) yield return new Coordinate(row, col);
+                if (Cells.ShareAUnit(row, col, row2, col2)) yield return new Cell(row, col);
             }
         }
     }
 
-    public IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         return ISharedSeenCellSearcher.DefaultSharedSeenEmptyCells(this, strategyManager, row1, col1, row2, col2);
     }

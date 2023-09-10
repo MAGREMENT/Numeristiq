@@ -90,7 +90,7 @@ public class NakedPossibilitiesStrategy : IStrategy
         {
             int col = possibleCols.Dequeue();
 
-            IPossibilities newCurrent = current.Mash(strategyManager.Possibilities[row, col]);
+            IPossibilities newCurrent = current.Or(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
             newVisited.Add(col);
             
@@ -141,7 +141,7 @@ public class NakedPossibilitiesStrategy : IStrategy
         {
             int row = possibleRows.Dequeue();
 
-            IPossibilities newCurrent = current.Mash(strategyManager.Possibilities[row, col]);
+            IPossibilities newCurrent = current.Or(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
             newVisited.Add(row);
             
@@ -198,7 +198,7 @@ public class NakedPossibilitiesStrategy : IStrategy
             int row = miniRow * 3 + gridNumber / 3;
             int col = miniCol * 3 + gridNumber % 3;
             
-            IPossibilities newCurrent = current.Mash(strategyManager.Possibilities[row, col]);
+            IPossibilities newCurrent = current.Or(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
             newVisited.Add(gridNumber);
 
@@ -253,7 +253,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        var coords = new List<PossibilityCoordinate>();
+        var coords = new List<CellPossibility>();
         switch (_unit)
         {
             case Unit.Row :
@@ -262,7 +262,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
                     foreach (var possibility in _possibilities)
                     {
                         if(manager.Possibilities[_unitNumber, col].Peek(possibility))
-                            coords.Add(new PossibilityCoordinate(_unitNumber, col, possibility));
+                            coords.Add(new CellPossibility(_unitNumber, col, possibility));
                     }
                 }
                 break;
@@ -272,7 +272,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
                     foreach (var possibility in _possibilities)
                     {
                         if(manager.Possibilities[row, _unitNumber].Peek(possibility))
-                            coords.Add(new PossibilityCoordinate(row, _unitNumber, possibility));
+                            coords.Add(new CellPossibility(row, _unitNumber, possibility));
                     }
                 }
                 break;
@@ -303,13 +303,13 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        var coords = new List<PossibilityCoordinate>();
+        var coords = new List<CellPossibility>();
         foreach (var pos in _miniPos)
         {
             foreach (var possibility in _possibilities)
             {
                 if(manager.Possibilities[pos.Row, pos.Col].Peek(possibility))
-                    coords.Add(new PossibilityCoordinate(pos.Row, pos.Col, possibility));
+                    coords.Add(new CellPossibility(pos.Row, pos.Col, possibility));
             }
         }
         

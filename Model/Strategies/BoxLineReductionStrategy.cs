@@ -87,19 +87,19 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        List<Coordinate> causes = new();
+        List<Cell> causes = new();
         switch (_unit)
         {
             case Unit.Row :
                 foreach (var col in _linePos)
                 {
-                    causes.Add(new Coordinate(_unitNumber, col));
+                    causes.Add(new Cell(_unitNumber, col));
                 }
                 break;
             case Unit.Column :
                 foreach (var row in _linePos)
                 {
-                    causes.Add(new Coordinate(row, _unitNumber));
+                    causes.Add(new Cell(row, _unitNumber));
                 }
                 break;
         }

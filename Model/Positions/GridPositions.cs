@@ -5,7 +5,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
-public class GridPositions : IEnumerable<Coordinate>
+public class GridPositions : IEnumerable<Cell>
 {
     private const int FirstLimit = 53;
     private const ulong RowMask = 0x1FF;
@@ -35,7 +35,7 @@ public class GridPositions : IEnumerable<Coordinate>
         else _first |= 1ul << n;
     }
 
-    public void Add(Coordinate coord)
+    public void Add(Cell coord)
     {
         Add(coord.Row, coord.Col);
     }
@@ -46,12 +46,19 @@ public class GridPositions : IEnumerable<Coordinate>
         return n > FirstLimit ? ((_second >> (n - FirstLimit - 1)) & 1) > 0 : ((_first >> n) & 1) > 0;
     }
 
-    public bool Peek(Coordinate coord)
+    public bool Peek(Cell coord)
     {
         return Peek(coord.Row, coord.Col);
     }
+    
+    public void Remove(int row, int col)
+    {
+        int n = row * 9 + col;
+        if(n > FirstLimit) _second &= ~(1ul << (n - FirstLimit - 1));
+        else _first &= ~(1ul << n);
+    }
 
-    public int RowCount(int row)
+    public int RowCount(int row) //TODO use masks
     {
         int result = 0;
         for (int col = 0; col < 9; col++)
@@ -62,7 +69,7 @@ public class GridPositions : IEnumerable<Coordinate>
         return result;
     }
 
-    public int ColumnCount(int column)
+    public int ColumnCount(int column) //TODO use masks
     {
         int result = 0;
         for (int row = 0; row < 9; row++)
@@ -73,7 +80,7 @@ public class GridPositions : IEnumerable<Coordinate>
         return result;
     }
 
-    public int MiniGridCount(int miniRow, int miniCol)
+    public int MiniGridCount(int miniRow, int miniCol) //TODO use masks
     {
         int result = 0;
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -105,13 +112,6 @@ public class GridPositions : IEnumerable<Coordinate>
         else _second |= MiniGridMask << (miniCol * 3);
     }
 
-    public void Remove(int row, int col)
-    {
-        int n = row * 9 + col;
-        if(n > FirstLimit) _second &= ~(1ul << (n - FirstLimit - 1));
-        else _first &= ~(1ul << n);
-    }
-
     public GridPositions Copy()
     {
         return new GridPositions(_first, _second);
@@ -127,13 +127,13 @@ public class GridPositions : IEnumerable<Coordinate>
         return HashCode.Combine(_first, _second);
     }
 
-    public IEnumerator<Coordinate> GetEnumerator()
+    public IEnumerator<Cell> GetEnumerator()
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Peek(row, col)) yield return new Coordinate(row, col);
+                if (Peek(row, col)) yield return new Cell(row, col);
             }
         }
     }

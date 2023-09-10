@@ -164,7 +164,7 @@ public class XYZWingStrategy : IStrategy
 
     private IEnumerable<int[]> MatchingCells(int hingeRow, int hingeCol, int row1, int col1, int row2, int col2)
     {
-        //Note : One of the coordinate has to be in the same box as the hinge
+        //Note : One of the cell has to be in the same box as the hinge
         if (row1 / 3 == hingeRow / 3 && col1 / 3 == hingeCol / 3)
         {
             if (row2 == hingeRow)

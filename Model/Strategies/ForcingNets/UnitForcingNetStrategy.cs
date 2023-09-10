@@ -93,7 +93,7 @@ public class UnitForcingNetStrategy : IStrategy
     {
         foreach (var element in colorings[0])
         {
-            if (element.Key is not PossibilityCoordinate current) continue;
+            if (element.Key is not CellPossibility current) continue;
 
             bool sameInAll = true;
             Coloring col = element.Value;
@@ -133,13 +133,13 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        PossibilityCoordinate[] coords = new PossibilityCoordinate[_pos.Count];
+        CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;
         foreach (var other in _pos)
         {
             coords[cursor] = _unit == Unit.Row
-                ? new PossibilityCoordinate(_unitNumber, other, _possibility)
-                : new PossibilityCoordinate(other, _unitNumber, _possibility);
+                ? new CellPossibility(_unitNumber, other, _possibility)
+                : new CellPossibility(other, _unitNumber, _possibility);
             cursor++;
         }
         
@@ -186,11 +186,11 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        PossibilityCoordinate[] coords = new PossibilityCoordinate[_pos.Count];
+        CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;
         foreach (var other in _pos)
         {
-            coords[cursor] = new PossibilityCoordinate(other, _possibility);
+            coords[cursor] = new CellPossibility(other, _possibility);
             cursor++;
         }
         

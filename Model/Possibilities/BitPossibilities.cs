@@ -61,14 +61,14 @@ public class BitPossibilities : IPossibilities
         }
     }
 
-    public IPossibilities Mash(IPossibilities possibilities)
+    public IPossibilities Or(IPossibilities possibilities)
     {
         if (possibilities is BitPossibilities bp)
         { 
             int mashed = _possibilities | bp._possibilities;
             return new BitPossibilities(mashed, System.Numerics.BitOperations.PopCount((uint) mashed));
         }
-        return IPossibilities.DefaultMash(this, possibilities);
+        return IPossibilities.DefaultOr(this, possibilities);
     }
 
     public bool Peek(int number)

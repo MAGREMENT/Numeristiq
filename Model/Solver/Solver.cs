@@ -10,7 +10,8 @@ using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
-public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
+//TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
+public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder 
 {
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
     public List<ISolverLog> Logs => _logManager.Logs;
@@ -20,7 +21,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
 
     public bool LogsManaged { get; init; } = true;
-    public bool StatisticsTracked { get; init; } = false;
+    public bool StatisticsTracked { get; init; }
 
     public string State => GetState();
     public string StartState => _logManager.StartState;
@@ -177,6 +178,13 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public void UseStrategy(int number)
     {
         _excludedStrategies &= ~(1ul << number);
+    }
+    
+    //PossibilityHolder-------------------------------------------------------------------------------------------------
+    
+    public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
+    {
+        return Possibilities[row, col];
     }
 
     //StrategyManager---------------------------------------------------------------------------------------------------

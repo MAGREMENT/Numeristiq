@@ -27,8 +27,8 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                 var rowFinal = row;
                 ppir.ForEachCombination((one, two) =>
                 {
-                    graph.AddLink(new PossibilityCoordinate(rowFinal, one, number),
-                        new PossibilityCoordinate(rowFinal, two, number), strength);
+                    graph.AddLink(new CellPossibility(rowFinal, one, number),
+                        new CellPossibility(rowFinal, two, number), strength);
                 });
             }
 
@@ -39,8 +39,8 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                 var colFinal = col;
                 ppic.ForEachCombination((one, two) =>
                 {
-                    graph.AddLink(new PossibilityCoordinate(one, colFinal, number),
-                        new PossibilityCoordinate(two, colFinal, number), strength);
+                    graph.AddLink(new CellPossibility(one, colFinal, number),
+                        new CellPossibility(two, colFinal, number), strength);
                 });
             }
 
@@ -52,8 +52,8 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                     var strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     ppimn.ForEachCombination((one, two) =>
                     {
-                        graph.AddLink(new PossibilityCoordinate(one.Row, one.Col, number),
-                            new PossibilityCoordinate(two.Row, two.Col, number), strength);
+                        graph.AddLink(new CellPossibility(one.Row, one.Col, number),
+                            new CellPossibility(two.Row, two.Col, number), strength);
                     });
                     SearchForPointingInMiniGrid(view, graph, ppimn, miniRow, miniCol, n);
                 }
@@ -71,7 +71,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
             var colPos = ppimn.OnGridRow(gridRow);
             if (colPos.Count > 1)
             {
-                List<PossibilityCoordinate> singles = new();
+                List<CellPossibility> singles = new();
                 List<PointingColumn> pcs = new();
                 for (int gridCol = 0; gridCol < 3; gridCol++)
                 {
@@ -81,7 +81,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                         if (a == gridRow) continue;
                         if (ppimn.Peek(a, gridCol))
                         {
-                            singles.Add(new PossibilityCoordinate(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
+                            singles.Add(new CellPossibility(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
                             if (buffer == -1) buffer = a;
                             else pcs.Add(new PointingColumn(numba, miniCol * 3 + gridCol,
                                 miniRow * 3 + a, miniRow * 3 + buffer));
@@ -110,13 +110,13 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                 {
                     if (miniCol == miniCol2) continue;
 
-                    List<PossibilityCoordinate> aligned = new();
+                    List<CellPossibility> aligned = new();
                     for (int gridCol = 0; gridCol < 3; gridCol++)
                     {
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
+                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -143,7 +143,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
             var rowPos = ppimn.OnGridColumn(gridCol);
             if (rowPos.Count > 1)
             {
-                List<PossibilityCoordinate> singles = new();
+                List<CellPossibility> singles = new();
                 List<PointingRow> prs = new();
                 for (int gridRow = 0; gridRow < 3; gridRow++)
                 {
@@ -153,7 +153,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                         if (a == gridCol) continue;
                         if (ppimn.Peek(gridRow, a))
                         {
-                            singles.Add(new PossibilityCoordinate(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
+                            singles.Add(new CellPossibility(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
                             if (buffer == -1) buffer = a;
                             else prs.Add(new PointingRow(numba, miniRow * 3 + gridRow,
                                 miniCol * 3 + a, miniCol * 3 + buffer));
@@ -182,13 +182,13 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
                 {
                     if (miniRow == miniRow2) continue;
 
-                    List<PossibilityCoordinate> aligned = new();
+                    List<CellPossibility> aligned = new();
                     for (int gridRow = 0; gridRow < 3; gridRow++)
                     {
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new PossibilityCoordinate(row, col, numba));
+                        if (view.Possibilities[row, col].Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -227,28 +227,28 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
             case PointingRow rOne when two is PointingRow rTwo :
                 RemovePossibilityInAll(view, rOne.SharedSeenCells(rTwo));
                 break;
-            case PointingRow rOne when two is PossibilityCoordinate sTwo :
+            case PointingRow rOne when two is CellPossibility sTwo :
                 RemovePossibilityInAll(view, rOne.SharedSeenCells(sTwo));
                 break;
-            case PossibilityCoordinate sOne when two is PointingRow rTwo :
+            case CellPossibility sOne when two is PointingRow rTwo :
                 RemovePossibilityInAll(view, rTwo.SharedSeenCells(sOne));
                 break;
-            case PossibilityCoordinate sOne when two is PossibilityCoordinate sTwo :
+            case CellPossibility sOne when two is CellPossibility sTwo :
                 RemovePossibilityInAll(view, sOne.SharedSeenCells(sTwo), sOne.Possibility);
                 break;
-            case PossibilityCoordinate sOne when two is PointingColumn cTwo :
+            case CellPossibility sOne when two is PointingColumn cTwo :
                 RemovePossibilityInAll(view, cTwo.SharedSeenCells(sOne));
                 break;
             case PointingColumn cOne when two is PointingColumn cTwo :
                 RemovePossibilityInAll(view, cOne.SharedSeenCells(cTwo));
                 break;
-            case PointingColumn cOne when two is PossibilityCoordinate sTwo :
+            case PointingColumn cOne when two is CellPossibility sTwo :
                 RemovePossibilityInAll(view, cOne.SharedSeenCells(sTwo));
                 break;
         }
     }
 
-    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<PossibilityCoordinate> coords)
+    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<CellPossibility> coords)
     {
         foreach (var coord in coords)
         {
@@ -256,7 +256,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
         }
     }
     
-    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<Coordinate> coords, int possibility)
+    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<Cell> coords, int possibility)
     {
         foreach (var coord in coords)
         {
@@ -266,7 +266,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
     public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
-        if (inference is not PossibilityCoordinate single) return false;
+        if (inference is not CellPossibility single) return false;
         view.ChangeBuffer.AddPossibilityToRemove(single.Possibility, single.Row, single.Col);
 
         return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
@@ -274,7 +274,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
-        if (inference is not PossibilityCoordinate single) return false;
+        if (inference is not CellPossibility single) return false;
         view.ChangeBuffer.AddDefinitiveToAdd(single.Possibility, single.Row, single.Col);
         
         return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));

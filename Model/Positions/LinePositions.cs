@@ -85,7 +85,7 @@ public class LinePositions : IReadOnlyLinePositions
         return result;
     }
 
-    public LinePositions Mash(LinePositions pos)
+    public LinePositions Or(LinePositions pos)
     {
         int newPos = _pos | pos._pos;
         return new LinePositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos));

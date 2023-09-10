@@ -7,22 +7,22 @@ using Model.StrategiesUtil.LoopFinder;
 
 namespace Model.Strategies.AlternatingChains.ChainTypes;
 
-public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
+public class NormalAIC : IAlternatingChainType<CellPossibility>
 {
     public string Name => "Alternating inference chain";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public IStrategy? Strategy { get; set; }
 
-    public IEnumerable<LinkGraph<PossibilityCoordinate>> GetGraphs(IStrategyManager view)
+    public IEnumerable<LinkGraph<CellPossibility>> GetGraphs(IStrategyManager view)
     {
-        LinkGraph<PossibilityCoordinate> graph = new();
+        LinkGraph<CellPossibility> graph = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 foreach (var possibility in view.Possibilities[row, col])
                 {
-                    PossibilityCoordinate current = new PossibilityCoordinate(row, col, possibility);
+                    CellPossibility current = new CellPossibility(row, col, possibility);
                     
                     //Row
                     var ppir = view.RowPositions(row, possibility);
@@ -31,7 +31,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
                     {
                         if (c != col)
                         {
-                            graph.AddLink(current, new PossibilityCoordinate(row, c, possibility), strength);
+                            graph.AddLink(current, new CellPossibility(row, c, possibility), strength);
                         }
                     }
 
@@ -43,7 +43,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
                     {
                         if (r != row)
                         {
-                            graph.AddLink(current, new PossibilityCoordinate(r, col, possibility), strength);
+                            graph.AddLink(current, new CellPossibility(r, col, possibility), strength);
                         }
                     }
 
@@ -55,7 +55,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
                     {
                         if (!(pos.Row == row && pos.Col == col))
                         {
-                            graph.AddLink(current, new PossibilityCoordinate(pos.Row, pos.Col, possibility), strength);
+                            graph.AddLink(current, new CellPossibility(pos.Row, pos.Col, possibility), strength);
                         }
                     }
 
@@ -64,7 +64,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
                     {
                         if (pos != possibility)
                         {
-                            graph.AddLink(current, new PossibilityCoordinate(row, col, pos), strength);
+                            graph.AddLink(current, new CellPossibility(row, col, pos), strength);
                         }
                     }
                 }
@@ -74,7 +74,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
         yield return graph;
     }
 
-    public bool ProcessFullLoop(IStrategyManager view, Loop<PossibilityCoordinate> loop)
+    public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)
     {
         bool wasProgressMade = false;
         
@@ -83,7 +83,7 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
         return wasProgressMade;
     }
 
-    private void ProcessWeakLink(IStrategyManager view, PossibilityCoordinate one, PossibilityCoordinate two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two, out bool wasProgressMade)
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
@@ -114,12 +114,12 @@ public class NormalAIC : IAlternatingChainType<PossibilityCoordinate>
         return wasProgressMade;
     }
 
-    public bool ProcessWeakInference(IStrategyManager view, PossibilityCoordinate inference, Loop<PossibilityCoordinate> loop)
+    public bool ProcessWeakInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
         return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, PossibilityCoordinate inference, Loop<PossibilityCoordinate> loop)
+    public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
         return view.AddDefinitiveNumber(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }

@@ -6,8 +6,8 @@ namespace Model.Changes;
 
 public class ChangeBuffer
 {
-    private readonly HashSet<PossibilityCoordinate> _possibilityRemoved = new();
-    private readonly HashSet<PossibilityCoordinate> _definitiveAdded = new();
+    private readonly HashSet<CellPossibility> _possibilityRemoved = new();
+    private readonly HashSet<CellPossibility> _definitiveAdded = new();
 
     private readonly IChangeManager _m;
 
@@ -18,10 +18,10 @@ public class ChangeBuffer
 
     public void AddPossibilityToRemove(int possibility, int row, int col)
     {
-        AddPossibilityToRemove(new PossibilityCoordinate(row, col, possibility));
+        AddPossibilityToRemove(new CellPossibility(row, col, possibility));
     }
 
-    public void AddPossibilityToRemove(PossibilityCoordinate coord)
+    public void AddPossibilityToRemove(CellPossibility coord)
     {
         if (!_m.Possibilities[coord.Row, coord.Col].Peek(coord.Possibility)) return;
         _possibilityRemoved.Add(coord);
@@ -29,10 +29,10 @@ public class ChangeBuffer
 
     public void AddDefinitiveToAdd(int number, int row, int col)
     {
-        AddDefinitiveToAdd(new PossibilityCoordinate(row, col, number));
+        AddDefinitiveToAdd(new CellPossibility(row, col, number));
     }
 
-    public void AddDefinitiveToAdd(PossibilityCoordinate coord)
+    public void AddDefinitiveToAdd(CellPossibility coord)
     {
         _definitiveAdded.Add(coord);
     }

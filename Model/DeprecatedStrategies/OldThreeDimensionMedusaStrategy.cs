@@ -15,17 +15,17 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        List<ColorableWeb<PossibilityCoordinateColoring>> chains = new();
+        List<ColorableWeb<CellPossibilityColoring>> chains = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    PossibilityCoordinateColoring start = new PossibilityCoordinateColoring(row, col, possibility);
+                    CellPossibilityColoring start = new CellPossibilityColoring(row, col, possibility);
                     if (DoesAnyChainContains(chains, start)) continue;
                     
-                    ColorableWeb<PossibilityCoordinateColoring> web = new();
+                    ColorableWeb<CellPossibilityColoring> web = new();
                     InitChain(strategyManager, web, start);
                     if (web.Count >= 2)
                     {
@@ -46,11 +46,11 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         
     }
 
-    private void SearchByCombination(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web)
+    private void SearchByCombination(IStrategyManager strategyManager, ColorableWeb<CellPossibilityColoring> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>
         {
-            if (one.PossibilityCoordinate.Row == two.PossibilityCoordinate.Row && one.PossibilityCoordinate.Col == two.PossibilityCoordinate.Col)
+            if (one.CellPossibility.Row == two.CellPossibility.Row && one.CellPossibility.Col == two.CellPossibility.Col)
             {
                 //Twice in a cell
                 if (one.Coloring == two.Coloring)
@@ -59,13 +59,13 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
                     return true;
                 }
                 //Two colours in a cell
-                RemoveAllExcept(strategyManager.ChangeBuffer, one.PossibilityCoordinate.Row, one.PossibilityCoordinate.Col,
-                    one.PossibilityCoordinate.Possibility, two.PossibilityCoordinate.Possibility);
+                RemoveAllExcept(strategyManager.ChangeBuffer, one.CellPossibility.Row, one.CellPossibility.Col,
+                    one.CellPossibility.Possibility, two.CellPossibility.Possibility);
             }
             
             //Twice in a unit
-            if (one.PossibilityCoordinate.Possibility == two.PossibilityCoordinate.Possibility &&
-                one.PossibilityCoordinate.ShareAUnit(two.PossibilityCoordinate) && one.Coloring == two.Coloring)
+            if (one.CellPossibility.Possibility == two.CellPossibility.Possibility &&
+                one.CellPossibility.ShareAUnit(two.CellPossibility) && one.Coloring == two.Coloring)
             {
                 InvalidColoring(strategyManager.ChangeBuffer, web, one.Coloring);
                 return true;
@@ -75,7 +75,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         });
     }
 
-    private void SearchOffChain(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web)
+    private void SearchOffChain(IStrategyManager strategyManager, ColorableWeb<CellPossibilityColoring> web)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -85,7 +85,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
                 bool cellTotallyOfChain = true;
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
-                    PossibilityCoordinateColoring current = new PossibilityCoordinateColoring(row, col, possibility);
+                    CellPossibilityColoring current = new CellPossibilityColoring(row, col, possibility);
                     if (web.Contains(current))
                     {
                         cellTotallyOfChain = false;
@@ -97,11 +97,11 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
                     foreach (var coord in web)
                     {
                         //Two X & Colours sharing a unit
-                        if (coord.PossibilityCoordinate.Possibility == possibility && coord.PossibilityCoordinate.ShareAUnit(current.PossibilityCoordinate)) 
+                        if (coord.CellPossibility.Possibility == possibility && coord.CellPossibility.ShareAUnit(current.CellPossibility)) 
                             twoElsewhere[(int)(coord.Coloring - 1)] = true;
 
                         //Colour in cell
-                        if (coord.PossibilityCoordinate.Row == current.PossibilityCoordinate.Row && coord.PossibilityCoordinate.Col == current.PossibilityCoordinate.Col)
+                        if (coord.CellPossibility.Row == current.CellPossibility.Row && coord.CellPossibility.Col == current.CellPossibility.Col)
                             inCell[(int)(coord.Coloring - 1)] = true;
                             
                         
@@ -122,7 +122,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
 
                 if (cellTotallyOfChain)
                 {
-                    Coordinate here = new Coordinate(row, col);
+                    Cell here = new Cell(row, col);
                     IPossibilities[] cellEmptiedByColor =
                     {
                         strategyManager.Possibilities[row, col].Copy(),
@@ -131,9 +131,9 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
 
                     foreach (var coord in web)
                     {
-                        if (coord.PossibilityCoordinate.ShareAUnit(here))
+                        if (coord.CellPossibility.ShareAUnit(here))
                         {
-                            cellEmptiedByColor[(int)(coord.Coloring - 1)].Remove(coord.PossibilityCoordinate.Possibility);
+                            cellEmptiedByColor[(int)(coord.Coloring - 1)].Remove(coord.CellPossibility.Possibility);
 
                             if (cellEmptiedByColor[0].Count == 0 || cellEmptiedByColor[1].Count == 0)
                             {
@@ -158,17 +158,17 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         }
     }
 
-    private void InvalidColoring(ChangeBuffer changeBuffer, ColorableWeb<PossibilityCoordinateColoring> web, Coloring invalid)
+    private void InvalidColoring(ChangeBuffer changeBuffer, ColorableWeb<CellPossibilityColoring> web, Coloring invalid)
     {
         foreach (var coord in web)
         {
             if (coord.Coloring == invalid)
-                changeBuffer.AddPossibilityToRemove(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col);
-            else changeBuffer.AddDefinitiveToAdd(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col);
+                changeBuffer.AddPossibilityToRemove(coord.CellPossibility.Possibility, coord.CellPossibility.Row, coord.CellPossibility.Col);
+            else changeBuffer.AddDefinitiveToAdd(coord.CellPossibility.Possibility, coord.CellPossibility.Row, coord.CellPossibility.Col);
         }
     }
 
-    private bool DoesAnyChainContains(List<ColorableWeb<PossibilityCoordinateColoring>> chains, PossibilityCoordinateColoring coord)
+    private bool DoesAnyChainContains(List<ColorableWeb<CellPossibilityColoring>> chains, CellPossibilityColoring coord)
     {
         foreach (var chain in chains)
         {
@@ -178,57 +178,57 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         return false;
     }
     
-    private void InitChain(IStrategyManager strategyManager, ColorableWeb<PossibilityCoordinateColoring> web, PossibilityCoordinateColoring current)
+    private void InitChain(IStrategyManager strategyManager, ColorableWeb<CellPossibilityColoring> web, CellPossibilityColoring current)
     {
-        var ppir = strategyManager.RowPositions(current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Possibility);
+        var ppir = strategyManager.RowPositions(current.CellPossibility.Row, current.CellPossibility.Possibility);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
             {
-                if (col != current.PossibilityCoordinate.Col)
+                if (col != current.CellPossibility.Col)
                 {
-                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(current.PossibilityCoordinate.Row, col, current.PossibilityCoordinate.Possibility);
+                    CellPossibilityColoring next = new CellPossibilityColoring(current.CellPossibility.Row, col, current.CellPossibility.Possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
             }
         }
         
-        var ppic = strategyManager.ColumnPositions(current.PossibilityCoordinate.Col, current.PossibilityCoordinate.Possibility);
+        var ppic = strategyManager.ColumnPositions(current.CellPossibility.Col, current.CellPossibility.Possibility);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
             {
-                if (row != current.PossibilityCoordinate.Row)
+                if (row != current.CellPossibility.Row)
                 {
-                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(row, current.PossibilityCoordinate.Col, current.PossibilityCoordinate.Possibility);
+                    CellPossibilityColoring next = new CellPossibilityColoring(row, current.CellPossibility.Col, current.CellPossibility.Possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
             }
         }
         
-        var ppimn = strategyManager.MiniGridPositions(current.PossibilityCoordinate.Row / 3, current.PossibilityCoordinate.Col / 3, current.PossibilityCoordinate.Possibility);
+        var ppimn = strategyManager.MiniGridPositions(current.CellPossibility.Row / 3, current.CellPossibility.Col / 3, current.CellPossibility.Possibility);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
             {
-                if (pos.Row != current.PossibilityCoordinate.Row && pos.Col != current.PossibilityCoordinate.Col)
+                if (pos.Row != current.CellPossibility.Row && pos.Col != current.CellPossibility.Col)
                 {
-                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(pos.Row, pos.Col, current.PossibilityCoordinate.Possibility);
+                    CellPossibilityColoring next = new CellPossibilityColoring(pos.Row, pos.Col, current.CellPossibility.Possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
             }
         }
 
-        if (strategyManager.Possibilities[current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Col].Count == 2)
+        if (strategyManager.Possibilities[current.CellPossibility.Row, current.CellPossibility.Col].Count == 2)
         {
-            foreach (var possibility in strategyManager.Possibilities[current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Col])
+            foreach (var possibility in strategyManager.Possibilities[current.CellPossibility.Row, current.CellPossibility.Col])
             {
-                if (possibility != current.PossibilityCoordinate.Possibility)
+                if (possibility != current.CellPossibility.Possibility)
                 {
-                    PossibilityCoordinateColoring next = new PossibilityCoordinateColoring(current.PossibilityCoordinate.Row, current.PossibilityCoordinate.Col, possibility);
+                    CellPossibilityColoring next = new CellPossibilityColoring(current.CellPossibility.Row, current.CellPossibility.Col, possibility);
                     if(web.AddLink(current, next)) InitChain(strategyManager, web, next);
                     break;
                 }
@@ -239,9 +239,9 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
 
 public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
 {
-    private readonly ColorableWeb<PossibilityCoordinateColoring> _web;
+    private readonly ColorableWeb<CellPossibilityColoring> _web;
 
-    public ThreeDimensionMedusaReportBuilder(ColorableWeb<PossibilityCoordinateColoring> web)
+    public ThreeDimensionMedusaReportBuilder(ColorableWeb<CellPossibilityColoring> web)
     {
         _web = web;
     }
@@ -254,15 +254,15 @@ public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
             
             foreach (var coord in _web)
             {
-                lighter.HighlightPossibility(coord.PossibilityCoordinate.Possibility, coord.PossibilityCoordinate.Row,
-                    coord.PossibilityCoordinate.Col, coord.Coloring == Coloring.On ?
+                lighter.HighlightPossibility(coord.CellPossibility.Possibility, coord.CellPossibility.Row,
+                    coord.CellPossibility.Col, coord.Coloring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffTwo);
                 
                 foreach (var friend in _web.GetLinkedVertices(coord))
                 {
                     if (friend.Coloring == Coloring.Off) continue;
-                    lighter.CreateLink(new PossibilityCoordinate(friend.PossibilityCoordinate.Row, friend.PossibilityCoordinate.Col, friend.PossibilityCoordinate.Possibility),
-                        new PossibilityCoordinate(coord.PossibilityCoordinate.Row, coord.PossibilityCoordinate.Col, coord.PossibilityCoordinate.Possibility), LinkStrength.Strong);
+                    lighter.CreateLink(new CellPossibility(friend.CellPossibility.Row, friend.CellPossibility.Col, friend.CellPossibility.Possibility),
+                        new CellPossibility(coord.CellPossibility.Row, coord.CellPossibility.Col, coord.CellPossibility.Possibility), LinkStrength.Strong);
                 }
             }
         });

@@ -123,11 +123,11 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return pos;
     }
 
-    public IEnumerator<Coordinate> GetEnumerator()
+    public IEnumerator<Cell> GetEnumerator()
     {
         for (int i = 0; i < 9; i++)
         {
-            if (Peek(i)) yield return new Coordinate(_startRow + i / 3, _startCol + i % 3);
+            if (Peek(i)) yield return new Cell(_startRow + i / 3, _startCol + i % 3);
         }
     }
 
@@ -141,7 +141,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return new MiniGridPositions(_pos, Count, _startRow, _startCol);
     }
 
-    public delegate void HandleCombination(Coordinate one, Coordinate two);
+    public delegate void HandleCombination(Cell one, Cell two);
 
     public void ForEachCombination(HandleCombination handler)
     {
@@ -151,19 +151,19 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
             for (int j = i + 1; j < 9; j++)
             {
                 if (((_pos >> j) & 1) == 0) continue;
-                handler(new Coordinate(
+                handler(new Cell(
                     _startRow + i / 3, _startCol + i % 3),
-                    new Coordinate(_startRow + j / 3, _startCol + j % 3));
+                    new Cell(_startRow + j / 3, _startCol + j % 3));
             }
         }
     }
 
-    public int GetMiniGridNumber()
+    public int MiniGridNumber()
     {
         return _startRow + _startRow / 3 + 1;
     }
     
-    public MiniGridPositions Mash(MiniGridPositions pos)
+    public MiniGridPositions Or(MiniGridPositions pos)
     {
         int newPos = _pos | pos._pos;
         return new MiniGridPositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos), _startRow,

@@ -7,7 +7,7 @@ using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
-public interface IStrategyManager
+public interface IStrategyManager : IPossibilitiesHolder
 {
     bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy);
 

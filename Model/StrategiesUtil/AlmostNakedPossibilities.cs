@@ -8,10 +8,10 @@ namespace Model.StrategiesUtil;
 
 public class AlmostNakedPossibilities : ILinkGraphElement
 {
-    public CoordinatePossibilities[] CoordinatePossibilities { get; }
-    public PossibilityCoordinate OddOne { get; }
+    public CellPossibilities[] CoordinatePossibilities { get; }
+    public CellPossibility OddOne { get; }
 
-    public AlmostNakedPossibilities(CoordinatePossibilities[] coordinates, PossibilityCoordinate oddOne)
+    public AlmostNakedPossibilities(CellPossibilities[] coordinates, CellPossibility oddOne)
     {
         CoordinatePossibilities = coordinates;
         OddOne = oddOne;
@@ -21,13 +21,13 @@ public class AlmostNakedPossibilities : ILinkGraphElement
     {
         foreach (var coord in CoordinatePossibilities)
         {
-            if (coord.Coordinate.Row == row && coord.Coordinate.Col == col) return true;
+            if (coord.Cell.Row == row && coord.Cell.Col == col) return true;
         }
 
         return false;
     }
 
-    public CoordinatePossibilities[] EachElement()
+    public CellPossibilities[] EachElement()
     {
         return CoordinatePossibilities;
     }
@@ -36,7 +36,7 @@ public class AlmostNakedPossibilities : ILinkGraphElement
     {
         if (obj is not AlmostNakedPossibilities anp) return false;
         if (anp.OddOne != OddOne) return false;
-        foreach (CoordinatePossibilities cp in CoordinatePossibilities)
+        foreach (CellPossibilities cp in CoordinatePossibilities)
         {
             if (!anp.CoordinatePossibilities.Contains(cp)) return false;
         }

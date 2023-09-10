@@ -28,8 +28,8 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
 
     private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two)
     {
-        List<PossibilityCoordinate> onePoss = new();
-        List<PossibilityCoordinate> twoPoss = new();
+        List<CellPossibility> onePoss = new();
+        List<CellPossibility> twoPoss = new();
 
         foreach (var c1 in one.EachElement())
         {
@@ -72,7 +72,7 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
                 {
                     for (int col = 0; col < 9; col++)
                     {
-                        var current = new PossibilityCoordinate(sharedRow, col, possibility);
+                        var current = new CellPossibility(sharedRow, col, possibility);
                         if (commons.Contains(current)) continue;
 
                         view.ChangeBuffer.AddPossibilityToRemove(possibility, sharedRow, col);
@@ -83,7 +83,7 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
                 {
                     for (int row = 0; row < 9; row++)
                     {
-                        var current = new PossibilityCoordinate(row, sharedCol, possibility);
+                        var current = new CellPossibility(row, sharedCol, possibility);
                         if (commons.Contains(current)) continue;
 
                         view.ChangeBuffer.AddPossibilityToRemove(possibility, row, sharedCol);
@@ -99,7 +99,7 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
                             var row = sharedMiniRow * 3 + gridRow;
                             var col = sharedMiniCol * 3 + gridCol;
                             
-                            var current = new PossibilityCoordinate(row, col, possibility);
+                            var current = new CellPossibility(row, col, possibility);
                             if (commons.Contains(current)) continue;
 
                             view.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
@@ -110,15 +110,15 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
         }
     }
 
-    private List<List<PossibilityCoordinate>> AllCommons(List<PossibilityCoordinate> onePoss, List<PossibilityCoordinate> twoPoss)
+    private List<List<CellPossibility>> AllCommons(List<CellPossibility> onePoss, List<CellPossibility> twoPoss)
     {
-        var result = new List<List<PossibilityCoordinate>>();
+        var result = new List<List<CellPossibility>>();
         IPossibilities done = IPossibilities.NewEmpty();
         for (int i = 0; i < onePoss.Count; i++)
         {
             if (done.Peek(onePoss[i].Possibility)) continue;
             
-            List<PossibilityCoordinate> current = new() { onePoss[i] };
+            List<CellPossibility> current = new() { onePoss[i] };
             for (int j = i + 1; j < onePoss.Count; j++)
             {
                 if (onePoss[j].Possibility == onePoss[i].Possibility) current.Add(onePoss[j]);
@@ -154,7 +154,7 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
 
     public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
-        if (inference is not PossibilityCoordinate pos) return false;
+        if (inference is not CellPossibility pos) return false;
         view.ChangeBuffer.AddPossibilityToRemove(pos.Possibility, pos.Row, pos.Col);
 
         return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
@@ -162,7 +162,7 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
 
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
-        if (inference is not PossibilityCoordinate pos) return false;
+        if (inference is not CellPossibility pos) return false;
         view.ChangeBuffer.AddDefinitiveToAdd(pos.Possibility, pos.Row, pos.Col);
 
         return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));

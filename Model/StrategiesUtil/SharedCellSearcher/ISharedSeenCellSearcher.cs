@@ -12,12 +12,12 @@ namespace Model.StrategiesUtil.SharedCellSearcher;
 /// </summary>
 public interface ISharedSeenCellSearcher
 {
-    IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2);
+    IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2);
 
-    IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2,
+    IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2,
         int col2);
 
-    static IEnumerable<Coordinate> DefaultSharedSeenEmptyCells(ISharedSeenCellSearcher searcher,
+    static IEnumerable<Cell> DefaultSharedSeenEmptyCells(ISharedSeenCellSearcher searcher,
         IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         foreach (var coord in searcher.SharedSeenCells(row1, col1, row2, col2))

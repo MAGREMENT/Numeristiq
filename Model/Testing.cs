@@ -110,12 +110,12 @@ public static class Testing
         Console.WriteLine("Two time : " + (end - start) + "ms");
     }
 
-    private static Coordinate LineBullshit(Coordinate from, Coordinate to)
+    private static Cell LineBullshit(Cell from, Cell to)
     {
         var space = 10;
         var proportion = space / Math.Sqrt(Math.Pow(to.Row - from.Row, 2) + Math.Pow(to.Col - from.Col, 2));
 
-        return new Coordinate((int) (from.Row + proportion * (to.Row - from.Row)), (int) (from.Col +proportion * (to.Col - from.Col)));
+        return new Cell((int) (from.Row + proportion * (to.Row - from.Row)), (int) (from.Col +proportion * (to.Col - from.Col)));
     }
 
     private static void AlsSearch(int[] ints, List<IPossibilities> list, int start, IPossibilities current)
@@ -242,7 +242,7 @@ public static class Testing
 
         PrintPositions(one);
         PrintPositions(two);
-        PrintPositions(one.Mash(two));
+        PrintPositions(one.Or(two));
         PrintPositions(three);
     }
 

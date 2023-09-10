@@ -10,7 +10,7 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
         {
             if (als.Coordinates.Length is < 2 or > 4) continue;
 
-            PossibilityCoordinate buffer = default;
+            CellPossibility buffer = default;
             bool found = false;
             foreach (var possibility in als.Possibilities)
             {
@@ -21,7 +21,7 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
 
                     if (!found)
                     {
-                        buffer = new PossibilityCoordinate(coord.Row, coord.Col, possibility); 
+                        buffer = new CellPossibility(coord.Row, coord.Col, possibility); 
                         found = true;
                     }
                     else
@@ -40,10 +40,10 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
             if (!found) continue;
 
             //Almost naked possibility found
-            CoordinatePossibilities[] buildUp = new CoordinatePossibilities[als.Coordinates.Length];
+            CellPossibilities[] buildUp = new CellPossibilities[als.Coordinates.Length];
             for (int i = 0; i < als.Coordinates.Length; i++)
             {
-                buildUp[i] = new CoordinatePossibilities(als.Coordinates[i],
+                buildUp[i] = new CellPossibilities(als.Coordinates[i],
                     strategyManager.Possibilities[als.Coordinates[i].Row, als.Coordinates[i].Col]);
             }
 
@@ -51,19 +51,19 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
             linkGraph.AddLink(buffer, anp, LinkStrength.Strong, LinkType.MonoDirectional);
 
             bool sameRow = true;
-            int sharedRow = anp.CoordinatePossibilities[0].Coordinate.Row;
+            int sharedRow = anp.CoordinatePossibilities[0].Cell.Row;
             bool sameCol = true;
-            int sharedCol = anp.CoordinatePossibilities[0].Coordinate.Col;
+            int sharedCol = anp.CoordinatePossibilities[0].Cell.Col;
             bool sameMini = true;
-            int sharedMiniRow = anp.CoordinatePossibilities[0].Coordinate.Row / 3;
-            int sharedMiniCol = anp.CoordinatePossibilities[0].Coordinate.Col / 3;
+            int sharedMiniRow = anp.CoordinatePossibilities[0].Cell.Row / 3;
+            int sharedMiniCol = anp.CoordinatePossibilities[0].Cell.Col / 3;
 
             for (int i = 1; i < anp.CoordinatePossibilities.Length; i++)
             {
-                if (anp.CoordinatePossibilities[i].Coordinate.Row != sharedRow) sameRow = false;
-                if (anp.CoordinatePossibilities[i].Coordinate.Col != sharedCol) sameCol = false;
-                if (anp.CoordinatePossibilities[i].Coordinate.Row / 3 != sharedMiniRow ||
-                    anp.CoordinatePossibilities[i].Coordinate.Col / 3 != sharedMiniCol) sameMini = false;
+                if (anp.CoordinatePossibilities[i].Cell.Row != sharedRow) sameRow = false;
+                if (anp.CoordinatePossibilities[i].Cell.Col != sharedCol) sameCol = false;
+                if (anp.CoordinatePossibilities[i].Cell.Row / 3 != sharedMiniRow ||
+                    anp.CoordinatePossibilities[i].Cell.Col / 3 != sharedMiniCol) sameMini = false;
             }
 
             foreach (var possibility in als.Possibilities)
@@ -75,10 +75,10 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
                     {
                         if (!strategyManager.Possibilities[sharedRow, col].Peek(possibility)) continue;
 
-                        Coordinate current = new Coordinate(sharedRow, col);
+                        Cell current = new Cell(sharedRow, col);
                         if (als.Contains(current)) continue;
                         
-                        linkGraph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
+                        linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
                             LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -89,10 +89,10 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
                     {
                         if (!strategyManager.Possibilities[row, sharedCol].Peek(possibility)) continue;
                         
-                        Coordinate current = new Coordinate(row, sharedCol);
+                        Cell current = new Cell(row, sharedCol);
                         if (als.Contains(current)) continue;
                         
-                        linkGraph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
+                        linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
                             LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -108,10 +108,10 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
                             
                             if (!strategyManager.Possibilities[row, col].Peek(possibility)) continue;
                         
-                            Coordinate current = new Coordinate(row, col);
+                            Cell current = new Cell(row, col);
                             if (als.Contains(current)) continue;
                         
-                            linkGraph.AddLink(anp, new PossibilityCoordinate(current.Row, current.Col, possibility),
+                            linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
                                 LinkStrength.Weak, LinkType.MonoDirectional);
                         }
                     }

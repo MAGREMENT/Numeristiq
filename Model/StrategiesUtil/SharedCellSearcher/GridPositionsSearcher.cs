@@ -6,7 +6,7 @@ namespace Model.StrategiesUtil.SharedCellSearcher;
 
 public class GridPositionsSearcher : ISharedSeenCellSearcher
 {
-    public IEnumerable<Coordinate> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
         var one = new GridPositions();
         var two = new GridPositions();
@@ -26,7 +26,7 @@ public class GridPositionsSearcher : ISharedSeenCellSearcher
         return and;
     }
 
-    public IEnumerable<Coordinate> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
         return ISharedSeenCellSearcher.DefaultSharedSeenEmptyCells(this, strategyManager, row1, col1, row2, col2);
     }

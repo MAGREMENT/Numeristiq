@@ -40,14 +40,14 @@ public class SueDeCoqStrategy : IStrategy
                     if (cols.Count < 2) continue;
                     if(possibilities.Count - 2 < cols.Count) continue;
 
-                    List<Coordinate> rowCoords = new();
-                    List<Coordinate> miniCoords = new();
+                    List<Cell> rowCoords = new();
+                    List<Cell> miniCoords = new();
                     for (int col = 0; col < 9; col++)
                     {
                         if (col / 3 == miniCol) continue;
                         if (strategyManager.Sudoku[row, col] != 0) continue;
 
-                        rowCoords.Add(new Coordinate(row, col));
+                        rowCoords.Add(new Cell(row, col));
                     }
 
                     for (int gridRow2 = 0; gridRow2 < 3; gridRow2++)
@@ -59,7 +59,7 @@ public class SueDeCoqStrategy : IStrategy
                             int col = miniCol * 3 + gridCol;
                             if (strategyManager.Sudoku[row2, col] != 0) continue;
 
-                            miniCoords.Add(new Coordinate(row2, col));
+                            miniCoords.Add(new Cell(row2, col));
                         }
                     }
 
@@ -70,7 +70,7 @@ public class SueDeCoqStrategy : IStrategy
                     {
                         foreach (var mAls in miniAls)
                         {
-                            if (rAls.Possibilities.Mash(mAls.Possibilities).Equals(possibilities))
+                            if (rAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities))
                                 ProcessSueDeCoq(strategyManager, row, cols, rAls, mAls, Unit.Row);
                         }
                     }
@@ -97,14 +97,14 @@ public class SueDeCoqStrategy : IStrategy
                     if (rows.Count < 2) continue;
                     if(possibilities.Count - 2 < rows.Count) continue;
 
-                    List<Coordinate> colCoords = new();
-                    List<Coordinate> miniCoords = new();
+                    List<Cell> colCoords = new();
+                    List<Cell> miniCoords = new();
                     for (int row = 0; row < 9; row++)
                     {
                         if (row / 3 == miniRow) continue;
                         if (strategyManager.Sudoku[row, col] != 0) continue;
 
-                        colCoords.Add(new Coordinate(row, col));
+                        colCoords.Add(new Cell(row, col));
                     }
 
                     for (int gridCol2 = 0; gridCol2 < 3; gridCol2++)
@@ -116,7 +116,7 @@ public class SueDeCoqStrategy : IStrategy
                             int row = miniRow * 3 + gridRow;
                             if (strategyManager.Sudoku[row, col2] != 0) continue;
 
-                            miniCoords.Add(new Coordinate(row, col2));
+                            miniCoords.Add(new Cell(row, col2));
                         }
                     }
 
@@ -127,7 +127,7 @@ public class SueDeCoqStrategy : IStrategy
                     {
                         foreach (var mAls in miniAls)
                         {
-                            if (cAls.Possibilities.Mash(mAls.Possibilities).Equals(possibilities))
+                            if (cAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities))
                                 ProcessSueDeCoq(strategyManager, col, rows, cAls, mAls, Unit.Column);
                         }
                     }
@@ -141,8 +141,8 @@ public class SueDeCoqStrategy : IStrategy
     {
         for (int other = 0; other < 9; other++)
         {
-            Coordinate current = unit == Unit.Row ?
-                new Coordinate(unitNumber, other) : new Coordinate(other, unitNumber);
+            Cell current = unit == Unit.Row ?
+                new Cell(unitNumber, other) : new Cell(other, unitNumber);
             if(unitAls.Contains(current)) continue;
             if(center.Peek(other)) continue;
 
@@ -159,9 +159,9 @@ public class SueDeCoqStrategy : IStrategy
             if (gridUnit + unitStart == unitNumber) continue;
             for (int gridOther = 0; gridOther < 3; gridOther++)
             {
-                Coordinate current = unit == Unit.Row ?
-                    new Coordinate(unitStart + gridUnit, otherStart + gridOther) :
-                    new Coordinate(otherStart + gridOther, unitStart + gridUnit);
+                Cell current = unit == Unit.Row ?
+                    new Cell(unitStart + gridUnit, otherStart + gridOther) :
+                    new Cell(otherStart + gridOther, unitStart + gridUnit);
                 if (miniAls.Contains(current)) continue;
                 
                 foreach (var possibility in miniAls.Possibilities)
@@ -195,12 +195,12 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        List<Coordinate> center = new(_positions.Count);
+        List<Cell> center = new(_positions.Count);
         foreach (var other in _positions)
         {
             center.Add(_unit == Unit.Row ?
-                new Coordinate(_unitNumber, other) :
-                new Coordinate(other, _unitNumber));
+                new Cell(_unitNumber, other) :
+                new Cell(other, _unitNumber));
         }
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>

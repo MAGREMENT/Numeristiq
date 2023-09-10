@@ -18,8 +18,8 @@ public class CellWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new PossibilityCoordinate(row, col, asArray[i]),
-                            new PossibilityCoordinate(row, col, asArray[j]), LinkStrength.Weak);
+                        linkGraph.AddLink(new CellPossibility(row, col, asArray[i]),
+                            new CellPossibility(row, col, asArray[j]), LinkStrength.Weak);
                     }
                 }
             }

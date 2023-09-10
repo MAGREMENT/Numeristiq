@@ -57,7 +57,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             var ppic = strategyManager.RowPositions(row, number);
 
-            var newMashed = mashed.Mash(ppic);
+            var newMashed = mashed.Or(ppic);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppic.Count) continue;
             
             var newVisited = visited.Copy();
@@ -121,7 +121,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             var ppir = strategyManager.ColumnPositions(col, number);
 
-            var newMashed = mashed.Mash(ppir);
+            var newMashed = mashed.Or(ppir);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppir.Count) continue;
 
             var newVisited = visited.Copy();
@@ -198,8 +198,8 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IChangeManager manager)
     {
-        List<Coordinate> normal = new();
-        List<Coordinate> finned = new();
+        List<Cell> normal = new();
+        List<Cell> finned = new();
 
         foreach (var visited in _visited)
         {
@@ -208,7 +208,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
                 int row = _unit == Unit.Row ? visited : mashed;
                 int col = _unit == Unit.Row ? mashed : visited;
 
-                if (manager.Possibilities[row, col].Peek(_number)) normal.Add(new Coordinate(row, col));
+                if (manager.Possibilities[row, col].Peek(_number)) normal.Add(new Cell(row, col));
             }
         }
 
@@ -219,8 +219,8 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
 
             if (manager.Possibilities[row, col].Peek(_number))
             {
-                if (_mashed.Peek(n)) normal.Add(new Coordinate(row, col));
-                else finned.Add(new Coordinate(row, col));
+                if (_mashed.Peek(n)) normal.Add(new Cell(row, col));
+                else finned.Add(new Cell(row, col));
             }
         }
         

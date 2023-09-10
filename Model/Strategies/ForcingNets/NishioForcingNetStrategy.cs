@@ -28,7 +28,7 @@ public class NishioForcingNetStrategy : IStrategy
                     var coloring = strategyManager.OnColoring(row, col, possibility);
                     foreach (var entry in coloring)
                     {
-                        if (entry.Value != Coloring.Off || entry.Key is not PossibilityCoordinate coord) continue;
+                        if (entry.Value != Coloring.Off || entry.Key is not CellPossibility coord) continue;
                         if (cs.AddOff(coord))
                         {
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
@@ -60,7 +60,7 @@ public class ContradictionSearcher
     }
 
     //returns true if contradiction
-    public bool AddOff(PossibilityCoordinate coord)
+    public bool AddOff(CellPossibility coord)
     {
         var cellInt = coord.Row * 9 + coord.Col;
         if (!_cells.TryGetValue(cellInt, out var poss))

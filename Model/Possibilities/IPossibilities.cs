@@ -16,7 +16,7 @@ public interface IPossibilities : IReadOnlyPossibilities
     public void Reset();
     public void Add(int n);
 
-    public static IPossibilities DefaultMash(IPossibilities poss1, IPossibilities poss2)
+    public static IPossibilities DefaultOr(IPossibilities poss1, IPossibilities poss2)
     {
         IPossibilities result = New();
         for (int i = Min; i <= Max; i++)
@@ -64,7 +64,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
 {
     public int Count { get; }
     public int GetFirst();
-    public IPossibilities Mash(IPossibilities possibilities);
+    public IPossibilities Or(IPossibilities possibilities);
     public bool Peek(int n);
     public bool PeekAll(IPossibilities poss);
     public bool PeekAny(IPossibilities poss);

@@ -307,5 +307,5 @@ public enum ContainedStatus
 
 public interface ILoopElement
 { 
-    CoordinatePossibilities[] EachElement();
+    CellPossibilities[] EachElement();
 }

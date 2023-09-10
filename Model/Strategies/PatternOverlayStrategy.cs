@@ -56,9 +56,9 @@ public class PatternOverlayStrategy : IStrategy
         //TODO add rule 2
     }
 
-    private List<Coordinate>[] AllPositionsOfAllNumbers(IStrategyManager strategyManager)
+    private List<Cell>[] AllPositionsOfAllNumbers(IStrategyManager strategyManager)
     {
-        List<Coordinate>[] possiblePositions =
+        List<Cell>[] possiblePositions =
         {
             new(), new(), new(),
             new(), new(), new(),
@@ -71,7 +71,7 @@ public class PatternOverlayStrategy : IStrategy
             {
                 if (strategyManager.Sudoku[row, col] != 0) continue;
 
-                Coordinate current = new Coordinate(row, col);
+                Cell current = new Cell(row, col);
                 foreach (var possibility in strategyManager.Possibilities[row, col])
                 {
                     possiblePositions[possibility - 1].Add(current);
@@ -82,7 +82,7 @@ public class PatternOverlayStrategy : IStrategy
         return possiblePositions;
     }
 
-    private HashSet<Pattern> Patterns(IStrategyManager strategyManager, List<Coordinate> all, int number)
+    private HashSet<Pattern> Patterns(IStrategyManager strategyManager, List<Cell> all, int number)
     {
         HashSet<Pattern> result = new HashSet<Pattern>();
         if (all.Count == 0) return result;
@@ -94,7 +94,7 @@ public class PatternOverlayStrategy : IStrategy
 
             GridPositions buildup = new GridPositions();
             buildup.Add(start);
-            var copy = new List<Coordinate>(all);
+            var copy = new List<Cell>(all);
             copy.RemoveAll(coord => coord.Row == start.Row || coord.Col == start.Col ||
                                     (coord.Row / 3 == start.Row / 3 && coord.Col / 3 == start.Col / 3));
 
@@ -104,14 +104,14 @@ public class PatternOverlayStrategy : IStrategy
         return result;
     }
 
-    private void SearchForPatterns(IStrategyManager strategyManager, List<Coordinate> toSearch, int number,
+    private void SearchForPatterns(IStrategyManager strategyManager, List<Cell> toSearch, int number,
         GridPositions buildup, HashSet<Pattern> result)
     {
         foreach (var current in toSearch)
         {
             var buildupCopy = buildup.Copy();
             buildupCopy.Add(current);
-            var copy = new List<Coordinate>(toSearch);
+            var copy = new List<Cell>(toSearch);
             copy.RemoveAll(coord => coord.Row == current.Row || coord.Col == current.Col ||
                                     (coord.Row / 3 == current.Row / 3 && coord.Col / 3 == current.Col / 3));
 
@@ -164,9 +164,9 @@ public class Pattern
         _pattern = positions;
     }
 
-    public bool Peek(Coordinate coordinate)
+    public bool Peek(Cell cell)
     {
-        return _pattern.Peek(coordinate);
+        return _pattern.Peek(cell);
     }
 
     public override bool Equals(object? obj)
