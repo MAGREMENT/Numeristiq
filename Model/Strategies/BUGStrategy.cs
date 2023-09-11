@@ -18,9 +18,9 @@ public class BUGStrategy : IStrategy
         {
             foreach (var possibility in strategyManager.Possibilities[triple[0], triple[1]])
             {
-                if (strategyManager.ColumnPositions(triple[1], possibility).Count == 3 &&
-                    strategyManager.RowPositions(triple[0], possibility).Count == 3 &&
-                    strategyManager.MiniGridPositions(triple[0] / 3, triple[1] / 3, possibility).Count == 3)
+                if (strategyManager.ColumnPositionsAt(triple[1], possibility).Count == 3 &&
+                    strategyManager.RowPositionsAt(triple[0], possibility).Count == 3 &&
+                    strategyManager.MiniGridPositionsAt(triple[0] / 3, triple[1] / 3, possibility).Count == 3)
                 {
                     strategyManager.ChangeBuffer.AddDefinitiveToAdd(possibility, triple[0], triple[1]);
                     break;
@@ -59,7 +59,7 @@ public class BUGReportBuilder : IChangeReportBuilder
         _triple = triple;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return ChangeReport.Default(changes);
     }

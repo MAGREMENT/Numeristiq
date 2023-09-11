@@ -22,13 +22,13 @@ public class HiddenSingleStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositions(row, number);
+                var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, row, ppir.GetFirst());
             }
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositions(col, number);
+                var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, ppic.GetFirst(), col);
             }
 
@@ -36,7 +36,7 @@ public class HiddenSingleStrategy : IStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositions(miniRow, miniCol, number);
+                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count != 1) continue;
                     
                     var pos = ppimn.GetFirst();
@@ -51,31 +51,31 @@ public class HiddenSingleStrategy : IStrategy
 
 public class HiddenSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), ChangesToExplanation(changes, snapshot),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes, snapshot),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 
-    private string ChangesToExplanation(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    private static string Explanation(List<SolverChange> changes, ISolver snapshot)
     {
         var builder = new StringBuilder();
 
         foreach (var change in changes)
         {
             string where;
-            if (snapshot.RowPositions(change.Row, change.Number).Count == 1) where = $"row {change.Row + 1}";
-            else if (snapshot.ColumnPositions(change.Column, change.Number).Count == 1)
+            if (snapshot.RowPositionsAt(change.Row, change.Number).Count == 1) where = $"row {change.Row + 1}";
+            else if (snapshot.ColumnPositionsAt(change.Column, change.Number).Count == 1)
                 where = $"column {change.Column + 1}";
             else
             {
-                var miniGridPositions = snapshot.MiniGridPositions(change.Row / 3, change.Column / 3, change.Number);
+                var miniGridPositions = snapshot.MiniGridPositionsAt(change.Row / 3, change.Column / 3, change.Number);
                 if (miniGridPositions.Count == 1) where = $"mini grid {miniGridPositions.MiniGridNumber()}";
                 else throw new Exception("Error while backtracking hidden singles");
             }
 
             builder.Append($"{change.Number} is the solution to the cell [{change.Row + 1}, {change.Column + 1}]" +
-                           $" because it's present only there in {where}.\n");
+                           $" because it's the only cell with that possibility in {where}.\n");
         }
 
         return builder.ToString();

@@ -47,7 +47,7 @@ public class ChangeBuffer
         if (_possibilityRemoved.Count == 0 && _definitiveAdded.Count == 0) return false;
         
         List<SolverChange> changes = new();
-        IPossibilitiesHolder? snapshot = null;
+        ISolver? snapshot = null;
         if (_m.LogsManaged) snapshot = _m.TakePossibilitiesSnapshot();
         
         foreach (var possibility in _possibilityRemoved)

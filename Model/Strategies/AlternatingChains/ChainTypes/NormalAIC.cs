@@ -25,7 +25,7 @@ public class NormalAIC : IAlternatingChainType<CellPossibility>
                     CellPossibility current = new CellPossibility(row, col, possibility);
                     
                     //Row
-                    var ppir = view.RowPositions(row, possibility);
+                    var ppir = view.RowPositionsAt(row, possibility);
                     var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var c in ppir)
                     {
@@ -37,7 +37,7 @@ public class NormalAIC : IAlternatingChainType<CellPossibility>
 
 
                     //Col
-                    var ppic = view.ColumnPositions(col, possibility);
+                    var ppic = view.ColumnPositionsAt(col, possibility);
                     strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var r in ppic)
                     {
@@ -49,7 +49,7 @@ public class NormalAIC : IAlternatingChainType<CellPossibility>
 
 
                     //MiniGrids
-                    var ppimn = view.MiniGridPositions(row / 3, col / 3, possibility);
+                    var ppimn = view.MiniGridPositionsAt(row / 3, col / 3, possibility);
                     strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     foreach (var pos in ppimn)
                     {

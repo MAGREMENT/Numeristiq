@@ -30,13 +30,13 @@ public class NakedSingleStrategy : IStrategy
 
 public class NakedSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), ChangesToExplanation(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 
-    private static string ChangesToExplanation(List<SolverChange> changes)
+    private static string Explanation(List<SolverChange> changes)
     {
         var builder = new StringBuilder();
 

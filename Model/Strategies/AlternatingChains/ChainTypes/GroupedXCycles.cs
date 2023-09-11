@@ -22,7 +22,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
             for (int row = 0; row < 9; row++)
             {
-                var ppir = view.RowPositions(row, n);
+                var ppir = view.RowPositionsAt(row, n);
                 var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                 var rowFinal = row;
                 ppir.ForEachCombination((one, two) =>
@@ -34,7 +34,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = view.ColumnPositions(col, n);
+                var ppic = view.ColumnPositionsAt(col, n);
                 var strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                 var colFinal = col;
                 ppic.ForEachCombination((one, two) =>
@@ -48,7 +48,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = view.MiniGridPositions(miniRow, miniCol, n);
+                    var ppimn = view.MiniGridPositionsAt(miniRow, miniCol, n);
                     var strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
                     ppimn.ForEachCombination((one, two) =>
                     {

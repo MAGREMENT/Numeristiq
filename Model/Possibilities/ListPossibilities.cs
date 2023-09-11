@@ -26,7 +26,7 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
         throw new System.NotImplementedException();
     }
 
-    public IPossibilities Or(IPossibilities possibilities)
+    public IPossibilities Or(IReadOnlyPossibilities possibilities)
     {
         throw new System.NotImplementedException();
     }

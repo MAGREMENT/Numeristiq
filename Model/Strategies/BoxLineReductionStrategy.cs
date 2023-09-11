@@ -18,7 +18,7 @@ public class BoxLineReductionStrategy : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppir = strategyManager.RowPositions(row, number);
+                var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int miniRow = row / 3;
@@ -45,7 +45,7 @@ public class BoxLineReductionStrategy : IStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var ppic = strategyManager.ColumnPositions(col, number);
+                var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
                     int miniRow = ppic.First() / 3;
@@ -85,7 +85,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)

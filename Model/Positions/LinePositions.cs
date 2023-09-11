@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
@@ -63,8 +62,19 @@ public class LinePositions : IReadOnlyLinePositions
     {
         for (int i = 0; i < 9; i++)
         {
-            if(Peek(i)) yield return i;
+            if (Peek(i)) yield return i;
         }
+    }
+
+    public int Next(ref int cursor)
+    {
+        cursor++;
+        for (; cursor < 9; cursor++)
+        {
+            if (Peek(cursor)) return cursor;
+        }
+
+        return -1;
     }
     
     IEnumerator IEnumerable.GetEnumerator()
@@ -121,3 +131,4 @@ public class LinePositions : IReadOnlyLinePositions
         }
     }
 }
+

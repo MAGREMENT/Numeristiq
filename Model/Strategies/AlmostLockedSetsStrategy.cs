@@ -189,7 +189,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
         _two = two;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

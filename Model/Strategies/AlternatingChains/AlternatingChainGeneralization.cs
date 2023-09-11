@@ -63,7 +63,7 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
         _loop = loop;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _loop.ToString(),
             lighter =>

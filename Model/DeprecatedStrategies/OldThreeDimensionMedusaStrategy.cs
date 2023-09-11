@@ -180,7 +180,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
     
     private void InitChain(IStrategyManager strategyManager, ColorableWeb<CellPossibilityColoring> web, CellPossibilityColoring current)
     {
-        var ppir = strategyManager.RowPositions(current.CellPossibility.Row, current.CellPossibility.Possibility);
+        var ppir = strategyManager.RowPositionsAt(current.CellPossibility.Row, current.CellPossibility.Possibility);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
@@ -194,7 +194,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
             }
         }
         
-        var ppic = strategyManager.ColumnPositions(current.CellPossibility.Col, current.CellPossibility.Possibility);
+        var ppic = strategyManager.ColumnPositionsAt(current.CellPossibility.Col, current.CellPossibility.Possibility);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
@@ -208,7 +208,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
             }
         }
         
-        var ppimn = strategyManager.MiniGridPositions(current.CellPossibility.Row / 3, current.CellPossibility.Col / 3, current.CellPossibility.Possibility);
+        var ppimn = strategyManager.MiniGridPositionsAt(current.CellPossibility.Row / 3, current.CellPossibility.Col / 3, current.CellPossibility.Possibility);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
@@ -246,7 +246,7 @@ public class ThreeDimensionMedusaReportBuilder : IChangeReportBuilder
         _web = web;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

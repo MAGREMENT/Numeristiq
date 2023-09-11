@@ -14,7 +14,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositions(miniRow, miniCol, n);
+                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, n);
                     if (ppimn.Count < 2) continue;
                     SearchForPointingInMiniGrid(strategyManager, linkGraph, ppimn, miniRow, miniCol, n);
                 }

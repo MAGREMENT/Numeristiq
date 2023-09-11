@@ -63,8 +63,8 @@ public class UniqueRectanglesStrategy : IStrategy
                             && strategyManager.Possibilities[potentialOpposite.Row, col].Peek(bi.One)
                             && strategyManager.Possibilities[potentialOpposite.Row, col].Peek(bi.Two))
                         {
-                            if (strategyManager.RowPositions(row, bi.One).Count == 2
-                                && strategyManager.ColumnPositions(col, bi.One).Count == 2)
+                            if (strategyManager.RowPositionsAt(row, bi.One).Count == 2
+                                && strategyManager.ColumnPositionsAt(col, bi.One).Count == 2)
                             {
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, col);
                                 strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
@@ -73,8 +73,8 @@ public class UniqueRectanglesStrategy : IStrategy
                                     new Cell(potentialOpposite.Row, col)));
                             }
                             
-                            if (strategyManager.RowPositions(row, bi.Two).Count == 2
-                                && strategyManager.ColumnPositions(col, bi.Two).Count == 2)
+                            if (strategyManager.RowPositionsAt(row, bi.Two).Count == 2
+                                && strategyManager.ColumnPositionsAt(col, bi.Two).Count == 2)
                             {
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.One, row, col);
                                 strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
@@ -162,7 +162,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 //Type 4
                 if (one.Col / 3 == two.Col / 3)
                 {
-                    var ppimn = view.MiniGridPositions(row / 3, one.Col / 3, bi.One);
+                    var ppimn = view.MiniGridPositionsAt(row / 3, one.Col / 3, bi.One);
                     if (ppimn.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
@@ -173,7 +173,7 @@ public class UniqueRectanglesStrategy : IStrategy
                         return;
                     }
                     
-                    ppimn = view.MiniGridPositions(row / 3, one.Col / 3, bi.Two);
+                    ppimn = view.MiniGridPositionsAt(row / 3, one.Col / 3, bi.Two);
                     if (ppimn.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
@@ -186,7 +186,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 }
                 else
                 {
-                    var ppir = view.RowPositions(row, bi.One);
+                    var ppir = view.RowPositionsAt(row, bi.One);
                     if (ppir.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
@@ -197,7 +197,7 @@ public class UniqueRectanglesStrategy : IStrategy
                         return;
                     }
                     
-                    ppir = view.RowPositions(row, bi.Two);
+                    ppir = view.RowPositionsAt(row, bi.Two);
                     if (ppir.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
@@ -210,28 +210,28 @@ public class UniqueRectanglesStrategy : IStrategy
                 }
                 
                 //Hidden type 2
-                if (view.ColumnPositions(one.Col, bi.One).Count == 2)
+                if (view.ColumnPositionsAt(one.Col, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
                     return;
                 }
-                if (view.ColumnPositions(one.Col, bi.Two).Count == 2)
+                if (view.ColumnPositionsAt(one.Col, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
                     return;
                 }
-                if (view.ColumnPositions(two.Col, bi.One).Count == 2)
+                if (view.ColumnPositionsAt(two.Col, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
                     return;
                 }
-                if (view.ColumnPositions(two.Col, bi.Two).Count == 2)
+                if (view.ColumnPositionsAt(two.Col, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
@@ -317,7 +317,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 //Type 4
                 if (one.Row / 3 == two.Row / 3)
                 {
-                    var ppimn = view.MiniGridPositions(one.Row / 3, col / 3, bi.One);
+                    var ppimn = view.MiniGridPositionsAt(one.Row / 3, col / 3, bi.One);
                     if (ppimn.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
@@ -328,7 +328,7 @@ public class UniqueRectanglesStrategy : IStrategy
                         return;
                     }
                     
-                    ppimn = view.MiniGridPositions(one.Row / 3, col / 3, bi.Two);
+                    ppimn = view.MiniGridPositionsAt(one.Row / 3, col / 3, bi.Two);
                     if (ppimn.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
@@ -341,7 +341,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 }
                 else
                 {
-                    var ppic = view.ColumnPositions(col, bi.One);
+                    var ppic = view.ColumnPositionsAt(col, bi.One);
                     if (ppic.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
@@ -352,7 +352,7 @@ public class UniqueRectanglesStrategy : IStrategy
                         return;
                     }
                     
-                    ppic = view.ColumnPositions(col, bi.Two);
+                    ppic = view.ColumnPositionsAt(col, bi.Two);
                     if (ppic.Count == 2)
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
@@ -365,7 +365,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 }
                 
                 //Hidden type 2
-                if (view.RowPositions(one.Row, bi.One).Count == 2)
+                if (view.RowPositionsAt(one.Row, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
@@ -373,7 +373,7 @@ public class UniqueRectanglesStrategy : IStrategy
                     
                     return;
                 }
-                if (view.RowPositions(one.Row, bi.Two).Count == 2)
+                if (view.RowPositionsAt(one.Row, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
@@ -381,7 +381,7 @@ public class UniqueRectanglesStrategy : IStrategy
                     
                     return;
                 }
-                if (view.RowPositions(two.Row, bi.One).Count == 2)
+                if (view.RowPositionsAt(two.Row, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
@@ -389,7 +389,7 @@ public class UniqueRectanglesStrategy : IStrategy
                     
                     return;
                 }
-                if (view.RowPositions(two.Row, bi.Two).Count == 2)
+                if (view.RowPositionsAt(two.Row, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
                     view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
@@ -452,10 +452,10 @@ public class UniqueRectanglesStrategy : IStrategy
             }
             
             //Type 5
-            if (view.RowPositions(one.Row, bi.One).Count == 2 &&
-                view.RowPositions(two.Row, bi.One).Count == 2 &&
-                view.ColumnPositions(one.Col, bi.One).Count == 2 &&
-                view.ColumnPositions(two.Col, bi.One).Count == 2)
+            if (view.RowPositionsAt(one.Row, bi.One).Count == 2 &&
+                view.RowPositionsAt(two.Row, bi.One).Count == 2 &&
+                view.ColumnPositionsAt(one.Col, bi.One).Count == 2 &&
+                view.ColumnPositionsAt(two.Col, bi.One).Count == 2)
             {
                 view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, one.Col);
                 view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, two.Col);
@@ -465,10 +465,10 @@ public class UniqueRectanglesStrategy : IStrategy
                 return;
             }
             
-            if (view.RowPositions(one.Row, bi.Two).Count == 2 &&
-                view.RowPositions(two.Row, bi.Two).Count == 2 &&
-                view.ColumnPositions(one.Col, bi.Two).Count == 2 &&
-                view.ColumnPositions(two.Col, bi.Two).Count == 2)
+            if (view.RowPositionsAt(one.Row, bi.Two).Count == 2 &&
+                view.RowPositionsAt(two.Row, bi.Two).Count == 2 &&
+                view.ColumnPositionsAt(one.Col, bi.Two).Count == 2 &&
+                view.ColumnPositionsAt(two.Col, bi.Two).Count == 2)
             {
                 view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, one.Col);
                 view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, two.Col);
@@ -559,7 +559,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
         _roofTwo = roofTwo;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -591,7 +591,7 @@ public class UniqueRectanglesWithAlsReportBuilder : IChangeReportBuilder
         _als = als;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

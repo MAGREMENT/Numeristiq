@@ -95,7 +95,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         _isInvalidColoring = isInvalidColoring;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         List<Link<CellPossibility>> links = FindPath();
 

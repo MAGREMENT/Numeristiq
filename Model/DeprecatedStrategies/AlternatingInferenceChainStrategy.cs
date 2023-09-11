@@ -159,7 +159,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     LinkResume resume = new();
 
                     //Row
-                    var ppir = strategyManager.RowPositions(row, possibility);
+                    var ppir = strategyManager.RowPositionsAt(row, possibility);
                     if (ppir.Count == 2)
                     {
                         foreach (var c in ppir)
@@ -174,7 +174,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //Col
-                    var ppic = strategyManager.ColumnPositions(col, possibility);
+                    var ppic = strategyManager.ColumnPositionsAt(col, possibility);
                     if (ppic.Count == 2)
                     {
                         foreach (var r in ppic)
@@ -189,7 +189,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //MiniGrids
-                    var ppimn = strategyManager.MiniGridPositions(row / 3, col / 3, possibility);
+                    var ppimn = strategyManager.MiniGridPositionsAt(row / 3, col / 3, possibility);
                     if (ppimn.Count == 2)
                     {
                         foreach (var pos in ppimn)
@@ -232,7 +232,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     if (!alreadyThere) resume = new LinkResume();
 
                     //Row
-                    var ppir = strategyManager.RowPositions(row, possibility);
+                    var ppir = strategyManager.RowPositionsAt(row, possibility);
                     foreach (var c in ppir)
                     {
                         if (c != col)
@@ -246,7 +246,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //Col
-                    var ppic = strategyManager.ColumnPositions(col, possibility);
+                    var ppic = strategyManager.ColumnPositionsAt(col, possibility);
                     
                     foreach (var r in ppic)
                     {
@@ -261,7 +261,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
 
                     //MiniGrids
-                    var ppimn = strategyManager.MiniGridPositions(row / 3, col / 3, possibility);
+                    var ppimn = strategyManager.MiniGridPositionsAt(row / 3, col / 3, possibility);
                     
                     foreach (var pos in ppimn)
                     {

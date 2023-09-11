@@ -11,7 +11,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositions(row, number);
+                var ppir = strategyManager.RowPositionsAt(row, number);
                 if(ppir.Count < 3) continue;
 
                 var asArray = ppir.ToArray();
@@ -27,7 +27,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositions(col, number);
+                var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if(ppic.Count < 3) continue;
 
                 var asArray = ppic.ToArray();
@@ -45,7 +45,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositions(miniRow, miniCol, number);
+                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 3) continue;
 
                     var asArray = ppimn.ToArray();

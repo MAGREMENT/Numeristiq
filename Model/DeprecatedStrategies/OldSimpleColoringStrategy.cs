@@ -98,7 +98,7 @@ public class OldSimpleColoringStrategy : IStrategy
 
     private void InitChain(IStrategyManager strategyManager, ColorableWeb<CellColoring> web, CellColoring current, int number)
     {
-        var ppir = strategyManager.RowPositions(current.Cell.Row, number);
+        var ppir = strategyManager.RowPositionsAt(current.Cell.Row, number);
         if (ppir.Count == 2)
         {
             foreach (var col in ppir)
@@ -112,7 +112,7 @@ public class OldSimpleColoringStrategy : IStrategy
             }
         }
         
-        var ppic = strategyManager.ColumnPositions(current.Cell.Col, number);
+        var ppic = strategyManager.ColumnPositionsAt(current.Cell.Col, number);
         if (ppic.Count == 2)
         {
             foreach (var row in ppic)
@@ -126,7 +126,7 @@ public class OldSimpleColoringStrategy : IStrategy
             }
         }
         
-        var ppimn = strategyManager.MiniGridPositions(current.Cell.Row / 3, current.Cell.Col / 3, number);
+        var ppimn = strategyManager.MiniGridPositionsAt(current.Cell.Row / 3, current.Cell.Col / 3, number);
         if (ppimn.Count == 2)
         {
             foreach (var pos in ppimn)
@@ -163,7 +163,7 @@ public class OldSimpleColoringReportBuilder : IChangeReportBuilder
         _web = web;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

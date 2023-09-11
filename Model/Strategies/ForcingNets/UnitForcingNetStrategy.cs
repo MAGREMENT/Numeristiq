@@ -26,7 +26,7 @@ public class UnitForcingNetStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositions(row, number);
+                var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -46,7 +46,7 @@ public class UnitForcingNetStrategy : IStrategy
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositions(col, number);
+                var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
                 Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -68,7 +68,7 @@ public class UnitForcingNetStrategy : IStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositions(miniRow, miniCol, number);
+                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
                     Dictionary<ILinkGraphElement, Coloring>[] colorings =
@@ -131,7 +131,7 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;
@@ -184,7 +184,7 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;

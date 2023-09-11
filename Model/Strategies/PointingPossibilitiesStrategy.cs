@@ -21,7 +21,7 @@ public class PointingPossibilitiesStrategy : IStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var ppimg = strategyManager.MiniGridPositions(miniRow, miniCol, number);
+                    var ppimg = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
                         int row = ppimg.First().Row;
@@ -61,7 +61,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

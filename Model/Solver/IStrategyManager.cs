@@ -7,7 +7,7 @@ using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
-public interface IStrategyManager : IPossibilitiesHolder
+public interface IStrategyManager : ISolver
 {
     bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy);
 
@@ -25,9 +25,9 @@ public interface IStrategyManager : IPossibilitiesHolder
 
     public Sudoku Sudoku { get; }
 
-    public IPossibilities[,] Possibilities { get; }
+    public IPossibilities[,] Possibilities { get; } //Eventually remove this
 
-    public Model.Solver.Solver Copy();
+    public Solver Copy();
 }
 
 

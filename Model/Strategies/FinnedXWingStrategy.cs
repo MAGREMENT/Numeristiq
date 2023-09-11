@@ -18,7 +18,7 @@ public class FinnedXWingStrategy : IStrategy
             Dictionary<int, LinePositions> candidates = new();
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositions(row, number);
+                var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.Count == 2) candidates.Add(row, ppir);
             }
 
@@ -27,7 +27,7 @@ public class FinnedXWingStrategy : IStrategy
                 for (int row = 0; row < 9; row++)
                 {
                     if (row == entry.Key) continue;
-                    var currentPpir = strategyManager.RowPositions(row, number);
+                    var currentPpir = strategyManager.RowPositionsAt(row, number);
 
                     var candidatePositions = entry.Value.ToArray();
 
@@ -60,7 +60,7 @@ public class FinnedXWingStrategy : IStrategy
             candidates.Clear();
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositions(col, number);
+                var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.Count == 2) candidates.Add(col, ppic);
             }
 
@@ -69,7 +69,7 @@ public class FinnedXWingStrategy : IStrategy
                 for (int col = 0; col < 9; col++)
                 {
                     if (col == entry.Key) continue;
-                    var currentPpic = strategyManager.ColumnPositions(col, number);
+                    var currentPpic = strategyManager.ColumnPositionsAt(col, number);
 
                     var candidatePositions = entry.Value.ToArray();
 
@@ -167,7 +167,7 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

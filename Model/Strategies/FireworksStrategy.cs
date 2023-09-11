@@ -176,7 +176,7 @@ public class FireworksStrategy : IStrategy
                 if(dual.Possibilities.Peek(possibility)) continue;
 
                 if (strategyManager.Possibilities[opposite.Row, dual.Cross.Col].Peek(possibility) &&
-                    strategyManager.RowPositions(opposite.Row, possibility).Count == 2)
+                    strategyManager.RowPositionsAt(opposite.Row, possibility).Count == 2)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, dual.Cross.Row, opposite.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty())
@@ -186,7 +186,7 @@ public class FireworksStrategy : IStrategy
                 }
 
                 if (strategyManager.Possibilities[dual.Cross.Row, opposite.Col].Peek(possibility) &&
-                    strategyManager.ColumnPositions(opposite.Col, possibility).Count == 2)
+                    strategyManager.ColumnPositionsAt(opposite.Col, possibility).Count == 2)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, dual.Cross.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty())
@@ -488,7 +488,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
         _fireworks = fireworks;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -508,7 +508,7 @@ public class FireworksStacksReportBuilder : IChangeReportBuilder
         _stacks = fireworks;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -533,7 +533,7 @@ public class FireworksWithAlsReportBuilder : IChangeReportBuilder
         _als = als;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -571,7 +571,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
         _wing = wing;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -596,7 +596,7 @@ public class OppositeFireworksReportBuilder : IChangeReportBuilder
         _f2 = f2;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

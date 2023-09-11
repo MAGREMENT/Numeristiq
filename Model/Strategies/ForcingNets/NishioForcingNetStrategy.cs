@@ -78,7 +78,7 @@ public class ContradictionSearcher
         var rowInt = coord.Row * 9 + coord.Possibility;
         if (!_rows.TryGetValue(rowInt, out var rowPos))
         {
-            var copy = _view.RowPositions(coord.Row, coord.Possibility).Copy();
+            var copy = _view.RowPositionsAt(coord.Row, coord.Possibility).Copy();
             copy.Remove(coord.Col);
             _rows[rowInt] = copy;
         }
@@ -91,7 +91,7 @@ public class ContradictionSearcher
         var colInt = coord.Col * 9 + coord.Possibility;
         if (!_cols.TryGetValue(colInt, out var colPos))
         {
-            var copy = _view.ColumnPositions(coord.Col, coord.Possibility).Copy();
+            var copy = _view.ColumnPositionsAt(coord.Col, coord.Possibility).Copy();
             copy.Remove(coord.Row);
             _cols[colInt] = copy;
         }
@@ -104,7 +104,7 @@ public class ContradictionSearcher
         var miniInt = coord.Row / 3 + coord.Col / 3 * 3 + coord.Possibility * 9;
         if (!_minis.TryGetValue(miniInt, out var miniPos))
         {
-            var copy = _view.MiniGridPositions(coord.Row / 3,
+            var copy = _view.MiniGridPositionsAt(coord.Row / 3,
                 coord.Col / 3, coord.Possibility).Copy();
             copy.Remove(coord.Row % 3, coord.Col % 3);
             _minis[miniInt] = copy;
@@ -143,7 +143,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         var c = ForcingNetsUtil.FilterPossibilityCoordinates(_coloring);
         

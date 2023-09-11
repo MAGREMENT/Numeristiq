@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
@@ -7,10 +8,14 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
+/// <summary>
+/// Naked possibilities, also called locked possibilities, happens when n cells shares n candidates in the same unit,
+/// without any cell having any extra possibility. In that case, each cell must have one of the n candidates as a
+/// solution. Therefor, any cell in that unit that is not in the n cells cannot have one of the n possibilities.
+/// </summary>
 public class NakedPossibilitiesStrategy : IStrategy
 {
     public string Name { get; }
-
     public StrategyLevel Difficulty { get; }
     public StatisticsTracker Tracker { get; } = new();
 
@@ -39,73 +44,61 @@ public class NakedPossibilitiesStrategy : IStrategy
     
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        //Rows
         for (int row = 0; row < 9; row++)
         {
-            IPossibilities empty = IPossibilities.New();
-            empty.RemoveAll();
             var possibleCols = EveryRowCellWithLessPossibilities(strategyManager, row, _type + 1);
-            RecursiveRowMashing(strategyManager, empty, possibleCols, row, _type, new LinePositions());
+            RecursiveRowMashing(strategyManager, IPossibilities.NewEmpty(), possibleCols, -1, row, new LinePositions());
         }
         
-        //Cols
         for (int col = 0; col < 9; col++)
         {
-            IPossibilities empty = IPossibilities.New();
-            empty.RemoveAll();
             var possibleRows = EveryColumnCellWithLessPossibilities(strategyManager, col, _type + 1);
-            RecursiveColumnMashing(strategyManager, empty, possibleRows, col, _type, new LinePositions());
+            RecursiveColumnMashing(strategyManager, IPossibilities.NewEmpty(), possibleRows, -1, col, new LinePositions());
         }
         
-        //MiniGrid
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                IPossibilities empty = IPossibilities.New();
-                empty.RemoveAll();
                 var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(strategyManager, miniRow, miniCol, _type + 1);
-                RecursiveMiniGridMashing(strategyManager, empty, possibleGridNumbers, miniRow, miniCol,
-                    _type, new MiniGridPositions(miniRow, miniCol));
+                RecursiveMiniGridMashing(strategyManager, IPossibilities.NewEmpty(), possibleGridNumbers, -1, miniRow, miniCol,
+                    new MiniGridPositions(miniRow, miniCol));
             }
         }
     }
 
-    private Queue<int> EveryRowCellWithLessPossibilities(IStrategyManager strategyManager, int row, int than)
+    private LinePositions EveryRowCellWithLessPossibilities(IStrategyManager strategyManager, int row, int than)
     {
-        Queue<int> result = new();
+        LinePositions result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.Possibilities[row, col].Count < than) 
-                result.Enqueue(col);
+            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.PossibilitiesAt(row, col).Count < than)
+                result.Add(col);
         }
 
         return result;
     }
 
     private void RecursiveRowMashing(IStrategyManager strategyManager, IPossibilities current,
-        Queue<int> possibleCols, int row, int count, LinePositions visited)
+        LinePositions possibleCols, int cursor, int row, LinePositions visited)
     {
-        while (possibleCols.Count > 0)
+        int col;
+        while ((col = possibleCols.Next(ref cursor)) != -1)
         {
-            int col = possibleCols.Dequeue();
-
-            IPossibilities newCurrent = current.Or(strategyManager.Possibilities[row, col]);
+            var possibilities = strategyManager.PossibilitiesAt(row, col);
+            if(possibilities.Count > _type) continue;
+            
+            var newCurrent = current.Or(possibilities);
+            if (newCurrent.Count > _type) continue;
+            
             var newVisited = visited.Copy();
             newVisited.Add(col);
             
-            if (newCurrent.Count <= _type)
-            {
-                if (count - 1 == 0 && newCurrent.Count == _type)
-                {
-                    RemovePossibilitiesFromRow(strategyManager, row, newCurrent, newVisited);
-                }
-                else
-                {
-                    RecursiveRowMashing(strategyManager, newCurrent,
-                        new Queue<int>(possibleCols), row, count - 1, newVisited);
-                }
-            }
+            if (newVisited.Count == _type && newCurrent.Count == _type)
+                RemovePossibilitiesFromRow(strategyManager, row, newCurrent, newVisited);
+            else if (newVisited.Count < _type)
+                RecursiveRowMashing(strategyManager, newCurrent, possibleCols, cursor, row, newVisited);
+            
         }
     }
 
@@ -122,41 +115,37 @@ public class NakedPossibilitiesStrategy : IStrategy
         strategyManager.ChangeBuffer.Push(this, new LineNakedPossibilitiesReportBuilder(toRemove, except, row, Unit.Row));
     }
     
-    private Queue<int> EveryColumnCellWithLessPossibilities(IStrategyManager strategyManager, int col, int than)
+    private LinePositions EveryColumnCellWithLessPossibilities(IStrategyManager strategyManager, int col, int than)
     {
-        Queue<int> result = new();
+        LinePositions result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.Possibilities[row, col].Count < than) 
-                result.Enqueue(row);
+            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.PossibilitiesAt(row, col).Count < than) 
+                result.Add(row);
         }
 
         return result;
     }
     
     private void RecursiveColumnMashing(IStrategyManager strategyManager, IPossibilities current,
-        Queue<int> possibleRows, int col, int count, LinePositions visited)
+        LinePositions possibleRows, int cursor, int col, LinePositions visited)
     {
-        while(possibleRows.Count > 0)
+        int row;
+        while((row = possibleRows.Next(ref cursor)) != -1)
         {
-            int row = possibleRows.Dequeue();
-
-            IPossibilities newCurrent = current.Or(strategyManager.Possibilities[row, col]);
+            var possibilities = strategyManager.PossibilitiesAt(row, col);
+            if(possibilities.Count > _type) continue;
+            
+            var newCurrent = current.Or(possibilities);
+            if (newCurrent.Count > _type) continue;
+            
             var newVisited = visited.Copy();
             newVisited.Add(row);
-            
-            if (newCurrent.Count <= _type)
-            {
-                if (count - 1 == 0 && newCurrent.Count == _type)
-                {
-                    RemovePossibilitiesFromColumn(strategyManager, col, newCurrent, newVisited);
-                }
-                else
-                {
-                    RecursiveColumnMashing(strategyManager, newCurrent, new Queue<int>(possibleRows),
-                        col, count - 1, newVisited);
-                }
-            }
+
+            if (newVisited.Count == _type && newCurrent.Count == _type)
+                RemovePossibilitiesFromColumn(strategyManager, col, newCurrent, newVisited);
+            else if (newVisited.Count < _type)
+                RecursiveColumnMashing(strategyManager, newCurrent, possibleRows, cursor, col, newVisited);
         }
     }
 
@@ -173,47 +162,43 @@ public class NakedPossibilitiesStrategy : IStrategy
         strategyManager.ChangeBuffer.Push(this, new LineNakedPossibilitiesReportBuilder(toRemove, except, col, Unit.Column));
     }
     
-    private Queue<int> EveryMiniGridCellWithLessPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol, int than)
+    private MiniGridPositions EveryMiniGridCellWithLessPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol, int than)
     {
-        Queue<int> result = new();
-        for (int gridNumber = 0; gridNumber < 9; gridNumber++)
+        MiniGridPositions result = new(miniRow, miniCol);
+        for (int gridRow = 0; gridRow < 3; gridRow++)
         {
-            int row = miniRow * 3 + gridNumber / 3;
-            int col = miniCol * 3 + gridNumber % 3;
+            for (int gridCol = 0; gridCol < 3; gridCol++)
+            {
+                int row = miniRow * 3 + gridRow;
+                int col = miniCol * 3 + gridCol;
             
-            if (strategyManager.Sudoku[row, col] == 0 && strategyManager.Possibilities[row, col].Count < than) 
-                result.Enqueue(gridNumber);
+                if (strategyManager.Sudoku[row, col] == 0 && strategyManager.PossibilitiesAt(row, col).Count < than) 
+                    result.Add(gridRow, gridCol);
+            }
         }
         
         return result;
     }
     
     private void RecursiveMiniGridMashing(IStrategyManager strategyManager, IPossibilities current,
-        Queue<int> possibleGridNumbers, int miniRow, int miniCol, int count, MiniGridPositions visited)
+        MiniGridPositions possiblePos, int cursor, int miniRow, int miniCol, MiniGridPositions visited)
     {
-        while(possibleGridNumbers.Count > 0)
+        Cell pos;
+        while((pos = possiblePos.Next(ref cursor)).Row != -1)
         {
-            int gridNumber = possibleGridNumbers.Dequeue();
+            var possibilities = strategyManager.PossibilitiesAt(pos.Row, pos.Col);
+            if(possibilities.Count > _type) continue;
             
-            int row = miniRow * 3 + gridNumber / 3;
-            int col = miniCol * 3 + gridNumber % 3;
+            var newCurrent = current.Or(possibilities);
+            if (newCurrent.Count > _type) continue;
             
-            IPossibilities newCurrent = current.Or(strategyManager.Possibilities[row, col]);
             var newVisited = visited.Copy();
-            newVisited.Add(gridNumber);
-
-            if (newCurrent.Count <= _type)
-            {
-                if (count - 1 == 0 && newCurrent.Count == _type)
-                {
-                    RemovePossibilitiesFromMiniGrid(strategyManager, miniRow, miniCol, newCurrent, newVisited);
-                }
-                else
-                {
-                    RecursiveMiniGridMashing(strategyManager, newCurrent, new Queue<int>(possibleGridNumbers),
-                        miniRow, miniCol, count - 1, newVisited);
-                }
-            }
+            newVisited.Add(pos.Row % 3, pos.Col % 3);
+            
+            if (newVisited.Count == _type && newCurrent.Count == _type)
+                RemovePossibilitiesFromMiniGrid(strategyManager, miniRow, miniCol, newCurrent, newVisited);
+            else if (newVisited.Count < _type)
+                RecursiveMiniGridMashing(strategyManager, newCurrent, possiblePos, cursor, miniRow, miniCol, newVisited);
         }
     }
     
@@ -222,12 +207,15 @@ public class NakedPossibilitiesStrategy : IStrategy
     {
         foreach (var n in toRemove)
         {
-            for (int gridNumber = 0; gridNumber < 9; gridNumber++)
+            for (int gridRow = 0; gridRow < 3; gridRow++)
             {
-                int row = miniRow * 3 + gridNumber / 3;
-                int col = miniCol * 3 + gridNumber % 3;
+                for (int gridCol = 0; gridCol < 3; gridCol++)
+                {
+                    int row = miniRow * 3 + gridRow;
+                    int col = miniCol * 3 + gridCol;
                 
-                if (!except.Peek(gridNumber)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
+                    if (!except.Peek(gridRow, gridCol)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
+                }
             }
         }
         
@@ -251,34 +239,28 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         var coords = new List<CellPossibility>();
-        switch (_unit)
+        foreach (var other in _linePos)
         {
-            case Unit.Row :
-                foreach (var col in _linePos)
+            foreach (var possibility in _possibilities)
+            {
+                switch (_unit)
                 {
-                    foreach (var possibility in _possibilities)
-                    {
-                        if(snapshot.PossibilitiesAt(_unitNumber, col).Peek(possibility))
-                            coords.Add(new CellPossibility(_unitNumber, col, possibility));
-                    }
+                    case Unit.Row :
+                        if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
+                            coords.Add(new CellPossibility(_unitNumber, other, possibility));
+                        break;
+                    case Unit.Column :
+                        if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
+                            coords.Add(new CellPossibility(other, _unitNumber, possibility));
+                        break;
                 }
-                break;
-            case Unit.Column :
-                foreach (var row in _linePos)
-                {
-                    foreach (var possibility in _possibilities)
-                    {
-                        if(snapshot.PossibilitiesAt(row, _unitNumber).Peek(possibility))
-                            coords.Add(new CellPossibility(row, _unitNumber, possibility));
-                    }
-                }
-                break;
+            }
         }
-        
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
             foreach (var coord in coords)
             {
@@ -287,6 +269,26 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation()
+    {
+        var builder = new StringBuilder("The cells (");
+        foreach (var other in _linePos)
+        {
+            switch (_unit)
+            {
+                case Unit.Row :
+                    builder.Append(new Cell(_unitNumber, other) + " ");
+                    break;
+                case Unit.Column :
+                    builder.Append(new Cell(other, _unitNumber) + " ");
+                    break;
+            }
+        }
+        
+        return builder.ToString()[..^1] + $") only contains the possibilities ({_possibilities}). Any other cell in" +
+               $" {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contains these possibilities";
     }
 }
 
@@ -301,7 +303,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var pos in _miniPos)
@@ -313,7 +315,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
             foreach (var coord in coords)
             {
@@ -322,5 +324,17 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+    
+    private string Explanation()
+    {
+        var builder = new StringBuilder("The cells (");
+        foreach (var coord in _miniPos)
+        {
+            builder.Append(coord);
+        }
+        
+        return builder.ToString()[..^1] + $") only contains the possibilities ({_possibilities}). Any other cell in" +
+               $" mini grid {_miniPos.MiniGridNumber()} cannot contains these possibilities";
     }
 }

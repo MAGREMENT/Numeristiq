@@ -214,17 +214,17 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public ChangeBuffer ChangeBuffer { get; }
 
-    public LinePositions RowPositions(int row, int number)
+    public LinePositions RowPositionsAt(int row, int number)
     {
         return _pre.RowPositions(row, number);
     }
     
-    public LinePositions ColumnPositions(int col, int number)
+    public LinePositions ColumnPositionsAt(int col, int number)
     {
         return _pre.ColumnPositions(col, number);
     }
     
-    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number)
+    public MiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
     {
         return _pre.MiniGridPositions(miniRow, miniCol, number);
     }
@@ -267,7 +267,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     
     //ChangeManager-----------------------------------------------------------------------------------------------------
     
-    public IPossibilitiesHolder TakePossibilitiesSnapshot()
+    public ISolver TakePossibilitiesSnapshot()
     {
         return PossibilitiesSnapshot.TakeSnapshot(this);
     }

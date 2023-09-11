@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
@@ -7,6 +8,10 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
+/// <summary>
+/// Hidden possibilities happens when n candidates are limited to n cells in a unit. In that case, each cell must have
+/// one of the n candidates as a solution. Therefor, any other possibilities in those cells can be removed
+/// </summary>
 public class HiddenPossibilitiesStrategy : IStrategy
 {
     public string Name { get; }
@@ -40,43 +45,20 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int row = 0; row < 9; row++)
         {
-            for (int number = 1; number <= 9; number++)
-            {
-                var pos = strategyManager.RowPositions(row, number);
-                if (pos.Count > _type || pos.Count == 0) continue;
-                var possibilities = IPossibilities.NewEmpty();
-                possibilities.Add(number);
-
-                RecursiveRowMashing(strategyManager, number + 1, pos, possibilities, row);
-            }
+            RecursiveRowMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), row);
         }
 
         for (int col = 0; col < 9; col++)
         {
-            for (int number = 1; number <= 9; number++)
-            {
-                var pos = strategyManager.ColumnPositions(col, number);
-                if (pos.Count > _type || pos.Count == 0) continue;
-                var possibilities = IPossibilities.NewEmpty();
-                possibilities.Add(number);
-                
-                RecursiveColumnMashing(strategyManager, number + 1, pos, possibilities, col);
-            }
+            RecursiveColumnMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), col);
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                for (int number = 1; number <= 9; number++)
-                {
-                    var pos = strategyManager.MiniGridPositions(miniRow, miniCol, number);
-                    if (pos.Count > _type || pos.Count == 0) continue;
-                    var possibilities = IPossibilities.NewEmpty();
-                    possibilities.Add(number);
-                    
-                    RecursiveMiniGridMashing(strategyManager, number + 1, pos, possibilities, miniRow, miniCol);
-                }
+                RecursiveMiniGridMashing(strategyManager, 1, new MiniGridPositions(miniRow, miniCol),
+                    IPossibilities.NewEmpty(), miniRow, miniCol);
             }
         }
     }
@@ -86,7 +68,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.RowPositions(row, i);
+            var pos = strategyManager.RowPositionsAt(row, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -99,7 +81,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 foreach (var col in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager.ChangeBuffer);
+                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager);
                 }
 
                 strategyManager.ChangeBuffer.Push(this,
@@ -114,7 +96,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.ColumnPositions(col, i);
+            var pos = strategyManager.ColumnPositionsAt(col, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -127,7 +109,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 foreach (var row in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager.ChangeBuffer);
+                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager);
                 }
 
                 strategyManager.ChangeBuffer.Push(this,
@@ -142,7 +124,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.MiniGridPositions(miniRow, miniCol, i);
+            var pos = strategyManager.MiniGridPositionsAt(miniRow, miniCol, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -155,7 +137,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
             {
                 foreach (var position in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(position.Row, position.Col, newVisited, strategyManager.ChangeBuffer);
+                    RemoveAllPossibilitiesExcept(position.Row, position.Col, newVisited, strategyManager);
                 }
 
                 strategyManager.ChangeBuffer.Push(this,
@@ -167,13 +149,13 @@ public class HiddenPossibilitiesStrategy : IStrategy
     }
 
     private void RemoveAllPossibilitiesExcept(int row, int col, IPossibilities except,
-        ChangeBuffer changeBuffer)
+        IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
             if (!except.Peek(number))
             {
-                changeBuffer.AddPossibilityToRemove(number, row, col);
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
             }
         }
     }
@@ -195,32 +177,28 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
         {
-            switch (_unit)
+            foreach (var other in _linePos)
             {
-                case Unit.Row :
-                    foreach (var col in _linePos)
-                    {
-                        if(snapshot.PossibilitiesAt(_unitNumber, col).Peek(possibility))
-                            coords.Add(new CellPossibility(_unitNumber, col, possibility));
-                    }
-                    break;
-                case Unit.Column :
-                    foreach (var row in _linePos)
-                    {
-                        if(snapshot.PossibilitiesAt(row, _unitNumber).Peek(possibility))
-                            coords.Add(new CellPossibility(row, _unitNumber, possibility));
-                    }
-                    break;
-            }  
+                switch (_unit)
+                {
+                    case Unit.Row :
+                        if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
+                                coords.Add(new CellPossibility(_unitNumber, other, possibility));
+                        break;
+                    case Unit.Column :
+                        if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
+                                coords.Add(new CellPossibility(other, _unitNumber, possibility));
+                        break;
+                }  
+            }
         }
-        
-        
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
             foreach (var coord in coords)
             {
@@ -229,6 +207,26 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation()
+    {
+        var builder = new StringBuilder("(");
+        foreach (var other in _linePos)
+        {
+            switch (_unit)
+            {
+                case Unit.Row :
+                    builder.Append(new Cell(_unitNumber, other) + " ");
+                    break;
+                case Unit.Column :
+                    builder.Append(new Cell(other, _unitNumber) + " ");
+                    break;
+            }
+        }
+
+        return $"The possibilities {_possibilities} are limited to the cells ({builder.ToString()[..^1]} in" +
+               $" {_unit.ToString().ToLower()} {_unitNumber}, so any other candidates in those cells can be removed";
     }
 }
 
@@ -243,7 +241,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
@@ -255,7 +253,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
             foreach (var coord in coords)
             {
@@ -265,5 +263,17 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+    
+    private string Explanation()
+    {
+        var builder = new StringBuilder("(");
+        foreach (var pos in _miniPos)
+        {
+            builder.Append(pos);
+        }
+
+        return $"The possibilities {_possibilities} are limited to the cells ({builder.ToString()[..^1]} in" +
+               $" mini grid {_miniPos.MiniGridNumber()}, so any other candidates in those cells can be removed";
     }
 }

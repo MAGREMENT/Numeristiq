@@ -132,6 +132,17 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
         return new Cell(-1, -1);
     }
+    
+    public Cell Next(ref int cursor)
+    {
+        cursor++;
+        for (; cursor < 9; cursor++)
+        {
+            if (Peek(cursor)) return new Cell(_startRow + cursor / 3, _startCol + cursor % 3);
+        }
+
+        return new Cell(-1, -1);
+    }
 
     public IEnumerator<Cell> GetEnumerator()
     {

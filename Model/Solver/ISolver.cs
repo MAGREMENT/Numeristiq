@@ -4,7 +4,7 @@ using Model.StrategiesUtil;
 
 namespace Model.Solver;
 
-public interface IPossibilitiesHolder
+public interface ISolver
 {
     IReadOnlyPossibilities PossibilitiesAt(int row, int col);
 
@@ -13,9 +13,9 @@ public interface IPossibilitiesHolder
         return PossibilitiesAt(cell.Row, cell.Col);
     }
     
-    LinePositions ColumnPositions(int col, int number);
+    LinePositions ColumnPositionsAt(int col, int number);
 
-    LinePositions RowPositions(int row, int number);
+    LinePositions RowPositionsAt(int row, int number);
 
-    MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number);
+    MiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number);
 }

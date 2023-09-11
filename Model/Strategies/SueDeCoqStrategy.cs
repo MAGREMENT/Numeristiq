@@ -193,7 +193,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         List<Cell> center = new(_positions.Count);
         foreach (var other in _positions)

@@ -60,8 +60,8 @@ public class GridFormationStrategy : IStrategy
         visited.Add(unitToSearch);
         
         var current = unit == Unit.Row
-            ? strategyManager.RowPositions(unitToSearch, number)
-            : strategyManager.ColumnPositions(unitToSearch, number);
+            ? strategyManager.RowPositionsAt(unitToSearch, number)
+            : strategyManager.ColumnPositionsAt(unitToSearch, number);
         if (current.Count > _type || current.Count < 2) return;
 
         var newMashed = mashed.Or(current);
@@ -113,7 +113,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)

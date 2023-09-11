@@ -30,7 +30,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppic = strategyManager.RowPositions(row, number);
+                var ppic = strategyManager.RowPositionsAt(row, number);
                 if (ppic.Count == 0) continue;
 
                 var here = new LinePositions { row };
@@ -40,7 +40,7 @@ public class FinnedGridFormationStrategy : IStrategy
             
             for (int col = 0; col < 9; col++)
             {
-                var ppir = strategyManager.ColumnPositions(col, number);
+                var ppir = strategyManager.ColumnPositionsAt(col, number);
                 if (ppir.Count == 0) continue;
 
                 var here = new LinePositions { col };
@@ -55,7 +55,7 @@ public class FinnedGridFormationStrategy : IStrategy
     {
         for (int row = start; row < 9; row++)
         {
-            var ppic = strategyManager.RowPositions(row, number);
+            var ppic = strategyManager.RowPositionsAt(row, number);
 
             var newMashed = mashed.Or(ppic);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppic.Count) continue;
@@ -76,7 +76,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             if (visited.Peek(row)) continue;
 
-            var ppic = strategyManager.RowPositions(row, number);
+            var ppic = strategyManager.RowPositionsAt(row, number);
 
             int miniCol = -1;
 
@@ -119,7 +119,7 @@ public class FinnedGridFormationStrategy : IStrategy
     {
         for (int col = start; col < 9; col++)
         {
-            var ppir = strategyManager.ColumnPositions(col, number);
+            var ppir = strategyManager.ColumnPositionsAt(col, number);
 
             var newMashed = mashed.Or(ppir);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppir.Count) continue;
@@ -140,7 +140,7 @@ public class FinnedGridFormationStrategy : IStrategy
         {
             if (visited.Peek(col)) continue;
 
-            var ppic = strategyManager.ColumnPositions(col, number);
+            var ppic = strategyManager.ColumnPositionsAt(col, number);
 
             int miniRow = -1;
 
@@ -196,7 +196,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         List<Cell> normal = new();
         List<Cell> finned = new();

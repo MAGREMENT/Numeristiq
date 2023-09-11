@@ -61,7 +61,7 @@ public class BitPossibilities : IPossibilities
         }
     }
 
-    public IPossibilities Or(IPossibilities possibilities)
+    public IPossibilities Or(IReadOnlyPossibilities possibilities)
     {
         if (possibilities is BitPossibilities bp)
         { 
@@ -152,14 +152,14 @@ public class BitPossibilities : IPossibilities
 
     public override string ToString()
     {
-        string result = "[";
+        string result = "(";
         for (int i = 1; i <= 9; i++)
         {
             if (Peek(i)) result += i + ", ";
         }
 
         if (result.Length != 1) result = result[..^2];
-        return result + "]";
+        return result + ")";
     }
 
     IEnumerator IEnumerable.GetEnumerator()

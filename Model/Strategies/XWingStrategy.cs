@@ -21,7 +21,7 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositions(row, n);
+                var ppir = strategyManager.RowPositionsAt(row, n);
                 if (ppir.Count == 2)
                 {
                     if (!dict.TryAdd(ppir, row))
@@ -35,7 +35,7 @@ public class XWingStrategy : IStrategy
             dict.Clear();
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositions(col, n);
+                var ppic = strategyManager.ColumnPositionsAt(col, n);
                 if (ppic.Count == 2)
                 {
                     if (!dict.TryAdd(ppic, col))
@@ -97,7 +97,7 @@ public class XWingReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

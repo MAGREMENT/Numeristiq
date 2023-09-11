@@ -4,10 +4,7 @@ using Model.Strategies;
 namespace Model.Possibilities;
 
 public interface IPossibilities : IReadOnlyPossibilities
-{
-    public const int Min = 1;
-    public const int Max = 9;
-    
+{ 
     public bool Remove(int n);
     public void RemoveAll();
     public void RemoveAll(int except);
@@ -16,9 +13,36 @@ public interface IPossibilities : IReadOnlyPossibilities
     public void Reset();
     public void Add(int n);
 
-    public static IPossibilities DefaultOr(IPossibilities poss1, IPossibilities poss2)
+    public static IPossibilities New()
     {
-        IPossibilities result = New();
+        return new BitPossibilities();
+    }
+
+    public static IPossibilities NewEmpty()
+    {
+        var buffer = new BitPossibilities();
+        buffer.RemoveAll();
+        return buffer;
+    }
+}
+
+public interface IReadOnlyPossibilities : IEnumerable<int>
+{
+    public const int Min = 1;
+    public const int Max = 9;
+    
+    public int Count { get; }
+    public int GetFirst();
+    public IPossibilities Or(IReadOnlyPossibilities possibilities);
+    public bool Peek(int n);
+    public bool PeekAll(IPossibilities poss);
+    public bool PeekAny(IPossibilities poss);
+    public IPossibilities Copy();
+    public IEnumerable<BiValue> EachBiValue();
+    
+    public static IPossibilities DefaultOr(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
+    {
+        var result = IPossibilities.New();
         for (int i = Min; i <= Max; i++)
         {
             if (!poss1.Peek(i) && !poss2.Peek(i)) result.Remove(i);
@@ -46,28 +70,4 @@ public interface IPossibilities : IReadOnlyPossibilities
 
         return false;
     }
-
-    public static IPossibilities New()
-    {
-        return new BitPossibilities();
-    }
-
-    public static IPossibilities NewEmpty()
-    {
-        var buffer = new BitPossibilities();
-        buffer.RemoveAll();
-        return buffer;
-    }
-}
-
-public interface IReadOnlyPossibilities : IEnumerable<int>
-{
-    public int Count { get; }
-    public int GetFirst();
-    public IPossibilities Or(IPossibilities possibilities);
-    public bool Peek(int n);
-    public bool PeekAll(IPossibilities poss);
-    public bool PeekAny(IPossibilities poss);
-    public IPossibilities Copy();
-    public IEnumerable<BiValue> EachBiValue();
 }

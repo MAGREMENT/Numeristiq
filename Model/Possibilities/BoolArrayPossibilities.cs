@@ -60,7 +60,7 @@ public class BoolArrayPossibilities : IPossibilities
         }
     }
 
-    public IPossibilities Or(IPossibilities possibilities)
+    public IPossibilities Or(IReadOnlyPossibilities possibilities)
     {
         return IPossibilities.DefaultOr(this, possibilities);
     }
