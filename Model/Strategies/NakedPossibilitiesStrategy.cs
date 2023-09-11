@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
@@ -11,7 +10,8 @@ namespace Model.Strategies;
 /// <summary>
 /// Naked possibilities, also called locked possibilities, happens when n cells shares n candidates in the same unit,
 /// without any cell having any extra possibility. In that case, each cell must have one of the n candidates as a
-/// solution. Therefor, any cell in that unit that is not in the n cells cannot have one of the n possibilities.
+/// solution. Therefor, any cell in that unit that is not in the n cells cannot have one of the n possibilities. As a side note,
+/// not every possibility has to be present in every cell.
 /// </summary>
 public class NakedPossibilitiesStrategy : IStrategy
 {
@@ -273,22 +273,8 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
     private string Explanation()
     {
-        var builder = new StringBuilder("The cells (");
-        foreach (var other in _linePos)
-        {
-            switch (_unit)
-            {
-                case Unit.Row :
-                    builder.Append(new Cell(_unitNumber, other) + " ");
-                    break;
-                case Unit.Column :
-                    builder.Append(new Cell(other, _unitNumber) + " ");
-                    break;
-            }
-        }
-        
-        return builder.ToString()[..^1] + $") only contains the possibilities ({_possibilities}). Any other cell in" +
-               $" {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contains these possibilities";
+        return $"The cells {_linePos.ToString(_unit, _unitNumber)} only contains the possibilities ({_possibilities})." +
+               $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contains these possibilities";
     }
 }
 
@@ -328,13 +314,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
     
     private string Explanation()
     {
-        var builder = new StringBuilder("The cells (");
-        foreach (var coord in _miniPos)
-        {
-            builder.Append(coord);
-        }
-        
-        return builder.ToString()[..^1] + $") only contains the possibilities ({_possibilities}). Any other cell in" +
+        return $"The cells {_miniPos} only contains the possibilities ({_possibilities}). Any other cell in" +
                $" mini grid {_miniPos.MiniGridNumber()} cannot contains these possibilities";
     }
 }

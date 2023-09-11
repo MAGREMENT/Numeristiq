@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Model.Changes;
 using Model.Positions;
 using Model.Solver;
@@ -7,62 +6,89 @@ using Model.StrategiesUtil;
 
 namespace Model.Strategies;
 
+/// <summary>
+/// Box line reduction is a pattern where a possibility in a row/column is restrained to a single mini grid. That means that,
+/// wherever this possibility ends up as a solution in that row or column, it will always remove the possibility from the
+/// remaining cells of the mini grid.
+///
+/// Example :
+///
+/// +-------+-------+-------+
+/// | x x x | . . . | . . . |
+/// | y y y | . . . | . . . |
+/// | y y y | . . . | . . . |
+/// +-------+-------+-------+
+/// | . . . | . . . | . . . |
+/// | . . . | . . . | . . . |
+/// | . . . | . . . | . . . |
+/// +-------+-------+-------+
+/// | . . . | . . . | . . . |
+/// | . . . | . . . | . . . |
+/// | . . . | . . . | . . . |
+/// +-------+-------+-------+
+///
+/// If a possibility is present in only the x-marked cells in the first row, then it can be removed from all
+/// y-marked cells
+/// </summary>
 public class BoxLineReductionStrategy : IStrategy
 {
     public string Name => "Box line reduction";
     public StrategyLevel Difficulty => StrategyLevel.Easy;
     public StatisticsTracker Tracker { get; } = new();
+
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        for (int row = 0; row < 9; row++)
+        for (int number = 1; number <= 9; number++)
         {
-            for (int number = 1; number <= 9; number++)
+            for (int row = 0; row < 9; row++)
             {
                 var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
-                    int miniRow = row / 3;
-                    int miniCol = ppir.First() / 3;
+                    int startRow = row / 3 * 3;
+                    int startCol = ppir.GetFirst() / 3 * 3;
 
                     for (int r = 0; r < 3; r++)
                     {
                         for (int c = 0; c < 3; c++)
                         {
-                            int realRow = miniRow * 3 + r;
-                            int realCol = miniCol * 3 + c;
+                            int removedFromRow = startRow + r;
+                            int removeFromCol = startCol + c;
 
-                            if (realRow != row) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, realRow, realCol);
+                            if (removedFromRow != row)
+                                strategyManager.ChangeBuffer
+                                    .AddPossibilityToRemove(number, removedFromRow, removeFromCol);
                         }
                     }
-                    
+
                     strategyManager.ChangeBuffer.Push(this,
                         new BoxLineReductionReportBuilder(row, ppir, number, Unit.Row));
                 }
             }
-        }
-        
-        for (int col = 0; col < 9; col++)
-        {
-            for (int number = 1; number <= 9; number++)
+
+            for (int col = 0; col < 9; col++)
             {
+
                 var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
-                    int miniRow = ppic.First() / 3;
-                    int miniCol = col / 3;
+                    int startRow = ppic.GetFirst() / 3 * 3;
+                    int startCol = col / 3 * 3;
 
                     for (int r = 0; r < 3; r++)
                     {
                         for (int c = 0; c < 3; c++)
                         {
-                            int realRow = miniRow * 3 + r;
-                            int realCol = miniCol * 3 + c;
+                            int removedFromRow = startRow + r;
+                            int removedFromCol = startCol + c;
 
-                            if (realCol != col) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, realRow, realCol);
+                            if (removedFromCol != col)
+                                strategyManager.ChangeBuffer
+                                    .AddPossibilityToRemove(number, removedFromRow, removedFromCol);
                         }
                     }
-                    
-                    strategyManager.ChangeBuffer.Push(this, 
+
+                    strategyManager.ChangeBuffer.Push(this,
                         new BoxLineReductionReportBuilder(col, ppic, number, Unit.Column));
                 }
             }
@@ -104,7 +130,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
                 break;
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes), lighter =>
         {
             foreach (var coord in causes)
             {
@@ -113,5 +139,14 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation(IReadOnlyList<SolverChange> changes)
+    {
+        var first = changes[0];
+        var miniGirdNumber = first.Row / 3 * 3 + first.Column / 3 + 1;
+        return $"{_number} is present only in the cells {_linePos.ToString(_unit, _unitNumber)} in mini" +
+               $" {_unit.ToString().ToLower()} {_unitNumber}, so it can be removed from any other cells in" +
+               $" mini grid {miniGirdNumber}";
     }
 }

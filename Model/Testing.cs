@@ -16,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("LocalBank.txt");
+        FullSudokuBankTest("OnlineBank2.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -177,7 +177,7 @@ public static class Testing
         try
         {
             using TextReader reader =
-                new StreamReader($"C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\SudokuBanks\\{fileNameInDataFolder}", Encoding.UTF8);
+                new StreamReader(PathsInfo.PathToData() + $@"/SudokuBanks/{fileNameInDataFolder}", Encoding.UTF8);
 
             while (reader.ReadLine() is { } line)
             {
@@ -267,16 +267,16 @@ public static class Testing
     private static void SudokuResolutionTest(string asString)
     {
         var sud = new Sudoku(asString);
-        Console.WriteLine("Sudoku initial : ");
+        Console.WriteLine("Initial sudoku : ");
         Console.WriteLine(sud);
 
         var solver = new Solver.Solver(sud);
         int numbersAdded = 0;
         solver.NumberAdded += (_, _) => numbersAdded++;
         solver.Solve();
-        Console.WriteLine("Sudoku après résolution : ");
+        Console.WriteLine("After solving : ");
         Console.WriteLine(solver.Sudoku);
-        Console.WriteLine("Chiffres ajoutés : " + numbersAdded);
-        Console.WriteLine("Est correct ? : " + sud.IsCorrect());
+        Console.WriteLine("Numbers added : " + numbersAdded);
+        Console.WriteLine("Is correct ? : " + sud.IsCorrect());
     }
 }

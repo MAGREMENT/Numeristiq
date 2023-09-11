@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Model.StrategiesUtil;
 
 namespace Model.Positions;
@@ -92,13 +93,13 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
     public override string ToString()
     {
-        var result = "";
-        for (int i = 0; i < 9; i++)
+        var builder = new StringBuilder("(");
+        foreach (var coord in this)
         {
-            if (Peek(i)) result += (_startRow + i / 3) + ", " + (_startCol + i % 3) + " ";
+            builder.Append(coord);
         }
 
-        return result;
+        return builder.ToString()[..^1] + ")";
     }
 
     public LinePositions OnGridRow(int gridRow)
@@ -190,4 +191,5 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return new MiniGridPositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos), _startRow,
             _startCol);
     }
+    
 }

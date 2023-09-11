@@ -14,7 +14,7 @@ namespace Model.Strategies;
 /// intersection is the cross. A firework means that the candidate must appear at least once in the wings and cross cells.
 /// On its own, this pattern doesn't tell us much, but its power come from multiple fireworks on the same cells.
 ///
-/// Example of a firework :
+/// Example :
 /// +-------+-------+-------+
 /// | x . . | 1 2 3 | 4 5 x |
 /// | . . . | . . . | . . . |

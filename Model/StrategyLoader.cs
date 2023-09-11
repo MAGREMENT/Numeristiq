@@ -12,7 +12,7 @@ namespace Model;
 
 public class StrategyLoader
 {
-    private readonly string _path = "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Data\\strategies.json";
+    private readonly string _path = PathsInfo.PathToData() + @"/strategies.json";
 
     private readonly IStrategy[] _strategies =
     {

@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
+using Model.StrategiesUtil;
 
 namespace Model.Positions;
 
@@ -129,6 +131,26 @@ public class LinePositions : IReadOnlyLinePositions
                 handler(i, j);
             }
         }
+    }
+
+    public string ToString(Unit unit, int unitNumber)
+    {
+        var builder = new StringBuilder();
+        
+        foreach (var other in this)
+        {
+            switch (unit)
+            {
+                case Unit.Row :
+                    builder.Append(new Cell(unitNumber, other) + " ");
+                    break;
+                case Unit.Column :
+                    builder.Append(new Cell(other, unitNumber) + " ");
+                    break;
+            }
+        }
+
+        return builder.ToString()[..^1] + ")";
     }
 }
 

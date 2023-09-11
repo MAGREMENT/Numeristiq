@@ -10,7 +10,8 @@ namespace Model.Strategies;
 
 /// <summary>
 /// Hidden possibilities happens when n candidates are limited to n cells in a unit. In that case, each cell must have
-/// one of the n candidates as a solution. Therefor, any other possibilities in those cells can be removed
+/// one of the n candidates as a solution. Therefor, any other possibilities in those cells can be removed. As a side note,
+/// not every possibility has to be present in every cell.
 /// </summary>
 public class HiddenPossibilitiesStrategy : IStrategy
 {
@@ -211,22 +212,8 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 
     private string Explanation()
     {
-        var builder = new StringBuilder("(");
-        foreach (var other in _linePos)
-        {
-            switch (_unit)
-            {
-                case Unit.Row :
-                    builder.Append(new Cell(_unitNumber, other) + " ");
-                    break;
-                case Unit.Column :
-                    builder.Append(new Cell(other, _unitNumber) + " ");
-                    break;
-            }
-        }
-
-        return $"The possibilities {_possibilities} are limited to the cells ({builder.ToString()[..^1]} in" +
-               $" {_unit.ToString().ToLower()} {_unitNumber}, so any other candidates in those cells can be removed";
+        return $"The possibilities {_possibilities} are limited to the cells {_linePos.ToString(_unit, _unitNumber)} in" +
+               $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
     }
 }
 
@@ -267,13 +254,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
     
     private string Explanation()
     {
-        var builder = new StringBuilder("(");
-        foreach (var pos in _miniPos)
-        {
-            builder.Append(pos);
-        }
-
-        return $"The possibilities {_possibilities} are limited to the cells ({builder.ToString()[..^1]} in" +
-               $" mini grid {_miniPos.MiniGridNumber()}, so any other candidates in those cells can be removed";
+        return $"The possibilities {_possibilities} are limited to the cells {_miniPos} in" +
+               $" mini grid {_miniPos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
     }
 }

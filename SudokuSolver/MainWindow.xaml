@@ -47,7 +47,7 @@
         <StackPanel x:Name="AsidePanel" Width="350">
             <local:LogListUserControl/>
             <TextBox Width="320" Height="200" Background="WhiteSmoke" Margin="0, 10, 0, 0" TextWrapping="Wrap"
-                     HorizontalAlignment="Center"/>
+                     HorizontalAlignment="Center" FontSize="12"/>
         </StackPanel>
         <StackPanel x:Name="AsidePanelTwo" Width="200">
             <local:StrategyListUserControl/>
