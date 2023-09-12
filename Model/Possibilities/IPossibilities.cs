@@ -34,9 +34,11 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public int Count { get; }
     public int GetFirst();
     public IPossibilities Or(IReadOnlyPossibilities possibilities);
+    public IPossibilities And(IReadOnlyPossibilities possibilities);
     public bool Peek(int n);
-    public bool PeekAll(IPossibilities poss);
-    public bool PeekAny(IPossibilities poss);
+    public bool PeekAll(IReadOnlyPossibilities poss);
+    public bool PeekAny(IReadOnlyPossibilities poss);
+    public bool PeekOnlyOne(IReadOnlyPossibilities poss);
     public IPossibilities Copy();
     public IEnumerable<BiValue> EachBiValue();
     
@@ -51,7 +53,18 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
         return result;
     }
 
-    public static bool DefaultPeekAll(IPossibilities poss1, IPossibilities poss2)
+    public static IPossibilities DefaultAnd(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
+    {
+        var result = IPossibilities.New();
+        for (int i = Min; i <= Max; i++)
+        {
+            if (!poss1.Peek(i) || !poss2.Peek(i)) result.Remove(i);
+        }
+
+        return result;
+    }
+
+    public static bool DefaultPeekAll(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
     {
         foreach (var possibility in poss2)
         {
@@ -61,7 +74,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
         return true;
     }
 
-    public static bool DefaultPeekAny(IPossibilities poss1, IPossibilities poss2)
+    public static bool DefaultPeekAny(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
     {
         foreach (var possibility in poss2)
         {
@@ -69,5 +82,21 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
         }
 
         return false;
+    }
+    
+    public static bool DefaultPeekOnlyOne(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
+    {
+        bool foundOne = false;
+        foreach (var possibility in poss2)
+        {
+            if (poss1.Peek(possibility))
+            {
+                if (foundOne) return false;
+                
+                foundOne = true;
+            }
+        }
+
+        return true;
     }
 }

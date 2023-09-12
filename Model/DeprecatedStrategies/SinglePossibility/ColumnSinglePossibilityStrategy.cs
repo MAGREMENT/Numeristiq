@@ -18,7 +18,7 @@ public class ColumnSinglePossibilityStrategy : IStrategy
                 int pos = CheckColumnForUnique(strategyManager, col, n);
                 if (pos != -1)
                 {
-                    strategyManager.AddDefinitiveNumber(n, pos, col, this);
+                    strategyManager.AddSolution(n, pos, col, this);
                 }
             } 
         }

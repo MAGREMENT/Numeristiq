@@ -41,7 +41,7 @@ public class TrialAndMatchStrategy : IStrategy //TODO fixme
         {
             Solver.Solver simulation = strategyManager.Copy();
             simulation.ExcludeStrategies(StrategyLevel.ByTrial);
-            simulation.AddDefinitiveNumber(possibility, row, col, this);
+            simulation.AddSolution(possibility, row, col, this);
             simulation.Solve();
 
             if (commonChanges is null)
@@ -84,7 +84,7 @@ public class TrialAndMatchStrategy : IStrategy //TODO fixme
         {
             for (int c = 0; c < 9; c++)
             {
-                if (toApply[r, c] != 0 && strategyManager.AddDefinitiveNumber(toApply[r, c], r, c, 
+                if (toApply[r, c] != 0 && strategyManager.AddSolution(toApply[r, c], r, c, 
                         this)) wasProgressMade = true;
             }
         }

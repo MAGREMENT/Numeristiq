@@ -134,7 +134,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
     private void ProcessOddLoop(IStrategyManager strategyManager, List<CellPossibility> visited)
     {
         if (visited.Count % 2 != 1) return;
-        strategyManager.AddDefinitiveNumber(visited[0].Possibility, visited[0].Row, visited[0].Col, this);
+        strategyManager.AddSolution(visited[0].Possibility, visited[0].Row, visited[0].Col, this);
     }
 
     private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)

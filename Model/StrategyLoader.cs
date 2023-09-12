@@ -41,6 +41,7 @@ public class StrategyLoader
         new AvoidableRectanglesStrategy(),
         new XYChainStrategy(),
         new ThreeDimensionMedusaStrategy(),
+        new WXYZWingStrategy(),
         new AlignedPairExclusionStrategy(4),
         new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
             new AlternatingChainAlgorithmV2<ILinkGraphElement>(20)),

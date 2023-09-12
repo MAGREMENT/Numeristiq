@@ -121,6 +121,6 @@ public class NormalAIC : IAlternatingChainType<CellPossibility>
 
     public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
-        return view.AddDefinitiveNumber(inference.Possibility, inference.Row, inference.Col, Strategy!);
+        return view.AddSolution(inference.Possibility, inference.Row, inference.Col, Strategy!);
     }
 }

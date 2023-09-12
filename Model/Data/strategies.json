@@ -125,6 +125,11 @@
     "Used": true
   },
   {
+    "StrategyName": "WXYZWing",
+    "Difficulty": 4,
+    "Used": true
+  },
+  {
     "StrategyName": "Aligned pair exclusion",
     "Difficulty": 4,
     "Used": true

@@ -2,7 +2,7 @@
 
 namespace Model;
 
-public class Sudoku
+public class Sudoku : IReadOnlySudoku
 {
     private const int GridSize = 9;
 
@@ -302,4 +302,16 @@ public enum Unit
 public enum SudokuTranslationType
 {
     Shortcuts, Zeros, Points
+}
+
+public interface IReadOnlySudoku
+{
+    public int this[int row, int col] { get; }
+
+    public string AsString(SudokuTranslationType type);
+    public bool IsCorrect();
+    public int RowCount(int row, int number);
+    public int ColumnCount(int column, int number);
+    public int MiniGridCount(int miniRow, int miniCol, int number);
+    public Sudoku Copy();
 }

@@ -18,7 +18,7 @@ public class RowSinglePossibilityStrategy : IStrategy
                 int pos = CheckRowForUnique(strategyManager, row, n);
                 if (pos != -1)
                 {
-                    strategyManager.AddDefinitiveNumber(n, row, pos, this);
+                    strategyManager.AddSolution(n, row, pos, this);
                 }
             } 
         }

@@ -134,7 +134,7 @@ public class XCyclesStrategy : IStrategy
 
     private void ProcessOddLoop(IStrategyManager strategyManager, List<Cell> visited, int number)
     {
-        strategyManager.AddDefinitiveNumber(number, visited[0].Row, visited[0].Col, this);
+        strategyManager.AddSolution(number, visited[0].Row, visited[0].Col, this);
     }
 
     private IEnumerable<CoordinateAndType> SearchForWeakLink(IStrategyManager strategyManager, Dictionary<Cell, Cell>[] strongLinks,

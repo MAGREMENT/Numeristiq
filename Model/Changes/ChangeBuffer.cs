@@ -60,7 +60,7 @@ public class ChangeBuffer
         
         foreach (var definitive in _definitiveAdded)
         {
-            if(_m.AddDefinitive(definitive.Possibility, definitive.Row, definitive.Col)) changes.Add(
+            if(_m.AddSolution(definitive.Possibility, definitive.Row, definitive.Col)) changes.Add(
                 new SolverChange(SolverNumberType.Definitive, definitive.Possibility,
                     definitive.Row, definitive.Col));
         }

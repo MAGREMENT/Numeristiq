@@ -9,7 +9,7 @@ namespace Model.Solver;
 
 public interface IStrategyManager : ISolver
 {
-    bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy);
+    bool AddSolution(int number, int row, int col, IStrategy strategy);
 
     bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
 
@@ -23,7 +23,7 @@ public interface IStrategyManager : ISolver
 
     public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility);
 
-    public Sudoku Sudoku { get; }
+    public IReadOnlySudoku Sudoku { get; }
 
     public IPossibilities[,] Possibilities { get; } //Eventually remove this
 

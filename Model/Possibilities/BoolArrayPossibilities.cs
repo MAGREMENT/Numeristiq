@@ -65,19 +65,29 @@ public class BoolArrayPossibilities : IPossibilities
         return IPossibilities.DefaultOr(this, possibilities);
     }
 
+    public IPossibilities And(IReadOnlyPossibilities possibilities)
+    {
+        return IPossibilities.DefaultAnd(this, possibilities);
+    }
+
     public bool Peek(int i)
     {
         return _possibilities[i - 1];
     }
 
-    public bool PeekAll(IPossibilities poss)
+    public bool PeekAll(IReadOnlyPossibilities poss)
     {
         return IPossibilities.DefaultPeekAll(this, poss);
     }
     
-    public bool PeekAny(IPossibilities poss)
+    public bool PeekAny(IReadOnlyPossibilities poss)
     {
         return IPossibilities.DefaultPeekAny(this, poss);
+    }
+
+    public bool PeekOnlyOne(IReadOnlyPossibilities poss)
+    {
+        return IPossibilities.DefaultPeekOnlyOne(this, poss);
     }
 
     public void Reset()

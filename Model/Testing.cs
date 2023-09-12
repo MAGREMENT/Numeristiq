@@ -17,7 +17,7 @@ public static class Testing
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
         FullSudokuBankTest("OnlineBank2.txt");
-
+        
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");

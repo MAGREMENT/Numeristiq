@@ -31,17 +31,27 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
         throw new System.NotImplementedException();
     }
 
+    public IPossibilities And(IReadOnlyPossibilities possibilities)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public bool Peek(int n)
     {
         throw new System.NotImplementedException();
     }
 
-    public bool PeekAll(IPossibilities poss)
+    public bool PeekAll(IReadOnlyPossibilities poss)
     {
         throw new System.NotImplementedException();
     }
 
-    public bool PeekAny(IPossibilities poss)
+    public bool PeekAny(IReadOnlyPossibilities poss)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public bool PeekOnlyOne(IReadOnlyPossibilities poss)
     {
         throw new System.NotImplementedException();
     }

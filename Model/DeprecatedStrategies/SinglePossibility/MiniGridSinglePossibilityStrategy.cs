@@ -20,7 +20,7 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
                     int[]? pos = CheckMiniGridForUnique(strategyManager, gridRow, gridCol, n);
                     if (pos is not null)
                     {
-                        strategyManager.AddDefinitiveNumber(n, pos[0], pos[1], this);
+                        strategyManager.AddSolution(n, pos[0], pos[1], this);
                     }
                 }
             }

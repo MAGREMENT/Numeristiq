@@ -147,7 +147,7 @@ public partial class SolverUserControl : IHighlightable
 
     public void AddDefinitiveNumber(int number, int row, int col)
     {
-        _solver.SetDefinitiveNumberByHand(number, row, col); 
+        _solver.SetSolutionByHand(number, row, col); 
         Update();
     }
     

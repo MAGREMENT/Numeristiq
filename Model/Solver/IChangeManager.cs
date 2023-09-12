@@ -7,7 +7,7 @@ public interface IChangeManager : ISolver
 {
     public ISolver TakePossibilitiesSnapshot();
     public bool LogsManaged { get; }
-    public bool AddDefinitive(int number, int row, int col);
+    public bool AddSolution(int number, int row, int col);
     public bool RemovePossibility(int possibility, int row, int col);
     public void PushChangeReportLog(ChangeReport report, IStrategy strategy);
 }

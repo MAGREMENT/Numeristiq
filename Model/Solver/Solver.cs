@@ -13,12 +13,12 @@ namespace Model.Solver;
 //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
 public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder 
 {
+    private Sudoku _sudoku;
+    public IReadOnlySudoku Sudoku => _sudoku;
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
-    public List<ISolverLog> Logs => _logManager.Logs;
-
-    public Sudoku Sudoku { get; private set; }
-    public IStrategy[] Strategies { get; private set; } = null!;
+    public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
     public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
+    public List<ISolverLog> Logs => _logManager.Logs;
 
     public bool LogsManaged { get; init; } = true;
     public bool StatisticsTracked { get; init; }
@@ -44,11 +44,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public Solver(Sudoku s)
     {
-        _strategyLoader = new StrategyLoader(this);
-        _strategyLoader.Load();
-        
-        Sudoku = s;
-        SetOriginalBoard();
+        _sudoku = s;
+        SetOriginalBoardForStrategies();
 
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
@@ -65,41 +62,48 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int j = 0; j < 9; j++)
             {
-                if (Sudoku[i, j] != 0)
+                if (_sudoku[i, j] != 0)
                 {
-                    UpdatePossibilitiesAfterDefinitiveNumberAdded(s[i, j], i, j);
+                    UpdatePossibilitiesAfterSolutionAdded(s[i, j], i, j);
                 }
             }
         }
 
+        _strategyLoader = new StrategyLoader(this);
+        _strategyLoader.Load();
+        
         _pre = new PreComputer(this);
+        
         _logManager = new LogManager(this);
         _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
+        
         ChangeBuffer = new ChangeBuffer(this);
     }
     
     private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t)
     {
-        Sudoku = s;
-        SetOriginalBoard();
+        _sudoku = s;
+        SetOriginalBoardForStrategies();
+        
         Possibilities = p;
+
+        NumberAdded += (_, _) => _changeWasMade = true;
+        PossibilityRemoved += (_, _) => _changeWasMade = true;
+        
+        _strategyLoader = new StrategyLoader(this);
         Strategies = t;
         _pre = new PreComputer(this);
         _logManager = new LogManager(this);
         _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
         ChangeBuffer = new ChangeBuffer(this);
-        _strategyLoader = new StrategyLoader(this);
-
-        NumberAdded += (_, _) => _changeWasMade = true;
-        PossibilityRemoved += (_, _) => _changeWasMade = true;
     }
     
     //Solver------------------------------------------------------------------------------------------------------------
     
     public void SetSudoku(Sudoku s)
     {
-        Sudoku = s;
-        SetOriginalBoard();
+        _sudoku = s;
+        SetOriginalBoardForStrategies();
 
         ResetPossibilities();
 
@@ -109,9 +113,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     }
     
     
-    public void SetDefinitiveNumberByHand(int number, int row, int col)
+    public void SetSolutionByHand(int number, int row, int col)
     {
-        Sudoku[row, col] = number;
+        _sudoku[row, col] = number;
         ResetPossibilities();
         if(LogsManaged) _logManager.Clear();
     }
@@ -127,7 +131,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     {
         for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
-            if (Sudoku.IsComplete()) return;
+            if (_sudoku.IsComplete()) return;
             if(((_excludedStrategies >> _currentStrategy) & 1) > 0) continue;
             
             if(StatisticsTracked) Strategies[_currentStrategy].Tracker.StartUsing();
@@ -155,7 +159,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Sudoku[row, col] == 0 && Possibilities[row, col].Count == 0) return true;
+                if (_sudoku[row, col] == 0 && Possibilities[row, col].Count == 0) return true;
             }
         }
 
@@ -189,12 +193,12 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     //StrategyManager---------------------------------------------------------------------------------------------------
     
-    public bool AddDefinitiveNumber(int number, int row, int col, IStrategy strategy)
+    public bool AddSolution(int number, int row, int col, IStrategy strategy)
     {
-        if (Sudoku[row, col] != 0) return false;
+        if (_sudoku[row, col] != 0) return false;
         
-        Sudoku[row, col] = number;
-        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+        _sudoku[row, col] = number;
+        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
         if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy);
         
         NumberAdded?.Invoke(row, col);
@@ -262,7 +266,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
         IStrategy[] stratCopy = new IStrategy[Strategies.Length];
         Array.Copy(Strategies, stratCopy, Strategies.Length);
-        return new Solver(Sudoku.Copy(), possCopy, stratCopy);
+        return new Solver(_sudoku.Copy(), possCopy, stratCopy);
     }
     
     //ChangeManager-----------------------------------------------------------------------------------------------------
@@ -272,12 +276,12 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         return PossibilitiesSnapshot.TakeSnapshot(this);
     }
     
-    public bool AddDefinitive(int number, int row, int col)
+    public bool AddSolution(int number, int row, int col)
     {
-        if (Sudoku[row, col] != 0) return false;
+        if (_sudoku[row, col] != 0) return false;
         
-        Sudoku[row, col] = number;
-        UpdatePossibilitiesAfterDefinitiveNumberAdded(number, row, col);
+        _sudoku[row, col] = number;
+        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
 
         NumberAdded?.Invoke(row, col);
         return true;
@@ -327,15 +331,15 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int j = 0; j < 9; j++)
             {
-                if (Sudoku[i, j] != 0)
+                if (_sudoku[i, j] != 0)
                 {
-                    UpdatePossibilitiesAfterDefinitiveNumberAdded(Sudoku[i, j], i, j);
+                    UpdatePossibilitiesAfterSolutionAdded(_sudoku[i, j], i, j);
                 }
             }
         }
     }
 
-    private void UpdatePossibilitiesAfterDefinitiveNumberAdded(int number, int row, int col)
+    private void UpdatePossibilitiesAfterSolutionAdded(int number, int row, int col)
     {
         Possibilities[row, col].RemoveAll();
         for (int i = 0; i < 9; i++)
@@ -355,13 +359,13 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         }
     }
 
-    private void SetOriginalBoard()
+    private void SetOriginalBoardForStrategies()
     {
         foreach (var strategy in Strategies)
         {
             if (strategy is IOriginalBoardNeededStrategy originalBoardNeededStrategy)
             {
-                originalBoardNeededStrategy.SetOriginalBoard(Sudoku.Copy());
+                originalBoardNeededStrategy.SetOriginalBoard(_sudoku.Copy());
             }
         }
     }
@@ -373,7 +377,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Sudoku[row, col] != 0) result += "d" + Sudoku[row, col];
+                if (_sudoku[row, col] != 0) result += "d" + _sudoku[row, col];
                 else
                 {
                     result += "p";

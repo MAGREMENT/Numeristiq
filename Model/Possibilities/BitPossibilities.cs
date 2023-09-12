@@ -65,8 +65,18 @@ public class BitPossibilities : IPossibilities
     {
         if (possibilities is BitPossibilities bp)
         { 
-            int mashed = _possibilities | bp._possibilities;
-            return new BitPossibilities(mashed, System.Numerics.BitOperations.PopCount((uint) mashed));
+            int or = _possibilities | bp._possibilities;
+            return new BitPossibilities(or, System.Numerics.BitOperations.PopCount((uint) or));
+        }
+        return IPossibilities.DefaultOr(this, possibilities);
+    }
+
+    public IPossibilities And(IReadOnlyPossibilities possibilities)
+    {
+        if (possibilities is BitPossibilities bp)
+        { 
+            int and = _possibilities & bp._possibilities;
+            return new BitPossibilities(and, System.Numerics.BitOperations.PopCount((uint) and));
         }
         return IPossibilities.DefaultOr(this, possibilities);
     }
@@ -76,15 +86,24 @@ public class BitPossibilities : IPossibilities
         return ((_possibilities >> (number - 1)) & 1) > 0;
     }
 
-    public bool PeekAll(IPossibilities poss)
+    public bool PeekAll(IReadOnlyPossibilities poss)
     {
         if (poss is BitPossibilities bp) return (_possibilities | bp._possibilities) == _possibilities;
         return IPossibilities.DefaultPeekAll(this, poss);
     }
 
-    public bool PeekAny(IPossibilities poss)
+    public bool PeekAny(IReadOnlyPossibilities poss)
     {
+        if (poss is BitPossibilities bp)
+            return System.Numerics.BitOperations.PopCount((uint)(bp._possibilities & _possibilities)) > 0;
         return IPossibilities.DefaultPeekAny(this, poss);
+    }
+
+    public bool PeekOnlyOne(IReadOnlyPossibilities poss)
+    {
+        if (poss is BitPossibilities bp)
+            return System.Numerics.BitOperations.PopCount((uint)(bp._possibilities & _possibilities)) == 1;
+        return IPossibilities.DefaultPeekOnlyOne(this, poss);
     }
 
     public void Reset()
