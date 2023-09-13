@@ -166,6 +166,7 @@ public static class Testing
 
     private static void FullSudokuBankTest(string fileNameInDataFolder)
     {
+        List<string> fuckUps = new();
         var counter = 1;
         var success = 0;
         var solverIsTrash = 0;
@@ -189,6 +190,7 @@ public static class Testing
                     if (solver.IsWrong())
                     {
                         Console.WriteLine(counter++ + " WRONG, Solver is trash ! => " + line);
+                        fuckUps.Add(line);
                         solverIsTrash++;
                     }
                     else Console.WriteLine(counter++ + " WRONG, did not find solution ! => " + line);
@@ -214,6 +216,12 @@ public static class Testing
         {
             Console.WriteLine($"-{StringUtil.FillWithSpace(strategy.Name, 40)} => Usage : {strategy.Tracker.Usage} |" +
                               $" Score : {strategy.Tracker.Score} | Time used : {strategy.Tracker.TimeUsed}");
+        }
+
+        Console.WriteLine("\nFuck ups : ");
+        foreach (var f in fuckUps)
+        {
+            Console.WriteLine("-" + f);
         }
     }
 

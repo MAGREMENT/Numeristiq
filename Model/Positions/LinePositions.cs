@@ -12,7 +12,7 @@ public class LinePositions : IReadOnlyLinePositions
 
     public LinePositions(){}
 
-    private LinePositions(int pos, int count)
+    public LinePositions(int pos, int count)
     {
         _pos = pos;
         Count = count;
@@ -107,9 +107,10 @@ public class LinePositions : IReadOnlyLinePositions
         return result;
     }
 
-    public LinePositions Or(LinePositions pos)
+    public LinePositions Or(IReadOnlyLinePositions pos)
     {
-        int newPos = _pos | pos._pos;
+        if (pos is not LinePositions line) return IReadOnlyLinePositions.DefaultOr(this, pos);
+        int newPos = _pos | line._pos;
         return new LinePositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos));
     }
 
@@ -118,9 +119,7 @@ public class LinePositions : IReadOnlyLinePositions
         return new LinePositions(_pos, Count);
     }
 
-    public delegate void HandleCombination(int one, int two);
-
-    public void ForEachCombination(HandleCombination handler)
+    public void ForEachCombination(IReadOnlyLinePositions.HandleCombination handler)
     {
         for (int i = 0; i < 9; i++)
         {

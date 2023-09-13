@@ -20,6 +20,16 @@
     "Used": true
   },
   {
+    "StrategyName": "Box line reduction",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
+    "StrategyName": "Pointing possibilities",
+    "Difficulty": 2,
+    "Used": true
+  },
+  {
     "StrategyName": "Naked triple",
     "Difficulty": 2,
     "Used": true
@@ -36,16 +46,6 @@
   },
   {
     "StrategyName": "Hidden quad",
-    "Difficulty": 2,
-    "Used": true
-  },
-  {
-    "StrategyName": "Box line reduction",
-    "Difficulty": 2,
-    "Used": true
-  },
-  {
-    "StrategyName": "Pointing possibilities",
     "Difficulty": 2,
     "Used": true
   },

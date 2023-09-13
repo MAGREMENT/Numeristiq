@@ -2,7 +2,7 @@
 
 namespace Model;
 
-public interface IStrategy
+public interface IStrategy //TODO : Add return after first instance found
 {
     public string Name { get; }
     public StrategyLevel Difficulty { get; }

@@ -98,7 +98,7 @@ public class XYZWingReportBuilder : IChangeReportBuilder
         _col2 = col2;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

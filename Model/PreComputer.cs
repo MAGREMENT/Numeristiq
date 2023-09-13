@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Positions;
 using Model.Possibilities;
 using Model.Solver;
 using Model.StrategiesUtil;
@@ -7,15 +6,10 @@ using Model.StrategiesUtil.LinkGraph;
 
 namespace Model;
 
-public class PreComputer //TODO : Look into caching positions the same way as possibilities
+public class PreComputer
 {
     private readonly IStrategyManager _view;
-    
-    private readonly LinePositions?[,] _rows = new LinePositions[9, 9];
-    private readonly LinePositions?[,] _cols = new LinePositions[9, 9];
-    private readonly MiniGridPositions?[,,] _miniGrids = new MiniGridPositions[3, 3, 9];
-    private bool _wasPrePosUsed;
-    
+
     private List<AlmostLockedSet>? _als;
 
     private readonly LinkGraphManager _graphManager;
@@ -38,25 +32,6 @@ public class PreComputer //TODO : Look into caching positions the same way as po
         _graphManager.Clear();
         _graphConstructed = false;
 
-        if (_wasPrePosUsed)
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                for (int j = 0; j < 3; j++)
-                {
-                    for (int k = 0; k < 9; k++)
-                    {
-                        _miniGrids[i, j, k] = null;
-
-                        int l = i * 3 + j;
-                        _rows[l, k] = null;
-                        _cols[l, k] = null;
-                    }
-                }
-            }
-            _wasPrePosUsed = false;
-        }
-
         if (_wasPreColorUsed)
         {
             for (int i = 0; i < 9; i++)
@@ -71,30 +46,6 @@ public class PreComputer //TODO : Look into caching positions the same way as po
             }
             _wasPreColorUsed = false;
         }
-    }
-
-    public LinePositions RowPositions(int row, int number)
-    {
-        _wasPrePosUsed = true;
-        
-        _rows[row, number - 1] ??= DoRowPositions(row, number);
-        return _rows[row, number - 1]!;
-    }
-    
-    public LinePositions ColumnPositions(int col, int number)
-    {
-        _wasPrePosUsed = true;
-        
-        _cols[col, number - 1] ??= DoColumnPositions(col, number);
-        return _cols[col, number - 1]!; 
-    }
-    
-    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol, int number)
-    {
-        _wasPrePosUsed = true;
-        
-        _miniGrids[miniRow, miniCol, number - 1] ??= DoMiniGridPositions(miniRow, miniCol, number);
-        return _miniGrids[miniRow, miniCol, number - 1]!;
     }
 
     public List<AlmostLockedSet> AlmostLockedSets()
@@ -125,47 +76,6 @@ public class PreComputer //TODO : Look into caching positions the same way as po
     public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility)
     {
         return DoColor(new CellPossibility(row, col, possibility), Coloring.Off);
-    }
-
-    private LinePositions DoRowPositions(int row, int number)
-    {
-        LinePositions result = new();
-        for (int col = 0; col < 9; col++)
-        {
-            if (_view.Sudoku[row, col] == number) return result;
-            if (_view.Possibilities[row, col].Peek(number)) result.Add(col);
-        }
-        return result;
-    }
-    
-    private LinePositions DoColumnPositions(int col, int number)
-    {
-        LinePositions result = new();
-        for (int row = 0; row < 9; row++)
-        {
-            if (_view.Sudoku[row, col] == number) return result;
-            if (_view.Possibilities[row, col].Peek(number)) result.Add(row);
-        }
-
-        return result;
-    }
-    
-    private MiniGridPositions DoMiniGridPositions(int miniRow, int miniCol, int number)
-    {
-        MiniGridPositions result = new(miniRow, miniCol);
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                var realRow = miniRow * 3 + i;
-                var realCol = miniCol * 3 + j;
-
-                if (_view.Sudoku[realRow, realCol] == number) return result;
-                if (_view.Possibilities[realRow, realCol].Peek(number)) result.Add(i, j);
-            }
-        }
-
-        return result;
     }
 
     private List<AlmostLockedSet> DoAlmostLockedSets()

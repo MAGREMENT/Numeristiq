@@ -129,7 +129,7 @@ public class CellForcingNetReportBuilder : IChangeReportBuilder
         _col = col;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         HighlightSolver[] highlights = new HighlightSolver[_colorings.Length + 1];
         highlights[0] = lighter =>

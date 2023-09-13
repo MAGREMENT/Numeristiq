@@ -115,13 +115,13 @@ public class UnitForcingNetStrategy : IStrategy
 public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
 {
     private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
-    private readonly LinePositions _pos;
+    private readonly IReadOnlyLinePositions _pos;
     private readonly int _unitNumber;
     private readonly Unit _unit;
     private readonly int _possibility;
 
 
-    public LineUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, LinePositions pos,
+    public LineUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, IReadOnlyLinePositions pos,
         int unitNumber, Unit unit, int possibility)
     {
         _colorings = colorings;
@@ -131,7 +131,7 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;
@@ -172,11 +172,11 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
 public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
 {
     private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
-    private readonly MiniGridPositions _pos;
+    private readonly IReadOnlyMiniGridPositions _pos;
     private readonly int _possibility;
 
 
-    public MiniGridUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, MiniGridPositions pos,
+    public MiniGridUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, IReadOnlyMiniGridPositions pos,
        int possibility)
     {
         _colorings = colorings;
@@ -184,7 +184,7 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         CellPossibility[] coords = new CellPossibility[_pos.Count];
         var cursor = 0;

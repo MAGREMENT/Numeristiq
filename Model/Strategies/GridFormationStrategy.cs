@@ -42,41 +42,32 @@ public class GridFormationStrategy : IStrategy
     { 
         for (int number = 1; number <= 9; number++)
         {
-            for (int row = 0; row < 9; row++)
-            {
-                Search(strategyManager, row, number, new LinePositions(), new LinePositions(), Unit.Row);
-            }
-            
-            for (int col = 0; col < 9; col++)
-            {
-                Search(strategyManager, col, number, new LinePositions(), new LinePositions(), Unit.Column);
-            }
+            Search(strategyManager, 0, Unit.Row, number, new LinePositions(), new LinePositions());
+            Search(strategyManager, 0, Unit.Column, number, new LinePositions(), new LinePositions());
         }
     }
 
-    private void Search(IStrategyManager strategyManager, int unitToSearch, int number, LinePositions mashed, LinePositions visited,
-        Unit unit)
+    private void Search(IStrategyManager strategyManager, int start, Unit unit, int number, LinePositions or,
+        LinePositions visited)
     {
-        visited.Add(unitToSearch);
-        
-        var current = unit == Unit.Row
-            ? strategyManager.RowPositionsAt(unitToSearch, number)
-            : strategyManager.ColumnPositionsAt(unitToSearch, number);
-        if (current.Count > _type || current.Count < 2) return;
-
-        var newMashed = mashed.Or(current);
-        if (newMashed.Count > _type) return;
-
-        if (visited.Count == _type)
+        for (int i = start; i < 9; i++)
         {
-            if(newMashed.Count == _type)Process(strategyManager, visited, newMashed, number, unit);
-        }
-        else
-        {
-            for (int i = unitToSearch + 1; i < 9; i++)
+            var current = unit == Unit.Row
+                ? strategyManager.RowPositionsAt(i, number)
+                : strategyManager.ColumnPositionsAt(i, number);
+            if (current.Count > _type || current.Count < 1) continue;
+
+            var newOr = or.Or(current);
+            if(newOr.Count > _type) continue;
+
+            var newVisited = visited.Copy();
+            newVisited.Add(i);
+
+            if (newVisited.Count == _type)
             {
-                Search(strategyManager, i, number, newMashed, visited.Copy(), unit);
+                if (newOr.Count == _type) Process(strategyManager, newVisited, newOr, number, unit);
             }
+            else Search(strategyManager, i + 1, unit, number, newOr, newVisited);
         }
     }
 
@@ -93,8 +84,7 @@ public class GridFormationStrategy : IStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this,
-            unit == Unit.Row
+        strategyManager.ChangeBuffer.Push(this, unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number));
     }
@@ -113,7 +103,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)

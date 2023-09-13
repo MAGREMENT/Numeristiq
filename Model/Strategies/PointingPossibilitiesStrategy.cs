@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Documents;
 using Model.Changes;
 using Model.Positions;
 using Model.Solver;
@@ -80,15 +77,15 @@ public class PointingPossibilitiesStrategy : IStrategy
 public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
 {
     private readonly int _number;
-    private readonly MiniGridPositions _miniPos;
+    private readonly IReadOnlyMiniGridPositions _miniPos;
 
-    public PointingPossibilitiesReportBuilder(int number, MiniGridPositions miniPos)
+    public PointingPossibilitiesReportBuilder(int number, IReadOnlyMiniGridPositions miniPos)
     {
         _number = number;
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes), lighter =>
         {

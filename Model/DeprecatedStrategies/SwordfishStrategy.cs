@@ -19,7 +19,7 @@ public class SwordfishStrategy : IStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                LinePositions p = strategyManager.RowPositionsAt(row, number);
+                var p = strategyManager.RowPositionsAt(row, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, row));
             }
 
@@ -48,7 +48,7 @@ public class SwordfishStrategy : IStrategy
             //Columns
             for (int col = 0; col < 9; col++)
             {
-                LinePositions p = strategyManager.ColumnPositionsAt(col, number);
+                var p = strategyManager.ColumnPositionsAt(col, number);
                 if (p.Count is 2 or 3) toSearch.Enqueue(new ValuePositions(p, col));
             }
 
@@ -107,12 +107,12 @@ public class SwordfishStrategy : IStrategy
 
 public class ValuePositions
 {
-    public ValuePositions(LinePositions positions, int value)
+    public ValuePositions(IReadOnlyLinePositions positions, int value)
     {
         Positions = positions;
         Value = value;
     }
 
-    public LinePositions Positions { get; }
+    public IReadOnlyLinePositions Positions { get; }
     public int Value { get; }
 }

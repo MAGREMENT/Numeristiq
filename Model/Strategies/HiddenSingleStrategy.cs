@@ -51,13 +51,13 @@ public class HiddenSingleStrategy : IStrategy
 
 public class HiddenSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes, snapshot),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 
-    private static string Explanation(List<SolverChange> changes, ISolver snapshot)
+    private static string Explanation(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var builder = new StringBuilder();
 

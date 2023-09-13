@@ -239,7 +239,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var other in _linePos)
@@ -289,7 +289,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var pos in _miniPos)

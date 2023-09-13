@@ -99,7 +99,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var on = ForcingNetsUtil.FilterPossibilityCoordinates(_onColoring);
         var off = ForcingNetsUtil.FilterPossibilityCoordinates(_offColoring);

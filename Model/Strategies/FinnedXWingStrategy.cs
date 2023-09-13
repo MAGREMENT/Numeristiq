@@ -15,7 +15,7 @@ public class FinnedXWingStrategy : IStrategy
     {
         for (int number = 1; number <= 9; number++)
         {
-            Dictionary<int, LinePositions> candidates = new();
+            Dictionary<int, IReadOnlyLinePositions> candidates = new();
             for (int row = 0; row < 9; row++)
             {
                 var ppir = strategyManager.RowPositionsAt(row, number);
@@ -100,7 +100,7 @@ public class FinnedXWingStrategy : IStrategy
         }
     }
 
-    private bool HasSameMiniCol(LinePositions toExamine, int col, int except)
+    private bool HasSameMiniCol(IReadOnlyLinePositions toExamine, int col, int except)
     {
         var miniCol = col / 3;
         foreach (var colToExamine in toExamine)
@@ -123,7 +123,7 @@ public class FinnedXWingStrategy : IStrategy
         }
     }
     
-    private bool HasSameMiniRow(LinePositions toExamine, int row, int except)
+    private bool HasSameMiniRow(IReadOnlyLinePositions toExamine, int row, int except)
     {
         var miniRow = row / 3;
         foreach (var rowToExamine in toExamine)
@@ -149,14 +149,14 @@ public class FinnedXWingStrategy : IStrategy
 
 public class FinnedXWingReportBuilder : IChangeReportBuilder
 {
-    private readonly LinePositions _normal;
+    private readonly IReadOnlyLinePositions _normal;
     private readonly int _normalUnit;
-    private readonly LinePositions _finned;
+    private readonly IReadOnlyLinePositions _finned;
     private readonly int _finnedUnit;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public FinnedXWingReportBuilder(LinePositions normal, int normalUnit, LinePositions finned, int finnedUnit,
+    public FinnedXWingReportBuilder(IReadOnlyLinePositions normal, int normalUnit, IReadOnlyLinePositions finned, int finnedUnit,
         int number, Unit unit)
     {
         _normal = normal;
@@ -167,7 +167,7 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

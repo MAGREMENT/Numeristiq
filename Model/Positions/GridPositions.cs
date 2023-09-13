@@ -94,10 +94,28 @@ public class GridPositions : IEnumerable<Cell>
         return result;
     }
 
+    public void Fill()
+    {
+        _first = 0x3FFFFFFFFFFFFF;
+        _second = 0x7FFFFFF;
+    }
+
+    public void Reset()
+    {
+        _first = 0ul;
+        _second = 0ul;
+    }
+
     public void FillRow(int row)
     {
         if (row < 6) _first |= RowMask << (row * 9);
         else _second |= RowMask << ((row - 6) * 9);
+    }
+
+    public void VoidRow(int row)
+    {
+        if (row < 6) _first &= ~(RowMask << (row * 9));
+        else _second &= ~(RowMask << ((row - 6) * 9));
     }
 
     public void FillColumn(int column)
@@ -106,10 +124,22 @@ public class GridPositions : IEnumerable<Cell>
         _second |= SecondColumnMask << column;
     }
 
+    public void VoidColumn(int column)
+    {
+        _first &= ~(FirstColumnMask << column);
+        _second &= ~(SecondColumnMask << column);
+    }
+
     public void FillMiniGrid(int miniRow, int miniCol)
     {
         if (miniRow < 2) _first |= MiniGridMask << (miniRow * 27 + miniCol * 3);
         else _second |= MiniGridMask << (miniCol * 3);
+    }
+
+    public void VoidMiniGrid(int miniRow, int miniCol)
+    {
+        if (miniRow < 2) _first &= ~(MiniGridMask << (miniRow * 27 + miniCol * 3));
+        else _second &= ~(MiniGridMask << (miniCol * 3));
     }
 
     public GridPositions Copy()
@@ -120,6 +150,29 @@ public class GridPositions : IEnumerable<Cell>
     public GridPositions And(GridPositions other)
     {
         return new GridPositions(_first & other._first, _second & other._second);
+    }
+
+    public LinePositions RowPositions(int row)
+    {
+        var i = row >= 6 ? (_second >> ((row - 6) * 9)) & RowMask : (_first >> (row * 9)) & RowMask;
+        return new LinePositions((int)i, System.Numerics.BitOperations.PopCount(i));
+    }
+
+    public LinePositions ColumnPositions(int col)
+    {
+        var i = _first >> col;
+        var j = _second >> col;
+        var k = i & 1 | (i & 0x200) >> 8 | (i & 0x40000) >> 16 |
+                (i & 0x8000000) >> 24 | (i & 0x1000000000) >> 32 | (i & 0x200000000000) >> 40 |
+                (j & 1) << 6 | (j & 0x200) >> 2 | (j & 0x40000) >> 10;
+        return new LinePositions((int)k, System.Numerics.BitOperations.PopCount(k));
+    }
+
+    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol)
+    {
+        var i = miniRow == 2 ? _second >> (miniCol * 3) : _first >> (miniRow * 27 + miniCol * 3);
+        var j = (i & 0x7) | (i & 0xE00) >> 6 | (i & 0x1C0000) >> 12;
+        return new MiniGridPositions((int)j, System.Numerics.BitOperations.PopCount(j), miniRow * 3, miniCol * 3);
     }
 
     public override int GetHashCode()

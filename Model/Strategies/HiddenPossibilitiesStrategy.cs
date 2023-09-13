@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Changes;
 using Model.Positions;
 using Model.Possibilities;
@@ -178,7 +177,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)
@@ -228,7 +227,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var coords = new List<CellPossibility>();
         foreach (var possibility in _possibilities)

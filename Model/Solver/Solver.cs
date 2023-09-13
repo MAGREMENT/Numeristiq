@@ -16,6 +16,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     private Sudoku _sudoku;
     public IReadOnlySudoku Sudoku => _sudoku;
     public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
+    private readonly GridPositions[] _positions = new GridPositions[9];
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
     public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
     public List<ISolverLog> Logs => _logManager.Logs;
@@ -50,24 +51,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
 
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                Possibilities[i, j] = IPossibilities.New();
-            }
-        }
-        
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                if (_sudoku[i, j] != 0)
-                {
-                    UpdatePossibilitiesAfterSolutionAdded(s[i, j], i, j);
-                }
-            }
-        }
+        Init();
 
         _strategyLoader = new StrategyLoader(this);
         _strategyLoader.Load();
@@ -80,12 +64,13 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         ChangeBuffer = new ChangeBuffer(this);
     }
     
-    private Solver(Sudoku s, IPossibilities[,] p, IStrategy[] t)
+    private Solver(Sudoku s, IPossibilities[,] p, GridPositions[] g, IStrategy[] t)
     {
         _sudoku = s;
         SetOriginalBoardForStrategies();
         
         Possibilities = p;
+        _positions = g;
 
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
@@ -105,7 +90,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         _sudoku = s;
         SetOriginalBoardForStrategies();
 
-        ResetPossibilities();
+        Reset();
 
         if (LogsManaged) _logManager.Clear();
 
@@ -116,13 +101,15 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public void SetSolutionByHand(int number, int row, int col)
     {
         _sudoku[row, col] = number;
-        ResetPossibilities();
+        Reset();
+        
         if(LogsManaged) _logManager.Clear();
     }
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
         if (!Possibilities[row, col].Remove(possibility)) return;
+        _positions[possibility - 1].Remove(row, col);
         
         if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col);
     }
@@ -139,6 +126,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
             if(StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_changeWasMade);
 
             if (!_changeWasMade) continue;
+            
             _changeWasMade = false;
             _currentStrategy = -1;
             _pre.Reset();
@@ -190,48 +178,41 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     {
         return Possibilities[row, col];
     }
+    
+    public IReadOnlyLinePositions RowPositionsAt(int row, int number)
+    {
+        return _positions[number - 1].RowPositions(row);
+    }
+    
+    public IReadOnlyLinePositions ColumnPositionsAt(int col, int number)
+    {
+        return _positions[number - 1].ColumnPositions(col);
+    }
+    
+    public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
+    {
+        return _positions[number - 1].MiniGridPositions(miniRow, miniCol);
+    }
 
     //StrategyManager---------------------------------------------------------------------------------------------------
     
     public bool AddSolution(int number, int row, int col, IStrategy strategy)
     {
-        if (_sudoku[row, col] != 0) return false;
+        if (!AddSolution(number, row, col)) return false;
         
-        _sudoku[row, col] = number;
-        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
         if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy);
-        
-        NumberAdded?.Invoke(row, col);
         return true;
     }
     
     public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
     {
-        bool buffer = Possibilities[row, col].Remove(possibility);
-        if (!buffer) return false;
+        if (!RemovePossibility(possibility, row, col)) return false;
         
         if (LogsManaged) _logManager.PossibilityRemoved(possibility, row, col, strategy);
-        
-        PossibilityRemoved?.Invoke(row, col);
         return true;
     }
 
     public ChangeBuffer ChangeBuffer { get; }
-
-    public LinePositions RowPositionsAt(int row, int number)
-    {
-        return _pre.RowPositions(row, number);
-    }
-    
-    public LinePositions ColumnPositionsAt(int col, int number)
-    {
-        return _pre.ColumnPositions(col, number);
-    }
-    
-    public MiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
-    {
-        return _pre.MiniGridPositions(miniRow, miniCol, number);
-    }
 
     public List<AlmostLockedSet> AlmostLockedSets()
     {
@@ -264,39 +245,36 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
             }
         }
 
+        GridPositions[] gpCopy = new GridPositions[9];
+        for (int i = 0; i < 9; i++)
+        {
+            gpCopy[0] = _positions[i].Copy();
+        }
+
         IStrategy[] stratCopy = new IStrategy[Strategies.Length];
         Array.Copy(Strategies, stratCopy, Strategies.Length);
-        return new Solver(_sudoku.Copy(), possCopy, stratCopy);
+        
+        return new Solver(_sudoku.Copy(), possCopy, gpCopy, stratCopy);
     }
     
     //ChangeManager-----------------------------------------------------------------------------------------------------
     
-    public ISolver TakePossibilitiesSnapshot()
+    public IPossibilitiesHolder TakePossibilitiesSnapshot()
     {
         return PossibilitiesSnapshot.TakeSnapshot(this);
     }
     
-    public bool AddSolution(int number, int row, int col)
+    public bool AddSolutionFromBuffer(int number, int row, int col)
     {
-        if (_sudoku[row, col] != 0) return false;
-        
-        _sudoku[row, col] = number;
-        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
-
-        NumberAdded?.Invoke(row, col);
-        return true;
+        return AddSolution(number, row, col);
     }
 
-    public bool RemovePossibility(int possibility, int row, int col)
+    public bool RemovePossibilityFromBuffer(int possibility, int row, int col)
     {
-        bool buffer = Possibilities[row, col].Remove(possibility);
-        if (!buffer) return false;
-        
-        PossibilityRemoved?.Invoke(row, col);
-        return true;
+        return RemovePossibility(possibility, row, col);
     }
 
-    public void PushChangeReportLog(ChangeReport report, IStrategy strategy)
+    public void PublishChangeReport(ChangeReport report, IStrategy strategy)
     {
         if (!LogsManaged) return;
         
@@ -317,6 +295,66 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     
     //Private-----------------------------------------------------------------------------------------------------------
 
+    private bool AddSolution(int number, int row, int col)
+    {
+        if (_sudoku[row, col] != 0) return false;
+        
+        _sudoku[row, col] = number;
+        UpdateAfterSolutionAdded(number, row, col);
+        
+        NumberAdded?.Invoke(row, col);
+        return true;
+    }
+
+    private bool RemovePossibility(int possibility, int row, int col)
+    {
+        if (!Possibilities[row, col].Remove(possibility)) return false;
+        _positions[possibility - 1].Remove(row, col);
+        
+        PossibilityRemoved?.Invoke(row, col);
+        return true;
+    }
+
+    private void Init()
+    {
+        InitPossibilities();
+        InitPositions();
+    }
+
+    private void Reset()
+    {
+        ResetPossibilities();
+        ResetPositions();
+    }
+
+    private void UpdateAfterSolutionAdded(int number, int row, int col)
+    {
+        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
+        UpdatePositionsAfterSolutionAdded(number, row, col);
+    }
+
+    private void InitPossibilities()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                Possibilities[i, j] = IPossibilities.New();
+            }
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (_sudoku[i, j] != 0)
+                {
+                    UpdatePossibilitiesAfterSolutionAdded(_sudoku[i, j], i, j);
+                }
+            }
+        }
+    }
+    
     private void ResetPossibilities()
     {
         for (int i = 0; i < 9; i++)
@@ -342,6 +380,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     private void UpdatePossibilitiesAfterSolutionAdded(int number, int row, int col)
     {
         Possibilities[row, col].RemoveAll();
+        
         for (int i = 0; i < 9; i++)
         {
             Possibilities[row, i].Remove(number);
@@ -357,6 +396,58 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
                 Possibilities[startRow + i, startColumn + j].Remove(number);
             }
         }
+    }
+    
+    private void InitPositions()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            _positions[i] = new GridPositions();
+            _positions[i].Fill();
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (_sudoku[i, j] != 0)
+                {
+                    UpdatePositionsAfterSolutionAdded(_sudoku[i, j], i, j);
+                }
+            }
+        }
+    }
+
+    private void ResetPositions()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            _positions[i].Fill();
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (_sudoku[i, j] != 0)
+                {
+                    UpdatePositionsAfterSolutionAdded(_sudoku[i, j], i, j);
+                }
+            }
+        }
+    }
+
+    private void UpdatePositionsAfterSolutionAdded(int number, int row, int col)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            _positions[i].Remove(row, col);
+        }
+        
+        var pos = _positions[number - 1];
+        pos.VoidRow(row);
+        pos.VoidColumn(col);
+        pos.VoidMiniGrid(row / 3, col / 3);
     }
 
     private void SetOriginalBoardForStrategies()

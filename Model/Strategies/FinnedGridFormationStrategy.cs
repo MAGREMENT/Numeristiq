@@ -50,7 +50,7 @@ public class FinnedGridFormationStrategy : IStrategy
         }
     }
 
-    private void SearchRowCandidate(IStrategyManager strategyManager, int start, LinePositions mashed,
+    private void SearchRowCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int row = start; row < 9; row++)
@@ -69,7 +69,7 @@ public class FinnedGridFormationStrategy : IStrategy
         }
     }
 
-    private void SearchRowFinned(IStrategyManager strategyManager, LinePositions mashed, LinePositions visited,
+    private void SearchRowFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int row = 0; row < 9; row++)
@@ -114,7 +114,7 @@ public class FinnedGridFormationStrategy : IStrategy
         }
     }
     
-    private void SearchColumnCandidate(IStrategyManager strategyManager, int start, LinePositions mashed,
+    private void SearchColumnCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int col = start; col < 9; col++)
@@ -133,7 +133,7 @@ public class FinnedGridFormationStrategy : IStrategy
         }
     }
     
-    private void SearchColumnFinned(IStrategyManager strategyManager, LinePositions mashed, LinePositions visited,
+    private void SearchColumnFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int col = 0; col < 9; col++)
@@ -181,13 +181,13 @@ public class FinnedGridFormationStrategy : IStrategy
 
 public class FinnedGridFormationReportBuilder : IChangeReportBuilder
 {
-    private readonly LinePositions _mashed;
-    private readonly LinePositions _visited;
+    private readonly IReadOnlyLinePositions _mashed;
+    private readonly IReadOnlyLinePositions _visited;
     private readonly int _fin;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public FinnedGridFormationReportBuilder(LinePositions mashed, LinePositions visited, int fin, int number, Unit unit)
+    public FinnedGridFormationReportBuilder(IReadOnlyLinePositions mashed, IReadOnlyLinePositions visited, int fin, int number, Unit unit)
     {
         _mashed = mashed;
         _visited = visited;
@@ -196,7 +196,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> normal = new();
         List<Cell> finned = new();

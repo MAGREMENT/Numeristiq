@@ -99,11 +99,11 @@ public class BoxLineReductionStrategy : IStrategy
 public class BoxLineReductionReportBuilder : IChangeReportBuilder
 {
     private readonly int _unitNumber;
-    private readonly LinePositions _linePos;
+    private readonly IReadOnlyLinePositions _linePos;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public BoxLineReductionReportBuilder(int unitNumber, LinePositions linePos, int number, Unit unit)
+    public BoxLineReductionReportBuilder(int unitNumber, IReadOnlyLinePositions linePos, int number, Unit unit)
     {
         _unitNumber = unitNumber;
         _linePos = linePos;
@@ -111,7 +111,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)

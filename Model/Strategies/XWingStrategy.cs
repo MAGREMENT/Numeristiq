@@ -40,11 +40,10 @@ public class XWingStrategy : IStrategy
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        Dictionary<LinePositions, int> dict = new();
+        Dictionary<IReadOnlyLinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)
         {
             //Rows
-            dict.Clear();
             for (int row = 0; row < 9; row++)
             {
                 var ppir = strategyManager.RowPositionsAt(row, n);
@@ -55,9 +54,9 @@ public class XWingStrategy : IStrategy
                     RemoveFromColumns(strategyManager, ppir, dict[ppir], row, n);
                 }
             }
+            dict.Clear();
             
             //Columns
-            dict.Clear();
             for (int col = 0; col < 9; col++)
             {
                 var ppic = strategyManager.ColumnPositionsAt(col, n);
@@ -68,10 +67,11 @@ public class XWingStrategy : IStrategy
                     RemoveFromRows(strategyManager, ppic, dict[ppic], col, n);
                 }
             }
+            dict.Clear();
         }
     }
 
-    private void RemoveFromColumns(IStrategyManager strategyManager, LinePositions cols, int row1, int row2, int number)
+    private void RemoveFromColumns(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -86,7 +86,7 @@ public class XWingStrategy : IStrategy
         strategyManager.ChangeBuffer.Push(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row));
     }
 
-    private void RemoveFromRows(IStrategyManager strategyManager, LinePositions rows, int col1, int col2, int number)
+    private void RemoveFromRows(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col1, int col2, int number)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -104,13 +104,13 @@ public class XWingStrategy : IStrategy
 
 public class XWingReportBuilder : IChangeReportBuilder
 {
-    private readonly LinePositions _linePos;
+    private readonly IReadOnlyLinePositions _linePos;
     private readonly int _unit1;
     private readonly int _unit2;
     private readonly int _number;
     private readonly Unit _unit;
 
-    public XWingReportBuilder(LinePositions linePos, int unit1, int unit2, int number, Unit unit)
+    public XWingReportBuilder(IReadOnlyLinePositions linePos, int unit1, int unit2, int number, Unit unit)
     {
         _linePos = linePos;
         _unit1 = unit1;
@@ -119,7 +119,7 @@ public class XWingReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> cells = new();
         foreach (var other in _linePos)

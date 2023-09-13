@@ -63,7 +63,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
         }
     }
 
-    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, MiniGridPositions ppimn, int miniRow,
+    private void SearchForPointingInMiniGrid(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, IReadOnlyMiniGridPositions ppimn, int miniRow,
         int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

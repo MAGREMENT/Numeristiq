@@ -3,11 +3,11 @@ using Model.Solver;
 
 namespace Model.Possibilities;
 
-public class PossibilitiesSnapshot : ISolver
+public class PossibilitiesSnapshot : IPossibilitiesHolder //TODO add positions
 {
     private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
 
-    public static ISolver TakeSnapshot(ISolver holder)
+    public static IPossibilitiesHolder TakeSnapshot(IPossibilitiesHolder holder)
     {
         PossibilitiesSnapshot snapshot = new PossibilitiesSnapshot();
         for (int row = 0; row < 9; row++)
@@ -26,7 +26,7 @@ public class PossibilitiesSnapshot : ISolver
         return _possibilities[row, col];
     }
     
-    public LinePositions RowPositionsAt(int row, int number)
+    public IReadOnlyLinePositions RowPositionsAt(int row, int number)
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
@@ -36,7 +36,7 @@ public class PossibilitiesSnapshot : ISolver
         return result;
     }
 
-    public LinePositions ColumnPositionsAt(int col, int number)
+    public IReadOnlyLinePositions ColumnPositionsAt(int col, int number)
     {
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
@@ -47,7 +47,7 @@ public class PossibilitiesSnapshot : ISolver
         return result;
     }
 
-    public MiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
+    public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
     {
         MiniGridPositions result = new(miniRow, miniCol);
         for (int i = 0; i < 3; i++)

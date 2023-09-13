@@ -23,7 +23,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
     }
     
     private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, LinkGraph<ILinkGraphElement> linkGraph,
-        MiniGridPositions ppimn, int miniRow, int miniCol, int numba)
+        IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {

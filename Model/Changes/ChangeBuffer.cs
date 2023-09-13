@@ -47,12 +47,12 @@ public class ChangeBuffer
         if (_possibilityRemoved.Count == 0 && _definitiveAdded.Count == 0) return false;
         
         List<SolverChange> changes = new();
-        ISolver? snapshot = null;
+        IPossibilitiesHolder? snapshot = null;
         if (_m.LogsManaged) snapshot = _m.TakePossibilitiesSnapshot();
         
         foreach (var possibility in _possibilityRemoved)
         {
-            if (_m.RemovePossibility(possibility.Possibility, possibility.Row, possibility.Col)) changes.Add(
+            if (_m.RemovePossibilityFromBuffer(possibility.Possibility, possibility.Row, possibility.Col)) changes.Add(
                 new SolverChange(SolverNumberType.Possibility,
                     possibility.Possibility, possibility.Row, possibility.Col));
             
@@ -60,12 +60,12 @@ public class ChangeBuffer
         
         foreach (var definitive in _definitiveAdded)
         {
-            if(_m.AddSolution(definitive.Possibility, definitive.Row, definitive.Col)) changes.Add(
+            if(_m.AddSolutionFromBuffer(definitive.Possibility, definitive.Row, definitive.Col)) changes.Add(
                 new SolverChange(SolverNumberType.Definitive, definitive.Possibility,
                     definitive.Row, definitive.Col));
         }
 
-        if (changes.Count > 0 && _m.LogsManaged) _m.PushChangeReportLog(builder.Build(changes, snapshot!), strategy);
+        if (changes.Count > 0 && _m.LogsManaged) _m.PublishChangeReport(builder.Build(changes, snapshot!), strategy);
 
         _possibilityRemoved.Clear();
         _definitiveAdded.Clear();

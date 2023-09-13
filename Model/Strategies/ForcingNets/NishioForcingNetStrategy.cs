@@ -16,7 +16,6 @@ public class NishioForcingNetStrategy : IStrategy
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        LinkGraph<ILinkGraphElement> graph = strategyManager.LinkGraph();
         ContradictionSearcher cs = new ContradictionSearcher(strategyManager);
 
         for (int row = 0; row < 9; row++)
@@ -32,12 +31,11 @@ public class NishioForcingNetStrategy : IStrategy
                         if (cs.AddOff(coord))
                         {
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                            break;
+                            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Push(this,
+                                new NishioForcingNetReportBuilder(coloring, row, col, possibility))) return;
                         }
                     }
 
-                    if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
-                        new NishioForcingNetReportBuilder(coloring, row, col, possibility));
                     cs.Reset();
                 }
             }
@@ -143,7 +141,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var c = ForcingNetsUtil.FilterPossibilityCoordinates(_coloring);
         

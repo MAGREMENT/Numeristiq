@@ -67,20 +67,20 @@ public class UniqueRectanglesStrategy : IStrategy
                                 && strategyManager.ColumnPositionsAt(col, bi.One).Count == 2)
                             {
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, col);
-                                strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
-                                    new Cell(row, col), potentialOpposite,
-                                    new Cell(row, potentialOpposite.Col),
-                                    new Cell(potentialOpposite.Row, col)));
+                                if (strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
+                                        new Cell(row, col), potentialOpposite,
+                                        new Cell(row, potentialOpposite.Col),
+                                        new Cell(potentialOpposite.Row, col)))) return;
                             }
                             
                             if (strategyManager.RowPositionsAt(row, bi.Two).Count == 2
                                 && strategyManager.ColumnPositionsAt(col, bi.Two).Count == 2)
                             {
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.One, row, col);
-                                strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
-                                    new Cell(row, col), potentialOpposite,
-                                    new Cell(row, potentialOpposite.Col),
-                                    new Cell(potentialOpposite.Row, col)));
+                                if (strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
+                                        new Cell(row, col), potentialOpposite,
+                                        new Cell(row, potentialOpposite.Col),
+                                        new Cell(potentialOpposite.Row, col)))) return;
                             }
                         }
                     }
@@ -559,7 +559,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
         _roofTwo = roofTwo;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -591,7 +591,7 @@ public class UniqueRectanglesWithAlsReportBuilder : IChangeReportBuilder
         _als = als;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, ISolver snapshot)
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
