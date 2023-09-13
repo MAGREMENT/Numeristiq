@@ -2,6 +2,8 @@
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Model.Solver;
+using Model.Solver.Helpers;
 
 namespace Model;
 

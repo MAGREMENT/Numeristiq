@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Model.Changes;
-using Model.Logs;
-using Model.Positions;
-using Model.Possibilities;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
+using Model.Solver.Helpers;
+using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Logs;
+using Model.Solver.Positions;
+using Model.Solver.Possibilities;
+using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
@@ -14,9 +15,10 @@ namespace Model.Solver;
 public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder 
 {
     private Sudoku _sudoku;
-    public IReadOnlySudoku Sudoku => _sudoku;
-    public IPossibilities[,] Possibilities { get; } = new IPossibilities[9, 9];
+    private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
     private readonly GridPositions[] _positions = new GridPositions[9];
+    
+    public IReadOnlySudoku Sudoku => _sudoku;
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
     public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
     public List<ISolverLog> Logs => _logManager.Logs;
@@ -69,7 +71,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         _sudoku = s;
         SetOriginalBoardForStrategies();
         
-        Possibilities = p;
+        _possibilities = p;
         _positions = g;
 
         NumberAdded += (_, _) => _changeWasMade = true;
@@ -108,7 +110,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
-        if (!Possibilities[row, col].Remove(possibility)) return;
+        if (!_possibilities[row, col].Remove(possibility)) return;
         _positions[possibility - 1].Remove(row, col);
         
         if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col);
@@ -147,7 +149,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int col = 0; col < 9; col++)
             {
-                if (_sudoku[row, col] == 0 && Possibilities[row, col].Count == 0) return true;
+                if (_sudoku[row, col] == 0 && _possibilities[row, col].Count == 0) return true;
             }
         }
 
@@ -176,7 +178,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     
     public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
     {
-        return Possibilities[row, col];
+        return _possibilities[row, col];
     }
     
     public IReadOnlyLinePositions RowPositionsAt(int row, int number)
@@ -241,7 +243,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int col = 0; col < 9; col++)
             {
-                possCopy[row, col] = Possibilities[row, col].Copy();
+                possCopy[row, col] = _possibilities[row, col].Copy();
             }
         }
 
@@ -308,7 +310,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     private bool RemovePossibility(int possibility, int row, int col)
     {
-        if (!Possibilities[row, col].Remove(possibility)) return false;
+        if (!_possibilities[row, col].Remove(possibility)) return false;
         _positions[possibility - 1].Remove(row, col);
         
         PossibilityRemoved?.Invoke(row, col);
@@ -339,7 +341,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int j = 0; j < 9; j++)
             {
-                Possibilities[i, j] = IPossibilities.New();
+                _possibilities[i, j] = IPossibilities.New();
             }
         }
         
@@ -361,7 +363,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int j = 0; j < 9; j++)
             {
-                Possibilities[i, j].Reset();
+                _possibilities[i, j].Reset();
             }
         }
         
@@ -379,12 +381,12 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
     private void UpdatePossibilitiesAfterSolutionAdded(int number, int row, int col)
     {
-        Possibilities[row, col].RemoveAll();
+        _possibilities[row, col].RemoveAll();
         
         for (int i = 0; i < 9; i++)
         {
-            Possibilities[row, i].Remove(number);
-            Possibilities[i, col].Remove(number);
+            _possibilities[row, i].Remove(number);
+            _possibilities[i, col].Remove(number);
         }
         
         int startRow = row / 3 * 3;
@@ -393,7 +395,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         {
             for (int j = 0; j < 3; j++)
             {
-                Possibilities[startRow + i, startColumn + j].Remove(number);
+                _possibilities[startRow + i, startColumn + j].Remove(number);
             }
         }
     }
@@ -472,7 +474,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
                 else
                 {
                     result += "p";
-                    foreach (var possibility in Possibilities[row, col])
+                    foreach (var possibility in _possibilities[row, col])
                     {
                         result += possibility;
                     }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Possibilities;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.Possibilities;
 
 namespace Model.DeprecatedStrategies.SamePossibilities;
 
@@ -26,9 +27,9 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
         }
     }
 
-    private Dictionary<IPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol)
+    private Dictionary<IReadOnlyPossibilities, int> GetDictionaryOfPossibilities(IStrategyManager strategyManager, int miniRow, int miniCol)
     {
-        Dictionary<IPossibilities, int> result = new();
+        Dictionary<IReadOnlyPossibilities, int> result = new();
         for (int row = 0; row < 3; row++)
         {
             for (int col = 0; col < 3; col++)
@@ -37,8 +38,8 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
                 int realCol = miniCol * 3 + col;
                 if (strategyManager.Sudoku[realRow, realCol] == 0)
                 {
-                    if (!result.TryAdd(strategyManager.Possibilities[realRow, realCol], 1))
-                        result[strategyManager.Possibilities[realRow, realCol]] += 1;
+                    if (!result.TryAdd(strategyManager.PossibilitiesAt(realRow, realCol), 1))
+                        result[strategyManager.PossibilitiesAt(realRow, realCol)] += 1;
                 }
             }
         }
@@ -46,7 +47,7 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
         return result;
     }
 
-    private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove)
+    private void RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IReadOnlyPossibilities toRemove)
     {
         for (int row = 0; row < 3; row++)
         {
@@ -55,7 +56,7 @@ public class MiniGridSamePossibilitiesStrategy : IStrategy
                 int realRow = miniRow * 3 + row;
                 int realCol = miniCol * 3 + col;
                 
-                if (strategyManager.Sudoku[realRow, realCol] == 0 && !strategyManager.Possibilities[realRow, realCol].Equals(toRemove))
+                if (strategyManager.Sudoku[realRow, realCol] == 0 && !strategyManager.PossibilitiesAt(realRow, realCol).Equals(toRemove))
                 {
                     foreach (var number in toRemove)
                     {

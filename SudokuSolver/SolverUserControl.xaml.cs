@@ -5,10 +5,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Model;
-using Model.Changes;
-using Model.Logs;
-using Model.Possibilities;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Logs;
+using Model.Solver.Possibilities;
+using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LinkGraph;
 using SudokuSolver.Utils;
@@ -141,7 +144,7 @@ public partial class SolverUserControl : IHighlightable
     private void UpdateCell(CellUserControl current, int row, int col)
     {
         if(_solver.Sudoku[row, col] != 0) current.SetDefinitiveNumber(_solver.Sudoku[row, col]);
-        else current.SetPossibilities(_solver.Possibilities[row, col]);
+        else current.SetPossibilities(_solver.PossibilitiesAt(row, col));
     }
 
 

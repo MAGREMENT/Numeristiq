@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Model;
-using Model.Changes;
+using Model.Solver.Helpers.Changes;
 
 namespace SudokuSolver;
 

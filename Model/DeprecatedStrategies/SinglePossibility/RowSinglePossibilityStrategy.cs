@@ -1,4 +1,5 @@
 ﻿using Model.Solver;
+using Model.Solver.Helpers;
 
 namespace Model.DeprecatedStrategies.SinglePossibility;
 
@@ -31,7 +32,7 @@ public class RowSinglePossibilityStrategy : IStrategy
         for (int i = 0; i < 9; i++)
         {
             if (strategyManager.Sudoku[row, i] == number) return -1;
-            if (strategyManager.Possibilities[row, i].Peek(number) && strategyManager.Sudoku[row, i] == 0)
+            if (strategyManager.PossibilitiesAt(row, i).Peek(number) && strategyManager.Sudoku[row, i] == 0)
             {
                 if (buffer != -1) return -1;
                 buffer = i;

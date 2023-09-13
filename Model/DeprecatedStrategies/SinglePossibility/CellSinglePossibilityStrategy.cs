@@ -1,5 +1,6 @@
 ﻿
 using Model.Solver;
+using Model.Solver.Helpers;
 
 namespace Model.DeprecatedStrategies.SinglePossibility;
 
@@ -18,9 +19,9 @@ public class CellSinglePossibilityStrategy : IStrategy
             {
                 if (strategyManager.Sudoku[i, j] != 0) continue;
                 
-                if (strategyManager.Possibilities[i, j].Count == 1)
+                if (strategyManager.PossibilitiesAt(i, j).Count == 1)
                 {
-                    int n = strategyManager.Possibilities[i, j].GetFirst();
+                    int n = strategyManager.PossibilitiesAt(i, j).GetFirst();
                     strategyManager.AddSolution(n,
                         i, j, this);
                 }

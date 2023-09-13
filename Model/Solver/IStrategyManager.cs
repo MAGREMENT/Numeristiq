@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Changes;
-using Model.Positions;
-using Model.Possibilities;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
+using Model.Solver.Helpers.Changes;
+using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
@@ -24,8 +22,6 @@ public interface IStrategyManager : IPossibilitiesHolder
     public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility);
 
     public IReadOnlySudoku Sudoku { get; }
-
-    public IPossibilities[,] Possibilities { get; } //Eventually remove this
 
     public Solver Copy();
 }

@@ -1,4 +1,5 @@
 ﻿using Model.Solver;
+using Model.Solver.Helpers;
 
 namespace Model.DeprecatedStrategies.SinglePossibility;
 
@@ -39,7 +40,7 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
                 var realCol = gridCol * 3 + col;
 
                 if (strategyManager.Sudoku[realRow, realCol] == number) return null;
-                if (strategyManager.Possibilities[realRow, realCol].Peek(number) && strategyManager.Sudoku[realRow, realCol] == 0)
+                if (strategyManager.PossibilitiesAt(realRow, realCol).Peek(number) && strategyManager.Sudoku[realRow, realCol] == 0)
                 {
                     if (pos is not null) return null;
                     pos = new[] { realRow, realCol };

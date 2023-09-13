@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Positions;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.Positions;
 
 namespace Model.DeprecatedStrategies;
 
@@ -82,7 +83,7 @@ public class SwordfishStrategy : IStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                if (row != row1 && row != row2 && row != row3 && strategyManager.Possibilities[row, col].Peek(number))
+                if (row != row1 && row != row2 && row != row3 && strategyManager.PossibilitiesAt(row, col).Peek(number))
                 {
                     strategyManager.RemovePossibility(number, row, col, this);
                 }
@@ -96,7 +97,7 @@ public class SwordfishStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (col != col1 && col != col2 && col != col3 && strategyManager.Possibilities[row, col].Peek(number))
+                if (col != col1 && col != col2 && col != col3 && strategyManager.PossibilitiesAt(row, col).Peek(number))
                 {
                     strategyManager.RemovePossibility(number, row, col, this);
                 }

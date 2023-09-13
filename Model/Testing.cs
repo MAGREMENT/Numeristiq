@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Model.Positions;
-using Model.Possibilities;
+using Model.Solver.Positions;
+using Model.Solver.Possibilities;
+using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.SharedCellSearcher;
 using Model.StrategiesUtil;
-using Model.StrategiesUtil.SharedCellSearcher;
 
 namespace Model;
 

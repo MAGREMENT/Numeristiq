@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
-using Model.Changes;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.Helpers.Changes;
+using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LinkGraph;
 
@@ -22,7 +25,7 @@ public class OldSimpleColoringStrategy : IStrategy
             {
                 for (int col = 0; col < 9; col++)
                 {
-                    if (strategyManager.Possibilities[row, col].Peek(number))
+                    if (strategyManager.PossibilitiesAt(row, col).Peek(number))
                     {
                         CellColoring current = new(row, col);
                         if (DoesAnyChainContains(chains, current)) continue;
@@ -73,7 +76,7 @@ public class OldSimpleColoringStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Possibilities[row, col].Peek(number))
+                if (strategyManager.PossibilitiesAt(row, col).Peek(number))
                 {
                     CellColoring current = new(row, col);
                     if (web.Contains(current)) continue;

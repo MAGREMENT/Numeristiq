@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.StrategiesUtil;
 using Model.StrategiesUtil;
 
 namespace Model.DeprecatedStrategies;

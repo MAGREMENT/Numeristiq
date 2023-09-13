@@ -1,7 +1,8 @@
 ﻿using System.Windows.Media;
 using Model;
-using Model.Changes;
-using Model.Logs;
+using Model.Solver;
+using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Logs;
 
 namespace RunTester.Utils;
 

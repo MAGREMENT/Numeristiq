@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
-using Model.Changes;
-using Model.Possibilities;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.Helpers.Changes;
+using Model.Solver.Possibilities;
+using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil;
 using Model.StrategiesUtil.LinkGraph;
 
@@ -20,7 +23,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyManager.Possibilities[row, col])
+                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
                     CellPossibilityColoring start = new CellPossibilityColoring(row, col, possibility);
                     if (DoesAnyChainContains(chains, start)) continue;
@@ -83,7 +86,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
             {
                 if (strategyManager.Sudoku[row, col] != 0) continue;
                 bool cellTotallyOfChain = true;
-                foreach (var possibility in strategyManager.Possibilities[row, col])
+                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
                     CellPossibilityColoring current = new CellPossibilityColoring(row, col, possibility);
                     if (web.Contains(current))
@@ -125,8 +128,8 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
                     Cell here = new Cell(row, col);
                     IPossibilities[] cellEmptiedByColor =
                     {
-                        strategyManager.Possibilities[row, col].Copy(),
-                        strategyManager.Possibilities[row, col].Copy()
+                        strategyManager.PossibilitiesAt(row, col).Copy(),
+                        strategyManager.PossibilitiesAt(row, col).Copy()
                     };
 
                     foreach (var coord in web)
@@ -222,9 +225,9 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
             }
         }
 
-        if (strategyManager.Possibilities[current.CellPossibility.Row, current.CellPossibility.Col].Count == 2)
+        if (strategyManager.PossibilitiesAt(current.CellPossibility.Row, current.CellPossibility.Col).Count == 2)
         {
-            foreach (var possibility in strategyManager.Possibilities[current.CellPossibility.Row, current.CellPossibility.Col])
+            foreach (var possibility in strategyManager.PossibilitiesAt(current.CellPossibility.Row, current.CellPossibility.Col))
             {
                 if (possibility != current.CellPossibility.Possibility)
                 {

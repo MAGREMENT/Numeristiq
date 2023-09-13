@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Model;
+using Model.Solver.Helpers;
 using SudokuSolver.Utils;
 
 namespace SudokuSolver;

@@ -1,5 +1,4 @@
-﻿using Model.Changes;
-using Model.Possibilities;
+﻿using Model.Solver.Helpers.Changes;
 
 namespace Model.Solver;
 

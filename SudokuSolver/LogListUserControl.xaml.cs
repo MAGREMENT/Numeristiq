@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using Model.Logs;
+using Model.Solver.Helpers.Logs;
 
 namespace SudokuSolver;
 

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Solver;
+using Model.Solver.Helpers;
+using Model.Solver.StrategiesUtil;
 using Model.StrategiesUtil;
 
 namespace Model.DeprecatedStrategies;
@@ -139,7 +141,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 
     private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
     {
-        foreach (var possibility in strategyManager.Possibilities[row, col])
+        foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
         {
             if (!except.Contains(possibility))
             {
@@ -154,7 +156,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyManager.Possibilities[row, col])
+                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
                     LinkResume resume = new();
 
@@ -202,9 +204,9 @@ public class AlternatingInferenceChainStrategy : IStrategy
                         }
                     }
 
-                    if (strategyManager.Possibilities[row, col].Count == 2)
+                    if (strategyManager.PossibilitiesAt(row, col).Count == 2)
                     {
-                        foreach (var pos in strategyManager.Possibilities[row, col])
+                        foreach (var pos in strategyManager.PossibilitiesAt(row, col))
                         {
                             if (pos != possibility)
                             {
@@ -226,7 +228,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyManager.Possibilities[row, col])
+                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
                     bool alreadyThere = map.TryGetValue(new CellPossibility(row, col, possibility), out var resume);
                     if (!alreadyThere) resume = new LinkResume();
@@ -275,7 +277,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
                     
 
                     
-                    foreach (var pos in strategyManager.Possibilities[row, col])
+                    foreach (var pos in strategyManager.PossibilitiesAt(row, col))
                     {
                         if (pos != possibility)
                         {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Model.Possibilities;
+using Model.Solver.Possibilities;
 
 namespace SudokuSolver;
 
@@ -92,10 +92,10 @@ public partial class CellUserControl
         Updated?.Invoke(false, _nums);
     }
 
-    public void SetPossibilities(IPossibilities possibilities)
+    public void SetPossibilities(IReadOnlyPossibilities possibilities)
     {
         _isPossibilities = true;
-        _nums = possibilities;
+        _nums = possibilities.Copy();
         
         Case.Children.Clear();
         Case.Children.Add(_small);
