@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Positions;
 
@@ -21,12 +20,17 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         _startCol = miniCol * 3;
     }
 
-    public MiniGridPositions(int pos, int count, int startRow, int startCol)
+    private MiniGridPositions(int pos, int count, int startRow, int startCol)
     {
         _pos = pos;
         Count = count;
         _startRow = startRow;
         _startCol = startCol;
+    }
+
+    public static MiniGridPositions FromBits(int miniRow, int miniCol, int bits)
+    {
+        return new MiniGridPositions(bits, System.Numerics.BitOperations.PopCount((uint)bits), miniRow, miniCol);
     }
 
     public void Add(int gridRow, int gridCol)
@@ -162,6 +166,19 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     public MiniGridPositions Copy()
     {
         return new MiniGridPositions(_pos, Count, _startRow, _startCol);
+    }
+
+    public Cell[] ToCellArray()
+    {
+        var result = new Cell[Count];
+        var cursor = 0;
+        foreach (var cell in this)
+        {
+            result[cursor] = cell;
+            cursor++;
+        }
+
+        return result;
     }
 
     public void ForEachCombination(IReadOnlyMiniGridPositions.HandleCombination handler)

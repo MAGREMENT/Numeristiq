@@ -4,6 +4,7 @@ using System.Windows.Media;
 using Model;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
+using SudokuSolver.Utils;
 
 namespace SudokuSolver;
 
@@ -22,14 +23,14 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
 
         Cell.SetSize(150);
         Cell.Focusable = true;
-        Cell.Background = new SolidColorBrush(Colors.WhiteSmoke);
+        Cell.Background = ColorUtil.Background2;
         Cell.LostFocus += (_, _) =>
         {
-            Cell.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            Cell.Background = ColorUtil.Background2;
         };
         Cell.GotFocus += (_, _) =>
         {
-            Cell.Background = new SolidColorBrush(Colors.Aqua);
+            Cell.Background = ColorUtil.Green;
         };
         Cell.MouseDown += (_, _) =>
         {

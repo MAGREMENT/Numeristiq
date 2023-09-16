@@ -12,6 +12,15 @@ public interface IPossibilities : IReadOnlyPossibilities
     public void RemoveAll(IEnumerable<int> except);
     public void Reset();
     public void Add(int n);
+    public void Add(IReadOnlyPossibilities possibilities);
+
+    public static void DefaultAdd(IPossibilities left, IReadOnlyPossibilities right)
+    {
+        foreach (var possibility in right)
+        {
+            left.Add(possibility);
+        }
+    }
 
     public static IPossibilities New()
     {

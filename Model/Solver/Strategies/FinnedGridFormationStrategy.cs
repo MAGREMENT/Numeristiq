@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
@@ -57,6 +57,7 @@ public class FinnedGridFormationStrategy : IStrategy
         for (int row = start; row < 9; row++)
         {
             var ppic = strategyManager.RowPositionsAt(row, number);
+            if (ppic.Count > _type) continue;
 
             var newMashed = mashed.Or(ppic);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppic.Count) continue;
@@ -121,6 +122,7 @@ public class FinnedGridFormationStrategy : IStrategy
         for (int col = start; col < 9; col++)
         {
             var ppir = strategyManager.ColumnPositionsAt(col, number);
+            if(ppir.Count > _type) continue;
 
             var newMashed = mashed.Or(ppir);
             if (newMashed.Count > _type || newMashed.Count == mashed.Count + ppir.Count) continue;

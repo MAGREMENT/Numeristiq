@@ -4,10 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SudokuSolver"
+        xmlns:inf="clr-namespace:SudokuSolver.Utils"
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
         Title="MainWindow">
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal" Background="{x:Static inf:ColorUtil.Background1}">
+        
         <StackPanel Width="200" Height="700">
             <StackPanel Width="200" Height="350" x:Name="OptionsPanel">
                 <TextBlock Text="Options" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
@@ -33,6 +35,7 @@
                 <local:LiveModificationUserControl/>
             </StackPanel>
         </StackPanel>
+        
         <StackPanel x:Name="MainPanel" Orientation="Vertical" Width="590">
             <local:SolverUserControl HorizontalAlignment="Center"/>
             <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="NewSudoku"
@@ -44,13 +47,16 @@
                         Margin="10, 0, 0, 0">Clear</Button>
             </StackPanel>
         </StackPanel>
+        
         <StackPanel x:Name="AsidePanel" Width="350">
             <local:LogListUserControl/>
-            <TextBox Width="320" Height="200" Background="WhiteSmoke" Margin="0, 10, 0, 0" TextWrapping="Wrap"
+            <TextBox Width="320" Height="200" Background="{x:Static inf:ColorUtil.Background2}" Margin="0, 10, 0, 0" TextWrapping="Wrap"
                      HorizontalAlignment="Center" FontSize="12"/>
         </StackPanel>
+        
         <StackPanel x:Name="AsidePanelTwo" Width="200">
             <local:StrategyListUserControl/>
         </StackPanel>
+        
     </StackPanel>
 </Window>

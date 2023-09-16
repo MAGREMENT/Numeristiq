@@ -247,7 +247,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
             }
         }
 
-        GridPositions[] gpCopy = new GridPositions[9];
+       GridPositions[] gpCopy = new GridPositions[9];
         for (int i = 0; i < 9; i++)
         {
             gpCopy[0] = _positions[i].Copy();

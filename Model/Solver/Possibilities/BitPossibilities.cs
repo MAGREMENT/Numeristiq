@@ -119,6 +119,18 @@ public class BitPossibilities : IPossibilities
         Count++;
     }
 
+    public void Add(IReadOnlyPossibilities possibilities)
+    {
+        if (possibilities is BitPossibilities bp)
+        {
+            _possibilities |= bp._possibilities;
+            Count = System.Numerics.BitOperations.PopCount((uint)_possibilities);
+            return;
+        }
+
+        IPossibilities.DefaultAdd(this, possibilities);
+    }
+
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)

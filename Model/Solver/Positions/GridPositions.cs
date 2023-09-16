@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Positions;
 
@@ -59,40 +58,24 @@ public class GridPositions : IEnumerable<Cell>
         else _first &= ~(1ul << n);
     }
 
-    public int RowCount(int row) //TODO use masks
+    public int RowCount(int row)
     {
-        int result = 0;
-        for (int col = 0; col < 9; col++)
-        {
-            if (Peek(row, col)) result++;
-        }
-
-        return result;
+        return row < 6 
+            ? System.Numerics.BitOperations.PopCount(_first & (RowMask << (row * 9)))
+            : System.Numerics.BitOperations.PopCount(_second & (RowMask << ((row - 6) * 9)));
     }
 
-    public int ColumnCount(int column) //TODO use masks
+    public int ColumnCount(int column)
     {
-        int result = 0;
-        for (int row = 0; row < 9; row++)
-        {
-            if (Peek(row, column)) result++;
-        }
-
-        return result;
+        return System.Numerics.BitOperations.PopCount(_first & (FirstColumnMask << column)) +
+               System.Numerics.BitOperations.PopCount(_first & (SecondColumnMask << column));
     }
 
-    public int MiniGridCount(int miniRow, int miniCol) //TODO use masks
+    public int MiniGridCount(int miniRow, int miniCol)
     {
-        int result = 0;
-        for (int gridRow = 0; gridRow < 3; gridRow++)
-        {
-            for (int gridCol = 0; gridCol < 3; gridCol++)
-            {
-                if (Peek(miniRow * 3 + gridRow, miniCol * 3 + gridCol)) result++;
-            }
-        }
-
-        return result;
+        return miniRow < 2 
+            ? System.Numerics.BitOperations.PopCount(_first & (MiniGridMask << (miniRow * 27 + miniCol * 3)))
+            : System.Numerics.BitOperations.PopCount(_second & (MiniGridMask << (miniCol * 3)));
     }
 
     public void Fill()
@@ -156,7 +139,7 @@ public class GridPositions : IEnumerable<Cell>
     public LinePositions RowPositions(int row)
     {
         var i = row >= 6 ? (_second >> ((row - 6) * 9)) & RowMask : (_first >> (row * 9)) & RowMask;
-        return new LinePositions((int)i, System.Numerics.BitOperations.PopCount(i));
+        return LinePositions.FromBits((int)i);
     }
 
     public LinePositions ColumnPositions(int col)
@@ -166,14 +149,14 @@ public class GridPositions : IEnumerable<Cell>
         var k = i & 1 | (i & 0x200) >> 8 | (i & 0x40000) >> 16 |
                 (i & 0x8000000) >> 24 | (i & 0x1000000000) >> 32 | (i & 0x200000000000) >> 40 |
                 (j & 1) << 6 | (j & 0x200) >> 2 | (j & 0x40000) >> 10;
-        return new LinePositions((int)k, System.Numerics.BitOperations.PopCount(k));
+        return LinePositions.FromBits((int)k);
     }
 
     public MiniGridPositions MiniGridPositions(int miniRow, int miniCol)
     {
         var i = miniRow == 2 ? _second >> (miniCol * 3) : _first >> (miniRow * 27 + miniCol * 3);
         var j = (i & 0x7) | (i & 0xE00) >> 6 | (i & 0x1C0000) >> 12;
-        return new MiniGridPositions((int)j, System.Numerics.BitOperations.PopCount(j), miniRow * 3, miniCol * 3);
+        return Positions.MiniGridPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
     }
 
     public override int GetHashCode()
@@ -232,5 +215,39 @@ public class GridPositions : IEnumerable<Cell>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    protected BitValue GetBitValue() => new(_first, _second);
+
+    public readonly struct BitValue
+    {
+        private readonly ulong _first;
+        private readonly ulong _second;
+
+        public BitValue(ulong first, ulong second)
+        {
+            _first = first;
+            _second = second;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is BitValue bv && bv._first == _first && bv._second == _second;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(_first, _second);
+        }
+
+        public static bool operator ==(BitValue left, BitValue right)
+        {
+            return left._first == right._first && left._second == right._second;
+        }
+
+        public static bool operator !=(BitValue left, BitValue right)
+        {
+            return !(left == right);
+        }
     }
 }

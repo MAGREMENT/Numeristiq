@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Solver.Possibilities;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.StrategiesUtil;
 
@@ -103,8 +102,11 @@ public class AlmostLockedSet
     {
         List<AlmostLockedSet> result = new();
         if (max < 1) return result;
+        
         for(int i = 0; i < coords.Count; i++){
             IReadOnlyPossibilities current = view.PossibilitiesAt(coords[i].Row, coords[i].Col);
+            if (current.Count == 0) continue;
+            
             if (current.Count == 2) result.Add(new AlmostLockedSet(coords[i], current));
             if (max > 1) SearchForAls(view, coords, new List<Cell> { coords[i] },
                 current, i + 1, max, result);
@@ -120,11 +122,13 @@ public class AlmostLockedSet
         {
             if (!ShareAUnitWithAll(coords[i], visited)) continue;
 
-            IPossibilities mashed = current.Or(view.PossibilitiesAt(coords[i].Row, coords[i].Col));
-            if (mashed.Count == current.Count + view.PossibilitiesAt(coords[i].Row, coords[i].Col).Count) continue;
+            var inspected = view.PossibilitiesAt(coords[i].Row, coords[i].Col);
+            if(inspected.Count == 0 || !current.PeekAny(inspected)) continue;
+
+            IPossibilities or = current.Or(inspected);
             int count = visited.Count + 1;
             
-            if (mashed.Count == count + 1)
+            if (or.Count == count + 1)
             {
                 Cell[] final = new Cell[visited.Count + 1];
                 for (int j = 0; j < visited.Count; j++)
@@ -133,11 +137,11 @@ public class AlmostLockedSet
                 }
 
                 final[^1] = coords[i];
-                result.Add(new AlmostLockedSet(final, mashed));
+                result.Add(new AlmostLockedSet(final, or));
             }
 
             if (max >= count) SearchForAls(view, coords, new List<Cell>(visited) { coords[i] },
-                    mashed, i + 1, max, result);
+                    or, i + 1, max, result);
         }
     }
 

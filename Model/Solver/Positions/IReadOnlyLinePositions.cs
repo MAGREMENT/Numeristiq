@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Positions;
 
@@ -16,6 +17,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
     public bool AreAllInSameMiniGrid();
     public LinePositions Copy();
     public string ToString(Unit unit, int unitNumber);
+    public Cell[] ToCellArray(Unit unit, int unitNumber);
 
     public static LinePositions DefaultOr(IReadOnlyLinePositions one, IReadOnlyLinePositions two)
     {

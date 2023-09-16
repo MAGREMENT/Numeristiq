@@ -12,8 +12,6 @@ using Model.Solver.Helpers.Logs;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 using SudokuSolver.Utils;
 
 namespace SudokuSolver;
@@ -398,7 +396,8 @@ public partial class SolverUserControl : IHighlightable
 
 public class SolverBackgroundManager
 {
-    private readonly Brush _linkBrush = Brushes.Indigo;
+    private readonly Brush _strongLinkBrush = Brushes.Indigo;
+    private readonly Brush _weakLinkBrush = Brushes.Orchid;
     private const double LinkOffset = 20;
 
     public int Size { get; }
@@ -479,14 +478,13 @@ public class SolverBackgroundManager
 
     public void CirclePossibility(int row, int col, int possibility)
     {
-        _groups.Children.Add(new GeometryDrawing()
+        _groups.Children.Add(new GeometryDrawing
         {
             Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
             Pen = new Pen()
             {
-                Brush = _linkBrush,
+                Brush = _strongLinkBrush,
                 Thickness = 3.0,
-                DashStyle = DashStyles.Dot
             }
         });
     }
@@ -496,11 +494,10 @@ public class SolverBackgroundManager
         _groups.Children.Add(new GeometryDrawing()
         {
             Geometry = new RectangleGeometry(new Rect(TopLeftX(col), TopLeftY(row), CellSize, CellSize)),
-            Pen = new Pen()
+            Pen = new Pen
             {
-                Brush = _linkBrush,
+                Brush = _strongLinkBrush,
                 Thickness = 3.0,
-                DashStyle = DashStyles.Dot
             }
         });
     }
@@ -670,7 +667,7 @@ public class SolverBackgroundManager
             Pen = new Pen()
             {
                 Thickness = 3.0,
-                Brush = _linkBrush,
+                Brush = _strongLinkBrush,
                 DashStyle = dashStyle
             }
         });
@@ -694,27 +691,27 @@ public class SolverBackgroundManager
         
         //Top left corner
         _cursor.Children.Add(GetRectangle(startRow - Margin, startCol - Margin, 
-            oneFourth, Margin, Brushes.Aqua));
+            oneFourth, Margin, ColorUtil.Green));
         _cursor.Children.Add(GetRectangle(startRow - Margin, startCol - Margin,
-            Margin, oneFourth, Brushes.Aqua));
+            Margin, oneFourth, ColorUtil.Green));
 
         //Top right corner
         _cursor.Children.Add(GetRectangle(startRow + CellSize + Margin - oneFourth, startCol - Margin,
-            oneFourth, Margin, Brushes.Aqua));
+            oneFourth, Margin, ColorUtil.Green));
         _cursor.Children.Add(GetRectangle(startRow + CellSize, startCol - Margin,
-            Margin, oneFourth, Brushes.Aqua));
+            Margin, oneFourth, ColorUtil.Green));
 
         //Bottom left corner
         _cursor.Children.Add(GetRectangle(startRow - Margin, startCol + CellSize,
-            oneFourth, Margin, Brushes.Aqua));
+            oneFourth, Margin, ColorUtil.Green));
         _cursor.Children.Add(GetRectangle(startRow - Margin, startCol + CellSize + Margin - oneFourth,
-            Margin, oneFourth, Brushes.Aqua));
+            Margin, oneFourth, ColorUtil.Green));
 
         //Bottom right corner
         _cursor.Children.Add(GetRectangle(startRow + CellSize + Margin - oneFourth, startCol + CellSize,
-            oneFourth, Margin, Brushes.Aqua));
+            oneFourth, Margin, ColorUtil.Green));
         _cursor.Children.Add(GetRectangle(startRow + CellSize, startCol + CellSize + Margin - oneFourth,
-            Margin, oneFourth, Brushes.Aqua));
+            Margin, oneFourth, ColorUtil.Green));
     }
     
     private const double PenStrokeWidth = 0.5;

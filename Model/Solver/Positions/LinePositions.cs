@@ -1,8 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Positions;
 
@@ -13,10 +13,15 @@ public class LinePositions : IReadOnlyLinePositions
 
     public LinePositions(){}
 
-    public LinePositions(int pos, int count)
+    private LinePositions(int pos, int count)
     {
         _pos = pos;
         Count = count;
+    }
+
+    public static LinePositions FromBits(int bits)
+    {
+        return new LinePositions(bits, System.Numerics.BitOperations.PopCount((uint)bits));
     }
 
     public void Add(int pos)
@@ -151,6 +156,25 @@ public class LinePositions : IReadOnlyLinePositions
         }
 
         return builder.ToString()[..^1] + ")";
+    }
+
+    public Cell[] ToCellArray(Unit unit, int unitNumber)
+    {
+        var result = new Cell[Count];
+        int cursor = 0;
+        foreach (var other in this)
+        {
+            result[cursor] = unit switch
+            {
+                Unit.Row => new Cell(unitNumber, other),
+                Unit.Column => new Cell(other, unitNumber),
+                _ => throw new ArgumentException("Unit has to be row or column")
+            };
+
+            cursor++;
+        }
+
+        return result;
     }
 }
 

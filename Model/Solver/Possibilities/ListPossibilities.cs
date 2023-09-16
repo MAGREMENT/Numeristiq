@@ -100,4 +100,9 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
     {
         throw new System.NotImplementedException();
     }
+
+    public void Add(IReadOnlyPossibilities possibilities)
+    {
+        IPossibilities.DefaultAdd(this, possibilities);
+    }
 }

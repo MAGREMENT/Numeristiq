@@ -15,89 +15,74 @@ public class FinnedXWingStrategy : IStrategy
     {
         for (int number = 1; number <= 9; number++)
         {
-            Dictionary<int, IReadOnlyLinePositions> candidates = new();
-            for (int row = 0; row < 9; row++)
+            for (int row1 = 0; row1 < 9; row1++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
-                if (ppir.Count == 2) candidates.Add(row, ppir);
-            }
+                var ppir1 = strategyManager.RowPositionsAt(row1, number);
+                if (ppir1.Count < 2) continue;
 
-            foreach (var entry in candidates)
-            {
-                for (int row = 0; row < 9; row++)
+                for (int row2 = row1 + 1; row2 < 9; row2++)
                 {
-                    if (row == entry.Key) continue;
-                    var currentPpir = strategyManager.RowPositionsAt(row, number);
+                    var ppir2 = strategyManager.RowPositionsAt(row2, number);
+                    if (ppir2.Count < 2) continue;
 
-                    var candidatePositions = entry.Value.ToArray();
-
-                    if (currentPpir.Peek(candidatePositions[0]) &&
-                        HasSameMiniCol(currentPpir, candidatePositions[1], candidatePositions[0]))
-                    {
-                        ProcessRow(strategyManager, entry.Key,row, candidatePositions[1],
-                            number);
-
-                        strategyManager.ChangeBuffer.Push(this,
-                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpir,
-                                row, number, Unit.Row));
-                    }
-
-
-                    if (currentPpir.Peek(candidatePositions[1]) &&
-                        HasSameMiniCol(currentPpir, candidatePositions[0], candidatePositions[1]))
-                    {
-                        ProcessRow(strategyManager, entry.Key,row, candidatePositions[0],
-                            number);
-
-                        strategyManager.ChangeBuffer.Push(this,
-                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpir,
-                                row, number, Unit.Row));
-                    }
-                        
+                    if (ppir1.Count == 2)
+                        ExamineRow(strategyManager, row1, row2, ppir1, ppir2, number);
+                    if (ppir2.Count == 2)
+                        ExamineRow(strategyManager, row2, row1, ppir2, ppir1, number);
                 }
             }
-            
-            candidates.Clear();
-            for (int col = 0; col < 9; col++)
-            {
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
-                if (ppic.Count == 2) candidates.Add(col, ppic);
-            }
 
-            foreach (var entry in candidates)
+            for (int col1 = 0; col1 < 9; col1++)
             {
-                for (int col = 0; col < 9; col++)
+                var ppic1 = strategyManager.ColumnPositionsAt(col1, number);
+                if (ppic1.Count < 2) continue;
+                
+                for (int col2 = col1 + 1; col2 < 9; col2++)
                 {
-                    if (col == entry.Key) continue;
-                    var currentPpic = strategyManager.ColumnPositionsAt(col, number);
+                    var ppic2 = strategyManager.ColumnPositionsAt(col2, number);
+                    if(ppic2.Count < 2) continue;
 
-                    var candidatePositions = entry.Value.ToArray();
-
-                    if (currentPpic.Peek(candidatePositions[0]) &&
-                        HasSameMiniRow(currentPpic, candidatePositions[1], candidatePositions[0]))
-                    {
-                        ProcessColumn(strategyManager, entry.Key,col, candidatePositions[1] ,
-                            number);
-
-                        strategyManager.ChangeBuffer.Push(this,
-                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpic,
-                                col, number, Unit.Column));
-                    }
-
-
-                    if (currentPpic.Peek(candidatePositions[1]) &&
-                        HasSameMiniRow(currentPpic, candidatePositions[0], candidatePositions[1]))
-                    {
-                        ProcessColumn(strategyManager, entry.Key,col, candidatePositions[0],
-                            number);
-
-                        strategyManager.ChangeBuffer.Push(this,
-                            new FinnedXWingReportBuilder(entry.Value, entry.Key, currentPpic,
-                                col, number, Unit.Column));
-                    }
+                    if (ppic1.Count == 2)
+                        ExamineColumn(strategyManager, col1, col2, ppic1, ppic2, number);
+                    if (ppic2.Count == 2)
+                        ExamineColumn(strategyManager, col2, col1, ppic2, ppic1, number);
                 }
             }
         }
+    }
+
+    private void ExamineRow(IStrategyManager strategyManager, int normalRow, int finnedRow,
+        IReadOnlyLinePositions normalPos, IReadOnlyLinePositions finnedPos, int number)
+    {
+        var asArray = normalPos.ToArray();
+
+        if (finnedPos.Peek(asArray[0]) && HasSameMiniCol(finnedPos, asArray[1], asArray[0]))
+            ProcessRow(strategyManager, normalRow, finnedRow, asArray[1], number);
+        
+        if (finnedPos.Peek(asArray[1]) && HasSameMiniCol(finnedPos, asArray[0], asArray[1]))
+            ProcessRow(strategyManager, normalRow, finnedRow, asArray[0], number);
+
+        if(strategyManager.ChangeBuffer.NotEmpty())
+            strategyManager.ChangeBuffer.Push(this,
+                new FinnedXWingReportBuilder(normalPos, normalRow, finnedPos,
+                    finnedRow, number, Unit.Row));
+    }
+
+    private void ExamineColumn(IStrategyManager strategyManager, int normalCol, int finnedCol,
+        IReadOnlyLinePositions normalPos, IReadOnlyLinePositions finnedPos, int number)
+    {
+        var asArray = normalPos.ToArray();
+
+        if (finnedPos.Peek(asArray[0]) && HasSameMiniRow(finnedPos, asArray[1], asArray[0]))
+            ProcessColumn(strategyManager, normalCol, finnedCol, asArray[1], number);
+        
+        if (finnedPos.Peek(asArray[1]) && HasSameMiniRow(finnedPos, asArray[0], asArray[1]))
+            ProcessColumn(strategyManager, normalCol, finnedCol, asArray[0], number);
+
+        if(strategyManager.ChangeBuffer.NotEmpty())
+            strategyManager.ChangeBuffer.Push(this,
+                new FinnedXWingReportBuilder(normalPos, normalCol,
+                    finnedPos, finnedCol, number, Unit.Column));
     }
 
     private bool HasSameMiniCol(IReadOnlyLinePositions toExamine, int col, int except)

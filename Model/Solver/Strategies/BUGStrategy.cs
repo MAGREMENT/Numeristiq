@@ -1,47 +1,49 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
 public class BUGStrategy : IStrategy
 {
     public string Name => "BUG";
-    
     public StrategyLevel Difficulty => StrategyLevel.Medium;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        int[]? triple = OnlyDoublesAndOneTriple(strategyManager);
-        if (triple is not null)
+        var triple = OnlyDoublesAndOneTriple(strategyManager);
+        if (triple.Row == -1) return;
+        
+        foreach (var possibility in strategyManager.PossibilitiesAt(triple.Row, triple.Col))
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(triple[0], triple[1]))
-            {
-                if (strategyManager.ColumnPositionsAt(triple[1], possibility).Count == 3 &&
-                    strategyManager.RowPositionsAt(triple[0], possibility).Count == 3 &&
-                    strategyManager.MiniGridPositionsAt(triple[0] / 3, triple[1] / 3, possibility).Count == 3)
-                {
-                    strategyManager.ChangeBuffer.AddDefinitiveToAdd(possibility, triple[0], triple[1]);
-                    break;
-                }
-            }
-
-            strategyManager.ChangeBuffer.Push(this, new BUGReportBuilder(triple));
+            if (strategyManager.ColumnPositionsAt(triple.Col, possibility).Count != 3 ||
+                strategyManager.RowPositionsAt(triple.Row, possibility).Count != 3 ||
+                strategyManager.MiniGridPositionsAt(triple.Row / 3, triple.Col / 3, possibility).Count != 3) 
+                continue;
+            
+            strategyManager.ChangeBuffer.AddDefinitiveToAdd(possibility, triple.Row, triple.Col);
+            break;
         }
+
+        strategyManager.ChangeBuffer.Push(this, new BUGReportBuilder(triple));
+        
     }
 
-    private int[]? OnlyDoublesAndOneTriple(IStrategyManager strategyManager)
+    private Cell OnlyDoublesAndOneTriple(IStrategyManager strategyManager)
     {
-        int[]? triple = null;
+        var triple = new Cell(-1, -1);
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 if (strategyManager.Sudoku[row, col] == 0 && strategyManager.PossibilitiesAt(row, col).Count != 2)
                 {
-                    if (strategyManager.PossibilitiesAt(row, col).Count != 3 || triple is not null) return null;
-                    triple = new[] { row, col };
+                    if (strategyManager.PossibilitiesAt(row, col).Count != 3 || triple.Row != -1)
+                        return new Cell(-1, -1);
+
+                    triple = new Cell(row, col);
                 }
             }
         }
@@ -50,17 +52,21 @@ public class BUGStrategy : IStrategy
     }
 }
 
-public class BUGReportBuilder : IChangeReportBuilder //TODO improve
+public class BUGReportBuilder : IChangeReportBuilder
 {
-    private readonly int[] _triple;
+    private readonly Cell _triple;
 
-    public BUGReportBuilder(int[] triple)
+    public BUGReportBuilder(Cell triple)
     {
         _triple = triple;
     }
     
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return ChangeReport.Default(changes);
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            lighter.HighlightCell(_triple.Row, _triple.Col, ChangeColoration.CauseOnOne);
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
     }
 }

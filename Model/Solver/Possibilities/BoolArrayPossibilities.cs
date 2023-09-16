@@ -106,6 +106,11 @@ public class BoolArrayPossibilities : IPossibilities
         _possibilities[n - 1] = true;
     }
 
+    public void Add(IReadOnlyPossibilities possibilities)
+    {
+        IPossibilities.DefaultAdd(this, possibilities);
+    }
+
     public int GetFirst()
     {
         for (int i = 0; i < 9; i++)

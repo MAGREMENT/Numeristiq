@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Positions;
 
@@ -24,6 +23,8 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
     public MiniGridPositions Or(IReadOnlyMiniGridPositions pos);
 
     public MiniGridPositions Copy();
+
+    public Cell[] ToCellArray();
 
     public int MiniGridNumber();
     

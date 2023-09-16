@@ -5,6 +5,10 @@ using Model.Solver.Positions;
 
 namespace Model.Solver.Strategies;
 
+/// <summary>
+/// Hidden doubles are a special case of hidden possibilities where there are only 2 candidates concerned. See the doc
+/// of HiddenPossibilities.cs for more information.
+/// </summary>
 public class HiddenDoublesStrategy : IStrategy
 {
     public string Name => "Hidden doubles";
@@ -73,7 +77,8 @@ public class HiddenDoublesStrategy : IStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new LineHiddenDoublesReportBuilder());
+        strategyManager.ChangeBuffer.Push(this,
+            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row));
     }
 
     private void ProcessColumn(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int col,
@@ -89,7 +94,8 @@ public class HiddenDoublesStrategy : IStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new LineHiddenDoublesReportBuilder());
+        strategyManager.ChangeBuffer.Push(this,
+            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column));
     }
 
     private void ProcessMiniGrid(IStrategyManager strategyManager, IReadOnlyMiniGridPositions positions, int n1, int n2)
@@ -103,22 +109,82 @@ public class HiddenDoublesStrategy : IStrategy
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
             }
         }
-        strategyManager.ChangeBuffer.Push(this, new MiniGridHiddenDoublesReportBuilder());
+
+        strategyManager.ChangeBuffer.Push(this,
+            new MiniGridHiddenDoublesReportBuilder(positions, n1, n2));
     }
 }
 
 public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
 {
+    private readonly int _unitNumber;
+    private readonly IReadOnlyLinePositions _pos;
+    private readonly int _n1;
+    private readonly int _n2;
+    private readonly Unit _unit;
+
+    public LineHiddenDoublesReportBuilder(int unitNumber, IReadOnlyLinePositions pos, int n1, int n2, Unit unit)
+    {
+        _unitNumber = unitNumber;
+        _pos = pos;
+        _n1 = n1;
+        _n2 = n2;
+        _unit = unit;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return ChangeReport.Default(changes);
+        var cells = _pos.ToCellArray(_unit, _unitNumber);
+
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        {
+            foreach (var cell in cells)
+            {
+                lighter.HighlightPossibility(_n1, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n2, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+            }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+
+    private string Explanation()
+    {
+        return ""; //TODO
     }
 }
 
 public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
 {
+    private readonly IReadOnlyMiniGridPositions _pos;
+    private readonly int _n1;
+    private readonly int _n2;
+
+    public MiniGridHiddenDoublesReportBuilder(IReadOnlyMiniGridPositions pos, int n1, int n2)
+    {
+        _pos = pos;
+        _n1 = n1;
+        _n2 = n2;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return ChangeReport.Default(changes);
+        var cells = _pos.ToCellArray();
+
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        {
+            foreach (var cell in cells)
+            {
+                lighter.HighlightPossibility(_n1, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n2, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+            }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+    
+    private string Explanation()
+    {
+        return ""; //TODO
     }
 }
