@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.Solver.StrategiesUtil.SharedCellSearcher;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.StrategiesUtil;
 
@@ -18,7 +17,7 @@ public static class Cells
                 && col1 / 3 == col2 / 3);
     }
     
-    public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO "AsList"
     {
         return Searcher.SharedSeenCells(row1, col1, row2, col2);
     }
@@ -81,6 +80,26 @@ public readonly struct Cell
     public bool ShareAUnit(Cell coord)
     {
         return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
+    }
+    
+    public bool ShareAUnitWithAll(List<Cell> coordinates)
+    {
+        foreach (var coord in coordinates)
+        {
+            if (!ShareAUnit(coord)) return false;
+        }
+
+        return true;
+    }
+    
+    public bool ShareAUnitWithAll(RecursionList<Cell> coordinates)
+    {
+        foreach (var coord in coordinates)
+        {
+            if (!ShareAUnit(coord)) return false;
+        }
+
+        return true;
     }
 
     public IEnumerable<Cell> SharedSeenCells(Cell coord)

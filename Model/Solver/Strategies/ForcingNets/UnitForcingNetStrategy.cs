@@ -4,8 +4,6 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
@@ -37,7 +35,7 @@ public class UnitForcingNetStrategy : IStrategy
                 var cursor = 0;
                 foreach (var col in ppir)
                 {
-                    colorings[cursor] = strategyManager.OnColoring(row, col, number);
+                    colorings[cursor] = strategyManager.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
                 
@@ -57,7 +55,7 @@ public class UnitForcingNetStrategy : IStrategy
                 var cursor = 0;
                 foreach (var row in ppic)
                 {
-                    colorings[cursor] = strategyManager.OnColoring(row, col, number);
+                    colorings[cursor] = strategyManager.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
                 
@@ -79,7 +77,7 @@ public class UnitForcingNetStrategy : IStrategy
                     var cursor = 0;
                     foreach (var pos in ppimn)
                     {
-                        colorings[cursor] = strategyManager.OnColoring(pos.Row, pos.Col, number);
+                        colorings[cursor] = strategyManager.PreComputer.OnColoring(pos.Row, pos.Col, number);
                         cursor++;
                     }
                 
@@ -166,8 +164,7 @@ public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
             };
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
     }
 }
 
@@ -217,7 +214,6 @@ public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
             };
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
     }
 }

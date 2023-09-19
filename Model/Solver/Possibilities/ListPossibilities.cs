@@ -31,6 +31,11 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
         throw new System.NotImplementedException();
     }
 
+    public int OrCount(IReadOnlyPossibilities possibilities)
+    {
+        return IPossibilities.DefaultOrCount(this, possibilities);
+    }
+
     public IPossibilities And(IReadOnlyPossibilities possibilities)
     {
         throw new System.NotImplementedException();

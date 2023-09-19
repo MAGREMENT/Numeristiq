@@ -245,7 +245,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 List<Cell> shared = new List<Cell>(
                     Cells.SharedSeenEmptyCells(view, row, one.Col, row, two.Col));
 
-                foreach (var als in AlmostLockedSet.SearchForAls(view, shared, 4))
+                foreach (var als in AlmostLockedSetSearcher.InCells(view, shared, 4))
                 {
                     if (als.Possibilities.Equals(mashed))
                     {
@@ -404,7 +404,7 @@ public class UniqueRectanglesStrategy : IStrategy
                 List<Cell> shared = new List<Cell>(
                     Cells.SharedSeenEmptyCells(view, one.Row, col, two.Row, col));
 
-                foreach (var als in AlmostLockedSet.SearchForAls(view, shared, 4))
+                foreach (var als in AlmostLockedSetSearcher.InCells(view, shared, 4))
                 {
                     if (als.Possibilities.Equals(mashed))
                     {

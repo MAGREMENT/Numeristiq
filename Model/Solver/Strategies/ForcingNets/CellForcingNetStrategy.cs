@@ -5,8 +5,6 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
@@ -38,7 +36,7 @@ public class CellForcingNetStrategy : IStrategy
 
                 for (int i = 0; i < possAsArray.Length; i++)
                 {
-                    colorings[i] = strategyManager.OnColoring(row, col, possAsArray[i]);
+                    colorings[i] = strategyManager.PreComputer.OnColoring(row, col, possAsArray[i]);
                 }
 
                 Process(strategyManager, colorings);

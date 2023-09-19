@@ -21,7 +21,7 @@ public interface ISharedSeenCellSearcher
     {
         foreach (var coord in searcher.SharedSeenCells(row1, col1, row2, col2))
         {
-            if (strategyManager.Sudoku[coord.Row, coord.Row] == 0) yield return coord;
+            if (strategyManager.Sudoku[coord.Row, coord.Col] == 0) yield return coord;
         }
     }
 

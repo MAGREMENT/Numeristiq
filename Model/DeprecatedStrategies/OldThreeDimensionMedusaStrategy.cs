@@ -6,7 +6,6 @@ using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.DeprecatedStrategies;
 

@@ -145,7 +145,7 @@ public class FireworksStrategy : IStrategy
             {
                 var coord = dual.Wings[i];
 
-                als[i] = AlmostLockedSet.SearchForAls(strategyManager, CoordinatesToSearch(dual.Cross,
+                als[i] = AlmostLockedSetSearcher.InCells(strategyManager, CoordinatesToSearch(dual.Cross,
                     coord, new Cell(opposite.Row, opposite.Col)), 4);
 
                 als[i].RemoveAll(singleAls => !singleAls.Possibilities.PeekAll(dual.Possibilities));

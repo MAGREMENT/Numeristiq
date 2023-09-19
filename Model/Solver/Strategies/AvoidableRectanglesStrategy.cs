@@ -95,7 +95,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
                 mashed.Remove(pair[0].Number);
                 mashed.Remove(pair[1].Number);
 
-                foreach (var als in AlmostLockedSet.SearchForAls(strategyManager, shared, 4))
+                foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, shared, 4))
                 {
                     if (als.Possibilities.Equals(mashed))
                         RemovePossibilitiesInAllExcept(strategyManager, mashed, shared, als);
@@ -198,7 +198,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
                 mashed.Remove(pair[0].Number);
                 mashed.Remove(pair[1].Number);
 
-                foreach (var als in AlmostLockedSet.SearchForAls(strategyManager, shared, 4))
+                foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, shared, 4))
                 {
                     if (als.Possibilities.Equals(mashed))
                         RemovePossibilitiesInAllExcept(strategyManager, mashed, shared, als);

@@ -3,8 +3,6 @@ using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
@@ -22,9 +20,9 @@ public class DigitForcingNetStrategy : IStrategy
                 foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
                     Dictionary<ILinkGraphElement, Coloring> onColoring =
-                        strategyManager.OnColoring(row, col, possibility);
+                        strategyManager.PreComputer.OnColoring(row, col, possibility);
                     Dictionary<ILinkGraphElement, Coloring> offColoring =
-                        strategyManager.OffColoring(row, col, possibility);
+                        strategyManager.PreComputer.OffColoring(row, col, possibility);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
                     Process(strategyManager, onColoring, offColoring);

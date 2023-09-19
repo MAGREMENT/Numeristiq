@@ -3,8 +3,6 @@ using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 

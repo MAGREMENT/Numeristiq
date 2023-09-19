@@ -40,8 +40,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     private int _currentStrategy = -1;
     private ulong _excludedStrategies;
     private bool _changeWasMade;
-    
-    private readonly PreComputer _pre;
+
     private readonly LogManager _logManager;
     private readonly StrategyLoader _strategyLoader;
 
@@ -58,7 +57,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         _strategyLoader = new StrategyLoader(this);
         _strategyLoader.Load();
         
-        _pre = new PreComputer(this);
+        PreComputer = new PreComputer(this);
+
+        GraphManager = new LinkGraphManager(this);
         
         _logManager = new LogManager(this);
         _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
@@ -79,7 +80,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         
         _strategyLoader = new StrategyLoader(this);
         Strategies = t;
-        _pre = new PreComputer(this);
+        PreComputer = new PreComputer(this);
+        GraphManager = new LinkGraphManager(this);
         _logManager = new LogManager(this);
         _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
         ChangeBuffer = new ChangeBuffer(this);
@@ -96,7 +98,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
         if (LogsManaged) _logManager.Clear();
 
-        _pre.Reset();
+        PreComputer.Reset();
     }
     
     
@@ -131,7 +133,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
             
             _changeWasMade = false;
             _currentStrategy = -1;
-            _pre.Reset();
+            PreComputer.Reset();
+            GraphManager.Clear();
             if(LogsManaged) _logManager.Push();
 
             if (stopAtProgress) return;
@@ -215,27 +218,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     }
 
     public ChangeBuffer ChangeBuffer { get; }
+    public LinkGraphManager GraphManager { get; }
+    public PreComputer PreComputer { get; }
 
-    public List<AlmostLockedSet> AlmostLockedSets()
-    {
-        return _pre.AlmostLockedSets();
-    }
-
-    public LinkGraph<ILinkGraphElement> LinkGraph()
-    {
-        return _pre.LinkGraph();
-    }
-
-    public Dictionary<ILinkGraphElement, Coloring> OnColoring(int row, int col, int possibility)
-    {
-        return _pre.OnColoring(row, col, possibility);
-    }
-
-    public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility)
-    {
-        return _pre.OffColoring(row, col, possibility);
-    }
-    
     public Solver Copy()
     {
         IPossibilities[,] possCopy = new IPossibilities[9, 9];
@@ -247,16 +232,16 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
             }
         }
 
-       GridPositions[] gpCopy = new GridPositions[9];
+        GridPositions[] gpCopy = new GridPositions[9];
         for (int i = 0; i < 9; i++)
         {
             gpCopy[0] = _positions[i].Copy();
         }
 
-        IStrategy[] stratCopy = new IStrategy[Strategies.Length];
-        Array.Copy(Strategies, stratCopy, Strategies.Length);
+        IStrategy[] strategiesCopy = new IStrategy[Strategies.Length];
+        Array.Copy(Strategies, strategiesCopy, Strategies.Length);
         
-        return new Solver(_sudoku.Copy(), possCopy, gpCopy, stratCopy);
+        return new Solver(_sudoku.Copy(), possCopy, gpCopy, strategiesCopy);
     }
     
     //ChangeManager-----------------------------------------------------------------------------------------------------

@@ -65,6 +65,11 @@ public class BoolArrayPossibilities : IPossibilities
         return IPossibilities.DefaultOr(this, possibilities);
     }
 
+    public int OrCount(IReadOnlyPossibilities possibilities)
+    {
+        return IPossibilities.DefaultOrCount(this, possibilities);
+    }
+
     public IPossibilities And(IReadOnlyPossibilities possibilities)
     {
         return IPossibilities.DefaultAnd(this, possibilities);

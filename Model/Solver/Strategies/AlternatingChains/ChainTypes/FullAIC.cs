@@ -4,8 +4,6 @@ using System.Linq;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
@@ -14,9 +12,10 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
     public string Name => "Alternating inference chain";
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public IStrategy? Strategy { get; set; }
-    public IEnumerable<LinkGraph<ILinkGraphElement>> GetGraphs(IStrategyManager view)
+    public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager view)
     {
-        yield return view.LinkGraph();
+        view.GraphManager.Construct();
+        return view.GraphManager.LinkGraph;
     }
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<ILinkGraphElement> loop)
@@ -125,11 +124,11 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
             }
 
             bool yes = false;
-            for (int j = 0; j < twoPoss.Count; j++)
+            foreach (var cell in twoPoss)
             {
-                if (twoPoss[j].Possibility == onePoss[i].Possibility)
+                if (cell.Possibility == onePoss[i].Possibility)
                 {
-                    current.Add(twoPoss[j]);
+                    current.Add(cell);
                     yes = true;
                 }
             }

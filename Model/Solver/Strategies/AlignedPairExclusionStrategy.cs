@@ -46,8 +46,7 @@ public class AlignedPairExclusionStrategy : IStrategy
         var poss1 = strategyManager.PossibilitiesAt(row1, col1);
         var poss2 = strategyManager.PossibilitiesAt(row2, col2);
         
-        if (shared.Count < poss1.Count ||
-            shared.Count < poss2.Count) return false;
+        if (shared.Count < poss1.Count || shared.Count < poss2.Count) return false;
 
         var inSameUnit = Cells.ShareAUnit(row1, col1, row2, col2);
 
@@ -69,7 +68,7 @@ public class AlignedPairExclusionStrategy : IStrategy
 
         HashSet<AlmostLockedSet> usefulAls = new();
 
-        foreach (var als in AlmostLockedSet.SearchForAls(strategyManager, shared, _maxAlzSize))
+        foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, shared, _maxAlzSize))
         {
             foreach (var possibility in als.Possibilities)
             {
@@ -77,10 +76,9 @@ public class AlignedPairExclusionStrategy : IStrategy
                 {
                     foreach (var possibility2 in als.Possibilities)
                     {
-                        if (possibility2 != possibility)
-                        {
-                            if(other1.Remove(possibility2)) usefulAls.Add(als);
-                        }
+                        if (possibility2 == possibility) continue;
+                        
+                        if(other1.Remove(possibility2)) usefulAls.Add(als);
                     }
 
                     if (other1.Count == 0)
@@ -96,10 +94,9 @@ public class AlignedPairExclusionStrategy : IStrategy
                 {
                     foreach (var possibility2 in als.Possibilities)
                     {
-                        if (possibility2 != possibility)
-                        {
-                            if(other2.Remove(possibility2)) usefulAls.Add(als);
-                        }
+                        if (possibility2 == possibility) continue;
+                        
+                        if(other2.Remove(possibility2)) usefulAls.Add(als);
                     }
 
                     if (other2.Count == 0)

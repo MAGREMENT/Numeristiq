@@ -71,6 +71,14 @@ public class BitPossibilities : IPossibilities
         return IPossibilities.DefaultOr(this, possibilities);
     }
 
+    public int OrCount(IReadOnlyPossibilities possibilities)
+    {
+        if (possibilities is BitPossibilities bp)
+            return System.Numerics.BitOperations.PopCount((uint)(bp._possibilities | _possibilities));
+
+        return IPossibilities.DefaultOrCount(this, possibilities);
+    }
+
     public IPossibilities And(IReadOnlyPossibilities possibilities)
     {
         if (possibilities is BitPossibilities bp)

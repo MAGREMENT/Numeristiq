@@ -2,7 +2,6 @@
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains;
 
@@ -26,10 +25,7 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElemen
     
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        foreach (var graph in _chain.GetGraphs(strategyManager))
-        {
-            _algorithm.Run(strategyManager, graph, _chain);
-        }
+        _algorithm.Run(strategyManager, _chain.GetGraph(strategyManager), _chain);
     }
 }
 
@@ -39,7 +35,7 @@ public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElem
     public StrategyLevel Difficulty { get; }
     IStrategy? Strategy { set; }
     
-    IEnumerable<LinkGraph<T>> GetGraphs(IStrategyManager view);
+    LinkGraph<T> GetGraph(IStrategyManager view);
 
     bool ProcessFullLoop(IStrategyManager view, Loop<T> loop);
 

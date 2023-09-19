@@ -5,8 +5,6 @@ using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
@@ -26,7 +24,7 @@ public class NishioForcingNetStrategy : IStrategy
             {
                 foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
-                    var coloring = strategyManager.OnColoring(row, col, possibility);
+                    var coloring = strategyManager.PreComputer.OnColoring(row, col, possibility);
                     foreach (var entry in coloring)
                     {
                         if (entry.Value != Coloring.Off || entry.Key is not CellPossibility coord) continue;

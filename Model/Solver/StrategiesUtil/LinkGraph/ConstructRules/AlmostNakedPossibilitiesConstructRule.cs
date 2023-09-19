@@ -1,14 +1,10 @@
-﻿using Model.Solver;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.LinkGraph;
-
-namespace Model.StrategiesUtil.LinkGraph.ConstructRules;
+﻿namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
 public class AlmostNakedPossibilitiesConstructRule : IConstructRule
 {
     public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
     {
-        foreach (var als in strategyManager.AlmostLockedSets())
+        foreach (var als in strategyManager.PreComputer.AlmostLockedSets())
         {
             if (als.Coordinates.Length is < 2 or > 4) continue;
 

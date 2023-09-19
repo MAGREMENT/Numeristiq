@@ -43,6 +43,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public int Count { get; }
     public int GetFirst();
     public IPossibilities Or(IReadOnlyPossibilities possibilities);
+    public int OrCount(IReadOnlyPossibilities possibilities);
     public IPossibilities And(IReadOnlyPossibilities possibilities);
     public bool Peek(int n);
     public bool PeekAll(IReadOnlyPossibilities poss);
@@ -57,6 +58,17 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
         for (int i = Min; i <= Max; i++)
         {
             if (!poss1.Peek(i) && !poss2.Peek(i)) result.Remove(i);
+        }
+
+        return result;
+    }
+
+    public static int DefaultOrCount(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
+    {
+        var result = 0;
+        for (int i = Min; i <= Max; i++)
+        {
+            if (poss1.Peek(i) || poss2.Peek(i)) result++;
         }
 
         return result;

@@ -1,9 +1,6 @@
 ﻿using System.Linq;
-using Model.Solver;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.LinkGraph;
 
-namespace Model.StrategiesUtil.LinkGraph.ConstructRules;
+namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
 public class CellStrongLinkConstructRule : IConstructRule
 {

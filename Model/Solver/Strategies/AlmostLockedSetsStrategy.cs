@@ -3,7 +3,6 @@ using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
@@ -15,7 +14,7 @@ public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
 
     public void ApplyOnce(IStrategyManager strategyManager) //TODO optimize
     {
-        var allAls = strategyManager.AlmostLockedSets();
+        var allAls = strategyManager.PreComputer.AlmostLockedSets();
 
         for (int i = 0; i < allAls.Count; i++)
         {

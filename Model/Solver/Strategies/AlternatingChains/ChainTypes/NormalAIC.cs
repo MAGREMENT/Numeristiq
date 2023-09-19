@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.StrategiesUtil;
-using Model.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
@@ -13,7 +10,7 @@ public class NormalAIC : IAlternatingChainType<CellPossibility>
     public StrategyLevel Difficulty => StrategyLevel.Extreme;
     public IStrategy? Strategy { get; set; }
 
-    public IEnumerable<LinkGraph<CellPossibility>> GetGraphs(IStrategyManager view)
+    public LinkGraph<CellPossibility> GetGraph(IStrategyManager view)
     {
         LinkGraph<CellPossibility> graph = new();
         for (int row = 0; row < 9; row++)
@@ -71,7 +68,7 @@ public class NormalAIC : IAlternatingChainType<CellPossibility>
             }
         }
 
-        yield return graph;
+        return graph;
     }
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)
