@@ -16,6 +16,8 @@ public class GridPositions : IReadOnlyGridPositions
     private ulong _first; //0 to 53 => First 6 boxes
     private ulong _second; // 54 to 80 => Last 3 boxes
 
+    public int Count => System.Numerics.BitOperations.PopCount(_first) + System.Numerics.BitOperations.PopCount(_second);
+
     public GridPositions()
     {
         _first = 0;
@@ -159,9 +161,19 @@ public class GridPositions : IReadOnlyGridPositions
         return Positions.MiniGridPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
     }
 
+    public GridPositions Or(GridPositions positions)
+    {
+        return new GridPositions(_first | positions._first, _second | positions._second);
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(_first, _second);
+    }
+    
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 
     public IEnumerator<Cell> GetEnumerator()
@@ -192,28 +204,5 @@ public class GridPositions : IReadOnlyGridPositions
         }
 
         return result;
-    }
-
-    public string ToBitGrid()
-    {
-        var result = "";
-        for (int i = 0; i <= FirstLimit; i++)
-        {
-            result += (((_first >> i) & 1) > 0 ? "1" : "0") + " ";
-            if ((i + 1) % 9 == 0) result += "\n";
-        }
-
-        for (int i = 0; i < 80 - FirstLimit; i++)
-        {
-            result += (((_second >> i) & 1) > 0 ? "1" : "0") + " ";
-            if ((i + 1) % 9 == 0) result += "\n";
-        }
-
-        return result;
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 }

@@ -32,6 +32,7 @@ public class StrategyLoader
         new GridFormationStrategy(4),
         new SimpleColoringStrategy(),
         new BUGStrategy(),
+        new ReverseBUGStrategy(),
         new FinnedXWingStrategy(),
         new FinnedGridFormationStrategy(3),
         new FinnedGridFormationStrategy(4),

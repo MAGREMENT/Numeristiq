@@ -39,6 +39,12 @@ public partial class SolverUserControl : IHighlightable
     public event OnSolverUpdate? SolverUpdated;
 
     public event LogManager.OnLogsUpdate? LogsUpdated;
+
+    public delegate void OnLogFocus(int number);
+    public event OnLogFocus? LogFocused;
+
+    public delegate void OnLogUnFocus();
+    public event OnLogUnFocus? LogUnFocused;
     
     public SolverUserControl()
     {
@@ -145,7 +151,6 @@ public partial class SolverUserControl : IHighlightable
         else current.SetPossibilities(_solver.PossibilitiesAt(row, col));
     }
 
-
     public void AddDefinitiveNumber(int number, int row, int col)
     {
         _solver.SetSolutionByHand(number, row, col); 
@@ -179,6 +184,7 @@ public partial class SolverUserControl : IHighlightable
         if (_solver.Logs.Count > 0 && _solver.Logs[^1].Id == _logBuffer)
         {
             RefreshSolver();
+            LogUnFocused?.Invoke();
             IsReady?.Invoke();
             return;
         }
@@ -196,6 +202,7 @@ public partial class SolverUserControl : IHighlightable
             await Task.Delay(TimeSpan.FromMilliseconds(Delay));
             
             ShowState(_solver.Logs[n].SolverState);
+            LogFocused?.Invoke(n);
 
             _logBuffer = current.Id;
             SolverUpdated?.Invoke(_solver.Sudoku.AsString(_translationType));
@@ -361,11 +368,6 @@ public partial class SolverUserControl : IHighlightable
         Main.Background = _backgroundManager.Background;
     }
 
-    public List<ISolverLog> GetLogs()
-    {
-        return _solver.Logs;
-    }
-
     public StrategyInfo[] GetStrategies()
     {
         return _solver.StrategyInfos;
@@ -397,7 +399,7 @@ public partial class SolverUserControl : IHighlightable
 public class SolverBackgroundManager
 {
     private readonly Brush _strongLinkBrush = Brushes.Indigo;
-    private readonly Brush _weakLinkBrush = Brushes.Orchid;
+    private readonly Brush _weakLinkBrush = Brushes.Orchid; //TODO
     private const double LinkOffset = 20;
 
     public int Size { get; }

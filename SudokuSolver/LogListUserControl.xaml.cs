@@ -13,8 +13,7 @@ public partial class LogListUserControl
 
     public delegate void OnShowStartClicked();
     public event OnShowStartClicked? ShowStartClicked;
-    
-    
+
     private LogUserControl? _currentlyShowed;
 
     public LogListUserControl()
@@ -30,35 +29,48 @@ public partial class LogListUserControl
         {
             var luc = new LogUserControl();
             luc.InitLog(log);
-            luc.LogClicked += logClicked => ShowLog(luc, logClicked);
+            luc.LogClicked += _ => ShowLog(luc);
             List.Children.Add(luc);
         }
         
         Scroll.ScrollToBottom();
     }
 
-    private void ShowLog(LogUserControl logUserControl, ISolverLog log)
+    private void ShowLog(LogUserControl logUserControl)
     {
-        _currentlyShowed?.NotShowedAnymore();
-        _currentlyShowed = logUserControl;
-        logUserControl.CurrentlyShowed();
-        
-        LogClicked?.Invoke(log);
+        FocusLog(logUserControl);
+        LogClicked?.Invoke(logUserControl.Log!);
     }
     
     private void ShowStart(object sender, RoutedEventArgs e)
     {
-        _currentlyShowed?.NotShowedAnymore();
-        _currentlyShowed = null;
-
+        UnFocusLog();
         ShowStartClicked?.Invoke();
     }
 
     private void ShowCurrent(object sender, RoutedEventArgs e)
     {
+        UnFocusLog();
+        ShowCurrentClicked?.Invoke();
+    }
+
+    public void FocusLog(int number)
+    {
+        if (number < 0 || number >= List.Children.Count) return;
+        
+        FocusLog((LogUserControl)List.Children[number]);
+    }
+
+    private void FocusLog(LogUserControl logUserControl)
+    {
+        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed = logUserControl;
+        _currentlyShowed.CurrentlyShowed();
+    }
+
+    public void UnFocusLog()
+    {
         _currentlyShowed?.NotShowedAnymore();
         _currentlyShowed = null;
-
-        ShowCurrentClicked?.Invoke();
     }
 }

@@ -7,7 +7,7 @@ namespace SudokuSolver;
 
 public partial class LogUserControl
 {
-    private ISolverLog? _log;
+    public ISolverLog? Log { get; private set; }
 
     public delegate void OnLogClicked(ISolverLog log);
     public event OnLogClicked? LogClicked;
@@ -26,13 +26,13 @@ public partial class LogUserControl
         };
         Main.MouseLeftButtonDown += (_, _) =>
         {
-            if(_log is not null) LogClicked?.Invoke(_log);
+            if(Log is not null) LogClicked?.Invoke(Log);
         };
     }
 
     public void InitLog(ISolverLog log)
     {
-        _log = log;
+        Log = log;
 
         Number.Text = "#" + log.Id;
         Title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
@@ -42,7 +42,7 @@ public partial class LogUserControl
 
     public void CurrentlyShowed()
     {
-        if(_log is not null && _log.HighlightManager.Count > 1) Highlights.Visibility = Visibility.Visible;
+        if(Log is not null && Log.HighlightManager.Count > 1) Highlights.Visibility = Visibility.Visible;
     }
 
     public void NotShowedAnymore()
@@ -52,17 +52,17 @@ public partial class LogUserControl
 
     private void ShiftLeft(object sender, RoutedEventArgs e)
     {
-        if (_log is null) return;
+        if (Log is null) return;
         
-        _log.HighlightManager.ShiftLeft();
-        LogClicked?.Invoke(_log);
+        Log.HighlightManager.ShiftLeft();
+        LogClicked?.Invoke(Log);
     }
 
     private void ShiftRight(object sender, RoutedEventArgs e)
     {
-        if (_log is null) return;
+        if (Log is null) return;
         
-        _log.HighlightManager.ShiftRight();
-        LogClicked?.Invoke(_log);
+        Log.HighlightManager.ShiftRight();
+        LogClicked?.Invoke(Log);
     }
 }

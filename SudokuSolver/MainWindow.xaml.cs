@@ -16,134 +16,89 @@ namespace SudokuSolver;
         {
             InitializeComponent();
 
-            GetSolverUserControl().IsReady += () =>
+            Solver.IsReady += () =>
             {
-                GetSolveButton().IsEnabled = true;
-                GetClearButton().IsEnabled = true;
+                SolveButton.IsEnabled = true;
+                ClearButton.IsEnabled = true;
             };
-            GetSolverUserControl().CellClickedOn += (sender, row, col) =>
+            Solver.CellClickedOn += (sender, row, col) =>
             {
-                GetLiveModificationUserControl().SetCurrent(sender, row, col);
+                LiveModification.SetCurrent(sender, row, col);
             };
-            GetSolverUserControl().SolverUpdated += asString =>
+            Solver.SolverUpdated += asString =>
             {
                 _createNewSudoku = false;
-                GetSudokuString().Text = asString;
+                SudokuStringBox.Text = asString;
                 _createNewSudoku = true;
             };
-            GetSolverUserControl().LogsUpdated += logs =>
+            Solver.LogsUpdated += logs =>
             {
-                GetLogListUserControl().InitLogs(logs);
-                GetExplanationBox().Text = "";
+                LogList.InitLogs(logs);
+                ExplanationBox.Text = "";
+            };
+            Solver.LogFocused += LogList.FocusLog;
+            Solver.LogUnFocused += LogList.UnFocusLog;
+
+            LogList.ShowCurrentClicked += () =>
+            {
+                Solver.ShowCurrent();
+                ExplanationBox.Text = "";
+            };
+            LogList.ShowStartClicked += () =>
+            {
+                Solver.ShowStartState();
+               ExplanationBox.Text = "";
+            };
+            LogList.LogClicked += log =>
+            {
+                Solver.ShowLog(log);
+                ExplanationBox.Text = log.Explanation;
             };
 
-            GetLogListUserControl().ShowCurrentClicked += () =>
+            LiveModification.LiveModified += (number, row, col, action) =>
             {
-                GetSolverUserControl().ShowCurrent();
-                GetExplanationBox().Text = "";
-            };
-            GetLogListUserControl().ShowStartClicked += () =>
-            {
-                GetSolverUserControl().ShowStartState();
-                GetExplanationBox().Text = "";
-            };
-            GetLogListUserControl().LogClicked += log =>
-            {
-                GetSolverUserControl().ShowLog(log);
-                GetExplanationBox().Text = log.Explanation;
-            };
-
-            GetLiveModificationUserControl().LiveModified += (number, row, col, action) =>
-            {
-                if (action == SolverNumberType.Definitive) GetSolverUserControl().AddDefinitiveNumber(number, row, col);
-                else if(action == SolverNumberType.Possibility) GetSolverUserControl().RemovePossibility(number, row, col);
+                if (action == SolverNumberType.Definitive) Solver.AddDefinitiveNumber(number, row, col);
+                else if(action == SolverNumberType.Possibility) Solver.RemovePossibility(number, row, col);
             };
             
-            GetStrategyList().InitStrategies(GetSolverUserControl().GetStrategies());
-            GetStrategyList().StrategyExcluded += GetSolverUserControl().ExcludeStrategy;
-            GetStrategyList().StrategyUsed += GetSolverUserControl().UseStrategy;
+            StrategyList.InitStrategies(Solver.GetStrategies());
+            StrategyList.StrategyExcluded += Solver.ExcludeStrategy;
+            StrategyList.StrategyUsed += Solver.UseStrategy;
 
-            DelaySlider.Value = GetSolverUserControl().Delay;
+            DelaySlider.Value = Solver.Delay;
         }
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
         {
-            if (_createNewSudoku) GetSolverUserControl().NewSudoku(new Sudoku(GetSudokuString().Text));
+            if (_createNewSudoku) Solver.NewSudoku(new Sudoku(SudokuStringBox.Text));
         }
 
         private void SolveSudoku(object sender, RoutedEventArgs e)
         {
-            GetSolveButton().IsEnabled = false;
-            GetClearButton().IsEnabled = false;
+            SolveButton.IsEnabled = false;
+            ClearButton.IsEnabled = false;
 
-            SolverUserControl suc = GetSolverUserControl();
+            SolverUserControl suc = Solver;
             
-            if (GetStepByStepOption().IsChecked == true) suc.RunUntilProgress();
+            if (StepByStepOption.IsChecked == true) suc.RunUntilProgress();
             else suc.SolveSudoku();
         }
 
         private void ClearSudoku(object sender, RoutedEventArgs e)
         {
-            SolverUserControl suc = GetSolverUserControl();
+            SolverUserControl suc = Solver;
             suc.ClearSudoku();
         }
         
         private void SelectedTranslationType(object sender, RoutedEventArgs e)
         {
             if (sender is not ComboBox box) return;
-            if (MainPanel is null) return;
-            GetSolverUserControl().SetTranslationType((SudokuTranslationType) box.SelectedIndex);
+            Solver?.SetTranslationType((SudokuTranslationType) box.SelectedIndex);
         }
         
         private void SetSolverDelay(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (sender is not Slider slider) return;
-            GetSolverUserControl().Delay = (int)slider.Value;
-        }
-
-        //Gets => Should probably make properties but i'm lazy
-        private SolverUserControl GetSolverUserControl()
-        {
-            return (SolverUserControl)MainPanel.Children[0];
-        }
-
-        private LiveModificationUserControl GetLiveModificationUserControl()
-        {
-            return (LiveModificationUserControl)ModificationsPanel.Children[1];
-        }
-
-        private LogListUserControl GetLogListUserControl()
-        {
-            return (LogListUserControl)AsidePanel.Children[0];
-        }
-
-        private Button GetSolveButton()
-        {
-            return (Button)((StackPanel)MainPanel.Children[2]).Children[0];
-        }
-        
-        private Button GetClearButton()
-        {
-            return (Button)((StackPanel)MainPanel.Children[2]).Children[1];
-        }
-
-        private TextBox GetSudokuString()
-        {
-            return (TextBox)MainPanel.Children[1];
-        }
-
-        private CheckBox GetStepByStepOption()
-        {
-            return (CheckBox)OptionsPanel.Children[1];
-        }
-
-        private TextBox GetExplanationBox()
-        {
-            return (TextBox)AsidePanel.Children[1];
-        }
-
-        private StrategyListUserControl GetStrategyList()
-        {
-            return (StrategyListUserControl)AsidePanelTwo.Children[0];
+            Solver.Delay = (int)slider.Value;
         }
     }

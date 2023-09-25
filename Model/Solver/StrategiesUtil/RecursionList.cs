@@ -8,45 +8,42 @@ public class RecursionList<T> : IEnumerable<T> //TODO use everywhere
 {
     private const int DefaultSize = 8;
 
-    public int Size { get; private set; }
+    public int Count { get; private set; }
     public int Cursor
     {
         get => _cursor;
         set
         {
-            if (value < 0 || value >= Size) return;
+            if (value < 0 || value >= Count) return;
             _cursor = value;
         }
     }
 
     private T[] _array;
-    private readonly int _growth;
     private int _cursor;
 
     public RecursionList()
     {
         _array = new T[DefaultSize];
-        _growth = DefaultSize >> 1;
     }
 
     public RecursionList(int capacity)
     {
         if (capacity < 0) capacity = 0;
         _array = new T[capacity];
-        _growth = capacity >> 1;
     }
 
     public void Add(T element)
     {
-        if (Size == _array.Length)
+        if (Count == _array.Length)
         {
-            var buffer = new T[_array.Length + _growth];
-            Array.Copy(_array, 0, buffer, 0, Size);
+            var buffer = new T[_array.Length + _array.Length / 2];
+            Array.Copy(_array, 0, buffer, 0, Count);
             _array = buffer;
         }
 
-        _array[Size] = element;
-        Size++;
+        _array[Count] = element;
+        Count++;
     }
 
     public void SetAtCursor(T element)
@@ -56,11 +53,11 @@ public class RecursionList<T> : IEnumerable<T> //TODO use everywhere
 
     public void SetCursorAndSetOrAdd(int cursor, T element)
     {
-        if (cursor > Size || cursor < 0) return;
-        if (cursor == Size)
+        if (cursor > Count || cursor < 0) return;
+        if (cursor == Count)
         {
             Add(element);
-            Cursor = Size - 1;
+            Cursor = Count - 1;
             return;
         }
 

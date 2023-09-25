@@ -11,9 +11,9 @@
     <StackPanel Orientation="Horizontal" Background="{x:Static inf:ColorUtil.Background1}">
         
         <StackPanel Width="200" Height="700">
-            <StackPanel Width="200" Height="350" x:Name="OptionsPanel">
+            <StackPanel Width="200" Height="350">
                 <TextBlock Text="Options" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
-                <CheckBox HorizontalAlignment="Center" Margin="0, 10, 0, 0" IsChecked="True">Step by step</CheckBox>
+                <CheckBox HorizontalAlignment="Center" Margin="0, 10, 0, 0" IsChecked="True" x:Name="StepByStepOption">Step by step</CheckBox>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 10, 0, 0" >
                     <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">Translation</TextBlock>
                     <ComboBox Width="110" Focusable="False" IsEditable="True" IsReadOnly="True" SelectedIndex="0"
@@ -32,30 +32,30 @@
             </StackPanel>
             <StackPanel Width="200" Height="350" x:Name="ModificationsPanel">
                 <TextBlock Text="Modifications" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
-                <local:LiveModificationUserControl/>
+                <local:LiveModificationUserControl x:Name="LiveModification"/>
             </StackPanel>
         </StackPanel>
         
-        <StackPanel x:Name="MainPanel" Orientation="Vertical" Width="590">
-            <local:SolverUserControl HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Vertical" Width="590">
+            <local:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
             <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="NewSudoku"
-                     HorizontalAlignment="Center"/>
+                     HorizontalAlignment="Center" x:Name="SudokuStringBox"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"
-                        Margin="0, 0, 10, 0">Solve</Button>
+                        Margin="0, 0, 10, 0" x:Name="SolveButton">Solve</Button>
                 <Button Width="200" Height="30" Click="ClearSudoku" HorizontalAlignment="Center"
-                        Margin="10, 0, 0, 0">Clear</Button>
+                        Margin="10, 0, 0, 0" x:Name="ClearButton">Clear</Button>
             </StackPanel>
         </StackPanel>
         
-        <StackPanel x:Name="AsidePanel" Width="350">
-            <local:LogListUserControl/>
-            <TextBox Width="320" Height="200" Background="{x:Static inf:ColorUtil.Background2}" Margin="0, 10, 0, 0" TextWrapping="Wrap"
-                     HorizontalAlignment="Center" FontSize="12"/>
+        <StackPanel Width="350">
+            <local:LogListUserControl x:Name="LogList"/>
+            <TextBox Width="320" Height="200" Background="{x:Static inf:ColorUtil.Background2}" x:Name="ExplanationBox"
+                     Margin="0, 10, 0, 0" TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="12"/>
         </StackPanel>
         
-        <StackPanel x:Name="AsidePanelTwo" Width="200">
-            <local:StrategyListUserControl/>
+        <StackPanel Width="200">
+            <local:StrategyListUserControl x:Name="StrategyList"/>
         </StackPanel>
         
     </StackPanel>

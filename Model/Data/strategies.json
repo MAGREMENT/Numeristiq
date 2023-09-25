@@ -85,6 +85,11 @@
     "Used": true
   },
   {
+    "StrategyName": "Reverse BUG",
+    "Difficulty": 3,
+    "Used": true
+  },
+  {
     "StrategyName": "Finned XWing",
     "Difficulty": 4,
     "Used": true
@@ -182,6 +187,6 @@
   {
     "StrategyName": "Brute force",
     "Difficulty": 6,
-    "Used": true
+    "Used": false
   }
 ]
