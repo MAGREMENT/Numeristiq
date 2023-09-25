@@ -12,7 +12,7 @@ namespace Model.DeprecatedStrategies;
 public class OldThreeDimensionMedusaStrategy : IStrategy {
     public string Name => "3D Medusa";
     
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -166,7 +166,7 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         {
             if (coord.Coloring == invalid)
                 changeBuffer.AddPossibilityToRemove(coord.CellPossibility.Possibility, coord.CellPossibility.Row, coord.CellPossibility.Col);
-            else changeBuffer.AddDefinitiveToAdd(coord.CellPossibility.Possibility, coord.CellPossibility.Row, coord.CellPossibility.Col);
+            else changeBuffer.AddSolutionToAdd(coord.CellPossibility.Possibility, coord.CellPossibility.Row, coord.CellPossibility.Col);
         }
     }
 

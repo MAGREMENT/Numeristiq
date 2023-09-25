@@ -8,13 +8,14 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
-public class NishioForcingNetStrategy : IStrategy
-{
-    public string Name => "Nishio forcing net";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
+public class NishioForcingNetStrategy : AbstractStrategy
+{ 
+    public NishioForcingNetStrategy() : base("Nishio forcing net", StrategyDifficulty.Extreme)
+    {
+        
+    }
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         ContradictionSearcher cs = new ContradictionSearcher(strategyManager);
 

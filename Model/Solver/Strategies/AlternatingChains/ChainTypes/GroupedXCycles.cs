@@ -7,7 +7,7 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 {
     public string Name => "XCycles";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public IStrategy? Strategy { get; set; }
     
     public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager view)
@@ -81,7 +81,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility single) return false;
-        view.ChangeBuffer.AddDefinitiveToAdd(single.Possibility, single.Row, single.Col);
+        view.ChangeBuffer.AddSolutionToAdd(single.Possibility, single.Row, single.Col);
         
         return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
     }

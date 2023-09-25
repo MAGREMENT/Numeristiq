@@ -6,12 +6,14 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
-public class DigitForcingNetStrategy : IStrategy
-{
-    public string Name => "Digit forcing net";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+public class DigitForcingNetStrategy : AbstractStrategy
+{ 
+    public DigitForcingNetStrategy() : base("Digit forcing net",  StrategyDifficulty.Extreme)
+    {
+        
+    }
+    
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -48,7 +50,7 @@ public class DigitForcingNetStrategy : IStrategy
                         view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, possOn.Row, possOn.Col);
                         break;
                     case Coloring.On when on.Value == Coloring.On :
-                        view.ChangeBuffer.AddDefinitiveToAdd(possOn.Possibility, possOn.Row, possOn.Col);
+                        view.ChangeBuffer.AddSolutionToAdd(possOn.Possibility, possOn.Row, possOn.Col);
                         break;
                 }
             }

@@ -8,7 +8,7 @@ namespace Model.Solver.Strategies;
 public class ThreeDimensionMedusaStrategy : IStrategy
 {
     public string Name => "3D Medusa";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -53,7 +53,7 @@ public class ThreeDimensionMedusaStrategy : IStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(coord);
+                        strategyManager.ChangeBuffer.AddSolutionToAdd(coord);
                     }
 
                     return true;

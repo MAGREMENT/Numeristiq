@@ -2,9 +2,10 @@
 
 namespace Model.Solver.Possibilities;
 
-public class PossibilitiesSnapshot : IPossibilitiesHolder //TODO add positions
+public class PossibilitiesSnapshot : IPossibilitiesHolder
 {
     private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
+    private readonly GridPositions[] _positions = new GridPositions[9];
 
     public static IPossibilitiesHolder TakeSnapshot(IPossibilitiesHolder holder)
     {
@@ -17,6 +18,11 @@ public class PossibilitiesSnapshot : IPossibilitiesHolder //TODO add positions
             }
         }
 
+        for (int number = 1; number <= 9; number++)
+        {
+            snapshot._positions[number - 1] = holder.PositionsFor(number).Copy();
+        }
+
         return snapshot;
     }
 
@@ -27,39 +33,21 @@ public class PossibilitiesSnapshot : IPossibilitiesHolder //TODO add positions
     
     public IReadOnlyLinePositions RowPositionsAt(int row, int number)
     {
-        LinePositions result = new();
-        for (int col = 0; col < 9; col++)
-        {
-            if (_possibilities[row, col].Peek(number)) result.Add(col);
-        }
-        return result;
+        return _positions[number - 1].RowPositions(row);
     }
 
     public IReadOnlyLinePositions ColumnPositionsAt(int col, int number)
     {
-        LinePositions result = new();
-        for (int row = 0; row < 9; row++)
-        {
-            if (_possibilities[row, col].Peek(number)) result.Add(row);
-        }
-
-        return result;
+        return _positions[number - 1].ColumnPositions(col);
     }
 
     public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
     {
-        MiniGridPositions result = new(miniRow, miniCol);
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                var realRow = miniRow * 3 + i;
-                var realCol = miniCol * 3 + j;
-                
-                if (_possibilities[realRow, realCol].Peek(number)) result.Add(i, j);
-            }
-        }
+        return _positions[number - 1].MiniGridPositions(miniRow, miniCol);
+    }
 
-        return result;
+    public IReadOnlyGridPositions PositionsFor(int number)
+    {
+        return _positions[number - 1];
     }
 }

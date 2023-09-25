@@ -7,7 +7,6 @@ using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.SharedCellSearcher;
-using Model.StrategiesUtil;
 
 namespace Model;
 
@@ -17,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank2.txt");
+        FullSudokuBankTest("OnlineBank3.txt");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

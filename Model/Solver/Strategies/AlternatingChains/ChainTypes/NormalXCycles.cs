@@ -6,7 +6,7 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 public class NormalXCycles : IAlternatingChainType<CellPossibility>
 {
     public string Name => "XCycles";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public IStrategy? Strategy { get; set; }
     public LinkGraph<CellPossibility> GetGraph(IStrategyManager view)
     {

@@ -1,25 +1,20 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AlignedPairExclusionStrategy : IStrategy
+public class AlignedPairExclusionStrategy : AbstractStrategy
 {
-    public string Name => "Aligned pair exclusion";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
-    public StatisticsTracker Tracker { get; } = new();
-
     private readonly int _maxAlzSize;
 
-    public AlignedPairExclusionStrategy(int maxAlsSize)
+    public AlignedPairExclusionStrategy(int maxAlsSize) : base("Aligned pair exclusion",  StrategyDifficulty.Hard)
     {
         _maxAlzSize = maxAlsSize;
     }
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for(int i = 0; i < 81; i++)
         {

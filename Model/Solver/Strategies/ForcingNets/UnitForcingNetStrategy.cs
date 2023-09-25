@@ -7,20 +7,16 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
-public class UnitForcingNetStrategy : IStrategy
+public class UnitForcingNetStrategy : AbstractStrategy
 {
-    public string Name => "Unit forcing net";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
-
     private readonly int _max;
 
-    public UnitForcingNetStrategy(int maxPossibilities)
+    public UnitForcingNetStrategy(int maxPossibilities) : base("Unit forcing net", StrategyDifficulty.Extreme)
     {
         _max = maxPossibilities;
     }
     
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -105,7 +101,7 @@ public class UnitForcingNetStrategy : IStrategy
 
             if (sameInAll)
             {
-                if (col == Coloring.On) view.ChangeBuffer.AddDefinitiveToAdd(current.Possibility, current.Row, current.Col);
+                if (col == Coloring.On) view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
                 else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
             }
         }

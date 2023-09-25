@@ -7,7 +7,7 @@ namespace Model.Solver.Strategies;
 public class ExocetStrategy : IStrategy
 {
     public string Name => "Exocet";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _max;

@@ -8,7 +8,7 @@ namespace Model.Solver.Strategies;
 public class BUGStrategy : IStrategy
 {
     public string Name => "BUG";
-    public StrategyLevel Difficulty => StrategyLevel.Medium;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -23,7 +23,7 @@ public class BUGStrategy : IStrategy
                 strategyManager.MiniGridPositionsAt(triple.Row / 3, triple.Col / 3, possibility).Count != 3) 
                 continue;
             
-            strategyManager.ChangeBuffer.AddDefinitiveToAdd(possibility, triple.Row, triple.Col);
+            strategyManager.ChangeBuffer.AddSolutionToAdd(possibility, triple.Row, triple.Col);
             break;
         }
 

@@ -3,7 +3,7 @@ using Model.Solver.Possibilities;
 
 namespace Model.Solver.StrategiesUtil;
 
-public static class AlmostLockedSetSearcher //TODO look to replace list copy with class, do "in rows, cols, minis" & "everywhere"
+public static class AlmostLockedSetSearcher //TODO do "in rows, cols, minis"
 {
     public static List<AlmostLockedSet> InCells(IStrategyManager view, List<Cell> coords, int max)
     {
@@ -105,7 +105,7 @@ public static class AlmostLockedSetSearcher //TODO look to replace list copy wit
         
     }
     
-    private static void InRow(IStrategyManager strategyManager, int row, int start, IReadOnlyPossibilities current, //TODO use recursion list and make into separate functions
+    private static void InRow(IStrategyManager strategyManager, int row, int start, IReadOnlyPossibilities current,
         RecursionList<Cell> visited, List<AlmostLockedSet> result)
     {
         int next = visited.Cursor + 1;

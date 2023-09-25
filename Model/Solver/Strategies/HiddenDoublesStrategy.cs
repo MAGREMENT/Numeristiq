@@ -12,7 +12,7 @@ namespace Model.Solver.Strategies;
 public class HiddenDoublesStrategy : IStrategy
 {
     public string Name => "Hidden doubles";
-    public StrategyLevel Difficulty => StrategyLevel.Easy;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {

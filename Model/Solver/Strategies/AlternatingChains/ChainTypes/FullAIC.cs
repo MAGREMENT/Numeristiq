@@ -10,7 +10,7 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 public class FullAIC : IAlternatingChainType<ILinkGraphElement>
 {
     public string Name => "Alternating inference chain";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public IStrategy? Strategy { get; set; }
     public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager view)
     {
@@ -162,7 +162,7 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
-        view.ChangeBuffer.AddDefinitiveToAdd(pos.Possibility, pos.Row, pos.Col);
+        view.ChangeBuffer.AddSolutionToAdd(pos.Possibility, pos.Row, pos.Col);
 
         return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
     }

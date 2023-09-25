@@ -11,7 +11,7 @@ namespace Model.Solver.Strategies;
 public class NakedSingleStrategy : IStrategy
 {
     public string Name => "Naked single";
-    public StrategyLevel Difficulty => StrategyLevel.Basic;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Basic;
     public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -19,7 +19,7 @@ public class NakedSingleStrategy : IStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.PossibilitiesAt(row, col).Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(
+                if (strategyManager.PossibilitiesAt(row, col).Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(
                         strategyManager.PossibilitiesAt(row, col).GetFirst(), row, col);
             }
         }

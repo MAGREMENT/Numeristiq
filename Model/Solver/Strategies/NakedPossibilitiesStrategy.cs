@@ -16,7 +16,7 @@ namespace Model.Solver.Strategies;
 public class NakedPossibilitiesStrategy : IStrategy
 {
     public string Name { get; }
-    public StrategyLevel Difficulty { get; }
+    public StrategyDifficulty Difficulty { get; }
     public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
@@ -27,16 +27,16 @@ public class NakedPossibilitiesStrategy : IStrategy
         switch (type)
         {
             case 2 : Name = "Naked double";
-                Difficulty = StrategyLevel.Easy;
+                Difficulty = StrategyDifficulty.Easy;
                 break;
             case 3 : Name = "Naked triple";
-                Difficulty = StrategyLevel.Easy;
+                Difficulty = StrategyDifficulty.Easy;
                 break;
             case 4 : Name = "Naked quad";
-                Difficulty = StrategyLevel.Easy;
+                Difficulty = StrategyDifficulty.Easy;
                 break;
             default : Name = "Naked unknown";
-                Difficulty = StrategyLevel.None;
+                Difficulty = StrategyDifficulty.None;
                 break;
         }
     }

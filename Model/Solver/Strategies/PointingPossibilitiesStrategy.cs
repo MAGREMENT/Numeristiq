@@ -34,7 +34,7 @@ public class PointingPossibilitiesStrategy : IStrategy
 {
     public string Name => "Pointing possibilities";
     
-    public StrategyLevel Difficulty => StrategyLevel.Easy;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)

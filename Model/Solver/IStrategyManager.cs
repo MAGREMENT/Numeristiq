@@ -8,6 +8,8 @@ namespace Model.Solver;
 
 public interface IStrategyManager : IPossibilitiesHolder
 {
+    IReadOnlySudoku OriginalBoard { get; }
+    
     bool AddSolution(int number, int row, int col, IStrategy strategy);
 
     bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
@@ -19,8 +21,6 @@ public interface IStrategyManager : IPossibilitiesHolder
     PreComputer PreComputer { get; }
 
     public IReadOnlySudoku Sudoku { get; }
-
-    public Solver Copy();
 }
 
 

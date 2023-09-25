@@ -12,7 +12,7 @@ public class OldSimpleColoringStrategy : IStrategy
 {
     public string Name => "Simple coloring";
     
-    public StrategyLevel Difficulty => StrategyLevel.Medium;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -60,7 +60,7 @@ public class OldSimpleColoringStrategy : IStrategy
                 foreach (var coord in web)
                 {
                     if (coord.Coloring == one.Coloring) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, coord.Cell.Row, coord.Cell.Col);
-                    else strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, coord.Cell.Row, coord.Cell.Col);
+                    else strategyManager.ChangeBuffer.AddSolutionToAdd(number, coord.Cell.Row, coord.Cell.Col);
                 }
             }
 

@@ -11,7 +11,7 @@ namespace Model.Solver.Strategies;
 public class UniqueRectanglesStrategy : IStrategy
 {
     public string Name => "Unique rectangles";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)
     {

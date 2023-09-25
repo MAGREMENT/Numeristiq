@@ -10,7 +10,7 @@ namespace Model.Solver.Strategies;
 public class PatternOverlayStrategy : IStrategy
 {
     public string Name => "Pattern Overlay";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _max;
@@ -47,7 +47,7 @@ public class PatternOverlayStrategy : IStrategy
 
                 if (count == 0) strategyManager.ChangeBuffer.AddPossibilityToRemove(i + 1, coord.Row, coord.Col);
                 else if (count == patternsExamined.Count)
-                    strategyManager.ChangeBuffer.AddDefinitiveToAdd(i + 1, coord.Row, coord.Col);
+                    strategyManager.ChangeBuffer.AddSolutionToAdd(i + 1, coord.Row, coord.Col);
             }
 
             if (strategyManager.ChangeBuffer.NotEmpty())

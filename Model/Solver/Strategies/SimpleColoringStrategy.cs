@@ -9,7 +9,7 @@ namespace Model.Solver.Strategies;
 public class SimpleColoringStrategy : IStrategy
 {
     public string Name => "Simple coloring";
-    public StrategyLevel Difficulty => StrategyLevel.Medium;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -52,7 +52,7 @@ public class SimpleColoringStrategy : IStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyManager.ChangeBuffer.AddDefinitiveToAdd(coord);
+                        strategyManager.ChangeBuffer.AddSolutionToAdd(coord);
                     }
 
                     return true;

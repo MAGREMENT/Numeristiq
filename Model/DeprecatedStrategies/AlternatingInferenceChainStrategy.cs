@@ -3,7 +3,6 @@ using System.Linq;
 using Model.Solver;
 using Model.Solver.Helpers;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.DeprecatedStrategies;
 
@@ -11,7 +10,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
 {
     public string Name { get; } = "Alternating inference chain";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Extreme;
+    public StrategyDifficulty Difficulty { get; } = StrategyDifficulty.Extreme;
     public StatisticsTracker Tracker { get; } = new();
 
     public long SearchCount { get; private set; }
@@ -301,14 +300,4 @@ public class LinkResume
     public HashSet<CellPossibility> WeakLinks { get; } = new();
 
     public int Count => StrongLinks.Count + WeakLinks.Count;
-}
-
-public class Path<T>
-{
-    public T First { get; }
-
-    public Path(T first)
-    {
-        First = first;
-    }
 }

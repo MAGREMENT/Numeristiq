@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
@@ -8,20 +7,16 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
-public class CellForcingNetStrategy : IStrategy
+public class CellForcingNetStrategy : AbstractStrategy
 {
-    public string Name => "Cell forcing net";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
-
     private readonly int _max;
 
-    public CellForcingNetStrategy(int maxPossibilities)
+    public CellForcingNetStrategy(int maxPossibilities) : base("Cell forcing net",  StrategyDifficulty.Extreme)
     {
         _max = maxPossibilities;
     }
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -65,7 +60,7 @@ public class CellForcingNetStrategy : IStrategy
             if (isSameInAll)
             {
                 if (currentColoring == Coloring.On)
-                    view.ChangeBuffer.AddDefinitiveToAdd(current.Possibility, current.Row, current.Col);
+                    view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
                 else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
             }
 

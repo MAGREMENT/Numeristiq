@@ -7,7 +7,7 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 public class NormalAIC : IAlternatingChainType<CellPossibility>
 {
     public string Name => "Alternating inference chain";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public IStrategy? Strategy { get; set; }
 
     public LinkGraph<CellPossibility> GetGraph(IStrategyManager view)

@@ -1,29 +1,22 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains;
 
-public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElement, ILinkGraphElement
+public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILoopElement, ILinkGraphElement
 {
-    public string Name { get; }
-    public StrategyLevel Difficulty { get; }
-    public StatisticsTracker Tracker { get; } = new();
-
     private readonly IAlternatingChainType<T> _chain;
     private readonly IAlternatingChainAlgorithm<T> _algorithm;
 
-    public AlternatingChainGeneralization(IAlternatingChainType<T> chainType, IAlternatingChainAlgorithm<T> algo)
+    public AlternatingChainGeneralization(IAlternatingChainType<T> chainType, IAlternatingChainAlgorithm<T> algo) : base(chainType.Name, chainType.Difficulty)
     {
         _chain = chainType;
         _chain.Strategy = this;
-        Name = chainType.Name;
-        Difficulty = chainType.Difficulty;
         _algorithm = algo;
     }
     
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         _algorithm.Run(strategyManager, _chain.GetGraph(strategyManager), _chain);
     }
@@ -32,7 +25,7 @@ public class AlternatingChainGeneralization<T> : IStrategy where T : ILoopElemen
 public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElement
 {
     public string Name { get; }
-    public StrategyLevel Difficulty { get; }
+    public StrategyDifficulty Difficulty { get; }
     IStrategy? Strategy { set; }
     
     LinkGraph<T> GetGraph(IStrategyManager view);

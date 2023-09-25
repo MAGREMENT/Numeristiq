@@ -53,7 +53,7 @@ public class StrategyLoader
         new UnitForcingNetStrategy(4),
         new NishioForcingNetStrategy(),
         new PatternOverlayStrategy(15),
-        new TrialAndMatchStrategy(2)
+        new BruteForceStrategy()
     };
 
     private readonly IStrategyHolder _holder;
@@ -104,13 +104,13 @@ public class StrategyLoader
 public class StrategyInfo
 {
     public string StrategyName { get; set; }
-    public StrategyLevel Difficulty { get; set; }
+    public StrategyDifficulty Difficulty { get; set; }
     public bool Used { get; set; }
 
     public StrategyInfo()
     {
         StrategyName = "Unknown";
-        Difficulty = StrategyLevel.None;
+        Difficulty = StrategyDifficulty.None;
         Used = false;
     }
 

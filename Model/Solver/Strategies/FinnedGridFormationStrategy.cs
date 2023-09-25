@@ -10,7 +10,7 @@ namespace Model.Solver.Strategies;
 public class FinnedGridFormationStrategy : IStrategy
 {
     public string Name { get; }
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
     
     private readonly int _type;

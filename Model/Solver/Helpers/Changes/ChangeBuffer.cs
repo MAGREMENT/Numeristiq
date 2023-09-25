@@ -27,12 +27,12 @@ public class ChangeBuffer
         _possibilityRemoved.Add(coord);
     }
 
-    public void AddDefinitiveToAdd(int number, int row, int col)
+    public void AddSolutionToAdd(int number, int row, int col)
     {
-        AddDefinitiveToAdd(new CellPossibility(row, col, number));
+        AddSolutionToAdd(new CellPossibility(row, col, number));
     }
 
-    public void AddDefinitiveToAdd(CellPossibility coord)
+    public void AddSolutionToAdd(CellPossibility coord)
     {
         _definitiveAdded.Add(coord);
     }

@@ -8,7 +8,7 @@ namespace SudokuSolver.Utils;
 public static class ColorUtil
 {
     public static readonly Brush Background1 = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
-    public static readonly Brush Background2 = new SolidColorBrush(Color.FromRgb(0xE3, 0xE3, 0xE3));
+    public static readonly Brush Background2 = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xEF));
     public static readonly Brush Background3 = new SolidColorBrush(Color.FromRgb(0xD1, 0xD1, 0xD1));
     public static readonly Brush Green = new SolidColorBrush(Color.FromRgb(0x50, 0xC1, 0x31));
     public static readonly Brush Purple = new SolidColorBrush(Color.FromRgb(0xBA, 0x7B, 0xC8));
@@ -46,16 +46,16 @@ public static class ColorUtil
         };
     }
     
-    public static Color ToColor(StrategyLevel level)
+    public static Color ToColor(StrategyDifficulty difficulty)
     {
-        return level switch
+        return difficulty switch
         {
-            StrategyLevel.Basic => Colors.RoyalBlue,
-            StrategyLevel.Easy => Colors.Green,
-            StrategyLevel.Medium => Colors.Orange,
-            StrategyLevel.Hard => Colors.Red,
-            StrategyLevel.Extreme => Colors.Purple,
-            StrategyLevel.ByTrial => Colors.Black,
+            StrategyDifficulty.Basic => Colors.RoyalBlue,
+            StrategyDifficulty.Easy => Colors.Green,
+            StrategyDifficulty.Medium => Colors.Orange,
+            StrategyDifficulty.Hard => Colors.Red,
+            StrategyDifficulty.Extreme => Colors.Purple,
+            StrategyDifficulty.ByTrial => Colors.Black,
             _ => Colors.Gray
         };
     }

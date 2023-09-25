@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Positions;
 
-public class GridPositions : IEnumerable<Cell>
+public class GridPositions : IReadOnlyGridPositions
 {
     private const int FirstLimit = 53;
     private const ulong RowMask = 0x1FF;
@@ -215,39 +215,5 @@ public class GridPositions : IEnumerable<Cell>
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
-    }
-
-    protected BitValue GetBitValue() => new(_first, _second);
-
-    public readonly struct BitValue
-    {
-        private readonly ulong _first;
-        private readonly ulong _second;
-
-        public BitValue(ulong first, ulong second)
-        {
-            _first = first;
-            _second = second;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            return obj is BitValue bv && bv._first == _first && bv._second == _second;
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(_first, _second);
-        }
-
-        public static bool operator ==(BitValue left, BitValue right)
-        {
-            return left._first == right._first && left._second == right._second;
-        }
-
-        public static bool operator !=(BitValue left, BitValue right)
-        {
-            return !(left == right);
-        }
     }
 }

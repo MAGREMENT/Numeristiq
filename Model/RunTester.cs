@@ -97,7 +97,7 @@ public class RunResult
 public class StrategyReport
 {
     public string StrategyName { get; }
-    public StrategyLevel Difficulty { get; }
+    public StrategyDifficulty Difficulty { get; }
     public IReadOnlyTracker Tracker { get; }
 
     public StrategyReport(IStrategy strategy)

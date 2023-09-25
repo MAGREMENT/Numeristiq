@@ -14,7 +14,7 @@ public class GridFormationStrategy : IStrategy
 {
     public string Name { get; }
 
-    public StrategyLevel Difficulty { get; }
+    public StrategyDifficulty Difficulty { get; }
     public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
@@ -25,16 +25,16 @@ public class GridFormationStrategy : IStrategy
         switch (type)
         {
             case 2 : Name = "XWing";
-                Difficulty = StrategyLevel.Medium;
+                Difficulty = StrategyDifficulty.Medium;
                 break;
             case 3 : Name = "Swordfish";
-                Difficulty = StrategyLevel.Medium;
+                Difficulty = StrategyDifficulty.Medium;
                 break;
             case 4 : Name = "Jellyfish";
-                Difficulty = StrategyLevel.Medium;
+                Difficulty = StrategyDifficulty.Medium;
                 break;
             default : Name = "Grid formation unknown";
-                Difficulty = StrategyLevel.None;
+                Difficulty = StrategyDifficulty.None;
                 break;
         }
     }

@@ -41,16 +41,16 @@ public static class ColorUtil
         };
     }
     
-    public static Color ToColor(StrategyLevel level)
+    public static Color ToColor(StrategyDifficulty difficulty)
     {
-        return level switch
+        return difficulty switch
         {
-            StrategyLevel.Basic => Colors.RoyalBlue,
-            StrategyLevel.Easy => Colors.Green,
-            StrategyLevel.Medium => Colors.Orange,
-            StrategyLevel.Hard => Colors.Red,
-            StrategyLevel.Extreme => Colors.Purple,
-            StrategyLevel.ByTrial => Colors.Black,
+            StrategyDifficulty.Basic => Colors.RoyalBlue,
+            StrategyDifficulty.Easy => Colors.Green,
+            StrategyDifficulty.Medium => Colors.Orange,
+            StrategyDifficulty.Hard => Colors.Red,
+            StrategyDifficulty.Extreme => Colors.Purple,
+            StrategyDifficulty.ByTrial => Colors.Black,
             _ => Colors.Gray
         };
     }

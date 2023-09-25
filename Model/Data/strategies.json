@@ -180,8 +180,8 @@
     "Used": true
   },
   {
-    "StrategyName": "Trial and match",
+    "StrategyName": "Brute force",
     "Difficulty": 6,
-    "Used": false
+    "Used": true
   }
 ]

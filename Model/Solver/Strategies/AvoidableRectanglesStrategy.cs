@@ -3,22 +3,17 @@ using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
+public class AvoidableRectanglesStrategy : IStrategy
 {
     public string Name => "Avoidable rectangles";
-    public StrategyLevel Difficulty => StrategyLevel.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
-
-    private Sudoku? _originalBoard;
 
     public void ApplyOnce(IStrategyManager strategyManager)
     {
-        if (_originalBoard is null) return;
-
         for (int row = 0; row < 9; row++)
         {
             SearchForRowMatch(strategyManager, RowSolvedNumberPairs(strategyManager, row), row);
@@ -45,7 +40,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 
                 //Type 1
                 if (strategyManager.Sudoku[row, pair[0].Column] == pair[1].Number &&
-                    _originalBoard![row, pair[0].Column] == 0)
+                    strategyManager.OriginalBoard[row, pair[0].Column] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, row, pair[1].Column);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -54,7 +49,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 
 
                 if (strategyManager.Sudoku[row, pair[1].Column] == pair[0].Number &&
-                    _originalBoard![row, pair[1].Column] == 0)
+                    strategyManager.OriginalBoard[row, pair[1].Column] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, row, pair[0].Column);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -113,7 +108,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 
         for (int col = 0; col < 9; col++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && _originalBoard![row, col] == 0) 
+            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0) 
                 SearchRowForPairs(strategyManager, row, col + 1,
                     new SolvedNumber(strategyManager.Sudoku[row, col], row, col), result);
         }
@@ -126,7 +121,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
     {
         for (int col = start; col < 9; col++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && _originalBoard![row, col] == 0)
+            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0)
             {
                 result.Add(new []{current, new SolvedNumber(strategyManager.Sudoku[row, col], row, col)});
             }
@@ -148,7 +143,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 
                 //Type 1
                 if (strategyManager.Sudoku[pair[0].Row, col] == pair[1].Number &&
-                    _originalBoard![pair[0].Row, col] == 0)
+                    strategyManager.OriginalBoard[pair[0].Row, col] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, pair[1].Row, col);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -157,7 +152,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 
 
                 if (strategyManager.Sudoku[pair[1].Row, col] == pair[0].Number &&
-                    _originalBoard![pair[1].Row, col] == 0)
+                    strategyManager.OriginalBoard[pair[1].Row, col] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, pair[0].Row, col);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -216,7 +211,7 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
 
         for (int row = 0; row < 9; row++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && _originalBoard![row, col] == 0) 
+            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0) 
                 SearchColumnForPairs(strategyManager, col, row + 1,
                     new SolvedNumber(strategyManager.Sudoku[row, col], row, col), result);
         }
@@ -229,18 +224,13 @@ public class AvoidableRectanglesStrategy : IOriginalBoardNeededStrategy
     {
         for (int row = start; row < 9; row++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && _originalBoard![row, col] == 0)
+            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0)
             {
                 result.Add(new []{current, new SolvedNumber(strategyManager.Sudoku[row, col], row, col)});
             }
         }
     }
 
-    public void SetOriginalBoard(Sudoku board)
-    {
-        _originalBoard = board;
-    }
-    
     private void RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Cell> coords,
         AlmostLockedSet except)
     {

@@ -17,7 +17,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
 {
     public string Name { get; }
 
-    public StrategyLevel Difficulty { get; }
+    public StrategyDifficulty Difficulty { get; }
     public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
@@ -28,16 +28,16 @@ public class HiddenPossibilitiesStrategy : IStrategy
         switch (type)
         {
             case 2 : Name = "Hidden double";
-                Difficulty = StrategyLevel.Easy;
+                Difficulty = StrategyDifficulty.Easy;
                 break;
             case 3 : Name = "Hidden triple";
-                Difficulty = StrategyLevel.Easy;
+                Difficulty = StrategyDifficulty.Easy;
                 break;
             case 4 : Name = "Hidden quad";
-                Difficulty = StrategyLevel.Easy;
+                Difficulty = StrategyDifficulty.Easy;
                 break;
             default : Name = "Hidden unknown";
-                Difficulty = StrategyLevel.None;
+                Difficulty = StrategyDifficulty.None;
                 break;
         }
     }

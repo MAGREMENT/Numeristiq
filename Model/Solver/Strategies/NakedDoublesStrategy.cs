@@ -13,7 +13,7 @@ namespace Model.Solver.Strategies;
 public class NakedDoublesStrategy : IStrategy
 {
     public string Name => "Naked doubles";
-    public StrategyLevel Difficulty => StrategyLevel.Easy;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -161,12 +161,12 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
             switch (_unit)
             {
                 case Unit.Row :
-                    cells.Add(new CellPossibility(possibility, _unitNumber, _other1));
-                    cells.Add(new CellPossibility(possibility, _unitNumber, _other2));
+                    cells.Add(new CellPossibility(_unitNumber, _other1, possibility));
+                    cells.Add(new CellPossibility(_unitNumber, _other2, possibility));
                     break;
                 case Unit.Column :
-                    cells.Add(new CellPossibility(possibility, _other1, _unitNumber));
-                    cells.Add(new CellPossibility(possibility, _other2, _unitNumber));
+                    cells.Add(new CellPossibility(_other1, _unitNumber, possibility));
+                    cells.Add(new CellPossibility(_other2, _unitNumber, possibility));
                     break;
             } 
         }
@@ -175,8 +175,10 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.ChangeOne);
+                lighter.HighlightPossibility(cell, ChangeColoration.CauseOffOne);
             }
+            
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
 
@@ -213,15 +215,17 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
             int row = _miniRow * 3 + _gn1 / 3;
             int col = _miniCol * 3 + _gn2 % 3;
             
-            cells.Add(new CellPossibility(possibility, row, col));
+            cells.Add(new CellPossibility(row, col, possibility));
         }
         
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.ChangeOne);
+                lighter.HighlightPossibility(cell, ChangeColoration.CauseOffOne);
             }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
     

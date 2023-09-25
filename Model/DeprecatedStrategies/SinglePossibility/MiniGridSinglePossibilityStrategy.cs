@@ -7,7 +7,7 @@ public class MiniGridSinglePossibilityStrategy : IStrategy
 {
     public string Name { get; } = "Single possibility";
     
-    public StrategyLevel Difficulty { get; } = StrategyLevel.Basic;
+    public StrategyDifficulty Difficulty { get; } = StrategyDifficulty.Basic;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)

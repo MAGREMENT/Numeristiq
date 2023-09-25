@@ -6,7 +6,6 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
-using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
@@ -47,7 +46,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public Solver(Sudoku s)
     {
         _sudoku = s;
-        SetOriginalBoardForStrategies();
+        OriginalBoard = s.Copy();
 
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
@@ -66,33 +65,13 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         
         ChangeBuffer = new ChangeBuffer(this);
     }
-    
-    private Solver(Sudoku s, IPossibilities[,] p, GridPositions[] g, IStrategy[] t)
-    {
-        _sudoku = s;
-        SetOriginalBoardForStrategies();
-        
-        _possibilities = p;
-        _positions = g;
 
-        NumberAdded += (_, _) => _changeWasMade = true;
-        PossibilityRemoved += (_, _) => _changeWasMade = true;
-        
-        _strategyLoader = new StrategyLoader(this);
-        Strategies = t;
-        PreComputer = new PreComputer(this);
-        GraphManager = new LinkGraphManager(this);
-        _logManager = new LogManager(this);
-        _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
-        ChangeBuffer = new ChangeBuffer(this);
-    }
-    
     //Solver------------------------------------------------------------------------------------------------------------
     
     public void SetSudoku(Sudoku s)
     {
         _sudoku = s;
-        SetOriginalBoardForStrategies();
+        OriginalBoard = s.Copy();
 
         Reset();
 
@@ -164,11 +143,11 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         _excludedStrategies |= 1ul << number;
     }
 
-    public void ExcludeStrategies(StrategyLevel level)
+    public void ExcludeStrategies(StrategyDifficulty difficulty)
     {
         for (int i = 0; i < Strategies.Length; i++)
         {
-            if (Strategies[i].Difficulty == level) ExcludeStrategy(i);
+            if (Strategies[i].Difficulty == difficulty) ExcludeStrategy(i);
         }
     }
 
@@ -199,8 +178,15 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         return _positions[number - 1].MiniGridPositions(miniRow, miniCol);
     }
 
+    public IReadOnlyGridPositions PositionsFor(int number)
+    {
+        return _positions[number - 1];
+    }
+
     //StrategyManager---------------------------------------------------------------------------------------------------
-    
+
+    public IReadOnlySudoku OriginalBoard { get; private set; }
+
     public bool AddSolution(int number, int row, int col, IStrategy strategy)
     {
         if (!AddSolution(number, row, col)) return false;
@@ -221,29 +207,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
     public LinkGraphManager GraphManager { get; }
     public PreComputer PreComputer { get; }
 
-    public Solver Copy()
-    {
-        IPossibilities[,] possCopy = new IPossibilities[9, 9];
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                possCopy[row, col] = _possibilities[row, col].Copy();
-            }
-        }
-
-        GridPositions[] gpCopy = new GridPositions[9];
-        for (int i = 0; i < 9; i++)
-        {
-            gpCopy[0] = _positions[i].Copy();
-        }
-
-        IStrategy[] strategiesCopy = new IStrategy[Strategies.Length];
-        Array.Copy(Strategies, strategiesCopy, Strategies.Length);
-        
-        return new Solver(_sudoku.Copy(), possCopy, gpCopy, strategiesCopy);
-    }
-    
     //ChangeManager-----------------------------------------------------------------------------------------------------
     
     public IPossibilitiesHolder TakePossibilitiesSnapshot()
@@ -435,17 +398,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         pos.VoidRow(row);
         pos.VoidColumn(col);
         pos.VoidMiniGrid(row / 3, col / 3);
-    }
-
-    private void SetOriginalBoardForStrategies()
-    {
-        foreach (var strategy in Strategies)
-        {
-            if (strategy is IOriginalBoardNeededStrategy originalBoardNeededStrategy)
-            {
-                originalBoardNeededStrategy.SetOriginalBoard(_sudoku.Copy());
-            }
-        }
     }
 
     private string GetState()

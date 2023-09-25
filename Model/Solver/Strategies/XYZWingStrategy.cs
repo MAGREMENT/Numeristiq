@@ -11,7 +11,7 @@ public class XYZWingStrategy : IStrategy
 {
     public string Name => "XYZWing";
     
-    public StrategyLevel Difficulty => StrategyLevel.Medium;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)

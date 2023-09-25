@@ -34,7 +34,7 @@ namespace Model.Solver.Strategies;
 public class BoxLineReductionStrategy : IStrategy
 {
     public string Name => "Box line reduction";
-    public StrategyLevel Difficulty => StrategyLevel.Easy;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)

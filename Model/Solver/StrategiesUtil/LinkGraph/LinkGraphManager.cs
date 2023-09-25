@@ -3,13 +3,13 @@ using Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph;
 
-public class LinkGraphManager //TODO : Refactor chaining strategies, cache the linkgraph
+public class LinkGraphManager //TODO : Refactor chaining strategies
 {
     public LinkGraph<ILinkGraphElement> LinkGraph { get; } = new();
 
-    private readonly IStrategyManager _solver; //TODO make into interface
+    private readonly IStrategyManager _solver;
 
-    private long _rulesApplied = 0;
+    private long _rulesApplied;
     private readonly IConstructRule[] _rules =
     {
         new UnitStrongLinkConstructRule(),

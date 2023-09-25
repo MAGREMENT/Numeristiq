@@ -19,4 +19,6 @@ public interface IPossibilitiesHolder
     IReadOnlyLinePositions RowPositionsAt(int row, int number);
 
     IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number);
+
+    IReadOnlyGridPositions PositionsFor(int number);
 }

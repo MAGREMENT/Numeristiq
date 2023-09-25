@@ -13,7 +13,7 @@ namespace Model.Solver.Strategies;
 public class HiddenSingleStrategy : IStrategy
 {
     public string Name => "Hidden single";
-    public StrategyLevel Difficulty => StrategyLevel.Basic;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Basic;
     public StatisticsTracker Tracker { get; } = new();
     
     public void ApplyOnce(IStrategyManager strategyManager)
@@ -23,13 +23,13 @@ public class HiddenSingleStrategy : IStrategy
             for (int row = 0; row < 9; row++)
             {
                 var ppir = strategyManager.RowPositionsAt(row, number);
-                if (ppir.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, row, ppir.GetFirst());
+                if (ppir.Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(number, row, ppir.GetFirst());
             }
 
             for (int col = 0; col < 9; col++)
             {
                 var ppic = strategyManager.ColumnPositionsAt(col, number);
-                if (ppic.Count == 1) strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, ppic.GetFirst(), col);
+                if (ppic.Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(number, ppic.GetFirst(), col);
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -40,7 +40,7 @@ public class HiddenSingleStrategy : IStrategy
                     if (ppimn.Count != 1) continue;
                     
                     var pos = ppimn.GetFirst();
-                    strategyManager.ChangeBuffer.AddDefinitiveToAdd(number, pos.Row, pos.Col);
+                    strategyManager.ChangeBuffer.AddSolutionToAdd(number, pos.Row, pos.Col);
                 }
             }
         }

@@ -10,7 +10,7 @@ namespace Model.Solver.Strategies;
 public class SueDeCoqStrategy : IStrategy
 {
     public string Name => "Sue-De-Coq";
-    public StrategyLevel Difficulty => StrategyLevel.Extreme;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public StatisticsTracker Tracker { get; } = new();
     
     public void ApplyOnce(IStrategyManager strategyManager)

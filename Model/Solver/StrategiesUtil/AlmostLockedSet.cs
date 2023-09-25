@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Model.Solver.Possibilities;
 
 namespace Model.Solver.StrategiesUtil;
