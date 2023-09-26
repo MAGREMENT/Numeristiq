@@ -10,7 +10,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class ReverseBUGStrategy : AbstractStrategy
 {
-    public ReverseBUGStrategy() : base("Reverse BUG", StrategyDifficulty.Medium)
+    public const string OfficialName = "Reverse BUG";
+    
+    public ReverseBUGStrategy() : base(OfficialName, StrategyDifficulty.Medium)
     {
     }
 

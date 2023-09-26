@@ -9,7 +9,9 @@ namespace Model.Solver.Strategies;
 
 public class PatternOverlayStrategy : IStrategy
 {
-    public string Name => "Pattern Overlay";
+    public const string OfficialName = "Pattern Overlay";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public StatisticsTracker Tracker { get; } = new();
 

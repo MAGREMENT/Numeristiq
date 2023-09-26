@@ -12,7 +12,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class HiddenSingleStrategy : IStrategy
 {
-    public string Name => "Hidden single";
+    public const string OfficialName = "Hidden Single";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Basic;
     public StatisticsTracker Tracker { get; } = new();
     

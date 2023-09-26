@@ -9,9 +9,11 @@ namespace Model.Solver.Strategies.ForcingNets;
 
 public class UnitForcingNetStrategy : AbstractStrategy
 {
+    public const string OfficialName = "Unit Forcing Net";
+    
     private readonly int _max;
 
-    public UnitForcingNetStrategy(int maxPossibilities) : base("Unit forcing net", StrategyDifficulty.Extreme)
+    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StrategyDifficulty.Extreme)
     {
         _max = maxPossibilities;
     }

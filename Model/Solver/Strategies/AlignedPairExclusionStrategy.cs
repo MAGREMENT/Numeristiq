@@ -7,9 +7,11 @@ namespace Model.Solver.Strategies;
 
 public class AlignedPairExclusionStrategy : AbstractStrategy
 {
+    public const string OfficialName = "Aligned Pair Exclusion";
+    
     private readonly int _maxAlzSize;
 
-    public AlignedPairExclusionStrategy(int maxAlsSize) : base("Aligned pair exclusion",  StrategyDifficulty.Hard)
+    public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName,  StrategyDifficulty.Hard)
     {
         _maxAlzSize = maxAlsSize;
     }

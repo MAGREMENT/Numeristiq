@@ -34,8 +34,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class XWingStrategy : IStrategy
 {
-    public string Name => "XWing";
+    public const string OfficialName = "X-Wing";
     
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 

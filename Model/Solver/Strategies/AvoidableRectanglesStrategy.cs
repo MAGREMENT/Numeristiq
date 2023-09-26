@@ -8,7 +8,9 @@ namespace Model.Solver.Strategies;
 
 public class AvoidableRectanglesStrategy : IStrategy
 {
-    public string Name => "Avoidable rectangles";
+    public const string OfficialName = "Avoidable Rectangles";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
 

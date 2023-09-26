@@ -11,14 +11,15 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 namespace Model.Solver;
 
 //TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
-public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHolder 
+//TODO correct visuals for naked doubles & XYWing
+public class Solver : IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;
     private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
     private readonly GridPositions[] _positions = new GridPositions[9];
     
     public IReadOnlySudoku Sudoku => _sudoku;
-    public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
+    public IStrategy[] Strategies { get; }
     public StrategyInfo[] StrategyInfos => _strategyLoader.Infos;
     public List<ISolverLog> Logs => _logManager.Logs;
 
@@ -53,8 +54,10 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
 
         Init();
 
-        _strategyLoader = new StrategyLoader(this);
+        _strategyLoader = new StrategyLoader();
         _strategyLoader.Load();
+        Strategies = _strategyLoader.Strategies;
+        _excludedStrategies = _strategyLoader.ExcludedStrategies;
         
         PreComputer = new PreComputer(this);
 
@@ -230,19 +233,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder, IStrategyHol
         
         _logManager.ChangePushed(report, strategy);
     }
-    
-    //StrategyHolder----------------------------------------------------------------------------------------------------
-    
-    public void SetStrategies(IStrategy[] strategies)
-    {
-        Strategies = strategies;
-    }
 
-    public void SetExcludedStrategies(ulong excluded)
-    {
-        _excludedStrategies = excluded;
-    }
-    
     //Private-----------------------------------------------------------------------------------------------------------
 
     private bool AddSolution(int number, int row, int col)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
@@ -15,8 +16,11 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class HiddenPossibilitiesStrategy : IStrategy
 {
+    public const string OfficialNameForType2 = "Hidden Double";
+    public const string OfficialNameForType3 = "Hidden Triple";
+    public const string OfficialNameForType4 = "Hidden Quad";
+    
     public string Name { get; }
-
     public StrategyDifficulty Difficulty { get; }
     public StatisticsTracker Tracker { get; } = new();
 
@@ -27,18 +31,16 @@ public class HiddenPossibilitiesStrategy : IStrategy
         _type = type;
         switch (type)
         {
-            case 2 : Name = "Hidden double";
+            case 2 : Name = OfficialNameForType2;
                 Difficulty = StrategyDifficulty.Easy;
                 break;
-            case 3 : Name = "Hidden triple";
+            case 3 : Name = OfficialNameForType3;
                 Difficulty = StrategyDifficulty.Easy;
                 break;
-            case 4 : Name = "Hidden quad";
+            case 4 : Name = OfficialNameForType4;
                 Difficulty = StrategyDifficulty.Easy;
                 break;
-            default : Name = "Hidden unknown";
-                Difficulty = StrategyDifficulty.None;
-                break;
+            default : throw new ArgumentException("Type not valid");
         }
     }
     

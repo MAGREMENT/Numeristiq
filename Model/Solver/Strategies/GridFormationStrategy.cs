@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
@@ -12,8 +13,11 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class GridFormationStrategy : IStrategy
 {
+    public const string OfficialNameForType2 = "X-Wing";
+    public const string OfficialNameForType3 = "Swordfish";
+    public const string OfficialNameForType4 = "Jellyfish";
+    
     public string Name { get; }
-
     public StrategyDifficulty Difficulty { get; }
     public StatisticsTracker Tracker { get; } = new();
 
@@ -24,18 +28,16 @@ public class GridFormationStrategy : IStrategy
         _type = type;
         switch (type)
         {
-            case 2 : Name = "XWing";
+            case 2 : Name =  OfficialNameForType2;
                 Difficulty = StrategyDifficulty.Medium;
                 break;
-            case 3 : Name = "Swordfish";
+            case 3 : Name = OfficialNameForType3;
                 Difficulty = StrategyDifficulty.Medium;
                 break;
-            case 4 : Name = "Jellyfish";
+            case 4 : Name = OfficialNameForType4;
                 Difficulty = StrategyDifficulty.Medium;
                 break;
-            default : Name = "Grid formation unknown";
-                Difficulty = StrategyDifficulty.None;
-                break;
+            default : throw new ArgumentException("Type not valid");
         }
     }
 

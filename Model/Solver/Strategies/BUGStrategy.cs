@@ -7,7 +7,9 @@ namespace Model.Solver.Strategies;
 
 public class BUGStrategy : IStrategy
 {
-    public string Name => "BUG";
+    public const string OfficialName = "BUG";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 

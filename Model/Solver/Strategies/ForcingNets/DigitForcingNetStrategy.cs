@@ -8,7 +8,9 @@ namespace Model.Solver.Strategies.ForcingNets;
 
 public class DigitForcingNetStrategy : AbstractStrategy
 { 
-    public DigitForcingNetStrategy() : base("Digit forcing net",  StrategyDifficulty.Extreme)
+    public const string OfficialName = "Digit Forcing Net";
+    
+    public DigitForcingNetStrategy() : base(OfficialName,  StrategyDifficulty.Extreme)
     {
         
     }

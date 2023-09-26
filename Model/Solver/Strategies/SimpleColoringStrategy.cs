@@ -8,7 +8,9 @@ namespace Model.Solver.Strategies;
 
 public class SimpleColoringStrategy : IStrategy
 {
-    public string Name => "Simple coloring";
+    public const string OfficialName = "Simple Coloring";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 

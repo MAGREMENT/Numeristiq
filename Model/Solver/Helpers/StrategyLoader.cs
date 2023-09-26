@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
@@ -9,116 +11,142 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
 
-public class StrategyLoader
+public class StrategyLoader //TODO finish
 {
-    private readonly string _path = PathsInfo.PathToData() + @"/strategies.json";
+    private static readonly string Path = PathsInfo.PathToData() + "/strategies.json";
 
-    private readonly IStrategy[] _strategies =
+    private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
-        new NakedSingleStrategy(),
-        new HiddenSingleStrategy(),
-        new NakedDoublesStrategy(),
-        new HiddenDoublesStrategy(),
-        new BoxLineReductionStrategy(),
-        new PointingPossibilitiesStrategy(),
-        new NakedPossibilitiesStrategy(3),
-        new HiddenPossibilitiesStrategy(3),
-        new NakedPossibilitiesStrategy(4),
-        new HiddenPossibilitiesStrategy(4),
-        new XWingStrategy(),
-        new XYWingStrategy(),
-        new XYZWingStrategy(),
-        new GridFormationStrategy(3),
-        new GridFormationStrategy(4),
-        new SimpleColoringStrategy(),
-        new BUGStrategy(),
-        new ReverseBUGStrategy(),
-        new FinnedXWingStrategy(),
-        new FinnedGridFormationStrategy(3),
-        new FinnedGridFormationStrategy(4),
-        new FireworksStrategy(),
-        new UniqueRectanglesStrategy(),
-        new AvoidableRectanglesStrategy(),
-        new XYChainStrategy(),
-        new ThreeDimensionMedusaStrategy(),
-        new WXYZWingStrategy(),
-        new AlignedPairExclusionStrategy(4),
-        new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
-            new AlternatingChainAlgorithmV2<ILinkGraphElement>(20)),
-        new SueDeCoqStrategy(),
-        new AlmostLockedSetsStrategy(),
-        new AlternatingChainGeneralization<ILinkGraphElement>(new FullAIC(),
-            new AlternatingChainAlgorithmV2<ILinkGraphElement>(15)),
-        new DigitForcingNetStrategy(),
-        new CellForcingNetStrategy(4),
-        new UnitForcingNetStrategy(4),
-        new NishioForcingNetStrategy(),
-        new PatternOverlayStrategy(15),
-        new BruteForceStrategy()
+        {NakedSingleStrategy.OfficialName, new NakedSingleStrategy()},
+        {HiddenSingleStrategy.OfficialName, new HiddenSingleStrategy()},
+        {NakedDoublesStrategy.OfficialName, new NakedDoublesStrategy()},
+        {HiddenDoublesStrategy.OfficialName, new HiddenDoublesStrategy()},
+        {BoxLineReductionStrategy.OfficialName, new BoxLineReductionStrategy()},
+        {PointingPossibilitiesStrategy.OfficialName, new PointingPossibilitiesStrategy()},
+        {NakedPossibilitiesStrategy.OfficialNameForType3, new NakedPossibilitiesStrategy(3)},
+        {HiddenPossibilitiesStrategy.OfficialNameForType3, new HiddenPossibilitiesStrategy(3)},
+        {NakedPossibilitiesStrategy.OfficialNameForType4, new NakedPossibilitiesStrategy(4)},
+        {HiddenPossibilitiesStrategy.OfficialNameForType4, new HiddenPossibilitiesStrategy(4)},
+        {XWingStrategy.OfficialName, new XWingStrategy()},
+        {XYWingStrategy.OfficialName, new XYWingStrategy()},
+        {XYZWingStrategy.OfficialName, new XYZWingStrategy()},
+        {GridFormationStrategy.OfficialNameForType3, new GridFormationStrategy(3)},
+        {GridFormationStrategy.OfficialNameForType4, new GridFormationStrategy(4)},
+        {SimpleColoringStrategy.OfficialName, new SimpleColoringStrategy()},
+        {BUGStrategy.OfficialName, new BUGStrategy()},
+        {ReverseBUGStrategy.OfficialName, new ReverseBUGStrategy()},
+        {ExocetStrategy.OfficialName, new ExocetStrategy(4)},
+        {FinnedXWingStrategy.OfficialName, new FinnedXWingStrategy()},
+        {FinnedGridFormationStrategy.OfficialNameForType3, new FinnedGridFormationStrategy(3)},
+        {FinnedGridFormationStrategy.OfficialNameForType4, new FinnedGridFormationStrategy(4)},
+        {FireworksStrategy.OfficialName, new FireworksStrategy()},
+        {UniqueRectanglesStrategy.OfficialName, new UniqueRectanglesStrategy()},
+        {AvoidableRectanglesStrategy.OfficialName, new AvoidableRectanglesStrategy()},
+        {XYChainStrategy.OfficialName, new XYChainStrategy()},
+        {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
+        {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
+        {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy(4)},
+        {GroupedXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
+            new AlternatingChainAlgorithmV2<ILinkGraphElement>(20))},
+        {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
+        {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
+        {FullAIC.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new FullAIC(),
+            new AlternatingChainAlgorithmV2<ILinkGraphElement>(15))},
+        {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
+        {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
+        {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},
+        {NishioForcingNetStrategy.OfficialName, new NishioForcingNetStrategy()},
+        {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(15)},
+        {BruteForceStrategy.OfficialName, new BruteForceStrategy()}
     };
 
-    private readonly IStrategyHolder _holder;
-    public StrategyInfo[] Infos { get; }
 
-    public StrategyLoader(IStrategyHolder holder)
-    {
-        _holder = holder;
-        var buffer = JsonSerializer.Deserialize<StrategyInfo[]>(File.ReadAllText(_path));
-        if (buffer is null || buffer.Length != _strategies.Length) Infos = HandleIncorrectJsonFile();
-        else Infos = buffer;
-    }
+    public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
+    public StrategyInfo[] Infos { get; private set; } = Array.Empty<StrategyInfo>();
+    public ulong ExcludedStrategies { get; private set; } = 0;
 
     public void Load()
     {
-        _holder.SetStrategies(_strategies);
-        _holder.SetExcludedStrategies(InitExcludedStrategies());
-    }
-
-    private ulong InitExcludedStrategies()
-    {
-        ulong result = 0;
-
-        for (int i = 0; i < Infos.Length; i++)
+        if (!File.Exists(Path))
         {
-            if (!Infos[i].Used) result |= 1ul << i;
+            HandleDefault();
+            return;
         }
-
-        return result;
-    }
-
-    private StrategyInfo[] HandleIncorrectJsonFile()
-    {
-        File.Delete(_path);
-        StrategyInfo[] toWrite = new StrategyInfo[_strategies.Length];
-        for (int i = 0; i < toWrite.Length; i++)
+        var buffer = JsonSerializer.Deserialize<StrategyUsage[]>(File.ReadAllText(Path));
+        if (buffer is null)
         {
-            toWrite[i] = new StrategyInfo(_strategies[i]);
+            HandleDefault();
+            return;
         }
         
-        File.WriteAllText(_path, JsonSerializer.Serialize(toWrite, new JsonSerializerOptions {WriteIndented = true}));
-
-        return toWrite;
+        HandleSpecified(buffer);
     }
 
+    private void HandleSpecified(StrategyUsage[] usage)
+    {
+        List<IStrategy> strategies = new();
+        List<StrategyInfo> infos = new();
+        ulong excluded = 0;
+
+        for (int i = 0; i < usage.Length; i++)
+        {
+            var current = usage[i];
+            var strategy = StrategyPool[current.StrategyName];
+            
+            strategies.Add(strategy);
+            infos.Add(new StrategyInfo(strategy, current.Used));
+            if (!current.Used) excluded |= 1ul << i;
+        }
+
+        Strategies = strategies.ToArray();
+        Infos = infos.ToArray();
+        ExcludedStrategies = excluded;
+    }
+
+    private void HandleDefault()
+    {
+        
+    }
+
+    public static void WritePool()
+    {
+        List<StrategyUsage> usage = new();
+        foreach (var strategy in StrategyPool)
+        {
+            usage.Add(new StrategyUsage()
+            {
+                StrategyName = strategy.Key,
+                Used = true
+            });
+        }
+        
+        File.Delete(Path);
+        File.WriteAllText(Path, JsonSerializer.Serialize(usage.ToArray(), new JsonSerializerOptions {WriteIndented = true}));
+    }
+}
+
+public class StrategyUsage
+{
+    public string StrategyName { get; set; }
+    public bool Used { get; set; }
+    
+    public StrategyUsage()
+    {
+        StrategyName = "Unknown";
+        Used = false;
+    }
 }
 
 public class StrategyInfo
 {
-    public string StrategyName { get; set; }
-    public StrategyDifficulty Difficulty { get; set; }
-    public bool Used { get; set; }
+    public string StrategyName { get; }
+    public StrategyDifficulty Difficulty { get; }
+    public bool Used { get; }
 
-    public StrategyInfo()
-    {
-        StrategyName = "Unknown";
-        Difficulty = StrategyDifficulty.None;
-        Used = false;
-    }
-
-    public StrategyInfo(IStrategy strategy)
+    public StrategyInfo(IStrategy strategy, bool used)
     {
         StrategyName = strategy.Name;
         Difficulty = strategy.Difficulty;
-        Used = true;
+        Used = used;
     }
 }

@@ -12,7 +12,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class NakedDoublesStrategy : IStrategy
 {
-    public string Name => "Naked doubles";
+    public const string OfficialName = "Naked Doubles";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
 

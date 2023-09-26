@@ -9,8 +9,9 @@ namespace Model.Solver.Strategies;
 
 public class XYWingStrategy : IStrategy
 {
-    public string Name => "XYWing";
+    public const string OfficialName = "XY-Wing";
     
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
     public StatisticsTracker Tracker { get; } = new();
 

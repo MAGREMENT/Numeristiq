@@ -10,7 +10,9 @@ namespace Model.Solver.Strategies.ForcingNets;
 
 public class NishioForcingNetStrategy : AbstractStrategy
 { 
-    public NishioForcingNetStrategy() : base("Nishio forcing net", StrategyDifficulty.Extreme)
+    public const string OfficialName = "Nishio Forcing Net";
+    
+    public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
     {
         
     }

@@ -6,7 +6,9 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
 public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
 {
-    public string Name => "XCycles";
+    public const string OfficialName = "X-Cycles";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public IStrategy? Strategy { get; set; }
     

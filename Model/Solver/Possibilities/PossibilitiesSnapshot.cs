@@ -2,7 +2,7 @@
 
 namespace Model.Solver.Possibilities;
 
-public class PossibilitiesSnapshot : IPossibilitiesHolder
+public class PossibilitiesSnapshot : IPossibilitiesHolder //Add sudoku
 {
     private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
     private readonly GridPositions[] _positions = new GridPositions[9];

@@ -8,7 +8,9 @@ namespace Model.Solver.Strategies;
 
 public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
 {
-    public string Name => "Almost locked sets";
+    public const string OfficialName = "Almost Locked Sets";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public StatisticsTracker Tracker { get; } = new();
 

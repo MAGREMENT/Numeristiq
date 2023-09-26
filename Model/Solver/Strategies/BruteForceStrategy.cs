@@ -6,7 +6,9 @@ namespace Model.Solver.Strategies;
 
 public class BruteForceStrategy : AbstractStrategy
 {
-    public BruteForceStrategy() : base("Brute force", StrategyDifficulty.ByTrial)
+    public const string OfficialName = "Brute Force";
+    
+    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial)
     {
     }
 

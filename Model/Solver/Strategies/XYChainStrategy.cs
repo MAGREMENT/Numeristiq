@@ -10,8 +10,9 @@ namespace Model.Solver.Strategies;
 
 public class XYChainStrategy : IStrategy
 {
-    public string Name => "XYChain";
+    public const string OfficialName = "XY-Chain";
     
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
 

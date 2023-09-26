@@ -6,7 +6,9 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
 public class NormalAIC : IAlternatingChainType<CellPossibility>
 {
-    public string Name => "Alternating inference chain";
+    public const string OfficialName = "Alternating Inference Chains";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public IStrategy? Strategy { get; set; }
 

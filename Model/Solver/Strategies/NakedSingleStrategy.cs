@@ -10,7 +10,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class NakedSingleStrategy : IStrategy
 {
-    public string Name => "Naked single";
+    public const string OfficialName = "Naked Single";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Basic;
     public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)

@@ -9,7 +9,8 @@ public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILoo
     private readonly IAlternatingChainType<T> _chain;
     private readonly IAlternatingChainAlgorithm<T> _algorithm;
 
-    public AlternatingChainGeneralization(IAlternatingChainType<T> chainType, IAlternatingChainAlgorithm<T> algo) : base(chainType.Name, chainType.Difficulty)
+    public AlternatingChainGeneralization(IAlternatingChainType<T> chainType, IAlternatingChainAlgorithm<T> algo)
+        : base(chainType.Name, chainType.Difficulty)
     {
         _chain = chainType;
         _chain.Strategy = this;

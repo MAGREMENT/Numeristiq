@@ -32,8 +32,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class PointingPossibilitiesStrategy : IStrategy
 {
-    public string Name => "Pointing possibilities";
+    public const string OfficialName = "Pointing Possibilities";
     
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
 

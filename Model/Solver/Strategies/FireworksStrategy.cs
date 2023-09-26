@@ -53,8 +53,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class FireworksStrategy : IStrategy
 {
-    public string Name => "Fireworks";
+    public const string OfficialName = "Fireworks";
     
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
 

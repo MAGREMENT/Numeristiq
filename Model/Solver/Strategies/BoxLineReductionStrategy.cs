@@ -33,7 +33,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class BoxLineReductionStrategy : IStrategy
 {
-    public string Name => "Box line reduction";
+    public const string OfficialName = "Box-Line Reduction";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
 

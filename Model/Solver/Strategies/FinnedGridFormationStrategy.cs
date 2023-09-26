@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
@@ -9,6 +10,9 @@ namespace Model.Solver.Strategies;
 
 public class FinnedGridFormationStrategy : IStrategy
 {
+    public const string OfficialNameForType3 = "Finned Swordfish";
+    public const string OfficialNameForType4 = "Finned Jellyfish";
+    
     public string Name { get; }
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public StatisticsTracker Tracker { get; } = new();
@@ -20,9 +24,9 @@ public class FinnedGridFormationStrategy : IStrategy
         _type = type;
         Name = type switch
         {
-            3 => "Finned Swordfish",
-            4 => "Finned Jellyfish",
-            _ => "Finned Grid formation unknown"
+            3 => OfficialNameForType3,
+            4 => OfficialNameForType4,
+            _ => throw new ArgumentException("Type not valid")
         };
     }
     public void ApplyOnce(IStrategyManager strategyManager)

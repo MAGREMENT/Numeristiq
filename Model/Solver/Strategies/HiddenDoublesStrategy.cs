@@ -11,7 +11,9 @@ namespace Model.Solver.Strategies;
 /// </summary>
 public class HiddenDoublesStrategy : IStrategy
 {
-    public string Name => "Hidden doubles";
+    public const string OfficialName = "Hidden Doubles";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
     public StatisticsTracker Tracker { get; } = new();
     public void ApplyOnce(IStrategyManager strategyManager)

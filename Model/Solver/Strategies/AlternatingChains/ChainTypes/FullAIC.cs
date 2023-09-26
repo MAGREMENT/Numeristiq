@@ -9,7 +9,9 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
 public class FullAIC : IAlternatingChainType<ILinkGraphElement>
 {
-    public string Name => "Alternating inference chain";
+    public const string OfficialName = "Alternating Inference Chain";
+    
+    public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public IStrategy? Strategy { get; set; }
     public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager view)

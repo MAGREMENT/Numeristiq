@@ -2,7 +2,7 @@
 
 namespace Model.Solver;
 
-public abstract class AbstractStrategy : IStrategy //TODO use for every strategy
+public abstract class AbstractStrategy : IStrategy //TODO use for every strategy, implement uniqueness
 { 
     public string Name { get; }
     public StrategyDifficulty Difficulty { get; }
