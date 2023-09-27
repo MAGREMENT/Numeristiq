@@ -6,9 +6,9 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class ExocetStrategy : IStrategy //TODO for columns & other elims
+public class JuniorExocetStrategy : IStrategy //TODO for columns & other elims
 {
-    public const string OfficialName = "Exocet";
+    public const string OfficialName = "Junior Exocet";
     
     public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
@@ -16,7 +16,7 @@ public class ExocetStrategy : IStrategy //TODO for columns & other elims
 
     private readonly int _max;
 
-    public ExocetStrategy(int max)
+    public JuniorExocetStrategy(int max)
     {
         _max = max;
     }
@@ -75,7 +75,7 @@ public class ExocetStrategy : IStrategy //TODO for columns & other elims
                             {
                                 var col4 = gridCols[0] * 3 + m4;
                                 var pos4 = strategyManager.PossibilitiesAt(rows[1], col4);
-                                if (pos4.Count == 0 || !pos3.Or(pos4).Equals(or)) continue;
+                                if (pos4.Count == 0 || !pos3.Or(pos4).PeekAll(or)) continue;
                                 
                                 ConfirmPatternInRow(strategyManager, new Cell(row, col1),
                                     new Cell(row, col2), new Cell(rows[0], col3),
@@ -142,6 +142,16 @@ public class ExocetStrategy : IStrategy //TODO for columns & other elims
         for (int row = 0; row < 9; row++)
         {
             if (strategyManager.Sudoku[row, col] == n) return row;
+        }
+
+        return -1;
+    }
+
+    private int SolvedColumnPositionsAt(IStrategyManager strategyManager, int row, int n)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            if (strategyManager.Sudoku[row, col] == n) return col;
         }
 
         return -1;

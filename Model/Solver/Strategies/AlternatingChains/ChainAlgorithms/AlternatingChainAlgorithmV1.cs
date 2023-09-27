@@ -35,7 +35,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
                 {
                     if (path.Count >= 4) chainType.ProcessStrongInference(view, path.FirstElement(), path.End(LinkStrength.Strong));
                 }
-                else if(!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Strong), chainType, view);
+                else if (!path.ContainsElement(friend)) Search(graph, path.Add(friend, LinkStrength.Strong), chainType, view);
             }
         }
         else
@@ -46,7 +46,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
                 {
                     if (graph.HasLinkTo(path.FirstElement(), weakFromLast, LinkStrength.Weak))
                     {
-                        if(path.IsAlreadyPresent(weakFromLast)) continue;
+                        if(path.ContainsElement(weakFromLast)) continue;
                         chainType.ProcessWeakInference(view, weakFromLast, path.Add(weakFromLast, LinkStrength.Weak).End(LinkStrength.Weak));
                     }
                 }
@@ -61,7 +61,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
                     if (path.Count >= 4) chainType.ProcessFullLoop(view, loop);
                     _loopsProcessed.Add(loop);
                 }
-                else if (!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
+                else if (!path.ContainsElement(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
             }
             
             foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
@@ -73,7 +73,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
                     if (path.Count >= 4) chainType.ProcessFullLoop(view, loop);
                     _loopsProcessed.Add(loop);
                 }
-                else if (!path.IsAlreadyPresent(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
+                else if (!path.ContainsElement(friend)) Search(graph, path.Add(friend, LinkStrength.Weak), chainType, view);
             }
         }
     }

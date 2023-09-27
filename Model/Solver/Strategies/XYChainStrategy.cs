@@ -17,13 +17,15 @@ public class XYChainStrategy : IStrategy
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)
-    
     {
         var map = new BiValueMap(strategyManager);
+        var route = new List<CellPossibility>();
+        var visited = new HashSet<CellPossibility>();
 
         foreach (var start in map)
         {
-            Search(strategyManager, map, start, new List<CellPossibility>(), new HashSet<CellPossibility>());
+            Search(strategyManager, map, start, route, visited);
+            visited.Clear();
         }
     }
 
@@ -44,9 +46,12 @@ public class XYChainStrategy : IStrategy
         {
             if (!visited.Contains(shared) && shared.ShareAUnit(current))
             {
-                Search(strategyManager, map, shared, new List<CellPossibility>(route), visited);
+                Search(strategyManager, map, shared, route, visited);
             }
         }
+
+        route.RemoveAt(route.Count - 1);
+        route.RemoveAt(route.Count - 1);
     }
 
     private void Process(IStrategyManager strategyManager, List<CellPossibility> visited)
@@ -114,22 +119,22 @@ public class BiValueMap : IEnumerable<CellPossibility>
 
 public class XYChainReportBuilder : IChangeReportBuilder
 {
-    private readonly List<CellPossibility> _visited;
+    private readonly CellPossibility[] _visited;
 
     public XYChainReportBuilder(List<CellPossibility> visited)
     {
-        _visited = visited;
+        _visited = visited.ToArray();
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            for (int i = 0; i < _visited.Count; i++)
+            for (int i = 0; i < _visited.Length; i++)
             {
                 lighter.HighlightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Col, i % 2 == 0 ?
                     ChangeColoration.CauseOnOne: ChangeColoration.CauseOffTwo);
-                if (i > _visited.Count - 2) continue;
+                if (i > _visited.Length - 2) continue;
                 lighter.CreateLink(_visited[i], _visited[i + 1], i % 2 == 0 ? LinkStrength.Weak : LinkStrength.Strong);
             }
 

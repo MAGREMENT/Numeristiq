@@ -35,7 +35,7 @@ public class StrategyLoader //TODO finish
         {SimpleColoringStrategy.OfficialName, new SimpleColoringStrategy()},
         {BUGStrategy.OfficialName, new BUGStrategy()},
         {ReverseBUGStrategy.OfficialName, new ReverseBUGStrategy()},
-        {ExocetStrategy.OfficialName, new ExocetStrategy(4)},
+        {JuniorExocetStrategy.OfficialName, new JuniorExocetStrategy(4)},
         {FinnedXWingStrategy.OfficialName, new FinnedXWingStrategy()},
         {FinnedGridFormationStrategy.OfficialNameForType3, new FinnedGridFormationStrategy(3)},
         {FinnedGridFormationStrategy.OfficialNameForType4, new FinnedGridFormationStrategy(4)},

@@ -124,7 +124,7 @@ public class LoopBuilder<T> where T : ILoopElement //TODO refactor with recursio
         return new Loop<T>(_elements, lBuffer);
     }
 
-    public bool IsAlreadyPresent(T element)
+    public bool ContainsElement(T element)
     {
         foreach (var e in _elements)
         {
