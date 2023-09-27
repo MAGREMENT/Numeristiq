@@ -35,7 +35,7 @@ public class StrategyLoader //TODO finish
         {SimpleColoringStrategy.OfficialName, new SimpleColoringStrategy()},
         {BUGStrategy.OfficialName, new BUGStrategy()},
         {ReverseBUGStrategy.OfficialName, new ReverseBUGStrategy()},
-        {JuniorExocetStrategy.OfficialName, new JuniorExocetStrategy(4)},
+        {JuniorExocetStrategy.OfficialName, new JuniorExocetStrategy()},
         {FinnedXWingStrategy.OfficialName, new FinnedXWingStrategy()},
         {FinnedGridFormationStrategy.OfficialNameForType3, new FinnedGridFormationStrategy(3)},
         {FinnedGridFormationStrategy.OfficialNameForType4, new FinnedGridFormationStrategy(4)},
@@ -127,14 +127,8 @@ public class StrategyLoader //TODO finish
 
 public class StrategyUsage
 {
-    public string StrategyName { get; set; }
-    public bool Used { get; set; }
-    
-    public StrategyUsage()
-    {
-        StrategyName = "Unknown";
-        Used = false;
-    }
+    public string StrategyName { get; init; } = "";
+    public bool Used { get; init; }
 }
 
 public class StrategyInfo
