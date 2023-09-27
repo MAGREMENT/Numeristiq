@@ -59,69 +59,112 @@ public class SKLoopsStrategy : AbstractStrategy
 
     private void ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
     {
-        int count = 0;
+        var one = CrossRowPossibilities(strategyManager, cells[0]);
+        var two = CrossRowPossibilities(strategyManager, cells[1]);
+        var and = one.Possibilities.And(two.Possibilities);
+        if (and.Count == 0) return;
+
+        if (!and.Equals(one.Possibilities) && !and.Equals(two.Possibilities)) IsLoop(strategyManager, cells, and);
+        
+        if (and.Count == 1) return;
+        
+        foreach (var combination in EachCombination(and))
+        {
+            IsLoop(strategyManager, cells, combination);
+        }
+    }
+
+    private static List<IPossibilities> EachCombination(IPossibilities possibilities)
+    {
+        List<IPossibilities> result = new();
+        EachCombination(result, possibilities, IPossibilities.NewEmpty());
+        return result;
+    }
+
+    private static void EachCombination(List<IPossibilities> result, IPossibilities total, IPossibilities toSearch)
+    {
+        foreach (var possibility in total)
+        {
+            if (toSearch.Peek(possibility)) continue;
+
+            toSearch.Add(possibility);
+            result.Add(toSearch.Copy());
+            EachCombination(result, total, toSearch);
+            toSearch.Remove(possibility);
+        }
+    }
+    
+    private void IsLoop(IStrategyManager strategyManager, Cell[] cells, IPossibilities start)
+    {
+        int possibilityCount = 0;
+        int cellCount = 0;
         IPossibilities[] links = new IPossibilities[8];
         int cursor = 0;
         
-        var first = CrossRowPossibilities(strategyManager, cells[0]);
         var second = CrossRowPossibilities(strategyManager, cells[1]);
-
-        var and = first.And(second);
-        if (and.Count == 0) return;
-        second.Remove(and);
-        if (second.Count == 0) return;
-        links[cursor++] = second;
-        count += second.Count;
+        second.Possibilities.Remove(start);
+        if (second.Possibilities.Count == 0) return;
+        links[cursor++] = second.Possibilities;
+        possibilityCount += second.Possibilities.Count;
+        cellCount += second.Number;
 
         var third = CrossColPossibilities(strategyManager, cells[1]);
-        if (!third.PeekAll(second)) return;
-        third.Remove(second);
-        if (third.Count == 0) return;
-        links[cursor++] = third;
-        count += third.Count;
+        if (!third.Possibilities.PeekAll(second.Possibilities)) return;
+        third.Possibilities.Remove(second.Possibilities);
+        if (third.Possibilities.Count == 0) return;
+        links[cursor++] = third.Possibilities;
+        possibilityCount += third.Possibilities.Count;
+        cellCount += third.Number;
 
         var fourth = CrossColPossibilities(strategyManager, cells[2]);
-        if (!fourth.PeekAll(third)) return;
-        fourth.Remove(third);
-        if (fourth.Count == 0) return;
-        links[cursor++] = fourth;
-        count += fourth.Count;
+        if (!fourth.Possibilities.PeekAll(third.Possibilities)) return;
+        fourth.Possibilities.Remove(third.Possibilities);
+        if (fourth.Possibilities.Count == 0) return;
+        links[cursor++] = fourth.Possibilities;
+        possibilityCount += fourth.Possibilities.Count;
+        cellCount += fourth.Number;
 
         var fifth = CrossRowPossibilities(strategyManager, cells[2]);
-        if (!fifth.PeekAll(fourth)) return;
-        fifth.Remove(fourth);
-        if (fifth.Count == 0) return;
-        links[cursor++] = fifth;
-        count += fifth.Count;
+        if (!fifth.Possibilities.PeekAll(fourth.Possibilities)) return;
+        fifth.Possibilities.Remove(fourth.Possibilities);
+        if (fifth.Possibilities.Count == 0) return;
+        links[cursor++] = fifth.Possibilities;
+        possibilityCount += fifth.Possibilities.Count;
+        cellCount += fifth.Number;
 
         var sixth = CrossRowPossibilities(strategyManager, cells[3]);
-        if (!sixth.PeekAll(fifth)) return;
-        sixth.Remove(fifth);
-        if (sixth.Count == 0) return;
-        links[cursor++] = sixth;
-        count += sixth.Count;
+        if (!sixth.Possibilities.PeekAll(fifth.Possibilities)) return;
+        sixth.Possibilities.Remove(fifth.Possibilities);
+        if (sixth.Possibilities.Count == 0) return;
+        links[cursor++] = sixth.Possibilities;
+        possibilityCount += sixth.Possibilities.Count;
+        cellCount += sixth.Number;
 
         var seventh = CrossColPossibilities(strategyManager, cells[3]);
-        if (!seventh.PeekAll(sixth)) return;
-        seventh.Remove(sixth);
-        if (seventh.Count == 0) return;
-        links[cursor++] = seventh;
-        count += seventh.Count;
+        if (!seventh.Possibilities.PeekAll(sixth.Possibilities)) return;
+        seventh.Possibilities.Remove(sixth.Possibilities);
+        if (seventh.Possibilities.Count == 0) return;
+        links[cursor++] = seventh.Possibilities;
+        possibilityCount += seventh.Possibilities.Count;
+        cellCount += seventh.Number;
 
         var eighth = CrossColPossibilities(strategyManager, cells[0]);
-        if (!eighth.PeekAll(seventh)) return;
-        eighth.Remove(seventh);
-        if (eighth.Count == 0) return;
-        links[cursor++] = eighth;
-        count += eighth.Count;
+        if (!eighth.Possibilities.PeekAll(seventh.Possibilities)) return;
+        eighth.Possibilities.Remove(seventh.Possibilities);
+        if (eighth.Possibilities.Count == 0) return;
+        links[cursor++] = eighth.Possibilities;
+        possibilityCount += eighth.Possibilities.Count;
+        cellCount += eighth.Number;
 
-        if (!first.PeekAll(eighth)) return;
-        first.Remove(eighth);
-        if (fifth.Count == 0) return;
-        links[cursor] = first;
-        count += first.Count;
+        var first = CrossRowPossibilities(strategyManager, cells[0]);
+        if (!first.Possibilities.PeekAll(eighth.Possibilities)) return;
+        first.Possibilities.Remove(eighth.Possibilities);
+        if (fifth.Possibilities.Count == 0) return;
+        links[cursor] = first.Possibilities;
+        possibilityCount += first.Possibilities.Count;
+        cellCount += first.Number;
 
-        if (!and.Equals(first) || count > 16) return;
+        if (!start.Equals(first.Possibilities) || possibilityCount > cellCount) return;
 
         ProcessPattern(strategyManager, cells, links);
     }
@@ -247,10 +290,11 @@ public class SKLoopsStrategy : AbstractStrategy
         return countRow < 2 & countCol < 2;
     }
 
-    private IPossibilities CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)
+    private PossibilitiesAndNumber CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)
     {
         int startCol = cell.Col / 3 * 3;
         IPossibilities result = IPossibilities.NewEmpty();
+        int count = 0;
 
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
@@ -258,16 +302,21 @@ public class SKLoopsStrategy : AbstractStrategy
             if (crossCol == cell.Col) continue;
 
             var poss = strategyManager.PossibilitiesAt(cell.Row, crossCol);
-            result.Add(poss);
+            if (poss.Count > 0)
+            {
+                result.Add(poss);
+                count++;
+            }
         }
 
-        return result;
+        return new PossibilitiesAndNumber(result, count);
     }
 
-    private IPossibilities CrossColPossibilities(IStrategyManager strategyManager, Cell cell)
+    private PossibilitiesAndNumber CrossColPossibilities(IStrategyManager strategyManager, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
         IPossibilities result = IPossibilities.NewEmpty();
+        int count = 0;
 
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
@@ -275,11 +324,27 @@ public class SKLoopsStrategy : AbstractStrategy
             if (crossRow == cell.Row) continue;
 
             var poss = strategyManager.PossibilitiesAt(crossRow, cell.Col);
-            result.Add(poss);
+            if (poss.Count > 0)
+            {
+                result.Add(poss);
+                count++;
+            }
         }
 
-        return result;
+        return new PossibilitiesAndNumber(result, count);
     }
+}
+
+public class PossibilitiesAndNumber
+{
+    public PossibilitiesAndNumber(IPossibilities possibilities, int number)
+    {
+        Possibilities = possibilities;
+        Number = number;
+    }
+
+    public IPossibilities Possibilities { get; }
+    public int Number { get; }
 }
 
 public class SKLoopsReportBuilder : IChangeReportBuilder
@@ -328,7 +393,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             }
         }
         
-        foreach (var cell in CrossRow(snapshot, _cells[2]))
+        foreach (var cell in CrossCol(snapshot, _cells[2]))
         {
             foreach (var possibility in _links[1])
             {
@@ -343,7 +408,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             }
         }
         
-        foreach (var cell in CrossCol(snapshot, _cells[2]))
+        foreach (var cell in CrossRow(snapshot, _cells[2]))
         {
             foreach (var possibility in _links[2])
             {
@@ -388,7 +453,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             }
         }
         
-        foreach (var cell in CrossRow(snapshot, _cells[0]))
+        foreach (var cell in CrossCol(snapshot, _cells[0]))
         {
             foreach (var possibility in _links[5])
             {
@@ -403,7 +468,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             }
         }
         
-        foreach (var cell in CrossCol(snapshot, _cells[0]))
+        foreach (var cell in CrossRow(snapshot, _cells[0]))
         {
             foreach (var possibility in _links[6])
             {

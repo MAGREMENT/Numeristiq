@@ -52,7 +52,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public bool PeekOnlyOne(IReadOnlyPossibilities poss);
     public IPossibilities Copy();
     public IEnumerable<BiValue> EachBiValue();
-    
+
     public static IPossibilities DefaultOr(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
     {
         var result = IPossibilities.New();
