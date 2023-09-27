@@ -64,7 +64,7 @@ public class JuniorExocet
         return result;
     }
 
-public static IEnumerable<JuniorExocet> SearchFullGrid(IStrategyManager strategyManager)
+    public static IEnumerable<JuniorExocet> SearchFullGrid(IStrategyManager strategyManager)
     {
         //Rows
         for (int row = 0; row < 9; row++)

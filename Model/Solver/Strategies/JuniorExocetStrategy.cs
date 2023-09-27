@@ -23,6 +23,8 @@ public class JuniorExocetStrategy : IStrategy //TODO other elims
 
     private void Process(IStrategyManager strategyManager, JuniorExocet je)
     {
+        //---Base candidates rules---
+        
         //Rule 1
         foreach (var sCell in je.SCells)
         {
@@ -42,7 +44,7 @@ public class JuniorExocetStrategy : IStrategy //TODO other elims
         
         //Rule 2
         var unit = je.GetUnit();
-        var t1Mirror = JuniorExocet.GetMirrorNodes(je.Target2, unit); //Yes, it's normal that it is jje.Target2
+        var t1Mirror = JuniorExocet.GetMirrorNodes(je.Target2, unit); //Yes, it's normal that it is je.Target2
         var t2Mirror = JuniorExocet.GetMirrorNodes(je.Target1, unit); 
         
         foreach (var possibility in je.BaseCandidates)
@@ -81,7 +83,7 @@ public class JuniorExocetStrategy : IStrategy //TODO other elims
             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, je.Target2.Row, je.Target2.Col);
         }
         
-        //Rule 4
+        //Rule 4 -> TODO add in LinkGraph
         
         //Rule 5
         foreach (var sCell in je.SCells)
@@ -110,7 +112,12 @@ public class JuniorExocetStrategy : IStrategy //TODO other elims
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target2.Row, je.Target2.Col);
         }
         
-        //Rule 6
+        //Rule 6 -> Done in rule 2
+        
+        if (strategyManager.ChangeBuffer.NotEmpty())
+            strategyManager.ChangeBuffer.Push(this, new JuniorExocetReportBuilder(je));
+        
+        //---Known true digits rule---
         
         //Rule 7
         
@@ -123,9 +130,6 @@ public class JuniorExocetStrategy : IStrategy //TODO other elims
         //Rule 11
         
         //Rule 12
-        
-        if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this, new JuniorExocetReportBuilder(je));
     }
     
     private static bool PossibilityPeekOrIsSolved(IStrategyManager strategyManager, Cell cell, int possibility)
