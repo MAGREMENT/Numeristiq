@@ -26,6 +26,11 @@ public class BoolArrayPossibilities : IPossibilities
         return old;
     }
 
+    public void Remove(IPossibilities possibilities)
+    {
+        throw new NotImplementedException();
+    }
+
     public void RemoveAll()
     {
         _possibilities = new[] { false, false, false, false, false, false, false, false, false};

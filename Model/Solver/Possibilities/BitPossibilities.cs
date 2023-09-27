@@ -29,6 +29,18 @@ public class BitPossibilities : IPossibilities
         return old;
     }
 
+    public void Remove(IPossibilities possibilities)
+    {
+        if (possibilities is not BitPossibilities bp)
+        {
+            //TODO
+            return;
+        }
+
+        _possibilities &= ~bp._possibilities;
+        Count = System.Numerics.BitOperations.PopCount((uint)_possibilities);
+    }
+
     public void RemoveAll()
     {
         _possibilities = 0;

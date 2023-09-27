@@ -92,6 +92,10 @@
     "Used": true
   },
   {
+    "StrategyName": "SK-Loops",
+    "Used": true
+  },
+  {
     "StrategyName": "Unique Rectangles",
     "Used": true
   },

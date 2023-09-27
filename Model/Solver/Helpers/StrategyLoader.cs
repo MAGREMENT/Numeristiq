@@ -57,13 +57,14 @@ public class StrategyLoader //TODO finish
         {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},
         {NishioForcingNetStrategy.OfficialName, new NishioForcingNetStrategy()},
         {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(15)},
-        {BruteForceStrategy.OfficialName, new BruteForceStrategy()}
+        {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
+        {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()}
     };
 
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
     public StrategyInfo[] Infos { get; private set; } = Array.Empty<StrategyInfo>();
-    public ulong ExcludedStrategies { get; private set; } = 0;
+    public ulong ExcludedStrategies { get; private set; }
 
     public void Load()
     {

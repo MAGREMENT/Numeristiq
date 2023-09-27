@@ -76,6 +76,11 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
         throw new System.NotImplementedException();
     }
 
+    public void Remove(IPossibilities possibilities)
+    {
+        throw new System.NotImplementedException();
+    }
+
     public void RemoveAll()
     {
         throw new System.NotImplementedException();

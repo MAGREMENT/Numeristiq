@@ -6,6 +6,7 @@ namespace Model.Solver.Possibilities;
 public interface IPossibilities : IReadOnlyPossibilities
 { 
     public bool Remove(int n);
+    public void Remove(IPossibilities possibilities);
     public void RemoveAll();
     public void RemoveAll(int except);
     public void RemoveAll(params int[] except);
