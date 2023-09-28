@@ -1,20 +1,20 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AvoidableRectanglesStrategy : IStrategy
+public class AvoidableRectanglesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Avoidable Rectangles";
-    
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public AvoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard)
+    {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
+    }
+
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

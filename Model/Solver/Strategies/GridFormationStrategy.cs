@@ -11,19 +11,15 @@ namespace Model.Solver.Strategies;
 /// <summary>
 /// This class generalize the XWing, Swordfish and JellyFish strategy
 /// </summary>
-public class GridFormationStrategy : IStrategy
+public class GridFormationStrategy : AbstractStrategy
 {
     public const string OfficialNameForType2 = "X-Wing";
     public const string OfficialNameForType3 = "Swordfish";
     public const string OfficialNameForType4 = "Jellyfish";
-    
-    public string Name { get; }
-    public StrategyDifficulty Difficulty { get; }
-    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
 
-    public GridFormationStrategy(int type)
+    public GridFormationStrategy(int type) : base("", StrategyDifficulty.None)
     {
         _type = type;
         switch (type)
@@ -41,7 +37,7 @@ public class GridFormationStrategy : IStrategy
         }
     }
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     { 
         for (int number = 1; number <= 9; number++)
         {

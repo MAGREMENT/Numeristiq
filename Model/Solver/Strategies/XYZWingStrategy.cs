@@ -1,21 +1,17 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class XYZWingStrategy : IStrategy
+public class XYZWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "XYZ-Wing";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
-    public StatisticsTracker Tracker { get; } = new();
+    public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium) {}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var map = new PositionsMap(strategyManager, Only2Possibilities);
 

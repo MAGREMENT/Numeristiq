@@ -14,6 +14,7 @@ public class ReverseBUGStrategy : AbstractStrategy
     
     public ReverseBUGStrategy() : base(OfficialName, StrategyDifficulty.Medium)
     {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
     }
 
     public override void ApplyOnce(IStrategyManager strategyManager)

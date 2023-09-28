@@ -6,15 +6,13 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class SimpleColoringStrategy : IStrategy
+public class SimpleColoringStrategy : AbstractStrategy
 {
     public const string OfficialName = "Simple Coloring";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
-    public StatisticsTracker Tracker { get; } = new();
+    public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium){}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var manager = new LinkGraphManager(strategyManager);
         manager.Construct(ConstructRule.UnitStrongLink);

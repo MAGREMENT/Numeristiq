@@ -21,6 +21,8 @@ public interface IStrategyManager : IPossibilitiesHolder
     PreComputer PreComputer { get; }
 
     public IReadOnlySudoku Sudoku { get; }
+    
+    public bool UniquenessDependantStrategiesAllowed { get; }
 }
 
 

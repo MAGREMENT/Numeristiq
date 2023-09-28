@@ -5,14 +5,13 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class ThreeDimensionMedusaStrategy : IStrategy
+public class ThreeDimensionMedusaStrategy : AbstractStrategy
 {
     public const string OfficialName = "3D Medusa";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard) {}
+    
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var manager = new LinkGraphManager(strategyManager);
         manager.Construct(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);

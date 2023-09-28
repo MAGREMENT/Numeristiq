@@ -31,15 +31,13 @@ namespace Model.Solver.Strategies;
 /// If a possibility is present in only the x-marked cells in the first row, then it can be removed from all
 /// y-marked cells
 /// </summary>
-public class BoxLineReductionStrategy : IStrategy
+public class BoxLineReductionStrategy : AbstractStrategy
 {
     public const string OfficialName = "Box-Line Reduction";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
-    public StatisticsTracker Tracker { get; } = new();
+    public BoxLineReductionStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

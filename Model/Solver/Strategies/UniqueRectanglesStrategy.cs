@@ -8,14 +8,16 @@ using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class UniqueRectanglesStrategy : IStrategy
+public class UniqueRectanglesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Unique Rectangles";
+
+    public UniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard)
+    {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
+    }
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         Dictionary<BiValue, List<Cell>> map = new();
         for (int row = 0; row < 9; row++)

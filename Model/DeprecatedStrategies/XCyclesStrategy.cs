@@ -12,6 +12,7 @@ public class XCyclesStrategy : IStrategy
     public string Name { get; } = "XCycles";
     
     public StrategyDifficulty Difficulty { get; } = StrategyDifficulty.Hard;
+    public UniquenessDependency UniquenessDependency { get; } = UniquenessDependency.NotDependent;
     public StatisticsTracker Tracker { get; } = new();
 
     public void ApplyOnce(IStrategyManager strategyManager)

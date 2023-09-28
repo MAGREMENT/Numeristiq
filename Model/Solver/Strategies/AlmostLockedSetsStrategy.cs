@@ -6,15 +6,15 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AlmostLockedSetsStrategy : IStrategy //TODO add chains
+public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
 {
     public const string OfficialName = "Almost Locked Sets";
-    
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
+ 
+    public AlmostLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
+    {
+    }
 
-    public void ApplyOnce(IStrategyManager strategyManager) //TODO optimize
+    public override void ApplyOnce(IStrategyManager strategyManager) //TODO optimize
     {
         var allAls = strategyManager.PreComputer.AlmostLockedSets();
 

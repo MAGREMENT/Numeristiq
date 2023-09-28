@@ -11,6 +11,7 @@ public class AlternatingInferenceChainStrategy : IStrategy
     public string Name { get; } = "Alternating inference chain";
     
     public StrategyDifficulty Difficulty { get; } = StrategyDifficulty.Extreme;
+    public UniquenessDependency UniquenessDependency { get; } = UniquenessDependency.NotDependent;
     public StatisticsTracker Tracker { get; } = new();
 
     public long SearchCount { get; private set; }

@@ -5,15 +5,16 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class BUGStrategy : IStrategy
+public class BUGStrategy : AbstractStrategy
 {
     public const string OfficialName = "BUG";
-    
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
-    public StatisticsTracker Tracker { get; } = new();
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public BUGStrategy() : base(OfficialName, StrategyDifficulty.Medium)
+    {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
+    }
+
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var triple = OnlyDoublesAndOneTriple(strategyManager);
         if (triple.Row == -1) return;

@@ -5,15 +5,16 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class JuniorExocetStrategy : IStrategy //TODO other elims
+public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 {
     public const string OfficialName = "Junior Exocet";
-    
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Hard)
+    {
+        UniquenessDependency = UniquenessDependency.PartiallyDependent;
+    }
+
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         foreach (var je in JuniorExocet.SearchFullGrid(strategyManager))
         {
@@ -117,18 +118,21 @@ public class JuniorExocetStrategy : IStrategy //TODO other elims
         if (strategyManager.ChangeBuffer.NotEmpty())
             strategyManager.ChangeBuffer.Push(this, new JuniorExocetReportBuilder(je));
         
+        //Incompatibility test
+        if (!strategyManager.UniquenessDependantStrategiesAllowed) return;
+
         //---Known true digits rule---
-        
+
         //Rule 7
-        
+
         //Rule 8
-        
+
         //Rule 9
-        
+
         //Rule 10
-        
+
         //Rule 11
-        
+
         //Rule 12
     }
     

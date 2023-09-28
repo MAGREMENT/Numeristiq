@@ -7,15 +7,13 @@ using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class XYWingStrategy : IStrategy
+public class XYWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "XY-Wing";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
-    public StatisticsTracker Tracker { get; } = new();
+    public XYWingStrategy() : base(OfficialName, StrategyDifficulty.Medium) {}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var map = new PositionsMap(strategyManager, Only2Possibilities);
         

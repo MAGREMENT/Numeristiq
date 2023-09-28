@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
@@ -8,14 +7,13 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class WXYZWingStrategy : IStrategy
+public class WXYZWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "WXYZ-Wing";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public WXYZWingStrategy() : base(OfficialName, StrategyDifficulty.Hard) {}
+    
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {

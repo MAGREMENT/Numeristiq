@@ -2,19 +2,22 @@
 using System.Windows.Controls;
 using Model;
 using Model.Solver.Helpers.Changes;
+using SudokuSolver.Utils;
 
 namespace SudokuSolver;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow
+    public partial class MainWindow : IGraphicsManager
     {
         private bool _createNewSudoku = true;
 
         public MainWindow()
         {
             InitializeComponent();
+
+            var solverStateManager = new SolverStateManager(this, Solver, LogList);
 
             Solver.IsReady += () =>
             {
@@ -25,34 +28,11 @@ namespace SudokuSolver;
             {
                 LiveModification.SetCurrent(sender, row, col);
             };
-            Solver.SolverUpdated += asString =>
-            {
-                _createNewSudoku = false;
-                SudokuStringBox.Text = asString;
-                _createNewSudoku = true;
-            };
+            Solver.SudokuAsStringChanged += ShowSudokuAsString;
             Solver.LogsUpdated += logs =>
             {
                 LogList.InitLogs(logs);
                 ExplanationBox.Text = "";
-            };
-            Solver.LogFocused += LogList.FocusLog;
-            Solver.LogUnFocused += LogList.UnFocusLog;
-
-            LogList.ShowCurrentClicked += () =>
-            {
-                Solver.ShowCurrent();
-                ExplanationBox.Text = "";
-            };
-            LogList.ShowStartClicked += () =>
-            {
-                Solver.ShowStartState();
-               ExplanationBox.Text = "";
-            };
-            LogList.LogClicked += log =>
-            {
-                Solver.ShowLog(log);
-                ExplanationBox.Text = log.Explanation;
             };
 
             LiveModification.LiveModified += (number, row, col, action) =>
@@ -66,6 +46,13 @@ namespace SudokuSolver;
             StrategyList.StrategyUsed += Solver.UseStrategy;
 
             DelaySlider.Value = Solver.Delay;
+        }
+        
+        public void ShowSudokuAsString(string asString)
+        {
+            _createNewSudoku = false;
+            SudokuStringBox.Text = asString;
+            _createNewSudoku = true;
         }
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
@@ -92,13 +79,26 @@ namespace SudokuSolver;
         
         private void SelectedTranslationType(object sender, RoutedEventArgs e)
         {
-            if (sender is not ComboBox box) return;
-            Solver?.SetTranslationType((SudokuTranslationType) box.SelectedIndex);
+            if (sender is not ComboBox box || Solver is null) return;
+            Solver.TranslationType = (SudokuTranslationType) box.SelectedIndex;
         }
         
         private void SetSolverDelay(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (sender is not Slider slider) return;
             Solver.Delay = (int)slider.Value;
+        }
+
+        private void AllowUniqueness(object sender, RoutedEventArgs e)
+        {
+            if (Solver is null) return;
+            Solver.AllowUniqueness(true);
+            StrategyList.UpdateStrategies(Solver.GetStrategies());
+        }
+
+        private void ForbidUniqueness(object sender, RoutedEventArgs e)
+        {
+            Solver.AllowUniqueness(false);
+            StrategyList.UpdateStrategies(Solver.GetStrategies());
         }
     }

@@ -32,15 +32,13 @@ namespace Model.Solver.Strategies;
 /// x-marked cells in row 3 & 7 that arent in the X, so [3, 4] & [7, 1].
 /// 
 /// </summary>
-public class XWingStrategy : IStrategy
+public class XWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "X-Wing";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Medium;
-    public StatisticsTracker Tracker { get; } = new();
+    public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium){}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         Dictionary<IReadOnlyLinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)

@@ -1,18 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using Model.Solver.Helpers.Logs;
+using SudokuSolver.Utils;
 
 namespace SudokuSolver;
 
-public partial class LogListUserControl
+public partial class LogListUserControl : ILogListGraphics
 { 
-    public event LogUserControl.OnLogClicked? LogClicked;
-    
-    public delegate void OnShowCurrentClicked();
-    public event OnShowCurrentClicked? ShowCurrentClicked;
-
-    public delegate void OnShowStartClicked();
-    public event OnShowStartClicked? ShowStartClicked;
+    public event OnShowLogAsked? ShowLogAsked;
+    public event OnShowCurrentAsked? ShowCurrentAsked;
+    public event OnShowStartAsked? ShowStartAsked;
 
     private LogUserControl? _currentlyShowed;
 
@@ -39,26 +36,27 @@ public partial class LogListUserControl
     private void ShowLog(LogUserControl logUserControl)
     {
         FocusLog(logUserControl);
-        LogClicked?.Invoke(logUserControl.Log!);
+        ShowLogAsked?.Invoke(logUserControl.Log!);
     }
     
     private void ShowStart(object sender, RoutedEventArgs e)
     {
         UnFocusLog();
-        ShowStartClicked?.Invoke();
+        ShowStartAsked?.Invoke();
     }
 
     private void ShowCurrent(object sender, RoutedEventArgs e)
     {
         UnFocusLog();
-        ShowCurrentClicked?.Invoke();
+        ShowCurrentAsked?.Invoke();
     }
 
-    public void FocusLog(int number)
+    public void FocusLog(ISolverLog log)
     {
-        if (number < 0 || number >= List.Children.Count) return;
-        
-        FocusLog((LogUserControl)List.Children[number]);
+        var toFocus = (LogUserControl)List.Children[log.Id - 1];
+        if (toFocus.Log is null || toFocus.Log.Id != log.Id) return;
+
+        FocusLog(toFocus);
     }
 
     private void FocusLog(LogUserControl logUserControl)

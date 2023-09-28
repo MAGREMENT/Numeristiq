@@ -8,9 +8,7 @@ public class BruteForceStrategy : AbstractStrategy
 {
     public const string OfficialName = "Brute Force";
     
-    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial)
-    {
-    }
+    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial) { }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {

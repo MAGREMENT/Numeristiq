@@ -7,15 +7,13 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class SueDeCoqStrategy : IStrategy
+public class SueDeCoqStrategy : AbstractStrategy
 {
     public const string OfficialName = "Sue-De-Coq";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
+    public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Extreme) {}
     
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

@@ -1,28 +1,22 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class PatternOverlayStrategy : IStrategy
+public class PatternOverlayStrategy : AbstractStrategy
 {
     public const string OfficialName = "Pattern Overlay";
-    
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
-    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _max;
 
-    public PatternOverlayStrategy(int max)
+    public PatternOverlayStrategy(int max) : base(OfficialName, StrategyDifficulty.Extreme)
     {
         _max = max;
     }
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var all = AllPositionsOfAllNumbers(strategyManager);
 

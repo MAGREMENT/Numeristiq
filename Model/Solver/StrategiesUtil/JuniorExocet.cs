@@ -33,6 +33,11 @@ public class JuniorExocet
         return Base1.Row == Base2.Row ? Unit.Row : Unit.Column;
     }
 
+    public List<int[]> IncompatibilityTest(IStrategyManager strategyManager) //TODO
+    {
+        return new List<int[]>(0);
+    }
+
     public static Cell[] GetMirrorNodes(Cell t2, Unit unit)
     {
         Cell[] result = new Cell[2];

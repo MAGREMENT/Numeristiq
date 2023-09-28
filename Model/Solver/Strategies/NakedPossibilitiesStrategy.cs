@@ -14,19 +14,15 @@ namespace Model.Solver.Strategies;
 /// solution. Therefor, any cell in that unit that is not in the n cells cannot have one of the n possibilities. As a side note,
 /// not every possibility has to be present in every cell.
 /// </summary>
-public class NakedPossibilitiesStrategy : IStrategy
+public class NakedPossibilitiesStrategy : AbstractStrategy
 {
     public const string OfficialNameForType2 = "Naked Double";
     public const string OfficialNameForType3 = "Naked Triple";
     public const string OfficialNameForType4 = "Naked Quad";
-    
-    public string Name { get; }
-    public StrategyDifficulty Difficulty { get; }
-    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
 
-    public NakedPossibilitiesStrategy(int type)
+    public NakedPossibilitiesStrategy(int type) : base("", StrategyDifficulty.None)
     {
         _type = type;
         switch (type)
@@ -45,7 +41,7 @@ public class NakedPossibilitiesStrategy : IStrategy
     }
     
     
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

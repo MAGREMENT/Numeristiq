@@ -10,15 +10,13 @@ namespace Model.Solver.Strategies;
 /// Naked doubles are a special case of naked possibilities where there are only 2 candidates concerned. See the doc
 /// of NakedPossibilities.cs for more information.
 /// </summary>
-public class NakedDoublesStrategy : IStrategy
+public class NakedDoublesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Naked Doubles";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
-    public StatisticsTracker Tracker { get; } = new();
+    public NakedDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         Dictionary<IReadOnlyPossibilities, int> dict = new();
         for (int row = 0; row < 9; row++)

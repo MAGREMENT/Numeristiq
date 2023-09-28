@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 
@@ -9,14 +8,13 @@ namespace Model.Solver.Strategies;
 /// Hidden doubles are a special case of hidden possibilities where there are only 2 candidates concerned. See the doc
 /// of HiddenPossibilities.cs for more information.
 /// </summary>
-public class HiddenDoublesStrategy : IStrategy
+public class HiddenDoublesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Doubles";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
+    
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         Dictionary<IReadOnlyLinePositions, int> lines = new();
         Dictionary<IReadOnlyMiniGridPositions, int> minis = new();

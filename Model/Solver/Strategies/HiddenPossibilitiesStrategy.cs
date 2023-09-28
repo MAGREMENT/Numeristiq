@@ -14,19 +14,15 @@ namespace Model.Solver.Strategies;
 /// one of the n candidates as a solution. Therefor, any other possibilities in those cells can be removed. As a side note,
 /// not every possibility has to be present in every cell.
 /// </summary>
-public class HiddenPossibilitiesStrategy : IStrategy
+public class HiddenPossibilitiesStrategy : AbstractStrategy
 {
     public const string OfficialNameForType2 = "Hidden Double";
     public const string OfficialNameForType3 = "Hidden Triple";
     public const string OfficialNameForType4 = "Hidden Quad";
-    
-    public string Name { get; }
-    public StrategyDifficulty Difficulty { get; }
-    public StatisticsTracker Tracker { get; } = new();
 
     private readonly int _type;
 
-    public HiddenPossibilitiesStrategy(int type)
+    public HiddenPossibilitiesStrategy(int type) : base("", StrategyDifficulty.None)
     {
         _type = type;
         switch (type)
@@ -44,7 +40,7 @@ public class HiddenPossibilitiesStrategy : IStrategy
         }
     }
     
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

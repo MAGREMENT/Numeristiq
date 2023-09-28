@@ -8,14 +8,13 @@ namespace Model.Solver.Strategies;
 /// <summary>
 /// A naked single is a cell that contains only one possibility, therefore being the solution to that cell
 /// </summary>
-public class NakedSingleStrategy : IStrategy
+public class NakedSingleStrategy : AbstractStrategy
 {
     public const string OfficialName = "Naked Single";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Basic;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic) {}
+    
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

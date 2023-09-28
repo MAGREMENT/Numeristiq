@@ -1,4 +1,5 @@
 ﻿using Model;
+using Model.Solver;
 using Model.Solver.Helpers;
 
 namespace SudokuSolver;
@@ -21,13 +22,21 @@ public partial class StrategyListUserControl
         for (int i = 0; i < strategies.Length; i++)
         {
             StrategyUserControl suc = new StrategyUserControl();
-            suc.InitStrategy(strategies[i]);
+            suc.Update(strategies[i]);
             
             int a = i;
             suc.Excluded += () => StrategyExcluded?.Invoke(a);
             suc.Used += () => StrategyUsed?.Invoke(a);
             
             List.Children.Add(suc);
+        }
+    }
+
+    public void UpdateStrategies(StrategyInfo[] strategies)
+    {
+        for (int i = 0; i < strategies.Length; i++)
+        {
+            ((StrategyUserControl) List.Children[i]).Update(strategies[i]);
         }
     }
 }

@@ -6,14 +6,13 @@ using Model.Solver.Positions;
 
 namespace Model.Solver.Strategies;
 
-public class FinnedXWingStrategy : IStrategy
+public class FinnedXWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "Finned X-Wing";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard){}
+    
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

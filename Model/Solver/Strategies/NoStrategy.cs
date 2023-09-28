@@ -2,13 +2,11 @@
 
 namespace Model.Solver.Strategies;
 
-public class NoStrategy : IStrategy
+public class NoStrategy : AbstractStrategy
 {
-    public string Name => "No strategy";
-    public StrategyDifficulty Difficulty => StrategyDifficulty.None;
-    public StatisticsTracker Tracker { get; } = new();
+    public NoStrategy() : base("No Strategy", StrategyDifficulty.None){}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         
     }

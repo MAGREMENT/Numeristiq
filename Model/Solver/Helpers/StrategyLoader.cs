@@ -63,7 +63,6 @@ public class StrategyLoader //TODO finish
 
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
-    public StrategyInfo[] Infos { get; private set; } = Array.Empty<StrategyInfo>();
     public ulong ExcludedStrategies { get; private set; }
 
     public void Load()
@@ -86,7 +85,6 @@ public class StrategyLoader //TODO finish
     private void HandleSpecified(StrategyUsage[] usage)
     {
         List<IStrategy> strategies = new();
-        List<StrategyInfo> infos = new();
         ulong excluded = 0;
 
         for (int i = 0; i < usage.Length; i++)
@@ -95,12 +93,10 @@ public class StrategyLoader //TODO finish
             var strategy = StrategyPool[current.StrategyName];
             
             strategies.Add(strategy);
-            infos.Add(new StrategyInfo(strategy, current.Used));
             if (!current.Used) excluded |= 1ul << i;
         }
 
         Strategies = strategies.ToArray();
-        Infos = infos.ToArray();
         ExcludedStrategies = excluded;
     }
 
@@ -130,18 +126,4 @@ public class StrategyUsage
 {
     public string StrategyName { get; init; } = "";
     public bool Used { get; init; }
-}
-
-public class StrategyInfo
-{
-    public string StrategyName { get; }
-    public StrategyDifficulty Difficulty { get; }
-    public bool Used { get; }
-
-    public StrategyInfo(IStrategy strategy, bool used)
-    {
-        StrategyName = strategy.Name;
-        Difficulty = strategy.Difficulty;
-        Used = used;
-    }
 }

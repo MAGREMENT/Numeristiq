@@ -8,15 +8,13 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class XYChainStrategy : IStrategy
+public class XYChainStrategy : AbstractStrategy
 {
     public const string OfficialName = "XY-Chain";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
+    public XYChainStrategy() : base(OfficialName, StrategyDifficulty.Hard) {}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var map = new BiValueMap(strategyManager);
         var route = new List<CellPossibility>();

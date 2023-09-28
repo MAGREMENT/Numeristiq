@@ -8,18 +8,14 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class FinnedGridFormationStrategy : IStrategy
+public class FinnedGridFormationStrategy : AbstractStrategy
 {
     public const string OfficialNameForType3 = "Finned Swordfish";
     public const string OfficialNameForType4 = "Finned Jellyfish";
-    
-    public string Name { get; }
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
-    
+
     private readonly int _type;
 
-    public FinnedGridFormationStrategy(int type)
+    public FinnedGridFormationStrategy(int type) : base("", StrategyDifficulty.Hard)
     {
         _type = type;
         Name = type switch
@@ -29,7 +25,7 @@ public class FinnedGridFormationStrategy : IStrategy
             _ => throw new ArgumentException("Type not valid")
         };
     }
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

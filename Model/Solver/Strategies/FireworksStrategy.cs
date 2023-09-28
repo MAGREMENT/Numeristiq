@@ -51,17 +51,13 @@ namespace Model.Solver.Strategies;
 /// from the opposite.
 /// 
 /// </summary>
-public class FireworksStrategy : IStrategy
+public class FireworksStrategy : AbstractStrategy
 {
     public const string OfficialName = "Fireworks";
-    
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public StatisticsTracker Tracker { get; } = new();
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public FireworksStrategy() : base(OfficialName, StrategyDifficulty.Hard){}
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
-
         List<FireworkStack> looseStacks = new();
         List<FireworkStack> strictStacks = new();
         for (int row = 0; row < 9; row++)

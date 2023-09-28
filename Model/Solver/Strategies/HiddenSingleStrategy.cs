@@ -10,15 +10,13 @@ namespace Model.Solver.Strategies;
 /// A hidden single is a unit that contain a possibility in only one of its cells. Since every unit must contain
 /// every number once, the possibility is the solution to that cell.
 /// </summary>
-public class HiddenSingleStrategy : IStrategy
+public class HiddenSingleStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Single";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Basic;
-    public StatisticsTracker Tracker { get; } = new();
+    public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic){}
     
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

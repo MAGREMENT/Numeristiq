@@ -30,15 +30,13 @@ namespace Model.Solver.Strategies;
 /// If a possibility is present in only the x-marked cells in the first mini grid, then it can be removed from all
 /// y-marked cells
 /// </summary>
-public class PointingPossibilitiesStrategy : IStrategy
+public class PointingPossibilitiesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Pointing Possibilities";
     
-    public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Easy;
-    public StatisticsTracker Tracker { get; } = new();
+    public PointingPossibilitiesStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
 
-    public void ApplyOnce(IStrategyManager strategyManager)
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
