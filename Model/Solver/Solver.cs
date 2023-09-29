@@ -268,7 +268,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     
     public IPossibilitiesHolder TakePossibilitiesSnapshot()
     {
-        return PossibilitiesSnapshot.TakeSnapshot(this);
+        return SolverSnapshot.TakeSnapshot(this);
     }
     
     public bool AddSolutionFromBuffer(int number, int row, int col)

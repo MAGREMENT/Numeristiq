@@ -349,7 +349,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
-        _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Strong);
+        _backgroundManager.CreateLink(from, to, linkStrength == LinkStrength.Weak);
     }
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
@@ -357,7 +357,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         switch (from)
         {
             case CellPossibility one when to is CellPossibility two:
-                _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Strong);
+                _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Weak);
                 break;
             case CellPossibility when to is AlmostNakedPossibilities:
                 break;
@@ -386,7 +386,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
                     }
                 }
             
-                _backgroundManager.CreateLink(winners[0], winners[1], linkStrength == LinkStrength.Strong);
+                _backgroundManager.CreateLink(winners[0], winners[1], linkStrength == LinkStrength.Weak);
                 break;
             
         }

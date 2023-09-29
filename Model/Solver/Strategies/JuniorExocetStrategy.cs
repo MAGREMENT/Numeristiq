@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
 
@@ -118,8 +117,8 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         if (strategyManager.ChangeBuffer.NotEmpty())
             strategyManager.ChangeBuffer.Push(this, new JuniorExocetReportBuilder(je));
         
-        //Incompatibility test
-        if (!strategyManager.UniquenessDependantStrategiesAllowed) return;
+        //Incompatibility test TODO
+        if (!strategyManager.UniquenessDependantStrategiesAllowed) return; 
 
         //---Known true digits rule---
 
@@ -152,7 +151,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
         _je = je;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot) //TODO Add see solved possibility in s cells
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> sCells = new();
         if (_je.GetUnit() == Unit.Row)
@@ -187,6 +186,12 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
             }
         }
 
+        List<Cell> sSolved = new();
+        foreach (var cell in sCells)
+        {
+            if (_je.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Col])) sSolved.Add(cell);
+        }
+
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             lighter.HighlightCell(_je.Base1, ChangeColoration.CauseOffOne);
@@ -203,6 +208,11 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
             foreach (var cp in sPossibilities)
             {
                 lighter.HighlightPossibility(cp, ChangeColoration.Neutral);
+            }
+
+            foreach (var cell in sSolved)
+            {
+                lighter.HighlightCell(cell, ChangeColoration.Neutral);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

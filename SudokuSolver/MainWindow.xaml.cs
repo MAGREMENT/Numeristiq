@@ -55,6 +55,11 @@ namespace SudokuSolver;
             _createNewSudoku = true;
         }
 
+        public void ShowExplanation(string explanation)
+        {
+            ExplanationBox.Text = explanation;
+        }
+
         private void NewSudoku(object sender, TextChangedEventArgs e)
         {
             if (_createNewSudoku) Solver.NewSudoku(new Sudoku(SudokuStringBox.Text));

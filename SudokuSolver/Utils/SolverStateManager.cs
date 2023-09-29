@@ -27,6 +27,7 @@ public class SolverStateManager
     {
         _llg.FocusLog(log);
         _gm.ShowSudokuAsString(Solver.StateToSudokuString(log.SolverState, _sg.TranslationType));
+        _gm.ShowExplanation(log.Explanation);
     }
 
     private void CurrentStateShowed()
@@ -40,6 +41,7 @@ public class SolverStateManager
         _sg.ShowState(log.SolverState);
         _sg.HighLightLog(log);
         _gm.ShowSudokuAsString(Solver.StateToSudokuString(log.SolverState, _sg.TranslationType));
+        _gm.ShowExplanation(log.Explanation);
     }
 
     private void ShowStartAsked()
@@ -58,6 +60,7 @@ public class SolverStateManager
 public interface IGraphicsManager
 {
     void ShowSudokuAsString(string asString);
+    void ShowExplanation(string explanation);
 }
 
 public interface ISolverGraphics

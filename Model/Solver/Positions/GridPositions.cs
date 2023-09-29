@@ -70,7 +70,7 @@ public class GridPositions : IReadOnlyGridPositions
     public int ColumnCount(int column)
     {
         return System.Numerics.BitOperations.PopCount(_first & (FirstColumnMask << column)) +
-               System.Numerics.BitOperations.PopCount(_first & (SecondColumnMask << column));
+               System.Numerics.BitOperations.PopCount(_second & (SecondColumnMask << column));
     }
 
     public int MiniGridCount(int miniRow, int miniCol)

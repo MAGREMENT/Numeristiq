@@ -58,7 +58,8 @@ public class StrategyLoader //TODO finish
         {NishioForcingNetStrategy.OfficialName, new NishioForcingNetStrategy()},
         {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(15)},
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
-        {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()}
+        {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
+        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy()}
     };
 
 
@@ -90,7 +91,7 @@ public class StrategyLoader //TODO finish
         for (int i = 0; i < usage.Length; i++)
         {
             var current = usage[i];
-            var strategy = StrategyPool[current.StrategyName];
+            if (!StrategyPool.TryGetValue(current.StrategyName, out var strategy)) continue;
             
             strategies.Add(strategy);
             if (!current.Used) excluded |= 1ul << i;

@@ -2,29 +2,41 @@
 
 namespace Model.Solver.Possibilities;
 
-public class PossibilitiesSnapshot : IPossibilitiesHolder //Add sudoku
+public class SolverSnapshot : IPossibilitiesHolder
 {
-    private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
-    private readonly GridPositions[] _positions = new GridPositions[9];
+    private readonly Sudoku _sudoku;
+    private readonly IPossibilities[,] _possibilities;
+    private readonly GridPositions[] _positions;
 
+    private SolverSnapshot(Sudoku sudoku, IPossibilities[,] possibilities, GridPositions[] positions)
+    {
+        _sudoku = sudoku;
+        _positions = positions;
+        _possibilities = possibilities;
+    }
+    
     public static IPossibilitiesHolder TakeSnapshot(IPossibilitiesHolder holder)
     {
-        PossibilitiesSnapshot snapshot = new PossibilitiesSnapshot();
+        var possibilities = new IPossibilities[9, 9];
+        var positions = new GridPositions[9];
+        
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                snapshot._possibilities[row, col] = holder.PossibilitiesAt(row, col).Copy();
+                possibilities[row, col] = holder.PossibilitiesAt(row, col).Copy();
             }
         }
 
         for (int number = 1; number <= 9; number++)
         {
-            snapshot._positions[number - 1] = holder.PositionsFor(number).Copy();
+            positions[number - 1] = holder.PositionsFor(number).Copy();
         }
 
-        return snapshot;
+        return new SolverSnapshot(holder.Sudoku.Copy(), possibilities, positions);
     }
+
+    public IReadOnlySudoku Sudoku => _sudoku;
 
     public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
     {

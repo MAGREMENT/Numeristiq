@@ -7,6 +7,8 @@ namespace Model.Solver;
 
 public interface IPossibilitiesHolder
 {
+    IReadOnlySudoku Sudoku { get; }
+    
     IReadOnlyPossibilities PossibilitiesAt(int row, int col);
 
     IReadOnlyPossibilities PossibilitiesAt(Cell cell)
