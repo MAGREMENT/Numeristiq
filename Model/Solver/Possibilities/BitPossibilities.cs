@@ -20,6 +20,11 @@ public class BitPossibilities : IPossibilities
         _possibilities = 0x1FF;
         Count = 9;
     }
+
+    public static BitPossibilities FromBits(int bits)
+    {
+        return new BitPossibilities(bits, System.Numerics.BitOperations.PopCount((uint)bits));
+    }
     
     public bool Remove(int number)
     {
@@ -176,6 +181,11 @@ public class BitPossibilities : IPossibilities
                 if (Peek(j)) yield return new BiValue(i, j);
             }
         }
+    }
+
+    public CellState ToCellState()
+    {
+        return CellState.FromBits((short)_possibilities);
     }
 
     public override int GetHashCode()

@@ -71,6 +71,11 @@ public class ListPossibilities : IPossibilities //TODO : do & test this
         throw new System.NotImplementedException();
     }
 
+    public CellState ToCellState()
+    {
+        throw new System.NotImplementedException();
+    }
+
     public bool Remove(int n)
     {
         throw new System.NotImplementedException();

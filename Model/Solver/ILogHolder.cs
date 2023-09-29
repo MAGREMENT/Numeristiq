@@ -2,5 +2,5 @@
 
 public interface ILogHolder
 {
-    public string State { get; }
+    public SolverState State { get; }
 }

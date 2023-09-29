@@ -26,8 +26,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public bool StatisticsTracked { get; init; }
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
 
-    public string State => GetState();
-    public string StartState => _logManager.StartState;
+    public SolverState State => new(this);
+    public SolverState StartState => _logManager.StartState;
 
     public delegate void OnNumberAdded(int row, int col);
     public event OnNumberAdded? NumberAdded;
@@ -210,7 +210,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
             cursor++;
         }
 
-        return s.AsString(type);
+        return SudokuTranslator.Translate(s, type);
     }
     
     //PossibilityHolder-------------------------------------------------------------------------------------------------
@@ -451,28 +451,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         pos.VoidMiniGrid(row / 3, col / 3);
     }
 
-    private string GetState()
-    {
-        string result = "";
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (_sudoku[row, col] != 0) result += "d" + _sudoku[row, col];
-                else
-                {
-                    result += "p";
-                    foreach (var possibility in _possibilities[row, col])
-                    {
-                        result += possibility;
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
-
     private StrategyInfo[] GetStrategyInfo()
     {
         StrategyInfo[] result = new StrategyInfo[Strategies.Length];
@@ -510,5 +488,62 @@ public class StrategyInfo
         Used = used;
         Locked = locked;
     }
+}
+
+public class SolverState : ITranslatable
+{
+    private readonly CellState[,] _cellStates = new CellState[9, 9];
+    
+    public SolverState(Solver solver)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for(int col = 0; col < 9; col++)
+            {
+                if (solver.Sudoku[row, col] != 0) _cellStates[row, col] = new CellState(solver.Sudoku[row, col]);
+                else _cellStates[row, col] = solver.PossibilitiesAt(row, col).ToCellState();
+            }
+        }
+    }
+
+    public CellState At(int row, int col)
+    {
+        return _cellStates[row, col];
+    }
+
+    public int this[int row, int col]
+    {
+        get
+        {
+            var current = _cellStates[row, col];
+            return current.IsPossibilities ? 0 : current.AsNumber;
+        } 
+    }
+}
+
+public readonly struct CellState
+{
+    private readonly short _bits;
+
+    public CellState(int solved)
+    {
+        _bits = (short) (solved << 9);
+    }
+
+    private CellState(short bits)
+    {
+        _bits = bits;
+    }
+
+    public static CellState FromBits(short bits)
+    {
+        return new CellState(bits);
+    }
+
+    public bool IsPossibilities => _bits <= 0x1FF;
+    
+    public IPossibilities AsPossibilities => BitPossibilities.FromBits(_bits);
+    
+    public int AsNumber => _bits >> 9;
 }
 

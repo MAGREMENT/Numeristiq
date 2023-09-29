@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Model.Solver;
 using Model.Solver.Helpers;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
@@ -17,7 +18,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank3.txt");
+        FullSudokuBankTest("OnlineBank2.txt");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -227,7 +228,7 @@ public static class Testing
 
             while (reader.ReadLine() is { } line)
             {
-                solver.SetSudoku(new Sudoku(line));
+                solver.SetSudoku(SudokuTranslator.Translate(line));
                 solver.Solve();
 
                 if (!solver.Sudoku.IsCorrect())
@@ -319,7 +320,7 @@ public static class Testing
 
     private static void SudokuResolutionTest(string asString)
     {
-        var sud = new Sudoku(asString);
+        var sud = SudokuTranslator.Translate(asString);
         Console.WriteLine("Initial sudoku : ");
         Console.WriteLine(sud);
 

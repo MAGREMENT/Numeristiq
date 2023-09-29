@@ -28,11 +28,11 @@ public class BuildUpLog : ISolverLog
 
     public string Explanation => "";
 
-    public string SolverState { get; }
+    public SolverState SolverState { get; }
 
     public HighlightManager HighlightManager => new(HighLight);
 
-    public BuildUpLog(int id, IStrategy causedBy, string solverState)
+    public BuildUpLog(int id, IStrategy causedBy, SolverState solverState)
     {
         Id = id;
         Title = causedBy.Name;

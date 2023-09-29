@@ -10,6 +10,8 @@ public class SolverStateManager
     private readonly ISolverGraphics _sg;
     private readonly ILogListGraphics _llg;
 
+    private SolverState? _currentState;
+
     public SolverStateManager(IGraphicsManager gm, ISolverGraphics sg, ILogListGraphics llg)
     {
         _gm = gm;
@@ -21,39 +23,56 @@ public class SolverStateManager
         _llg.ShowLogAsked += ShowLogAsked;
         _llg.ShowStartAsked += ShowStartAsked;
         _llg.ShowCurrentAsked += ShowCurrentAsked;
+        _gm.TranslationTypeChanged += TranslationTypeChanged;
     }
 
     private void LogShowed(ISolverLog log)
     {
+        _currentState = log.SolverState;
+            
         _llg.FocusLog(log);
-        _gm.ShowSudokuAsString(Solver.StateToSudokuString(log.SolverState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.SolverState, _sg.TranslationType));
         _gm.ShowExplanation(log.Explanation);
     }
 
     private void CurrentStateShowed()
     {
+        _currentState = _sg.CurrentState;
+        
         _llg.UnFocusLog();
-        _gm.ShowSudokuAsString(Solver.StateToSudokuString(_sg.CurrentState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.CurrentState, _sg.TranslationType));
     }
 
     private void ShowLogAsked(ISolverLog log)
     {
+        _currentState = log.SolverState;
+        
         _sg.ShowState(log.SolverState);
         _sg.HighLightLog(log);
-        _gm.ShowSudokuAsString(Solver.StateToSudokuString(log.SolverState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.SolverState, _sg.TranslationType));
         _gm.ShowExplanation(log.Explanation);
     }
 
     private void ShowStartAsked()
     {
+        _currentState = _sg.StartState;
+        
         _sg.ShowState(_sg.StartState);
-        _gm.ShowSudokuAsString(Solver.StateToSudokuString(_sg.StartState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.StartState, _sg.TranslationType));
     }
     
     private void ShowCurrentAsked()
     {
+        _currentState = _sg.CurrentState;
+            
         _sg.ShowState(_sg.CurrentState);
-        _gm.ShowSudokuAsString(Solver.StateToSudokuString(_sg.CurrentState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.CurrentState, _sg.TranslationType));
+    }
+
+    private void TranslationTypeChanged()
+    {
+        _gm.ShowSudokuAsString(_currentState is null ? ""
+            : SudokuTranslator.Translate(_currentState, _sg.TranslationType));
     }
 }
 
@@ -61,19 +80,23 @@ public interface IGraphicsManager
 {
     void ShowSudokuAsString(string asString);
     void ShowExplanation(string explanation);
+
+    public event OnTranslationTypeChanged? TranslationTypeChanged;
 }
+
+public delegate void OnTranslationTypeChanged();
 
 public interface ISolverGraphics
 {
     SudokuTranslationType TranslationType { get; }
-    string StartState { get; }
-    string CurrentState { get; }
+    SolverState StartState { get; }
+    SolverState CurrentState { get; }
 
     public event OnLogShowed? LogShowed;
     public event OnCurrentStateShowed? CurrentStateShowed;
 
     void HighLightLog(ISolverLog log);
-    void ShowState(string state);
+    void ShowState(SolverState state);
 }
 
 public delegate void OnLogShowed(ISolverLog log);

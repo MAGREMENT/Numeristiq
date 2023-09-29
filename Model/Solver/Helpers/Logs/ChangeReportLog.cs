@@ -9,10 +9,10 @@ public class ChangeReportLog : ISolverLog
     public Intensity Intensity { get; }
     public string Changes { get; }
     public string Explanation { get; }
-    public string SolverState { get; }
+    public SolverState SolverState { get; }
     public HighlightManager HighlightManager  { get; }
 
-    public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, string solverState)
+    public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, SolverState solverState)
     {
         Id = id;
         Title = strategy.Name;

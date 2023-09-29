@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -44,68 +43,24 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
 
         if (onePoss.Count == 0 || twoPoss.Count == 0) throw new ArgumentException("Wtf");
 
-        if (onePoss.Count == 1 && twoPoss.Count == 1 && onePoss[0].Row == twoPoss[0].Row &&
-            onePoss[0].Col == twoPoss[0].Col)
+        if (onePoss.Count == 1 && twoPoss.Count == 1 && onePoss[0] == twoPoss[0])
         {
-            RemoveAllExcept(view, onePoss[0].Row, onePoss[0].Col, onePoss[0].Possibility, twoPoss[0].Possibility);
+            var cell = onePoss[0];
+            foreach (var possibility in view.PossibilitiesAt(cell.Row, cell.Col))
+            {
+                if (possibility != cell.Possibility && possibility != twoPoss[0].Possibility)
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                }
+            }
         }
         else
         {
             foreach (var commons in AllCommons(onePoss, twoPoss))
             {
-                bool sameRow = true;
-                int sharedRow = commons[0].Row;
-                bool sameCol = true;
-                int sharedCol = commons[0].Col;
-                bool sameMini = true;
-                int sharedMiniRow =  commons[0].Row / 3;
-                int sharedMiniCol =  commons[0].Col / 3;
-
-                for (int i = 1; i < commons.Count; i++)
+                foreach (var cell in Cells.SharedSeenCells(commons))
                 {
-                    if (commons[i].Row != sharedRow) sameRow = false;
-                    if (commons[i].Col != sharedCol) sameCol = false;
-                    if (commons[i].Row / 3 != sharedMiniRow || commons[i].Col / 3 != sharedMiniCol) sameMini = false;
-                }
-
-                int possibility = commons[0].Possibility;
-                if (sameRow)
-                {
-                    for (int col = 0; col < 9; col++)
-                    {
-                        var current = new CellPossibility(sharedRow, col, possibility);
-                        if (commons.Contains(current)) continue;
-
-                        view.ChangeBuffer.AddPossibilityToRemove(possibility, sharedRow, col);
-                    }
-                }
-
-                if (sameCol)
-                {
-                    for (int row = 0; row < 9; row++)
-                    {
-                        var current = new CellPossibility(row, sharedCol, possibility);
-                        if (commons.Contains(current)) continue;
-
-                        view.ChangeBuffer.AddPossibilityToRemove(possibility, row, sharedCol);
-                    }
-                }
-
-                if (sameMini)
-                {
-                    for (int gridRow = 0; gridRow < 3; gridRow++)
-                    {
-                        for (int gridCol = 0; gridCol < 3; gridCol++)
-                        {
-                            var row = sharedMiniRow * 3 + gridRow;
-                            var col = sharedMiniCol * 3 + gridCol;
-                            
-                            var current = new CellPossibility(row, col, possibility);
-                            if (commons.Contains(current)) continue;
-
-                            view.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                        }
-                    }
+                    view.ChangeBuffer.AddPossibilityToRemove(commons[0].Possibility, cell.Row, cell.Col);
                 }
             }
         }
@@ -140,17 +95,6 @@ public class FullAIC : IAlternatingChainType<ILinkGraphElement>
         }
 
         return result;
-    }
-    
-    private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
-    {
-        foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
-        {
-            if (!except.Contains(possibility))
-            {
-                strategyManager.RemovePossibility(possibility, row, col, Strategy!);
-            }
-        }
     }
 
     public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)

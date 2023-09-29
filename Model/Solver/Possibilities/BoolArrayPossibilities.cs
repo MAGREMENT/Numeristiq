@@ -149,6 +149,11 @@ public class BoolArrayPossibilities : IPossibilities
         }
     }
 
+    public CellState ToCellState()
+    {
+        throw new NotImplementedException();
+    }
+
     public IEnumerator<int> GetEnumerator()
     {
         for (int i = 0; i < _possibilities.Length; i++)

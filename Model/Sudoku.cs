@@ -11,133 +11,7 @@ public class Sudoku : IReadOnlySudoku
     public Sudoku()
     {
     }
-
-    /**
-     * [1-9] = Digit
-     * x[1-9] = Fixed digit
-     * s[1-9]+s = Number of void cells
-     */
-    public Sudoku(string asString)
-    {
-        int row = 0;
-        int column = 0;
-        bool isCounting = false;
-        string buffer = "";
-
-        try
-        {
-            foreach (var c in asString)
-            {
-                switch (c)
-                {
-                    case 's' when isCounting:
-                    {
-                        var newPos = FillOfVoid(row, column, int.Parse(buffer));
-                        row = newPos[0];
-                        column = newPos[1];
-                        buffer = "";
-                        isCounting = false;
-                        break;
-                    }
-                    case 's':
-                        isCounting = true;
-                        break;
-                    case ' ': case '.' :
-                        _grid[row, column] = 0;
-
-                        ProgressInSudoku(ref row, ref column);
-                        break;
-                    default:
-                    {
-                        if (isCounting) buffer += c;
-                        else
-                        {
-                            _grid[row, column] = int.Parse(c.ToString());
-                            ProgressInSudoku(ref row, ref column);
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            FillOfVoid(row, column, 81 - row * GridSize - column);
-        }
-        catch (Exception)
-        {
-            for (int i = 0; i < GridSize; i++)
-            {
-                for (int j = 0; j < GridSize; j++)
-                {
-                    _grid[i, j] = 0;
-                }
-            }
-        }
-    }
-
-    public string AsString(SudokuTranslationType type = SudokuTranslationType.Shortcuts)
-    {
-        string result = "";
-        int voidCount = 0;
-        for (int i = 0; i < GridSize; i++)
-        {
-            for (int j = 0; j < GridSize; j++)
-            {
-                int current = _grid[i, j];
-                if (current == 0)
-                {
-                    switch (type)
-                    {
-                        case SudokuTranslationType.Shortcuts :
-                            voidCount++;
-                            break;
-                        case SudokuTranslationType.Zeros :
-                            result += "0";
-                            break;
-                        case SudokuTranslationType.Points :
-                            result += ".";
-                            break;
-                    }
-                }
-                else
-                {
-                    if (voidCount != 0)
-                    {
-                        result += voidCount > 3 ? "s" + voidCount + "s" : StringUtil.Repeat(" ", voidCount);
-                        voidCount = 0;
-                    }
-
-                    result += current;
-                }
-            }
-        }
-
-        return result;
-    }
-
-    private int[] FillOfVoid(int rowStart, int columnStart, int number)
-    {
-        while (number > 0)
-        {
-            _grid[rowStart, columnStart] = 0;
-            
-            ProgressInSudoku(ref rowStart, ref columnStart);
-            
-            number--;
-        }
-
-        return new[] { rowStart, columnStart };
-    }
-
-    private void ProgressInSudoku(ref int row, ref int col)
-    {
-        if (++col >= GridSize)
-        {
-            col = 0;
-            row++;
-        }
-    }
-
+    
     public bool IsComplete()
     {
         foreach (var cell in _grid)
@@ -299,16 +173,8 @@ public enum Unit
     Row, Column, MiniGrid
 }
 
-public enum SudokuTranslationType
+public interface IReadOnlySudoku : ITranslatable
 {
-    Shortcuts, Zeros, Points
-}
-
-public interface IReadOnlySudoku
-{
-    public int this[int row, int col] { get; }
-
-    public string AsString(SudokuTranslationType type);
     public bool IsCorrect();
     public int RowCount(int row, int number);
     public int ColumnCount(int column, int number);

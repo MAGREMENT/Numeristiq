@@ -11,13 +11,15 @@ namespace SudokuSolver;
     /// </summary>
     public partial class MainWindow : IGraphicsManager
     {
+        public event OnTranslationTypeChanged? TranslationTypeChanged;
+        
         private bool _createNewSudoku = true;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            var solverStateManager = new SolverStateManager(this, Solver, LogList);
+            var unused = new SolverStateManager(this, Solver, LogList);
 
             Solver.IsReady += () =>
             {
@@ -62,7 +64,7 @@ namespace SudokuSolver;
 
         private void NewSudoku(object sender, TextChangedEventArgs e)
         {
-            if (_createNewSudoku) Solver.NewSudoku(new Sudoku(SudokuStringBox.Text));
+            if (_createNewSudoku) Solver.NewSudoku(SudokuTranslator.Translate(SudokuStringBox.Text));
         }
 
         private void SolveSudoku(object sender, RoutedEventArgs e)
@@ -86,6 +88,7 @@ namespace SudokuSolver;
         {
             if (sender is not ComboBox box || Solver is null) return;
             Solver.TranslationType = (SudokuTranslationType) box.SelectedIndex;
+            TranslationTypeChanged?.Invoke();
         }
         
         private void SetSolverDelay(object sender, RoutedPropertyChangedEventArgs<double> e)

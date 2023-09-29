@@ -15,7 +15,7 @@ public class LogManager
     public delegate void OnLogsUpdate(List<ISolverLog> logs);
     public event OnLogsUpdate? LogsUpdated;
     
-    public string StartState { get; private set; }
+    public SolverState StartState { get; private set; }
 
     public LogManager(ILogHolder holder)
     {

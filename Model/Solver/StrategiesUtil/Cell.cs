@@ -59,6 +59,25 @@ public static class Cells
             if (ok) yield return coord;
         }
     }
+    
+    public static IEnumerable<Cell> SharedSeenCells(List<CellPossibility> list)
+    {
+        if(list.Count < 2) yield break;
+        foreach (var coord in list[0].SharedSeenCells(list[1]))
+        {
+            bool ok = true;
+            for (int i = 2; i < list.Count; i++)
+            {
+                if (!list[i].ShareAUnit(coord) || (list[i].Row == coord.Row && list[i].Col == coord.Col))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) yield return coord;
+        }
+    }
 
     public static IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {

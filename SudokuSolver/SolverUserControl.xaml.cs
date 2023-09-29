@@ -6,7 +6,6 @@ using Model;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
-using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using SudokuSolver.Utils;
@@ -21,20 +20,10 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     private readonly Solver _solver = new(new Sudoku());
     private int _logBuffer;
 
-    private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
+    public SudokuTranslationType TranslationType { get; set; } = SudokuTranslationType.Shortcuts;
 
-    public SudokuTranslationType TranslationType
-    {
-        get => _translationType;
-        set
-        {
-            _translationType = value;
-            SudokuAsStringChanged?.Invoke(_solver.Sudoku.AsString(_translationType));
-        }
-    }
-
-    public string StartState => _solver.StartState;
-    public string CurrentState => _solver.State;
+    public SolverState StartState => _solver.StartState;
+    public SolverState CurrentState => _solver.State;
     public int Delay { get; set; } = 400;
 
     private readonly SolverBackgroundManager _backgroundManager;
@@ -141,7 +130,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     private void Update()
     {
         RefreshSolver();
-        SudokuAsStringChanged?.Invoke(_solver.Sudoku.AsString(TranslationType));
+        SudokuAsStringChanged?.Invoke(SudokuTranslator.Translate(_solver.Sudoku, TranslationType));
     }
 
     private void RefreshSolver()
@@ -228,7 +217,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         }
     }
 
-    public void ShowState(string state)
+    public void ShowState(SolverState state)
     {
         _backgroundManager.Clear();
         Main.Background = _backgroundManager.Background;
@@ -236,37 +225,19 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         ShowStateWithoutUpdatingBackground(state);
     }
 
-    private void ShowStateWithoutUpdatingBackground(string state)
+    private void ShowStateWithoutUpdatingBackground(SolverState state)
     {
-        int n = -1;
-        int cursor = 0;
-        bool possibility = false;
-        IPossibilities buffer = IPossibilities.NewEmpty();
-        while (cursor < state.Length)
+        for (int row = 0; row < 9; row++)
         {
-            char current = state[cursor];
-            if (current is 'd' or 'p')
+            for (int col = 0; col < 9; col++)
             {
-                if (buffer.Count > 0)
-                {
-                    var scuc = GetTo(n / 9, n % 9);
-                    if (possibility) scuc.SetPossibilities(buffer);
-                    else scuc.SetDefinitiveNumber(buffer.GetFirst());
+                var uc = GetTo(row, col);
+                var cs = state.At(row, col);
 
-                    buffer.RemoveAll();
-                }
-
-                possibility = current == 'p';
-                n++;
+                if (cs.IsPossibilities) uc.SetPossibilities(cs.AsPossibilities);
+                else uc.SetDefinitiveNumber(cs.AsNumber);
             }
-            else buffer.Add(current - '0');
-
-            cursor++;
         }
-        
-        var scuc2 = GetTo(n / 9, n % 9);
-        if (possibility) scuc2.SetPossibilities(buffer);
-        else scuc2.SetDefinitiveNumber(buffer.GetFirst());
     }
     
     public void HighLightLog(ISolverLog log)
