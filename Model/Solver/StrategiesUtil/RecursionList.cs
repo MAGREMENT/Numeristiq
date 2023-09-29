@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Model.Solver.StrategiesUtil;
 
-public class RecursionList<T> : IEnumerable<T> //TODO use everywhere
+public class RecursionList<T> : IEnumerable<T>
 {
     private const int DefaultSize = 8;
 

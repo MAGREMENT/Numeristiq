@@ -1,7 +1,6 @@
 ﻿using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
-using Model.StrategiesUtil;
 
 namespace Model.Solver;
 
