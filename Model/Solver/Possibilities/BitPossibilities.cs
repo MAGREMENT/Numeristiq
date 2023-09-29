@@ -38,7 +38,7 @@ public class BitPossibilities : IPossibilities
     {
         if (possibilities is not BitPossibilities bp)
         {
-            //TODO
+            IPossibilities.DefaultRemove(this, possibilities);
             return;
         }
 
@@ -88,14 +88,6 @@ public class BitPossibilities : IPossibilities
         return IPossibilities.DefaultOr(this, possibilities);
     }
 
-    public int OrCount(IReadOnlyPossibilities possibilities)
-    {
-        if (possibilities is BitPossibilities bp)
-            return System.Numerics.BitOperations.PopCount((uint)(bp._possibilities | _possibilities));
-
-        return IPossibilities.DefaultOrCount(this, possibilities);
-    }
-
     public IPossibilities And(IReadOnlyPossibilities possibilities)
     {
         if (possibilities is BitPossibilities bp)
@@ -104,6 +96,11 @@ public class BitPossibilities : IPossibilities
             return new BitPossibilities(and, System.Numerics.BitOperations.PopCount((uint) and));
         }
         return IPossibilities.DefaultOr(this, possibilities);
+    }
+
+    public IPossibilities Invert()
+    {
+        return new BitPossibilities(~_possibilities & 0x1FF, 9 - Count);
     }
 
     public bool Peek(int number)

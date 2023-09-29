@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -15,10 +16,117 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        foreach (var je in JuniorExocet.SearchFullGrid(strategyManager))
+        var jes = JuniorExocet.SearchFullGrid(strategyManager);
+        
+        foreach (var je in jes)
         {
             Process(strategyManager, je);
         }
+
+        for (int i = 0; i < jes.Count - 1; i++)
+        {
+            for (int j = i + 1; j < jes.Count; j++)
+            {
+                ProcessDouble(strategyManager, jes[i], jes[j]);
+            }
+        }
+    }
+
+    private void ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2)
+    {
+        if(!je1.BaseCandidates.Equals(je2.BaseCandidates) || je1.GetUnit() != je2.GetUnit()) return;
+
+        var cells1 = new HashSet<Cell>();
+        cells1.Add(je1.Base1);
+        cells1.Add(je1.Base2);
+        cells1.Add(je1.Target1);
+        cells1.Add(je1.Target2);
+
+        if (cells1.Contains(je2.Base1)) return;
+        if (cells1.Contains(je2.Base2)) return;
+        if (cells1.Contains(je2.Target1)) return;
+        if (cells1.Contains(je2.Target2)) return;
+
+        LinePositions lp1 = new();
+        LinePositions lp2 = new();
+        if (je1.GetUnit() == Unit.Row)
+        {
+            if (je1.Base1.Row / 3 != je2.Base1.Row / 3) return;
+            
+            lp1.Add(je1.Target1.Col);
+            lp1.Add(je1.Target2.Col);
+            lp1.Add(je1.EscapeCell.Col);
+            lp2.Add(je2.Target1.Col);
+            lp2.Add(je2.Target2.Col);
+            lp2.Add(je2.EscapeCell.Col);
+        }
+        else
+        {
+            if (je1.Base1.Col/ 3 != je2.Base1.Col / 3) return;
+            
+            lp1.Add(je1.Target1.Row);
+            lp1.Add(je1.Target2.Row);
+            lp1.Add(je1.EscapeCell.Row);
+            lp2.Add(je2.Target1.Row);
+            lp2.Add(je2.Target2.Row);
+            lp2.Add(je2.EscapeCell.Row);
+        }
+
+        if (!lp1.Equals(lp2)) return;
+        
+        //Perfectly overlapping double junior exocet
+
+        foreach (var cell in Cells.SharedSeenCells(je1.Base1, je2.Base2, je1.Base2, je2.Base1))
+        {
+            foreach (var possibility in je1.BaseCandidates)
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+            }
+        }
+        
+        foreach (var cell in Cells.SharedSeenCells(je1.Target1, je2.Target2, je1.Target2, je2.Target1))
+        {
+            foreach (var possibility in je1.BaseCandidates)
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+            }
+        }
+
+        foreach (var sPossibility in je1.SPossibilities)
+        {
+            if (sPossibility.IsDoubleParallel())
+            {
+                var or = sPossibility.Or();
+                if (je1.GetUnit() == Unit.Row)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        if (col == je1.EscapeCell.Col || col == je1.Target1.Col || col == je1.Target2.Col) continue;
+
+                        foreach (var row in or)
+                        {
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(sPossibility.Possibility, row, col);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int row = 0; row < 9; row++)
+                    {
+                        if (row == je1.EscapeCell.Row || row == je1.Target1.Row || row == je1.Target2.Row) continue;
+
+                        foreach (var col in or)
+                        {
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(sPossibility.Possibility, row, col);
+                        }
+                    }
+                }
+            }   
+            
+            //TODO : other cover houses
+        }
+
+        strategyManager.ChangeBuffer.Push(this, new DoubleJuniorExocetReportBuilder(je1, je2));
     }
 
     private void Process(IStrategyManager strategyManager, JuniorExocet je)
@@ -26,7 +134,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         //---Base candidates rules---
         
         //Rule 1
-        foreach (var sCell in je.SCells)
+        foreach (var sCell in je.SPossibilities)
         {
             if ((sCell.FromTarget1.Count > 0 && sCell.FromTarget2.Count == 0 && sCell.FromEscapeCell.Count == 0)
                 || (sCell.FromTarget1.Count == 0 && sCell.FromTarget2.Count > 0 && sCell.FromEscapeCell.Count == 0)
@@ -86,7 +194,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         //Rule 4 -> TODO add in LinkGraph
         
         //Rule 5
-        foreach (var sCell in je.SCells)
+        foreach (var sCell in je.SPossibilities)
         {
             if (sCell.IsDoubleParallel()) continue;
             
@@ -105,10 +213,10 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target1.Row, je.Target1.Col);
             }
 
-            if (SCells.IsPerpendicularWithOneParallel(sCell.FromTarget1, sCell.FromTarget2, sCell.FromEscapeCell))
+            if (SPossibility.IsPerpendicularWithOneParallel(sCell.FromTarget1, sCell.FromTarget2, sCell.FromEscapeCell))
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target1.Row, je.Target1.Col);
             
-            if (SCells.IsPerpendicularWithOneParallel(sCell.FromTarget2, sCell.FromTarget1, sCell.FromEscapeCell))
+            if (SPossibility.IsPerpendicularWithOneParallel(sCell.FromTarget2, sCell.FromTarget1, sCell.FromEscapeCell))
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target2.Row, je.Target2.Col);
         }
         
@@ -153,29 +261,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<Cell> sCells = new();
-        if (_je.GetUnit() == Unit.Row)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                if (row / 3 == _je.Base1.Row / 3) continue;
-                
-                sCells.Add(new Cell(row, _je.Target1.Col));
-                sCells.Add(new Cell(row, _je.Target2.Col));
-                sCells.Add(new Cell(row, _je.EscapeCell.Col));
-            }
-        }
-        else
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (col / 3 == _je.Base1.Col / 3) continue;
-                
-                sCells.Add(new Cell(_je.Target1.Row, col));
-                sCells.Add(new Cell(_je.Target2.Row, col));
-                sCells.Add(new Cell(_je.EscapeCell.Row, col));
-            }
-        }
+        List<Cell> sCells = _je.GetSCells();
 
         List<CellPossibility> sPossibilities = new();
         foreach (var cell in sCells)
@@ -199,6 +285,70 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
             
             lighter.HighlightCell(_je.Target1, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_je.Target2, ChangeColoration.CauseOffTwo);
+
+            foreach (var cell in sCells)
+            {
+                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+            }
+
+            foreach (var cp in sPossibilities)
+            {
+                lighter.HighlightPossibility(cp, ChangeColoration.Neutral);
+            }
+
+            foreach (var cell in sSolved)
+            {
+                lighter.HighlightCell(cell, ChangeColoration.Neutral);
+            }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
+public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
+{
+    private readonly JuniorExocet _je1;
+    private readonly JuniorExocet _je2;
+
+    public DoubleJuniorExocetReportBuilder(JuniorExocet je1, JuniorExocet je2)
+    {
+        _je1 = je1;
+        _je2 = je2;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        List<Cell> sCells = _je1.GetSCells();
+
+        List<CellPossibility> sPossibilities = new();
+        foreach (var cell in sCells)
+        {
+            foreach (var possibility in _je1.BaseCandidates)
+            {
+                if(snapshot.PossibilitiesAt(cell).Peek(possibility)) sPossibilities.Add(new CellPossibility(cell, possibility));
+            }
+        }
+
+        List<Cell> sSolved = new();
+        foreach (var cell in sCells)
+        {
+            if (_je1.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Col])) sSolved.Add(cell);
+        }
+        
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            lighter.HighlightCell(_je1.Base1, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_je1.Base2, ChangeColoration.CauseOffOne);
+            
+            lighter.HighlightCell(_je1.Target1, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_je1.Target2, ChangeColoration.CauseOffTwo);
+            
+            lighter.HighlightCell(_je2.Base1, ChangeColoration.CauseOffFive);
+            lighter.HighlightCell(_je2.Base2, ChangeColoration.CauseOffFive);
+            
+            lighter.HighlightCell(_je2.Target1, ChangeColoration.CauseOffFour);
+            lighter.HighlightCell(_je2.Target2, ChangeColoration.CauseOffFour);
 
             foreach (var cell in sCells)
             {

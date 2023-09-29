@@ -28,7 +28,7 @@ public class BoolArrayPossibilities : IPossibilities
 
     public void Remove(IPossibilities possibilities)
     {
-        throw new NotImplementedException();
+        IPossibilities.DefaultRemove(this, possibilities);
     }
 
     public void RemoveAll()
@@ -69,15 +69,15 @@ public class BoolArrayPossibilities : IPossibilities
     {
         return IPossibilities.DefaultOr(this, possibilities);
     }
-
-    public int OrCount(IReadOnlyPossibilities possibilities)
-    {
-        return IPossibilities.DefaultOrCount(this, possibilities);
-    }
-
+    
     public IPossibilities And(IReadOnlyPossibilities possibilities)
     {
         return IPossibilities.DefaultAnd(this, possibilities);
+    }
+
+    public IPossibilities Invert()
+    {
+        return IPossibilities.DefaultInvert(this);
     }
 
     public bool Peek(int i)

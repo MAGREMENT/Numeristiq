@@ -14,10 +14,10 @@ public class JuniorExocet
     public Cell Target2 { get; }
     public IPossibilities BaseCandidates { get; }
     public Cell EscapeCell { get; }
-    public SCells[] SCells { get; }
+    public SPossibility[] SPossibilities { get; }
 
     private JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, IPossibilities baseCandidates
-        , Cell escapeCell, SCells[] sCells)
+        , Cell escapeCell, SPossibility[] sPossibilities)
     {
         Base1 = base1;
         Base2 = base2;
@@ -25,7 +25,7 @@ public class JuniorExocet
         Target2 = target2;
         BaseCandidates = baseCandidates;
         EscapeCell = escapeCell;
-        SCells = sCells;
+        SPossibilities = sPossibilities;
     }
 
     public Unit GetUnit()
@@ -36,6 +36,34 @@ public class JuniorExocet
     public List<int[]> IncompatibilityTest(IStrategyManager strategyManager) //TODO
     {
         return new List<int[]>(0);
+    }
+
+    public List<Cell> GetSCells(){
+        List<Cell> sCells = new();
+        if (GetUnit() == Unit.Row)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                if (row / 3 == Base1.Row / 3) continue;
+                
+                sCells.Add(new Cell(row, Target1.Col));
+                sCells.Add(new Cell(row, Target2.Col));
+                sCells.Add(new Cell(row, EscapeCell.Col));
+            }
+        }
+        else
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (col / 3 == Base1.Col / 3) continue;
+                
+                sCells.Add(new Cell(Target1.Row, col));
+                sCells.Add(new Cell(Target2.Row, col));
+                sCells.Add(new Cell(EscapeCell.Row, col));
+            }
+        }
+
+        return sCells;
     }
 
     public static Cell[] GetMirrorNodes(Cell t2, Unit unit)
@@ -69,8 +97,10 @@ public class JuniorExocet
         return result;
     }
 
-    public static IEnumerable<JuniorExocet> SearchFullGrid(IStrategyManager strategyManager)
+    public static List<JuniorExocet> SearchFullGrid(IStrategyManager strategyManager)
     {
+        var result = new List<JuniorExocet>();
+        
         //Rows
         for (int row = 0; row < 9; row++)
         {
@@ -110,7 +140,7 @@ public class JuniorExocet
                                 var je = TryCreateFromRow(strategyManager, new Cell(row, col1),
                                     new Cell(row, col2), new Cell(rows[0], col3),
                                     new Cell(rows[1], col4), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
 
@@ -129,7 +159,7 @@ public class JuniorExocet
                                 var je = TryCreateFromRow(strategyManager, new Cell(row, col1),
                                     new Cell(row, col2), new Cell(rows[0], col3),
                                     new Cell(rows[1], col4), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
                     }
@@ -176,7 +206,7 @@ public class JuniorExocet
                                 var je = TryCreateFromColumn(strategyManager, new Cell(row1, col),
                                     new Cell(row2, col), new Cell(row3, cols[0]),
                                     new Cell(row4, cols[1]), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
 
@@ -195,13 +225,15 @@ public class JuniorExocet
                                 var je = TryCreateFromColumn(strategyManager, new Cell(row1, col),
                                     new Cell(row2, col), new Cell(row3, cols[0]),
                                     new Cell(row4, cols[1]), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
                     }
                 }
             }
         }
+
+        return result;
     }
 
     private static bool GeneralCheck(IStrategyManager strategyManager, Cell target1,
@@ -256,7 +288,7 @@ public class JuniorExocet
         //Check that each base digit is in max 2 cover houses (2 rows, 2 cols, 1 row & 1 col) in the S cells
         var miniRow = base1.Row / 3;
         var eCol = UnitInGridExcept(base1.Col, base2.Col);
-        SCells[] sCells = new SCells[baseCandidates.Count];
+        SPossibility[] sCells = new SPossibility[baseCandidates.Count];
         int cursor = 0;
         
         foreach (var possibility in baseCandidates)
@@ -276,7 +308,7 @@ public class JuniorExocet
             solved = SolvedColumnPositionsAt(strategyManager, eCol, possibility);
             if(solved != -1) se.Add(solved);
 
-            var current  = new SCells(s1, s2, se, possibility);
+            var current  = new SPossibility(s1, s2, se, possibility);
             if (!current.IsValid()) return null;
 
             sCells[cursor++] = current;
@@ -328,7 +360,7 @@ public class JuniorExocet
         //Check that each base digit is in max 2 cover houses (2 rows, 2 cols, 1 row & 1 col) in the S cells
         var miniCol = base1.Col / 3;
         var eRow = UnitInGridExcept(base1.Row, base2.Row);
-        SCells[] sCells = new SCells[baseCandidates.Count];
+        SPossibility[] sCells = new SPossibility[baseCandidates.Count];
         int cursor = 0;
         
         foreach (var possibility in baseCandidates)
@@ -348,7 +380,7 @@ public class JuniorExocet
             solved = SolvedRowPositionsAt(strategyManager, eRow, possibility);
             if(solved != -1) se.Add(solved);
             
-            var current = new SCells(s1, s2, se, possibility);
+            var current = new SPossibility(s1, s2, se, possibility);
             if (!current.IsValid()) return null;
 
             sCells[cursor++] = current;
@@ -428,9 +460,9 @@ public class JuniorExocet
     }
 }
 
-public class SCells
+public class SPossibility
 {
-    public SCells(IReadOnlyLinePositions fromTarget1, IReadOnlyLinePositions fromTarget2,
+    public SPossibility(IReadOnlyLinePositions fromTarget1, IReadOnlyLinePositions fromTarget2,
         IReadOnlyLinePositions fromEscapeCell, int possibility)
     {
         FromTarget1 = fromTarget1;
@@ -459,6 +491,11 @@ public class SCells
         return IsPerpendicularWithOneParallel(FromTarget1, FromTarget2, FromEscapeCell)
                || IsPerpendicularWithOneParallel(FromTarget2, FromTarget1, FromEscapeCell)
                || IsPerpendicularWithOneParallel(FromEscapeCell, FromTarget2, FromTarget1);
+    }
+
+    public LinePositions Or()
+    {
+        return FromTarget1.Or(FromTarget2).Or(FromEscapeCell);
     }
 
     public static bool IsPerpendicularWithOneParallel(IReadOnlyLinePositions perp, IReadOnlyLinePositions par1,

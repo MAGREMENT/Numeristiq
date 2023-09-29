@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj": {}
+    "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj": {
+    "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj",
+        "projectUniqueName": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj",
         "projectName": "Model",
-        "projectPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj",
-        "packagesPath": "C:\\Users\\Zach\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\obj\\",
+        "projectPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj",
+        "packagesPath": "C:\\Users\\zacha\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Model\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Zach\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\zacha\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0-windows"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -50,6 +48,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -58,36 +74,34 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\zacha\\.dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj": {
+    "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj",
+        "projectUniqueName": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj",
         "projectName": "SudokuSolver",
-        "projectPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj",
-        "packagesPath": "C:\\Users\\Zach\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\obj\\",
+        "projectPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\SudokuSolver.csproj",
+        "packagesPath": "C:\\Users\\zacha\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\SudokuSolver\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Zach\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\zacha\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0-windows"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0-windows7.0": {
             "targetAlias": "net6.0-windows",
             "projectReferences": {
-              "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj": {
-                "projectPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj"
+              "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj": {
+                "projectPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Model\\Model.csproj"
               }
             }
           }
@@ -112,6 +126,24 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.win-x64",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -120,7 +152,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\zacha\\.dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }
