@@ -2,7 +2,7 @@
 
 public static class PathsInfo //TODO make relative paths
 {
-    private const string HardCodedPath = @"C:/Users/Zach/Desktop/Perso/SudokuSolver";
+    private const string HardCodedPath = @"C:/Users/zacha/Desktop/Perso/SudokuSolver";
         
     public static string PathToData()
     {

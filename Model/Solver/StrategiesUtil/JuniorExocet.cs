@@ -38,6 +38,34 @@ public class JuniorExocet
         return new List<int[]>(0);
     }
 
+    public List<Cell> GetSCells(){
+        List<Cell> sCells = new();
+        if (GetUnit() == Unit.Row)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                if (row / 3 == Base1.Row / 3) continue;
+                
+                sCells.Add(new Cell(row, Target1.Col));
+                sCells.Add(new Cell(row, Target2.Col));
+                sCells.Add(new Cell(row, EscapeCell.Col));
+            }
+        }
+        else
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (col / 3 == Base1.Col / 3) continue;
+                
+                sCells.Add(new Cell(Target1.Row, col));
+                sCells.Add(new Cell(Target2.Row, col));
+                sCells.Add(new Cell(EscapeCell.Row, col));
+            }
+        }
+
+        return sCells;
+    }
+
     public static Cell[] GetMirrorNodes(Cell t2, Unit unit)
     {
         Cell[] result = new Cell[2];
@@ -69,8 +97,10 @@ public class JuniorExocet
         return result;
     }
 
-    public static IEnumerable<JuniorExocet> SearchFullGrid(IStrategyManager strategyManager)
+    public static List<JuniorExocet> SearchFullGrid(IStrategyManager strategyManager)
     {
+        var result = new List<JuniorExocet>();
+        
         //Rows
         for (int row = 0; row < 9; row++)
         {
@@ -110,7 +140,7 @@ public class JuniorExocet
                                 var je = TryCreateFromRow(strategyManager, new Cell(row, col1),
                                     new Cell(row, col2), new Cell(rows[0], col3),
                                     new Cell(rows[1], col4), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
 
@@ -129,7 +159,7 @@ public class JuniorExocet
                                 var je = TryCreateFromRow(strategyManager, new Cell(row, col1),
                                     new Cell(row, col2), new Cell(rows[0], col3),
                                     new Cell(rows[1], col4), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
                     }
@@ -176,7 +206,7 @@ public class JuniorExocet
                                 var je = TryCreateFromColumn(strategyManager, new Cell(row1, col),
                                     new Cell(row2, col), new Cell(row3, cols[0]),
                                     new Cell(row4, cols[1]), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
 
@@ -195,13 +225,15 @@ public class JuniorExocet
                                 var je = TryCreateFromColumn(strategyManager, new Cell(row1, col),
                                     new Cell(row2, col), new Cell(row3, cols[0]),
                                     new Cell(row4, cols[1]), or);
-                                if (je is not null) yield return je;
+                                if (je is not null) result.Add(je);
                             }
                         }
                     }
                 }
             }
         }
+
+        return result;
     }
 
     private static bool GeneralCheck(IStrategyManager strategyManager, Cell target1,

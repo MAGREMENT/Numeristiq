@@ -23,6 +23,14 @@ public interface IPossibilities : IReadOnlyPossibilities
         }
     }
 
+    public static void DefaultRemove(IPossibilities left, IPossibilities right)
+    {
+        foreach (var possibility in right)
+        {
+            left.Remove(possibility);
+        }
+    }
+
     public static IPossibilities New()
     {
         return new BitPossibilities();
@@ -44,8 +52,8 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public int Count { get; }
     public int GetFirst();
     public IPossibilities Or(IReadOnlyPossibilities possibilities);
-    public int OrCount(IReadOnlyPossibilities possibilities);
     public IPossibilities And(IReadOnlyPossibilities possibilities);
+    public IPossibilities Invert();
     public bool Peek(int n);
     public bool PeekAll(IReadOnlyPossibilities poss);
     public bool PeekAny(IReadOnlyPossibilities poss);
@@ -64,23 +72,23 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
         return result;
     }
 
-    public static int DefaultOrCount(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
-    {
-        var result = 0;
-        for (int i = Min; i <= Max; i++)
-        {
-            if (poss1.Peek(i) || poss2.Peek(i)) result++;
-        }
-
-        return result;
-    }
-
     public static IPossibilities DefaultAnd(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
     {
         var result = IPossibilities.New();
         for (int i = Min; i <= Max; i++)
         {
             if (!poss1.Peek(i) || !poss2.Peek(i)) result.Remove(i);
+        }
+
+        return result;
+    }
+
+    public static IPossibilities DefaultInvert(IReadOnlyPossibilities possibilities)
+    {
+        var result = IPossibilities.New();
+        for (int i = Min; i <= Max; i++)
+        {
+            if (!possibilities.Peek(i)) result.Add(i);
         }
 
         return result;

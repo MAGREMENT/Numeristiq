@@ -1,8 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "8umS/L6TR12C2NlPQkOAUgSYxOnn8K0wKu3BaQuspT3kkQv4WbqTw8NOkHaoBUx65rbx4BPrEFoJjQuSB0dKyA==",
+  "dgSpecHash": "4RlihMopVGlDVOmqAhVvJ2lJ33QPuEGw0oaMq4DGJwJhLPsOLFOhDLnyzGMxfibGdraIcKy82ctlwm+COQG02Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\RunTester\\RunTester.csproj",
-  "expectedPackageFiles": [],
+  "projectFilePath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\RunTester\\RunTester.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\zacha\\.nuget\\packages\\microsoft.netcore.app.ref\\6.0.20\\microsoft.netcore.app.ref.6.0.20.nupkg.sha512",
+    "C:\\Users\\zacha\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\6.0.20\\microsoft.windowsdesktop.app.ref.6.0.20.nupkg.sha512",
+    "C:\\Users\\zacha\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\6.0.20\\microsoft.aspnetcore.app.ref.6.0.20.nupkg.sha512",
+    "C:\\Users\\zacha\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\6.0.20\\microsoft.netcore.app.host.win-x64.6.0.20.nupkg.sha512"
+  ],
   "logs": []
 }

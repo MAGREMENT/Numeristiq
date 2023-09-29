@@ -6,6 +6,9 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
+/// <summary>
+/// http://forum.enjoysudoku.com/using-multi-sector-locked-sets-t31222.html
+/// </summary>
 public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other elims
 {
     public const string OfficialName = "Multi-Sector Locked Sets";
@@ -28,14 +31,14 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
                         possibilities.Add(p);
                         possibilities.Add(q);
 
-                        Try(strategyManager, possibilities);
+                        Try(strategyManager, possibilities, possibilities.Invert());
                     }
                 }
             }
         }
     }
 
-    private void Try(IStrategyManager strategyManager, IPossibilities possibilities)
+    private void Try(IStrategyManager strategyManager, IPossibilities home, IPossibilities away)
     {
         GridPositions gpRow = new GridPositions();
         GridPositions gpCol = new GridPositions();
@@ -47,14 +50,14 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
             for (int col = 0; col < 9; col++)
             {
                 var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
                 
-                if (possibilities.Peek(solved))
+                if (home.Peek(solved))
                 {
                     gpRow.VoidRow(row);
                     gpCol.VoidColumn(col);
                 }
-                else
+                
+                if(away.Peek(solved))
                 {
                     gpRow.VoidColumn(col);
                     gpCol.VoidRow(row);
@@ -62,13 +65,26 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
             }
         }
 
-        TryRow(strategyManager, gpRow, possibilities);
-        TryColumn(strategyManager, gpCol, possibilities);
+        Try(strategyManager, gpRow, home, away, Unit.Row);
+        Try(strategyManager, gpCol, home, away, Unit.Column);
     }
 
-    private void TryRow(IStrategyManager strategyManager, GridPositions gp, IPossibilities possibilities)
+    private void Try(IStrategyManager strategyManager, GridPositions gp, IPossibilities home, IPossibilities away, Unit unit)
     {
-        if (gp.Count < possibilities.Count) return;
+        if (gp.Count < 9) return;
+
+        IPossibilities one;
+        IPossibilities two;
+        if (unit == Unit.Row)
+        {
+            one = home;
+            two = away;
+        }
+        else
+        {
+            one = away;
+            two = home;
+        }
         
         int count = 0;
         
@@ -79,13 +95,10 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
             int n = 0;
             for (int col = 0; col < 9; col++)
             {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                if (!possibilities.Peek(solved)) n++;
+                if (two.Peek(strategyManager.Sudoku[row, col])) n++;
             }
 
-            count += 9 - possibilities.Count - n;
+            count += two.Count - n;
         }
 
         for (int col = 0; col < 9; col++)
@@ -95,62 +108,31 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
             int n = 0;
             for (int row = 0; row < 9; row++)
             {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                if (possibilities.Peek(solved)) n++;
+                if (one.Peek(strategyManager.Sudoku[row, col])) n++;
             }
             
-            count += possibilities.Count - n;
+            count += one.Count - n;
         }
 
-        ProcessRow(strategyManager, gp, possibilities, count);
+        Process(strategyManager, gp, home, away, count, unit);
     }
 
-    private void TryColumn(IStrategyManager strategyManager, GridPositions gp, IPossibilities possibilities)
-    {
-        if (gp.Count < possibilities.Count) return;
-        
-        int count = 0;
-        
-        for (int col = 0; col < 9; col++)
-        {
-            if (gp.ColumnCount(col) == 0) continue;
-
-            int n = 0;
-            for (int row = 0; row < 9; row++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                if (!possibilities.Peek(solved)) n++;
-            }
-            
-            count += 9 - possibilities.Count - n;
-        }
-        
-        for (int row = 0; row < 9; row++)
-        {
-            if (gp.RowCount(row) == 0) continue;
-
-            int n = 0;
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                if (possibilities.Peek(solved)) n++;
-            }
-
-            count += possibilities.Count - n;
-        }
-
-        ProcessCol(strategyManager, gp, possibilities, count);
-    }
-
-    private void ProcessRow(IStrategyManager strategyManager, GridPositions gp, IPossibilities possibilities, int count)
+    private void Process(IStrategyManager strategyManager, GridPositions gp, IPossibilities home, IPossibilities away, int count, Unit unit)
     {
         if (count != gp.Count) return;
+        
+        IPossibilities one;
+        IPossibilities two;
+        if (unit == Unit.Row)
+        {
+            one = home;
+            two = away;
+        }
+        else
+        {
+            one = away;
+            two = home;
+        }
         
         for (int row = 0; row < 9; row++)
         {
@@ -159,19 +141,17 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
                 var rowCount = gp.RowCount(row);
                 var colCount = gp.ColumnCount(col);
 
-                switch (rowCount)
+                switch (rowCount, colCount)
                 {
-                    case > 0 when colCount == 0:
-                        for (int possibility = 1; possibility <= 9; possibility++)
+                    case (> 0, 0) :
+                        foreach (var possibility in two)
                         {
-                            if (possibilities.Peek(possibility)) continue;
-
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                         }
 
                         break;
-                    case 0 when colCount > 0:
-                        foreach (var possibility in possibilities)
+                    case (0, > 0) :
+                        foreach (var possibility in one)
                         {
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                         }
@@ -181,55 +161,21 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new MultiSectorLockedSetsReportBuilder(gp, possibilities));
-    }
-    
-    private void ProcessCol(IStrategyManager strategyManager, GridPositions gp, IPossibilities possibilities, int count)
-    {
-        if (count != gp.Count) return;
-        
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var rowCount = gp.RowCount(row);
-                var colCount = gp.ColumnCount(col);
-
-                switch (rowCount)
-                {
-                    case > 0 when colCount == 0:
-                        foreach (var possibility in possibilities)
-                        {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                        }
-
-                        break;
-                    case 0 when colCount > 0:
-                        for (int possibility = 1; possibility <= 9; possibility++)
-                        {
-                            if (possibilities.Peek(possibility)) continue;
-
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        strategyManager.ChangeBuffer.Push(this, new MultiSectorLockedSetsReportBuilder(gp, possibilities));
+        strategyManager.ChangeBuffer.Push(this, new MultiSectorLockedSetsReportBuilder(gp, home, away));
     }
 }
 
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly GridPositions _gp;
-    private readonly IPossibilities _possibilities;
+    private readonly IPossibilities _home;
+    private readonly IPossibilities _away;
 
-    public MultiSectorLockedSetsReportBuilder(GridPositions gp, IPossibilities possibilities)
+    public MultiSectorLockedSetsReportBuilder(GridPositions gp, IPossibilities home, IPossibilities away)
     {
         _gp = gp;
-        _possibilities = possibilities;
+        _home = home;
+        _away = away;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -242,14 +188,13 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
             for (int col = 0; col < 9; col++)
             {
                 var solved = snapshot.Sudoku[row, col];
-                if (solved == 0) continue;
 
-                if (_possibilities.Peek(solved)) homeSet.Add(new Cell(row, col));
-                else awaySet.Add(new Cell(row, col));
+                if (_home.Peek(solved)) homeSet.Add(new Cell(row, col));
+                if (_away.Peek(solved)) awaySet.Add(new Cell(row, col));
             }
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _possibilities.ToString()!, lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
             foreach (var cell in homeSet)
             {
@@ -268,5 +213,12 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation()
+    {
+        return $"Multi-Sector Locked Sets found :\n" +
+               $"Home possibilities : {_home}\n" +
+               $"Away possibilities : {_away}";
     }
 }
