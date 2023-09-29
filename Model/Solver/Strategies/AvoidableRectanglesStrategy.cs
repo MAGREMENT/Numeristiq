@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AvoidableRectanglesStrategy : AbstractStrategy
+public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
 {
     public const string OfficialName = "Avoidable Rectangles";
 
@@ -42,7 +42,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
 
                 //Type 1
                 if (strategyManager.Sudoku[row, pair[0].Column] == pair[1].Number &&
-                    strategyManager.OriginalBoard[row, pair[0].Column] == 0)
+                    OriginalBoard[row, pair[0].Column] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, row, pair[1].Column);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -51,7 +51,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
 
 
                 if (strategyManager.Sudoku[row, pair[1].Column] == pair[0].Number &&
-                    strategyManager.OriginalBoard[row, pair[1].Column] == 0)
+                    OriginalBoard[row, pair[1].Column] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, row, pair[0].Column);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -110,7 +110,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
 
         for (int col = 0; col < 9; col++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0) 
+            if (strategyManager.Sudoku[row, col] != 0 && OriginalBoard[row, col] == 0) 
                 SearchRowForPairs(strategyManager, row, col + 1,
                     new SolvedNumber(strategyManager.Sudoku[row, col], row, col), result);
         }
@@ -123,7 +123,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
     {
         for (int col = start; col < 9; col++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0)
+            if (strategyManager.Sudoku[row, col] != 0 && OriginalBoard[row, col] == 0)
             {
                 result.Add(new []{current, new SolvedNumber(strategyManager.Sudoku[row, col], row, col)});
             }
@@ -145,7 +145,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
 
                 //Type 1
                 if (strategyManager.Sudoku[pair[0].Row, col] == pair[1].Number &&
-                    strategyManager.OriginalBoard[pair[0].Row, col] == 0)
+                    OriginalBoard[pair[0].Row, col] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, pair[1].Row, col);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -154,7 +154,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
 
 
                 if (strategyManager.Sudoku[pair[1].Row, col] == pair[0].Number &&
-                    strategyManager.OriginalBoard[pair[1].Row, col] == 0)
+                    OriginalBoard[pair[1].Row, col] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, pair[0].Row, col);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
@@ -213,7 +213,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
 
         for (int row = 0; row < 9; row++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0) 
+            if (strategyManager.Sudoku[row, col] != 0 && OriginalBoard[row, col] == 0) 
                 SearchColumnForPairs(strategyManager, col, row + 1,
                     new SolvedNumber(strategyManager.Sudoku[row, col], row, col), result);
         }
@@ -226,7 +226,7 @@ public class AvoidableRectanglesStrategy : AbstractStrategy
     {
         for (int row = start; row < 9; row++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 && strategyManager.OriginalBoard[row, col] == 0)
+            if (strategyManager.Sudoku[row, col] != 0 && OriginalBoard[row, col] == 0)
             {
                 result.Add(new []{current, new SolvedNumber(strategyManager.Sudoku[row, col], row, col)});
             }

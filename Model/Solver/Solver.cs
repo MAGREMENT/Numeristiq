@@ -46,19 +46,19 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     public Solver(Sudoku s)
     {
+        var strategyLoader = new StrategyLoader();
+        strategyLoader.Load();
+        Strategies = strategyLoader.Strategies;
+        _excludedStrategies = strategyLoader.ExcludedStrategies;
+        
         _sudoku = s;
-        OriginalBoard = s.Copy();
+        CallOnNewSudokuForEachStrategy();
 
         NumberAdded += (_, _) => _changeWasMade = true;
         PossibilityRemoved += (_, _) => _changeWasMade = true;
 
         Init();
 
-        var strategyLoader = new StrategyLoader();
-        strategyLoader.Load();
-        Strategies = strategyLoader.Strategies;
-        _excludedStrategies = strategyLoader.ExcludedStrategies;
-        
         PreComputer = new PreComputer(this);
 
         GraphManager = new LinkGraphManager(this);
@@ -74,7 +74,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public void SetSudoku(Sudoku s)
     {
         _sudoku = s;
-        OriginalBoard = s.Copy();
+        CallOnNewSudokuForEachStrategy();
 
         Reset();
 
@@ -242,8 +242,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     //StrategyManager---------------------------------------------------------------------------------------------------
 
-    public IReadOnlySudoku OriginalBoard { get; private set; }
-
     public bool AddSolution(int number, int row, int col, IStrategy strategy)
     {
         if (!AddSolution(number, row, col)) return false;
@@ -290,6 +288,14 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     //Private-----------------------------------------------------------------------------------------------------------
 
+    private void CallOnNewSudokuForEachStrategy()
+    {
+        foreach (var s in Strategies)
+        {
+            s.OnNewSudoku(_sudoku);
+        }
+    }
+    
     private bool AddSolution(int number, int row, int col)
     {
         if (_sudoku[row, col] != 0) return false;

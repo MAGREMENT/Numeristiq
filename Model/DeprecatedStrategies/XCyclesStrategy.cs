@@ -81,6 +81,11 @@ public class XCyclesStrategy : IStrategy
         }
     }
 
+    public void OnNewSudoku(Sudoku s)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private void Search(IStrategyManager strategyManager, Dictionary<Cell, Cell>[] strongLinks, CoordinateAndType current,
         List<Cell> visited, int number)
     {

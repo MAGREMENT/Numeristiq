@@ -78,6 +78,11 @@ public class SwordfishStrategy : IStrategy
         }
     }
 
+    public void OnNewSudoku(Sudoku s)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private void ProcessSwordfishInRows(IStrategyManager strategyManager, int row1, int row2, int row3, LinePositions cols, int number)
     {
         foreach (var col in cols)

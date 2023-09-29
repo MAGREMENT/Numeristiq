@@ -17,4 +17,21 @@ public abstract class AbstractStrategy : IStrategy
     }
     
     public abstract void ApplyOnce(IStrategyManager strategyManager);
+    public virtual void OnNewSudoku(Sudoku s) { }
+    
+}
+
+public abstract class OriginalBoardBasedAbstractStrategy : AbstractStrategy
+{
+    public Sudoku OriginalBoard { get; private set; } = new();
+    
+    protected OriginalBoardBasedAbstractStrategy(string name, StrategyDifficulty difficulty) : base(name, difficulty)
+    {
+    }
+
+    public override void OnNewSudoku(Sudoku s)
+    {
+        base.OnNewSudoku(s);
+        OriginalBoard = s;
+    }
 }

@@ -9,8 +9,8 @@ public interface IStrategy //TODO : Add return after first instance found
     public UniquenessDependency UniquenessDependency { get; }
     public StatisticsTracker Tracker { get; }
     
-
     void ApplyOnce(IStrategyManager strategyManager);
+    void OnNewSudoku(Sudoku s);
 }
 
 public enum StrategyDifficulty

@@ -49,6 +49,11 @@ public class OldThreeDimensionMedusaStrategy : IStrategy {
         
     }
 
+    public void OnNewSudoku(Sudoku s)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private void SearchByCombination(IStrategyManager strategyManager, ColorableWeb<CellPossibilityColoring> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>

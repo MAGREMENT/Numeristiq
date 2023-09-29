@@ -52,6 +52,11 @@ public class OldSimpleColoringStrategy : IStrategy
         }
     }
 
+    public void OnNewSudoku(Sudoku s)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private void SearchForTwiceInTheSameUnit(IStrategyManager strategyManager, int number, ColorableWeb<CellColoring> web)
     {
         web.ForEachCombinationOfTwo((one, two) =>

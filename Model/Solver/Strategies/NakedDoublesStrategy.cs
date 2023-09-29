@@ -212,10 +212,8 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
         
         foreach (var possibility in _pos)
         {
-            int row = _miniRow * 3 + _gn1 / 3;
-            int col = _miniCol * 3 + _gn2 % 3;
-            
-            cells.Add(new CellPossibility(row, col, possibility));
+            cells.Add(new CellPossibility(_miniRow * 3 + _gn1 / 3, _miniCol * 3 + _gn1 % 3, possibility));
+            cells.Add(new CellPossibility(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3, possibility));
         }
         
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>

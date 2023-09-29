@@ -47,6 +47,11 @@ public class AlternatingInferenceChainStrategy : IStrategy
         }
     }
 
+    public void OnNewSudoku(Sudoku s)
+    {
+        throw new System.NotImplementedException();
+    }
+
     private void Search(IStrategyManager strategyManager, Dictionary<CellPossibility, LinkResume> map,
         List<CellPossibility> visited)
     {
