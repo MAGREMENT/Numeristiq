@@ -14,10 +14,10 @@ public class JuniorExocet
     public Cell Target2 { get; }
     public IPossibilities BaseCandidates { get; }
     public Cell EscapeCell { get; }
-    public SCells[] SCells { get; }
+    public SPossibility[] SPossibilities { get; }
 
     private JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, IPossibilities baseCandidates
-        , Cell escapeCell, SCells[] sCells)
+        , Cell escapeCell, SPossibility[] sPossibilities)
     {
         Base1 = base1;
         Base2 = base2;
@@ -25,7 +25,7 @@ public class JuniorExocet
         Target2 = target2;
         BaseCandidates = baseCandidates;
         EscapeCell = escapeCell;
-        SCells = sCells;
+        SPossibilities = sPossibilities;
     }
 
     public Unit GetUnit()
@@ -288,7 +288,7 @@ public class JuniorExocet
         //Check that each base digit is in max 2 cover houses (2 rows, 2 cols, 1 row & 1 col) in the S cells
         var miniRow = base1.Row / 3;
         var eCol = UnitInGridExcept(base1.Col, base2.Col);
-        SCells[] sCells = new SCells[baseCandidates.Count];
+        SPossibility[] sCells = new SPossibility[baseCandidates.Count];
         int cursor = 0;
         
         foreach (var possibility in baseCandidates)
@@ -308,7 +308,7 @@ public class JuniorExocet
             solved = SolvedColumnPositionsAt(strategyManager, eCol, possibility);
             if(solved != -1) se.Add(solved);
 
-            var current  = new SCells(s1, s2, se, possibility);
+            var current  = new SPossibility(s1, s2, se, possibility);
             if (!current.IsValid()) return null;
 
             sCells[cursor++] = current;
@@ -360,7 +360,7 @@ public class JuniorExocet
         //Check that each base digit is in max 2 cover houses (2 rows, 2 cols, 1 row & 1 col) in the S cells
         var miniCol = base1.Col / 3;
         var eRow = UnitInGridExcept(base1.Row, base2.Row);
-        SCells[] sCells = new SCells[baseCandidates.Count];
+        SPossibility[] sCells = new SPossibility[baseCandidates.Count];
         int cursor = 0;
         
         foreach (var possibility in baseCandidates)
@@ -380,7 +380,7 @@ public class JuniorExocet
             solved = SolvedRowPositionsAt(strategyManager, eRow, possibility);
             if(solved != -1) se.Add(solved);
             
-            var current = new SCells(s1, s2, se, possibility);
+            var current = new SPossibility(s1, s2, se, possibility);
             if (!current.IsValid()) return null;
 
             sCells[cursor++] = current;
@@ -460,9 +460,9 @@ public class JuniorExocet
     }
 }
 
-public class SCells
+public class SPossibility
 {
-    public SCells(IReadOnlyLinePositions fromTarget1, IReadOnlyLinePositions fromTarget2,
+    public SPossibility(IReadOnlyLinePositions fromTarget1, IReadOnlyLinePositions fromTarget2,
         IReadOnlyLinePositions fromEscapeCell, int possibility)
     {
         FromTarget1 = fromTarget1;
@@ -491,6 +491,11 @@ public class SCells
         return IsPerpendicularWithOneParallel(FromTarget1, FromTarget2, FromEscapeCell)
                || IsPerpendicularWithOneParallel(FromTarget2, FromTarget1, FromEscapeCell)
                || IsPerpendicularWithOneParallel(FromEscapeCell, FromTarget2, FromTarget1);
+    }
+
+    public LinePositions Or()
+    {
+        return FromTarget1.Or(FromTarget2).Or(FromEscapeCell);
     }
 
     public static bool IsPerpendicularWithOneParallel(IReadOnlyLinePositions perp, IReadOnlyLinePositions par1,
