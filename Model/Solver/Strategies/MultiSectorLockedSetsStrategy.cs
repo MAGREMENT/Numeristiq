@@ -165,6 +165,146 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
     }
 }
 
+public abstract class MultiSectorHouse
+{
+    protected IStrategyManager StrategyManager { get; }
+    public IPossibilities AssociatedSet { get; }
+    public IPossibilities OtherSet { get; }
+    
+    protected MultiSectorHouse(IPossibilities associatedSet, IPossibilities otherSet, IStrategyManager strategyManager)
+    {
+        AssociatedSet = associatedSet;
+        OtherSet = otherSet;
+        StrategyManager = strategyManager;
+    }
+
+    public abstract void ExcludeCell(GridPositions gp, int row, int col);
+    public abstract int FindCount(GridPositions gp);
+
+    public abstract bool IsCovered(GridPositions gp, int row, int col);
+}
+
+public class MultiSectorRow : MultiSectorHouse
+{
+    public MultiSectorRow(IPossibilities associatedSet, IPossibilities otherSet, IStrategyManager strategyManager)
+        : base(associatedSet, otherSet, strategyManager)
+    {
+    }
+
+    public override void ExcludeCell(GridPositions gp, int row, int col)
+    {
+        if (AssociatedSet.Peek(StrategyManager.Sudoku[row, col]))
+            gp.VoidRow(row);
+    }
+
+    public override int FindCount(GridPositions gp)
+    {
+        int count = 0;
+        
+        for (int row = 0; row < 9; row++)
+        {
+            if (gp.RowCount(row) == 0) continue;
+
+            int n = 0;
+            for (int col = 0; col < 9; col++)
+            {
+                if (OtherSet.Peek(StrategyManager.Sudoku[row, col])) n++;
+            }
+
+            count += OtherSet.Count - n;
+        }
+
+        return count;
+    }
+
+    public override bool IsCovered(GridPositions gp, int row, int col)
+    {
+        return gp.RowCount(row) == 0;
+    }
+}
+
+public class MultiSectorColumn : MultiSectorHouse
+{
+    public MultiSectorColumn(IPossibilities associatedSet, IPossibilities otherSet, IStrategyManager strategyManager) : base(associatedSet, otherSet, strategyManager)
+    {
+    }
+
+    public override void ExcludeCell(GridPositions gp, int row, int col)
+    {
+        if (AssociatedSet.Peek(StrategyManager.Sudoku[row, col]))
+            gp.VoidColumn(col);
+    }
+
+    public override int FindCount(GridPositions gp)
+    {
+        int count = 0;
+        
+        for (int col = 0; col < 9; col++)
+        {
+            if (gp.ColumnCount(col) == 0) continue;
+
+            int n = 0;
+            for (int row = 0; row < 9; row++)
+            {
+                if (OtherSet.Peek(StrategyManager.Sudoku[row, col])) n++;
+            }
+            
+            count += OtherSet.Count - n;
+        }
+
+        return count;
+    }
+
+    public override bool IsCovered(GridPositions gp, int row, int col)
+    {
+        return gp.ColumnCount(col) == 0;
+    }
+}
+
+public class MultiSectorMiniGrid : MultiSectorHouse
+{
+    public MultiSectorMiniGrid(IPossibilities associatedSet, IPossibilities otherSet, IStrategyManager strategyManager) : base(associatedSet, otherSet, strategyManager)
+    {
+    }
+
+    public override void ExcludeCell(GridPositions gp, int row, int col)
+    {
+        if (AssociatedSet.Peek(StrategyManager.Sudoku[row, col]))
+            gp.VoidMiniGrid(row / 3, col / 3);
+    }
+
+    public override int FindCount(GridPositions gp)
+    {
+        int count = 0;
+        
+        for(int miniRow = 0; miniRow < 3; miniRow++)
+        {
+            for (int miniCol = 0; miniCol < 3; miniCol++)
+            {
+                if (gp.MiniGridCount(miniRow, miniCol) == 0) continue;
+
+                int n = 0;
+                for (int gridRow = 0; gridRow < 3; gridRow++)
+                {
+                    for (int gridCol = 0; gridCol < 3; gridCol++)
+                    {
+                        if (OtherSet.Peek(StrategyManager.Sudoku[miniRow * 3 + gridRow, miniCol * 3 + gridCol])) n++;
+                    }
+                }
+
+                count += OtherSet.Count - n;
+            }
+        }
+
+        return count;
+    }
+
+    public override bool IsCovered(GridPositions gp, int row, int col)
+    {
+        return gp.MiniGridCount(row / 3, col / 3) == 0;
+    }
+}
+
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly GridPositions _gp;
