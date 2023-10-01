@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using Model.DeprecatedStrategies;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Solver.Strategies.AlternatingChains.ChainTypes;
 using Model.Solver.Strategies.ForcingNets;
+using Model.Solver.Strategies.MultiSectorLockedSets;
+using Model.Solver.Strategies.MultiSectorLockedSets.SearchAlgorithms;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
@@ -59,7 +62,7 @@ public class StrategyLoader //TODO finish
         {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(15)},
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
-        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy()},
+        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new EmptyAlgorithm())},
         {GurthTheorem.OfficialName, new GurthTheorem()}
     };
 

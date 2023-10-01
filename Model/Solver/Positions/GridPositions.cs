@@ -75,7 +75,7 @@ public class GridPositions : IReadOnlyGridPositions
 
     public int MiniGridCount(int miniRow, int miniCol)
     {
-        return miniRow < 2 
+        return miniRow < 2
             ? System.Numerics.BitOperations.PopCount(_first & (MiniGridMask << (miniRow * 27 + miniCol * 3)))
             : System.Numerics.BitOperations.PopCount(_second & (MiniGridMask << (miniCol * 3)));
     }
@@ -137,6 +137,11 @@ public class GridPositions : IReadOnlyGridPositions
     {
         return new GridPositions(_first & other._first, _second & other._second);
     }
+    
+    public GridPositions Or(GridPositions positions)
+    {
+        return new GridPositions(_first | positions._first, _second | positions._second);
+    }
 
     public LinePositions RowPositions(int row)
     {
@@ -159,11 +164,6 @@ public class GridPositions : IReadOnlyGridPositions
         var i = miniRow == 2 ? _second >> (miniCol * 3) : _first >> (miniRow * 27 + miniCol * 3);
         var j = (i & 0x7) | (i & 0xE00) >> 6 | (i & 0x1C0000) >> 12;
         return Positions.MiniGridPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
-    }
-
-    public GridPositions Or(GridPositions positions)
-    {
-        return new GridPositions(_first | positions._first, _second | positions._second);
     }
 
     public override int GetHashCode()

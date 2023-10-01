@@ -1,19 +1,20 @@
 ﻿using System.Collections.Generic;
+using Model.Solver;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 
-namespace Model.Solver.Strategies;
+namespace Model.DeprecatedStrategies;
 
 /// <summary>
 /// http://forum.enjoysudoku.com/using-multi-sector-locked-sets-t31222.html
 /// </summary>
-public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other elims
+public class RigidMultiSectorLockedSetsStrategy : AbstractStrategy
 {
     public const string OfficialName = "Multi-Sector Locked Sets";
     
-    public MultiSectorLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme) { }
+    public RigidMultiSectorLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme) { }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -40,128 +41,67 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //TODO add other e
 
     private void Try(IStrategyManager strategyManager, IPossibilities home, IPossibilities away)
     {
-        GridPositions gpRow = new GridPositions();
-        GridPositions gpCol = new GridPositions();
-        gpRow.Fill();
-        gpCol.Fill();
+        Try(strategyManager, new MultiSectorRow(home, away, strategyManager),
+            new MultiSectorColumn(away, home, strategyManager));
+        Try(strategyManager, new MultiSectorColumn(home, away, strategyManager),
+            new MultiSectorRow(away, home, strategyManager));
+        
+        Try(strategyManager, new MultiSectorRow(home, away, strategyManager),
+            new MultiSectorMiniGrid(away, home, strategyManager));
+        Try(strategyManager, new MultiSectorMiniGrid(home, away, strategyManager),
+            new MultiSectorRow(away, home, strategyManager));
+        
+        Try(strategyManager, new MultiSectorMiniGrid(home, away, strategyManager),
+            new MultiSectorColumn(away, home, strategyManager));
+        Try(strategyManager, new MultiSectorColumn(home, away, strategyManager),
+            new MultiSectorMiniGrid(away, home, strategyManager));
+    }
+
+    private void Try(IStrategyManager strategyManager, MultiSectorHouse house1, MultiSectorHouse house2)
+    {
+        GridPositions gp = new();
+        gp.Fill();
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var solved = strategyManager.Sudoku[row, col];
-                
-                if (home.Peek(solved))
-                {
-                    gpRow.VoidRow(row);
-                    gpCol.VoidColumn(col);
-                }
-                
-                if(away.Peek(solved))
-                {
-                    gpRow.VoidColumn(col);
-                    gpCol.VoidRow(row);
-                }
+                house1.ExcludeCell(gp, row, col);
+                house2.ExcludeCell(gp, row, col);
             }
         }
 
-        Try(strategyManager, gpRow, home, away, Unit.Row);
-        Try(strategyManager, gpCol, home, away, Unit.Column);
-    }
-
-    private void Try(IStrategyManager strategyManager, GridPositions gp, IPossibilities home, IPossibilities away, Unit unit)
-    {
         if (gp.Count < 9) return;
 
-        IPossibilities one;
-        IPossibilities two;
-        if (unit == Unit.Row)
-        {
-            one = home;
-            two = away;
-        }
-        else
-        {
-            one = away;
-            two = home;
-        }
-        
-        int count = 0;
-        
-        for (int row = 0; row < 9; row++)
-        {
-            if (gp.RowCount(row) == 0) continue;
-
-            int n = 0;
-            for (int col = 0; col < 9; col++)
-            {
-                if (two.Peek(strategyManager.Sudoku[row, col])) n++;
-            }
-
-            count += two.Count - n;
-        }
-
-        for (int col = 0; col < 9; col++)
-        {
-            if (gp.ColumnCount(col) == 0) continue;
-
-            int n = 0;
-            for (int row = 0; row < 9; row++)
-            {
-                if (one.Peek(strategyManager.Sudoku[row, col])) n++;
-            }
-            
-            count += one.Count - n;
-        }
-
-        Process(strategyManager, gp, home, away, count, unit);
-    }
-
-    private void Process(IStrategyManager strategyManager, GridPositions gp, IPossibilities home, IPossibilities away, int count, Unit unit)
-    {
+        int count = house1.FindCount(gp) + house2.FindCount(gp);
         if (count != gp.Count) return;
         
-        IPossibilities one;
-        IPossibilities two;
-        if (unit == Unit.Row)
-        {
-            one = home;
-            two = away;
-        }
-        else
-        {
-            one = away;
-            two = home;
-        }
-        
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var rowCount = gp.RowCount(row);
-                var colCount = gp.ColumnCount(col);
+                var isCovered1 = house1.IsCovered(gp, row, col);
+                var isCovered2 = house2.IsCovered(gp, row, col);
 
-                switch (rowCount, colCount)
+                if (isCovered1 && !isCovered2)
                 {
-                    case (> 0, 0) :
-                        foreach (var possibility in two)
-                        {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                        }
-
-                        break;
-                    case (0, > 0) :
-                        foreach (var possibility in one)
-                        {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                        }
-
-                        break;
+                    foreach (var possibility in house1.AssociatedSet)
+                    {
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    }
+                }
+                else if (isCovered2 && !isCovered1)
+                {
+                    foreach (var possibility in house2.AssociatedSet)
+                    {
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    }
                 }
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new MultiSectorLockedSetsReportBuilder(gp, home, away));
+        strategyManager.ChangeBuffer.Push(this,
+            new RigidMultiSectorLockedSetsReportBuilder(gp, house1.AssociatedSet, house1.OtherSet));
     }
 }
 
@@ -305,13 +245,13 @@ public class MultiSectorMiniGrid : MultiSectorHouse
     }
 }
 
-public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
+public class RigidMultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly GridPositions _gp;
     private readonly IPossibilities _home;
     private readonly IPossibilities _away;
 
-    public MultiSectorLockedSetsReportBuilder(GridPositions gp, IPossibilities home, IPossibilities away)
+    public RigidMultiSectorLockedSetsReportBuilder(GridPositions gp, IPossibilities home, IPossibilities away)
     {
         _gp = gp;
         _home = home;

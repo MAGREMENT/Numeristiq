@@ -18,7 +18,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank2.txt");
+        SudokuResolutionTest("1......8......92....6.3...52....8.....5.7.....6.5....4..47...........91..3..6...7");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
