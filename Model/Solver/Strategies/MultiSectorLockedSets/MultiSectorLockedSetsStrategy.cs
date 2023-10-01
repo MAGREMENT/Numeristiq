@@ -47,20 +47,24 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
         new CoverMiniGrid(2, 2),
     };
 
-    private readonly ICoverHouseSearchAlgorithm _searchAlgorithm;
+    private readonly ICoverHouseSearchAlgorithm[] _searchAlgorithms;
 
-    public MultiSectorLockedSetsStrategy(ICoverHouseSearchAlgorithm searchAlgorithm)
+    public MultiSectorLockedSetsStrategy(params ICoverHouseSearchAlgorithm[] searchAlgorithms)
         : base(OfficialName, StrategyDifficulty.Extreme)
     {
-        _searchAlgorithm = searchAlgorithm;
+        _searchAlgorithms = searchAlgorithms;
     }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        foreach (var result in _searchAlgorithm.Search(strategyManager))
+        foreach (var algorithm in _searchAlgorithms)
         {
-            Try(strategyManager, result.Home, result.Away, result.HomeList, result.AwayList);
+            foreach (var result in algorithm.Search(strategyManager))
+            {
+                Try(strategyManager, result.Home, result.Away, result.HomeList, result.AwayList);
+            }
         }
+        
     }
 
     private void Try(IStrategyManager strategyManager, IPossibilities home, IPossibilities away,
@@ -69,22 +73,63 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
         var gpHome = new GridPositions();
         var gpAway = new GridPositions();
 
-        int digitCovers = 0;
+        List<DigitCover> digitCovers = new List<DigitCover>(homeList.Count + awayList.Count);
+        var digitsCovered = 0;
 
         foreach (var coverHouse in homeList)
         {
-            digitCovers += coverHouse.Apply(strategyManager, home, ref gpHome);
+            var dc = coverHouse.Apply(strategyManager, home, ref gpHome);
+            digitCovers.Add(dc);
+            digitsCovered += dc.Possibilities.Count;
         }
 
         foreach (var coverHouse in awayList)
         {
-            digitCovers += coverHouse.Apply(strategyManager, away, ref gpAway);
+            var dc = coverHouse.Apply(strategyManager, away, ref gpAway);
+            digitCovers.Add(dc);
+            digitsCovered += dc.Possibilities.Count;
         }
 
+        var total = gpHome.Or(gpAway);
         var common = gpHome.And(gpAway);
 
-        if (common.Count != digitCovers) return;
+        if (total.Count == common.Count) return;
         
+        if(common.Count + 1 == digitsCovered) 
+            ProcessAlmostNakedSet(strategyManager, home, gpHome, gpAway, digitCovers);
+        else if(common.Count == digitsCovered) 
+            ProcessNakedSet(strategyManager, home, away, gpHome, gpAway, digitCovers);
+        else if(total.Count + 1 == digitsCovered) 
+            ProcessAlmostHiddenSet(strategyManager, digitCovers);
+        else if (total.Count == digitsCovered)
+            ProcessHiddenSet(strategyManager, home, away, gpHome, gpAway, digitCovers);
+        else return;
+
+        strategyManager.ChangeBuffer.Push(this,
+            new MultiSectorLockedSetsReportBuilder(home, away));
+    }
+
+    private void ProcessAlmostNakedSet(IStrategyManager strategyManager, IPossibilities home,
+        GridPositions gpHome, GridPositions gpAway, List<DigitCover> digitCovers)
+    {
+        foreach (var cp in DigitsCoveredMoreThanOnce(strategyManager, digitCovers))
+        {
+            if (home.Peek(cp.Possibility))
+            {
+                if (gpHome.Peek(cp.Row, cp.Col) && !gpAway.Peek(cp.Row, cp.Col))
+                    strategyManager.ChangeBuffer.AddSolutionToAdd(cp);
+            }
+            else
+            {
+                if (!gpHome.Peek(cp.Row, cp.Col) && gpAway.Peek(cp.Row, cp.Col))
+                    strategyManager.ChangeBuffer.AddPossibilityToRemove(cp);
+            }
+        }
+    }
+    
+    private void ProcessNakedSet(IStrategyManager strategyManager, IPossibilities home, IPossibilities away,
+        GridPositions gpHome, GridPositions gpAway, List<DigitCover> digitCovers)
+    {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -106,12 +151,153 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
                 }
             }
         }
+
+        foreach (var cp in DigitsCoveredMoreThanOnce(strategyManager, digitCovers))
+        {
+            if (gpHome.Peek(cp.Row, cp.Col) && gpAway.Peek(cp.Row, cp.Col))
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(cp);
+        }
+    }
+    
+    private void ProcessAlmostHiddenSet(IStrategyManager strategyManager, List<DigitCover> digitCovers)
+    {
+        IPossibilities possibilities = IPossibilities.New();
+        Cell? cell = null;
+        foreach (var cp in DigitsCoveredMoreThanOnce(strategyManager, digitCovers))
+        {
+            if (cell is null)
+            {
+                cell = new Cell(cp.Row, cp.Col);
+                possibilities.Add(cp.Possibility);
+            }
+            else if (cp.Row != cell.Value.Row || cp.Col != cell.Value.Col) return;
+            else possibilities.Add(cp.Possibility);
+        }
+
+        if (cell == null) return;
+
+        foreach (var possibility in strategyManager.PossibilitiesAt(cell.Value.Row, cell.Value.Col))
+        {
+            if (possibilities.Peek(possibility)) return;
+            
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Value.Row, cell.Value.Col);
+        }
+    }
+    
+    private void ProcessHiddenSet(IStrategyManager strategyManager, IPossibilities home, IPossibilities away,
+        GridPositions gpHome, GridPositions gpAway, List<DigitCover> digitCovers)
+    {
+        var doubleCovers = DigitsCoveredMoreThanOnce(strategyManager, digitCovers);
+
+        if (doubleCovers.Count == 0)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                for (int col = 0; col < 9; col++)
+                {
+                    if (gpHome.Peek(row, col) && !gpAway.Peek(row, col))
+                    {
+                        foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+                        {
+                            if (home.Peek(possibility)) continue;
+
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                        }
+                    }
+                    else if (!gpHome.Peek(row, col) && gpAway.Peek(row, col))
+                    {
+                        foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+                        {
+                            if (away.Peek(possibility)) continue;
+
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            IPossibilities possibilities = IPossibilities.New();
+            Cell? cell = null;
+            foreach (var cp in DigitsCoveredMoreThanOnce(strategyManager, digitCovers))
+            {
+                if (cell is null)
+                {
+                    cell = new Cell(cp.Row, cp.Col);
+                    possibilities.Add(cp.Possibility);
+                }
+                else if (cp.Row != cell.Value.Row || cp.Col != cell.Value.Col) return;
+                else possibilities.Add(cp.Possibility);
+            }
+
+            if (cell == null) return;
+
+            foreach (var possibility in strategyManager.PossibilitiesAt(cell.Value.Row, cell.Value.Col))
+            {
+                if (possibilities.Peek(possibility)) return;
+            
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Value.Row, cell.Value.Col);
+            }
+        }
+    }
+
+    private HashSet<CellPossibility> DigitsCoveredMoreThanOnce(IStrategyManager strategyManager,
+        List<DigitCover> digitCovers)
+    {
+        GridPositions[] gps = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
+        HashSet<CellPossibility> result = new();
+
+        foreach (var dc in digitCovers)
+        {
+            foreach (var possibility in dc.Possibilities)
+            {
+                switch (dc.Unit)
+                {
+                    case Unit.Row :
+                        for (int col = 0; col < 9; col++)
+                        {
+                            IsCoveredMoreThanOnce(strategyManager, dc.UnitNumber, col, possibility, result, gps);
+                        }
+                        break;
+                    case Unit.Column :
+                        for (int row = 0; row < 9; row++)
+                        {
+                            IsCoveredMoreThanOnce(strategyManager, row, dc.UnitNumber, possibility, result, gps);
+                        }
+                        break;
+                    case Unit.MiniGrid :
+                        for (int gridRow = 0; gridRow < 3; gridRow++)
+                        {
+                            for (int gridCol = 0; gridCol < 3; gridCol++)
+                            {
+                                IsCoveredMoreThanOnce(strategyManager, dc.UnitNumber / 3 * 3 + gridRow,
+                                    dc.UnitNumber % 3 * 3 + gridCol, possibility, result, gps);
+                            }
+                        }
+
+                        break;
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private void IsCoveredMoreThanOnce(IStrategyManager strategyManager, int row, int col, int possibility,
+        HashSet<CellPossibility> result, GridPositions[] gps)
+    {
+        if (strategyManager.Sudoku[row, col] != 0) return;
+
+        if (gps[possibility - 1].Peek(row, col))
+            result.Add(new CellPossibility(possibility, row, col));
+        else gps[possibility - 1].Add(row, col);
     }
 }
 
 public interface ICoverHouse
 {
-    public int Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp);
+    public DigitCover Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp);
 }
 
 public class CoverRow : ICoverHouse
@@ -123,19 +309,19 @@ public class CoverRow : ICoverHouse
         _row = row;
     }
 
-    public int Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp)
+    public DigitCover Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp)
     {
-        int count = associatedSet.Count;
+        IPossibilities cover = associatedSet.Copy();
         
         for (int col = 0; col < 9; col++)
         {
             var solved = strategyManager.Sudoku[_row, col];
 
             if (solved == 0) gp.Add(_row, col);
-            else if (associatedSet.Peek(solved)) count--;
+            else if (associatedSet.Peek(solved)) cover.Remove(solved);
         }
 
-        return count;
+        return new DigitCover(cover, Unit.Row, _row);
     }
 }
 
@@ -148,19 +334,19 @@ public class CoverColumn : ICoverHouse
         _col = col;
     }
 
-    public int Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp)
+    public DigitCover Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp)
     {
-        int count = associatedSet.Count;
+        IPossibilities cover = associatedSet.Copy();
         
         for (int row = 0; row < 9; row++)
         {
             var solved = strategyManager.Sudoku[row, _col];
 
             if (solved == 0) gp.Add(row, _col);
-            else if (associatedSet.Peek(solved)) count--;
+            else if (associatedSet.Peek(solved)) cover.Remove(solved);
         }
 
-        return count;
+        return new DigitCover(cover, Unit.Column, _col);
     }
 }
 
@@ -175,9 +361,9 @@ public class CoverMiniGrid : ICoverHouse
         _miniCol = miniCol;
     }
 
-    public int Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp)
+    public DigitCover Apply(IStrategyManager strategyManager, IPossibilities associatedSet, ref GridPositions gp)
     {
-        int count = associatedSet.Count;
+        IPossibilities cover = associatedSet.Copy();
 
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
@@ -189,12 +375,26 @@ public class CoverMiniGrid : ICoverHouse
                 var solved = strategyManager.Sudoku[row, col];
 
                 if (solved == 0) gp.Add(row, col);
-                else if (associatedSet.Peek(solved)) count--;
+                else if (associatedSet.Peek(solved)) cover.Remove(solved);
             }
         }
 
-        return count;
+        return new DigitCover(cover, Unit.MiniGrid, _miniRow * 3 + _miniCol);
     }
+}
+
+public class DigitCover
+{
+    public DigitCover(IPossibilities possibilities, Unit unit, int unitNumber)
+    {
+        Possibilities = possibilities;
+        Unit = unit;
+        UnitNumber = unitNumber;
+    }
+
+    public IPossibilities Possibilities { get; }
+    public Unit Unit { get; }
+    public int UnitNumber { get; }
 }
 
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
@@ -234,6 +434,8 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
             }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
 }

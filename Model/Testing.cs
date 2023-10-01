@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Model.Solver;
-using Model.Solver.Helpers;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
@@ -18,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        SudokuResolutionTest("1......8......92....6.3...52....8.....5.7.....6.5....4..47...........91..3..6...7");
+        FullSudokuBankTest("OnlineBank2.txt ");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

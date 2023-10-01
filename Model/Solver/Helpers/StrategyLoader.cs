@@ -62,7 +62,8 @@ public class StrategyLoader //TODO finish
         {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(15)},
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
-        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new EmptyAlgorithm())},
+        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(
+            new MonoLineAlgorithm())},
         {GurthTheorem.OfficialName, new GurthTheorem()}
     };
 

@@ -23,7 +23,7 @@ public abstract class AbstractStrategy : IStrategy
 
 public abstract class OriginalBoardBasedAbstractStrategy : AbstractStrategy
 {
-    public Sudoku OriginalBoard { get; private set; } = new();
+    protected Sudoku OriginalBoard { get; private set; } = new();
     
     protected OriginalBoardBasedAbstractStrategy(string name, StrategyDifficulty difficulty) : base(name, difficulty)
     {
@@ -32,6 +32,6 @@ public abstract class OriginalBoardBasedAbstractStrategy : AbstractStrategy
     public override void OnNewSudoku(Sudoku s)
     {
         base.OnNewSudoku(s);
-        OriginalBoard = s;
+        OriginalBoard = s.Copy();
     }
 }
