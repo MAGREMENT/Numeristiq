@@ -29,6 +29,7 @@ public class ChangeBuffer
 
     public void AddSolutionToAdd(int number, int row, int col)
     {
+        if (_m.Sudoku[row, col] != 0) return;
         AddSolutionToAdd(new CellPossibility(row, col, number));
     }
 
@@ -52,16 +53,16 @@ public class ChangeBuffer
         
         foreach (var possibility in _possibilityRemoved)
         {
-            if (_m.RemovePossibilityFromBuffer(possibility.Possibility, possibility.Row, possibility.Col)) changes.Add(
-                new SolverChange(SolverNumberType.Possibility,
+            if (_m.RemovePossibilityFromBuffer(possibility.Possibility, possibility.Row, possibility.Col)) 
+                changes.Add(new SolverChange(SolverNumberType.Possibility,
                     possibility.Possibility, possibility.Row, possibility.Col));
             
         }
         
         foreach (var definitive in _definitiveAdded)
         {
-            if(_m.AddSolutionFromBuffer(definitive.Possibility, definitive.Row, definitive.Col)) changes.Add(
-                new SolverChange(SolverNumberType.Definitive, definitive.Possibility,
+            if(_m.AddSolutionFromBuffer(definitive.Possibility, definitive.Row, definitive.Col)) 
+                changes.Add(new SolverChange(SolverNumberType.Definitive, definitive.Possibility,
                     definitive.Row, definitive.Col));
         }
 

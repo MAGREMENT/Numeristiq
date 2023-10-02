@@ -38,11 +38,18 @@ public partial class LogUserControl
         Title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
         Title.Text = log.Title;
         Text.Text = log.Changes;
+
+        HighlightsNumber.Text = log.HighlightManager.CursorPosition();
+        if (log.HighlightManager.Count == 1)
+        {
+            LeftArrow.IsEnabled = false;
+            RightArrow.IsEnabled = false;
+        }
     }
 
     public void CurrentlyShowed()
     {
-        if(Log is not null && Log.HighlightManager.Count > 1) Highlights.Visibility = Visibility.Visible;
+        Highlights.Visibility = Visibility.Visible;
     }
 
     public void NotShowedAnymore()
@@ -55,6 +62,7 @@ public partial class LogUserControl
         if (Log is null) return;
         
         Log.HighlightManager.ShiftLeft();
+        HighlightsNumber.Text = Log.HighlightManager.CursorPosition();
         LogClicked?.Invoke(Log);
     }
 
@@ -63,6 +71,7 @@ public partial class LogUserControl
         if (Log is null) return;
         
         Log.HighlightManager.ShiftRight();
+        HighlightsNumber.Text = Log.HighlightManager.CursorPosition();
         LogClicked?.Invoke(Log);
     }
 }

@@ -59,7 +59,7 @@ public class StrategyLoader //TODO finish
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
         {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},
         {NishioForcingNetStrategy.OfficialName, new NishioForcingNetStrategy()},
-        {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(15)},
+        {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy()},
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(

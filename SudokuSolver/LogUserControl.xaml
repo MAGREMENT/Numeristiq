@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:SudokuSolver"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Width="300" Orientation="Vertical" x:Name="Main">
@@ -13,8 +12,9 @@
         </StackPanel>
         <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
         <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 0, 0, 5">
-            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" Click="ShiftLeft" FontSize="20" Margin="0, 0, 5, 0"></Button>
-            <Button FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="ShiftRight" FontSize="20"></Button>
+            <Button x:Name="LeftArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" Click="ShiftLeft" FontSize="20" Margin="0, 0, 5, 0"></Button>
+            <TextBlock x:Name="HighlightsNumber" FontSize="20"></TextBlock>
+            <Button x:Name="RightArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="ShiftRight" FontSize="20" Margin="5, 0, 0, 0"></Button>
         </StackPanel>
     </StackPanel>
 </UserControl>

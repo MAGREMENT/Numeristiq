@@ -110,4 +110,9 @@ public class HighlightManager
     {
         _cursor = (_cursor + 1) % Count;
     }
+
+    public string CursorPosition()
+    {
+        return $"{_cursor + 1} / {Count}";
+    }
 }

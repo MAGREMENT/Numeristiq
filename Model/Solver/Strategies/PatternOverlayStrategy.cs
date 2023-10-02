@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
@@ -9,16 +10,73 @@ public class PatternOverlayStrategy : AbstractStrategy
 {
     public const string OfficialName = "Pattern Overlay";
 
-    private readonly int _max;
-
-    public PatternOverlayStrategy(int max) : base(OfficialName, StrategyDifficulty.Extreme)
+    public PatternOverlayStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
     {
-        _max = max;
     }
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var patterns = GetPatterns(strategyManager);
+        var allPatterns = GetPatterns(strategyManager);
+
+        for (int number = 1; number <= 9; number++)
+        {
+            if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
+        }
+
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                if (i == j) continue;
+                
+                var p1 = allPatterns[i];
+                var p2 = allPatterns[j];
+
+                p1.RemoveAll(pattern1 =>
+                {
+                    bool isOk = false;
+
+                    foreach (var pattern2 in p2)
+                    {
+                        if (!pattern1.PeakAny(pattern2))
+                        {
+                            isOk = true;
+                            break;
+                        }
+                    }
+
+                    return !isOk;
+                });
+            }
+        }
+        
+        for (int number = 1; number <= 9; number++)
+        {
+            if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
+        }
+    }
+
+    private bool SearchForElimination(IStrategyManager strategyManager, int number, List<GridPositions> patterns)
+    {
+        if (patterns.Count == 0) return false;
+            
+        var and = patterns[0].And(patterns);
+        foreach (var cell in and)
+        {
+            strategyManager.ChangeBuffer.AddSolutionToAdd(number, cell.Row, cell.Col);
+        }
+
+        if (strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder())) return true;
+            
+        var or = patterns[0].Or(patterns);
+        var gp = strategyManager.PositionsFor(number);
+
+        foreach (var cell in gp.Difference(or))
+        {
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
+        }
+
+        return strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder());
     }
 
     private List<GridPositions>[] GetPatterns(IStrategyManager strategyManager)
@@ -81,8 +139,6 @@ public class PatternOverlayStrategy : AbstractStrategy
                 if (strategyManager.Sudoku[row, col] == number) break;
             }
 
-            current.Add(new Cell(row, col));
-            
             colsUsed.Add(col);
             if ((row + 1) % 3 == 0) nextMCU = new LinePositions();
             else

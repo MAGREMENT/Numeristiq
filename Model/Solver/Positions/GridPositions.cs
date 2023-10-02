@@ -52,6 +52,11 @@ public class GridPositions : IReadOnlyGridPositions
     {
         return Peek(coord.Row, coord.Col);
     }
+
+    public bool PeakAny(GridPositions gp)
+    {
+        return (gp._first & _first) != 0ul || (gp._second & _second) != 0ul;
+    }
     
     public void Remove(int row, int col)
     {
@@ -143,9 +148,43 @@ public class GridPositions : IReadOnlyGridPositions
         return new GridPositions(_first & other._first, _second & other._second);
     }
 
+    public GridPositions And(List<GridPositions> gps)
+    {
+        var first = _first;
+        var second = _second;
+
+        foreach (var gp in gps)
+        {
+            first &= gp._first;
+            second &= gp._second;
+        }
+
+        return new GridPositions(first, second);
+    }
+
     public GridPositions Or(GridPositions positions)
     {
         return new GridPositions(_first | positions._first, _second | positions._second);
+    }
+
+    public GridPositions Or(List<GridPositions> gps)
+    {
+        var first = _first;
+        var second = _second;
+
+        foreach (var gp in gps)
+        {
+            first |= gp._first;
+            second |= gp._second;
+        }
+
+        return new GridPositions(first, second);
+    }
+
+    public GridPositions Difference(IReadOnlyGridPositions with)
+    {
+        if (with is not GridPositions gp) return new GridPositions(); //TODO
+        return new GridPositions(_first & ~gp._first, _second & ~gp._second);
     }
 
     public LinePositions RowPositions(int row)

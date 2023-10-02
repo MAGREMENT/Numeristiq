@@ -97,6 +97,7 @@ public interface ISolverGraphics
 
     void HighLightLog(ISolverLog log);
     void ShowState(SolverState state);
+    void ShowCurrent();
 }
 
 public delegate void OnLogShowed(ISolverLog log);

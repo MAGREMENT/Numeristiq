@@ -6,4 +6,6 @@ namespace Model.Solver.Positions;
 public interface IReadOnlyGridPositions : IEnumerable<Cell>
 {
     GridPositions Copy();
+
+    GridPositions Difference(IReadOnlyGridPositions with);
 }

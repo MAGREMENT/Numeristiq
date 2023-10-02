@@ -116,29 +116,21 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
             }
         }
 
-        RefreshSolver();
+        ShowCurrent();
     }
 
     public void NewSudoku(Sudoku sudoku)
     {
         _solver.SetSudoku(sudoku);
-        RefreshSolver();
+        ShowCurrent();
 
         _logBuffer = 0;
     }
     
     private void Update()
     {
-        RefreshSolver();
+        ShowCurrent();
         SudokuAsStringChanged?.Invoke(SudokuTranslator.Translate(_solver.Sudoku, TranslationType));
-    }
-
-    private void RefreshSolver()
-    {
-        ShowCurrentState();
-        
-        _backgroundManager.Clear();
-        Main.Background = _backgroundManager.Background;
     }
     
     private void UpdateCell(CellUserControl current, int row, int col)
@@ -179,7 +171,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
 
         if (_solver.Logs.Count > 0 && _solver.Logs[^1].Id == _logBuffer)
         {
-            RefreshSolver();
+            ShowCurrent();
             CurrentStateShowed?.Invoke();
             IsReady?.Invoke();
             return;
@@ -205,9 +197,12 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         
         IsReady?.Invoke();
     }
-
-    private void ShowCurrentState()
+    
+    public void ShowCurrent()
     {
+        _backgroundManager.Clear();
+        Main.Background = _backgroundManager.Background;
+        
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
