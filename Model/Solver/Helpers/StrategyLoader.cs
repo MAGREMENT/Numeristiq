@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using Model.DeprecatedStrategies;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -48,7 +47,7 @@ public class StrategyLoader //TODO finish
         {XYChainStrategy.OfficialName, new XYChainStrategy()},
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
-        {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy(4)},
+        {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy(5)},
         {GroupedXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
             new AlternatingChainAlgorithmV2<ILinkGraphElement>(20))},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},

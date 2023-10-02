@@ -91,8 +91,9 @@ public class SolverBackgroundManager
     {
         _groups.Children.Add(new GeometryDrawing
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility), _oneThird, _oneThird)),
-            Pen = new Pen()
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(col, possibility), TopLeftY(row, possibility),
+                _oneThird, _oneThird)),
+            Pen = new Pen
             {
                 Brush = _strongLinkBrush,
                 Thickness = 3.0,
@@ -102,13 +103,14 @@ public class SolverBackgroundManager
 
     public void CircleCell(int row, int col)
     {
-        _groups.Children.Add(new GeometryDrawing()
+        _groups.Children.Add(new GeometryDrawing
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(col), TopLeftY(row), CellSize, CellSize)),
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(col) - Margin / 2, TopLeftY(row) - Margin / 2,
+                CellSize + Margin, CellSize + Margin)),
             Pen = new Pen
             {
                 Brush = _strongLinkBrush,
-                Thickness = 3.0,
+                Thickness = 5.0,
             }
         });
     }

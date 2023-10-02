@@ -16,55 +16,11 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank3.txt ");
+        FullSudokuBankTest("OnlineBank2.txt ");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
-    }
-
-    private static void RecursionListTest()
-    {
-        List<int> numbers = new();
-        for (int i = 1; i <= 5; i++)
-        {
-            numbers.Add(i);
-        }
-
-        var result = Combos(numbers, 3);
-        foreach (var t in result)
-        {
-            string s = "-";
-            foreach (var n in t)
-            {
-                s += n + " ";
-            }
-
-            Console.WriteLine(s);
-        }
-    }
-
-    private static List<int[]> Combos(List<int> numbers, int max)
-    {
-        List<int[]> result = new();
-        
-        Combos(numbers, max, 0, 0, new RecursionList<int>(max), result);
-
-        return result;
-    }
-
-    private static void Combos(List<int> numbers, int max, int count, int start, RecursionList<int> rList, List<int[]> result)
-    {
-        for (int i = start; i < numbers.Count; i++)
-        {
-            rList.SetCursorAndSetOrAdd(count, numbers[i]);
-
-            if (count < max - 1) Combos(numbers, max, count + 1, i + 1, rList, result);
-            else if (count == max - 1)
-            {
-                result.Add(rList.CopyUntilCursor());
-            }
-        }
     }
 
     private static void SharedSeenCellSearcherCompare(ISharedSeenCellSearcher one, ISharedSeenCellSearcher two)

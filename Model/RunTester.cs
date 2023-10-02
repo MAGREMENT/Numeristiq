@@ -16,7 +16,7 @@ public class RunTester
     private Solver.Solver? _currentSolver;
     private RunResult? _currentRunResult;
 
-    public delegate void OnSolveDone(int number, string line, bool success);
+    public delegate void OnSolveDone(int number, string line, bool success, bool solverFail);
     public event OnSolveDone? SolveDone;
 
     public delegate void OnRunStatusChanged(bool running);
@@ -43,8 +43,7 @@ public class RunTester
             LogsManaged = false,
             StatisticsTracked = true
         };
-        
-        
+
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);
 
         while (_running && reader.ReadLine() is { } line)
@@ -53,7 +52,7 @@ public class RunTester
             _currentSolver.Solve();
 
             _currentRunResult.SolveDone(_currentSolver);
-            SolveDone?.Invoke(_currentRunResult.Count, line, _currentSolver.Sudoku.IsCorrect());
+            SolveDone?.Invoke(_currentRunResult.Count, line, _currentSolver.Sudoku.IsCorrect(), _currentSolver.IsWrong());
         }
 
         _currentRunResult.RunFinished(_currentSolver);
@@ -76,7 +75,7 @@ public class RunResult
     public int SolverFails { get; private set; }
     public IReadOnlyList<StrategyReport> Reports => _reports;
     
-    private readonly List<StrategyReport> _reports = new ();
+    private readonly List<StrategyReport> _reports = new();
 
     public void SolveDone(Solver.Solver solver)
     {

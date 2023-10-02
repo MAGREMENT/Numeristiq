@@ -111,16 +111,6 @@ public readonly struct Cell
 
         return true;
     }
-    
-    public bool ShareAUnitWithAll(RecursionList<Cell> coordinates)
-    {
-        foreach (var coord in coordinates)
-        {
-            if (!ShareAUnit(coord)) return false;
-        }
-
-        return true;
-    }
 
     public IEnumerable<Cell> SharedSeenCells(Cell coord)
     {

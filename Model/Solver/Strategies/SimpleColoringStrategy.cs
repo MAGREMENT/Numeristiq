@@ -29,6 +29,7 @@ public class SimpleColoringStrategy : AbstractStrategy
             }
             
             SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
+            
             if (strategyManager.ChangeBuffer.NotEmpty())
                 strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph));
         }
@@ -66,14 +67,18 @@ public class SimpleColoringStrategy : AbstractStrategy
     private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
         ColoredVertices<CellPossibility> cv)
     {
+        HashSet<CellPossibility> inGraph = new(cv.On);
+        inGraph.UnionWith(cv.Off);
+        
         foreach (var on in cv.On)
         {
             foreach (var off in cv.Off)
             {
-                if (on.Row == off.Row || on.Col == off.Col) continue;
-
                 foreach (var coord in on.SharedSeenCells(off))
                 {
+                    var current = new CellPossibility(coord, on.Possibility);
+                    if (inGraph.Contains(current)) continue;
+                    
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(on.Possibility, coord.Row, coord.Col);
                 }
             }

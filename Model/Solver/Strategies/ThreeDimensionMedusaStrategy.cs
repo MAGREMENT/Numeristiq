@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
+using Model.Solver.Positions;
+using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
@@ -39,18 +40,53 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
     private bool SearchColor(IStrategyManager strategyManager, List<CellPossibility> toSearch,
         List<CellPossibility> other, HashSet<CellPossibility> inGraph)
     {
+        GridPositions[] seen = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
+        
         for (int i = 0; i < toSearch.Count; i++)
         {
+            var first = toSearch[i];
             for (int j = i + 1; j < toSearch.Count; j++)
             {
-                var first = toSearch[i];
                 var second = toSearch[j];
 
                 bool sameCell = first.Row == second.Row && first.Col == second.Col;
                 bool sameUnitAndPossibility = first.Possibility == second.Possibility && first.ShareAUnit(second);
-                bool doEmptyCell = DoEmptyCell(strategyManager, first, second, inGraph);
-                
-                if (sameCell || sameUnitAndPossibility || doEmptyCell)
+
+                if (sameCell || sameUnitAndPossibility)
+                {
+                    foreach (var coord in other)
+                    {
+                        strategyManager.ChangeBuffer.AddSolutionToAdd(coord);
+                    }
+
+                    return true;
+                }
+            }
+
+            var current = seen[first.Possibility - 1];
+            current.FillRow(first.Row);
+            current.FillColumn(first.Col);
+            current.FillMiniGrid(first.Row / 3, first.Col / 3);
+        }
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var possibilities = strategyManager.PossibilitiesAt(row, col);
+                if (possibilities.Count == 0 || !IsOffChain(row, col, possibilities, inGraph)) continue;
+
+                bool emptied = true;
+                foreach (var possibility in possibilities)
+                {
+                    if (!seen[possibility - 1].Peek(row, col))
+                    {
+                        emptied = false;
+                        break;
+                    }
+                }
+
+                if (emptied)
                 {
                     foreach (var coord in other)
                     {
@@ -65,28 +101,12 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         return false;
     }
 
-    private bool DoEmptyCell(IStrategyManager strategyManager, CellPossibility one, CellPossibility two,
-        HashSet<CellPossibility> inGraph)
+    private bool IsOffChain(int row, int col, IReadOnlyPossibilities possibilities, HashSet<CellPossibility> inGraph)
     {
-        if (one.Row == two.Row || one.Col == two.Col || one.Possibility == two.Possibility) return false;
-
-        foreach (var coord in one.SharedSeenCells(two))
+        foreach (var possibility in possibilities)
         {
-            if(!IsTotallyOffGraph(strategyManager, coord, inGraph)) continue;
-            
-            var possibilities = strategyManager.PossibilitiesAt(coord.Row, coord.Col);
-            if (possibilities.Count == 2 && possibilities.Peek(one.Possibility) &&
-                possibilities.Peek(two.Possibility)) return true;
-        }
-
-        return false;
-    }
-
-    private bool IsTotallyOffGraph(IStrategyManager strategyManager, Cell cell, HashSet<CellPossibility> inGraph)
-    {
-        foreach (var possibility in strategyManager.PossibilitiesAt(cell.Row, cell.Col))
-        {
-            if (inGraph.Contains(new CellPossibility(cell.Row, cell.Col, possibility))) return false;
+            var current = new CellPossibility(row, col, possibility);
+            if (inGraph.Contains(current)) return false;
         }
 
         return true;
@@ -101,8 +121,6 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             {
                 if (first.Possibility == second.Possibility)
                 {
-                    if(first.Row == second.Row || first.Col == second.Col) continue;
-
                     foreach (var coord in first.SharedSeenCells(second))
                     {
                         var current = new CellPossibility(coord.Row, coord.Col, first.Possibility);

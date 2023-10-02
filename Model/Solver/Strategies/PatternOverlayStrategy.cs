@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -41,7 +40,7 @@ public class PatternOverlayStrategy : AbstractStrategy
 
                     currentPatterns.RemoveAll(pattern =>
                     {
-                        bool isOk = false;
+                        bool toRemove = true;
 
                         while (enumerator.MoveNext())
                         {
@@ -49,13 +48,13 @@ public class PatternOverlayStrategy : AbstractStrategy
 
                             if (!pattern.PeakAny(current))
                             {
-                                isOk = true;
+                                toRemove = false;
                                 break;
                             }
                         }
                         
                         enumerator.Reset();
-                        return !isOk;
+                        return toRemove;
                     });
                 }
                 
