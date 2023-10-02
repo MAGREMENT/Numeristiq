@@ -1,7 +1,9 @@
-﻿using System;
+﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Positions;
+using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -10,10 +12,13 @@ public class PatternOverlayStrategy : AbstractStrategy
 {
     public const string OfficialName = "Pattern Overlay";
 
-    public PatternOverlayStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
+    private readonly int _maxCombinationSize;
+
+    public PatternOverlayStrategy(int maxCombinationSize) : base(OfficialName, StrategyDifficulty.Extreme)
     {
+        _maxCombinationSize = maxCombinationSize;
     }
-    
+
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var allPatterns = GetPatterns(strategyManager);
@@ -23,6 +28,40 @@ public class PatternOverlayStrategy : AbstractStrategy
             if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
         }
 
+        /*for (int combinationSize = 1; combinationSize <= _maxCombinationSize; combinationSize++) TODO : fixme
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                var currentPatterns = allPatterns[i];
+                var combinations = CombinationsOfSize(combinationSize, i);
+
+                foreach (var combination in combinations)
+                {
+                    var enumerator = new PatternCombinationEnumerator(allPatterns, combination);
+
+                    currentPatterns.RemoveAll(pattern =>
+                    {
+                        bool isOk = false;
+
+                        while (enumerator.MoveNext())
+                        {
+                            var current = enumerator.Current;
+
+                            if (!pattern.PeakAny(current))
+                            {
+                                isOk = true;
+                                break;
+                            }
+                        }
+                        
+                        return !isOk;
+                    });
+                }
+                
+                if (SearchForElimination(strategyManager, i + 1, allPatterns[i])) return;
+            }
+        }*/
+        
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -56,22 +95,42 @@ public class PatternOverlayStrategy : AbstractStrategy
         }
     }
 
+    private List<LinePositions> CombinationsOfSize(int size, int except)
+    {
+        List<LinePositions> result = new();
+
+        SearchCombinationsOfSize(size, except, 0, new LinePositions(), result);
+        
+        return result;
+    }
+
+    private void SearchCombinationsOfSize(int size, int except, int start, LinePositions current, List<LinePositions> result)
+    {
+        for (int i = start; i < 9; i++)
+        {
+            if (i == except) continue;
+
+            current.Add(i);
+            
+            if (current.Count == size) result.Add(current.Copy());
+            else SearchCombinationsOfSize(size, except, i + 1, current, result);
+
+            current.Remove(i);
+        }
+    }
+
     private bool SearchForElimination(IStrategyManager strategyManager, int number, List<GridPositions> patterns)
     {
         if (patterns.Count == 0) return false;
-            
-        var and = patterns[0].And(patterns);
-        foreach (var cell in and)
+        
+        foreach (var cell in patterns[0].And(patterns))
         {
             strategyManager.ChangeBuffer.AddSolutionToAdd(number, cell.Row, cell.Col);
         }
 
         if (strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder())) return true;
-            
-        var or = patterns[0].Or(patterns);
-        var gp = strategyManager.PositionsFor(number);
 
-        foreach (var cell in gp.Difference(or))
+        foreach (var cell in strategyManager.PositionsFor(number).Difference(patterns[0].Or(patterns)))
         {
             strategyManager.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
         }
@@ -149,6 +208,90 @@ public class PatternOverlayStrategy : AbstractStrategy
 
             SearchForPattern(strategyManager, colsUsed, nextMCU, current, number, result, row + 1);
         }
+    }
+}
+
+public class PatternCombinationEnumerator : IEnumerator<GridPositions>
+{
+    public GridPositions Current => GetCurrent();
+    object IEnumerator.Current => Current;
+
+    private readonly List<GridPositions>[] _allPatterns;
+    private readonly int[] _patternsNumber;
+    private readonly int[] _patternsCount;
+
+    private bool _alreadyNexted;
+
+    public PatternCombinationEnumerator(List<GridPositions>[] allPatterns, params int[] patternsNumber)
+    {
+        _allPatterns = allPatterns;
+        _patternsNumber = patternsNumber;
+        _patternsCount = new int[patternsNumber.Length];
+    }
+    
+    public PatternCombinationEnumerator(List<GridPositions>[] allPatterns, List<int> patternsNumber)
+    {
+        _allPatterns = allPatterns;
+        _patternsNumber = patternsNumber.ToArray();
+        _patternsCount = new int[patternsNumber.Count];
+    }
+    
+    public PatternCombinationEnumerator(List<GridPositions>[] allPatterns, LinePositions patternsNumber)
+    {
+        _allPatterns = allPatterns;
+        _patternsNumber = patternsNumber.ToArray();
+        _patternsCount = new int[patternsNumber.Count];
+    }
+    
+    public bool MoveNext()
+    {
+        if (!_alreadyNexted)
+        {
+            _alreadyNexted = true;
+            return true;
+        }
+        
+        int i = 0;
+        while (i < _patternsNumber.Length)
+        {
+            if (_patternsCount[i] < _allPatterns[_patternsNumber[i]].Count - 1)
+            {
+                _patternsCount[i]++;
+                return true;
+            }
+
+            _patternsCount[i] = 0;
+            i++;
+        }
+
+        return false;
+    }
+
+    public void Reset()
+    {
+        for (int i = 0; i < _patternsCount.Length; i++)
+        {
+            _patternsCount[i] = 0;
+        }
+
+        _alreadyNexted = false;
+    }
+
+    private GridPositions GetCurrent()
+    {
+        var result = _allPatterns[_patternsNumber[0]][_patternsCount[0]];
+
+        for (int i = 1; i < _patternsNumber.Length; i++)
+        {
+            result = result.Or(_allPatterns[_patternsNumber[i]][_patternsCount[i]]);
+        }
+
+        return result;
+    }
+    
+    public void Dispose()
+    {
+        
     }
 }
 
