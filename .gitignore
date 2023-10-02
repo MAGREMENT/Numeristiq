@@ -8,3 +8,5 @@
 
 /SudokuSolver/bin
 /SudokuSolver/obj
+
+*.user

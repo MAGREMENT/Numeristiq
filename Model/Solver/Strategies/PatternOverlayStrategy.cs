@@ -15,165 +15,84 @@ public class PatternOverlayStrategy : AbstractStrategy
     {
         _max = max;
     }
-
+    
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var all = AllPositionsOfAllNumbers(strategyManager);
-
-        HashSet<Pattern>?[] patterns = new HashSet<Pattern>[9];
-        for (int i = 0; i < patterns.Length; i++)
-        {
-            if (all[i].Count > _max) continue;
-
-            patterns[i] = Patterns(strategyManager, all[i], i + 1);
-        }
-
-        for (int i = 0; i < all.Length; i++)
-        {
-            var patternsExamined = patterns[i];
-            if (patternsExamined is null || patternsExamined.Count == 0) continue;
-
-            foreach (var coord in all[i])
-            {
-                int count = 0;
-                foreach (var pattern in patternsExamined)
-                {
-                    if (pattern.Peek(coord)) count++;
-                }
-
-                if (count == 0) strategyManager.ChangeBuffer.AddPossibilityToRemove(i + 1, coord.Row, coord.Col);
-                else if (count == patternsExamined.Count)
-                    strategyManager.ChangeBuffer.AddSolutionToAdd(i + 1, coord.Row, coord.Col);
-            }
-
-            if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder());
-        }
-
-        //TODO add rule 2
+        var patterns = GetPatterns(strategyManager);
     }
 
-    private List<Cell>[] AllPositionsOfAllNumbers(IStrategyManager strategyManager)
+    private List<GridPositions>[] GetPatterns(IStrategyManager strategyManager)
     {
-        List<Cell>[] possiblePositions =
+        List<GridPositions>[] result = new List<GridPositions>[9];
+
+        for (int i = 0; i < 9; i++)
         {
-            new(), new(), new(),
-            new(), new(), new(),
-            new(), new(), new()
-        };
+            List<GridPositions> currentResult = new();
 
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (strategyManager.Sudoku[row, col] != 0) continue;
+            SearchForPattern(strategyManager, new LinePositions(), new LinePositions(),
+                new GridPositions(), i + 1, currentResult, 0);
 
-                Cell current = new Cell(row, col);
-                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
-                {
-                    possiblePositions[possibility - 1].Add(current);
-                }
-            }
-        }
-
-        return possiblePositions;
-    }
-
-    private HashSet<Pattern> Patterns(IStrategyManager strategyManager, List<Cell> all, int number)
-    {
-        HashSet<Pattern> result = new HashSet<Pattern>();
-        if (all.Count == 0) return result;
-
-        int firstRow = all[0].Row;
-        foreach (var start in all)
-        {
-            if (start.Row != firstRow) break;
-
-            GridPositions buildup = new GridPositions();
-            buildup.Add(start);
-            var copy = new List<Cell>(all);
-            copy.RemoveAll(coord => coord.Row == start.Row || coord.Col == start.Col ||
-                                    (coord.Row / 3 == start.Row / 3 && coord.Col / 3 == start.Col / 3));
-
-            SearchForPatterns(strategyManager, copy, number, buildup, result);
+            result[i] = currentResult;
         }
 
         return result;
     }
 
-    private void SearchForPatterns(IStrategyManager strategyManager, List<Cell> toSearch, int number,
-        GridPositions buildup, HashSet<Pattern> result)
+    private void SearchForPattern(IStrategyManager strategyManager, LinePositions colsUsed, LinePositions miniColsUsed,
+        GridPositions current, int number, List<GridPositions> result, int row)
     {
-        foreach (var current in toSearch)
+        if (row == 9)
         {
-            var buildupCopy = buildup.Copy();
-            buildupCopy.Add(current);
-            var copy = new List<Cell>(toSearch);
-            copy.RemoveAll(coord => coord.Row == current.Row || coord.Col == current.Col ||
-                                    (coord.Row / 3 == current.Row / 3 && coord.Col / 3 == current.Col / 3));
-
-            if (copy.Count == 0)
+            result.Add(current.Copy());
+            return;
+        }
+        
+        var cols = strategyManager.RowPositionsAt(row, number);
+        LinePositions nextMCU;
+        
+        if (cols.Count != 0)
+        {
+            foreach (var col in cols)
             {
-                if(IsValid(strategyManager, buildupCopy, number)) result.Add(new Pattern(buildupCopy));
+                if (colsUsed.Peek(col) || miniColsUsed.Peek(col)) continue;
+
+                var cell = new Cell(row, col);
+                current.Add(cell);
+                
+                colsUsed.Add(col);
+                if ((row + 1) % 3 == 0) nextMCU = new LinePositions();
+                else
+                {
+                    nextMCU = miniColsUsed.Copy();
+                    nextMCU.FillMiniGrid(col / 3);
+                }
+
+                SearchForPattern(strategyManager, colsUsed, nextMCU, current, number, result, row + 1);
+
+                current.Remove(cell);
+                colsUsed.Remove(col);
             }
+        }
+        else
+        {
+            int col = 0;
+            for (; col < 9; col++)
+            {
+                if (strategyManager.Sudoku[row, col] == number) break;
+            }
+
+            current.Add(new Cell(row, col));
+            
+            colsUsed.Add(col);
+            if ((row + 1) % 3 == 0) nextMCU = new LinePositions();
             else
             {
-                SearchForPatterns(strategyManager, copy, number, buildupCopy, result);
+                nextMCU = miniColsUsed.Copy();
+                nextMCU.FillMiniGrid(col / 3);
             }
+
+            SearchForPattern(strategyManager, colsUsed, nextMCU, current, number, result, row + 1);
         }
-    }
-
-    private bool IsValid(IStrategyManager strategyManager, GridPositions pattern, int number)
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            int total = strategyManager.Sudoku.RowCount(row, number) + pattern.RowCount(row);
-            if (total != 1) return false;
-        }
-
-        for (int col = 0; col < 9; col++)
-        {
-            int total = strategyManager.Sudoku.ColumnCount(col, number) + pattern.ColumnCount(col);
-            if (total != 1) return false;
-        }
-
-        for (int miniRow = 0; miniRow < 3; miniRow++)
-        {
-            for (int miniCol = 0; miniCol < 3; miniCol++)
-            {
-                int total = strategyManager.Sudoku.MiniGridCount(miniRow, miniCol, number) +
-                            pattern.MiniGridCount(miniRow, miniCol);
-                if (total != 1) return false;
-            }
-        }
-
-        return true;
-    }
-
-}
-
-public class Pattern
-{
-    private readonly GridPositions _pattern;
-
-    public Pattern(GridPositions positions)
-    {
-        _pattern = positions;
-    }
-
-    public bool Peek(Cell cell)
-    {
-        return _pattern.Peek(cell);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Pattern p && p._pattern.Equals(_pattern);
-    }
-
-    public override int GetHashCode()
-    {
-        return _pattern.GetHashCode();
     }
 }
 

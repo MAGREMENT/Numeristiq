@@ -16,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank2.txt ");
+        FullSudokuBankTest("OnlineBank3.txt ");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

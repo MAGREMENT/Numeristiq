@@ -54,6 +54,12 @@ public class LinePositions : IReadOnlyLinePositions
         Count = System.Numerics.BitOperations.PopCount((uint)_pos);
     }
 
+    public void FillMiniGrid(int miniUnit)
+    {
+        _pos |= 0b111 << (miniUnit * 3);
+        Count = System.Numerics.BitOperations.PopCount((uint)_pos);
+    }
+
     public bool AreAllInSameMiniGrid()
     {
         //111 111 000

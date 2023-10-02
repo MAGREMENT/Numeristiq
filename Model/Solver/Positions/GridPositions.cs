@@ -60,6 +60,11 @@ public class GridPositions : IReadOnlyGridPositions
         else _first &= ~(1ul << n);
     }
 
+    public void Remove(Cell cell)
+    {
+        Remove(cell.Row, cell.Col);
+    }
+
     public int RowCount(int row)
     {
         return row < 6 
@@ -137,7 +142,7 @@ public class GridPositions : IReadOnlyGridPositions
     {
         return new GridPositions(_first & other._first, _second & other._second);
     }
-    
+
     public GridPositions Or(GridPositions positions)
     {
         return new GridPositions(_first | positions._first, _second | positions._second);
