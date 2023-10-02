@@ -28,7 +28,7 @@ public class PatternOverlayStrategy : AbstractStrategy
             if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
         }
 
-        /*for (int combinationSize = 1; combinationSize <= _maxCombinationSize; combinationSize++) TODO : fixme
+        for (int combinationSize = 1; combinationSize <= _maxCombinationSize; combinationSize++)
         {
             for (int i = 0; i < 9; i++)
             {
@@ -54,44 +54,13 @@ public class PatternOverlayStrategy : AbstractStrategy
                             }
                         }
                         
+                        enumerator.Reset();
                         return !isOk;
                     });
                 }
                 
                 if (SearchForElimination(strategyManager, i + 1, allPatterns[i])) return;
             }
-        }*/
-        
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                if (i == j) continue;
-                
-                var p1 = allPatterns[i];
-                var p2 = allPatterns[j];
-
-                p1.RemoveAll(pattern1 =>
-                {
-                    bool isOk = false;
-
-                    foreach (var pattern2 in p2)
-                    {
-                        if (!pattern1.PeakAny(pattern2))
-                        {
-                            isOk = true;
-                            break;
-                        }
-                    }
-
-                    return !isOk;
-                });
-            }
-        }
-        
-        for (int number = 1; number <= 9; number++)
-        {
-            if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
         }
     }
 
@@ -128,14 +97,12 @@ public class PatternOverlayStrategy : AbstractStrategy
             strategyManager.ChangeBuffer.AddSolutionToAdd(number, cell.Row, cell.Col);
         }
 
-        if (strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder())) return true;
-
         foreach (var cell in strategyManager.PositionsFor(number).Difference(patterns[0].Or(patterns)))
         {
             strategyManager.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
         }
 
-        return strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder());
+        return strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder(patterns, number));
     }
 
     private List<GridPositions>[] GetPatterns(IStrategyManager strategyManager)
@@ -297,9 +264,39 @@ public class PatternCombinationEnumerator : IEnumerator<GridPositions>
 
 public class PatternOverlayReportBuilder : IChangeReportBuilder
 {
+    private readonly List<GridPositions> _patterns;
+    private readonly int _number;
+
+    public PatternOverlayReportBuilder(List<GridPositions> patterns, int number)
+    {
+        _patterns = patterns;
+        _number = number;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+        HighlightSolver[] highlights = new HighlightSolver[_patterns.Count];
+
+        for (int i = 0; i < _patterns.Count; i++)
+        {
+            var current = _patterns[i];
+            highlights[i] = lighter =>
+            {
+                for (int row = 0; row < 9; row++)
+                {
+                    for (int col = 0; col < 9; col++)
+                    {
+                        if (!snapshot.PossibilitiesAt(row, col).Peek(_number)) continue;
+
+                        lighter.HighlightCell(row, col, current.Peek(row, col) 
+                            ? ChangeColoration.CauseOnOne : ChangeColoration.Neutral);
+                    }
+                }
+
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+            };
+        }
+
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
     }
 }
