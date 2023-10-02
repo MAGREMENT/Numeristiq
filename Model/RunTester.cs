@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,9 +24,14 @@ public class RunTester
     public delegate void OnRunStatusChanged(bool running);
     public event OnRunStatusChanged? RunStatusChanged;
 
-    public async void Start()
+    public void StartAsync()
     {
-        await Task.Run(Run);
+        Task.Run(Run);
+    }
+
+    public void Start()
+    {
+        Run();
     }
 
     public void Cancel()
@@ -90,6 +97,73 @@ public class RunResult
         {
             _reports.Add(new StrategyReport(strategy));
         }
+    }
+
+    public override string ToString()
+    {
+        string[] columnTitles = { "Strategy name", "Usage", "Score", "Score percentage", "Total time", "Average time" };
+        int[] widthCap = new int[columnTitles.Length];
+
+        for (int i = 0; i < columnTitles.Length; i++)
+        {
+            widthCap[i] = columnTitles[i].Length + 2;
+        }
+
+        foreach (var report in Reports)
+        {
+            widthCap[0] = Math.Max(widthCap[0], report.StrategyName.Length + 2);
+            widthCap[1] = Math.Max(widthCap[1], report.Tracker.Usage.ToString().Length + 2);
+            widthCap[2] = Math.Max(widthCap[2], report.Tracker.Score.ToString().Length + 2);
+            widthCap[3] = Math.Max(widthCap[3], report.Tracker.ScorePercentage()
+                .ToString(CultureInfo.InvariantCulture).Length + 3);
+            widthCap[4] = Math.Max(widthCap[4], report.Tracker.TotalTimeInSecond()
+                .ToString(CultureInfo.InvariantCulture).Length + 3);
+            widthCap[5] = Math.Max(widthCap[5], report.Tracker.AverageTime()
+                .ToString(CultureInfo.InvariantCulture).Length + 4);
+        }
+
+        var totalWidth = columnTitles.Length - 1;
+
+        foreach (var width in widthCap)
+        {
+            totalWidth += width;
+        }
+
+        var result = new StringBuilder(StringUtil.FillEvenlyWith("Result", '-', totalWidth) + "\n\n");
+
+        result.Append($"Completion rate : {Success} / {Count}\n");
+        result.Append($"Solver fails : {SolverFails}\n\n");
+        
+        result.Append(StringUtil.FillEvenlyWith(columnTitles[0], ' ', widthCap[0]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[1], ' ', widthCap[1]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[2], ' ', widthCap[2]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[3], ' ', widthCap[3]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[4], ' ', widthCap[4]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[5], ' ', widthCap[5]) + "\n");
+        result.Append(CrossRow(widthCap));
+
+        foreach (var report in Reports)
+        {
+            result.Append(StringUtil.FillEvenlyWith(report.StrategyName, ' ', widthCap[0]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.Usage.ToString(), ' ', widthCap[1]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.Score.ToString(), ' ', widthCap[2]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.ScorePercentage()
+                    .ToString(CultureInfo.InvariantCulture) + "%", ' ', widthCap[3]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.TotalTimeInSecond()
+                    .ToString(CultureInfo.InvariantCulture) + "s", ' ', widthCap[4]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.AverageTime()
+                    .ToString(CultureInfo.InvariantCulture) + "ms", ' ', widthCap[5]) + "\n");
+            result.Append(CrossRow(widthCap));
+        }
+
+        return result.ToString();
+    }
+
+    private static string CrossRow(int[] widthCap)
+    {
+        return StringUtil.Repeat('-', widthCap[0]) + "+" + StringUtil.Repeat('-', widthCap[1]) + "+"
+               + StringUtil.Repeat('-', widthCap[2]) + "+" + StringUtil.Repeat('-', widthCap[3]) + "+"
+               + StringUtil.Repeat('-', widthCap[4]) + "+" + StringUtil.Repeat('-', widthCap[5]) + "\n";
     }
 }
 

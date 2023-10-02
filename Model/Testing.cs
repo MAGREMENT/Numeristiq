@@ -16,7 +16,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank2.txt ");
+        FullSudokuBankTest("OnlineBank3  .txt");
         
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -166,63 +166,24 @@ public static class Testing
 
     private static void FullSudokuBankTest(string fileNameInDataFolder)
     {
-        List<string> fuckUps = new();
-        var counter = 1;
-        var success = 0;
-        var solverIsTrash = 0;
-        Solver.Solver solver = new Solver.Solver(new Sudoku())
+        RunTester runTester = new RunTester();
+        runTester.Path = PathsInfo.PathToData() + $"/SudokuBanks/{fileNameInDataFolder}";
+        runTester.SolveDone += (number, line, success, fail) =>
         {
-            LogsManaged = false,
-            StatisticsTracked = true
-        };
-        try
-        {
-            using TextReader reader =
-                new StreamReader(PathsInfo.PathToData() + $@"/SudokuBanks/{fileNameInDataFolder}", Encoding.UTF8);
-
-            while (reader.ReadLine() is { } line)
+            Console.Write($"#{number} ");
+            if(success) Console.WriteLine("Ok !");
+            else
             {
-                solver.SetSudoku(SudokuTranslator.Translate(line));
-                solver.Solve();
-
-                if (!solver.Sudoku.IsCorrect())
-                {
-                    if (solver.IsWrong())
-                    {
-                        Console.WriteLine(counter++ + " WRONG, Solver is trash ! => " + line);
-                        fuckUps.Add(line);
-                        solverIsTrash++;
-                    }
-                    else Console.WriteLine(counter++ + " WRONG, did not find solution ! => " + line);
-                }
-                else
-                {
-                    Console.WriteLine(counter++ + " OK!");
-                    success++;
-                }
+                if (fail) Console.Write("Solver failed");
+                else Console.Write("Solver did not find solution");
+                
+                Console.WriteLine($" => '{line}'");
             }
-        }
-        catch (IOException e)
-        {
-            Console.WriteLine("Reader problem : " + e.Message);
-        }
+        };
         
-        Console.WriteLine("\nResult-------------------------------");
-        Console.WriteLine($"Completion rate = {success} / {counter - 1}");
-        Console.WriteLine($"Solver fuck ups : {solverIsTrash}");
-        Console.WriteLine();
-        Console.WriteLine("Strategy usage : ");
-        foreach (var strategy in solver.Strategies)
-        {
-            Console.WriteLine($"-{StringUtil.FillWithSpace(strategy.Name, 40)} => Usage : {strategy.Tracker.Usage} |" +
-                              $" Score : {strategy.Tracker.Score} | Time used : {strategy.Tracker.TimeUsed}");
-        }
+        runTester.Start();
 
-        Console.WriteLine("\nFuck ups : ");
-        foreach (var f in fuckUps)
-        {
-            Console.WriteLine("-" + f);
-        }
+        Console.WriteLine(runTester.LastRunResult);
     }
 
     private static void PositionsTest()

@@ -15,9 +15,23 @@ public static class StringUtil
 
         return builder.ToString();
     }
-
-    public static string FillWithSpace(string s, int desiredLength)
+    
+    public static string Repeat(char s, int number)
     {
-        return s + Repeat(" ", desiredLength - s.Length);
+        if (number < 0) return "";
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < number; i++)
+        {
+            builder.Append(s);
+        }
+
+        return builder.ToString();
+    }
+
+    public static string FillEvenlyWith(string s, char fill, int desiredLength)
+    {
+        var toAdd = desiredLength - s.Length;
+        var db2 = toAdd / 2;
+        return Repeat(fill, db2 + toAdd % 2) + s + Repeat(fill, db2);
     }
 }
