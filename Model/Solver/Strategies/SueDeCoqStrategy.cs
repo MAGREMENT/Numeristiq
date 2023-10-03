@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
 
@@ -274,7 +275,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        HighlightSolver[] highlights = new HighlightSolver[_patterns.Count];
+        Highlight[] highlights = new Highlight[_patterns.Count];
 
         for (int i = 0; i < _patterns.Count; i++)
         {

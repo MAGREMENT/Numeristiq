@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
@@ -104,7 +105,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
     {
         List<Link<CellPossibility>> links = FindPath();
 
-        HighlightSolver[] highlights = new HighlightSolver[_isInvalidColoring ? 2 : 1];
+        Highlight[] highlights = new Highlight[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
         {
             highlights[0] = lighter => IChangeReportBuilder.HighlightChanges(lighter, changes);

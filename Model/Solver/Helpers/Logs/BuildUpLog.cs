@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.Helpers.Logs;
 
@@ -30,7 +31,7 @@ public class BuildUpLog : ISolverLog
 
     public SolverState SolverState { get; }
 
-    public HighlightManager HighlightManager => new(HighLight);
+    public HighlightManager HighlightManager => new(new DelegateHighlighter(HighLight));
 
     public BuildUpLog(int id, IStrategy causedBy, SolverState solverState)
     {

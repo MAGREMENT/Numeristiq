@@ -1,4 +1,5 @@
 ﻿using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.Helpers.Logs;
 

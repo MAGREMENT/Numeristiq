@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using Model;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -238,13 +239,13 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public void HighLightLog(ISolverLog log)
     {
         _backgroundManager.Clear();
-        log.HighlightManager.Apply(this);
+        log.HighlightManager.Highlight(this);
         Main.Background = _backgroundManager.Background;
     }
 
     private void Highlight(ISolverLog log)
     {
-        log.HighlightManager.Apply(this);
+        log.HighlightManager.Highlight(this);
         Main.Background = _backgroundManager.Background;
     }
 

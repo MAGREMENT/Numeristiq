@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Helpers.Logs;
 
 namespace SudokuSolver.Utils;

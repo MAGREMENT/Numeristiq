@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 

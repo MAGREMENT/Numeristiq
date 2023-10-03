@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -231,7 +232,7 @@ public class CellForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        HighlightSolver[] highlights = new HighlightSolver[_colorings.Length + 1];
+        Highlight[] highlights = new Highlight[_colorings.Length + 1];
         highlights[0] = lighter =>
         {
             IChangeReportBuilder.HighlightChanges(lighter, changes);

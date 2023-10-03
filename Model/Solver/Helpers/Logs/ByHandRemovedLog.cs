@@ -1,4 +1,5 @@
 ﻿using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.Helpers.Logs;
 
@@ -10,7 +11,7 @@ public class ByHandRemovedLog : ISolverLog
     public string Changes { get; }
     public string Explanation => "This possibility was removed by hand";
     public SolverState SolverState { get; }
-    public HighlightManager HighlightManager => new(HighLight);
+    public HighlightManager HighlightManager => new(new DelegateHighlighter(HighLight));
 
     private readonly SolverChange _asChange;
 
