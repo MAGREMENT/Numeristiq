@@ -1,9 +1,12 @@
 /.idea
 
 /Model/bin
+/Model/obj
 
 /RunTester/bin
+/RunTester/obj
 
 /SudokuSolver/bin
+/SudokuSolver/obj
 
 *.user
