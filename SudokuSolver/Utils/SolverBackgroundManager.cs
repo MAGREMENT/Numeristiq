@@ -110,7 +110,7 @@ public class SolverBackgroundManager
             Pen = new Pen
             {
                 Brush = _strongLinkBrush,
-                Thickness = 5.0,
+                Thickness = 3.5,
             }
         });
     }

@@ -3,7 +3,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil;
 
-public static class ColorHelper //TODO use more
+public static class ColorHelper //TODO use more + add parent history
 {
     //TODO see if possible to do without ColoredElement
     public static List<ColoredVertices<T>> Color<T>(LinkGraph<ILinkGraphElement> graph) 

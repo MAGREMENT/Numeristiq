@@ -36,7 +36,7 @@ public class CellForcingNetStrategy : AbstractStrategy
                     colorings[i] = strategyManager.PreComputer.OnColoring(row, col, possAsArray[i]);
                 }
 
-                Process(strategyManager, colorings);
+                Process(strategyManager, colorings, new Cell(row, col));
 
                 if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
                         new CellForcingNetReportBuilder(colorings, row, col));
@@ -44,63 +44,166 @@ public class CellForcingNetStrategy : AbstractStrategy
         }
     }
 
-    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
+    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings, Cell current)
     {
-        PossibilityStacker?[,] cellCheck = new PossibilityStacker[9, 9];
-
         foreach (var element in colorings[0])
         {
-            if (element.Key is not CellPossibility current) continue;
+            if (element.Key is not CellPossibility cell) continue;
+            
             var currentColoring = element.Value;
             bool isSameInAll = true;
 
             for (int i = 1; i < colorings.Length && isSameInAll; i++)
             {
-                if (!colorings[i].TryGetValue(current, out var c) || c != currentColoring) isSameInAll = false;
+                if (!colorings[i].TryGetValue(cell, out var c) || c != currentColoring)
+                {
+                    isSameInAll = false;
+                    break;
+                }
             }
 
             if (isSameInAll)
             {
                 if (currentColoring == Coloring.On)
-                    view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
-                else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
-            }
-
-            if(currentColoring == Coloring.On) InitStackerArray(cellCheck, current);
-        }
-
-        for (int i = 1; i < colorings.Length; i++)
-        {
-            foreach (var element in colorings[i])
-            {
-                if (element.Value != Coloring.On) continue;
-                if (element.Key is not CellPossibility current) continue;
-
-                AddToStackerArray(view, cellCheck, current, colorings.Length, i);
+                    view.ChangeBuffer.AddSolutionToAdd(cell.Possibility, cell.Row, cell.Col);
+                else view.ChangeBuffer.AddPossibilityToRemove(cell.Possibility, cell.Row, cell.Col);
             }
         }
         
-        //TODO do rule 4 and look into rule 3 (doesnt change anything currently)
-    }
+        //Not yet proven useful so bye bye for now
+        /*HashSet<int> count = new HashSet<int>(colorings.Length);
 
-    private void InitStackerArray(PossibilityStacker?[,] array, CellPossibility coord)
-    {
-        array[coord.Row, coord.Col] ??= new PossibilityStacker();
-        array[coord.Row, coord.Col]!.Possibilities.Add(coord.Possibility);
-        array[coord.Row, coord.Col]!.ColoringCount = 1;
-    }
-    
-    private void AddToStackerArray(IStrategyManager view, PossibilityStacker?[,] array, CellPossibility coord,
-        int total, int currentColoring)
-    {
-        var current = array[coord.Row, coord.Col];
-        if (current is null) return;
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (current.Row == row && current.Col == col) continue;
+                
+                IPossibilities on = IPossibilities.NewEmpty();
 
-        current.Possibilities.Add(coord.Possibility);
-        current.ColoringCount |= 1 << currentColoring;
+                foreach (var possibility in view.PossibilitiesAt(row, col))
+                {
+                    var examined = new CellPossibility(row, col, possibility);
 
-        if (currentColoring == total - 1 && System.Numerics.BitOperations.PopCount((uint) current.ColoringCount) == total)
-            RemoveAll(view, coord.Row, coord.Col, current.Possibilities);
+                    for (int i = 0; i < colorings.Length; i++)
+                    {
+                        if (colorings[i].TryGetValue(examined, out var c) && c == Coloring.On)
+                        {
+                            count.Add(i);
+                            on.Add(possibility);
+                        }
+                    }
+                }
+
+                if (count.Count == colorings.Length) RemoveAll(view, row, col, on);
+                count.Clear();
+            }
+        }
+
+        for (int number = 1; number <= 9; number++)
+        {
+            for (int row = 0; row < 9; row++)
+            {
+                var cols = view.RowPositionsAt(row, number);
+                if (cols.Count == 0) continue;
+                
+                LinePositions on = new LinePositions();
+
+                foreach (var col in cols)
+                {
+                    var examined = new CellPossibility(row, col, number);
+                    
+                    for (int i = 0; i < colorings.Length; i++)
+                    {
+                        if (colorings[i].TryGetValue(examined, out var c) && c == Coloring.On)
+                        {
+                            count.Add(i);
+                            on.Add(col);
+                        }
+                    }
+                }
+
+                if (count.Count == colorings.Length)
+                {
+                    foreach (var col in cols)
+                    {
+                        if (on.Peek(col)) continue;
+
+                        view.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                    }
+                }
+                count.Clear();
+            }
+
+            for (int col = 0; col < 9; col++)
+            {
+                var rows = view.ColumnPositionsAt(col, number);
+                if (rows.Count == 0) continue;
+
+                LinePositions on = new LinePositions();
+
+                foreach (var row in rows)
+                {
+                    var examined = new CellPossibility(row, col, number);
+                    
+                    for (int i = 0; i < colorings.Length; i++)
+                    {
+                        if (colorings[i].TryGetValue(examined, out var c) && c == Coloring.On)
+                        {
+                            count.Add(i);
+                            on.Add(row);
+                        }
+                    }
+                }
+
+                if (count.Count == colorings.Length)
+                {
+                    foreach (var row in rows)
+                    {
+                        if(on.Peek(row)) continue;
+
+                        view.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                    }
+                }
+                count.Clear();
+            }
+
+            for (int miniRow = 0; miniRow < 3; miniRow++)
+            {
+                for (int miniCol = 0; miniCol < 3; miniCol++)
+                {
+                    var cells = view.MiniGridPositionsAt(miniRow, miniCol, number);
+                    if (cells.Count == 0) continue;
+
+                    MiniGridPositions on = new MiniGridPositions(miniRow, miniCol);
+
+                    foreach (var cell in cells)
+                    {
+                        var examined = new CellPossibility(cell, number);
+                    
+                        for (int i = 0; i < colorings.Length; i++)
+                        {
+                            if (colorings[i].TryGetValue(examined, out var c) && c == Coloring.On)
+                            {
+                                count.Add(i);
+                                on.Add(cell.Row % 3, cell.Col % 3);
+                            }
+                        }
+                    }
+
+                    if (count.Count == colorings.Length)
+                    {
+                        foreach (var cell in cells)
+                        {
+                            if (on.Peek(cell.Row % 3, cell.Col % 3)) continue;
+
+                            view.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
+                        }
+                    }
+                    count.Clear();
+                }
+            }
+        }*/
     }
 
     private void RemoveAll(IStrategyManager view, int row, int col, IPossibilities except)
@@ -147,10 +250,4 @@ public class CellForcingNetReportBuilder : IChangeReportBuilder
         
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
     }
-}
-
-public class PossibilityStacker
-{
-    public int ColoringCount { get; set; }
-    public IPossibilities Possibilities { get; } = IPossibilities.NewEmpty();
 }

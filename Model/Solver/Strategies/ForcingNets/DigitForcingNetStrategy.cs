@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -29,6 +28,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                         strategyManager.PreComputer.OffColoring(row, col, possibility);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
+                    
                     Process(strategyManager, onColoring, offColoring);
 
                     if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
@@ -44,6 +44,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
         foreach (var on in onColoring)
         {
             if (on.Key is not CellPossibility possOn) continue;
+            
             if (offColoring.TryGetValue(possOn, out var other))
             {
                 switch (other)
@@ -58,6 +59,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
             }
 
             if (on.Value != Coloring.On) continue;
+            
             foreach (var off in offColoring)
             {
                 if (off.Value != Coloring.On || off.Key is not CellPossibility possOff) continue;

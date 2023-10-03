@@ -98,7 +98,11 @@ public class UnitForcingNetStrategy : AbstractStrategy
 
             for (int i = 1; i < colorings.Length && sameInAll; i++)
             {
-                if (!colorings[i].TryGetValue(current, out var c) || c != col) sameInAll = false;
+                if (!colorings[i].TryGetValue(current, out var c) || c != col)
+                {
+                    sameInAll = false;
+                    break;
+                }
             }
 
             if (sameInAll)

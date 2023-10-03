@@ -30,8 +30,10 @@ public class NishioForcingNetStrategy : AbstractStrategy
                     var coloring = strategyManager.PreComputer.OnColoring(row, col, possibility);
                     foreach (var entry in coloring)
                     {
-                        if (entry.Value != Coloring.Off || entry.Key is not CellPossibility coord) continue;
-                        if (cs.AddOff(coord))
+                        if (entry.Key is not CellPossibility cell) continue;
+                        
+                        if ((entry.Value == Coloring.Off && cs.AddOff(cell))
+                            || (entry.Value == Coloring.On && cs.AddOn(cell)))
                         {
                             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
                             if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Push(this,
@@ -48,10 +50,12 @@ public class NishioForcingNetStrategy : AbstractStrategy
 
 public class ContradictionSearcher
 {
-    private readonly Dictionary<int, IPossibilities> _cells = new();
-    private readonly Dictionary<int, LinePositions> _rows = new();
-    private readonly Dictionary<int, LinePositions> _cols = new();
-    private readonly Dictionary<int, MiniGridPositions> _minis = new();
+    private readonly Dictionary<int, IPossibilities> _offCells = new();
+    private readonly Dictionary<int, LinePositions> _offRows = new();
+    private readonly Dictionary<int, LinePositions> _offCols = new();
+    private readonly Dictionary<int, MiniGridPositions> _offMinis = new();
+
+    private readonly Dictionary<int, GridPositions> _onPositions = new();
 
     private readonly IStrategyManager _view;
 
@@ -60,60 +64,83 @@ public class ContradictionSearcher
         _view = view;
     }
 
-    //returns true if contradiction
-    public bool AddOff(CellPossibility coord)
+    /// <summary>
+    /// Returns true if a contradiction if found
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <returns></returns>
+    public bool AddOff(CellPossibility cell)
     {
-        var cellInt = coord.Row * 9 + coord.Col;
-        if (!_cells.TryGetValue(cellInt, out var poss))
+        var cellInt = cell.Row * 9 + cell.Col;
+        if (!_offCells.TryGetValue(cellInt, out var poss))
         {
-            var copy = _view.PossibilitiesAt(coord.Row, coord.Col).Copy();
-            copy.Remove(coord.Possibility);
-            _cells[cellInt] = copy;
+            var copy = _view.PossibilitiesAt(cell.Row, cell.Col).Copy();
+            copy.Remove(cell.Possibility);
+            _offCells[cellInt] = copy;
         }
         else
         {
-            poss.Remove(coord.Possibility);
+            poss.Remove(cell.Possibility);
             if (poss.Count == 0) return true;
         }
 
-        var rowInt = coord.Row * 9 + coord.Possibility;
-        if (!_rows.TryGetValue(rowInt, out var rowPos))
+        var rowInt = cell.Row * 9 + cell.Possibility;
+        if (!_offRows.TryGetValue(rowInt, out var rowPos))
         {
-            var copy = _view.RowPositionsAt(coord.Row, coord.Possibility).Copy();
-            copy.Remove(coord.Col);
-            _rows[rowInt] = copy;
+            var copy = _view.RowPositionsAt(cell.Row, cell.Possibility).Copy();
+            copy.Remove(cell.Col);
+            _offRows[rowInt] = copy;
         }
         else
         {
-            rowPos.Remove(coord.Possibility);
+            rowPos.Remove(cell.Possibility);
             if (rowPos.Count == 0){ return true;}
         }
 
-        var colInt = coord.Col * 9 + coord.Possibility;
-        if (!_cols.TryGetValue(colInt, out var colPos))
+        var colInt = cell.Col * 9 + cell.Possibility;
+        if (!_offCols.TryGetValue(colInt, out var colPos))
         {
-            var copy = _view.ColumnPositionsAt(coord.Col, coord.Possibility).Copy();
-            copy.Remove(coord.Row);
-            _cols[colInt] = copy;
+            var copy = _view.ColumnPositionsAt(cell.Col, cell.Possibility).Copy();
+            copy.Remove(cell.Row);
+            _offCols[colInt] = copy;
         }
         else
         {
-            colPos.Remove(coord.Row);
+            colPos.Remove(cell.Row);
             if (colPos.Count == 0) return true;
         }
 
-        var miniInt = coord.Row / 3 + coord.Col / 3 * 3 + coord.Possibility * 9;
-        if (!_minis.TryGetValue(miniInt, out var miniPos))
+        var miniInt = cell.Row / 3 + cell.Col / 3 * 3 + cell.Possibility * 9;
+        if (!_offMinis.TryGetValue(miniInt, out var miniPos))
         {
-            var copy = _view.MiniGridPositionsAt(coord.Row / 3,
-                coord.Col / 3, coord.Possibility).Copy();
-            copy.Remove(coord.Row % 3, coord.Col % 3);
-            _minis[miniInt] = copy;
+            var copy = _view.MiniGridPositionsAt(cell.Row / 3,
+                cell.Col / 3, cell.Possibility).Copy();
+            copy.Remove(cell.Row % 3, cell.Col % 3);
+            _offMinis[miniInt] = copy;
         }
         else
         {
-            miniPos.Remove(coord.Row % 3, coord.Col % 3);
+            miniPos.Remove(cell.Row % 3, cell.Col % 3);
             if (miniPos.Count == 0) return true;
+        }
+
+        return false;
+    }
+
+    public bool AddOn(CellPossibility cell)
+    {
+        if (!_onPositions.TryGetValue(cell.Possibility, out var positions))
+        {
+            _onPositions.Add(cell.Possibility, new GridPositions());
+        }
+        else
+        {
+            if (positions.Peek(cell.Row, cell.Col)) return true;
+
+            positions.Add(cell.Row, cell.Col);
+            if (positions.RowCount(cell.Row) > 1
+                || positions.ColumnCount(cell.Col) > 1
+                || positions.MiniGridCount(cell.Row / 3, cell.Col / 3) > 1) return true;
         }
 
         return false;
@@ -121,10 +148,12 @@ public class ContradictionSearcher
 
     public void Reset()
     {
-        _cells.Clear();
-        _rows.Clear();
-        _cols.Clear();
-        _minis.Clear();
+        _offCells.Clear();
+        _offRows.Clear();
+        _offCols.Clear();
+        _offMinis.Clear();
+
+        _onPositions.Clear();
     }
 }
 
