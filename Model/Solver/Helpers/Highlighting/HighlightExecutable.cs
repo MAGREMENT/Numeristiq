@@ -75,7 +75,7 @@ public readonly struct HighlightInstruction
     
     public void Apply(IHighlightable highlightable, ILinkGraphElement[] registers)
     {
-        switch ((InstructionType)(_bits >> 24))
+        switch ((InstructionType)((_bits >> 24) & 0xF))
         {
             case InstructionType.HighlightPossibility :
                 highlightable.HighlightPossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
@@ -133,9 +133,6 @@ public class HighlightCompiler : IHighlightable
     
     public IHighlighter Compile(Highlight d)
     {
-        return new DelegateHighlighter(d);
-
-        //TODO fix
         d(this);
         var result = new HighlightExecutable(_instructions.ToArray(), _registers.ToArray());
         

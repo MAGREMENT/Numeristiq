@@ -165,7 +165,7 @@ public class SolverBackgroundManager
         });
     }
 
-    public void HighlightGroup(AlmostNakedPossibilities anp, Color color)
+    public void HighlightGroup(AlmostNakedPossibilities anp, Color color) //TODO take margin into account
     {
         foreach (var coord in anp.CoordinatePossibilities)
         {
