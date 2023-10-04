@@ -44,6 +44,10 @@
     "Used": true
   },
   {
+    "StrategyName": "Set Equivalence",
+    "Used": true
+  },
+  {
     "StrategyName": "X-Wing",
     "Used": true
   },
@@ -129,10 +133,6 @@
   },
   {
     "StrategyName": "Sue-De-Coq",
-    "Used": true
-  },
-  {
-    "StrategyName": "Multi-Sector Locked Sets",
     "Used": true
   },
   {

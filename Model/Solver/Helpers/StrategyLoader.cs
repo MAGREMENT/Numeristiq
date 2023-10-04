@@ -9,6 +9,8 @@ using Model.Solver.Strategies.AlternatingChains.ChainTypes;
 using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.MultiSectorLockedSets;
 using Model.Solver.Strategies.MultiSectorLockedSets.SearchAlgorithms;
+using Model.Solver.Strategies.SetEquivalence;
+using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
@@ -63,7 +65,8 @@ public class StrategyLoader
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(
             new MonoLineAlgorithm())},
-        {GurthTheorem.OfficialName, new GurthTheorem()}
+        {GurthTheorem.OfficialName, new GurthTheorem()},
+        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new PossibilitiesGroupSearcher())}
     };
 
     private static readonly StrategyUsage[] DefaultUsage =

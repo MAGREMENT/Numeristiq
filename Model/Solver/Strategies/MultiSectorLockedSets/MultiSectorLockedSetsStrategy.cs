@@ -48,24 +48,20 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
         new CoverMiniGrid(2, 2),
     };
 
-    private readonly ICoverHouseSearchAlgorithm[] _searchAlgorithms;
+    private readonly ICoverHouseSearchAlgorithm _searchAlgorithm;
 
-    public MultiSectorLockedSetsStrategy(params ICoverHouseSearchAlgorithm[] searchAlgorithms)
+    public MultiSectorLockedSetsStrategy(ICoverHouseSearchAlgorithm searchAlgorithm)
         : base(OfficialName, StrategyDifficulty.Extreme)
     {
-        _searchAlgorithms = searchAlgorithms;
+        _searchAlgorithm = searchAlgorithm;
     }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        foreach (var algorithm in _searchAlgorithms)
+        foreach (var result in _searchAlgorithm.Search(strategyManager))
         {
-            foreach (var result in algorithm.Search(strategyManager))
-            {
-                Try(strategyManager, result.Home, result.Away, result.HomeList, result.AwayList);
-            }
+            Try(strategyManager, result.Home, result.Away, result.HomeList, result.AwayList);
         }
-        
     }
 
     private void Try(IStrategyManager strategyManager, IPossibilities home, IPossibilities away,

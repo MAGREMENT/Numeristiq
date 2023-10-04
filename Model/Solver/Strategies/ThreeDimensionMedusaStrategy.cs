@@ -29,6 +29,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                 SearchColor(strategyManager, coloredVertices.Off, coloredVertices.On, inGraph))
             {
                 strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph, true));
+                continue;
             }
             
             SearchMix(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph);
@@ -74,12 +75,13 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             for (int col = 0; col < 9; col++)
             {
                 var possibilities = strategyManager.PossibilitiesAt(row, col);
-                if (possibilities.Count == 0 || !IsOffChain(row, col, possibilities, inGraph)) continue;
+                if (possibilities.Count == 0) continue;
 
                 bool emptied = true;
                 foreach (var possibility in possibilities)
                 {
-                    if (!seen[possibility - 1].Peek(row, col))
+                    if (!seen[possibility - 1].Peek(row, col)
+                        || inGraph.Contains(new CellPossibility(row, col, possibility)))
                     {
                         emptied = false;
                         break;
@@ -99,17 +101,6 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         }
 
         return false;
-    }
-
-    private bool IsOffChain(int row, int col, IReadOnlyPossibilities possibilities, HashSet<CellPossibility> inGraph)
-    {
-        foreach (var possibility in possibilities)
-        {
-            var current = new CellPossibility(row, col, possibility);
-            if (inGraph.Contains(current)) return false;
-        }
-
-        return true;
     }
 
     private void SearchMix(IStrategyManager strategyManager, List<CellPossibility> one,

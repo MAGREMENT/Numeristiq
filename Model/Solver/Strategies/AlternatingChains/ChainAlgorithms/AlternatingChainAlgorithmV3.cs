@@ -62,7 +62,7 @@ public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> wher
                     }
                     else
                     {
-                        AddNewNodeToTree(tree, queue, friend, current, LinkStrength.Strong);
+                        AddNewNodeToTree(tree, queue, friend, current, opposite);
                     }
                 }
             }
@@ -121,10 +121,10 @@ public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> wher
             }
         }
 
-        for (int i = elementsToReverse.Count - 1; i > 0; i--)
+        for (int i = elementsToReverse.Count - 2; i >= 0; i--)
         {
             elements.Add(elementsToReverse[i]);
-            links.Add(linksToReverse[i - 1]);
+            links.Add(linksToReverse[i]);
         }
 
         links.Add(linkBetween);
