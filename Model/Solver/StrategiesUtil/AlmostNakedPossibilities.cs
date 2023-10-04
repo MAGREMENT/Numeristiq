@@ -1,23 +1,24 @@
 ﻿using System;
 using System.Linq;
+using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil;
 
 public class AlmostNakedPossibilities : ILinkGraphElement
 {
-    public CellPossibilities[] CoordinatePossibilities { get; }
+    public CellPossibilities[] CellPossibilities { get; }
     public CellPossibility OddOne { get; }
 
-    public AlmostNakedPossibilities(CellPossibilities[] coordinates, CellPossibility oddOne)
+    public AlmostNakedPossibilities(CellPossibilities[] cells, CellPossibility oddOne)
     {
-        CoordinatePossibilities = coordinates;
+        CellPossibilities = cells;
         OddOne = oddOne;
     }
 
     public bool Contains(int row, int col)
     {
-        foreach (var coord in CoordinatePossibilities)
+        foreach (var coord in CellPossibilities)
         {
             if (coord.Cell.Row == row && coord.Cell.Col == col) return true;
         }
@@ -25,17 +26,30 @@ public class AlmostNakedPossibilities : ILinkGraphElement
         return false;
     }
 
-    public CellPossibilities[] EachElement()
+    public CellPossibilities[] EveryCellPossibilities()
     {
-        return CoordinatePossibilities;
+        return CellPossibilities;
     }
 
     public Cell[] EveryCell()
     {
-        Cell[] result = new Cell[CoordinatePossibilities.Length];
-        for (int i = 0; i < CoordinatePossibilities.Length; i++)
+        Cell[] result = new Cell[CellPossibilities.Length];
+        for (int i = 0; i < CellPossibilities.Length; i++)
         {
-            result[i] = CoordinatePossibilities[i].Cell;
+            result[i] = CellPossibilities[i].Cell;
+        }
+
+        return result;
+    }
+
+    public IPossibilities EveryPossibilities()
+    {
+        IPossibilities result = IPossibilities.NewEmpty();
+        result.Add(OddOne.Possibility);
+
+        foreach (var cp in CellPossibilities)
+        {
+            result = result.Or(cp.Possibilities);
         }
 
         return result;
@@ -45,9 +59,9 @@ public class AlmostNakedPossibilities : ILinkGraphElement
     {
         if (obj is not AlmostNakedPossibilities anp) return false;
         if (anp.OddOne != OddOne) return false;
-        foreach (CellPossibilities cp in CoordinatePossibilities)
+        foreach (CellPossibilities cp in CellPossibilities)
         {
-            if (!anp.CoordinatePossibilities.Contains(cp)) return false;
+            if (!anp.CellPossibilities.Contains(cp)) return false;
         }
 
         return true;
@@ -56,7 +70,7 @@ public class AlmostNakedPossibilities : ILinkGraphElement
     public override int GetHashCode()
     {
         var hashCode = 0;
-        foreach (var coord in CoordinatePossibilities)
+        foreach (var coord in CellPossibilities)
         {
             hashCode ^= coord.GetHashCode();
         }
@@ -66,12 +80,12 @@ public class AlmostNakedPossibilities : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = $"[ALS ({OddOne.Possibility}) : ";
-        foreach (var coord in CoordinatePossibilities)
+        var result = $"ALS : {EveryPossibilities()}";
+        foreach (var coord in CellPossibilities)
         {
-            result += $"{coord} | ";
+            result += $"{coord.Cell}, ";
         }
 
-        return result[..^2] + "]";
+        return result[..^2];
     }
 }

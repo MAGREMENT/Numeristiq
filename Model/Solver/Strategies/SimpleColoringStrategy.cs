@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.CellColoring;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
@@ -37,14 +38,14 @@ public class SimpleColoringStrategy : AbstractStrategy
     }
 
     private bool SearchForTwiceInTheSameUnit(IStrategyManager strategyManager,
-        ColoredVertices<CellPossibility> cv)
+        ColoringLists<CellPossibility> cv)
     {
         return SearchColorForTwiceInTheSameUnit(strategyManager, cv.On, cv.Off) ||
                SearchColorForTwiceInTheSameUnit(strategyManager, cv.Off, cv.On);
     }
 
     private bool SearchColorForTwiceInTheSameUnit(IStrategyManager strategyManager,
-        List<CellPossibility> toSearch, List<CellPossibility> other)
+        IReadOnlyList<CellPossibility> toSearch, IReadOnlyList<CellPossibility> other)
     {
         for (int i = 0; i < toSearch.Count; i++)
         {
@@ -66,7 +67,7 @@ public class SimpleColoringStrategy : AbstractStrategy
     }
 
     private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
-        ColoredVertices<CellPossibility> cv)
+        ColoringLists<CellPossibility> cv)
     {
         HashSet<CellPossibility> inGraph = new(cv.On);
         inGraph.UnionWith(cv.Off);
@@ -89,11 +90,11 @@ public class SimpleColoringStrategy : AbstractStrategy
 
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoredVertices<CellPossibility> _vertices;
+    private readonly ColoringLists<CellPossibility> _vertices;
     private readonly LinkGraph<ILinkGraphElement> _graph;
     private readonly bool _isInvalidColoring;
 
-    public SimpleColoringReportBuilder(ColoredVertices<CellPossibility> vertices,
+    public SimpleColoringReportBuilder(ColoringLists<CellPossibility> vertices,
         LinkGraph<ILinkGraphElement> graph, bool isInvalidColoring = false)
     {
         _vertices = vertices;

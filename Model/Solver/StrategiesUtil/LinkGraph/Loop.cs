@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph;
 
-public class Loop<T> : IEnumerable<T> where T : ILoopElement
+public class Loop<T> : IEnumerable<T> where T : notnull
 {
     private readonly T[] _elements;
     private readonly LinkStrength[] _links;
@@ -63,17 +63,17 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
 
     public override string ToString()
     {
-        string result = _elements[0] + (_links[0] == LinkStrength.Strong ? "=" : "-");
+        string result = _elements[0] + (_links[0] == LinkStrength.Strong ? " = " : " - ");
         for (int i = 1; i < _elements.Length; i++)
         {
-            result += _elements[i] + (_links[i] == LinkStrength.Strong ? "=" : "-");
+            result += _elements[i] + (_links[i] == LinkStrength.Strong ? " = " : " - ");
         }
 
         return result;
     }
 }
 
-public class LoopBuilder<T> where T : ILoopElement
+public class LoopBuilder<T> where T : notnull
 {
 
     private readonly T[] _elements;
@@ -183,9 +183,4 @@ public class LoopBuilder<T> where T : ILoopElement
         return result;
     }
 
-}
-
-public interface ILoopElement
-{ 
-    CellPossibilities[] EachElement();
 }

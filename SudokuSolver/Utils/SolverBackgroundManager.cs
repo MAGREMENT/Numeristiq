@@ -105,7 +105,7 @@ public class SolverBackgroundManager
     {
         _groups.Children.Add(new GeometryDrawing
         {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(col) - Margin / 2, TopLeftY(row) - Margin / 2,
+            Geometry = new RectangleGeometry(new Rect(TopLeftX(col) - (double)Margin / 2, TopLeftY(row) - (double)Margin / 2,
                 CellSize + Margin, CellSize + Margin)),
             Pen = new Pen
             {
@@ -117,7 +117,7 @@ public class SolverBackgroundManager
     
     public void HighlightGroup(PointingRow pr, Color color)
     {
-        var coords = pr.EachElement();
+        var coords = pr.EveryCellPossibilities();
         var mostLeft = coords[0];
         var mostRight = coords[0];
         for (int i = 1; i < coords.Length; i++)
@@ -142,7 +142,7 @@ public class SolverBackgroundManager
 
     public void HighlightGroup(PointingColumn pc, Color color)
     {
-        var coords = pc.EachElement();
+        var coords = pc.EveryCellPossibilities();
         var mostUp = coords[0];
         var mostDown = coords[0];
         for (int i = 1; i < coords.Length; i++)
@@ -165,9 +165,9 @@ public class SolverBackgroundManager
         });
     }
 
-    public void HighlightGroup(AlmostNakedPossibilities anp, Color color) //TODO take margin into account
+    public void HighlightGroup(AlmostNakedPossibilities anp, Color color) //TODO take margin into account + improve visually
     {
-        foreach (var coord in anp.CoordinatePossibilities)
+        foreach (var coord in anp.CellPossibilities)
         {
             var x = TopLeftX(coord.Cell.Col);
             var y = TopLeftY(coord.Cell.Row);

@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class NormalAIC : IAlternatingChainType<CellPossibility>
+public class SimpleAlternatingInferenceChains : IAlternatingChainType<CellPossibility>
 {
     public const string OfficialName = "Alternating Inference Chains";
     

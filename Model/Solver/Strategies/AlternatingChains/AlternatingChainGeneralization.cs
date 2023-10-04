@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains;
 
-public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILoopElement, ILinkGraphElement
+public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILinkGraphElement
 {
     private readonly IAlternatingChainType<T> _chain;
     private readonly IAlternatingChainAlgorithm<T> _algorithm;
@@ -24,7 +24,7 @@ public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILoo
     }
 }
 
-public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElement
+public interface IAlternatingChainType<T> where T : ILinkGraphElement
 {
     public string Name { get; }
     public StrategyDifficulty Difficulty { get; }
@@ -39,7 +39,7 @@ public interface IAlternatingChainType<T> where T : ILoopElement, ILinkGraphElem
     bool ProcessStrongInference(IStrategyManager view, T inference, Loop<T> loop);
 }
 
-public interface IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
+public interface IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 {
     void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType);
 }
@@ -47,15 +47,17 @@ public interface IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGrap
 public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : ILinkGraphElement
 {
     private readonly Loop<T> _loop;
+    private readonly LoopType _type;
 
-    public AlternatingChainReportBuilder(Loop<T> loop)
+    public AlternatingChainReportBuilder(Loop<T> loop, LoopType type)
     {
         _loop = loop;
+        _type = type;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _loop.ToString(),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
             lighter =>
             {
                 int counter = 0;
@@ -71,5 +73,22 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
             });
     }
+
+    private string Explanation()
+    {
+        var result = _type switch
+        {
+            LoopType.NiceLoop => "Nice loop",
+            LoopType.StrongInference => "Loop with a strong inference",
+            LoopType.WeakInference => "Loop with a weak inference"
+        };
+
+        return result + $" found\nLoop :: {_loop}";
+    }
+}
+
+public enum LoopType
+{
+    NiceLoop, WeakInference, StrongInference
 }
 

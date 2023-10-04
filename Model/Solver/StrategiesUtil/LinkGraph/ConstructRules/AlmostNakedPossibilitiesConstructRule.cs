@@ -49,19 +49,19 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
             linkGraph.AddLink(buffer, anp, LinkStrength.Strong, LinkType.MonoDirectional);
 
             bool sameRow = true;
-            int sharedRow = anp.CoordinatePossibilities[0].Cell.Row;
+            int sharedRow = anp.CellPossibilities[0].Cell.Row;
             bool sameCol = true;
-            int sharedCol = anp.CoordinatePossibilities[0].Cell.Col;
+            int sharedCol = anp.CellPossibilities[0].Cell.Col;
             bool sameMini = true;
-            int sharedMiniRow = anp.CoordinatePossibilities[0].Cell.Row / 3;
-            int sharedMiniCol = anp.CoordinatePossibilities[0].Cell.Col / 3;
+            int sharedMiniRow = anp.CellPossibilities[0].Cell.Row / 3;
+            int sharedMiniCol = anp.CellPossibilities[0].Cell.Col / 3;
 
-            for (int i = 1; i < anp.CoordinatePossibilities.Length; i++)
+            for (int i = 1; i < anp.CellPossibilities.Length; i++)
             {
-                if (anp.CoordinatePossibilities[i].Cell.Row != sharedRow) sameRow = false;
-                if (anp.CoordinatePossibilities[i].Cell.Col != sharedCol) sameCol = false;
-                if (anp.CoordinatePossibilities[i].Cell.Row / 3 != sharedMiniRow ||
-                    anp.CoordinatePossibilities[i].Cell.Col / 3 != sharedMiniCol) sameMini = false;
+                if (anp.CellPossibilities[i].Cell.Row != sharedRow) sameRow = false;
+                if (anp.CellPossibilities[i].Cell.Col != sharedCol) sameCol = false;
+                if (anp.CellPossibilities[i].Cell.Row / 3 != sharedMiniRow ||
+                    anp.CellPossibilities[i].Cell.Col / 3 != sharedMiniCol) sameMini = false;
             }
 
             foreach (var possibility in als.Possibilities)

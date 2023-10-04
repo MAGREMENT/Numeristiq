@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.CellColoring;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;

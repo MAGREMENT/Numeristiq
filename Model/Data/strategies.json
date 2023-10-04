@@ -141,7 +141,7 @@
   },
   {
     "StrategyName": "Alternating Inference Chain",
-    "Used": false
+    "Used": true
   },
   {
     "StrategyName": "Digit Forcing Net",

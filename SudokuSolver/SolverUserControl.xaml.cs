@@ -332,13 +332,13 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
                 CellPossibility[] winners = new CellPossibility[2];
                 double winningDistance = int.MaxValue;
 
-                foreach (var c1 in from.EachElement())
+                foreach (var c1 in from.EveryCellPossibilities())
                 {
-                    foreach (var c2 in to.EachElement())
+                    foreach (var c2 in to.EveryCellPossibilities())
                     {
-                        foreach (var pc1 in c1.ToPossibilityCoordinates())
+                        foreach (var pc1 in c1.ToCellPossibility())
                         {
-                            foreach (var pc2 in c2.ToPossibilityCoordinates())
+                            foreach (var pc2 in c2.ToCellPossibility())
                             {
                                 var distance = Math.Pow(pc1.Row - pc2.Row, 2) + Math.Pow(pc1.Col - pc2.Col, 2);
 

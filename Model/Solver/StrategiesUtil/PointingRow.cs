@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Positions;
+using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil;
@@ -44,47 +45,6 @@ public class PointingRow : ILinkGraphElement
         }
     }
 
-    public IEnumerable<CellPossibility> SharedSeenCells(CellPossibility single)
-    {
-        if (single.Row == Row)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (col == single.Col || _pos.Any(posCol=> posCol == col)) continue;
-                yield return new CellPossibility(Row, col, Possibility);
-            }
-        }
-        if (single.Row / 3 == Row / 3 && single.Col / 3 == _pos.First() / 3)
-        {
-            int rowStart = single.Row / 3 * 3;
-            int colStart = single.Col / 3 * 3;
-
-            for (int gridRow = 0; gridRow < 3; gridRow++)
-            {
-                for (int gridCol = 0; gridCol < 3; gridCol++)
-                {
-                    int row = rowStart + gridRow;
-                    int col = colStart + gridCol;
-
-                    if ((row == single.Row && col == single.Col) ||
-                        (row == Row && _pos.Any(posCol => posCol == col))) continue;
-                    yield return new CellPossibility(row, col, Possibility);
-                }
-            }
-        }
-    }
-    
-    public IEnumerable<CellPossibility> SharedSeenCells(PointingRow row)
-    {
-        if(Row != row.Row) yield break;
-        for (int col = 0; col < 9; col++)
-        {
-            if (row._pos.Any(posCol => posCol == col) ||
-                _pos.Any(posCol => posCol == col)) continue;
-            yield return new CellPossibility(Row, col, Possibility);
-        }
-    }
-
     public override int GetHashCode()
     {
         int coordsHash = 0;
@@ -110,17 +70,16 @@ public class PointingRow : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = "[PR : ";
+        var result = $"PR : {Possibility}";
         foreach (var col in _pos)
         {
-            result += $"{Row + 1}, {col + 1} | ";
+            result += $"[{Row + 1}, {col + 1}], ";
         }
-
-        result = result[..^2];
-        return result + $"=> {Possibility}]";
+        
+        return result[..^2];
     }
 
-    public CellPossibilities[] EachElement()
+    public CellPossibilities[] EveryCellPossibilities()
     {
         CellPossibilities[] result = new CellPossibilities[_pos.Count];
         
@@ -145,6 +104,13 @@ public class PointingRow : ILinkGraphElement
             cursor++;
         }
 
+        return result;
+    }
+
+    public IPossibilities EveryPossibilities()
+    {
+        var result = IPossibilities.NewEmpty();
+        result.Add(Possibility);
         return result;
     }
 }
