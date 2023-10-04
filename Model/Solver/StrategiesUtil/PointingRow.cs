@@ -133,4 +133,18 @@ public class PointingRow : ILinkGraphElement
 
         return result;
     }
+
+    public Cell[] EveryCell()
+    {
+        Cell[] result = new Cell[_pos.Count];
+        
+        int cursor = 0;
+        foreach (var col in _pos)
+        {
+            result[cursor] = new Cell(Row, col);
+            cursor++;
+        }
+
+        return result;
+    }
 }

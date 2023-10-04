@@ -73,7 +73,7 @@ public class Loop<T> : IEnumerable<T> where T : ILoopElement
     }
 }
 
-public class LoopBuilder<T> where T : ILoopElement //TODO refactor with recursion list
+public class LoopBuilder<T> where T : ILoopElement
 {
 
     private readonly T[] _elements;

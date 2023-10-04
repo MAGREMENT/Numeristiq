@@ -9,8 +9,6 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
-//TODO : improve UI, solve memory problems, improve classes access to things (possibilities for example)
-//TODO correct visuals for naked doubles & XYWing
 public class Solver : IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;

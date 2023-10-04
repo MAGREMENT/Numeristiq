@@ -183,7 +183,7 @@ public class GridPositions : IReadOnlyGridPositions
 
     public GridPositions Difference(IReadOnlyGridPositions with)
     {
-        if (with is not GridPositions gp) return new GridPositions(); //TODO
+        if (with is not GridPositions gp) return IReadOnlyGridPositions.DefaultDifference(this, with);
         return new GridPositions(_first & ~gp._first, _second & ~gp._second);
     }
 

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
@@ -10,7 +9,8 @@ public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> wher
     {
         foreach (var start in graph)
         {
-            Dictionary<T, ElementInfo> tree = new();
+            Dictionary<T, ElementInfo<T>> tree = new();
+            tree.Add(start, new ElementInfo<T>());
 
             Queue<T> queue = new();
 
@@ -28,17 +28,20 @@ public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> wher
             {
                 var current = queue.Dequeue();
 
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
+                var lastLink = tree[current].ParentLinkAt(0);
+                var opposite = lastLink == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
+                
+                foreach (var friend in graph.GetLinks(current, opposite))
                 {
                     if (tree.TryGetValue(friend, out var ei))
                     {
                         for (int i = 0; i < ei.ParentCount; i++)
                         {
-                            if (ei.ParentLinkAt(i) == LinkStrength.Weak)
+                            if (ei.ParentLinkAt(i) == lastLink)
                             {
                                 //Nice loop
-                                foreach (var loop in MessyBacktrack(tree, friend,
-                                             current, LinkStrength.Strong))
+                                foreach (var loop in MessyBacktrack(tree, friend, lastLink,
+                                             current, opposite))
                                 {
                                     chainType.ProcessFullLoop(view, loop);
                                 }
@@ -46,90 +49,110 @@ public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> wher
                             else
                             {
                                 //Strong inference
-                                chainType.ProcessStrongInference(view, friend, StraightForwardBacktrack(tree,
-                                    friend, current, LinkStrength.Strong));
+                                if(opposite == LinkStrength.Strong) chainType.ProcessStrongInference(view, friend,
+                                    StraightForwardBacktrack(tree, friend, opposite, current, opposite));
+                                //Weak inference
+                                else chainType.ProcessWeakInference(view, friend, StraightForwardBacktrack(tree,
+                                    friend, opposite, current, opposite));
+                               
                             } 
                         }
                         
-                        ei.AddParent(current, LinkStrength.Strong);
+                        ei.AddParent(current, opposite);
                     }
                     else
                     {
                         AddNewNodeToTree(tree, queue, friend, current, LinkStrength.Strong);
                     }
                 }
-                
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
-                {
-                    if (tree.TryGetValue(friend, out var ei))
-                    {
-                        for (int i = 0; i < ei.ParentCount; i++)
-                        {
-                            if (ei.ParentLinkAt(i) == LinkStrength.Strong)
-                            {
-                                //Nice loop
-                                foreach (var loop in MessyBacktrack(tree, friend,
-                                             current, LinkStrength.Weak))
-                                {
-                                    chainType.ProcessFullLoop(view, loop);
-                                }
-                            }
-                            else
-                            {
-                                //Weak inference
-                                chainType.ProcessStrongInference(view, friend, StraightForwardBacktrack(tree,
-                                    friend, current, LinkStrength.Weak));
-                            } 
-                        }
-                        
-                        ei.AddParent(current, LinkStrength.Weak);
-                    }
-                    else
-                    {
-                        AddNewNodeToTree(tree, queue, friend, current, LinkStrength.Weak);
-                    }
-                }
             }
         }
     }
 
-    private static void AddNewNodeToTree(Dictionary<T, ElementInfo> tree, Queue<T> queue,
+    private static void AddNewNodeToTree(Dictionary<T, ElementInfo<T>> tree, Queue<T> queue,
         T toAdd, T parent, LinkStrength parentLink)
     {
-        var ei = new ElementInfo();
+        var ei = new ElementInfo<T>();
         ei.AddParent(parent, parentLink);
                 
         tree[toAdd] = ei;
         queue.Enqueue(toAdd);
     }
 
-    private Loop<T> StraightForwardBacktrack(Dictionary<T, ElementInfo> tree, T startPoint1, T startPoint2,
-        LinkStrength linkBetween)
+    private Loop<T> StraightForwardBacktrack(Dictionary<T, ElementInfo<T>> tree, T startPoint1, LinkStrength assignedLink,
+        T startPoint2, LinkStrength linkBetween)
     {
-        return new Loop<T>(Array.Empty<T>(), Array.Empty<LinkStrength>()); //TODO
+        List<T> elements = new() {startPoint1};
+        List<LinkStrength> links = new();
+
+        ElementInfo<T> ei;
+        var nextLink = assignedLink;
+
+        while ((ei = tree[elements[^1]]).ParentCount > 0)
+        {
+            for (int i = 0; i < ei.ParentCount; i++)
+            {
+                if (ei.ParentLinkAt(i) == nextLink)
+                {
+                    elements.Add(ei.ParentAt(i));
+                    links.Add(ei.ParentLinkAt(i));
+                    nextLink = nextLink == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
+                    break;
+                }
+            }
+        }
+
+        nextLink = linkBetween == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
+
+        List<T> elementsToReverse = new() { startPoint2 };
+        List<LinkStrength> linksToReverse = new();
+        
+        while ((ei = tree[elementsToReverse[^1]]).ParentCount > 0)
+        {
+            for (int i = 0; i < ei.ParentCount; i++)
+            {
+                if (ei.ParentLinkAt(i) == nextLink)
+                {
+                    elementsToReverse.Add(ei.ParentAt(i));
+                    linksToReverse.Add(ei.ParentLinkAt(i));
+                    nextLink = nextLink == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
+                    break;
+                }
+            }
+        }
+
+        for (int i = elementsToReverse.Count - 1; i > 0; i--)
+        {
+            elements.Add(elementsToReverse[i]);
+            links.Add(linksToReverse[i - 1]);
+        }
+
+        links.Add(linkBetween);
+
+        return new Loop<T>(elements.ToArray(), links.ToArray());
     }
 
-    private List<Loop<T>> MessyBacktrack(Dictionary<T, ElementInfo> tree, T startPoint1, T startPoint2,
-        LinkStrength linkBetween)
+    private List<Loop<T>> MessyBacktrack(Dictionary<T, ElementInfo<T>> tree, T startPoint1, LinkStrength assignedLink,
+        T startPoint2, LinkStrength linkBetween)
     {
         return new List<Loop<T>>(); //TODO
     }
 }
 
-public class ElementInfo
+public class ElementInfo<T>
 {
-    private readonly List<ILinkGraphElement> _parents = new();
+    private readonly List<T> _parents = new();
     private readonly List<LinkStrength> _parentLinks = new();
     
     public int ParentCount => _parents.Count;
 
-    public void AddParent(ILinkGraphElement element, LinkStrength link)
+    public void AddParent(T element, LinkStrength link)
     {
         _parents.Add(element);
         _parentLinks.Add(link);
     }
 
-    public ILinkGraphElement ParentAt(int index)
+    public T ParentAt(int index)
     {
         return _parents[index];
     }

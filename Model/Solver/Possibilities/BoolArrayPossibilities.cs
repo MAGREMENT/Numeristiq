@@ -151,7 +151,13 @@ public class BoolArrayPossibilities : IPossibilities
 
     public CellState ToCellState()
     {
-        throw new NotImplementedException();
+        short bits = 0;
+        for (int i = 0; i < 9; i++)
+        {
+            if (_possibilities[i]) bits |= (short)(1 << i);
+        }
+
+        return CellState.FromBits(bits);
     }
 
     public IEnumerator<int> GetEnumerator()

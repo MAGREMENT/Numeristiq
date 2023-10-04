@@ -2,5 +2,5 @@
 
 public interface ILinkGraphElement : ILoopElement
 {
-    
+    public Cell[] EveryCell();
 }

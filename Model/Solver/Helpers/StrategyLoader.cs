@@ -13,7 +13,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
 
-public class StrategyLoader //TODO finish
+public class StrategyLoader
 {
     private static readonly string Path = PathsInfo.PathToData() + "/strategies.json";
 
@@ -66,6 +66,51 @@ public class StrategyLoader //TODO finish
         {GurthTheorem.OfficialName, new GurthTheorem()}
     };
 
+    private static readonly StrategyUsage[] DefaultUsage =
+    {
+        new(NakedSingleStrategy.OfficialName, true),
+        new(HiddenSingleStrategy.OfficialName, true),
+        new(NakedDoublesStrategy.OfficialName, true),
+        new(HiddenDoublesStrategy.OfficialName, true),
+        new(BoxLineReductionStrategy.OfficialName, true),
+        new(PointingPossibilitiesStrategy.OfficialName, true),
+        new(NakedPossibilitiesStrategy.OfficialNameForType3, true),
+        new(HiddenPossibilitiesStrategy.OfficialNameForType3, true),
+        new(NakedPossibilitiesStrategy.OfficialNameForType4, true),
+        new(HiddenPossibilitiesStrategy.OfficialNameForType4, true),
+        new(GurthTheorem.OfficialName, true),
+        new(XWingStrategy.OfficialName, true),
+        new(XYWingStrategy.OfficialName, true),
+        new(XYZWingStrategy.OfficialName, true),
+        new(GridFormationStrategy.OfficialNameForType3, true),
+        new(GridFormationStrategy.OfficialNameForType4, true),
+        new(SimpleColoringStrategy.OfficialName, true),
+        new(BUGStrategy.OfficialName, true),
+        new(ReverseBUGStrategy.OfficialName, true),
+        new(JuniorExocetStrategy.OfficialName, true),
+        new(FinnedXWingStrategy.OfficialName, true),
+        new(FinnedGridFormationStrategy.OfficialNameForType3, true),
+        new(FinnedGridFormationStrategy.OfficialNameForType4, true),
+        new(FireworksStrategy.OfficialName, true),
+        new(SKLoopsStrategy.OfficialName, true),
+        new(UniqueRectanglesStrategy.OfficialName, true),
+        new(AvoidableRectanglesStrategy.OfficialName, true),
+        new(XYChainStrategy.OfficialName, true),
+        new(ThreeDimensionMedusaStrategy.OfficialName, true),
+        new(WXYZWingStrategy.OfficialName, true),
+        new(AlignedPairExclusionStrategy.OfficialName, true),
+        new(GroupedXCycles.OfficialName, true),
+        new(SueDeCoqStrategy.OfficialName, true),
+        new(MultiSectorLockedSetsStrategy.OfficialName, true),
+        new(AlmostLockedSetsStrategy.OfficialName, true),
+        new(FullAIC.OfficialName, false),
+        new(DigitForcingNetStrategy.OfficialName, true),
+        new(CellForcingNetStrategy.OfficialName, true),
+        new(UnitForcingNetStrategy.OfficialName, true),
+        new(NishioForcingNetStrategy.OfficialName, true),
+        new(PatternOverlayStrategy.OfficialName, true),
+        new(BruteForceStrategy.OfficialName, false)
+    };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
     public ulong ExcludedStrategies { get; private set; }
@@ -77,6 +122,7 @@ public class StrategyLoader //TODO finish
             HandleDefault();
             return;
         }
+        
         var buffer = JsonSerializer.Deserialize<StrategyUsage[]>(File.ReadAllText(Path));
         if (buffer is null)
         {
@@ -107,23 +153,11 @@ public class StrategyLoader //TODO finish
 
     private void HandleDefault()
     {
-        
-    }
-
-    public static void WritePool()
-    {
-        List<StrategyUsage> usage = new();
-        foreach (var strategy in StrategyPool)
-        {
-            usage.Add(new StrategyUsage()
-            {
-                StrategyName = strategy.Key,
-                Used = true
-            });
-        }
+        HandleSpecified(DefaultUsage);
         
         File.Delete(Path);
-        File.WriteAllText(Path, JsonSerializer.Serialize(usage.ToArray(), new JsonSerializerOptions {WriteIndented = true}));
+        File.WriteAllText(Path, JsonSerializer.Serialize(DefaultUsage,
+            new JsonSerializerOptions {WriteIndented = true}));
     }
 }
 
@@ -131,4 +165,12 @@ public class StrategyUsage
 {
     public string StrategyName { get; init; } = "";
     public bool Used { get; init; }
+
+    public StrategyUsage() { }
+    
+    public StrategyUsage(string strategyName, bool used)
+    {
+        StrategyName = strategyName;
+        Used = used;
+    }
 }

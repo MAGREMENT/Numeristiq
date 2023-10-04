@@ -30,6 +30,17 @@ public class AlmostNakedPossibilities : ILinkGraphElement
         return CoordinatePossibilities;
     }
 
+    public Cell[] EveryCell()
+    {
+        Cell[] result = new Cell[CoordinatePossibilities.Length];
+        for (int i = 0; i < CoordinatePossibilities.Length; i++)
+        {
+            result[i] = CoordinatePossibilities[i].Cell;
+        }
+
+        return result;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not AlmostNakedPossibilities anp) return false;
@@ -55,7 +66,7 @@ public class AlmostNakedPossibilities : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = $"[ANP ({OddOne.Possibility}) : ";
+        var result = $"[ALS ({OddOne.Possibility}) : ";
         foreach (var coord in CoordinatePossibilities)
         {
             result += $"{coord} | ";

@@ -226,6 +226,11 @@ public readonly struct CellPossibility : ILinkGraphElement
         return new[] { new CellPossibilities(this) };
     }
 
+    public Cell[] EveryCell()
+    {
+        return new Cell[] { new(Row, Col) };
+    }
+
     public bool IsSameLoopElement(ILoopElement other)
     {
         return other is CellPossibility pc && pc.Equals(this);
