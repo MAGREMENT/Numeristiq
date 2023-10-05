@@ -1,6 +1,10 @@
-﻿namespace Model.Solver.StrategiesUtil.LinkGraph;
+﻿using Model.Solver.Possibilities;
 
-public interface ILinkGraphElement : ILoopElement
+namespace Model.Solver.StrategiesUtil.LinkGraph;
+
+public interface ILinkGraphElement
 {
-    public Cell[] EveryCell();
+    CellPossibilities[] EveryCellPossibilities();
+    Cell[] EveryCell();
+    IPossibilities EveryPossibilities();
 }

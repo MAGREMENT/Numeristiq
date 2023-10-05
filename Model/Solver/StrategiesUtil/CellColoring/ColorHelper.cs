@@ -1,21 +1,22 @@
 ﻿using System.Collections.Generic;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
-namespace Model.Solver.StrategiesUtil;
+namespace Model.Solver.StrategiesUtil.CellColoring;
 
 public static class ColorHelper //TODO use more + add parent history
 {
     //TODO see if possible to do without ColoredElement
-    public static List<ColoredVertices<T>> Color<T>(LinkGraph<ILinkGraphElement> graph) 
+    public static List<ColoringLists<T>> Color<T>(LinkGraph<ILinkGraphElement> graph) 
     {
-        var result = new List<ColoredVertices<T>>();
+        var result = new List<ColoringLists<T>>();
         HashSet<ILinkGraphElement> visited = new();
 
         foreach (var start in graph)
         {
             if (visited.Contains(start)) continue;
 
-            ColoredVertices<T> cv = new();
+            ColoringLists<T> cv = new();
             cv.Add((T)start, Coloring.On);
             visited.Add(start);
 

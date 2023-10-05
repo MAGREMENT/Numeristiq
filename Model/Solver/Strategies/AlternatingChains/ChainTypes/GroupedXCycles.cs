@@ -24,44 +24,15 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
         loop.ForEachLink((one, two)
             => ProcessWeakLink(view, one, two), LinkStrength.Weak);
 
-        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
+        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.NiceLoop));
     }
     
-    //TODO make this bullshit better for the eyes
     private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two)
     {
-        switch (one)
-        {
-            case PointingRow rOne when two is PointingRow rTwo :
-                RemovePossibilityInAll(view, rOne.SharedSeenCells(rTwo));
-                break;
-            case PointingRow rOne when two is CellPossibility sTwo :
-                RemovePossibilityInAll(view, rOne.SharedSeenCells(sTwo));
-                break;
-            case CellPossibility sOne when two is PointingRow rTwo :
-                RemovePossibilityInAll(view, rTwo.SharedSeenCells(sOne));
-                break;
-            case CellPossibility sOne when two is CellPossibility sTwo :
-                RemovePossibilityInAll(view, sOne.SharedSeenCells(sTwo), sOne.Possibility);
-                break;
-            case CellPossibility sOne when two is PointingColumn cTwo :
-                RemovePossibilityInAll(view, cTwo.SharedSeenCells(sOne));
-                break;
-            case PointingColumn cOne when two is PointingColumn cTwo :
-                RemovePossibilityInAll(view, cOne.SharedSeenCells(cTwo));
-                break;
-            case PointingColumn cOne when two is CellPossibility sTwo :
-                RemovePossibilityInAll(view, cOne.SharedSeenCells(sTwo));
-                break;
-        }
-    }
-
-    private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<CellPossibility> coords)
-    {
-        foreach (var coord in coords)
-        {
-            view.ChangeBuffer.AddPossibilityToRemove(coord.Possibility, coord.Row, coord.Col);
-        }
+        List<Cell> cells = new List<Cell>(one.EveryCell());
+        cells.AddRange(two.EveryCell());
+        
+        RemovePossibilityInAll(view, Cells.SharedSeenCells(cells), one.EveryPossibilities().GetFirst());
     }
     
     private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<Cell> coords, int possibility)
@@ -77,7 +48,7 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
         if (inference is not CellPossibility single) return false;
         view.ChangeBuffer.AddPossibilityToRemove(single.Possibility, single.Row, single.Col);
 
-        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
+        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
@@ -85,6 +56,6 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
         if (inference is not CellPossibility single) return false;
         view.ChangeBuffer.AddSolutionToAdd(single.Possibility, single.Row, single.Col);
         
-        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop));
+        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
     }
 }

@@ -3,7 +3,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class NormalXCycles : IAlternatingChainType<CellPossibility>
+public class SimpleXCycles : IAlternatingChainType<CellPossibility>
 {
     public const string OfficialName = "X-Cycles";
     

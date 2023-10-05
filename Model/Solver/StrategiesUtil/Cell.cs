@@ -144,27 +144,6 @@ public readonly struct Cell
     }
 }
 
-public class CellColoring : IColorable
-{
-    public Cell Cell { get; }
-    public Coloring Coloring { get; set; } = Coloring.None;
-
-    public CellColoring(int row, int col)
-    {
-        Cell = new Cell(row, col);
-    }
-
-    public override int GetHashCode()
-    {
-        return Cell.GetHashCode();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is CellColoring cc && cc.Cell.Equals(Cell);
-    }
-}
-
 public readonly struct CellPossibility : ILinkGraphElement
 {
     public int Possibility { get; }
@@ -218,10 +197,10 @@ public readonly struct CellPossibility : ILinkGraphElement
 
     public override string ToString()
     {
-        return $"[{Row + 1}, {Col + 1} => {Possibility}]";
+        return $"{Possibility}[{Row + 1}, {Col + 1}]";
     }
 
-    public CellPossibilities[] EachElement()
+    public CellPossibilities[] EveryCellPossibilities()
     {
         return new[] { new CellPossibilities(this) };
     }
@@ -231,9 +210,11 @@ public readonly struct CellPossibility : ILinkGraphElement
         return new Cell[] { new(Row, Col) };
     }
 
-    public bool IsSameLoopElement(ILoopElement other)
+    public IPossibilities EveryPossibilities()
     {
-        return other is CellPossibility pc && pc.Equals(this);
+        var result = IPossibilities.NewEmpty();
+        result.Add(Possibility);
+        return result;
     }
 
     public static bool operator ==(CellPossibility left, CellPossibility right)
@@ -244,27 +225,6 @@ public readonly struct CellPossibility : ILinkGraphElement
     public static bool operator !=(CellPossibility left, CellPossibility right)
     {
         return !(left == right);
-    }
-}
-
-public class CellPossibilityColoring : IColorable
-{
-    public CellPossibility CellPossibility { get; }
-    public Coloring Coloring { get; set; }
-    
-    public CellPossibilityColoring(int row, int col, int possibility)
-    {
-        CellPossibility = new CellPossibility(row, col, possibility);
-    }
-
-    public override int GetHashCode()
-    {
-        return CellPossibility.GetHashCode();
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is CellPossibilityColoring pcc && pcc.CellPossibility.Equals(CellPossibility);
     }
 }
 
@@ -295,7 +255,7 @@ public class CellPossibilities
         Possibilities = buffer;
     }
 
-    public CellPossibility[] ToPossibilityCoordinates()
+    public CellPossibility[] ToCellPossibility()
     {
         var result = new CellPossibility[Possibilities.Count];
 

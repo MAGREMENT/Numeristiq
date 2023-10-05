@@ -3,7 +3,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 
-public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : ILoopElement, ILinkGraphElement
+public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 {
     private readonly int _maxLoopSize;
     private readonly HashSet<Loop<T>> _loopsProcessed = new();

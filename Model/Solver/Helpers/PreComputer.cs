@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.CellColoring;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
