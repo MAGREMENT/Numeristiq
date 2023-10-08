@@ -1,9 +1,8 @@
-﻿using System;
-using Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
+﻿using Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph;
 
-public class LinkGraphManager //TODO : Refactor chaining strategies
+public class LinkGraphManager
 {
     public LinkGraph<ILinkGraphElement> ComplexLinkGraph { get; } = new();
     private long _rulesAppliedOnComplex;

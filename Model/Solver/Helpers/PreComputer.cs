@@ -65,7 +65,7 @@ public class PreComputer
         return AlmostLockedSetSearcher.FullGrid(_view);
     }
 
-    private Dictionary<ILinkGraphElement, Coloring> DoColor(ILinkGraphElement start, Coloring firstColor)
+    private Dictionary<ILinkGraphElement, Coloring> DoColor(ILinkGraphElement start, Coloring firstColor) //TODO use color helper
     {
         _view.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
             ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,

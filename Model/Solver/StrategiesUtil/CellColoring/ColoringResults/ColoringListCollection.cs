@@ -13,6 +13,11 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
         _lists[^1].Add(vertex, coloring);
     }
 
+    public bool TryGetColoredElement(T element, out Coloring coloring)
+    {
+        throw new NotImplementedException();
+    }
+
     public void NewStart()
     {
         _lists.Add(new ColoringList<T>());

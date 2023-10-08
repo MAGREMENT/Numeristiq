@@ -18,8 +18,8 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
-        foreach (var coloredVertices in ColorHelper.GetAlgorithm()
-                     .ColoringWithoutRules<CellPossibility, ColoringListCollection<CellPossibility>>(graph))
+        foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
+                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColoringWithoutRules, graph))
         {
             if(coloredVertices.Count <= 1) continue;
             

@@ -9,6 +9,11 @@ public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T>
         Add(element, coloring);
     }
 
+    public bool TryGetColoredElement(T element, out Coloring coloring)
+    {
+        return TryGetValue(element, out coloring);
+    }
+
     public void NewStart()
     {
         
