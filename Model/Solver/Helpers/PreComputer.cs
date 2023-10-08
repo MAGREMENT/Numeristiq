@@ -67,8 +67,10 @@ public class PreComputer
 
     private Dictionary<ILinkGraphElement, Coloring> DoColor(ILinkGraphElement start, Coloring firstColor)
     {
-        _view.GraphManager.Construct();
-        var graph = _view.GraphManager.LinkGraph;
+        _view.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
+            ConstructRule.AlmostNakedPossibilities);
+        var graph = _view.GraphManager.ComplexLinkGraph;
 
         Queue<ILinkGraphElement> queue = new();
         queue.Enqueue(start);

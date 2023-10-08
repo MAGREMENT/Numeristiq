@@ -12,7 +12,8 @@ public class SimpleXCycles : IAlternatingChainType<CellPossibility>
     public IStrategy? Strategy { get; set; }
     public LinkGraph<CellPossibility> GetGraph(IStrategyManager view)
     {
-        return new LinkGraph<CellPossibility>(); //TODO
+        view.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+        return view.GraphManager.SimpleLinkGraph;
     }
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)

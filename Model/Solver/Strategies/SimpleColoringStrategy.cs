@@ -16,11 +16,11 @@ public class SimpleColoringStrategy : AbstractStrategy
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var manager = new LinkGraphManager(strategyManager);
-        manager.Construct(ConstructRule.UnitStrongLink);
-        var graph = manager.LinkGraph;
+        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
+        var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
-        foreach (var coloredVertices in ColorHelper.Color<CellPossibility>(graph))
+        foreach (var coloredVertices in ColorHelper.GetAlgorithm()
+                     .ColoringWithoutRules<CellPossibility, ColoringListCollection<CellPossibility>>(graph))
         {
             if(coloredVertices.Count <= 1) continue;
 
@@ -38,7 +38,7 @@ public class SimpleColoringStrategy : AbstractStrategy
     }
 
     private bool SearchForTwiceInTheSameUnit(IStrategyManager strategyManager,
-        ColoringLists<CellPossibility> cv)
+        ColoringList<CellPossibility> cv)
     {
         return SearchColorForTwiceInTheSameUnit(strategyManager, cv.On, cv.Off) ||
                SearchColorForTwiceInTheSameUnit(strategyManager, cv.Off, cv.On);
@@ -67,7 +67,7 @@ public class SimpleColoringStrategy : AbstractStrategy
     }
 
     private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
-        ColoringLists<CellPossibility> cv)
+        ColoringList<CellPossibility> cv)
     {
         HashSet<CellPossibility> inGraph = new(cv.On);
         inGraph.UnionWith(cv.Off);
@@ -90,12 +90,12 @@ public class SimpleColoringStrategy : AbstractStrategy
 
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringLists<CellPossibility> _vertices;
-    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly ColoringList<CellPossibility> _vertices;
+    private readonly LinkGraph<CellPossibility> _graph;
     private readonly bool _isInvalidColoring;
 
-    public SimpleColoringReportBuilder(ColoringLists<CellPossibility> vertices,
-        LinkGraph<ILinkGraphElement> graph, bool isInvalidColoring = false)
+    public SimpleColoringReportBuilder(ColoringList<CellPossibility> vertices,
+        LinkGraph<CellPossibility> graph, bool isInvalidColoring = false)
     {
         _vertices = vertices;
         _graph = graph;
@@ -170,11 +170,11 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
 
             foreach (var friend in _graph.GetLinks(current, LinkStrength.Strong))
             {
-                if(friend is not CellPossibility pc || !inGraph.Contains(pc)) continue;
+                if(!inGraph.Contains(friend)) continue;
 
-                links.Add(new Link<CellPossibility>(current, pc));
-                inGraph.Remove(pc);
-                queue.Enqueue(pc);
+                links.Add(new Link<CellPossibility>(current, friend));
+                inGraph.Remove(friend);
+                queue.Enqueue(friend);
             }
         }
 

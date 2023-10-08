@@ -5,11 +5,14 @@ namespace Model.Solver.StrategiesUtil.LinkGraph;
 
 public class LinkGraphManager //TODO : Refactor chaining strategies
 {
-    public LinkGraph<ILinkGraphElement> LinkGraph { get; } = new();
+    public LinkGraph<ILinkGraphElement> ComplexLinkGraph { get; } = new();
+    private long _rulesAppliedOnComplex;
+
+    public LinkGraph<CellPossibility> SimpleLinkGraph { get; } = new();
+    private long _rulesAppliedOnSimple;
 
     private readonly IStrategyManager _solver;
-
-    private long _rulesApplied;
+    
     private readonly IConstructRule[] _rules =
     {
         new UnitStrongLinkConstructRule(),
@@ -17,7 +20,8 @@ public class LinkGraphManager //TODO : Refactor chaining strategies
         new UnitWeakLinkConstructRule(),
         new CellWeakLinkConstructRule(),
         new PointingPossibilitiesConstructRule(),
-        new AlmostNakedPossibilitiesConstructRule()
+        new AlmostNakedPossibilitiesConstructRule(),
+        new XYChainSpecificConstructRule()
     };
 
     public LinkGraphManager(IStrategyManager solver)
@@ -25,45 +29,67 @@ public class LinkGraphManager //TODO : Refactor chaining strategies
         _solver = solver;
     }
 
-    public void Construct(ConstructRule rule)
+    public void ConstructComplex(ConstructRule rule)
     {
-        IsOverConstructed(rule);
-        DoConstruct(rule);
+        if(IsOverConstructed(_rulesAppliedOnComplex, rule)) ClearComplex();
+        DoConstructComplex(rule);
     }
 
-    public void Construct(params ConstructRule[] rules)
+    public void ConstructComplex(params ConstructRule[] rules)
     {
-        IsOverConstructed(rules);
+        if(IsOverConstructed(_rulesAppliedOnComplex, rules)) ClearComplex();
         foreach (var rule in rules)
         {
-            DoConstruct(rule);
+            DoConstructComplex(rule);
         }
     }
 
-    public void Construct()
+    public void ConstructSimple(params ConstructRule[] rules)
     {
-        foreach (var rule in Enum.GetValues<ConstructRule>())
+        if(IsOverConstructed(_rulesAppliedOnSimple, rules)) ClearSimple();
+        foreach (var rule in rules)
         {
-            DoConstruct(rule);
+            DoConstructSimple(rule);
         }
     }
 
     public void Clear()
     {
-        LinkGraph.Clear();
-        _rulesApplied = 0;
+        ClearComplex();
+        ClearSimple();
     }
     
-    private void DoConstruct(ConstructRule rule)
+    private void DoConstructComplex(ConstructRule rule)
     {
         int asInt = (int)rule;
-        if(((_rulesApplied >> asInt) & 1) > 0) return;
+        if(((_rulesAppliedOnComplex >> asInt) & 1) > 0) return;
 
-        _rules[asInt].Apply(LinkGraph, _solver);
-        _rulesApplied |= 1L << asInt;
+        _rules[asInt].Apply(ComplexLinkGraph, _solver);
+        _rulesAppliedOnComplex |= 1L << asInt;
     }
 
-    private void IsOverConstructed(params ConstructRule[] rules)
+    private void DoConstructSimple(ConstructRule rule)
+    {
+        int asInt = (int)rule;
+        if(((_rulesAppliedOnSimple >> asInt) & 1) > 0) return;
+
+        _rules[asInt].Apply(SimpleLinkGraph, _solver);
+        _rulesAppliedOnSimple |= 1L << asInt;
+    }
+
+    private void ClearComplex()
+    {
+        ComplexLinkGraph.Clear();
+        _rulesAppliedOnComplex = 0;
+    }
+
+    private void ClearSimple()
+    {
+        SimpleLinkGraph.Clear();
+        _rulesAppliedOnSimple = 0;
+    }
+
+    private bool IsOverConstructed(long rulesApplied, params ConstructRule[] rules)
     {
         var buffer = 0L;
         foreach (var rule in rules)
@@ -71,23 +97,26 @@ public class LinkGraphManager //TODO : Refactor chaining strategies
             buffer |= 1L << (int)rule;
         }
 
-        for (int i = 0; i < _rules.Length; i++)
+        return (buffer | rulesApplied) != buffer;
+
+        /*for (int i = 0; i < _rules.Length; i++)
         {
-            if (((_rulesApplied >> i) & 1) > 0 && ((buffer >> i) & 1) == 0)
-            {
-                Clear();
-                return;
-            }
+            if (((rulesApplied >> i) & 1) > 0 && ((buffer >> i) & 1) == 0) return true;
         }
+
+        return false;*/
     }
 }
 
 public enum ConstructRule
 {
-    UnitStrongLink = 0, CellStrongLink = 1, UnitWeakLink = 2, CellWeakLink = 3, PointingPossibilities = 4, AlmostNakedPossibilities = 5
+    UnitStrongLink = 0, CellStrongLink = 1, UnitWeakLink = 2, CellWeakLink = 3
+    , PointingPossibilities = 4, AlmostNakedPossibilities = 5, XYChainSpecific = 6
 }
 
 public interface IConstructRule
 {
     public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager);
+    
+    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager);
 }

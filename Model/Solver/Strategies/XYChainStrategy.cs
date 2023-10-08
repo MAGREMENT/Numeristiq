@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil;
@@ -17,22 +15,23 @@ public class XYChainStrategy : AbstractStrategy
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var map = new BiValueMap(strategyManager);
+        strategyManager.GraphManager.ConstructSimple(ConstructRule.XYChainSpecific,
+            ConstructRule.CellStrongLink);
+        var graph = strategyManager.GraphManager.SimpleLinkGraph;
         var route = new List<CellPossibility>();
         var visited = new HashSet<CellPossibility>();
 
-        foreach (var start in map)
+        foreach (var start in graph)
         {
-            Search(strategyManager, map, start, route, visited);
+            Search(strategyManager, graph, start, route, visited);
             visited.Clear();
         }
     }
 
-    private void Search(IStrategyManager strategyManager, BiValueMap map, CellPossibility current,
+    private void Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
-
     {
-        CellPossibility friend = map.AssociatedCoordinate(current);
+        CellPossibility friend = graph.GetLinks(current, LinkStrength.Strong).First();
 
         route.Add(current);
         route.Add(friend);
@@ -41,11 +40,11 @@ public class XYChainStrategy : AbstractStrategy
         
         if(friend.Possibility == route[0].Possibility) Process(strategyManager, route);
 
-        foreach (var shared in map.AssociatedCoordinates(friend.Possibility))
+        foreach (var next in graph.GetLinks(friend, LinkStrength.Weak))
         {
-            if (!visited.Contains(shared) && shared.ShareAUnit(current))
+            if (!visited.Contains(next))
             {
-                Search(strategyManager, map, shared, route, visited);
+                Search(strategyManager, graph, next, route, visited);
             }
         }
 
@@ -61,58 +60,6 @@ public class XYChainStrategy : AbstractStrategy
         }
         
         strategyManager.ChangeBuffer.Push(this, new XYChainReportBuilder(visited));
-    }
-}
-
-public class BiValueMap : IEnumerable<CellPossibility>
-{
-    private readonly Dictionary<CellPossibility, CellPossibility> _cells = new();
-    private readonly Dictionary<int, HashSet<CellPossibility>> _map = new();
-
-    public BiValueMap(IStrategyManager strategyManager)
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (strategyManager.PossibilitiesAt(row, col).Count == 2)
-                {
-                    int[] possibilities = strategyManager.PossibilitiesAt(row, col).ToArray();
-                    
-                    CellPossibility first = new CellPossibility(row, col, possibilities[0]);
-                    CellPossibility second = new CellPossibility(row, col, possibilities[1]);
-
-                    _cells.Add(first, second);
-                    _cells.Add(second, first);
-                    
-                    if (!_map.TryAdd(possibilities[0], new HashSet<CellPossibility> { first }))
-                        _map[possibilities[0]].Add(first);
-                    if (!_map.TryAdd(possibilities[1], new HashSet<CellPossibility> { second }))
-                        _map[possibilities[1]].Add(second);
-                }
-            }
-        }
-    }
-
-    public IEnumerator<CellPossibility> GetEnumerator()
-    {
-        return _cells.Keys.GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public HashSet<CellPossibility> AssociatedCoordinates(int possibility)
-    {
-        return _map.TryGetValue(possibility, out var result) ?
-            result : new HashSet<CellPossibility>();
-    }
-
-    public CellPossibility AssociatedCoordinate(CellPossibility coord)
-    {
-        return _cells[coord];
     }
 }
 

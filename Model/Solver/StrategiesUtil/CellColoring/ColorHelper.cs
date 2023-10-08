@@ -1,67 +1,10 @@
-﻿using System.Collections.Generic;
-using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
-using Model.Solver.StrategiesUtil.LinkGraph;
+﻿using Model.Solver.StrategiesUtil.CellColoring.ColoringAlgorithms;
 
 namespace Model.Solver.StrategiesUtil.CellColoring;
 
 public static class ColorHelper //TODO use more + add parent history
 {
-    //TODO see if possible to do without ColoredElement
-    public static List<ColoringLists<T>> Color<T>(LinkGraph<ILinkGraphElement> graph) 
-    {
-        var result = new List<ColoringLists<T>>();
-        HashSet<ILinkGraphElement> visited = new();
+    private static readonly IColoringAlgorithm Algo = new QueueColoringAlgorithm();
 
-        foreach (var start in graph)
-        {
-            if (visited.Contains(start)) continue;
-
-            ColoringLists<T> cv = new();
-            cv.Add((T)start, Coloring.On);
-            visited.Add(start);
-
-            Queue<ColoredElement> queue = new();
-            queue.Enqueue(new ColoredElement(start, Coloring.On));
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
-
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
-                {
-                    if (visited.Contains(friend)) continue;
-
-                    cv.Add((T)friend, opposite);
-                    visited.Add(friend);
-                    queue.Enqueue(new ColoredElement(friend, opposite));
-                }
-                
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
-                {
-                    if (visited.Contains(friend)) continue;
-
-                    cv.Add((T)friend, opposite);
-                    visited.Add(friend);
-                    queue.Enqueue(new ColoredElement(friend, opposite));
-                }
-            }
-
-            result.Add(cv);
-        }
-
-        return result;
-    }
-}
-
-public class ColoredElement
-{
-    public ColoredElement(ILinkGraphElement element, Coloring coloring)
-    {
-        Element = element;
-        Coloring = coloring;
-    }
-
-    public ILinkGraphElement Element { get; }
-    public Coloring Coloring { get; }
+    public static IColoringAlgorithm GetAlgorithm() => Algo;
 }

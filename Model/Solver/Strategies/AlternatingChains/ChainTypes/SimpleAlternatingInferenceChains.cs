@@ -14,63 +14,9 @@ public class SimpleAlternatingInferenceChains : IAlternatingChainType<CellPossib
 
     public LinkGraph<CellPossibility> GetGraph(IStrategyManager view)
     {
-        LinkGraph<CellPossibility> graph = new();
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                foreach (var possibility in view.PossibilitiesAt(row, col))
-                {
-                    CellPossibility current = new CellPossibility(row, col, possibility);
-                    
-                    //Row
-                    var ppir = view.RowPositionsAt(row, possibility);
-                    var strength = ppir.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var c in ppir)
-                    {
-                        if (c != col)
-                        {
-                            graph.AddLink(current, new CellPossibility(row, c, possibility), strength);
-                        }
-                    }
-
-
-                    //Col
-                    var ppic = view.ColumnPositionsAt(col, possibility);
-                    strength = ppic.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var r in ppic)
-                    {
-                        if (r != row)
-                        {
-                            graph.AddLink(current, new CellPossibility(r, col, possibility), strength);
-                        }
-                    }
-
-
-                    //MiniGrids
-                    var ppimn = view.MiniGridPositionsAt(row / 3, col / 3, possibility);
-                    strength = ppimn.Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var pos in ppimn)
-                    {
-                        if (!(pos.Row == row && pos.Col == col))
-                        {
-                            graph.AddLink(current, new CellPossibility(pos.Row, pos.Col, possibility), strength);
-                        }
-                    }
-
-                    strength = view.PossibilitiesAt(row, col).Count == 2 ? LinkStrength.Strong : LinkStrength.Weak;
-                    foreach (var pos in view.PossibilitiesAt(row, col))
-                    {
-                        if (pos != possibility)
-                        {
-                            graph.AddLink(current, new CellPossibility(row, col, pos), strength);
-                        }
-                    }
-                }
-            }
-        }
-
-        return graph;
+        view.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+        return view.GraphManager.SimpleLinkGraph;
     }
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)

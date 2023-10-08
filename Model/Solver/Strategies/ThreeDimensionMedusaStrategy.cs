@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.CellColoring;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
@@ -14,11 +15,11 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var manager = new LinkGraphManager(strategyManager);
-        manager.Construct(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);
-        var graph = manager.LinkGraph;
+        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);
+        var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
-        foreach (var coloredVertices in ColorHelper.Color<CellPossibility>(graph))
+        foreach (var coloredVertices in ColorHelper.GetAlgorithm()
+                     .ColoringWithoutRules<CellPossibility, ColoringListCollection<CellPossibility>>(graph))
         {
             if(coloredVertices.Count <= 1) continue;
             
@@ -38,8 +39,8 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         }
     }
 
-    private bool SearchColor(IStrategyManager strategyManager, List<CellPossibility> toSearch,
-        List<CellPossibility> other, HashSet<CellPossibility> inGraph)
+    private bool SearchColor(IStrategyManager strategyManager, IReadOnlyList<CellPossibility> toSearch,
+        IReadOnlyList<CellPossibility> other, HashSet<CellPossibility> inGraph)
     {
         GridPositions[] seen = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
         
@@ -103,8 +104,8 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         return false;
     }
 
-    private void SearchMix(IStrategyManager strategyManager, List<CellPossibility> one,
-        List<CellPossibility> two, HashSet<CellPossibility> inGraph)
+    private void SearchMix(IStrategyManager strategyManager, IReadOnlyList<CellPossibility> one,
+        IReadOnlyList<CellPossibility> two, HashSet<CellPossibility> inGraph)
     {
         foreach (var first in one)
         {

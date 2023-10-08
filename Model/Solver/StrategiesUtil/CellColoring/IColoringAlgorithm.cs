@@ -4,6 +4,7 @@ namespace Model.Solver.StrategiesUtil.CellColoring;
 
 public interface IColoringAlgorithm
 {
-    R SimpleColoring<T, R>(LinkGraph<T> graph) where R : IColoringResult<T>, new() where T : notnull;
-    R ComplexColoring<T, R>(LinkGraph<T> graph) where R : IColoringResult<T>, new() where T : notnull;
+    TR ColoringWithoutRules<TB, TR>(LinkGraph<TB> graph) where TR : IColoringResult<TB>, new() where TB : ILinkGraphElement;
+    TR SimpleColoring<TB, TR>(LinkGraph<TB> graph) where TR : IColoringResult<TB>, new() where TB : ILinkGraphElement;
+    TR ComplexColoring<TB, TR>(LinkGraph<TB> graph) where TR : IColoringResult<TB>, new() where TB : ILinkGraphElement;
 }

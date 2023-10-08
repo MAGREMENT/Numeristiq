@@ -117,4 +117,9 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
             }
         }
     }
+
+    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    {
+        
+    }
 }

@@ -9,6 +9,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
+//TODO => Documentation + Explanation + Review highlighting for each strategy
 public class Solver : IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;

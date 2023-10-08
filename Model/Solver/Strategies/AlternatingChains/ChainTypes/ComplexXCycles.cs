@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
+public class ComplexXCycles : IAlternatingChainType<ILinkGraphElement>
 {
     public const string OfficialName = "X-Cycles";
     
@@ -14,9 +14,9 @@ public class GroupedXCycles : IAlternatingChainType<ILinkGraphElement>
     
     public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager view)
     {
-        view.GraphManager.Construct(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
+        view.GraphManager.ConstructComplex(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
             ConstructRule.PointingPossibilities);
-        return view.GraphManager.LinkGraph;
+        return view.GraphManager.ComplexLinkGraph;
     }
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<ILinkGraphElement> loop)

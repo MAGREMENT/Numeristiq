@@ -7,8 +7,6 @@ using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Solver.Strategies.AlternatingChains.ChainTypes;
 using Model.Solver.Strategies.ForcingNets;
-using Model.Solver.Strategies.MultiSectorLockedSets;
-using Model.Solver.Strategies.MultiSectorLockedSets.SearchAlgorithms;
 using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -50,11 +48,11 @@ public class StrategyLoader
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy(5)},
-        {GroupedXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new GroupedXCycles(),
+        {ComplexXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexXCycles(),
             new AlternatingChainAlgorithmV2<ILinkGraphElement>(20))},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
-        {CompleteAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new CompleteAlternatingInferenceChains(),
+        {ComplexAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexAlternatingInferenceChains(),
             new AlternatingChainAlgorithmV2<ILinkGraphElement>(15))},
         {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
@@ -63,8 +61,6 @@ public class StrategyLoader
         {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(1)},
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
-        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(
-            new MonoLineAlgorithm())},
         {GurthTheorem.OfficialName, new GurthTheorem()},
         {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new PossibilitiesGroupSearcher())}
     };
@@ -102,11 +98,10 @@ public class StrategyLoader
         new(ThreeDimensionMedusaStrategy.OfficialName, true),
         new(WXYZWingStrategy.OfficialName, true),
         new(AlignedPairExclusionStrategy.OfficialName, true),
-        new(GroupedXCycles.OfficialName, true),
+        new(ComplexXCycles.OfficialName, true),
         new(SueDeCoqStrategy.OfficialName, true),
-        new(MultiSectorLockedSetsStrategy.OfficialName, true),
         new(AlmostLockedSetsStrategy.OfficialName, true),
-        new(CompleteAlternatingInferenceChains.OfficialName, false),
+        new(ComplexAlternatingInferenceChains.OfficialName, false),
         new(DigitForcingNetStrategy.OfficialName, true),
         new(CellForcingNetStrategy.OfficialName, true),
         new(UnitForcingNetStrategy.OfficialName, true),

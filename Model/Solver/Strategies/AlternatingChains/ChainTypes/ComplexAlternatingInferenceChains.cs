@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class CompleteAlternatingInferenceChains : IAlternatingChainType<ILinkGraphElement>
+public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGraphElement>
 {
     public const string OfficialName = "Alternating Inference Chain";
     
@@ -13,8 +13,10 @@ public class CompleteAlternatingInferenceChains : IAlternatingChainType<ILinkGra
     public IStrategy? Strategy { get; set; }
     public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager view)
     {
-        view.GraphManager.Construct();
-        return view.GraphManager.LinkGraph;
+        view.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
+            ConstructRule.AlmostNakedPossibilities);
+        return view.GraphManager.ComplexLinkGraph;
     }
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<ILinkGraphElement> loop)

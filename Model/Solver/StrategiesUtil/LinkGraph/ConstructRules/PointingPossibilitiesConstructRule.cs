@@ -20,7 +20,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
             }
         }
     }
-    
+
+    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    {
+        
+    }
+
     private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, LinkGraph<ILinkGraphElement> linkGraph,
         IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
