@@ -7,13 +7,6 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
 {
     private readonly Dictionary<T, HashSet<T>>[] _links = { new(), new() };
 
-    public LinkGraph() {}
-
-    private LinkGraph(Dictionary<T, HashSet<T>>[] links)
-    {
-        _links = links;
-    }
-
     public void AddLink(T one, T two, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
         var index = (int)strength - 1;

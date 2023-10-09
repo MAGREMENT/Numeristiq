@@ -144,7 +144,14 @@ public readonly struct Cell
     }
 }
 
-public readonly struct CellPossibility : ILinkGraphElement
+public interface ICellPossibility
+{
+    public int Possibility { get; }
+    public int Row { get; }
+    public int Col { get; } 
+}
+
+public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
 {
     public int Possibility { get; }
     public int Row { get; }
@@ -191,8 +198,8 @@ public readonly struct CellPossibility : ILinkGraphElement
 
     public override bool Equals(object? obj)
     {
-        if (obj is not CellPossibility pc) return false;
-        return pc.Possibility == Possibility && pc.Row == Row && pc.Col == Col;
+        return (obj is CellPossibility cp && cp == this) ||
+               (obj is ICellPossibility icp && icp.Possibility == Possibility && icp.Row == Row && icp.Col == Col);
     }
 
     public override string ToString()

@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil.CellColoring;
 
-public static class ColorHelper //TODO use more + add parent history
+public static class ColorHelper //TODO add parent history
 {
     public static IColoringAlgorithm Algorithm { get; } = new QueueColoringAlgorithm();
 

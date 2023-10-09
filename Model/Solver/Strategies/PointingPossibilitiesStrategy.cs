@@ -117,7 +117,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         }
         else throw new Exception("Error while backtracking pointing possibilities");
 
-        return $"{_number} is present only in the cells {_miniPos} in mini grid {_miniPos.MiniGridNumber()}, so" +
+        return $"{_number} is present only in the cells {_miniPos} in mini grid {_miniPos.MiniGridNumber() + 1}, so" +
                $" it can be removed from any other cells in {unit.ToString().ToLower()} {lineNumber}";
     }
 }

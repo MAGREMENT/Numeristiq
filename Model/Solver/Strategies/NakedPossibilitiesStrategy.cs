@@ -315,6 +315,6 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
     private string Explanation()
     {
         return $"The cells {_miniPos} only contains the possibilities ({_possibilities}). Any other cell in" +
-               $" mini grid {_miniPos.MiniGridNumber()} cannot contains these possibilities";
+               $" mini grid {_miniPos.MiniGridNumber() + 1} cannot contains these possibilities";
     }
 }

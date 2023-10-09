@@ -6,7 +6,7 @@ using Model.Solver.StrategiesUtil;
 
 namespace SudokuSolver.Utils;
 
-public class SolverBackgroundManager
+public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTargetPossibility
 {
     private readonly Brush _strongLinkBrush = Brushes.Indigo;
     private const double LinkOffset = 20;

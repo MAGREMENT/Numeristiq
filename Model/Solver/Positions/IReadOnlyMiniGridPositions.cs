@@ -30,6 +30,15 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
     
     public static MiniGridPositions DefaultOr(IReadOnlyMiniGridPositions one, IReadOnlyMiniGridPositions two)
     {
-        return new MiniGridPositions(0, 0); //TODO
+        var result = new MiniGridPositions(one.MiniGridNumber() / 3, one.MiniGridNumber() % 3);
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                if (one.Peek(i, j) || two.Peek(i, j)) result.Add(i, j);
+            }
+        }
+
+        return result;
     }
 }

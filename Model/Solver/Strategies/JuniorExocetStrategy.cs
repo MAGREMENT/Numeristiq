@@ -17,7 +17,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var jes = JuniorExocet.SearchFullGrid(strategyManager);
+        var jes = strategyManager.PreComputer.JuniorExocet();
         
         foreach (var je in jes)
         {
@@ -192,7 +192,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, je.Target2.Row, je.Target2.Col);
         }
         
-        //Rule 4 -> TODO add in LinkGraph
+        //Rule 4 -> Added In LinkGraph
         
         //Rule 5
         foreach (var sCell in je.SPossibilities)
@@ -229,7 +229,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         //Incompatibility test TODO
         if (!strategyManager.UniquenessDependantStrategiesAllowed) return; 
 
-        //---Known true digits rule---
+        //---Known true digits rules---
 
         //Rule 7
 

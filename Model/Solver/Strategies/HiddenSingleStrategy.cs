@@ -70,7 +70,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
             else
             {
                 var miniGridPositions = snapshot.MiniGridPositionsAt(change.Row / 3, change.Column / 3, change.Number);
-                if (miniGridPositions.Count == 1) where = $"mini grid {miniGridPositions.MiniGridNumber()}";
+                if (miniGridPositions.Count == 1) where = $"mini grid {miniGridPositions.MiniGridNumber() + 1}";
                 else throw new Exception("Error while backtracking hidden singles");
             }
 

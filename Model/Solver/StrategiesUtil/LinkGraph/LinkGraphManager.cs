@@ -20,18 +20,13 @@ public class LinkGraphManager
         new CellWeakLinkConstructRule(),
         new PointingPossibilitiesConstructRule(),
         new AlmostNakedPossibilitiesConstructRule(),
-        new XYChainSpecificConstructRule()
+        new XYChainSpecificConstructRule(),
+        new JuniorExocetConstructRule()
     };
 
     public LinkGraphManager(IStrategyManager solver)
     {
         _solver = solver;
-    }
-
-    public void ConstructComplex(ConstructRule rule)
-    {
-        if(IsOverConstructed(_rulesAppliedOnComplex, rule)) ClearComplex();
-        DoConstructComplex(rule);
     }
 
     public void ConstructComplex(params ConstructRule[] rules)
@@ -97,20 +92,14 @@ public class LinkGraphManager
         }
 
         return (buffer | rulesApplied) != buffer;
-
-        /*for (int i = 0; i < _rules.Length; i++)
-        {
-            if (((rulesApplied >> i) & 1) > 0 && ((buffer >> i) & 1) == 0) return true;
-        }
-
-        return false;*/
     }
 }
 
 public enum ConstructRule
 {
-    UnitStrongLink = 0, CellStrongLink = 1, UnitWeakLink = 2, CellWeakLink = 3
-    , PointingPossibilities = 4, AlmostNakedPossibilities = 5, XYChainSpecific = 6
+    UnitStrongLink = 0, CellStrongLink = 1, UnitWeakLink = 2, CellWeakLink = 3, 
+    PointingPossibilities = 4, AlmostNakedPossibilities = 5, XYChainSpecific = 6,
+    JuniorExocet = 7
 }
 
 public interface IConstructRule

@@ -15,7 +15,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
     {
         view.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
             ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
-            ConstructRule.AlmostNakedPossibilities);
+            ConstructRule.AlmostNakedPossibilities, ConstructRule.JuniorExocet);
         return view.GraphManager.ComplexLinkGraph;
     }
 

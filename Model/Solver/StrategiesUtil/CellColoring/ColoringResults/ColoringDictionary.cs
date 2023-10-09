@@ -6,7 +6,7 @@ public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T>
 {
     public void AddColoredElement(T element, Coloring coloring)
     {
-        Add(element, coloring);
+        TryAdd(element, coloring);
     }
 
     public bool TryGetColoredElement(T element, out Coloring coloring)

@@ -198,7 +198,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
     public int MiniGridNumber()
     {
-        return _startRow + _startCol / 3 + 1;
+        return _startRow + _startCol / 3;
     }
     
     public MiniGridPositions Or(IReadOnlyMiniGridPositions pos)

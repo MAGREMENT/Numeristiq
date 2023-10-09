@@ -187,31 +187,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         }
     }
 
-    public static string StateToSudokuString(string state, SudokuTranslationType type)
-    {
-        var s = new Sudoku();
-        int cursor = 0;
-        int n = -1;
-        
-        while (cursor < state.Length)
-        {
-            char current = state[cursor];
-            if (current is 'd' or 'p')
-            {
-                n++;
-
-                if (current == 'd')
-                {
-                    s[n / 9, n % 9] = state[cursor + 1] - '0';
-                }
-            }
-
-            cursor++;
-        }
-
-        return SudokuTranslator.Translate(s, type);
-    }
-    
     //PossibilityHolder-------------------------------------------------------------------------------------------------
     
     public IReadOnlyPossibilities PossibilitiesAt(int row, int col)

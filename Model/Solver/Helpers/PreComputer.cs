@@ -1,23 +1,26 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
 
 public class PreComputer
 {
-    private readonly IStrategyManager _view;
+    private readonly IStrategyManager _strategyManager;
 
     private List<AlmostLockedSet>? _als;
 
-    private readonly Dictionary<ILinkGraphElement, Coloring>?[,,] _onColoring
-        = new Dictionary<ILinkGraphElement, Coloring>[9, 9, 9];
+    private readonly ColoringDictionary<ILinkGraphElement>?[,,] _onColoring
+        = new ColoringDictionary<ILinkGraphElement>[9, 9, 9];
     private bool _wasPreColorUsed;
 
-    public PreComputer(IStrategyManager view)
+    private List<JuniorExocet>? _jes;
+
+    public PreComputer(IStrategyManager strategyManager)
     {
-        _view = view;
+        _strategyManager = strategyManager;
     }
 
     public void Reset()
@@ -38,6 +41,8 @@ public class PreComputer
             }
             _wasPreColorUsed = false;
         }
+
+        _jes = null;
     }
 
     public List<AlmostLockedSet> AlmostLockedSets()
@@ -46,7 +51,7 @@ public class PreComputer
         return _als;
     }
 
-    public Dictionary<ILinkGraphElement, Coloring> OnColoring(int row, int col, int possibility)
+    public ColoringDictionary<ILinkGraphElement> OnColoring(int row, int col, int possibility)
     {
         _wasPreColorUsed = true;
 
@@ -55,126 +60,35 @@ public class PreComputer
         return _onColoring[row, col, possibility - 1]!;
     }
     
-    public Dictionary<ILinkGraphElement, Coloring> OffColoring(int row, int col, int possibility)
+    public ColoringDictionary<ILinkGraphElement> OffColoring(int row, int col, int possibility)
     {
         return DoColor(new CellPossibility(row, col, possibility), Coloring.Off);
     }
 
-    private List<AlmostLockedSet> DoAlmostLockedSets()
+    public List<JuniorExocet> JuniorExocet()
     {
-        return AlmostLockedSetSearcher.FullGrid(_view);
+        _jes ??= DoJuniorExocet();
+        return _jes;
     }
 
-    private Dictionary<ILinkGraphElement, Coloring> DoColor(ILinkGraphElement start, Coloring firstColor) //TODO use color helper
+    private List<AlmostLockedSet> DoAlmostLockedSets()
     {
-        _view.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+        return AlmostLockedSetSearcher.FullGrid(_strategyManager);
+    }
+
+    private ColoringDictionary<ILinkGraphElement> DoColor(ILinkGraphElement start, Coloring firstColor)
+    {
+        _strategyManager.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
             ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
-            ConstructRule.AlmostNakedPossibilities);
-        var graph = _view.GraphManager.ComplexLinkGraph;
+            ConstructRule.AlmostNakedPossibilities, ConstructRule.JuniorExocet);
+        var graph = _strategyManager.GraphManager.ComplexLinkGraph;
 
-        Queue<ILinkGraphElement> queue = new();
-        queue.Enqueue(start);
+        return ColorHelper.ColorFromStart<ILinkGraphElement, ColoringDictionary<ILinkGraphElement>>(
+            ColorHelper.Algorithm.ComplexColoring, graph, start, firstColor);
+    }
 
-        Dictionary<ILinkGraphElement, Coloring> result = new() { { start, firstColor } };
-
-        while (queue.Count > 0)
-        {
-            var current = queue.Dequeue();
-            Coloring opposite = result[current] == Coloring.On ? Coloring.Off : Coloring.On;
-
-            foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
-            {
-                if (!result.ContainsKey(friend))
-                {
-                    result[friend] = opposite;
-                    queue.Enqueue(friend);
-                }
-            }
-
-            if (opposite == Coloring.Off)
-            {
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
-                {
-                    if (!result.ContainsKey(friend))
-                    {
-                        result[friend] = opposite;
-                        queue.Enqueue(friend);
-                    }
-                }
-            }
-            else if (current is CellPossibility pos)
-            {
-                CellPossibility? row = null;
-                bool rowB = true;
-                CellPossibility? col = null;
-                bool colB = true;
-                CellPossibility? mini = null;
-                bool miniB = true;
-            
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Weak))
-                {
-                    if (friend is not CellPossibility friendPos) continue;
-                    if (rowB && friendPos.Row == pos.Row)
-                    {
-                        if (result.TryGetValue(friend, out var coloring))
-                        {
-                            if (coloring == Coloring.On) rowB = false;
-                        }
-                        else
-                        {
-                            if (row is null) row = friendPos;
-                            else rowB = false;  
-                        }
-                    
-                    }
-
-                    if (colB && friendPos.Col == pos.Col)
-                    {
-                        if (result.TryGetValue(friend, out var coloring))
-                        {
-                            if (coloring == Coloring.On) colB = false;
-                        }
-                        else
-                        {
-                            if (col is null) col = friendPos;
-                            else colB = false;
-                        }
-                    }
-
-                    if (miniB && friendPos.Row / 3 == pos.Row / 3 && friendPos.Col / 3 == pos.Col / 3)
-                    {
-                        if (result.TryGetValue(friend, out var coloring))
-                        {
-                            if (coloring == Coloring.On) miniB = false;
-                        }
-                        else
-                        {
-                            if (mini is null) mini = friendPos;
-                            else miniB = false;
-                        }
-                    }
-                }
-
-                if (row is not null && rowB)
-                {
-                    result[row] = Coloring.On;
-                    queue.Enqueue(row);
-                }
-
-                if (col is not null && colB)
-                {
-                    result[col] = Coloring.On;
-                    queue.Enqueue(col);
-                }
-
-                if (mini is not null && miniB)
-                {
-                    result[mini] = Coloring.On;
-                    queue.Enqueue(mini);
-                }
-            }
-        }
-
-        return result;
+    private List<JuniorExocet> DoJuniorExocet()
+    {
+        return StrategiesUtil.JuniorExocet.SearchFullGrid(_strategyManager);
     }
 }

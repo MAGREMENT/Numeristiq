@@ -21,6 +21,12 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
 
     public static LinePositions DefaultOr(IReadOnlyLinePositions one, IReadOnlyLinePositions two)
     {
-        return new LinePositions(); //TODO
+        var result = new LinePositions();
+        for (int i = 0; i < 9; i++)
+        {
+            if (one.Peek(i) || two.Peek(i)) result.Add(i);
+        }
+
+        return result;
     }
 }
