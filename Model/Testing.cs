@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
@@ -14,11 +15,61 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        FullSudokuBankTest("OnlineBank3.txt");
-        
+        FullSudokuBankTest("OnlineBank2.txt");
+
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
         Console.WriteLine($"Time taken : {((double) end - start) / 1000}s");
+    }
+
+    private static void SetCombination(List<int> one, List<int> two, int pos, bool first)
+    {
+        if ((first && one.Count >= 5) || (!first && two.Count >= 5)) return;
+        for (int i = pos; i < 9; i++)
+        {
+            if (first)
+            {
+                var oneCopy1 = new List<int>(one);
+                var twoCopy1 = new List<int>(two);
+                var oneCopy2 = new List<int>(one);
+                var twoCopy2 = new List<int>(two);
+                
+                oneCopy1.Add(i);
+                oneCopy2.Add(i);
+                
+                SetCombination(oneCopy1, twoCopy1, i + 1, true);
+                SetCombination(oneCopy2, twoCopy2, 0, false);
+            }
+            else
+            {
+                var oneCopy = new List<int>(one);
+                var twoCopy = new List<int>(two);
+                
+                twoCopy.Add(i);
+                
+                if (Math.Abs(oneCopy.Count - twoCopy.Count) <= 2) Console.WriteLine(ToString(oneCopy, twoCopy));
+                
+                SetCombination(oneCopy, twoCopy, i + 1, false);
+            }
+        }
+    }
+
+    private static string ToString(List<int> one, List<int> two)
+    {
+        var builder = new StringBuilder();
+        foreach (var n in one)
+        {
+            builder.Append(n + " ");
+        }
+
+        builder.Append("--- ");
+
+        foreach (var n in two)
+        {
+            builder.Append(n + " ");
+        }
+
+        return builder.ToString();
     }
 
     private static void SharedSeenCellSearcherCompare(ISharedSeenCellSearcher one, ISharedSeenCellSearcher two)

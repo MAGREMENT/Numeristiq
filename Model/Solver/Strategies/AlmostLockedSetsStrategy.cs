@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibilities;
@@ -15,7 +14,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
     {
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager) //TODO optimize
+    public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var allAls = strategyManager.PreComputer.AlmostLockedSets();
 
@@ -29,7 +28,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                 if (one.HasAtLeastOneCoordinateInCommon(two)) continue;
 
                 var restrictedCommons = RestrictedCommons(strategyManager, one, two);
-                if (restrictedCommons.Count == 0) continue;
+                if (restrictedCommons.Count is 0 or > 2) continue;
 
                 foreach (var restrictedCommon in restrictedCommons)
                 {
@@ -50,7 +49,10 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                                 coords.Add(twoCoord);
                         }
                         
-                        ProcessOneRestrictedCommon(strategyManager, coords, possibility);
+                        foreach (var coord in Cells.SharedSeenCells(coords))
+                        {
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                        }
                     }
                 }
 
@@ -66,7 +68,10 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                             if (strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) where.Add(coord);
                         }
                         
-                        ProcessTwoRestrictedCommon(strategyManager, where, possibility);
+                        foreach (var coord in Cells.SharedSeenCells(where))
+                        {
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                        }
                     }
                     
                     foreach (var possibility in two.Possibilities)
@@ -79,71 +84,15 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                             if (strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) where.Add(coord);
                         }
                         
-                        ProcessTwoRestrictedCommon(strategyManager, where, possibility);
+                        foreach (var coord in Cells.SharedSeenCells(where))
+                        {
+                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                        }
                     }
                 }
 
                 if(strategyManager.ChangeBuffer.Push(this, new AlmostLockedSetsReportBuilder(one, two))) return;
             }
-        }
-    }
-
-    private void ProcessTwoRestrictedCommon(IStrategyManager strategyManager, List<Cell> coords, int possibility)
-    {
-        bool shareRow = true;
-        bool shareCol = true;
-        bool shareMini = true;
-
-        var first = coords[0];
-        foreach (var coord in coords)
-        {
-            if (coord.Row != first.Row) shareRow = false;
-            if (coord.Col != first.Col) shareCol = false;
-            if (!(coord.Row / 3 == first.Row / 3 && coord.Col / 3 == first.Col / 3)) shareMini = false;
-        }
-
-        if (shareRow)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                Cell current = new Cell(first.Row, col);
-                if(coords.Contains(current)) continue;
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, first.Row, col);
-            }
-        }
-        
-        if (shareCol)
-        {
-            for (int row = 0; row < 9; row++)
-            {
-                Cell current = new Cell(row, first.Col);
-                if(coords.Contains(current)) continue;
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, first.Col);
-            }
-        }
-        
-        if (shareMini)
-        {
-            for (int gridRow = 0; gridRow < 3; gridRow++)
-            {
-                for (int gridCol = 0; gridCol < 3; gridCol++)
-                {
-                    int row = first.Row / 3 * 3 + gridRow;
-                    int col = first.Col / 3 * 3 + gridCol;
-                    
-                    Cell current = new Cell(row, col);
-                    if(coords.Contains(current)) continue;
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                }
-            }
-        }
-    }
-
-    private void ProcessOneRestrictedCommon(IStrategyManager strategyManager, List<Cell> coords, int possibility)
-    {
-        foreach (var coord in Cells.SharedSeenCells(coords))
-        {
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
         }
     }
 
@@ -155,14 +104,13 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
         {
             if (!two.Possibilities.Peek(possibility)) continue;
 
-            if (IsRestricted(strategyManager, one, two, possibility)) result.Add(possibility);
+            if (IsPossibilityRestricted(strategyManager, one, two, possibility)) result.Add(possibility);
         }
 
         return result;
     }
 
-    //Both als have to share the possibility for this function to work
-    private bool IsRestricted(IStrategyManager strategyManager, AlmostLockedSet one, AlmostLockedSet two,
+    private bool IsPossibilityRestricted(IStrategyManager strategyManager, AlmostLockedSet one, AlmostLockedSet two,
         int possibility)
     {
         foreach (var oneCoord in one.Coordinates)

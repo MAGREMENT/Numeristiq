@@ -13,15 +13,21 @@ public class PatternOverlayStrategy : AbstractStrategy
     public const string OfficialName = "Pattern Overlay";
 
     private readonly int _maxCombinationSize;
+    private readonly int _maxPatternNumber;
 
-    public PatternOverlayStrategy(int maxCombinationSize) : base(OfficialName, StrategyDifficulty.Extreme)
+    public PatternOverlayStrategy(int maxCombinationSize, int maxPatternNumber) : base(OfficialName, StrategyDifficulty.Extreme)
     {
         _maxCombinationSize = maxCombinationSize;
+        _maxPatternNumber = maxPatternNumber;
     }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var allPatterns = GetPatterns(strategyManager);
+        foreach (var p in allPatterns)
+        {
+            if (p.Count > _maxPatternNumber) return;
+        }
 
         for (int number = 1; number <= 9; number++)
         {

@@ -4,16 +4,10 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// Hidden possibilities happens when n candidates are limited to n cells in a unit. In that case, each cell must have
-/// one of the n candidates as a solution. Therefor, any other possibilities in those cells can be removed. As a side note,
-/// not every possibility has to be present in every cell.
-/// </summary>
-public class HiddenPossibilitiesStrategy : AbstractStrategy
+public class HiddenSetStrategy : AbstractStrategy
 {
     public const string OfficialNameForType2 = "Hidden Double";
     public const string OfficialNameForType3 = "Hidden Triple";
@@ -21,7 +15,7 @@ public class HiddenPossibilitiesStrategy : AbstractStrategy
 
     private readonly int _type;
 
-    public HiddenPossibilitiesStrategy(int type) : base("", StrategyDifficulty.None)
+    public HiddenSetStrategy(int type) : base("", StrategyDifficulty.None)
     {
         _type = type;
         switch (type)
@@ -177,32 +171,26 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var coords = new List<CellPossibility>();
-        foreach (var possibility in _possibilities)
-        {
-            foreach (var other in _linePos)
-            {
-                switch (_unit)
-                {
-                    case Unit.Row :
-                        if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
-                                coords.Add(new CellPossibility(_unitNumber, other, possibility));
-                        break;
-                    case Unit.Column :
-                        if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
-                                coords.Add(new CellPossibility(other, _unitNumber, possibility));
-                        break;
-                }  
-            }
-        }
-
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            foreach (var coord in coords)
+            foreach (var possibility in _possibilities)
             {
-                lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                foreach (var other in _linePos)
+                {
+                    switch (_unit)
+                    {
+                        case Unit.Row :
+                            if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
+                                lighter.HighlightPossibility(possibility, _unitNumber, other, ChangeColoration.CauseOffOne);
+                            break;
+                        case Unit.Column :
+                            if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
+                                lighter.HighlightPossibility(possibility, other, _unitNumber, ChangeColoration.CauseOffOne);
+                            break;
+                    }  
+                }
             }
-            
+
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
@@ -227,24 +215,17 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var coords = new List<CellPossibility>();
-        foreach (var possibility in _possibilities)
-        {
-            foreach (var pos in _miniPos)
-            {
-                if(snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
-                    coords.Add(new CellPossibility(pos, possibility));
-            }
-        }
-        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            foreach (var coord in coords)
+            foreach (var possibility in _possibilities)
             {
-                lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
-                
+                foreach (var pos in _miniPos)
+                {
+                    if (snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
+                        lighter.HighlightPossibility(possibility, pos.Row, pos.Col, ChangeColoration.CauseOffOne);
+                }
             }
-            
+
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }

@@ -8,6 +8,8 @@ namespace Model.Solver;
 
 public interface IStrategyManager : IPossibilitiesHolder
 { 
+    bool LogsManaged { get; }
+    
     bool AddSolution(int number, int row, int col, IStrategy strategy);
 
     bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
@@ -18,7 +20,7 @@ public interface IStrategyManager : IPossibilitiesHolder
     
     PreComputer PreComputer { get; }
 
-    public bool UniquenessDependantStrategiesAllowed { get; }
+    bool UniquenessDependantStrategiesAllowed { get; }
 }
 
 

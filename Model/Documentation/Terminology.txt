@@ -1,0 +1,6 @@
+Unit : A row, a column, or a box. "Mini grid" is often used here to describe a box.
+
+Possibility : A number that can be the solution of a specific cell. "Candidate" is a synonym.
+
+Locked Set : N cells containing N possibilities in common. Each possibility must be the solution of one of those cells.
+    Not every cell has to contain every possibility.

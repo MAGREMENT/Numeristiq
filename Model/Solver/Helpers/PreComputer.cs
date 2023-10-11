@@ -84,7 +84,7 @@ public class PreComputer
         var graph = _strategyManager.GraphManager.ComplexLinkGraph;
 
         return ColorHelper.ColorFromStart<ILinkGraphElement, ColoringDictionary<ILinkGraphElement>>(
-            ColorHelper.Algorithm.ComplexColoring, graph, start, firstColor);
+            ColorHelper.Algorithm.ComplexColoring, graph, start, firstColor, true);
     }
 
     private List<JuniorExocet> DoJuniorExocet()

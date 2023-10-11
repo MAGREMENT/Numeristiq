@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.Solver.StrategiesUtil.SharedCellSearcher;
@@ -16,6 +15,32 @@ public static class Cells
         return row1 == row2 || col1 == col2 ||
                (row1 / 3 == row2 / 3
                 && col1 / 3 == col2 / 3);
+    }
+
+    public static List<Cell> SeenCells(Cell cell)
+    {
+        List<Cell> result = new();
+        
+        for (int i = 0; i < 9; i++)
+        {
+            if (i != cell.Row) result.Add(new Cell(i, cell.Col));
+            if (i != cell.Col) result.Add(new Cell(cell.Row, i));
+        }
+
+        var startRow = cell.Row / 3 * 3;
+        var startCol = cell.Col / 3 * 3;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                var row = startRow + i;
+                var col = startCol + i;
+
+                if (row != cell.Row && col != cell.Col) result.Add(new Cell(row, col));
+            }
+        }
+
+        return result;
     }
     
     public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO "AsList"
@@ -41,9 +66,12 @@ public static class Cells
         }
     }
     
-    public static IEnumerable<Cell> SharedSeenCells(List<Cell> list)
+    public static List<Cell> SharedSeenCells(List<Cell> list)
     {
-        if(list.Count < 2) yield break;
+        if (list.Count == 0) return new List<Cell>();
+        if (list.Count == 1) return SeenCells(list[^1]);
+
+        var result = new List<Cell>();
         foreach (var coord in list[0].SharedSeenCells(list[1]))
         {
             bool ok = true;
@@ -56,27 +84,10 @@ public static class Cells
                 }
             }
 
-            if (ok) yield return coord;
+            if (ok) result.Add(coord);
         }
-    }
-    
-    public static IEnumerable<Cell> SharedSeenCells(List<CellPossibility> list)
-    {
-        if(list.Count < 2) yield break;
-        foreach (var coord in list[0].SharedSeenCells(list[1]))
-        {
-            bool ok = true;
-            for (int i = 2; i < list.Count; i++)
-            {
-                if (!list[i].ShareAUnit(coord) || (list[i].Row == coord.Row && list[i].Col == coord.Col))
-                {
-                    ok = false;
-                    break;
-                }
-            }
 
-            if (ok) yield return coord;
-        }
+        return result;
     }
 
     public static IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)

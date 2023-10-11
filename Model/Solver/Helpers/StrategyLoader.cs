@@ -24,11 +24,11 @@ public class StrategyLoader
         {NakedDoublesStrategy.OfficialName, new NakedDoublesStrategy()},
         {HiddenDoublesStrategy.OfficialName, new HiddenDoublesStrategy()},
         {BoxLineReductionStrategy.OfficialName, new BoxLineReductionStrategy()},
-        {PointingPossibilitiesStrategy.OfficialName, new PointingPossibilitiesStrategy()},
-        {NakedPossibilitiesStrategy.OfficialNameForType3, new NakedPossibilitiesStrategy(3)},
-        {HiddenPossibilitiesStrategy.OfficialNameForType3, new HiddenPossibilitiesStrategy(3)},
-        {NakedPossibilitiesStrategy.OfficialNameForType4, new NakedPossibilitiesStrategy(4)},
-        {HiddenPossibilitiesStrategy.OfficialNameForType4, new HiddenPossibilitiesStrategy(4)},
+        {PointingSetStrategy.OfficialName, new PointingSetStrategy()},
+        {NakedSetStrategy.OfficialNameForType3, new NakedSetStrategy(3)},
+        {HiddenSetStrategy.OfficialNameForType3, new HiddenSetStrategy(3)},
+        {NakedSetStrategy.OfficialNameForType4, new NakedSetStrategy(4)},
+        {HiddenSetStrategy.OfficialNameForType4, new HiddenSetStrategy(4)},
         {XWingStrategy.OfficialName, new XWingStrategy()},
         {XYWingStrategy.OfficialName, new XYWingStrategy()},
         {XYZWingStrategy.OfficialName, new XYZWingStrategy()},
@@ -58,56 +58,11 @@ public class StrategyLoader
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
         {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},
         {NishioForcingNetStrategy.OfficialName, new NishioForcingNetStrategy()},
-        {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(1)},
+        {PatternOverlayStrategy.OfficialName, new PatternOverlayStrategy(1, 1000)},
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {GurthTheorem.OfficialName, new GurthTheorem()},
-        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new PossibilitiesGroupSearcher())}
-    };
-
-    private static readonly StrategyUsage[] DefaultUsage =
-    {
-        new(NakedSingleStrategy.OfficialName, true),
-        new(HiddenSingleStrategy.OfficialName, true),
-        new(NakedDoublesStrategy.OfficialName, true),
-        new(HiddenDoublesStrategy.OfficialName, true),
-        new(BoxLineReductionStrategy.OfficialName, true),
-        new(PointingPossibilitiesStrategy.OfficialName, true),
-        new(NakedPossibilitiesStrategy.OfficialNameForType3, true),
-        new(HiddenPossibilitiesStrategy.OfficialNameForType3, true),
-        new(NakedPossibilitiesStrategy.OfficialNameForType4, true),
-        new(HiddenPossibilitiesStrategy.OfficialNameForType4, true),
-        new(GurthTheorem.OfficialName, true),
-        new(XWingStrategy.OfficialName, true),
-        new(XYWingStrategy.OfficialName, true),
-        new(XYZWingStrategy.OfficialName, true),
-        new(GridFormationStrategy.OfficialNameForType3, true),
-        new(GridFormationStrategy.OfficialNameForType4, true),
-        new(SimpleColoringStrategy.OfficialName, true),
-        new(BUGStrategy.OfficialName, true),
-        new(ReverseBUGStrategy.OfficialName, true),
-        new(JuniorExocetStrategy.OfficialName, true),
-        new(FinnedXWingStrategy.OfficialName, true),
-        new(FinnedGridFormationStrategy.OfficialNameForType3, true),
-        new(FinnedGridFormationStrategy.OfficialNameForType4, true),
-        new(FireworksStrategy.OfficialName, true),
-        new(SKLoopsStrategy.OfficialName, true),
-        new(UniqueRectanglesStrategy.OfficialName, true),
-        new(AvoidableRectanglesStrategy.OfficialName, true),
-        new(XYChainStrategy.OfficialName, true),
-        new(ThreeDimensionMedusaStrategy.OfficialName, true),
-        new(WXYZWingStrategy.OfficialName, true),
-        new(AlignedPairExclusionStrategy.OfficialName, true),
-        new(ComplexXCycles.OfficialName, true),
-        new(SueDeCoqStrategy.OfficialName, true),
-        new(AlmostLockedSetsStrategy.OfficialName, true),
-        new(ComplexAlternatingInferenceChains.OfficialName, false),
-        new(DigitForcingNetStrategy.OfficialName, true),
-        new(CellForcingNetStrategy.OfficialName, true),
-        new(UnitForcingNetStrategy.OfficialName, true),
-        new(NishioForcingNetStrategy.OfficialName, true),
-        new(PatternOverlayStrategy.OfficialName, true),
-        new(BruteForceStrategy.OfficialName, false)
+        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new ExhaustiveSearcher(2, 5))}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
@@ -115,47 +70,30 @@ public class StrategyLoader
 
     public void Load()
     {
-        if (!File.Exists(Path))
-        {
-            HandleDefault();
-            return;
-        }
-        
-        var buffer = JsonSerializer.Deserialize<StrategyUsage[]>(File.ReadAllText(Path));
-        if (buffer is null)
-        {
-            HandleDefault();
-            return;
-        }
-        
-        HandleSpecified(buffer);
-    }
+        if (!File.Exists(Path)) return;
 
-    private void HandleSpecified(StrategyUsage[] usage)
-    {
+        var buffer = JsonSerializer.Deserialize<StrategyUsage[]>(File.ReadAllText(Path));
+        if (buffer is null) return;
+
         List<IStrategy> strategies = new();
         ulong excluded = 0;
+        int errorOffset = 0;
 
-        for (int i = 0; i < usage.Length; i++)
+        for (int i = 0; i < buffer.Length; i++)
         {
-            var current = usage[i];
-            if (!StrategyPool.TryGetValue(current.StrategyName, out var strategy)) continue;
+            var current = buffer[i];
+            if (!StrategyPool.TryGetValue(current.StrategyName, out var strategy))
+            {
+                errorOffset++;
+                continue;
+            }
             
             strategies.Add(strategy);
-            if (!current.Used) excluded |= 1ul << i;
+            if (!current.Used) excluded |= 1ul << (i - errorOffset);
         }
 
         Strategies = strategies.ToArray();
         ExcludedStrategies = excluded;
-    }
-
-    private void HandleDefault()
-    {
-        HandleSpecified(DefaultUsage);
-        
-        File.Delete(Path);
-        File.WriteAllText(Path, JsonSerializer.Serialize(DefaultUsage,
-            new JsonSerializerOptions {WriteIndented = true}));
     }
 }
 

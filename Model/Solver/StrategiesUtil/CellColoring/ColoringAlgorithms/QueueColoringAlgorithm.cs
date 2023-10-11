@@ -23,7 +23,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             {
                 if (visited.Contains(friend)) continue;
 
-                result.AddColoredElement(friend, opposite);
+                result.AddColoredElement(friend, opposite, current.Element);
                 visited.Add(friend);
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
@@ -32,7 +32,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             {
                 if (visited.Contains(friend)) continue;
 
-                result.AddColoredElement(friend, opposite);
+                result.AddColoredElement(friend, opposite, current.Element);
                 visited.Add(friend);
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
@@ -41,7 +41,38 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
     public void SimpleColoring<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ILinkGraphElement
     {
+        result.AddColoredElement(start, firstColor);
+        visited.Add(start);
         
+        Queue<ColoredElement<T>> queue = new();
+        queue.Enqueue(new ColoredElement<T>(start, firstColor));
+
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+            var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
+
+            foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
+            {
+                if (visited.Contains(friend)) continue;
+
+                result.AddColoredElement(friend, opposite, current.Element);
+                visited.Add(friend);
+                queue.Enqueue(new ColoredElement<T>(friend, opposite));
+            }
+
+            if (opposite == Coloring.Off)
+            {
+                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
+                {
+                    if (visited.Contains(friend)) continue;
+
+                    result.AddColoredElement(friend, opposite, current.Element);
+                    visited.Add(friend);
+                    queue.Enqueue(new ColoredElement<T>(friend, opposite));
+                }
+            }
+        }
     }
 
     public void ComplexColoring<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
@@ -62,7 +93,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             {
                 if (visited.Contains(friend)) continue;
 
-                result.AddColoredElement(friend, opposite);
+                result.AddColoredElement(friend, opposite, current.Element);
                 visited.Add(friend);
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
@@ -73,7 +104,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 {
                     if (visited.Contains(friend)) continue;
 
-                    result.AddColoredElement(friend, opposite);
+                    result.AddColoredElement(friend, opposite, current.Element);
                     visited.Add(friend);
                     queue.Enqueue(new ColoredElement<T>(friend, opposite));
                 }
@@ -133,21 +164,21 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
                 if (row is not null && rowB)
                 {
-                    result.AddColoredElement(row, Coloring.On);
+                    result.AddColoredElement(row, Coloring.On, current.Element);
                     visited.Add(row);
                     queue.Enqueue(new ColoredElement<T>(row, Coloring.On));
                 }
 
                 if (col is not null && colB)
                 {
-                    result.AddColoredElement(col, Coloring.On);
+                    result.AddColoredElement(col, Coloring.On, current.Element);
                     visited.Add(col);
                     queue.Enqueue(new ColoredElement<T>(col, Coloring.On));
                 }
 
                 if (mini is not null && miniB)
                 {
-                    result.AddColoredElement(mini, Coloring.On);
+                    result.AddColoredElement(mini, Coloring.On, current.Element);
                     visited.Add(mini);
                     queue.Enqueue(new ColoredElement<T>(mini, Coloring.On));
                 }

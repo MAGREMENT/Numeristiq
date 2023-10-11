@@ -4,14 +4,15 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil.CellColoring;
 
-public static class ColorHelper //TODO add parent history
+public static class ColorHelper
 {
     public static IColoringAlgorithm Algorithm { get; } = new QueueColoringAlgorithm();
 
-    public static TR ColorFromStart<TB, TR>(Color<TB> colorMethod, LinkGraph<TB> graph, TB start, Coloring firstColor = Coloring.On)
-        where TB : ILinkGraphElement where TR : IColoringResult<TB>, new()
+    public static TR ColorFromStart<TB, TR>(Color<TB> colorMethod, LinkGraph<TB> graph, TB start,
+        Coloring firstColor = Coloring.On, bool history = false) where TB : ILinkGraphElement where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
+        if(history) result.ActivateHistoryTracking();
         var visited = new HashSet<TB>();
         
         result.NewStart();
@@ -20,10 +21,11 @@ public static class ColorHelper //TODO add parent history
         return result;
     }
     
-    public static TR ColorAll<TB, TR>(Color<TB> colorMethod, LinkGraph<TB> graph, Coloring firstColor = Coloring.On)
-        where TB : ILinkGraphElement where TR : IColoringResult<TB>, new()
+    public static TR ColorAll<TB, TR>(Color<TB> colorMethod, LinkGraph<TB> graph, Coloring firstColor = Coloring.On,
+        bool history = false) where TB : ILinkGraphElement where TR : IColoringResult<TB>, new()
     {
         var result = new TR();
+        if(history) result.ActivateHistoryTracking();
         var visited = new HashSet<TB>();
 
         foreach (var start in graph)

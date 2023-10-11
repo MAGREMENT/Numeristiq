@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
@@ -9,13 +8,7 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// Naked possibilities, also called locked possibilities, happens when n cells shares n candidates in the same unit,
-/// without any cell having any extra possibility. In that case, each cell must have one of the n candidates as a
-/// solution. Therefor, any cell in that unit that is not in the n cells cannot have one of the n possibilities. As a side note,
-/// not every possibility has to be present in every cell.
-/// </summary>
-public class NakedPossibilitiesStrategy : AbstractStrategy
+public class NakedSetStrategy : AbstractStrategy
 {
     public const string OfficialNameForType2 = "Naked Double";
     public const string OfficialNameForType3 = "Naked Triple";
@@ -23,7 +16,7 @@ public class NakedPossibilitiesStrategy : AbstractStrategy
 
     private readonly int _type;
 
-    public NakedPossibilitiesStrategy(int type) : base("", StrategyDifficulty.None)
+    public NakedSetStrategy(int type) : base("", StrategyDifficulty.None)
     {
         _type = type;
         switch (type)
@@ -241,30 +234,24 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var coords = new List<CellPossibility>();
-        foreach (var other in _linePos)
-        {
-            foreach (var possibility in _possibilities)
-            {
-                switch (_unit)
-                {
-                    case Unit.Row :
-                        if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
-                            coords.Add(new CellPossibility(_unitNumber, other, possibility));
-                        break;
-                    case Unit.Column :
-                        if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
-                            coords.Add(new CellPossibility(other, _unitNumber, possibility));
-                        break;
-                }
-            }
-        }
-
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            foreach (var coord in coords)
+            foreach (var other in _linePos)
             {
-                lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                foreach (var possibility in _possibilities)
+                {
+                    switch (_unit)
+                    {
+                        case Unit.Row :
+                            if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
+                                lighter.HighlightPossibility(possibility, _unitNumber, other, ChangeColoration.CauseOffOne);
+                            break;
+                        case Unit.Column :
+                            if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
+                                lighter.HighlightPossibility(possibility, other, _unitNumber, ChangeColoration.CauseOffOne);
+                            break;
+                    }
+                }
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -274,7 +261,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
     private string Explanation()
     {
         return $"The cells {_linePos.ToString(_unit, _unitNumber)} only contains the possibilities ({_possibilities})." +
-               $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contains these possibilities";
+               $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
     }
 }
 
@@ -291,21 +278,15 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var coords = new List<CellPossibility>();
-        foreach (var pos in _miniPos)
-        {
-            foreach (var possibility in _possibilities)
-            {
-                if(snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
-                    coords.Add(new CellPossibility(pos.Row, pos.Col, possibility));
-            }
-        }
-        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            foreach (var coord in coords)
+            foreach (var pos in _miniPos)
             {
-                lighter.HighlightPossibility(coord.Possibility, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                foreach (var possibility in _possibilities)
+                {
+                    if(snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
+                        lighter.HighlightPossibility(possibility, pos.Row, pos.Col, ChangeColoration.CauseOffOne);
+                }
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -315,6 +296,6 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
     private string Explanation()
     {
         return $"The cells {_miniPos} only contains the possibilities ({_possibilities}). Any other cell in" +
-               $" mini grid {_miniPos.MiniGridNumber() + 1} cannot contains these possibilities";
+               $" mini grid {_miniPos.MiniGridNumber() + 1} cannot contain these possibilities";
     }
 }

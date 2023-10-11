@@ -19,7 +19,8 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
-                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColoringWithoutRules, graph))
+                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColoringWithoutRules, graph,
+                     Coloring.On, strategyManager.LogsManaged))
         {
             if(coloredVertices.Count <= 1) continue;
             
@@ -29,13 +30,13 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             if (SearchColor(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph) ||
                 SearchColor(strategyManager, coloredVertices.Off, coloredVertices.On, inGraph))
             {
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph, true));
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, true));
                 continue;
             }
             
             SearchMix(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph);
             if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph));
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
         }
     }
 
@@ -149,5 +150,4 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             }
         }
     }
-
 }

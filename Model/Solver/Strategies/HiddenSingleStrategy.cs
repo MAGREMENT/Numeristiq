@@ -6,10 +6,6 @@ using Model.Solver.Helpers.Changes;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// A hidden single is a unit that contain a possibility in only one of its cells. Since every unit must contain
-/// every number once, the possibility is the solution to that cell.
-/// </summary>
 public class HiddenSingleStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Single";
@@ -64,7 +60,8 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
         foreach (var change in changes)
         {
             string where;
-            if (snapshot.RowPositionsAt(change.Row, change.Number).Count == 1) where = $"row {change.Row + 1}";
+            if (snapshot.RowPositionsAt(change.Row, change.Number).Count == 1)
+                where = $"row {change.Row + 1}";
             else if (snapshot.ColumnPositionsAt(change.Column, change.Number).Count == 1)
                 where = $"column {change.Column + 1}";
             else

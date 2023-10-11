@@ -27,25 +27,6 @@ public class SetEquivalenceStrategy : AbstractStrategy
             int count1 = 0;
             int count2 = 0;
 
-            var order = equivalence.FirstOrder - equivalence.SecondOrder;
-
-            switch (order)
-            {
-                case 0 : break;
-                case > 0 :
-                    for (int i = 0; i < solved2.Length; i++)
-                    {
-                        solved2[i] += order;
-                    }
-                    break;
-                case < 0 :
-                    for (int i = 0; i < solved1.Length; i++)
-                    {
-                        solved1[i] -= order;
-                    }
-                    break;
-            }
-
             foreach (var cell in equivalence.FirstGeometry)
             {
                 var solved = strategyManager.Sudoku[cell.Row, cell.Col];
@@ -62,6 +43,33 @@ public class SetEquivalenceStrategy : AbstractStrategy
                 
                 solved2[solved - 1]++;
                 count2++;
+            }
+            
+            var order = equivalence.FirstOrder - equivalence.SecondOrder;
+
+            switch (order)
+            {
+                case 0 : break;
+                case > 0 :
+                    for (int i = 0; i < solved2.Length; i++)
+                    {
+                        if (solved2[i] > 0)
+                        {
+                            solved2[i] += order;
+                            count2 += order;
+                        }
+                    }
+                    break;
+                case < 0 :
+                    for (int i = 0; i < solved1.Length; i++)
+                    {
+                        if (solved1[i] > 0)
+                        {
+                            solved1[i] -= order;
+                            count1 -= order;
+                        }
+                    }
+                    break;
             }
 
             int[] difference1 = new int[9];
@@ -120,7 +128,10 @@ public class SetEquivalenceStrategy : AbstractStrategy
             }
 
             if (strategyManager.ChangeBuffer.NotEmpty())
+            {
                 strategyManager.ChangeBuffer.Push(this, new GeometricEquivalenceReportBuilder(equivalence));
+                return;
+            }
         }
     }
 }

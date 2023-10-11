@@ -5,9 +5,6 @@ using Model.Solver.Helpers.Changes;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// A naked single is a cell that contains only one possibility, therefore being the solution to that cell
-/// </summary>
 public class NakedSingleStrategy : AbstractStrategy
 {
     public const string OfficialName = "Naked Single";

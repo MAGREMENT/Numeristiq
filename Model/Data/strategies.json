@@ -20,7 +20,7 @@
     "Used": true
   },
   {
-    "StrategyName": "Pointing Possibilities",
+    "StrategyName": "Pointing Set",
     "Used": true
   },
   {
@@ -41,10 +41,6 @@
   },
   {
     "StrategyName": "Gurth's Theorem",
-    "Used": true
-  },
-  {
-    "StrategyName": "Set Equivalence",
     "Used": true
   },
   {

@@ -4,5 +4,5 @@ namespace Model.Solver.Strategies.SetEquivalence;
 
 public interface ISetEquivalenceSearcher 
 {
-    public List<SetEquivalence> Search(IStrategyManager strategyManager);
+    public IEnumerable<SetEquivalence> Search(IStrategyManager strategyManager);
 }

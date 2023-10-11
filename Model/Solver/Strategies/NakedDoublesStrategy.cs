@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibilities;
@@ -7,10 +6,6 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// Naked doubles are a special case of naked possibilities where there are only 2 candidates concerned. See the doc
-/// of NakedPossibilities.cs for more information.
-/// </summary>
 public class NakedDoublesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Naked Doubles";
@@ -155,38 +150,34 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<CellPossibility> cells = new(4);
-        
-        foreach (var possibility in _pos)
-        {
-            switch (_unit)
-            {
-                case Unit.Row :
-                    cells.Add(new CellPossibility(_unitNumber, _other1, possibility));
-                    cells.Add(new CellPossibility(_unitNumber, _other2, possibility));
-                    break;
-                case Unit.Column :
-                    cells.Add(new CellPossibility(_other1, _unitNumber, possibility));
-                    cells.Add(new CellPossibility(_other2, _unitNumber, possibility));
-                    break;
-            } 
-        }
-        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            foreach (var cell in cells)
+            foreach (var possibility in _pos)
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.CauseOffOne);
+                switch (_unit)
+                {
+                    case Unit.Row :
+                        lighter.HighlightPossibility(possibility, _unitNumber, _other1, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(possibility, _unitNumber, _other2, ChangeColoration.CauseOffOne);
+                        break;
+                    case Unit.Column :
+                        lighter.HighlightPossibility(possibility, _other1, _unitNumber, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(possibility, _other2, _unitNumber, ChangeColoration.CauseOffOne);
+                        break;
+                } 
             }
-            
+
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
 
     private string Explanation()
     {
-        //TODO
-        return "";
+        string cells = _unit == Unit.Row
+            ? $"[{_unitNumber}, {_other1}], [{_unitNumber}, {_other2}]"
+            : $"[{_other1}, {_unitNumber}], [{_other2}, {_unitNumber}]";
+        return $"The cells {cells} only contains the possibilities ({_pos})." +
+               $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
     }
 }
 
@@ -217,7 +208,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
             cells.Add(new CellPossibility(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3, possibility));
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -228,9 +219,9 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
         });
     }
     
-    private string Explanation()
+    private string Explanation(IReadOnlyList<CellPossibility> cells)
     {
-        //TODO
-        return "";
+        return $"The cells {cells[0]}, {cells[1]} only contains the possibilities ({_pos}). Any other cell in" +
+               $" mini grid {_miniRow * 3 + _miniCol + 1} cannot contain these possibilities";
     }
 }

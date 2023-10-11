@@ -2,13 +2,10 @@
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
+using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// Hidden doubles are a special case of hidden possibilities where there are only 2 candidates concerned. See the doc
-/// of HiddenPossibilities.cs for more information.
-/// </summary>
 public class HiddenDoublesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Doubles";
@@ -137,7 +134,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -149,9 +146,10 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
         });
     }
 
-    private string Explanation()
+    private string Explanation(Cell[] cells)
     {
-        return ""; //TODO
+        return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
+               $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
     }
 }
 
@@ -172,7 +170,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
     {
         var cells = _pos.ToCellArray();
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -184,8 +182,9 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
         });
     }
     
-    private string Explanation()
+    private string Explanation(Cell[] cells)
     {
-        return ""; //TODO
+        return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
+               $" mini grid {_pos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
     }
 }

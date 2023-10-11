@@ -20,20 +20,21 @@ public class SimpleColoringStrategy : AbstractStrategy
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
-                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColoringWithoutRules, graph))
+                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColoringWithoutRules, graph,
+                     Coloring.On, strategyManager.LogsManaged))
         {
             if(coloredVertices.Count <= 1) continue;
 
             if (SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
             {
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph, true));
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, true));
                 continue;
             }
             
             SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
             
             if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, graph));
+                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
         }
     }
 
@@ -91,31 +92,24 @@ public class SimpleColoringStrategy : AbstractStrategy
 public class SimpleColoringReportBuilder : IChangeReportBuilder
 {
     private readonly ColoringList<CellPossibility> _vertices;
-    private readonly LinkGraph<CellPossibility> _graph;
     private readonly bool _isInvalidColoring;
 
-    public SimpleColoringReportBuilder(ColoringList<CellPossibility> vertices,
-        LinkGraph<CellPossibility> graph, bool isInvalidColoring = false)
+    public SimpleColoringReportBuilder(ColoringList<CellPossibility> vertices, bool isInvalidColoring = false)
     {
         _vertices = vertices;
-        _graph = graph;
         _isInvalidColoring = isInvalidColoring;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<Link<CellPossibility>> links = FindPath();
-
         Highlight[] highlights = new Highlight[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
         {
             highlights[0] = lighter => IChangeReportBuilder.HighlightChanges(lighter, changes);
             highlights[1] = lighter =>
             {
-                foreach (var link in links)
-                {
-                    lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
-                }
+                _vertices.History!.ForeachLink((one, two)
+                    => lighter.CreateLink(one, two, LinkStrength.Strong));
 
                 foreach (var coord in _vertices.On)
                 {
@@ -132,10 +126,8 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         {
             highlights[0] = lighter =>
             {
-                foreach (var link in links)
-                {
-                    lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
-                }
+                _vertices.History!.ForeachLink((one, two)
+                    => lighter.CreateLink(one, two, LinkStrength.Strong));
 
                 foreach (var coord in _vertices.On)
                 {
@@ -152,32 +144,5 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         }
 
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
-    }
-
-    private List<Link<CellPossibility>> FindPath()
-    {
-        List<Link<CellPossibility>> links = new();
-
-        Queue<CellPossibility> queue = new();
-        HashSet<CellPossibility> inGraph = new HashSet<CellPossibility>(_vertices.On);
-        inGraph.UnionWith(_vertices.Off);
-        
-        queue.Enqueue(_vertices.On[0]);
-
-        while (queue.Count > 0 && inGraph.Count > 0)
-        {
-            var current = queue.Dequeue();
-
-            foreach (var friend in _graph.GetLinks(current, LinkStrength.Strong))
-            {
-                if(!inGraph.Contains(friend)) continue;
-
-                links.Add(new Link<CellPossibility>(current, friend));
-                inGraph.Remove(friend);
-                queue.Enqueue(friend);
-            }
-        }
-
-        return links;
     }
 }

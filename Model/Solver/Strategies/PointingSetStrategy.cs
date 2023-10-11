@@ -31,11 +31,11 @@ namespace Model.Solver.Strategies;
 /// If a possibility is present in only the x-marked cells in the first mini grid, then it can be removed from all
 /// y-marked cells
 /// </summary>
-public class PointingPossibilitiesStrategy : AbstractStrategy
+public class PointingSetStrategy : AbstractStrategy
 {
-    public const string OfficialName = "Pointing Possibilities";
+    public const string OfficialName = "Pointing Set";
     
-    public PointingPossibilitiesStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
+    public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {

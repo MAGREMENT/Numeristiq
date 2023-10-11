@@ -10,20 +10,12 @@ public class Loop<T> : IEnumerable<T> where T : notnull
     private readonly T[] _elements;
     private readonly LinkStrength[] _links;
 
+    public int Count => _elements.Length;
+
     public Loop(T[] elements, LinkStrength[] links)
     {
         _elements = elements;
         _links = links;
-    }
-
-    public IEnumerator<T> GetEnumerator()
-    {
-        return _elements.AsEnumerable().GetEnumerator();
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
     }
 
     public delegate void LinkHandler(T one, T two);
@@ -70,6 +62,16 @@ public class Loop<T> : IEnumerable<T> where T : notnull
         }
 
         return result;
+    }
+    
+    public IEnumerator<T> GetEnumerator()
+    {
+        return _elements.AsEnumerable().GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
 
@@ -168,6 +170,26 @@ public class LoopBuilder<T> where T : notnull
     public LinkStrength LastLink()
     {
         return _links.Length == 0 ? LinkStrength.None : _links[^1];
+    }
+    
+    public Loop<T>? TryMerging(LoopBuilder<T> builder)
+    {
+        if (!LastElement().Equals(builder.LastElement()) || !FirstElement().Equals(builder.FirstElement())) return null;
+        var fromFirst = new HashSet<T>(_elements);
+        var elements = new List<T>(_elements);
+        var links = new List<LinkStrength>(_links);
+
+        for (int i = builder._elements.Length - 2; i > 0; i--)
+        {
+            var current = builder._elements[i];
+            if (fromFirst.Contains(current)) return null;
+            elements.Add(current);
+            links.Add(builder._links[i]);
+        }
+
+        links.Add(builder._links[0]);
+
+        return new Loop<T>(elements.ToArray(), links.ToArray());
     }
 
     public override string ToString()

@@ -1,0 +1,29 @@
+A naked set is essentially a locked set in a unit. It means that in this unit, there is n cells
+sharing exactly n candidates.
+ 
+There exists a different name for every number of cells involved :
+
+1 = Naked single
+2 = Naked double
+3 = Naked triple
+4 = Naked quad 
+
+Locating a naked cell allows you to remove the possibilities from the locked set in any cell in the unit, but not in
+the locked set.
+
+Examples :
++-------+-------+-------+
+| x . . | . . . | . . . |
+| - . . | . . . | . . . |
+| - . . | . . . | . . . |
++-------+-------+-------+
+| - . . | . . . | . . . |
+| - . . | . . . | . . . |
+| - . . | . . . | . . . |
++-------+-------+-------+
+| - . . | . . . | . . . |
+| x . . | . . . | . . . |
+| - . . | . . . | . . . |
++-------+-------+-------+
+
+If the x-marked cells contains only 1 & 2, these possibilities can be removed from any possibility with "-".
