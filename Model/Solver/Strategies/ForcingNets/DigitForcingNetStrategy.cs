@@ -2,6 +2,7 @@
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
@@ -23,24 +24,19 @@ public class DigitForcingNetStrategy : AbstractStrategy
             {
                 foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
                 {
-                    Dictionary<ILinkGraphElement, Coloring> onColoring =
-                        strategyManager.PreComputer.OnColoring(row, col, possibility);
-                    Dictionary<ILinkGraphElement, Coloring> offColoring =
-                        strategyManager.PreComputer.OffColoring(row, col, possibility);
+                    var onColoring = strategyManager.PreComputer.OnColoring(row, col, possibility);
+                    var offColoring = strategyManager.PreComputer.OffColoring(row, col, possibility);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
-                    
-                    Process(strategyManager, onColoring, offColoring);
 
-                    if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
-                            new DigitForcingNetReportBuilder(onColoring, offColoring, row, col, possibility));
+                    Process(strategyManager, onColoring, offColoring);
                 }
             }
         }
     }
 
-    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring> onColoring,
-        Dictionary<ILinkGraphElement, Coloring> offColoring)
+    private void Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement> onColoring,
+        ColoringDictionary<ILinkGraphElement> offColoring)
     {
         foreach (var on in onColoring)
         {
@@ -57,6 +53,12 @@ public class DigitForcingNetStrategy : AbstractStrategy
                         view.ChangeBuffer.AddSolutionToAdd(possOn.Possibility, possOn.Row, possOn.Col);
                         break;
                 }
+
+                if (view.ChangeBuffer.NotEmpty())
+                {
+                    view.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder(onColoring, offColoring,
+                        possOn, on.Value, possOn, other));
+                }
             }
 
             if (on.Value != Coloring.On) continue;
@@ -65,13 +67,25 @@ public class DigitForcingNetStrategy : AbstractStrategy
             {
                 if (off.Value != Coloring.On || off.Key is not CellPossibility possOff) continue;
                 if (possOff.Row == possOn.Row && possOn.Col == possOff.Col)
+                {
                     RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility);
-
+                    if (view.ChangeBuffer.NotEmpty())
+                    {
+                        view.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder(onColoring, offColoring,
+                            possOn, on.Value, possOff, off.Value));
+                    }
+                }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
                     foreach (var coord in possOn.SharedSeenCells(possOff))
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, coord.Row, coord.Col);
+                    }
+                    
+                    if (view.ChangeBuffer.NotEmpty())
+                    {
+                        view.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder(onColoring, offColoring,
+                            possOn, on.Value, possOff, off.Value));
                     }
                 }
             }
@@ -90,42 +104,45 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
 public class DigitForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly Dictionary<ILinkGraphElement, Coloring> _onColoring;
-    private readonly Dictionary<ILinkGraphElement, Coloring> _offColoring;
-    private readonly int _row;
-    private readonly int _col;
-    private readonly int _possibility;
+    private readonly ColoringDictionary<ILinkGraphElement> _on;
+    private readonly ColoringDictionary<ILinkGraphElement> _off;
+    private readonly CellPossibility _onPos;
+    private readonly Coloring _onColoring;
+    private readonly CellPossibility _offPos;
+    private readonly Coloring _offColoring;
 
-    public DigitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring> onColoring,
-        Dictionary<ILinkGraphElement, Coloring> offColoring, int row, int col, int possibility)
+    public DigitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> on, 
+        ColoringDictionary<ILinkGraphElement> off, CellPossibility onPos, Coloring onColoring,
+        CellPossibility offPos, Coloring offColoring)
     {
+        _on = on;
+        _off = off;
+        _onPos = onPos;
         _onColoring = onColoring;
+        _offPos = offPos;
         _offColoring = offColoring;
-        _row = row;
-        _col = col;
-        _possibility = possibility;
     }
-    
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var on = ForcingNetsUtil.FilterPossibilityCoordinates(_onColoring);
-        var off = ForcingNetsUtil.FilterPossibilityCoordinates(_offColoring);
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
+            onPath.Highlight(lighter);
+            
+            var first = onPath.Elements[0];
+            if(first is CellPossibility cp) lighter.CirclePossibility(cp);
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
-            lighter =>
-            {
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
-                lighter.CirclePossibility(_possibility, _row, _col);
-            },
-            lighter =>
-            {
-                ForcingNetsUtil.HighlightColoring(lighter, on);
-                lighter.CirclePossibility(_possibility, _row, _col);
-            },
-            lighter =>
-            {
-                ForcingNetsUtil.HighlightColoring(lighter, off);
-                lighter.CirclePossibility(_possibility, _row, _col);
-            });
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        }, lighter =>
+        {
+            var offPath = _off.History!.GetPathToRoot(_offPos, _offColoring);
+            offPath.Highlight(lighter);
+
+            var first = offPath.Elements[0];
+            if(first is CellPossibility cp) lighter.CirclePossibility(cp);
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
     }
 }

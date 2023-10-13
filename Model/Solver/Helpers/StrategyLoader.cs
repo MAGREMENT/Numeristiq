@@ -62,7 +62,7 @@ public class StrategyLoader
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {GurthTheorem.OfficialName, new GurthTheorem()},
-        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new ExhaustiveSearcher(2, 5))}
+        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new VoidSearcher())}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

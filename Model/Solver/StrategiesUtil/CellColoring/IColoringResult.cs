@@ -1,6 +1,8 @@
+using Model.Solver.StrategiesUtil.LinkGraph;
+
 namespace Model.Solver.StrategiesUtil.CellColoring;
 
-public interface IColoringResult<T> where T : notnull
+public interface IColoringResult<T> where T : ILinkGraphElement
 {
     public IReadOnlyColoringHistory<T>? History { get; }
 

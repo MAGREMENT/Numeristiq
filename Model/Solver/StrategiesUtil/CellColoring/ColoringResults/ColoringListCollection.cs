@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 
-public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : notnull
+public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : ILinkGraphElement
 {
     private bool _withHistory;
     
@@ -72,7 +73,7 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
     }
 }
 
-public class ColoringList<T> where T : notnull
+public class ColoringList<T> where T : ILinkGraphElement
 {
     private readonly List<T> _on = new();
     private readonly List<T> _off = new();

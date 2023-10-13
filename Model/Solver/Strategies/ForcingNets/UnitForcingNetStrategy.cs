@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
@@ -28,8 +28,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
-                Dictionary<ILinkGraphElement, Coloring>[] colorings =
-                    new Dictionary<ILinkGraphElement, Coloring>[ppir.Count];
+                var colorings = new ColoringDictionary<ILinkGraphElement>[ppir.Count];
 
                 var cursor = 0;
                 foreach (var col in ppir)
@@ -39,8 +38,6 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 }
                 
                 Process(strategyManager, colorings);
-                if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
-                    new LineUnitForcingNetReportBuilder(colorings, ppir, row, Unit.Row, number));
             }
 
             for (int col = 0; col < 9; col++)
@@ -48,8 +45,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
-                Dictionary<ILinkGraphElement, Coloring>[] colorings =
-                    new Dictionary<ILinkGraphElement, Coloring>[ppic.Count];
+                var colorings = new ColoringDictionary<ILinkGraphElement>[ppic.Count];
 
                 var cursor = 0;
                 foreach (var row in ppic)
@@ -59,8 +55,6 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 }
                 
                 Process(strategyManager, colorings);
-                if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
-                    new LineUnitForcingNetReportBuilder(colorings, ppic, col, Unit.Column, number));
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -70,8 +64,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
-                    Dictionary<ILinkGraphElement, Coloring>[] colorings =
-                        new Dictionary<ILinkGraphElement, Coloring>[ppimn.Count];
+                    var colorings = new ColoringDictionary<ILinkGraphElement>[ppimn.Count];
 
                     var cursor = 0;
                     foreach (var pos in ppimn)
@@ -81,14 +74,12 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     }
                 
                     Process(strategyManager, colorings);
-                    if (strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Push(this,
-                        new MiniGridUnitForcingNetReportBuilder(colorings, ppimn, number));
                 }
             }
         }
     }
 
-    private void Process(IStrategyManager view, Dictionary<ILinkGraphElement, Coloring>[] colorings)
+    private void Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {
@@ -108,112 +99,49 @@ public class UnitForcingNetStrategy : AbstractStrategy
 
             if (sameInAll)
             {
-                if (col == Coloring.On) view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
-                else view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
+                if (col == Coloring.On)
+                {
+                    view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
+                    if (view.ChangeBuffer.NotEmpty())
+                        view.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder(colorings, current, Coloring.On));
+                }
+                else
+                {
+                    view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
+                    if (view.ChangeBuffer.NotEmpty())
+                        view.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder(colorings, current, Coloring.Off));
+                }
             }
         }
     }
 }
 
-public class LineUnitForcingNetReportBuilder : IChangeReportBuilder
+public class UnitForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
-    private readonly IReadOnlyLinePositions _pos;
-    private readonly int _unitNumber;
-    private readonly Unit _unit;
-    private readonly int _possibility;
+    private readonly ColoringDictionary<ILinkGraphElement>[] _colorings;
+    private readonly CellPossibility _target;
+    private readonly Coloring _targetColoring;
 
-
-    public LineUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, IReadOnlyLinePositions pos,
-        int unitNumber, Unit unit, int possibility)
+    public UnitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, CellPossibility target, Coloring targetColoring)
     {
         _colorings = colorings;
-        _pos = pos;
-        _unitNumber = unitNumber;
-        _unit = unit;
-        _possibility = possibility;
+        _target = target;
+        _targetColoring = targetColoring;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        CellPossibility[] coords = new CellPossibility[_pos.Count];
-        var cursor = 0;
-        foreach (var other in _pos)
-        {
-            coords[cursor] = _unit == Unit.Row
-                ? new CellPossibility(_unitNumber, other, _possibility)
-                : new CellPossibility(other, _unitNumber, _possibility);
-            cursor++;
-        }
-        
-        Highlight[] highlights = new Highlight[_colorings.Length + 1];
-        highlights[0] = lighter =>
-        {
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
-            foreach (var coord in coords)
-            {
-                lighter.CirclePossibility(coord);
-            }
-        };
+        Highlight[] highlights = new Highlight[_colorings.Length];
 
         for (int i = 0; i < _colorings.Length; i++)
         {
-            var filtered = ForcingNetsUtil.FilterPossibilityCoordinates(_colorings[i]);
-            var coord = coords[i];
-            highlights[i + 1] = lighter =>
+            var a = i;
+            highlights[i] = lighter =>
             {
-                ForcingNetsUtil.HighlightColoring(lighter, filtered);
-                lighter.CirclePossibility(coord);
-            };
-        }
-        
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
-    }
-}
-
-public class MiniGridUnitForcingNetReportBuilder : IChangeReportBuilder
-{
-    private readonly Dictionary<ILinkGraphElement, Coloring>[] _colorings;
-    private readonly IReadOnlyMiniGridPositions _pos;
-    private readonly int _possibility;
-
-
-    public MiniGridUnitForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring>[] colorings, IReadOnlyMiniGridPositions pos,
-       int possibility)
-    {
-        _colorings = colorings;
-        _pos = pos;
-        _possibility = possibility;
-    }
-
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
-    {
-        CellPossibility[] coords = new CellPossibility[_pos.Count];
-        var cursor = 0;
-        foreach (var other in _pos)
-        {
-            coords[cursor] = new CellPossibility(other, _possibility);
-            cursor++;
-        }
-        
-        Highlight[] highlights = new Highlight[_colorings.Length + 1];
-        highlights[0] = lighter =>
-        {
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
-            foreach (var coord in coords)
-            {
-                lighter.CirclePossibility(coord);
-            }
-        };
-
-        for (int i = 0; i < _colorings.Length; i++)
-        {
-            var filtered = ForcingNetsUtil.FilterPossibilityCoordinates(_colorings[i]);
-            var coord = coords[i];
-            highlights[i + 1] = lighter =>
-            {
-                ForcingNetsUtil.HighlightColoring(lighter, filtered);
-                lighter.CirclePossibility(coord);
+                var path = _colorings[a].History!.GetPathToRoot(_target, _targetColoring);
+                path.Highlight(lighter);
+                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                if (path.Elements[0] is CellPossibility start) lighter.CirclePossibility(start);
             };
         }
         

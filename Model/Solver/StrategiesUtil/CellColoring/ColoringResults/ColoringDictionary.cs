@@ -1,8 +1,9 @@
 using System.Collections.Generic;
+using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 
-public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : notnull
+public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : ILinkGraphElement
 {
     private ColoringHistory<T>? _history;
 

@@ -91,7 +91,8 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                     }
                 }
 
-                if(strategyManager.ChangeBuffer.Push(this, new AlmostLockedSetsReportBuilder(one, two))) return;
+                if(strategyManager.ChangeBuffer
+                   .Push(this, new AlmostLockedSetsReportBuilder(one, two, restrictedCommons))) return;
             }
         }
     }
@@ -133,11 +134,13 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly AlmostLockedSet _one;
     private readonly AlmostLockedSet _two;
+    private readonly IPossibilities _restrictedCommons;
 
-    public AlmostLockedSetsReportBuilder(AlmostLockedSet one, AlmostLockedSet two)
+    public AlmostLockedSetsReportBuilder(AlmostLockedSet one, AlmostLockedSet two, IPossibilities restrictedCommons)
     {
         _one = one;
         _two = two;
+        _restrictedCommons = restrictedCommons;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -152,6 +155,21 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
             foreach (var coord in _two.Coordinates)
             {
                 lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
+            }
+
+            foreach (var possibility in _restrictedCommons)
+            {
+                foreach (var coord in _one.Coordinates)
+                {
+                    if(snapshot.PossibilitiesAt(coord).Peek(possibility))
+                        lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.Neutral);
+                }
+                
+                foreach (var coord in _two.Coordinates)
+                {
+                    if(snapshot.PossibilitiesAt(coord).Peek(possibility))
+                        lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.Neutral);
+                }
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

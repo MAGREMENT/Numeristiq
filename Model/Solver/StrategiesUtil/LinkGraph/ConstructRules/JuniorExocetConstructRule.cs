@@ -3,7 +3,7 @@ using Model.Solver.Possibilities;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
-public class JuniorExocetConstructRule : IConstructRule
+public class JuniorExocetConstructRule : IConstructRule //TODO improve
 {
     public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
     {
