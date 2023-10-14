@@ -16,7 +16,7 @@ public class AlternatingChainAlgorithmV1<T> : IAlternatingChainAlgorithm<T> wher
     public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         _loopsProcessed.Clear();
-        foreach (var start in graph.EveryVerticesWith(LinkStrength.Strong))
+        foreach (var start in graph)
         {
             Search(graph, new LoopBuilder<T>(start), chainType, view);
         }

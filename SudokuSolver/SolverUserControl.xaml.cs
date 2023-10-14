@@ -308,7 +308,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
             case PointingColumn pc :
                 _backgroundManager.HighlightGroup(pc, ColorUtil.ToColor(coloration));
                 break;
-            case AlmostNakedPossibilities anp :
+            case AlmostNakedSet anp :
                 _backgroundManager.HighlightGroup(anp, ColorUtil.ToColor(coloration));
                 break;
         }
@@ -326,7 +326,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
             case CellPossibility one when to is CellPossibility two:
                 _backgroundManager.CreateLink(one, two, linkStrength == LinkStrength.Weak);
                 break;
-            case CellPossibility when to is AlmostNakedPossibilities:
+            case CellPossibility when to is AlmostNakedSet:
                 break;
             default:
                 CellPossibility[] winners = new CellPossibility[2];

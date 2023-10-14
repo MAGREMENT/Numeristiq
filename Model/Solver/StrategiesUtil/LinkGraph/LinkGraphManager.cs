@@ -19,7 +19,7 @@ public class LinkGraphManager
         new UnitWeakLinkConstructRule(),
         new CellWeakLinkConstructRule(),
         new PointingPossibilitiesConstructRule(),
-        new AlmostNakedPossibilitiesConstructRule(),
+        new AlmostNakedSetConstructRule(),
         new XYChainSpecificConstructRule(),
         new JuniorExocetConstructRule()
     };

@@ -7,33 +7,33 @@ namespace Model.Solver.StrategiesUtil.LinkGraph;
 
 public class Loop<T> : IEnumerable<T> where T : notnull
 {
-    private readonly T[] _elements;
-    private readonly LinkStrength[] _links;
+    public T[] Elements { get; }
+    public LinkStrength[] Links { get; }
 
-    public int Count => _elements.Length;
+    public int Count => Elements.Length;
 
     public Loop(T[] elements, LinkStrength[] links)
     {
-        _elements = elements;
-        _links = links;
+        Elements = elements;
+        Links = links;
     }
 
     public delegate void LinkHandler(T one, T two);
 
     public void ForEachLink(LinkHandler handler, LinkStrength strength)
     {
-        for (int i = 0; i < _links.Length - 1; i++)
+        for (int i = 0; i < Links.Length - 1; i++)
         {
-            if (_links[i] == strength) handler(_elements[i], _elements[i + 1]);
+            if (Links[i] == strength) handler(Elements[i], Elements[i + 1]);
         }
 
-        if (_links[^1] == strength) handler(_elements[0], _elements[^1]);
+        if (Links[^1] == strength) handler(Elements[0], Elements[^1]);
     }
 
     public override int GetHashCode()
     {
         int hash = 0;
-        foreach (T element in _elements)
+        foreach (T element in Elements)
         {
             hash ^= EqualityComparer<T>.Default.GetHashCode(element);
         }
@@ -44,10 +44,10 @@ public class Loop<T> : IEnumerable<T> where T : notnull
     public override bool Equals(object? obj)
     {
         if (obj is not Loop<T> loop) return false;
-        if (loop._elements.Length != _elements.Length) return false;
-        foreach (var element in _elements)
+        if (loop.Elements.Length != Elements.Length) return false;
+        foreach (var element in Elements)
         {
-            if (!loop._elements.Contains(element)) return false;
+            if (!loop.Elements.Contains(element)) return false;
         }
 
         return true;
@@ -55,10 +55,10 @@ public class Loop<T> : IEnumerable<T> where T : notnull
 
     public override string ToString()
     {
-        string result = _elements[0] + (_links[0] == LinkStrength.Strong ? " = " : " - ");
-        for (int i = 1; i < _elements.Length; i++)
+        string result = Elements[0] + (Links[0] == LinkStrength.Strong ? " = " : " - ");
+        for (int i = 1; i < Elements.Length; i++)
         {
-            result += _elements[i] + (_links[i] == LinkStrength.Strong ? " = " : " - ");
+            result += Elements[i] + (Links[i] == LinkStrength.Strong ? " = " : " - ");
         }
 
         return result;
@@ -66,7 +66,7 @@ public class Loop<T> : IEnumerable<T> where T : notnull
     
     public IEnumerator<T> GetEnumerator()
     {
-        return _elements.AsEnumerable().GetEnumerator();
+        return Elements.AsEnumerable().GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

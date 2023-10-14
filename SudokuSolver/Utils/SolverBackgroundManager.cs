@@ -165,9 +165,9 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
         });
     }
 
-    public void HighlightGroup(AlmostNakedPossibilities anp, Color color) //TODO take margin into account + improve visually
+    public void HighlightGroup(AlmostNakedSet anp, Color color) //TODO take margin into account + improve visually
     {
-        foreach (var coord in anp.CellPossibilities)
+        foreach (var coord in anp.NakedSet)
         {
             var x = TopLeftX(coord.Cell.Col);
             var y = TopLeftY(coord.Cell.Row);

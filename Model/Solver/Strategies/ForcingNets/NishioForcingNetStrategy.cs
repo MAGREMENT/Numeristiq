@@ -42,7 +42,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
                                 if (strategyManager.ChangeBuffer.NotEmpty())
                                 {
                                     strategyManager.ChangeBuffer.Push(this, new FromOffNishioForcingNetReportBuilder(
-                                        coloring, row, col, possibility, cs.Cause, cs.CauseNumber));
+                                        coloring, row, col, possibility, cs.Cause, cell));
                                     return;
                                 }
 
@@ -76,7 +76,6 @@ public class ContradictionSearcher
     private readonly IStrategyManager _view;
 
     public ContradictionCause Cause { get; private set; } = ContradictionCause.None;
-    public int CauseNumber { get; private set; }
 
     public ContradictionSearcher(IStrategyManager view)
     {
@@ -103,7 +102,6 @@ public class ContradictionSearcher
             if (poss.Count == 0)
             {
                 Cause = ContradictionCause.Cell;
-                CauseNumber = cellInt;
                 return true;
             }
         }
@@ -120,7 +118,6 @@ public class ContradictionSearcher
         if (rowPos.Count == 0)
         {
             Cause = ContradictionCause.Row;
-            CauseNumber = cell.Row;
             return true;
         }
         
@@ -137,7 +134,6 @@ public class ContradictionSearcher
         if (colPos.Count == 0)
         {
             Cause = ContradictionCause.Column;
-            CauseNumber = cell.Col;
             return true;
         }
         
@@ -155,7 +151,6 @@ public class ContradictionSearcher
         if (miniPos.Count == 0)
         {
             Cause = ContradictionCause.MiniGrid;
-            CauseNumber = cell.Row / 3 * 3 + cell.Col / 3;
             return true;
         }
         
@@ -172,21 +167,18 @@ public class ContradictionSearcher
         if (possibilityPositions.RowCount(cell.Row) > 1)
         {
             Cause = ContradictionCause.Row;
-            CauseNumber = cell.Row;
             return true;
         }
 
         if (possibilityPositions.ColumnCount(cell.Col) > 1)
         {
             Cause = ContradictionCause.Column;
-            CauseNumber = cell.Col;
             return true;
         }
 
         if (possibilityPositions.MiniGridCount(cell.Row / 3, cell.Col / 3) > 1)
         {
             Cause = ContradictionCause.MiniGrid;
-            CauseNumber = cell.Row / 3 * 3 + cell.Col / 3;
             return true;
         }
         
@@ -195,7 +187,6 @@ public class ContradictionSearcher
             if (entry.Key != cell.Possibility && entry.Value.Peek(cell.Row, cell.Col))
             {
                 Cause = ContradictionCause.Cell;
-                CauseNumber = cell.Row * 9 + cell.Col;
                 return true;
             }
         }
@@ -213,7 +204,6 @@ public class ContradictionSearcher
         _onPositions.Clear();
 
         Cause = ContradictionCause.None;
-        CauseNumber = 0;
     }
 }
 
@@ -252,24 +242,24 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
     }
 }
 
-public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO from on + improve ContradictionCause & cause number
+public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO FromOn
 {
     private readonly ColoringDictionary<ILinkGraphElement> _coloring;
     private readonly int _row;
     private readonly int _col;
     private readonly int _possibility;
     private readonly ContradictionCause _cause;
-    private readonly int _causeNumber;
+    private readonly CellPossibility _lastChecked;
 
     public FromOffNishioForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> coloring, int row, int col,
-        int possibility, ContradictionCause cause, int causeNumber)
+        int possibility, ContradictionCause cause, CellPossibility lastChecked)
     {
         _coloring = coloring;
         _row = row;
         _col = col;
         _possibility = possibility;
         _cause = cause;
-        _causeNumber = causeNumber;
+        _lastChecked = lastChecked;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -279,9 +269,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
         switch (_cause)
         {
             case ContradictionCause.Cell :
-                var r = _causeNumber / 9;
-                var c = _causeNumber % 9;
-                var possibilities = snapshot.PossibilitiesAt(r, c);
+                var possibilities = snapshot.PossibilitiesAt(_lastChecked.Row, _lastChecked.Col);
                 highlighters = new Highlight[possibilities.Count];
 
                 cursor = 0;
@@ -289,7 +277,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 {
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(r, c, possibility), Coloring.Off)
+                        _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, _lastChecked.Col, possibility), Coloring.Off)
                             .Highlight(lighter);
                         lighter.CirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
@@ -298,7 +286,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 }
                 break;
             case ContradictionCause.Row :
-                var cols = snapshot.RowPositionsAt(_causeNumber, _possibility);
+                var cols = snapshot.RowPositionsAt(_lastChecked.Row, _possibility);
                 highlighters = new Highlight[cols.Count];
 
                 cursor = 0;
@@ -306,7 +294,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 {
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(_causeNumber, col, _possibility), Coloring.Off)
+                        _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, col, _possibility), Coloring.Off)
                             .Highlight(lighter);
                         lighter.CirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
@@ -316,7 +304,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 
                 break;
             case ContradictionCause.Column :
-                var rows = snapshot.ColumnPositionsAt(_causeNumber, _possibility);
+                var rows = snapshot.ColumnPositionsAt(_lastChecked.Col, _possibility);
                 highlighters = new Highlight[rows.Count];
 
                 cursor = 0;
@@ -324,7 +312,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 {
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(row, _causeNumber, _possibility), Coloring.Off)
+                        _coloring.History!.GetPathToRoot(new CellPossibility(row, _lastChecked.Col, _possibility), Coloring.Off)
                             .Highlight(lighter);
                         lighter.CirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
@@ -334,7 +322,8 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 
                 break;
             case ContradictionCause.MiniGrid :
-                var cells = snapshot.MiniGridPositionsAt(_causeNumber / 3, _causeNumber % 3, _possibility);
+                var cells = snapshot.MiniGridPositionsAt(_lastChecked.Row / 3,
+                    _lastChecked.Col / 3, _possibility);
                 highlighters = new Highlight[cells.Count];
                 
                 cursor = 0;

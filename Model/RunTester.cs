@@ -9,7 +9,7 @@ using Model.Solver.Helpers;
 
 namespace Model;
 
-public class RunTester
+public class RunTester //TODO : Add eliminations + solutions for each strategy + total time spent
 {
     public string Path { get; set; } = "";
     public RunResult LastRunResult { get; private set; } = new();

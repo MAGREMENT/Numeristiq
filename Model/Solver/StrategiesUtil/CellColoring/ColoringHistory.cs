@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
@@ -79,6 +80,8 @@ public class Path<T> where T : ILinkGraphElement
     public T[] Elements { get; }
     public LinkStrength[] Links { get; }
 
+    public int Count => Elements.Length;
+
     public void Highlight(IHighlightable highlighter)
     {
         for (int i = 0; i < Links.Length; i++)
@@ -91,5 +94,47 @@ public class Path<T> where T : ILinkGraphElement
         
         if(Elements.Length > 0) highlighter.HighlightLinkGraphElement(Elements[0], Links[0] == LinkStrength.Strong
             ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
+    }
+
+    public Loop<T>? TryMakeLoop(Path<T> path)
+    {
+        if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
+        HashSet<T> present = new HashSet<T>(Elements);
+
+        var total = Count + path.Count - 2;
+        
+        var elements = new T[total];
+        var links = new LinkStrength[total];
+
+        Array.Copy(Elements, 0, elements, 0, Elements.Length);
+        var cursor = Elements.Length;
+        for (int i = path.Elements.Length - 2; i > 0; i--)
+        {
+            var current = path.Elements[i];
+            if (present.Contains(current)) return null;
+
+            elements[cursor++] = current;
+        }
+
+        Array.Copy(Links, 0, links, 0, Links.Length);
+        cursor = Links.Length;
+        for (int i = path.Links.Length - 1; i >= 0; i--)
+        {
+            links[cursor++] = path.Links[i];
+        }
+
+        return new Loop<T>(elements, links);
+    }
+    
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+        for (int i = 0; i < Elements.Length; i++)
+        {
+            builder.Append(Elements[i] + (Links[i] == LinkStrength.Strong ? " = " : " - "));
+        }
+
+        builder.Append(Elements[^1]);
+        return builder.ToString();
     }
 }

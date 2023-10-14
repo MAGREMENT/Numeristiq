@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -60,11 +61,16 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
             lighter =>
             {
-                int counter = 0;
+                var coloring = _loop.Links[0] == LinkStrength.Strong
+                    ? ChangeColoration.CauseOffOne
+                    : ChangeColoration.CauseOnOne;
+                
                 foreach (var element in _loop)
                 {
-                    lighter.HighlightLinkGraphElement(element, counter % 2 == 0 ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
-                    counter++;
+                    lighter.HighlightLinkGraphElement(element, coloring);
+                    coloring = coloring == ChangeColoration.CauseOnOne
+                        ? ChangeColoration.CauseOffOne
+                        : ChangeColoration.CauseOnOne;
                 }
                 
                 _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
@@ -80,7 +86,8 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
         {
             LoopType.NiceLoop => "Nice loop",
             LoopType.StrongInference => "Loop with a strong inference",
-            LoopType.WeakInference => "Loop with a weak inference"
+            LoopType.WeakInference => "Loop with a weak inference",
+            _ => throw new ArgumentOutOfRangeException()
         };
 
         return result + $" found\nLoop :: {_loop}";

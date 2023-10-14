@@ -1,6 +1,6 @@
 ﻿namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
-public class AlmostNakedPossibilitiesConstructRule : IConstructRule
+public class AlmostNakedSetConstructRule : IConstructRule
 {
     public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
     {
@@ -41,27 +41,28 @@ public class AlmostNakedPossibilitiesConstructRule : IConstructRule
             CellPossibilities[] buildUp = new CellPossibilities[als.Coordinates.Length];
             for (int i = 0; i < als.Coordinates.Length; i++)
             {
-                buildUp[i] = new CellPossibilities(als.Coordinates[i],
-                    strategyManager.PossibilitiesAt(als.Coordinates[i].Row, als.Coordinates[i].Col));
+                var poss = strategyManager.PossibilitiesAt(als.Coordinates[i].Row, als.Coordinates[i].Col).Copy();
+                poss.Remove(buffer.Possibility);
+                buildUp[i] = new CellPossibilities(als.Coordinates[i], poss);
             }
 
-            AlmostNakedPossibilities anp = new AlmostNakedPossibilities(buildUp, buffer);
+            AlmostNakedSet anp = new AlmostNakedSet(buildUp, buffer);
             linkGraph.AddLink(buffer, anp, LinkStrength.Strong, LinkType.MonoDirectional);
 
             bool sameRow = true;
-            int sharedRow = anp.CellPossibilities[0].Cell.Row;
+            int sharedRow = anp.NakedSet[0].Cell.Row;
             bool sameCol = true;
-            int sharedCol = anp.CellPossibilities[0].Cell.Col;
+            int sharedCol = anp.NakedSet[0].Cell.Col;
             bool sameMini = true;
-            int sharedMiniRow = anp.CellPossibilities[0].Cell.Row / 3;
-            int sharedMiniCol = anp.CellPossibilities[0].Cell.Col / 3;
+            int sharedMiniRow = anp.NakedSet[0].Cell.Row / 3;
+            int sharedMiniCol = anp.NakedSet[0].Cell.Col / 3;
 
-            for (int i = 1; i < anp.CellPossibilities.Length; i++)
+            for (int i = 1; i < anp.NakedSet.Length; i++)
             {
-                if (anp.CellPossibilities[i].Cell.Row != sharedRow) sameRow = false;
-                if (anp.CellPossibilities[i].Cell.Col != sharedCol) sameCol = false;
-                if (anp.CellPossibilities[i].Cell.Row / 3 != sharedMiniRow ||
-                    anp.CellPossibilities[i].Cell.Col / 3 != sharedMiniCol) sameMini = false;
+                if (anp.NakedSet[i].Cell.Row != sharedRow) sameRow = false;
+                if (anp.NakedSet[i].Cell.Col != sharedCol) sameCol = false;
+                if (anp.NakedSet[i].Cell.Row / 3 != sharedMiniRow ||
+                    anp.NakedSet[i].Cell.Col / 3 != sharedMiniCol) sameMini = false;
             }
 
             foreach (var possibility in als.Possibilities)
