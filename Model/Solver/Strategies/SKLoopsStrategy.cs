@@ -57,213 +57,7 @@ public class SKLoopsStrategy : AbstractStrategy
             }
         }
     }
-
-    private void ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
-    {
-        var one = CrossRowPossibilities(strategyManager, cells[0]);
-        var two = CrossRowPossibilities(strategyManager, cells[1]);
-        var and = one.Possibilities.And(two.Possibilities);
-        if (and.Count == 0) return;
-
-        if (!and.Equals(one.Possibilities) && !and.Equals(two.Possibilities)) IsLoop(strategyManager, cells, and);
-        
-        if (and.Count == 1) return;
-        
-        foreach (var combination in EachCombination(and))
-        {
-            IsLoop(strategyManager, cells, combination);
-        }
-    }
-
-    private static List<IPossibilities> EachCombination(IPossibilities possibilities)
-    {
-        List<IPossibilities> result = new();
-        EachCombination(result, possibilities, IPossibilities.NewEmpty());
-        return result;
-    }
-
-    private static void EachCombination(List<IPossibilities> result, IPossibilities total, IPossibilities toSearch)
-    {
-        foreach (var possibility in total)
-        {
-            if (toSearch.Peek(possibility)) continue;
-
-            toSearch.Add(possibility);
-            result.Add(toSearch.Copy());
-            EachCombination(result, total, toSearch);
-            toSearch.Remove(possibility);
-        }
-    }
     
-    private void IsLoop(IStrategyManager strategyManager, Cell[] cells, IPossibilities start)
-    {
-        int possibilityCount = 0;
-        int cellCount = 0;
-        IPossibilities[] links = new IPossibilities[8];
-        int cursor = 0;
-        
-        var second = CrossRowPossibilities(strategyManager, cells[1]);
-        second.Possibilities.Remove(start);
-        if (second.Possibilities.Count == 0) return;
-        links[cursor++] = second.Possibilities;
-        possibilityCount += second.Possibilities.Count;
-        cellCount += second.Number;
-
-        var third = CrossColPossibilities(strategyManager, cells[1]);
-        if (!third.Possibilities.PeekAll(second.Possibilities)) return;
-        third.Possibilities.Remove(second.Possibilities);
-        if (third.Possibilities.Count == 0) return;
-        links[cursor++] = third.Possibilities;
-        possibilityCount += third.Possibilities.Count;
-        cellCount += third.Number;
-
-        var fourth = CrossColPossibilities(strategyManager, cells[2]);
-        if (!fourth.Possibilities.PeekAll(third.Possibilities)) return;
-        fourth.Possibilities.Remove(third.Possibilities);
-        if (fourth.Possibilities.Count == 0) return;
-        links[cursor++] = fourth.Possibilities;
-        possibilityCount += fourth.Possibilities.Count;
-        cellCount += fourth.Number;
-
-        var fifth = CrossRowPossibilities(strategyManager, cells[2]);
-        if (!fifth.Possibilities.PeekAll(fourth.Possibilities)) return;
-        fifth.Possibilities.Remove(fourth.Possibilities);
-        if (fifth.Possibilities.Count == 0) return;
-        links[cursor++] = fifth.Possibilities;
-        possibilityCount += fifth.Possibilities.Count;
-        cellCount += fifth.Number;
-
-        var sixth = CrossRowPossibilities(strategyManager, cells[3]);
-        if (!sixth.Possibilities.PeekAll(fifth.Possibilities)) return;
-        sixth.Possibilities.Remove(fifth.Possibilities);
-        if (sixth.Possibilities.Count == 0) return;
-        links[cursor++] = sixth.Possibilities;
-        possibilityCount += sixth.Possibilities.Count;
-        cellCount += sixth.Number;
-
-        var seventh = CrossColPossibilities(strategyManager, cells[3]);
-        if (!seventh.Possibilities.PeekAll(sixth.Possibilities)) return;
-        seventh.Possibilities.Remove(sixth.Possibilities);
-        if (seventh.Possibilities.Count == 0) return;
-        links[cursor++] = seventh.Possibilities;
-        possibilityCount += seventh.Possibilities.Count;
-        cellCount += seventh.Number;
-
-        var eighth = CrossColPossibilities(strategyManager, cells[0]);
-        if (!eighth.Possibilities.PeekAll(seventh.Possibilities)) return;
-        eighth.Possibilities.Remove(seventh.Possibilities);
-        if (eighth.Possibilities.Count == 0) return;
-        links[cursor++] = eighth.Possibilities;
-        possibilityCount += eighth.Possibilities.Count;
-        cellCount += eighth.Number;
-
-        var first = CrossRowPossibilities(strategyManager, cells[0]);
-        if (!first.Possibilities.PeekAll(eighth.Possibilities)) return;
-        first.Possibilities.Remove(eighth.Possibilities);
-        if (fifth.Possibilities.Count == 0) return;
-        links[cursor] = first.Possibilities;
-        possibilityCount += first.Possibilities.Count;
-        cellCount += first.Number;
-
-        if (!start.Equals(first.Possibilities) || possibilityCount > cellCount) return;
-
-        ProcessPattern(strategyManager, cells, links);
-    }
-
-    private void ProcessPattern(IStrategyManager strategyManager, Cell[] cells, IPossibilities[] links)
-    {
-        var miniCol1 = cells[0].Col / 3;
-        var miniCol2 = cells[1].Col / 3;
-        
-        for (int col = 0; col < 9; col++)
-        {
-            var miniCol = col / 3;
-            if(miniCol == miniCol1 || miniCol == miniCol2) continue;
-
-            foreach (var possibility in links[7])
-            {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cells[0].Row, col);
-            }
-            
-            foreach (var possibility in links[3])
-            {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cells[2].Row, col);
-            }
-        }
-
-        for (int gridRow = 0; gridRow < 3; gridRow++)
-        {
-            for (int gridCol = 0; gridCol < 3; gridCol++)
-            {
-                int row = cells[1].Row / 3 * 3 + gridRow;
-                int col = cells[1].Col / 3 * 3 + gridCol;
-
-                if (row != cells[1].Row && col != cells[1].Col)
-                {
-                    foreach (var possibility in links[0])
-                    {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                    }
-                }
-                
-                row = cells[2].Row / 3 * 3 + gridRow;
-                col = cells[2].Col / 3 * 3 + gridCol;
-
-                if (row != cells[2].Row && col != cells[2].Col)
-                {
-                    foreach (var possibility in links[2])
-                    {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                    }
-                }
-                
-                row = cells[3].Row / 3 * 3 + gridRow;
-                col = cells[3].Col / 3 * 3 + gridCol;
-
-                if (row != cells[3].Row && col != cells[3].Col)
-                {
-                    foreach (var possibility in links[4])
-                    {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                    }
-                }
-                
-                row = cells[0].Row / 3 * 3 + gridRow;
-                col = cells[0].Col / 3 * 3 + gridCol;
-
-                if (row != cells[0].Row && col != cells[0].Col)
-                {
-                    foreach (var possibility in links[6])
-                    {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                    }
-                }
-            }
-        }
-
-        var miniRow1 = cells[1].Row / 3;
-        var miniRow2 = cells[2].Row / 3;
-
-        for (int row = 0; row < 9; row++)
-        {
-            var miniRow = row / 3;
-            if (miniRow == miniRow1 || miniRow == miniRow2) continue;
-            
-            foreach (var possibility in links[1])
-            {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, cells[1].Col);
-            }
-            
-            foreach (var possibility in links[5])
-            {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, cells[3].Col);
-            }
-        }
-        
-        if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this, new SKLoopsReportBuilder(cells, links));
-    }
-
     private bool IsCellValid(IStrategyManager strategyManager, int row, int col)
     {
         int startCol = col / 3 * 3;
@@ -289,6 +83,164 @@ public class SKLoopsStrategy : AbstractStrategy
         }
 
         return countRow < 2 & countCol < 2;
+    }
+
+    private void ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
+    {
+        var one = CrossColPossibilities(strategyManager, cells[0]);
+        var two = CrossColPossibilities(strategyManager, cells[3]);
+        var and = one.Possibilities.And(two.Possibilities);
+        if (and.Count == 0 || and.Equals(one.Possibilities) || and.Equals(two.Possibilities)) return;
+
+        var combinations = EachCombination(and);
+        
+        foreach (var combination in combinations)
+        {
+            IsLoop(strategyManager, cells, combination);
+        }
+    }
+
+    private static List<IPossibilities> EachCombination(IPossibilities possibilities)
+    {
+        List<IPossibilities> result = new();
+        EachCombination(result, possibilities, IPossibilities.NewEmpty(), 0);
+        return result;
+    }
+
+    private static void EachCombination(List<IPossibilities> result, IPossibilities total, IPossibilities toSearch, int cursor)
+    {
+        while(total.Next(ref cursor) != 0)
+        {
+            if (toSearch.Peek(cursor)) continue;
+
+            toSearch.Add(cursor);
+            result.Add(toSearch.Copy());
+            EachCombination(result, total, toSearch, cursor);
+            toSearch.Remove(cursor);
+        }
+    }
+    
+    private void IsLoop(IStrategyManager strategyManager, Cell[] cells, IPossibilities start)
+    {
+        int possibilityCount = 0;
+        int cellCount = 0;
+        int total = cells.Length * 2;
+        
+        IPossibilities[] links = new IPossibilities[total];
+        var poss = start;
+        for (int i = 0; i < total; i++)
+        {
+            var pan = (i + 1) / 2 % 2 == 1
+                ? CrossRowPossibilities(strategyManager, cells[i / 2])
+                : CrossColPossibilities(strategyManager, cells[i / 2]);
+            pan.Possibilities.Remove(poss);
+            if (pan.Possibilities.Count == 0) return;
+            
+            if (i == total - 1 && !pan.Possibilities.Equals(start)) return;
+            
+            links[i] = pan.Possibilities;
+            possibilityCount += pan.Possibilities.Count;
+            cellCount += pan.Number;
+            poss = pan.Possibilities;
+        }
+
+        if (possibilityCount > cellCount) return;
+
+        ProcessPattern(strategyManager, cells, links);
+    }
+
+    private void ProcessPattern(IStrategyManager strategyManager, Cell[] cells, IPossibilities[] links)
+    {
+        var miniCol1 = cells[0].Col / 3;
+        var miniCol2 = cells[1].Col / 3;
+        
+        for (int col = 0; col < 9; col++)
+        {
+            var miniCol = col / 3;
+            if(miniCol == miniCol1 || miniCol == miniCol2) continue;
+
+            foreach (var possibility in links[1])
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cells[0].Row, col);
+            }
+            
+            foreach (var possibility in links[5])
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cells[2].Row, col);
+            }
+        }
+
+        for (int gridRow = 0; gridRow < 3; gridRow++)
+        {
+            for (int gridCol = 0; gridCol < 3; gridCol++)
+            {
+                int row = cells[0].Row / 3 * 3 + gridRow;
+                int col = cells[0].Col / 3 * 3 + gridCol;
+
+                if (row != cells[0].Row && col != cells[0].Col)
+                {
+                    foreach (var possibility in links[0])
+                    {
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    }
+                }
+                
+                row = cells[1].Row / 3 * 3 + gridRow;
+                col = cells[1].Col / 3 * 3 + gridCol;
+
+                if (row != cells[1].Row && col != cells[1].Col)
+                {
+                    foreach (var possibility in links[2])
+                    {
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    }
+                }
+                
+                row = cells[2].Row / 3 * 3 + gridRow;
+                col = cells[2].Col / 3 * 3 + gridCol;
+
+                if (row != cells[2].Row && col != cells[2].Col)
+                {
+                    foreach (var possibility in links[4])
+                    {
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    }
+                }
+                
+                row = cells[3].Row / 3 * 3 + gridRow;
+                col = cells[3].Col / 3 * 3 + gridCol;
+
+                if (row != cells[3].Row && col != cells[3].Col)
+                {
+                    foreach (var possibility in links[6])
+                    {
+                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    }
+                }
+            }
+        }
+
+        var miniRow1 = cells[1].Row / 3;
+        var miniRow2 = cells[2].Row / 3;
+
+        for (int row = 0; row < 9; row++)
+        {
+            var miniRow = row / 3;
+            if (miniRow == miniRow1 || miniRow == miniRow2) continue;
+            
+            foreach (var possibility in links[3])
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, cells[1].Col);
+            }
+            
+            foreach (var possibility in links[7])
+            {
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, cells[3].Col);
+            }
+        }
+        
+        if (strategyManager.ChangeBuffer.NotEmpty())
+            strategyManager.ChangeBuffer.Push(this, new SKLoopsReportBuilder(cells, links));
     }
 
     private PossibilitiesAndNumber CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)
@@ -364,126 +316,30 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();
 
-        foreach (var cell in CrossRow(snapshot, _cells[1]))
+        for (int i = 0; i < _cells.Length * 2; i++)
         {
-            foreach (var possibility in _links[7])
+            var cells = (i + 1) / 2 % 2 == 1
+                ? CrossRow(snapshot, _cells[i / 2])
+                : CrossCol(snapshot, _cells[i / 2]);
+
+            foreach (var cell in cells)
             {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
+                var before = i - 1;
+                if (before < 0) before = _links.Length - 1;
+                foreach (var possibility in _links[before])
+                {
+                    if(snapshot.PossibilitiesAt(cell).Peek(possibility))
+                        on.Add(new CellPossibility(cell, possibility));
+                }
             
-            foreach (var possibility in _links[0])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
+                foreach (var possibility in _links[i])
+                {
+                    if(snapshot.PossibilitiesAt(cell).Peek(possibility))
+                        off.Add(new CellPossibility(cell, possibility));
+                }
             }
         }
-        
-        foreach (var cell in CrossCol(snapshot, _cells[1]))
-        {
-            foreach (var possibility in _links[0])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[1])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
-        foreach (var cell in CrossCol(snapshot, _cells[2]))
-        {
-            foreach (var possibility in _links[1])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[2])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
-        foreach (var cell in CrossRow(snapshot, _cells[2]))
-        {
-            foreach (var possibility in _links[2])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[3])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
-        foreach (var cell in CrossRow(snapshot, _cells[3]))
-        {
-            foreach (var possibility in _links[3])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[4])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
-        foreach (var cell in CrossCol(snapshot, _cells[3]))
-        {
-            foreach (var possibility in _links[4])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[5])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
-        foreach (var cell in CrossCol(snapshot, _cells[0]))
-        {
-            foreach (var possibility in _links[5])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[6])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
-        foreach (var cell in CrossRow(snapshot, _cells[0]))
-        {
-            foreach (var possibility in _links[6])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    on.Add(new CellPossibility(cell, possibility));
-            }
-            
-            foreach (var possibility in _links[7])
-            {
-                if(snapshot.PossibilitiesAt(cell).Peek(possibility))
-                    off.Add(new CellPossibility(cell, possibility));
-            }
-        }
-        
+
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             foreach (var cell in _cells)

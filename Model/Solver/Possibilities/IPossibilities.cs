@@ -51,6 +51,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     
     public int Count { get; }
     public int GetFirst();
+    public int Next(ref int cursor);
     public IPossibilities Or(IReadOnlyPossibilities possibilities);
     public IPossibilities And(IReadOnlyPossibilities possibilities);
     public IPossibilities Invert();

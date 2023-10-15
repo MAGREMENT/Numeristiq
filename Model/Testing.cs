@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
-using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.SharedCellSearcher;
 
@@ -15,9 +14,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
-        //12 3s5s34s4s1s4s5s6s6 24  5s6s6  7s6s8  6  42  3s6s7   9s5s9 8
-        //100000002090400050006000700050903000000070000000850040700000600030009080002000001
-        FullSudokuBankTest("LocalBank.txt");
+        FullSudokuBankTest("OnlineBank2.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

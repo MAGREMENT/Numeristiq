@@ -65,6 +65,11 @@ public class BoolArrayPossibilities : IPossibilities
         }
     }
 
+    public int Next(ref int cursor)
+    {
+        throw new NotImplementedException();
+    }
+
     public IPossibilities Or(IReadOnlyPossibilities possibilities)
     {
         return IPossibilities.DefaultOr(this, possibilities);
