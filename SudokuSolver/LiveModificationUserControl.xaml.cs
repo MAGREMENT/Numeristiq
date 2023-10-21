@@ -67,7 +67,7 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
         if (_current is not null)
         {
             if (isPossibilities) Cell.SetPossibilities(numbers);
-            else Cell.SetDefinitiveNumber(numbers.GetFirst());
+            else Cell.SetDefinitiveNumber(numbers.First());
         }
     }
 

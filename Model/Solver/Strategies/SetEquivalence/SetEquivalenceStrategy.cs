@@ -13,7 +13,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
     private readonly ISetEquivalenceSearcher _searcher;
     
     public SetEquivalenceStrategy(ISetEquivalenceSearcher searcher)
-        : base(OfficialName, StrategyDifficulty.Extreme)
+        : base(OfficialName, StrategyDifficulty.Hard)
     {
         _searcher = searcher;
     }

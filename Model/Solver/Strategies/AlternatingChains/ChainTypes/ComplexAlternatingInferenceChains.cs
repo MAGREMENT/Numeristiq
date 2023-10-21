@@ -50,16 +50,28 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
         foreach (var possibility in or)
         {
             List<Cell> cells = new();
+            bool yes1 = false;
+            bool yes2 = false;
 
             foreach (var cp in cp1)
             {
-                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                if (cp.Possibilities.Peek(possibility))
+                {
+                    yes1 = true;
+                    cells.Add(cp.Cell);
+                }
             }
             
             foreach (var cp in cp2)
             {
-                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                if (cp.Possibilities.Peek(possibility))
+                {
+                    yes2 = true;
+                    cells.Add(cp.Cell);
+                }
             }
+
+            if (!yes1 || !yes2) continue;
 
             foreach (var cell in Cells.SharedSeenCells(cells))
             {

@@ -36,7 +36,7 @@ public class XYWingStrategy : AbstractStrategy
                         var thirdPoss = strategyManager.PossibilitiesAt(otherRow, col);
                         var and = thirdPoss.And(secondPoss);
                         int toRemove;
-                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.GetFirst()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
+                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
 
                         if(Process(strategyManager, row, col, row, otherCol, otherRow, col, toRemove))
                             return;
@@ -50,7 +50,7 @@ public class XYWingStrategy : AbstractStrategy
                         var thirdPoss = strategyManager.PossibilitiesAt(mini.Row, mini.Col);
                         var and = thirdPoss.And(secondPoss);
                         int toRemove;
-                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.GetFirst()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
+                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
 
                         if (Process(strategyManager, row, col, row, otherCol, mini.Row, mini.Col, toRemove))
                             return;
@@ -72,7 +72,7 @@ public class XYWingStrategy : AbstractStrategy
                         var thirdPoss = strategyManager.PossibilitiesAt(mini.Row, mini.Col);
                         var and = thirdPoss.And(secondPoss);
                         int toRemove;
-                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.GetFirst()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
+                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
 
                         if (Process(strategyManager, row, col, otherRow, col, mini.Row, mini.Col, toRemove))
                             return;

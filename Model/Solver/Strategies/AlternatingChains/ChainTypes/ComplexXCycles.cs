@@ -32,7 +32,7 @@ public class ComplexXCycles : IAlternatingChainType<ILinkGraphElement>
         List<Cell> cells = new List<Cell>(one.EveryCell());
         cells.AddRange(two.EveryCell());
         
-        RemovePossibilityInAll(view, Cells.SharedSeenCells(cells), one.EveryPossibilities().GetFirst());
+        RemovePossibilityInAll(view, Cells.SharedSeenCells(cells), one.EveryPossibilities().First());
     }
     
     private void RemovePossibilityInAll(IStrategyManager view, IEnumerable<Cell> coords, int possibility)

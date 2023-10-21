@@ -65,11 +65,6 @@ public class BoolArrayPossibilities : IPossibilities
         }
     }
 
-    public int Next(ref int cursor)
-    {
-        throw new NotImplementedException();
-    }
-
     public IPossibilities Or(IReadOnlyPossibilities possibilities)
     {
         return IPossibilities.DefaultOr(this, possibilities);
@@ -126,7 +121,7 @@ public class BoolArrayPossibilities : IPossibilities
         IPossibilities.DefaultAdd(this, possibilities);
     }
 
-    public int GetFirst()
+    public int First()
     {
         for (int i = 0; i < 9; i++)
         {

@@ -1,6 +1,4 @@
-﻿using Model.Solver.Helpers;
-
-namespace Model.Solver.Strategies;
+﻿namespace Model.Solver.Strategies;
 
 public class NoStrategy : AbstractStrategy
 {

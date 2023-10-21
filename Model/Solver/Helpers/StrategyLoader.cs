@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -10,12 +9,13 @@ using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Util;
 
 namespace Model.Solver.Helpers;
 
 public class StrategyLoader
 {
-    private static readonly string Path = PathsInfo.PathToData() + "/strategies.json";
+    private static readonly string Path = PathsInfo.PathToData() + "/strategies.ini";
 
     private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
@@ -62,7 +62,9 @@ public class StrategyLoader
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {GurthTheorem.OfficialName, new GurthTheorem()},
-        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new VoidSearcher())}
+        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new VoidSearcher())},
+        {MultiSectorLockedSetsStrategy.OfficialName,
+            new MultiSectorLockedSetsStrategy(2, 5, 2, 2)}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
@@ -72,26 +74,23 @@ public class StrategyLoader
     {
         if (!File.Exists(Path)) return;
 
-        var buffer = JsonSerializer.Deserialize<StrategyUsage[]>(File.ReadAllText(Path));
-        if (buffer is null) return;
-
+        var result = IniFileReader.Read(Path);
+        if (!result.TryGetValue("Strategy Order", out var orderSection)) return;
+        
         List<IStrategy> strategies = new();
         ulong excluded = 0;
-        int errorOffset = 0;
+        int count = 0;
 
-        for (int i = 0; i < buffer.Length; i++)
+        foreach (var entry in orderSection)
         {
-            var current = buffer[i];
-            if (!StrategyPool.TryGetValue(current.StrategyName, out var strategy))
-            {
-                errorOffset++;
-                continue;
-            }
+            if (!StrategyPool.TryGetValue(entry.Key, out var strategy)) continue;
             
             strategies.Add(strategy);
-            if (!current.Used) excluded |= 1ul << (i - errorOffset);
-        }
+            if (entry.Value.Equals("false")) excluded |= 1ul << count;
 
+            count++;
+        }
+        
         Strategies = strategies.ToArray();
         ExcludedStrategies = excluded;
     }

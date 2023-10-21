@@ -18,7 +18,7 @@ public class NakedSingleStrategy : AbstractStrategy
             for (int col = 0; col < 9; col++)
             {
                 if (strategyManager.PossibilitiesAt(row, col).Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(
-                        strategyManager.PossibilitiesAt(row, col).GetFirst(), row, col);
+                        strategyManager.PossibilitiesAt(row, col).First(), row, col);
             }
         }
 

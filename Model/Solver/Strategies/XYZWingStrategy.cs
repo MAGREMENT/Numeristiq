@@ -41,7 +41,7 @@ public class XYZWingStrategy : AbstractStrategy
                         if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
 
                         if (Process(strategyManager, row, col, mini.Row, mini.Col, row,
-                                otherCol, and.And(secondCorner).GetFirst())) return;
+                                otherCol, and.And(secondCorner).First())) return;
                     }
 
                     foreach (var otherRow in map.Columns[col])
@@ -52,7 +52,7 @@ public class XYZWingStrategy : AbstractStrategy
                         if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
 
                         if (Process(strategyManager, row, col, mini.Row, mini.Col,
-                                otherRow, col, and.And(secondCorner).GetFirst())) return;
+                                otherRow, col, and.And(secondCorner).First())) return;
                     }
                 }
             }

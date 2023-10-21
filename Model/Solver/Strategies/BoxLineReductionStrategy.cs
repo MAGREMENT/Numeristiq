@@ -46,7 +46,7 @@ public class BoxLineReductionStrategy : AbstractStrategy
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int startRow = row / 3 * 3;
-                    int startCol = ppir.GetFirst() / 3 * 3;
+                    int startCol = ppir.First() / 3 * 3;
 
                     for (int r = 0; r < 3; r++)
                     {
@@ -72,7 +72,7 @@ public class BoxLineReductionStrategy : AbstractStrategy
                 var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
-                    int startRow = ppic.GetFirst() / 3 * 3;
+                    int startRow = ppic.First() / 3 * 3;
                     int startCol = col / 3 * 3;
 
                     for (int r = 0; r < 3; r++)

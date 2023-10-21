@@ -68,7 +68,7 @@ public class LinePositions : IReadOnlyLinePositions
         return Count is < 4 and > 0 && ((_pos & 0x1F8) == 0 || (_pos & 0x1C7) == 0 || (_pos & 0x3F) == 0);
     }
     
-    public int GetFirst()
+    public int First()
     {
         for (int i = 0; i < 9; i++)
         {

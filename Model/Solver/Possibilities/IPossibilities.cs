@@ -50,8 +50,16 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public const int Max = 9;
     
     public int Count { get; }
-    public int GetFirst();
-    public int Next(ref int cursor);
+    public int First();
+    public int Next(ref int cursor){
+        cursor++;
+        for (; cursor <= 9; cursor++)
+        {
+            if (Peek(cursor)) return cursor;
+        }
+
+        return 0;
+    }
     public IPossibilities Or(IReadOnlyPossibilities possibilities);
     public IPossibilities And(IReadOnlyPossibilities possibilities);
     public IPossibilities Invert();

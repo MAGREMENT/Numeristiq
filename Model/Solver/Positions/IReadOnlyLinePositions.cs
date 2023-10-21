@@ -6,7 +6,7 @@ namespace Model.Solver.Positions;
 public interface IReadOnlyLinePositions : IEnumerable<int>
 {
     public int Count { get; }
-    public int GetFirst();
+    public int First();
     public int Next(ref int cursor);
     
     public delegate void HandleCombination(int one, int two);

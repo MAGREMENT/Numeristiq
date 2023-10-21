@@ -10,7 +10,7 @@ public class SolverStateManager
     private readonly ISolverGraphics _sg;
     private readonly ILogListGraphics _llg;
 
-    private SolverState? _currentState;
+    private SolverState? _shownState;
 
     public SolverStateManager(IGraphicsManager gm, ISolverGraphics sg, ILogListGraphics llg)
     {
@@ -28,7 +28,7 @@ public class SolverStateManager
 
     private void LogShowed(ISolverLog log)
     {
-        _currentState = log.SolverState;
+        _shownState = log.SolverState;
             
         _llg.FocusLog(log);
         _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.SolverState, _sg.TranslationType));
@@ -37,7 +37,7 @@ public class SolverStateManager
 
     private void CurrentStateShowed()
     {
-        _currentState = _sg.CurrentState;
+        _shownState = _sg.CurrentState;
         
         _llg.UnFocusLog();
         _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.CurrentState, _sg.TranslationType));
@@ -45,7 +45,7 @@ public class SolverStateManager
 
     private void ShowLogAsked(ISolverLog log)
     {
-        _currentState = log.SolverState;
+        _shownState = log.SolverState;
         
         _sg.ShowState(log.SolverState);
         _sg.HighLightLog(log);
@@ -55,7 +55,7 @@ public class SolverStateManager
 
     private void ShowStartAsked()
     {
-        _currentState = _sg.StartState;
+        _shownState = _sg.StartState;
         
         _sg.ShowState(_sg.StartState);
         _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.StartState, _sg.TranslationType));
@@ -63,16 +63,15 @@ public class SolverStateManager
     
     private void ShowCurrentAsked()
     {
-        _currentState = _sg.CurrentState;
+        _shownState = _sg.CurrentState;
             
-        _sg.ShowState(_sg.CurrentState);
+        _sg.ShowCurrent();
         _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.CurrentState, _sg.TranslationType));
     }
 
     private void TranslationTypeChanged()
     {
-        _gm.ShowSudokuAsString(_currentState is null ? ""
-            : SudokuTranslator.Translate(_currentState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(_shownState ?? _sg.CurrentState, _sg.TranslationType));
     }
 }
 

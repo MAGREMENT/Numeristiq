@@ -129,7 +129,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return pos;
     }
     
-    public Cell GetFirst()
+    public Cell First()
     {
         for (int i = 0; i < 9; i++)
         {

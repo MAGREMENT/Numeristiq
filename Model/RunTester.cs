@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Model.Solver;
 using Model.Solver.Helpers;
+using Model.Util;
 
 namespace Model;
 

@@ -9,7 +9,6 @@
         SizeToContent="WidthAndHeight"
         Title="MainWindow">
     <StackPanel Orientation="Horizontal" Background="{x:Static inf:ColorUtil.Background1}">
-        
         <StackPanel Width="200" Height="700">
             <StackPanel Width="200" Height="350">
                 <TextBlock Text="Options" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>

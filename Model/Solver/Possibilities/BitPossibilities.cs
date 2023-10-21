@@ -78,17 +78,6 @@ public class BitPossibilities : IPossibilities
         }
     }
 
-    public int Next(ref int cursor)
-    {
-        cursor++;
-        for (; cursor <= 9; cursor++)
-        {
-            if (Peek(cursor)) return cursor;
-        }
-
-        return 0;
-    }
-
     public IPossibilities Or(IReadOnlyPossibilities possibilities)
     {
         if (possibilities is BitPossibilities bp)
@@ -164,7 +153,7 @@ public class BitPossibilities : IPossibilities
         IPossibilities.DefaultAdd(this, possibilities);
     }
 
-    public int GetFirst()
+    public int First()
     {
         for (int i = 0; i < 9; i++)
         {

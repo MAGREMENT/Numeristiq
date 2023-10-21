@@ -140,6 +140,10 @@
     "Used": false
   },
   {
+    "StrategyName": "Multi-Sector Locket Sets",
+    "Used": false
+  },
+  {
     "StrategyName": "Digit Forcing Net",
     "Used": true
   },
@@ -160,7 +164,7 @@
     "Used": true
   },
   {
-    "StrategyName": "Brute Force",
+    "StrategyName": "Pattern Overlay",
     "Used": false
   }
 ]

@@ -19,13 +19,13 @@ public class HiddenSingleStrategy : AbstractStrategy
             for (int row = 0; row < 9; row++)
             {
                 var ppir = strategyManager.RowPositionsAt(row, number);
-                if (ppir.Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(number, row, ppir.GetFirst());
+                if (ppir.Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(number, row, ppir.First());
             }
 
             for (int col = 0; col < 9; col++)
             {
                 var ppic = strategyManager.ColumnPositionsAt(col, number);
-                if (ppic.Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(number, ppic.GetFirst(), col);
+                if (ppic.Count == 1) strategyManager.ChangeBuffer.AddSolutionToAdd(number, ppic.First(), col);
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -35,7 +35,7 @@ public class HiddenSingleStrategy : AbstractStrategy
                     var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count != 1) continue;
                     
-                    var pos = ppimn.GetFirst();
+                    var pos = ppimn.First();
                     strategyManager.ChangeBuffer.AddSolutionToAdd(number, pos.Row, pos.Col);
                 }
             }

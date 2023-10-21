@@ -48,7 +48,7 @@ public class PointingSetStrategy : AbstractStrategy
                     var ppimg = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
-                        int row = ppimg.GetFirst().Row;
+                        int row = ppimg.First().Row;
                         for (int col = 0; col < 9; col++)
                         {
                             if (col / 3 != miniCol) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
@@ -59,7 +59,7 @@ public class PointingSetStrategy : AbstractStrategy
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
-                        int col = ppimg.GetFirst().Col;
+                        int col = ppimg.First().Col;
                         for (int row = 0; row < 9; row++)
                         {
                             if (row / 3 != miniRow) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
@@ -101,7 +101,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
     private string Explanation(List<SolverChange> changes)
     {
         var firstChange = changes[0];
-        var firstMini = _miniPos.GetFirst();
+        var firstMini = _miniPos.First();
         int lineNumber;
         Unit unit;
 

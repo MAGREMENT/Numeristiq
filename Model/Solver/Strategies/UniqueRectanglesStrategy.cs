@@ -151,7 +151,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 //Type 2
                 if (roofOne.Count == 1 && roofTwo.Count == 1 && roofOne.Equals(roofTwo))
                 {
-                    int possibility = roofOne.GetFirst();
+                    int possibility = roofOne.First();
                     foreach (var coord in 
                              Cells.SharedSeenCells(row, one.Col, row, two.Col))
                     {
@@ -306,7 +306,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 //Type 2
                 if (roofOne.Count == 1 && roofTwo.Count == 1 && roofOne.Equals(roofTwo))
                 {
-                    int possibility = roofOne.GetFirst();
+                    int possibility = roofOne.First();
                     foreach (var coord in 
                              Cells.SharedSeenCells(one.Row, col, two.Row, col))
                     {
@@ -441,7 +441,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             //Type 2
             if (roofOne.Count == 1 && roofTwo.Count == 1 && roofOne.Equals(roofTwo))
             {
-                int possibility = roofOne.GetFirst();
+                int possibility = roofOne.First();
                 foreach (var coord in 
                          Cells.SharedSeenCells(one.Row, two.Col, two.Row, one.Col))
                 {

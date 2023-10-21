@@ -6,7 +6,7 @@ namespace Model.Solver.Positions;
 public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
 {
     public int Count { get; }
-    public Cell GetFirst();
+    public Cell First();
     public Cell Next(ref int cursor);
     
     public delegate void HandleCombination(Cell one, Cell two);

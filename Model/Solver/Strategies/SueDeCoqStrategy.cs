@@ -97,7 +97,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         }
 
         int miniRow = row / 3;
-        int miniCol = cols.GetFirst() / 3;
+        int miniCol = cols.First() / 3;
 
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
@@ -151,7 +151,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         }
 
         int miniCol = col / 3;
-        int miniRow = rows.GetFirst() / 3;
+        int miniRow = rows.First() / 3;
         for (int gridCol = 0; gridCol < 3; gridCol++)
         { 
             for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -195,7 +195,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         }
 
         var unitStart = unitNumber / 3 * 3;
-        var otherStart = center.GetFirst() / 3 * 3;
+        var otherStart = center.First() / 3 * 3;
         for (int gridUnit = 0; gridUnit < 3; gridUnit++)
         {
             if (gridUnit + unitStart == unitNumber) continue;
