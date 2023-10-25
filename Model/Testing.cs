@@ -15,7 +15,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
-        FullSudokuBankTest("OnlineBank2.txt");
+        FullSudokuBankTest("OnlineBank3.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         
@@ -240,7 +240,7 @@ public static class Testing
 
         var solver = new Solver.Solver(sud);
         int numbersAdded = 0;
-        solver.NumberAdded += (_, _) => numbersAdded++;
+        solver.SolutionAdded += (_, _) => numbersAdded++;
         solver.Solve();
         Console.WriteLine("After solving : ");
         Console.WriteLine(solver.Sudoku);

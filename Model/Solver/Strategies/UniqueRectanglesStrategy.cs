@@ -604,7 +604,7 @@ public class UniqueRectanglesWithAlsReportBuilder : IChangeReportBuilder
             lighter.HighlightCell(_roofOne.Row, _roofOne.Col, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_roofTwo.Row, _roofTwo.Col, ChangeColoration.CauseOffTwo);
 
-            foreach (var coord in _als.Coordinates)
+            foreach (var coord in _als.Cells)
             {
                 lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffThree);
             }

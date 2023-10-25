@@ -5,14 +5,14 @@ namespace Model.Solver.StrategiesUtil;
 
 public class AlmostLockedSet
 {
-    public Cell[] Coordinates { get; }
+    public Cell[] Cells { get; }
     public IReadOnlyPossibilities Possibilities { get; }
 
-    public AlmostLockedSet(Cell[] coordinates, IReadOnlyPossibilities poss)
+    public AlmostLockedSet(Cell[] cells, IReadOnlyPossibilities poss)
     {
-        if (coordinates.Length + 1 != poss.Count)
+        if (cells.Length + 1 != poss.Count)
             throw new ArgumentException("Possibilities count not equal to cell count plus one"); 
-        Coordinates = coordinates;
+        Cells = cells;
         Possibilities = poss;
     }
 
@@ -20,13 +20,13 @@ public class AlmostLockedSet
     {
         if(poss.Count != 2)
             throw new ArgumentException("Possibilities count not equal to cell count plus one"); 
-        Coordinates = new[] { coord };
+        Cells = new[] { coord };
         Possibilities = poss;
     }
 
     public bool Contains(Cell coord)
     {
-        foreach (var c in Coordinates)
+        foreach (var c in Cells)
         {
             if (c == coord) return true;
         }
@@ -36,9 +36,9 @@ public class AlmostLockedSet
 
     public bool HasAtLeastOneCoordinateInCommon(AlmostLockedSet als)
     {
-        foreach (var coord in Coordinates)
+        foreach (var coord in Cells)
         {
-            foreach (var alsCoord in als.Coordinates)
+            foreach (var alsCoord in als.Cells)
             {
                 if (coord == alsCoord) return true;
             }
@@ -49,7 +49,7 @@ public class AlmostLockedSet
 
     public bool ShareAUnit(Cell coord)
     {
-        foreach (var c in Coordinates)
+        foreach (var c in Cells)
         {
             if (!c.ShareAUnit(coord)) return false;
         }
@@ -60,8 +60,8 @@ public class AlmostLockedSet
     public override bool Equals(object? obj)
     {
         if (obj is not AlmostLockedSet als) return false;
-        if (!Possibilities.Equals(als.Possibilities) || Coordinates.Length != als.Coordinates.Length) return false;
-        foreach (var coord in Coordinates)
+        if (!Possibilities.Equals(als.Possibilities) || Cells.Length != als.Cells.Length) return false;
+        foreach (var coord in Cells)
         {
             if (!als.Contains(coord)) return false;
         }
@@ -72,7 +72,7 @@ public class AlmostLockedSet
     public override int GetHashCode()
     {
         int coordHashCode = 0;
-        foreach (var coord in Coordinates)
+        foreach (var coord in Cells)
         {
             coordHashCode ^= coord.GetHashCode();
         }
@@ -82,10 +82,10 @@ public class AlmostLockedSet
 
     public override string ToString()
     {
-        var result = $"[ALS : {Coordinates[0].Row + 1}, {Coordinates[0].Col + 1} ";
-        for (int i = 1; i < Coordinates.Length; i++)
+        var result = $"[ALS : {Cells[0].Row + 1}, {Cells[0].Col + 1} ";
+        for (int i = 1; i < Cells.Length; i++)
         {
-            result += $"| {Coordinates[i].Row + 1}, {Coordinates[i].Col + 1} ";
+            result += $"| {Cells[i].Row + 1}, {Cells[i].Col + 1} ";
         }
 
         result += "=> ";

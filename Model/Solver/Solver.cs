@@ -28,8 +28,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public SolverState State => new(this);
     public SolverState StartState => _logManager.StartState;
 
-    public delegate void OnNumberAdded(int row, int col);
-    public event OnNumberAdded? NumberAdded;
+    public delegate void OnSolutionAdded(int row, int col);
+    public event OnSolutionAdded? SolutionAdded;
 
     public delegate void OnPossibilityRemoved(int row, int col);
     public event OnPossibilityRemoved? PossibilityRemoved;
@@ -39,7 +39,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     private int _currentStrategy = -1;
     private ulong _excludedStrategies;
     private ulong _lockedStrategies;
-    private bool _changeWasMade;
+    
+    private int _solutionAddedBuffer;
+    private int _possibilityRemovedBuffer;
 
     private readonly LogManager _logManager;
 
@@ -53,8 +55,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
 
-        NumberAdded += (_, _) => _changeWasMade = true;
-        PossibilityRemoved += (_, _) => _changeWasMade = true;
+        SolutionAdded += (_, _) => _solutionAddedBuffer++;
+        PossibilityRemoved += (_, _) => _possibilityRemovedBuffer++;
 
         Init();
 
@@ -103,22 +105,22 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     {
         for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
-            if (_sudoku.IsComplete()) return;
             if (!IsStrategyUsed(_currentStrategy)) continue;
             
             if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StartUsing();
             Strategies[_currentStrategy].ApplyOnce(this);
-            if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_changeWasMade);
+            if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
 
-            if (!_changeWasMade) continue;
+            if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
             
-            _changeWasMade = false;
+            _solutionAddedBuffer = 0;
+            _possibilityRemovedBuffer = 0;
             _currentStrategy = -1;
             PreComputer.Reset();
             GraphManager.Clear();
             if(LogsManaged) _logManager.Push();
 
-            if (stopAtProgress) return;
+            if (stopAtProgress || _sudoku.IsComplete()) return;
         }
     }
 
@@ -277,7 +279,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         _sudoku[row, col] = number;
         UpdateAfterSolutionAdded(number, row, col);
         
-        NumberAdded?.Invoke(row, col);
+        SolutionAdded?.Invoke(row, col);
         return true;
     }
 

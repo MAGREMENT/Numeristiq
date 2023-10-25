@@ -24,14 +24,15 @@ public class PatternOverlayStrategy : AbstractStrategy
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
         var allPatterns = GetPatterns(strategyManager);
-        foreach (var p in allPatterns)
-        {
-            if (p.Count > _maxPatternNumber) return;
-        }
 
         for (int number = 1; number <= 9; number++)
         {
             if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
+        }
+        
+        foreach (var p in allPatterns)
+        {
+            if (p.Count > _maxPatternNumber) return;
         }
 
         for (int combinationSize = 1; combinationSize <= _maxCombinationSize; combinationSize++)

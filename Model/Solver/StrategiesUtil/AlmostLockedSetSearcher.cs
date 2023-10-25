@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtil;
 
 public static class AlmostLockedSetSearcher
 {
-    public static List<AlmostLockedSet> InCells(IStrategyManager strategyManager, List<Cell> coords, int max)
+    public static List<AlmostLockedSet> InCells(IStrategyManager strategyManager, List<Cell> coords, int max = 9)
     {
         List<AlmostLockedSet> result = new();
         if (max < 1) return result;
@@ -52,7 +52,7 @@ public static class AlmostLockedSetSearcher
         }
     }
     
-    public static List<AlmostLockedSet> FullGrid(IStrategyManager strategyManager)
+    public static List<AlmostLockedSet> FullGrid(IStrategyManager strategyManager, int max = 9)
     {
         var result = new List<AlmostLockedSet>();
 
@@ -70,14 +70,14 @@ public static class AlmostLockedSetSearcher
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                result.AddRange(InMiniGrid(strategyManager, miniRow, miniCol));
+                result.AddRange(InMiniGrid(strategyManager, miniRow, miniCol, true));
             }
         }
 
         return result;
     }
 
-    public static List<AlmostLockedSet> InRow(IStrategyManager strategyManager, int row)
+    public static List<AlmostLockedSet> InRow(IStrategyManager strategyManager, int row, int max = 9)
     {
         var result = new List<AlmostLockedSet>();
         var visited = new List<Cell>();
@@ -90,14 +90,14 @@ public static class AlmostLockedSetSearcher
                 result.Add(new AlmostLockedSet(new Cell(row, col), strategyManager.PossibilitiesAt(row, col)));
 
             visited.Add(new Cell(row, col));
-            InRow(strategyManager, row, col + 1, strategyManager.PossibilitiesAt(row, col), visited, result);
+            if(max > 1) InRow(strategyManager, row, col + 1, strategyManager.PossibilitiesAt(row, col), visited, result, max);
             visited.RemoveAt(visited.Count - 1);
         }
 
         return result;
     }
 
-    public static List<AlmostLockedSet> InColumn(IStrategyManager strategyManager, int col)
+    public static List<AlmostLockedSet> InColumn(IStrategyManager strategyManager, int col, int max = 9)
     {
         var result = new List<AlmostLockedSet>();
         var visited = new List<Cell>();
@@ -107,14 +107,15 @@ public static class AlmostLockedSetSearcher
             if (strategyManager.Sudoku[row, col] != 0) continue;
 
             visited.Add(new Cell(row, col));
-            InColumn(strategyManager, col, row + 1, strategyManager.PossibilitiesAt(row, col), visited, result);
+            if(max > 1) InColumn(strategyManager, col, row + 1, strategyManager.PossibilitiesAt(row, col), visited, result, max);
             visited.RemoveAt(visited.Count - 1);
         }
 
         return result;
     }
 
-    public static List<AlmostLockedSet> InMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol)
+    public static List<AlmostLockedSet> InMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol,
+        bool excludeSameLine = false, int max = 9)
     {
         var result = new List<AlmostLockedSet>();
         var visited = new List<Cell>();
@@ -126,7 +127,7 @@ public static class AlmostLockedSetSearcher
             if (strategyManager.Sudoku[row, col] != 0) continue;
 
             visited.Add(new Cell(row, col));
-            InMiniGrid(strategyManager, miniRow, miniCol, n + 1, strategyManager.PossibilitiesAt(row, col), visited, result);
+            if(max > 1) InMiniGrid(strategyManager, miniRow, miniCol, n + 1, strategyManager.PossibilitiesAt(row, col), visited, result, excludeSameLine, max);
             visited.RemoveAt(visited.Count - 1);
         }
 
@@ -134,7 +135,7 @@ public static class AlmostLockedSetSearcher
     }
     
     private static void InRow(IStrategyManager strategyManager, int row, int start, IReadOnlyPossibilities current,
-        List<Cell> visited, List<AlmostLockedSet> result)
+        List<Cell> visited, List<AlmostLockedSet> result, int max)
     {
         for (int col = start; col < 9; col++)
         {
@@ -149,14 +150,14 @@ public static class AlmostLockedSetSearcher
                 result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
             }
 
-            InRow(strategyManager, row, col + 1, mashed, visited, result);
+            if(max > visited.Count) InRow(strategyManager, row, col + 1, mashed, visited, result, max);
             
             visited.RemoveAt(visited.Count - 1);
         }
     }
     
     private static void InColumn(IStrategyManager strategyManager, int col, int start, IReadOnlyPossibilities current,
-        List<Cell> visited, List<AlmostLockedSet> result)
+        List<Cell> visited, List<AlmostLockedSet> result, int max)
     {
         for (int row = start; row < 9; row++)
         {
@@ -171,14 +172,14 @@ public static class AlmostLockedSetSearcher
                 result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
             }
 
-            InColumn(strategyManager, col, row + 1, mashed, visited, result);
+            if(max > visited.Count) InColumn(strategyManager, col, row + 1, mashed, visited, result, max);
             
             visited.RemoveAt(visited.Count - 1);
         }
     }
 
     private static void InMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, int start,
-        IReadOnlyPossibilities current, List<Cell> visited, List<AlmostLockedSet> result)
+        IReadOnlyPossibilities current, List<Cell> visited, List<AlmostLockedSet> result, bool excludeSameLine, int max)
     {
         for (int n = start; n < 9; n++)
         {
@@ -191,12 +192,12 @@ public static class AlmostLockedSetSearcher
             IPossibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + 1 && NotInSameRowOrColumn(visited))
+            if (mashed.Count == visited.Count + 1 && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
                 result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
             }
 
-            InMiniGrid(strategyManager, miniRow, miniCol, n + 1, mashed, visited, result);
+            if(max > visited.Count) InMiniGrid(strategyManager, miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine, max);
             
             visited.RemoveAt(visited.Count - 1);
         }

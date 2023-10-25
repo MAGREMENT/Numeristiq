@@ -540,7 +540,7 @@ public class FireworksWithAlsReportBuilder : IChangeReportBuilder
             {
                 var coloration = (ChangeColoration)color;
 
-                foreach (var coord in als.Coordinates)
+                foreach (var coord in als.Cells)
                 {
                     lighter.HighlightCell(coord, coloration);
                 }

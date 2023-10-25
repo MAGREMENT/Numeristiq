@@ -10,7 +10,7 @@ using Model.Util;
 
 namespace Model;
 
-public class RunTester //TODO : Add eliminations + solutions for each strategy + total time spent
+public class RunTester
 {
     public string Path { get; set; } = "";
     public RunResult LastRunResult { get; private set; } = new();
@@ -102,7 +102,8 @@ public class RunResult
 
     public override string ToString()
     {
-        string[] columnTitles = { "Strategy name", "Usage", "Score", "Score percentage", "Total time", "Average time" };
+        string[] columnTitles = { "Strategy name", "Usage", "Score", "Solutions added", "Possibilities removed",
+            "Score percentage", "Total time", "Average time" };
         int[] widthCap = new int[columnTitles.Length];
 
         for (int i = 0; i < columnTitles.Length; i++)
@@ -115,11 +116,13 @@ public class RunResult
             widthCap[0] = Math.Max(widthCap[0], report.StrategyName.Length + 2);
             widthCap[1] = Math.Max(widthCap[1], report.Tracker.Usage.ToString().Length + 2);
             widthCap[2] = Math.Max(widthCap[2], report.Tracker.Score.ToString().Length + 2);
-            widthCap[3] = Math.Max(widthCap[3], report.Tracker.ScorePercentage()
+            widthCap[3] = Math.Max(widthCap[3], report.Tracker.SolutionsAdded.ToString().Length + 2);
+            widthCap[4] = Math.Max(widthCap[4], report.Tracker.PossibilitiesRemoved.ToString().Length + 2);
+            widthCap[5] = Math.Max(widthCap[5], report.Tracker.ScorePercentage()
                 .ToString(CultureInfo.InvariantCulture).Length + 3);
-            widthCap[4] = Math.Max(widthCap[4], report.Tracker.TotalTimeInSecond()
+            widthCap[6] = Math.Max(widthCap[6], report.Tracker.TotalTimeInSecond()
                 .ToString(CultureInfo.InvariantCulture).Length + 3);
-            widthCap[5] = Math.Max(widthCap[5], report.Tracker.AverageTime()
+            widthCap[7] = Math.Max(widthCap[7], report.Tracker.AverageTime()
                 .ToString(CultureInfo.InvariantCulture).Length + 4);
         }
 
@@ -134,28 +137,38 @@ public class RunResult
 
         result.Append($"Completion rate : {Success} / {Count}\n");
         result.Append($"Solver fails : {SolverFails}\n\n");
-        
+
         result.Append(StringUtil.FillEvenlyWith(columnTitles[0], ' ', widthCap[0]) + "|"
             + StringUtil.FillEvenlyWith(columnTitles[1], ' ', widthCap[1]) + "|"
             + StringUtil.FillEvenlyWith(columnTitles[2], ' ', widthCap[2]) + "|"
             + StringUtil.FillEvenlyWith(columnTitles[3], ' ', widthCap[3]) + "|"
             + StringUtil.FillEvenlyWith(columnTitles[4], ' ', widthCap[4]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[5], ' ', widthCap[5]) + "\n");
+            + StringUtil.FillEvenlyWith(columnTitles[5], ' ', widthCap[5]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[6], ' ', widthCap[6]) + "|"
+            + StringUtil.FillEvenlyWith(columnTitles[7], ' ', widthCap[7]) + "\n");
         result.Append(CrossRow(widthCap));
+        
+        var totalStrategyTime = 0L;
 
         foreach (var report in Reports)
         {
             result.Append(StringUtil.FillEvenlyWith(report.StrategyName, ' ', widthCap[0]) + "|"
                 + StringUtil.FillEvenlyWith(report.Tracker.Usage.ToString(), ' ', widthCap[1]) + "|"
                 + StringUtil.FillEvenlyWith(report.Tracker.Score.ToString(), ' ', widthCap[2]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.SolutionsAdded.ToString(), ' ', widthCap[3]) + "|"
+                + StringUtil.FillEvenlyWith(report.Tracker.PossibilitiesRemoved.ToString(), ' ', widthCap[4]) + "|"
                 + StringUtil.FillEvenlyWith(report.Tracker.ScorePercentage()
-                    .ToString(CultureInfo.InvariantCulture) + "%", ' ', widthCap[3]) + "|"
+                    .ToString(CultureInfo.InvariantCulture) + "%", ' ', widthCap[5]) + "|"
                 + StringUtil.FillEvenlyWith(report.Tracker.TotalTimeInSecond()
-                    .ToString(CultureInfo.InvariantCulture) + "s", ' ', widthCap[4]) + "|"
+                    .ToString(CultureInfo.InvariantCulture) + "s", ' ', widthCap[6]) + "|"
                 + StringUtil.FillEvenlyWith(report.Tracker.AverageTime()
-                    .ToString(CultureInfo.InvariantCulture) + "ms", ' ', widthCap[5]) + "\n");
+                    .ToString(CultureInfo.InvariantCulture) + "ms", ' ', widthCap[7]) + "\n");
             result.Append(CrossRow(widthCap));
+            
+            totalStrategyTime += report.Tracker.TotalTime;
         }
+
+        result.Append($"\nTotal strategy time : {Math.Round((double)totalStrategyTime / 1000, 4)}s\n");
 
         return result.ToString();
     }
@@ -164,7 +177,8 @@ public class RunResult
     {
         return StringUtil.Repeat('-', widthCap[0]) + "+" + StringUtil.Repeat('-', widthCap[1]) + "+"
                + StringUtil.Repeat('-', widthCap[2]) + "+" + StringUtil.Repeat('-', widthCap[3]) + "+"
-               + StringUtil.Repeat('-', widthCap[4]) + "+" + StringUtil.Repeat('-', widthCap[5]) + "\n";
+               + StringUtil.Repeat('-', widthCap[4]) + "+" + StringUtil.Repeat('-', widthCap[5]) + "+"
+               + StringUtil.Repeat('-', widthCap[6]) + "+" + StringUtil.Repeat('-', widthCap[7]) + "\n";
     }
 }
 

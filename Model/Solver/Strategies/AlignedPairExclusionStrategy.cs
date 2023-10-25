@@ -139,7 +139,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var als in _als)
             {
-                foreach (var coord in als.Coordinates)
+                foreach (var coord in als.Cells)
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, (ChangeColoration) color);
                 }

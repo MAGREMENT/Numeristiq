@@ -5,6 +5,8 @@ namespace Model.Solver.Helpers;
 public class StatisticsTracker : IReadOnlyTracker
 {
     public int Score { get; private set; }
+    public int SolutionsAdded { get; private set; }
+    public int PossibilitiesRemoved { get; private set; }
     public int Usage { get; private set; }
     public long TotalTime { get; private set; }
     
@@ -15,17 +17,21 @@ public class StatisticsTracker : IReadOnlyTracker
         _lastStartTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
     }
 
-    public void StopUsing(bool scored)
+    public void StopUsing(int solutionsAdded, int possibilitiesRemoved)
     {
         Usage++;
         TotalTime += DateTimeOffset.Now.ToUnixTimeMilliseconds() - _lastStartTime;
-        if (scored) Score++;
+        SolutionsAdded += solutionsAdded;
+        PossibilitiesRemoved += possibilitiesRemoved;
+        if (solutionsAdded + possibilitiesRemoved > 0) Score++;
     }
 }
 
 public interface IReadOnlyTracker
 {
     public int Score { get; }
+    public int SolutionsAdded { get; }
+    public int PossibilitiesRemoved { get; }
     public int Usage { get; }
     public long TotalTime { get; }
 

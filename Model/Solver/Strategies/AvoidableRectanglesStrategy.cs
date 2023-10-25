@@ -347,7 +347,7 @@ public class AvoidableRectanglesWithAlsReportBuilder : IChangeReportBuilder
                     lighter.HighlightCell(single.Row, single.Column, ChangeColoration.CauseOffOne);
                 }
 
-                foreach (var coord in _als.Coordinates)
+                foreach (var coord in _als.Cells)
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
                 }

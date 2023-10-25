@@ -6,14 +6,14 @@ public class AlmostNakedSetConstructRule : IConstructRule
     {
         foreach (var als in strategyManager.PreComputer.AlmostLockedSets())
         {
-            if (als.Coordinates.Length is < 2 or > 4) continue;
+            if (als.Cells.Length is < 2 or > 4) continue;
 
             CellPossibility buffer = default;
             bool found = false;
             foreach (var possibility in als.Possibilities)
             {
                 found = false;
-                foreach (var coord in als.Coordinates)
+                foreach (var coord in als.Cells)
                 {
                     if (!strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) continue;
 
@@ -38,12 +38,12 @@ public class AlmostNakedSetConstructRule : IConstructRule
             if (!found) continue;
 
             //Almost naked possibility found
-            CellPossibilities[] buildUp = new CellPossibilities[als.Coordinates.Length];
-            for (int i = 0; i < als.Coordinates.Length; i++)
+            CellPossibilities[] buildUp = new CellPossibilities[als.Cells.Length];
+            for (int i = 0; i < als.Cells.Length; i++)
             {
-                var poss = strategyManager.PossibilitiesAt(als.Coordinates[i].Row, als.Coordinates[i].Col).Copy();
+                var poss = strategyManager.PossibilitiesAt(als.Cells[i].Row, als.Cells[i].Col).Copy();
                 poss.Remove(buffer.Possibility);
-                buildUp[i] = new CellPossibilities(als.Coordinates[i], poss);
+                buildUp[i] = new CellPossibilities(als.Cells[i], poss);
             }
 
             AlmostNakedSet anp = new AlmostNakedSet(buildUp, buffer);

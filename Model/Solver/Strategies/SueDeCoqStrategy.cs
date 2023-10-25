@@ -252,12 +252,12 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.Neutral);
                 }
 
-                foreach (var coord in _unitAls.Coordinates)
+                foreach (var coord in _unitAls.Cells)
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffOne);
                 }
 
-                foreach (var coord in _miniAls.Coordinates)
+                foreach (var coord in _miniAls.Cells)
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
                 }

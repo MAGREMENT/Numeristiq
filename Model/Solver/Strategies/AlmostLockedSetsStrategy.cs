@@ -37,13 +37,13 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         if (!two.Possibilities.Peek(possibility) || possibility == restrictedCommon) continue;
 
                         List<Cell> coords = new();
-                        foreach (var oneCoord in one.Coordinates)
+                        foreach (var oneCoord in one.Cells)
                         {
                             if (strategyManager.PossibilitiesAt(oneCoord.Row, oneCoord.Col).Peek(possibility))
                                 coords.Add(oneCoord);
                         }
 
-                        foreach (var twoCoord in two.Coordinates)
+                        foreach (var twoCoord in two.Cells)
                         {
                             if (strategyManager.PossibilitiesAt(twoCoord.Row, twoCoord.Col).Peek(possibility))
                                 coords.Add(twoCoord);
@@ -63,7 +63,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
 
                         List<Cell> where = new();
-                        foreach (var coord in one.Coordinates)
+                        foreach (var coord in one.Cells)
                         {
                             if (strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) where.Add(coord);
                         }
@@ -79,7 +79,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
 
                         List<Cell> where = new();
-                        foreach (var coord in two.Coordinates)
+                        foreach (var coord in two.Cells)
                         {
                             if (strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) where.Add(coord);
                         }
@@ -114,11 +114,11 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
     private bool IsPossibilityRestricted(IStrategyManager strategyManager, AlmostLockedSet one, AlmostLockedSet two,
         int possibility)
     {
-        foreach (var oneCoord in one.Coordinates)
+        foreach (var oneCoord in one.Cells)
         {
             if (!strategyManager.PossibilitiesAt(oneCoord.Row, oneCoord.Col).Peek(possibility)) continue;
 
-            foreach (var twoCoord in two.Coordinates)
+            foreach (var twoCoord in two.Cells)
             {
                 if (!strategyManager.PossibilitiesAt(twoCoord.Row, twoCoord.Col).Peek(possibility)) continue;
 
@@ -147,25 +147,25 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            foreach (var coord in _one.Coordinates)
+            foreach (var coord in _one.Cells)
             {
                 lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffOne);
             }
 
-            foreach (var coord in _two.Coordinates)
+            foreach (var coord in _two.Cells)
             {
                 lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
             }
 
             foreach (var possibility in _restrictedCommons)
             {
-                foreach (var coord in _one.Coordinates)
+                foreach (var coord in _one.Cells)
                 {
                     if(snapshot.PossibilitiesAt(coord).Peek(possibility))
                         lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.Neutral);
                 }
                 
-                foreach (var coord in _two.Coordinates)
+                foreach (var coord in _two.Cells)
                 {
                     if(snapshot.PossibilitiesAt(coord).Peek(possibility))
                         lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.Neutral);

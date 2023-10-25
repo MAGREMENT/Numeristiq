@@ -64,7 +64,8 @@ public class StrategyLoader
         {GurthTheorem.OfficialName, new GurthTheorem()},
         {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new VoidSearcher())},
         {MultiSectorLockedSetsStrategy.OfficialName,
-            new MultiSectorLockedSetsStrategy(2, 5, 2, 2)}
+            new MultiSectorLockedSetsStrategy(2, 5, 2, 2)},
+        {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
