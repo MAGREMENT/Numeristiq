@@ -1,4 +1,6 @@
-﻿namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
+﻿using Model.Solver.StrategiesUtil.AlmostLockedSets;
+
+namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
 public class AlmostNakedSetConstructRule : IConstructRule
 {

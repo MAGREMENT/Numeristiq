@@ -33,8 +33,8 @@ namespace SudokuSolver;
             Solver.SudokuAsStringChanged += ShowSudokuAsString;
             Solver.LogsUpdated += logs =>
             {
-                LogList.InitLogs(logs);
-                ExplanationBox.Text = "";
+                LogList.Dispatcher.Invoke(() => LogList.InitLogs(logs));
+                ExplanationBox.Dispatcher.Invoke(() => ExplanationBox.Text = "");
             };
 
             LiveModification.LiveModified += (number, row, col, action) =>

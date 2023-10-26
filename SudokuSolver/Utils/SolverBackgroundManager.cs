@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace SudokuSolver.Utils;
 

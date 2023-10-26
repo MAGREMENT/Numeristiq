@@ -3,7 +3,7 @@ using System.Linq;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
-namespace Model.Solver.StrategiesUtil;
+namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden set
 {

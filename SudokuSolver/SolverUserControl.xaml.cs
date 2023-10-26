@@ -8,6 +8,7 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using SudokuSolver.Utils;
 
@@ -158,9 +159,10 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         Update();
     }
 
-    public void SolveSudoku()
+    public async void SolveSudoku()
     {
-        _solver.Solve();
+        await _solver.SolveAsync();
+        
         if (_solver.Logs.Count > 0) _logBuffer = _solver.Logs[^1].Id;
         Update();
         IsReady?.Invoke();
@@ -168,7 +170,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
 
     public async void RunUntilProgress()
     {
-        _solver.Solve(true);
+        await _solver.SolveAsync(true);
 
         if (_solver.Logs.Count > 0 && _solver.Logs[^1].Id == _logBuffer)
         {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Possibilities;
 
-namespace Model.Solver.StrategiesUtil;
+namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 public static class AlmostLockedSetSearcher
 {

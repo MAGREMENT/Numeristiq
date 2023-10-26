@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using System.Text;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
@@ -16,165 +18,159 @@ public class DeathBlossomStrategy : AbstractStrategy
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        var als = strategyManager.PreComputer.AlmostLockedSets();
+        var allAls = strategyManager.PreComputer.AlmostLockedSets();
+        Dictionary<int, List<AlmostLockedSet>> concernedAls = new();
 
-        for (int i = 0; i < als.Count; i++)
+        for (int row = 0; row < 9; row++)
         {
-            for (int j = 0; j < als.Count; j++)
+            for (int col = 0; col < 9; col++)
             {
-                var one = als[i];
-                var two = als[j];
-                
-                if (one.HasAtLeastOneCoordinateInCommon(two)) continue;
+                var possibilities = strategyManager.PossibilitiesAt(row, col);
+                if (possibilities.Count == 0) continue;
 
-                foreach (var possibility in one.Possibilities)
+                var current = new Cell(row, col);
+                foreach (var possibility in possibilities)
                 {
-                    if (two.Possibilities.Peek(possibility))
+                    concernedAls[possibility] = new List<AlmostLockedSet>();
+                }
+
+                foreach (var als in allAls)
+                {
+                    if (als.Contains(current)) continue;
+                    
+                    var and = als.Possibilities.And(possibilities);
+                    if (and.Count == 0) continue;
+
+                    foreach (var possibilityInCommon in and)
                     {
-                        if (Try(strategyManager, one, two, possibility)) return;
+                        var ok = true;
+
+                        foreach (var cell in als.Cells)
+                        {
+                            if (strategyManager.PossibilitiesAt(cell).Peek(possibilityInCommon) &&
+                                !cell.ShareAUnit(current))
+                            {
+                                ok = false;
+                                break;
+                            }
+                        }
+
+                        if (ok)
+                        {
+                            concernedAls[possibilityInCommon].Add(als);
+                        }
                     }
                 }
+
+                Dictionary<Cell, IPossibilities> eliminations = new();
+                Dictionary<Cell, HashSet<AlmostLockedSet>> eliminationsCauses = new();
+                List<Cell> buffer = new();
+                
+                foreach (var possibility in possibilities)
+                {
+                    foreach (var als in concernedAls[possibility])
+                    {
+                        if (!als.Possibilities.Peek(possibility)) continue;
+
+                        foreach (var alsPossibility in als.Possibilities)
+                        {
+                            if(alsPossibility == possibility) continue;
+
+                            foreach (var cell in als.Cells)
+                            {
+                                if (strategyManager.PossibilitiesAt(cell).Peek(alsPossibility)) buffer.Add(cell);
+                            }
+
+                            foreach (var seenCell in Cells.SharedSeenCells(buffer))
+                            {
+                                if (seenCell == current || strategyManager.Sudoku[seenCell.Row, seenCell.Col] != 0) continue;
+
+                                if (!eliminations.TryGetValue(seenCell, out var value))
+                                {
+                                    value = strategyManager.PossibilitiesAt(seenCell).Copy();
+                                    eliminations[seenCell] = value;
+                                    eliminationsCauses[seenCell] = new HashSet<AlmostLockedSet>();
+                                }
+
+                                if (value.Remove(alsPossibility)) eliminationsCauses[seenCell].Add(als);
+                                
+                                
+                                if (value.Count == 0)
+                                {
+                                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, current.Row,
+                                        current.Col);
+                                    strategyManager.ChangeBuffer.Push(this,
+                                        new DeathBlossomReportBuilder(current, seenCell,
+                                            eliminationsCauses[seenCell]));
+                                    return;
+                                }
+                            }
+                            
+                            buffer.Clear();
+                        }
+                    }
+                    
+                    eliminations.Clear();
+                }
+                
+                concernedAls.Clear();
             }
         }
     }
 
-    private bool Try(IStrategyManager strategyManager, AlmostLockedSet one, AlmostLockedSet two, int possibility)
+    private void Process(IStrategyManager strategyManager, Cell stem, Cell target, IEnumerable<AlmostLockedSet> sets)
     {
-        var stems = new List<Cell>();
-        Dictionary<Cell, IPossibilities> eliminations = new();
-        List<Cell> buffer = new();
-
-        foreach (var cell in one.Cells)
-        {
-            if (strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
-        }
-
-        foreach (var cell in two.Cells)
-        {
-            if (strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
-        }
-
-        foreach (var cell in Cells.SharedSeenCells(buffer))
-        {
-            if (strategyManager.PossibilitiesAt(cell).Peek(possibility)) stems.Add(cell);
-        }
-
-        if (stems.Count == 0) return false;
-        buffer.Clear();
-
-        /*Debug
-        var debugPossOne = IPossibilities.NewEmpty();
-        debugPossOne.Add(1);
-        debugPossOne.Add(3);
-        debugPossOne.Add(5);
-        debugPossOne.Add(7);
-        var debugOne = new AlmostLockedSet(new[]
-        {
-            new Cell(0, 2),
-            new Cell(4, 2), new Cell(5, 2)
-        }, debugPossOne);
-
-        var debugPossTwo = IPossibilities.NewEmpty();
-        debugPossTwo.Add(1);
-        debugPossTwo.Add(6);
-        debugPossTwo.Add(7);
-        debugPossTwo.Add(8);
-        var debugTwo = new AlmostLockedSet(new[]
-        {
-            new Cell(2, 4), new Cell(2, 5), new Cell(2, 7)
-        }, debugPossTwo);
-
-        if (one.Equals(debugOne) && two.Equals(debugTwo) && possibility == 7)
-        {
-            int a = 0;
-        }*/
-
-        for (int i = 0; i < 2; i++)
-        {
-            var current = i == 0 ? one : two;
-            foreach (var poss in current.Possibilities)
-            {
-                if (poss == possibility) continue;
-                
-                foreach (var cell in current.Cells)
-                {
-                    if (strategyManager.PossibilitiesAt(cell).Peek(poss)) buffer.Add(cell);
-                }
-
-                foreach (var cell in Cells.SharedSeenCells(buffer))
-                {
-                    if (!eliminations.TryGetValue(cell, out var value))
-                    {
-                        value = IPossibilities.NewEmpty();
-                        eliminations[cell] = value;
-                    }
-
-                    value.Add(poss);
-                }
-            
-                buffer.Clear();
-            }
-        }
-
-        foreach (var entry in eliminations)
-        {
-            var actualPoss = strategyManager.PossibilitiesAt(entry.Key);
-            if(actualPoss.Count == 0) continue;
-            
-            if (entry.Value.PeekAll(actualPoss) && !one.Contains(entry.Key) && !two.Contains(entry.Key)
-                && !stems.Contains(entry.Key))
-            {
-                foreach (var stem in stems)
-                {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, stem.Row, stem.Col);
-                }
-                
-                strategyManager.ChangeBuffer.Push(this, new DeathBlossomReportBuilder(stems, one, two, entry.Key));
-                return true;
-            }
-        }
-
-        return false;
+        //TODO use;
     }
 }
 
 public class DeathBlossomReportBuilder : IChangeReportBuilder
 {
-    private readonly List<Cell> _stems;
-    private readonly AlmostLockedSet _one;
-    private readonly AlmostLockedSet _two;
+    private readonly Cell _stem;
     private readonly Cell _target;
+    private readonly IEnumerable<AlmostLockedSet> _als;
 
-    public DeathBlossomReportBuilder(List<Cell> stems, AlmostLockedSet one, AlmostLockedSet two, Cell target)
+    public DeathBlossomReportBuilder(Cell stem, Cell target, IEnumerable<AlmostLockedSet> als)
     {
-        _stems = stems;
-        _one = one;
-        _two = two;
+        _stem = stem;
         _target = target;
+        _als = als;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            foreach (var stem in _stems)
-            {
-                lighter.HighlightCell(stem, ChangeColoration.Neutral); 
-            }
-
-            foreach (var cell in _one.Cells)
-            {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
-            }
-
-            foreach (var cell in _two.Cells)
-            {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
-            }
-            
+            lighter.HighlightCell(_stem, ChangeColoration.Neutral);
             lighter.HighlightCell(_target, ChangeColoration.CauseOnOne);
 
+            int start = (int)ChangeColoration.CauseOffOne;
+            foreach (var als in _als)
+            {
+                var coloration = (ChangeColoration)start;
+
+                foreach (var cell in als.Cells)
+                {
+                    lighter.HighlightCell(cell, coloration);
+                }
+
+                start++;
+            }
+            
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation()
+    {
+        var builder = new StringBuilder();
+        var asList = new List<AlmostLockedSet>(_als);
+
+        for (int i = 0; i < asList.Count; i++)
+        {
+            builder.Append($"#{i + 1} : {asList[i]}\n");
+        }
+
+        return builder.ToString();
     }
 }

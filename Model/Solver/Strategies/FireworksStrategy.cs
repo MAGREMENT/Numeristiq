@@ -5,6 +5,7 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
