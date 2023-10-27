@@ -10,10 +10,13 @@ namespace Model.Solver.Strategies;
 public class AlignedPairExclusionStrategy : AbstractStrategy
 {
     public const string OfficialName = "Aligned Pair Exclusion";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
     private readonly int _maxAlzSize;
 
-    public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName,  StrategyDifficulty.Hard)
+    public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName,  StrategyDifficulty.Hard, DefaultBehavior)
     {
         _maxAlzSize = maxAlsSize;
     }
@@ -83,9 +86,9 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                     if (other1.Count == 0)
                     {
                         strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row1, col1);
-                        strategyManager.ChangeBuffer.Push(this, 
+                        strategyManager.ChangeBuffer.Commit(this, 
                             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
-                        return true;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
                 
@@ -101,9 +104,9 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                     if (other2.Count == 0)
                     {
                         strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row2, col2);
-                        strategyManager.ChangeBuffer.Push(this,
+                        strategyManager.ChangeBuffer.Commit(this,
                             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
-                        return true;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
             }

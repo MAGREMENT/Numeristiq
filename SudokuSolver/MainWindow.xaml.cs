@@ -1,6 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Model;
+using Model.Solver;
 using Model.Solver.Helpers.Changes;
 using SudokuSolver.Utils;
 
@@ -39,8 +40,8 @@ namespace SudokuSolver;
 
             LiveModification.LiveModified += (number, row, col, action) =>
             {
-                if (action == SolverNumberType.Definitive) Solver.AddDefinitiveNumber(number, row, col);
-                else if(action == SolverNumberType.Possibility) Solver.RemovePossibility(number, row, col);
+                if (action == ChangeType.Solution) Solver.AddDefinitiveNumber(number, row, col);
+                else if(action == ChangeType.Possibility) Solver.RemovePossibility(number, row, col);
             };
             
             StrategyList.InitStrategies(Solver.GetStrategies());
@@ -89,6 +90,12 @@ namespace SudokuSolver;
             if (sender is not ComboBox box || Solver is null) return;
             Solver.TranslationType = (SudokuTranslationType) box.SelectedIndex;
             TranslationTypeChanged?.Invoke();
+        }
+        
+        private void SelectedOnInstanceFound(object sender, RoutedEventArgs e)
+        {
+            if (sender is not ComboBox box || Solver is null) return;
+            Solver.SetOnInstanceFound((OnInstanceFound) box.SelectedIndex);
         }
         
         private void SetSolverDelay(object sender, RoutedPropertyChangedEventArgs<double> e)

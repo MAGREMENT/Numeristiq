@@ -11,8 +11,11 @@ namespace Model.Solver.Strategies;
 public class SimpleColoringStrategy : AbstractStrategy
 {
     public const string OfficialName = "Simple Coloring";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -27,14 +30,17 @@ public class SimpleColoringStrategy : AbstractStrategy
 
             if (SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
             {
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, true));
+                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        new SimpleColoringReportBuilder(coloredVertices, true)) &&
+                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                
                 continue;
             }
             
             SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
             
-            if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
+            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }
 

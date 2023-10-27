@@ -2,11 +2,13 @@
 
 namespace Model.Solver;
 
-public interface IStrategy //TODO : Add return after first instance found
+public interface IStrategy
 { 
     public string Name { get; }
     public StrategyDifficulty Difficulty { get; }
     public UniquenessDependency UniquenessDependency { get; }
+    public OnCommitBehavior OnCommitBehavior { get; set; }
+    public OnCommitBehavior DefaultOnCommitBehavior { get; }
     public StatisticsTracker Tracker { get; }
     
     void ApplyOnce(IStrategyManager strategyManager);
@@ -21,4 +23,9 @@ public enum StrategyDifficulty
 public enum UniquenessDependency
 {
     NotDependent, PartiallyDependent, FullyDependent
+}
+
+public enum OnCommitBehavior
+{
+    Return, WaitForAll, ChooseBest
 }

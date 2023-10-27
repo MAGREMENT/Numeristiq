@@ -10,8 +10,11 @@ namespace Model.Solver.Strategies;
 public class FinnedXWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "Finned X-Wing";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior){}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -27,10 +30,10 @@ public class FinnedXWingStrategy : AbstractStrategy
                     var ppir2 = strategyManager.RowPositionsAt(row2, number);
                     if (ppir2.Count < 2) continue;
 
-                    if (ppir1.Count == 2)
-                        ExamineRow(strategyManager, row1, row2, ppir1, ppir2, number);
-                    if (ppir2.Count == 2)
-                        ExamineRow(strategyManager, row2, row1, ppir2, ppir1, number);
+                    if (ppir1.Count == 2 && ExamineRow(strategyManager, row1, row2, ppir1,
+                            ppir2, number)) return;
+                    if (ppir2.Count == 2 && ExamineRow(strategyManager, row2, row1, ppir2,
+                            ppir1, number)) return;
                 }
             }
 
@@ -44,16 +47,16 @@ public class FinnedXWingStrategy : AbstractStrategy
                     var ppic2 = strategyManager.ColumnPositionsAt(col2, number);
                     if(ppic2.Count < 2) continue;
 
-                    if (ppic1.Count == 2)
-                        ExamineColumn(strategyManager, col1, col2, ppic1, ppic2, number);
-                    if (ppic2.Count == 2)
-                        ExamineColumn(strategyManager, col2, col1, ppic2, ppic1, number);
+                    if (ppic1.Count == 2 && ExamineColumn(strategyManager, col1, col2, ppic1,
+                            ppic2, number)) return;
+                    if (ppic2.Count == 2 && ExamineColumn(strategyManager, col2, col1, ppic2,
+                            ppic1, number)) return;
                 }
             }
         }
     }
 
-    private void ExamineRow(IStrategyManager strategyManager, int normalRow, int finnedRow,
+    private bool ExamineRow(IStrategyManager strategyManager, int normalRow, int finnedRow,
         IReadOnlyLinePositions normalPos, IReadOnlyLinePositions finnedPos, int number)
     {
         var asArray = normalPos.ToArray();
@@ -64,13 +67,12 @@ public class FinnedXWingStrategy : AbstractStrategy
         if (finnedPos.Peek(asArray[1]) && HasSameMiniCol(finnedPos, asArray[0], asArray[1]))
             ProcessRow(strategyManager, normalRow, finnedRow, asArray[0], number);
 
-        if(strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this,
-                new FinnedXWingReportBuilder(normalPos, normalRow, finnedPos,
-                    finnedRow, number, Unit.Row));
+        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            new FinnedXWingReportBuilder(normalPos, normalRow, finnedPos,
+                finnedRow, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void ExamineColumn(IStrategyManager strategyManager, int normalCol, int finnedCol,
+    private bool ExamineColumn(IStrategyManager strategyManager, int normalCol, int finnedCol,
         IReadOnlyLinePositions normalPos, IReadOnlyLinePositions finnedPos, int number)
     {
         var asArray = normalPos.ToArray();
@@ -81,10 +83,9 @@ public class FinnedXWingStrategy : AbstractStrategy
         if (finnedPos.Peek(asArray[1]) && HasSameMiniRow(finnedPos, asArray[0], asArray[1]))
             ProcessColumn(strategyManager, normalCol, finnedCol, asArray[0], number);
 
-        if(strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this,
+        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
                 new FinnedXWingReportBuilder(normalPos, normalCol,
-                    finnedPos, finnedCol, number, Unit.Column));
+                    finnedPos, finnedCol, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private bool HasSameMiniCol(IReadOnlyLinePositions toExamine, int col, int except)

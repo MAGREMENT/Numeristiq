@@ -12,10 +12,13 @@ namespace Model.Solver.Strategies.ForcingNets;
 public class CellForcingNetStrategy : AbstractStrategy
 {
     public const string OfficialName = "Cell Forcing Net";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
     private readonly int _max;
 
-    public CellForcingNetStrategy(int maxPossibilities) : base(OfficialName,  StrategyDifficulty.Extreme)
+    public CellForcingNetStrategy(int maxPossibilities) : base(OfficialName,  StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _max = maxPossibilities;
     }
@@ -37,12 +40,12 @@ public class CellForcingNetStrategy : AbstractStrategy
                     colorings[i] = strategyManager.PreComputer.OnColoring(row, col, possAsArray[i]);
                 }
 
-                Process(strategyManager, colorings, new Cell(row, col));
+                if (Process(strategyManager, colorings, new Cell(row, col))) return;
             }
         }
     }
 
-    private void Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings, Cell current)
+    private bool Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings, Cell current)
     {
         foreach (var element in colorings[0])
         {
@@ -65,21 +68,21 @@ public class CellForcingNetStrategy : AbstractStrategy
                 if (currentColoring == Coloring.On)
                 {
                     view.ChangeBuffer.AddSolutionToAdd(cell.Possibility, cell.Row, cell.Col);
-                    if (view.ChangeBuffer.NotEmpty())
-                        view.ChangeBuffer.Push(this, new CellForcingNetBuilder(colorings,
-                            current.Row, current.Col, cell, Coloring.On));
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                            new CellForcingNetBuilder(colorings, current.Row, current.Col, cell, Coloring.On))
+                                && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(cell.Possibility, cell.Row, cell.Col);
-                    if (view.ChangeBuffer.NotEmpty())
-                        view.ChangeBuffer.Push(this, new CellForcingNetBuilder(colorings,
-                            current.Row, current.Col, cell, Coloring.Off));
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                            new CellForcingNetBuilder(colorings, current.Row, current.Col, cell, Coloring.Off))
+                                && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
         
-        //Not yet proven useful so bye bye for now
+        //Not yet proven useful so bye bye for now, if implemented, do not forget to add the OnCommitBehavior
         /*HashSet<int> count = new HashSet<int>(colorings.Length);
 
         for (int row = 0; row < 9; row++)
@@ -213,6 +216,8 @@ public class CellForcingNetStrategy : AbstractStrategy
                 }
             }
         }*/
+
+        return false;
     }
 }
 

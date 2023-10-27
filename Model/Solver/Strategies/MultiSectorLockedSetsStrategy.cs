@@ -10,6 +10,9 @@ namespace Model.Solver.Strategies;
 public class MultiSectorLockedSetsStrategy : AbstractStrategy //Not optimal
 {
     public const string OfficialName = "Multi-Sector Locket Sets";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly int _minimumUnitCount;
     private readonly int _maximumUnitCount;
@@ -17,7 +20,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //Not optimal
     private readonly int _maximumFixedCells;
 
     public MultiSectorLockedSetsStrategy(int minimumUnitCount, int maximumUnitCount, int maximumUnitDifference,
-        int maximumFixedCells) : base(OfficialName, StrategyDifficulty.Extreme)
+        int maximumFixedCells) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _minimumUnitCount = minimumUnitCount;
         _maximumUnitDifference = maximumUnitDifference;
@@ -180,7 +183,8 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //Not optimal
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
-            .Push(this, new MultiSectorLockedSetsReportBuilder(rows, cols, rowCovers, colCovers, miniCovers));
+            .Commit(this, new MultiSectorLockedSetsReportBuilder(rows, cols, rowCovers, colCovers, miniCovers))
+            && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

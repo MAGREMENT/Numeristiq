@@ -8,11 +8,14 @@ using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
-public class UniqueRectanglesStrategy : AbstractStrategy
+public class UniqueRectanglesStrategy : AbstractStrategy //TODO look at this a bit and improve it
 {
     public const string OfficialName = "Unique Rectangles";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public UniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard)
+    public UniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -34,7 +37,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         foreach (var b in value)
                         {
-                            Process(strategyManager, bi, current, b);
+                            if (Process(strategyManager, bi, current, b)) return;
                         }
 
                         value.Add(current);
@@ -72,20 +75,22 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                                 && strategyManager.ColumnPositionsAt(col, bi.One).Count == 2)
                             {
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, col);
-                                if (strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
+                                if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(
                                         new Cell(row, col), potentialOpposite,
                                         new Cell(row, potentialOpposite.Col),
-                                        new Cell(potentialOpposite.Row, col)))) return;
+                                        new Cell(potentialOpposite.Row, col)))
+                                    && OnCommitBehavior == OnCommitBehavior.Return) return;
                             }
                             
                             if (strategyManager.RowPositionsAt(row, bi.Two).Count == 2
                                 && strategyManager.ColumnPositionsAt(col, bi.Two).Count == 2)
                             {
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(bi.One, row, col);
-                                if (strategyManager.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(
+                                if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(
                                         new Cell(row, col), potentialOpposite,
                                         new Cell(row, potentialOpposite.Col),
-                                        new Cell(potentialOpposite.Row, col)))) return;
+                                        new Cell(potentialOpposite.Row, col)))
+                                    && OnCommitBehavior == OnCommitBehavior.Return) return;
                             }
                         }
                     }
@@ -94,23 +99,23 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         }
     }
 
-    private void Process(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool Process(IStrategyManager view, BiValue bi, Cell one, Cell two)
     {
         if (one.Row == two.Row)
         {
-            ProcessSameRow(view, bi, one, two);
+            return ProcessSameRow(view, bi, one, two);
         }
         else if (one.Col == two.Col)
         {
-            ProcessSameColumn(view, bi, one, two);
+            return ProcessSameColumn(view, bi, one, two);
         }
         else
         {
-            ProcessDiagonal(view, bi, one, two);
+            return ProcessDiagonal(view, bi, one, two);
         }
     }
 
-    private void ProcessSameRow(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool ProcessSameRow(IStrategyManager view, BiValue bi, Cell one, Cell two)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -133,20 +138,20 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 if (roofTwo.Count == 0)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 //Type 2
@@ -158,10 +163,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
                     }
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
 
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 //Type 4
@@ -172,10 +177,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(row, one.Col), new Cell(row, two.Col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                     
                     ppimn = view.MiniGridPositionsAt(row / 3, one.Col / 3, bi.Two);
@@ -183,10 +188,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(row, one.Col), new Cell(row, two.Col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
                 else
@@ -196,10 +201,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(row, one.Col), new Cell(row, two.Col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                     
                     ppir = view.RowPositionsAt(row, bi.Two);
@@ -207,10 +212,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(row, one.Col), new Cell(row, two.Col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
                 
@@ -218,30 +223,30 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 if (view.ColumnPositionsAt(one.Col, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, two.Col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 if (view.ColumnPositionsAt(one.Col, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, two.Col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 if (view.ColumnPositionsAt(two.Col, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, row, one.Col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 if (view.ColumnPositionsAt(two.Col, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, row, one.Col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 //Type 3
@@ -256,16 +261,18 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                         RemovePossibilitiesInAllExcept(view, mashed, shared, als);
                         if (!view.ChangeBuffer.NotEmpty()) continue;
 
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
                             new Cell(row, one.Col), new Cell(row, two.Col), als));
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
             }
         }
+
+        return false;
     }
 
-    private void ProcessSameColumn(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool ProcessSameColumn(IStrategyManager view, BiValue bi, Cell one, Cell two)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -288,20 +295,20 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 if (roofTwo.Count == 0)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 //Type 2
@@ -313,10 +320,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
                     }
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
 
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 //Type 4
@@ -327,10 +334,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(one.Row, col), new Cell(two.Row, col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                     
                     ppimn = view.MiniGridPositionsAt(one.Row / 3, col / 3, bi.Two);
@@ -338,10 +345,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(one.Row, col), new Cell(two.Row, col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
                 else
@@ -351,10 +358,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(one.Row, col), new Cell(two.Row, col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                     
                     ppic = view.ColumnPositionsAt(col, bi.Two);
@@ -362,10 +369,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     {
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
                         view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                             new Cell(one.Row, col), new Cell(two.Row, col)));
                         
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
                 
@@ -373,34 +380,34 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 if (view.RowPositionsAt(one.Row, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 if (view.RowPositionsAt(one.Row, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 if (view.RowPositionsAt(two.Row, bi.One).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 if (view.RowPositionsAt(two.Row, bi.Two).Count == 2)
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, col);
-                    view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                         new Cell(one.Row, col), new Cell(two.Row, col)));
                     
-                    return;
+                    return OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
                 //Type 3
@@ -415,17 +422,18 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                         RemovePossibilitiesInAllExcept(view, mashed, shared, als);
                         if (!view.ChangeBuffer.NotEmpty()) continue;
                         
-                        view.ChangeBuffer.Push(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
+                        view.ChangeBuffer.Commit(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
                             new Cell(one.Row, col), new Cell(two.Row, col), als));
-                        return;
+                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
-                        
                 }
             }
         }
+
+        return false;
     }
 
-    private void ProcessDiagonal(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool ProcessDiagonal(IStrategyManager view, BiValue bi, Cell one, Cell two)
     {
         if (view.PossibilitiesAt(one.Row, two.Col).Peek(bi.One) && view.PossibilitiesAt(one.Row, two.Col).Peek(bi.Two) &&
             view.PossibilitiesAt(two.Row, one.Col).Peek(bi.One) && view.PossibilitiesAt(two.Row, one.Col).Peek(bi.Two) &&
@@ -450,10 +458,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                         (coord.Row == two.Row && coord.Col == two.Col)) continue;
                     view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
                 }
-                view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                     new Cell(one.Row, two.Col), new Cell(two.Row, one.Col)));
 
-                return;
+                return OnCommitBehavior == OnCommitBehavior.Return;
             }
             
             //Type 5
@@ -464,10 +472,10 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             {
                 view.ChangeBuffer.AddPossibilityToRemove(bi.Two, one.Row, one.Col);
                 view.ChangeBuffer.AddPossibilityToRemove(bi.Two, two.Row, two.Col);
-                view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                     new Cell(one.Row, two.Col), new Cell(two.Row, one.Col)));
                 
-                return;
+                return OnCommitBehavior == OnCommitBehavior.Return;
             }
             
             if (view.RowPositionsAt(one.Row, bi.Two).Count == 2 &&
@@ -477,10 +485,14 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             {
                 view.ChangeBuffer.AddPossibilityToRemove(bi.One, one.Row, one.Col);
                 view.ChangeBuffer.AddPossibilityToRemove(bi.One, two.Row, two.Col);
-                view.ChangeBuffer.Push(this, new UniqueRectanglesReportBuilder(one, two,
+                view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
                     new Cell(one.Row, two.Col), new Cell(two.Row, one.Col)));
+
+                return OnCommitBehavior == OnCommitBehavior.Return;
             }
         }
+
+        return false;
     }
 
     private bool AreSpreadOverOnlyTwoBoxes(int row1, int col1, int row2, int col2, int row3, int col3, int row4,

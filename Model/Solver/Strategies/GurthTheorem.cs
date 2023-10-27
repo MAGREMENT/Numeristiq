@@ -1,29 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
 
 namespace Model.Solver.Strategies;
 
-public class GurthTheorem : AbstractStrategy //TODO : rotational symmetry
+public class GurthTheorem : AbstractStrategy //TODO : rotational symmetry + test
 {
     public const string OfficialName = "Gurth's Theorem";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private bool _hasSymmetry;
-    private readonly List<SymmetryEliminations> _eliminations = new();
+    private readonly List<Symmetry> _symmetries;
 
-    public GurthTheorem() : base(OfficialName, StrategyDifficulty.Medium)
+    public GurthTheorem() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
+        _symmetries = new List<Symmetry>
+        {
+            new TopLeftToBottomRightCross(this), new TopRightToBottomLeftCross(this)
+        };
     }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        if (!_hasSymmetry) CheckForSymmetry(strategyManager);
-        if (!_hasSymmetry) return;
-
-        foreach (var elimination in _eliminations)
+        foreach (var symmetry in _symmetries)
         {
-            elimination.Apply(strategyManager);
+            symmetry.Run(strategyManager);
         }
     }
 
@@ -31,106 +35,38 @@ public class GurthTheorem : AbstractStrategy //TODO : rotational symmetry
     {
         base.OnNewSudoku(s);
 
-        _hasSymmetry = false;
-        _eliminations.Clear();
-    }
-
-    private void CheckForSymmetry(IStrategyManager strategyManager)
-    {
-        CheckForTopLeftToBottomRight(strategyManager);
-        CheckForTopRightToBottomLeft(strategyManager);
-    }
-
-    private void CheckForTopLeftToBottomRight(IStrategyManager strategyManager)
-    {
-        int[] potentialMapping = new int[9];
-
-        for (int row = 0; row < 9; row++)
+        foreach (var symmetry in _symmetries)
         {
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                var symmetry = strategyManager.Sudoku[col, row];
-                if (symmetry == 0) return;
-
-                var definedSymmetry = potentialMapping[solved - 1];
-                if (definedSymmetry == 0) potentialMapping[solved - 1] = symmetry;
-                else if (definedSymmetry != symmetry)
-                {
-                    if (row != col) return;
-                }
-            }
+            symmetry.Reset();
         }
-
-        int count = 0;
-        for (int i = 0; i < potentialMapping.Length; i++)
-        {
-            var symmetry = potentialMapping[i];
-            if (symmetry == 0) return;
-            if (symmetry == i + 1) count++;
-        }
-
-        if (count < 3) return;
-
-        _hasSymmetry = true;
-        _eliminations.Add(new TopLeftToBottomRightCrossEliminations(this, potentialMapping));
-    }
-
-    private void CheckForTopRightToBottomLeft(IStrategyManager strategyManager)
-    {
-        int[] potentialMapping = new int[9];
-
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                var symmetry = strategyManager.Sudoku[8 - col, row];
-                if (symmetry == 0) return;
-
-                var definedSymmetry = potentialMapping[solved - 1];
-                if (definedSymmetry == 0) potentialMapping[solved - 1] = symmetry;
-                else if (definedSymmetry != symmetry)
-                {
-                    if (row != 8 - col) return;
-                }
-            }
-        }
-        
-        int count = 0;
-        for (int i = 0; i < potentialMapping.Length; i++)
-        {
-            var symmetry = potentialMapping[i];
-            if (symmetry == 0) return;
-            if (symmetry == i + 1) count++;
-        }
-
-        if (count < 3) return;
-
-        _hasSymmetry = true;
-        _eliminations.Add(new TopRightToBottomLeftCrossEliminations(this, potentialMapping));
     }
 }
 
-public abstract class SymmetryEliminations
+public abstract class Symmetry
 {
-    protected int[] Mapping { get; }
-
     private readonly IStrategy _strategy;
+    protected int[] Mapping { get; private set; } = Array.Empty<int>();
+
+    private bool _isSymmetric;
     private bool _appliedOnce;
 
-    protected SymmetryEliminations(IStrategy strategy, int[] mapping)
+    protected Symmetry(IStrategy strategy)
     {
         _strategy = strategy;
-        Mapping = mapping;
     }
 
-    public void Apply(IStrategyManager strategyManager)
+    public void Run(IStrategyManager strategyManager)
     {
+        if (!_isSymmetric)
+        {
+            if (Check(strategyManager, out var mapping))
+            {
+                _isSymmetric = true;
+                Mapping = mapping;
+            }
+            else return;
+        }
+
         if (!_appliedOnce)
         {
             ApplyOnce(strategyManager);
@@ -140,17 +76,28 @@ public abstract class SymmetryEliminations
         ApplyEveryTime(strategyManager);
 
         if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(_strategy, new GurthTheoremReportBuilder());
+            strategyManager.ChangeBuffer.Commit(_strategy, new GurthTheoremReportBuilder());
     }
 
-    public abstract void ApplyOnce(IStrategyManager strategyManager);
+    public void Reset()
+    {
+        _isSymmetric = false;
+    }
+
+    protected abstract void ApplyOnce(IStrategyManager strategyManager);
     
-    public abstract void ApplyEveryTime(IStrategyManager strategyManager);
+    protected abstract void ApplyEveryTime(IStrategyManager strategyManager);
+
+    protected abstract bool Check(IStrategyManager strategyManager, out int[] mapping);
 }
 
-public class TopLeftToBottomRightCrossEliminations : SymmetryEliminations
+public class TopLeftToBottomRightCross : Symmetry
 {
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public TopLeftToBottomRightCross(IStrategy strategy) : base(strategy)
+    {
+    }
+    
+    protected override void ApplyOnce(IStrategyManager strategyManager)
     {
         IPossibilities selfMap = IPossibilities.NewEmpty();
         for (int i = 0; i < Mapping.Length; i++)
@@ -169,7 +116,7 @@ public class TopLeftToBottomRightCrossEliminations : SymmetryEliminations
         }
     }
 
-    public override void ApplyEveryTime(IStrategyManager strategyManager)
+    protected override void ApplyEveryTime(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -184,14 +131,48 @@ public class TopLeftToBottomRightCrossEliminations : SymmetryEliminations
         }
     }
 
-    public TopLeftToBottomRightCrossEliminations(IStrategy strategy, int[] mapping) : base(strategy, mapping)
+    protected override bool Check(IStrategyManager strategyManager, out int[] mapping)
     {
+        mapping = new int[9];
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var solved = strategyManager.Sudoku[row, col];
+                if (solved == 0) continue;
+
+                var symmetry = strategyManager.Sudoku[col, row];
+                if (symmetry == 0) return false;
+
+                var definedSymmetry = mapping[solved - 1];
+                if (definedSymmetry == 0) mapping[solved - 1] = symmetry;
+                else if (definedSymmetry != symmetry)
+                {
+                    if (row != col) return false;
+                }
+            }
+        }
+
+        int count = 0;
+        for (int i = 0; i < mapping.Length; i++)
+        {
+            var symmetry = mapping[i];
+            if (symmetry == 0) return false;
+            if (symmetry == i + 1) count++;
+        }
+
+        return count >= 3;
     }
 }
 
-public class TopRightToBottomLeftCrossEliminations : SymmetryEliminations
+public class TopRightToBottomLeftCross : Symmetry
 {
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public TopRightToBottomLeftCross(IStrategy strategy) : base(strategy)
+    {
+    }
+    
+    protected override void ApplyOnce(IStrategyManager strategyManager)
     {
         IPossibilities selfMap = IPossibilities.NewEmpty();
         for (int i = 0; i < Mapping.Length; i++)
@@ -210,7 +191,7 @@ public class TopRightToBottomLeftCrossEliminations : SymmetryEliminations
         }
     }
 
-    public override void ApplyEveryTime(IStrategyManager strategyManager)
+    protected override void ApplyEveryTime(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -225,8 +206,38 @@ public class TopRightToBottomLeftCrossEliminations : SymmetryEliminations
         }
     }
 
-    public TopRightToBottomLeftCrossEliminations(IStrategy strategy, int[] mapping) : base(strategy, mapping)
+    protected override bool Check(IStrategyManager strategyManager, out int[] mapping)
     {
+        mapping = new int[9];
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var solved = strategyManager.Sudoku[row, col];
+                if (solved == 0) continue;
+
+                var symmetry = strategyManager.Sudoku[8 - col, row];
+                if (symmetry == 0) return false;
+
+                var definedSymmetry = mapping[solved - 1];
+                if (definedSymmetry == 0) mapping[solved - 1] = symmetry;
+                else if (definedSymmetry != symmetry)
+                {
+                    if (row != 8 - col) return false;
+                }
+            }
+        }
+        
+        int count = 0;
+        for (int i = 0; i < mapping.Length; i++)
+        {
+            var symmetry = mapping[i];
+            if (symmetry == 0) return false;
+            if (symmetry == i + 1) count++;
+        }
+
+        return count >= 3;
     }
 }
 

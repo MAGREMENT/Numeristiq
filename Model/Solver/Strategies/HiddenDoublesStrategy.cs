@@ -9,8 +9,11 @@ namespace Model.Solver.Strategies;
 public class HiddenDoublesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Doubles";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -23,7 +26,10 @@ public class HiddenDoublesStrategy : AbstractStrategy
                 var pos = strategyManager.RowPositionsAt(row, number);
                 if (pos.Count != 2) continue;
 
-                if (lines.TryGetValue(pos, out var n)) ProcessRow(strategyManager, pos, row, number, n);
+                if (lines.TryGetValue(pos, out var n))
+                {
+                    if (ProcessRow(strategyManager, pos, row, number, n)) return;
+                }
                 else lines.Add(pos, number);
             }
 
@@ -37,7 +43,10 @@ public class HiddenDoublesStrategy : AbstractStrategy
                 var pos = strategyManager.ColumnPositionsAt(col, number);
                 if (pos.Count != 2) continue;
 
-                if (lines.TryGetValue(pos, out var n)) ProcessColumn(strategyManager, pos, col, number, n);
+                if (lines.TryGetValue(pos, out var n))
+                {
+                    if (ProcessColumn(strategyManager, pos, col, number, n)) return;
+                }
                 else lines.Add(pos, number);
             }
 
@@ -53,7 +62,10 @@ public class HiddenDoublesStrategy : AbstractStrategy
                     var pos = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (pos.Count != 2) continue;
 
-                    if (minis.TryGetValue(pos, out var n)) ProcessMiniGrid(strategyManager, pos, number, n);
+                    if (minis.TryGetValue(pos, out var n))
+                    {
+                        if (ProcessMiniGrid(strategyManager, pos, number, n)) return;
+                    }
                     else minis.Add(pos, number);
                 }
 
@@ -62,7 +74,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
         }
     }
     
-    private void ProcessRow(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int row, int n1,
+    private bool ProcessRow(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int row, int n1,
         int n2)
     {
         foreach (var col in positions)
@@ -75,11 +87,11 @@ public class HiddenDoublesStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this,
-            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row));
+        return strategyManager.ChangeBuffer.Commit(this,
+            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void ProcessColumn(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int col,
+    private bool ProcessColumn(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int col,
         int n1, int n2)
     {
         foreach(var row in positions)
@@ -92,11 +104,11 @@ public class HiddenDoublesStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this,
-            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column));
+        return strategyManager.ChangeBuffer.Commit(this,
+            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void ProcessMiniGrid(IStrategyManager strategyManager, IReadOnlyMiniGridPositions positions, int n1, int n2)
+    private bool ProcessMiniGrid(IStrategyManager strategyManager, IReadOnlyMiniGridPositions positions, int n1, int n2)
     {
         foreach (var cell in positions)
         {
@@ -108,8 +120,8 @@ public class HiddenDoublesStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this,
-            new MiniGridHiddenDoublesReportBuilder(positions, n1, n2));
+        return strategyManager.ChangeBuffer.Commit(this,
+            new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

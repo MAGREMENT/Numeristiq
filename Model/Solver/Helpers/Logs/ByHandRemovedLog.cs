@@ -20,7 +20,7 @@ public class ByHandRemovedLog : ISolverLog
         Id = id;
         Changes = $"[{row + 1}, {col + 1}] {possibility} removed by hand";
         SolverState = solverState;
-        _asChange = new SolverChange(SolverNumberType.Possibility, possibility, row, col);
+        _asChange = new SolverChange(ChangeType.Possibility, possibility, row, col);
     }
 
     private void HighLight(IHighlightable highlightable)

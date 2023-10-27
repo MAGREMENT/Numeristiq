@@ -9,8 +9,11 @@ namespace Model.Solver.Strategies;
 public class BUGStrategy : AbstractStrategy
 {
     public const string OfficialName = "BUG";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public BUGStrategy() : base(OfficialName, StrategyDifficulty.Medium)
+    public BUGStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -31,8 +34,7 @@ public class BUGStrategy : AbstractStrategy
             break;
         }
 
-        strategyManager.ChangeBuffer.Push(this, new BUGReportBuilder(triple));
-        
+        strategyManager.ChangeBuffer.Commit(this, new BUGReportBuilder(triple));
     }
 
     private Cell OnlyDoublesAndOneTriple(IStrategyManager strategyManager)

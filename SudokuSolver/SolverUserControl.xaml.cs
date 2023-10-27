@@ -271,6 +271,11 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         _solver.AllowUniqueness(yes);
     }
 
+    public void SetOnInstanceFound(OnInstanceFound found)
+    {
+        _solver.SetOnInstanceFound(found);
+    }
+
     private CellUserControl GetTo(int row, int col)
     {
         return (CellUserControl) ((StackPanel)Main.Children[row]).Children[col];

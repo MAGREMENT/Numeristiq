@@ -7,8 +7,11 @@ namespace Model.Solver.Strategies;
 public class BruteForceStrategy : AbstractStrategy
 {
     public const string OfficialName = "Brute Force";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial) { }
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultBehavior) { }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -75,7 +78,7 @@ public class BruteForceStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new BruteForceReportBuilder());
+        strategyManager.ChangeBuffer.Commit(this, new BruteForceReportBuilder());
     }
 }
 

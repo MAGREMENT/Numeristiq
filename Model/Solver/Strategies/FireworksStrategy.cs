@@ -54,8 +54,11 @@ namespace Model.Solver.Strategies;
 public class FireworksStrategy : AbstractStrategy
 {
     public const string OfficialName = "Fireworks";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public FireworksStrategy() : base(OfficialName, StrategyDifficulty.Hard){}
+    public FireworksStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior){}
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
         List<FireworkStack> looseStacks = new();
@@ -93,9 +96,8 @@ public class FireworksStrategy : AbstractStrategy
                         {
                             var sharedWings = stack.MashWings(cellFireworks[k]);
                             if (sharedWings.Count == 2)
-                                ProcessTripleFirework(strategyManager, sharedWings,
-                                    cellFireworks[i], cellFireworks[j],
-                                    cellFireworks[k]);
+                                if (ProcessTripleFirework(strategyManager, sharedWings, cellFireworks[i],
+                                        cellFireworks[j], cellFireworks[k])) return;
                         }
                     }
                 }
@@ -124,8 +126,9 @@ public class FireworksStrategy : AbstractStrategy
                     {
                         RemoveAllExcept(strategyManager, coord, mashed);
                     }
-                    
-                    strategyManager.ChangeBuffer.Push(this, new FireworksStacksReportBuilder(one, two));
+
+                    if (strategyManager.ChangeBuffer.Commit(this, new FireworksStacksReportBuilder(one, two))
+                        && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
         }
@@ -160,8 +163,10 @@ public class FireworksStrategy : AbstractStrategy
             {
                 strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, opposite.Col);
             }
-            strategyManager.ChangeBuffer.Push(this, new FireworksWithAlsReportBuilder(dual, 
-                als[0][0], als[1][0]));
+
+
+            if (strategyManager.ChangeBuffer.Commit(this, new FireworksWithAlsReportBuilder(dual,
+                    als[0][0], als[1][0])) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
 
         //L-wing
@@ -177,20 +182,18 @@ public class FireworksStrategy : AbstractStrategy
                     strategyManager.RowPositionsAt(opposite.Row, possibility).Count == 2)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, dual.Cross.Row, opposite.Col);
-                    if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this, new FireworksWithStrongLinkReportBuilder(dual, possibility,
-                                new Cell(opposite.Row, opposite.Col),
-                                new Cell(opposite.Row, dual.Cross.Col)));
+                    if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                            new FireworksWithStrongLinkReportBuilder(dual, possibility, new Cell(opposite.Row,
+                                opposite.Col), new Cell(opposite.Row, dual.Cross.Col))) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
 
                 if (strategyManager.PossibilitiesAt(dual.Cross.Row, opposite.Col).Peek(possibility) &&
                     strategyManager.ColumnPositionsAt(opposite.Col, possibility).Count == 2)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, dual.Cross.Col);
-                    if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this, new FireworksWithStrongLinkReportBuilder(dual, possibility,
-                            new Cell(opposite.Row, opposite.Col),
-                            new Cell(dual.Cross.Row, opposite.Col)));
+                    if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                            new FireworksWithStrongLinkReportBuilder(dual, possibility, new Cell(opposite.Row,
+                                opposite.Col), new Cell(dual.Cross.Row, opposite.Col))) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
         }
@@ -236,8 +239,8 @@ public class FireworksStrategy : AbstractStrategy
                     }
                 }
 
-                strategyManager.ChangeBuffer.Push(this,
-                    new OppositeFireworksReportBuilder(strictStacks[i], strictStacks[j]));
+                if (strategyManager.ChangeBuffer.Commit(this, new OppositeFireworksReportBuilder(strictStacks[i],
+                        strictStacks[j])) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
     }
@@ -267,7 +270,7 @@ public class FireworksStrategy : AbstractStrategy
         }
     }
 
-    private void ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Cell> wings,
+    private bool ProcessTripleFirework(IStrategyManager strategyManager, HashSet<Cell> wings,
         Firework one, Firework two, Firework three)
     {
         foreach (var possibility in strategyManager.PossibilitiesAt(one.Cross.Row, one.Cross.Col))
@@ -285,7 +288,8 @@ public class FireworksStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new FireworksReportBuilder(one, two, three));
+        return strategyManager.ChangeBuffer.Commit(this, new FireworksReportBuilder(one, two, three))
+               && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private void AddIfFirework(IStrategyManager strategyManager, List<Firework> fireworks, int row, int col, int possibility)

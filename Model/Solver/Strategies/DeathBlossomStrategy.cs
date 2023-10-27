@@ -11,8 +11,11 @@ namespace Model.Solver.Strategies;
 public class DeathBlossomStrategy : AbstractStrategy
 {
     public const string OfficialName = "Death Blossom";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public DeathBlossomStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public DeathBlossomStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
     }
 
@@ -93,17 +96,11 @@ public class DeathBlossomStrategy : AbstractStrategy
                                 }
 
                                 if (value.Remove(alsPossibility)) eliminationsCauses[seenCell].Add(als);
+                                if (value.Count != 0) continue;
                                 
-                                
-                                if (value.Count == 0)
-                                {
-                                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, current.Row,
-                                        current.Col);
-                                    strategyManager.ChangeBuffer.Push(this,
-                                        new DeathBlossomReportBuilder(current, seenCell,
-                                            eliminationsCauses[seenCell]));
-                                    return;
-                                }
+                                Process(strategyManager, current, seenCell, eliminationsCauses[seenCell],
+                                    possibility);
+                                if (OnCommitBehavior == OnCommitBehavior.Return) return;
                             }
                             
                             buffer.Clear();
@@ -118,21 +115,43 @@ public class DeathBlossomStrategy : AbstractStrategy
         }
     }
 
-    private void Process(IStrategyManager strategyManager, Cell stem, Cell target, IEnumerable<AlmostLockedSet> sets)
+    private void Process(IStrategyManager strategyManager, Cell stem, Cell target, HashSet<AlmostLockedSet> sets, int possibility)
     {
-        //TODO use;
+        List<Cell> buffer = new();
+        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, stem.Row, stem.Col);
+
+        foreach (var als in sets)
+        {
+            foreach (var cell in als.Cells)
+            {
+                if (strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+            }
+        }
+
+        var allStems = Cells.SharedSeenCells(buffer);
+        if (allStems.Count > 1)
+        {
+            foreach (var cell in allStems)
+            {
+                if (cell == stem) continue;
+
+                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+            }
+        }
+        
+        strategyManager.ChangeBuffer.Commit(this, new DeathBlossomReportBuilder(allStems, target, sets));
     }
 }
 
 public class DeathBlossomReportBuilder : IChangeReportBuilder
 {
-    private readonly Cell _stem;
+    private readonly List<Cell> _stems;
     private readonly Cell _target;
     private readonly IEnumerable<AlmostLockedSet> _als;
 
-    public DeathBlossomReportBuilder(Cell stem, Cell target, IEnumerable<AlmostLockedSet> als)
+    public DeathBlossomReportBuilder(List<Cell> stems, Cell target, IEnumerable<AlmostLockedSet> als)
     {
-        _stem = stem;
+        _stems = stems;
         _target = target;
         _als = als;
     }
@@ -141,7 +160,12 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            lighter.HighlightCell(_stem, ChangeColoration.Neutral);
+            foreach (var stem in _stems)
+            {
+                if (snapshot.Sudoku[stem.Row, stem.Col] != 0) continue;
+                lighter.HighlightCell(stem, ChangeColoration.Neutral);
+            }
+            
             lighter.HighlightCell(_target, ChangeColoration.CauseOnOne);
 
             int start = (int)ChangeColoration.CauseOffOne;

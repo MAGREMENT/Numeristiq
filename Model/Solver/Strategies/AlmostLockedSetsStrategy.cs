@@ -10,8 +10,11 @@ namespace Model.Solver.Strategies;
 public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
 {
     public const string OfficialName = "Almost Locked Sets";
- 
-    public AlmostLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+
+    public AlmostLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
     }
 
@@ -92,8 +95,8 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                     }
                 }
 
-                if(strategyManager.ChangeBuffer
-                   .Push(this, new AlmostLockedSetsReportBuilder(one, two, restrictedCommons))) return;
+                if(strategyManager.ChangeBuffer.Commit(this, new AlmostLockedSetsReportBuilder(one,
+                       two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
     }

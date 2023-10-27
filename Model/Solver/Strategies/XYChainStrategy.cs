@@ -10,8 +10,11 @@ namespace Model.Solver.Strategies;
 public class XYChainStrategy : AbstractStrategy
 {
     public const string OfficialName = "XY-Chain";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public XYChainStrategy() : base(OfficialName, StrategyDifficulty.Hard) {}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public XYChainStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -23,12 +26,12 @@ public class XYChainStrategy : AbstractStrategy
 
         foreach (var start in graph)
         {
-            Search(strategyManager, graph, start, route, visited);
+            if (Search(strategyManager, graph, start, route, visited)) return;
             visited.Clear();
         }
     }
 
-    private void Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph, CellPossibility current,
+    private bool Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
     {
         CellPossibility friend = graph.GetLinks(current, LinkStrength.Strong).First();
@@ -38,28 +41,31 @@ public class XYChainStrategy : AbstractStrategy
         visited.Add(current);
         visited.Add(friend);
         
-        if(friend.Possibility == route[0].Possibility) Process(strategyManager, route);
+        if(friend.Possibility == route[0].Possibility && Process(strategyManager, route)) return true;
 
         foreach (var next in graph.GetLinks(friend, LinkStrength.Weak))
         {
             if (!visited.Contains(next))
             {
-                Search(strategyManager, graph, next, route, visited);
+                if (Search(strategyManager, graph, next, route, visited)) return true;
             }
         }
 
         route.RemoveAt(route.Count - 1);
         route.RemoveAt(route.Count - 1);
+
+        return false;
     }
 
-    private void Process(IStrategyManager strategyManager, List<CellPossibility> visited)
+    private bool Process(IStrategyManager strategyManager, List<CellPossibility> visited)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
             strategyManager.ChangeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
         }
         
-        strategyManager.ChangeBuffer.Push(this, new XYChainReportBuilder(visited));
+        return strategyManager.ChangeBuffer.Commit(this, new XYChainReportBuilder(visited))
+            && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

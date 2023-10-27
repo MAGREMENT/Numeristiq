@@ -33,8 +33,11 @@ namespace Model.Solver.Strategies;
 public class BoxLineReductionStrategy : AbstractStrategy
 {
     public const string OfficialName = "Box-Line Reduction";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public BoxLineReductionStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public BoxLineReductionStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -61,8 +64,8 @@ public class BoxLineReductionStrategy : AbstractStrategy
                         }
                     }
 
-                    strategyManager.ChangeBuffer.Push(this,
-                        new BoxLineReductionReportBuilder(row, ppir, number, Unit.Row));
+                    if (strategyManager.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(row,
+                            ppir, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
 
@@ -88,8 +91,8 @@ public class BoxLineReductionStrategy : AbstractStrategy
                         }
                     }
 
-                    strategyManager.ChangeBuffer.Push(this,
-                        new BoxLineReductionReportBuilder(col, ppic, number, Unit.Column));
+                    if(strategyManager.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(col,
+                           ppic, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
         }

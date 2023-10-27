@@ -9,8 +9,11 @@ namespace Model.Solver.Strategies;
 public class XYZWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "XYZ-Wing";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium) {}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior) {}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -68,8 +71,8 @@ public class XYZWingStrategy : AbstractStrategy
             strategyManager.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
         }
 
-        return strategyManager.ChangeBuffer.Push(this,
-            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2));
+        return strategyManager.ChangeBuffer.Commit(this,
+            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
     
     private static bool Only2Possibilities(IReadOnlyPossibilities possibilities)

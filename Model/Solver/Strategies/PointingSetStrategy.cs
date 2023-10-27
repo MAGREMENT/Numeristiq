@@ -34,8 +34,11 @@ namespace Model.Solver.Strategies;
 public class PointingSetStrategy : AbstractStrategy
 {
     public const string OfficialName = "Pointing Set";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -54,8 +57,9 @@ public class PointingSetStrategy : AbstractStrategy
                             if (col / 3 != miniCol) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                         }
                         
-                        strategyManager.ChangeBuffer.Push(this,
-                            new PointingPossibilitiesReportBuilder(number, ppimg));
+                        if(strategyManager.ChangeBuffer.Commit(this,
+                            new PointingPossibilitiesReportBuilder(number, ppimg)) &&
+                                OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
@@ -64,9 +68,10 @@ public class PointingSetStrategy : AbstractStrategy
                         {
                             if (row / 3 != miniRow) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
                         }
-                        
-                        strategyManager.ChangeBuffer.Push(this,
-                            new PointingPossibilitiesReportBuilder(number, ppimg));
+
+                        if (strategyManager.ChangeBuffer.Commit(this,
+                                new PointingPossibilitiesReportBuilder(number, ppimg)) &&
+                                    OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                 }
             }

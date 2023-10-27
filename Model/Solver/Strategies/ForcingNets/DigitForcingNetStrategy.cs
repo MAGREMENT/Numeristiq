@@ -10,8 +10,11 @@ namespace Model.Solver.Strategies.ForcingNets;
 public class DigitForcingNetStrategy : AbstractStrategy
 { 
     public const string OfficialName = "Digit Forcing Net";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public DigitForcingNetStrategy() : base(OfficialName,  StrategyDifficulty.Extreme)
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+
+    public DigitForcingNetStrategy() : base(OfficialName,  StrategyDifficulty.Extreme, DefaultBehavior)
     {
         
     }
@@ -29,13 +32,13 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
 
-                    Process(strategyManager, onColoring, offColoring);
+                    if (Process(strategyManager, onColoring, offColoring)) return;
                 }
             }
         }
     }
 
-    private void Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement> onColoring,
+    private bool Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement> onColoring,
         ColoringDictionary<ILinkGraphElement> offColoring)
     {
         foreach (var on in onColoring)
@@ -54,11 +57,9 @@ public class DigitForcingNetStrategy : AbstractStrategy
                         break;
                 }
 
-                if (view.ChangeBuffer.NotEmpty())
-                {
-                    view.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder(onColoring, offColoring,
-                        possOn, on.Value, possOn, other));
-                }
+                if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(this,
+                        new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
+                            possOn, other)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
 
             if (on.Value != Coloring.On) continue;
@@ -69,11 +70,9 @@ public class DigitForcingNetStrategy : AbstractStrategy
                 if (possOff.Row == possOn.Row && possOn.Col == possOff.Col)
                 {
                     RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility);
-                    if (view.ChangeBuffer.NotEmpty())
-                    {
-                        view.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder(onColoring, offColoring,
-                            possOn, on.Value, possOff, off.Value));
-                    }
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                            new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
+                                possOff, off.Value)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
@@ -82,14 +81,14 @@ public class DigitForcingNetStrategy : AbstractStrategy
                         view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, coord.Row, coord.Col);
                     }
                     
-                    if (view.ChangeBuffer.NotEmpty())
-                    {
-                        view.ChangeBuffer.Push(this, new DigitForcingNetReportBuilder(onColoring, offColoring,
-                            possOn, on.Value, possOff, off.Value));
-                    }
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                            new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
+                                possOff, off.Value)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
+
+        return false;
     }
 
     private void RemoveAll(IStrategyManager view, int row, int col, int except1, int except2)

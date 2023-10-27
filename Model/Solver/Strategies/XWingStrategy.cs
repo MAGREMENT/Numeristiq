@@ -34,8 +34,11 @@ namespace Model.Solver.Strategies;
 public class XWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "X-Wing";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -50,7 +53,7 @@ public class XWingStrategy : AbstractStrategy
                 
                 if (!dict.TryAdd(ppir, row))
                 {
-                    RemoveFromColumns(strategyManager, ppir, dict[ppir], row, n);
+                    if (RemoveFromColumns(strategyManager, ppir, dict[ppir], row, n)) return;
                 }
             }
             dict.Clear();
@@ -63,14 +66,14 @@ public class XWingStrategy : AbstractStrategy
                 
                 if (!dict.TryAdd(ppic, col))
                 {
-                    RemoveFromRows(strategyManager, ppic, dict[ppic], col, n);
+                    if (RemoveFromRows(strategyManager, ppic, dict[ppic], col, n)) return;
                 }
             }
             dict.Clear();
         }
     }
 
-    private void RemoveFromColumns(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row1, int row2, int number)
+    private bool RemoveFromColumns(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -82,10 +85,11 @@ public class XWingStrategy : AbstractStrategy
             }
         }
         
-        strategyManager.ChangeBuffer.Push(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row));
+        return strategyManager.ChangeBuffer.Commit(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
+            && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void RemoveFromRows(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col1, int col2, int number)
+    private bool RemoveFromRows(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col1, int col2, int number)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -97,7 +101,8 @@ public class XWingStrategy : AbstractStrategy
             }
         }
         
-        strategyManager.ChangeBuffer.Push(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column));
+        return strategyManager.ChangeBuffer.Commit(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
+            && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

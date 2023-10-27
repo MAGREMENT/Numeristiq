@@ -19,15 +19,15 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
         Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
         {
-            Search(view, graph, chainType, new LoopBuilder<T>(start), globallySearched, locallySearched);
+            if (Search(view, graph, chainType, new LoopBuilder<T>(start), globallySearched, locallySearched)) return;
             locallySearched.Clear();
         }
     }
 
-    private void Search(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType, LoopBuilder<T> builder,
+    private bool Search(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType, LoopBuilder<T> builder,
         Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
-        if (builder.Count > _maxLoopSize) return;
+        if (builder.Count > _maxLoopSize) return false;
 
         var last = builder.LastElement();
         var before = builder.ElementBefore();
@@ -61,19 +61,21 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
                         var loop = cut.End(LinkStrength.Weak);
                         if (_loopsProcessed.Contains(loop)) continue;
 
-                        chainType.ProcessFullLoop(view, loop);
+                        if (chainType.ProcessFullLoop(view, loop) &&
+                            chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                         _loopsProcessed.Add(loop);
                     }
                     else
                     {
-                        chainType.ProcessStrongInference(view, cut.FirstElement(), cut.End(LinkStrength.Strong));
+                        if (chainType.ProcessStrongInference(view, cut.FirstElement(), cut.End(LinkStrength.Strong))
+                            && chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
                 }
                 AddToSearched(locallySearched, cut.FirstElement(), last);
             }
         }
         
-        if (builder.Count % 2 == 1 && builder.Count < 4) return;
+        if (builder.Count % 2 == 1 && builder.Count < 4) return false;
         foreach (var friend in graph.GetLinks(last, LinkStrength.Weak))
         {
             if (localFriends is not null && localFriends.Contains(friend)) continue;
@@ -96,18 +98,22 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
                         var loop = cut.End(LinkStrength.Weak);
                         if (_loopsProcessed.Contains(loop)) continue;
 
-                        chainType.ProcessFullLoop(view, loop);
+                        if (chainType.ProcessFullLoop(view, loop) &&
+                            chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                         _loopsProcessed.Add(loop);
                     }
                     else
                     {
-                        chainType.ProcessWeakInference(view, cut.LastElement(), cut.End(LinkStrength.Weak));
+                        if (chainType.ProcessWeakInference(view, cut.LastElement(), cut.End(LinkStrength.Weak))
+                            && chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
                 }
 
                 AddToSearched(locallySearched, cut.FirstElement(), last);
             }
         }
+
+        return false;
     }
     
     private void AddToSearched(Dictionary<T, HashSet<T>> searched, T from, T to)

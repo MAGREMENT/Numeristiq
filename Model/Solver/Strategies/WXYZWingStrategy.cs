@@ -11,8 +11,11 @@ namespace Model.Solver.Strategies;
 public class WXYZWingStrategy : AbstractStrategy
 {
     public const string OfficialName = "WXYZ-Wing";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public WXYZWingStrategy() : base(OfficialName, StrategyDifficulty.Hard) {}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public WXYZWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -223,38 +226,37 @@ public class WXYZWingStrategy : AbstractStrategy
             }
         }
 
-        if (buffer != -1)
+        if (buffer == -1) return false;
+        
+        List<Cell> cells = new();
+        foreach (var cell in miniPositions)
         {
-            List<Cell> cells = new();
-            foreach (var cell in miniPositions)
-            {
-                if (strategyManager.PossibilitiesAt(cell.Row, cell.Col).Peek(buffer)) cells.Add(cell);
-            }
+            if (strategyManager.PossibilitiesAt(cell.Row, cell.Col).Peek(buffer)) cells.Add(cell);
+        }
             
-            foreach (var other in linePositions)
+        foreach (var other in linePositions)
+        {
+            Cell cell = unit switch
             {
-                Cell cell = unit switch
-                {
-                    Unit.Row => new Cell(unitNumber, other),
-                    Unit.Column => new Cell(other, unitNumber),
-                    _ => throw new Exception()
-                };
+                Unit.Row => new Cell(unitNumber, other),
+                Unit.Column => new Cell(other, unitNumber),
+                _ => throw new Exception()
+            };
                 
-                if (strategyManager.PossibilitiesAt(cell.Row, cell.Col).Peek(buffer)) cells.Add(cell);
-            }
-
-            if (cells.Count == 1) return false;
-
-            foreach (var coord in Cells.SharedSeenCells(cells))
-            {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(buffer, coord.Row, coord.Col);
-            }
-
-            return strategyManager.ChangeBuffer.Push(this,
-                new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber));
+            if (strategyManager.PossibilitiesAt(cell.Row, cell.Col).Peek(buffer)) cells.Add(cell);
         }
 
-        return false;
+        if (cells.Count == 1) return false;
+
+        foreach (var coord in Cells.SharedSeenCells(cells))
+        {
+            strategyManager.ChangeBuffer.AddPossibilityToRemove(buffer, coord.Row, coord.Col);
+        }
+
+        return strategyManager.ChangeBuffer.Commit(this,
+            new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber))
+            && OnCommitBehavior == OnCommitBehavior.Return;
+        
     }
 }
 

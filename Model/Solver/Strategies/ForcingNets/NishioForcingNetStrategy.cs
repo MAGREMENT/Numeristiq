@@ -14,11 +14,12 @@ namespace Model.Solver.Strategies.ForcingNets;
 public class NishioForcingNetStrategy : AbstractStrategy
 { 
     public const string OfficialName = "Nishio Forcing Net";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme)
-    {
-        
-    }
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+
+    public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    { }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -39,21 +40,18 @@ public class NishioForcingNetStrategy : AbstractStrategy
                         {
                             case Coloring.Off when cs.AddOff(cell):
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                                if (strategyManager.ChangeBuffer.NotEmpty())
-                                {
-                                    strategyManager.ChangeBuffer.Push(this, new FromOffNishioForcingNetReportBuilder(
-                                        coloring, row, col, possibility, cs.Cause, cell));
+                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
+                                        .Commit(this, new FromOffNishioForcingNetReportBuilder(coloring, row, col,
+                                            possibility, cs.Cause, cell)) && OnCommitBehavior == OnCommitBehavior.Return)
                                     return;
-                                }
-
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
                                 strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
-                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Push(this,
-                                        new NishioForcingNetReportBuilder(coloring, row, col, possibility))) return;
+                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                                        new NishioForcingNetReportBuilder(coloring, row, col, possibility)) && 
+                                            OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
-                            
                         }
                     }
 

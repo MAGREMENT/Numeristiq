@@ -12,10 +12,13 @@ public class HiddenSetStrategy : AbstractStrategy
     public const string OfficialNameForType2 = "Hidden Double";
     public const string OfficialNameForType3 = "Hidden Triple";
     public const string OfficialNameForType4 = "Hidden Quad";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly int _type;
 
-    public HiddenSetStrategy(int type) : base("", StrategyDifficulty.None)
+    public HiddenSetStrategy(int type) : base("", StrategyDifficulty.None, DefaultBehavior)
     {
         _type = type;
         switch (type)
@@ -37,25 +40,25 @@ public class HiddenSetStrategy : AbstractStrategy
     {
         for (int row = 0; row < 9; row++)
         {
-            RecursiveRowMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), row);
+            if (RecursiveRowMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), row)) return;
         }
 
         for (int col = 0; col < 9; col++)
         {
-            RecursiveColumnMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), col);
+            if (RecursiveColumnMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), col)) return;
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                RecursiveMiniGridMashing(strategyManager, 1, new MiniGridPositions(miniRow, miniCol),
-                    IPossibilities.NewEmpty(), miniRow, miniCol);
+                if (RecursiveMiniGridMashing(strategyManager, 1, new MiniGridPositions(miniRow, miniCol),
+                    IPossibilities.NewEmpty(), miniRow, miniCol)) return;
             }
         }
     }
 
-    private void RecursiveRowMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
+    private bool RecursiveRowMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
         IPossibilities visited, int row)
     {
         for (int i = start; i <= 9; i++)
@@ -76,14 +79,18 @@ public class HiddenSetStrategy : AbstractStrategy
                     RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager);
                 }
 
-                strategyManager.ChangeBuffer.Push(this,
-                    new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row));
+                if (strategyManager.ChangeBuffer.Commit(this,
+                        new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row))
+                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
-            else if (newVisited.Count < _type) RecursiveRowMashing(strategyManager, i + 1, newMashed, newVisited, row);
+            else if (newVisited.Count < _type &&
+                     RecursiveRowMashing(strategyManager, i + 1, newMashed, newVisited, row)) return true;
         }
+
+        return false;
     }
     
-    private void RecursiveColumnMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
+    private bool RecursiveColumnMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
         IPossibilities visited, int col)
     {
         for (int i = start; i <= 9; i++)
@@ -104,14 +111,18 @@ public class HiddenSetStrategy : AbstractStrategy
                     RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager);
                 }
 
-                strategyManager.ChangeBuffer.Push(this,
-                    new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column));
+                if (strategyManager.ChangeBuffer.Commit(this,
+                        new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column))
+                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
-            else if (newVisited.Count < _type) RecursiveColumnMashing(strategyManager, i + 1, newMashed, newVisited,col);
+            else if (newVisited.Count < _type &&
+                     RecursiveColumnMashing(strategyManager, i + 1, newMashed, newVisited, col)) return true;
         }
+
+        return false;
     }
     
-    private void RecursiveMiniGridMashing(IStrategyManager strategyManager, int start, MiniGridPositions mashed,
+    private bool RecursiveMiniGridMashing(IStrategyManager strategyManager, int start, MiniGridPositions mashed,
         IPossibilities visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
@@ -132,12 +143,15 @@ public class HiddenSetStrategy : AbstractStrategy
                     RemoveAllPossibilitiesExcept(position.Row, position.Col, newVisited, strategyManager);
                 }
 
-                strategyManager.ChangeBuffer.Push(this,
-                    new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed));
+                if (strategyManager.ChangeBuffer.Commit(this,
+                        new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed))
+                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
-            else if (newVisited.Count < _type) RecursiveMiniGridMashing(strategyManager, i + 1, newMashed,
-                newVisited, miniRow, miniCol);
+            else if (newVisited.Count < _type && RecursiveMiniGridMashing(strategyManager, i + 1, newMashed,
+                         newVisited, miniRow, miniCol)) return true;
         }
+
+        return false;
     }
 
     private void RemoveAllPossibilitiesExcept(int row, int col, IPossibilities except,

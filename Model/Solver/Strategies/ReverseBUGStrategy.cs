@@ -12,8 +12,11 @@ namespace Model.Solver.Strategies;
 public class ReverseBUGStrategy : AbstractStrategy
 {
     public const string OfficialName = "Reverse BUG";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public ReverseBUGStrategy() : base(OfficialName, StrategyDifficulty.Medium)
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public ReverseBUGStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -44,12 +47,12 @@ public class ReverseBUGStrategy : AbstractStrategy
                 var or = pos1.Or(pos2);
                 if(or.Count is >= 4 or <= 1) continue;
 
-                Process(strategyManager, n1, n2, or);
+                if (Process(strategyManager, n1, n2, or)) return;
             }
         }
     }
 
-    private void Process(IStrategyManager strategyManager, int n1, int n2, GridPositions or)
+    private bool Process(IStrategyManager strategyManager, int n1, int n2, GridPositions or)
     {
         LinePositions rows = new LinePositions();
         LinePositions cols = new LinePositions();
@@ -60,7 +63,7 @@ public class ReverseBUGStrategy : AbstractStrategy
             cols.Add(pos.Col);
         }
 
-        if (rows.Count != 2 || cols.Count != 2 || (!rows.AreAllInSameMiniGrid() && !cols.AreAllInSameMiniGrid())) return;
+        if (rows.Count != 2 || cols.Count != 2 || (!rows.AreAllInSameMiniGrid() && !cols.AreAllInSameMiniGrid())) return false;
 
         foreach (var row in rows)
         {
@@ -71,8 +74,8 @@ public class ReverseBUGStrategy : AbstractStrategy
             }
         }
 
-        if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this, new ReverseBugReportBuilder(rows, cols));
+        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            new ReverseBugReportBuilder(rows, cols)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

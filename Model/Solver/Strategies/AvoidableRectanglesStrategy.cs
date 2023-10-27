@@ -10,8 +10,11 @@ namespace Model.Solver.Strategies;
 public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
 {
     public const string OfficialName = "Avoidable Rectangles";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public AvoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard)
+    public AvoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -20,16 +23,16 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
     {
         for (int row = 0; row < 9; row++)
         {
-            SearchForRowMatch(strategyManager, RowSolvedNumberPairs(strategyManager, row), row);
+            if (SearchForRowMatch(strategyManager, RowSolvedNumberPairs(strategyManager, row), row)) return;
         }
 
         for (int col = 0; col < 9; col++)
         {
-            SearchForColumnMatch(strategyManager, ColumnSolvedNumberPairs(strategyManager, col), col);
+            if (SearchForColumnMatch(strategyManager, ColumnSolvedNumberPairs(strategyManager, col), col)) return;
         }
     }
 
-    private void SearchForRowMatch(IStrategyManager strategyManager, List<SolvedNumber[]> pairs, int except)
+    private bool SearchForRowMatch(IStrategyManager strategyManager, List<SolvedNumber[]> pairs, int except)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -47,7 +50,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                     OriginalBoard[row, pair[0].Column] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, row, pair[1].Column);
-                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
+                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, row, pair[0].Column));
                 }
 
@@ -56,7 +59,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                     OriginalBoard[row, pair[1].Column] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, row, pair[0].Column);
-                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
+                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, row, pair[1].Column));
                 }
                 
@@ -79,10 +82,10 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                         }
 
                         if (strategyManager.ChangeBuffer.NotEmpty()){
-                            strategyManager.ChangeBuffer.Push(this,
+                            strategyManager.ChangeBuffer.Commit(this,
                                 new AvoidableRectanglesWithBiValuesReportBuilder(pair, row, pair[0].Column,
                                     row, pair[1].Column));
-                            return;
+                            return OnCommitBehavior == OnCommitBehavior.Return;
                         }
                     }
                 }
@@ -99,11 +102,16 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                     if (als.Possibilities.Equals(mashed))
                         RemovePossibilitiesInAllExcept(strategyManager, mashed, shared, als);
                     if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this,
+                    {
+                        strategyManager.ChangeBuffer.Commit(this,
                             new AvoidableRectanglesWithAlsReportBuilder(pair, als));
+                        return OnCommitBehavior == OnCommitBehavior.Return;
+                    }
                 }
             }
         }
+
+        return false;
     }
 
     private List<SolvedNumber[]> RowSolvedNumberPairs(IStrategyManager strategyManager, int row)
@@ -132,7 +140,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
         }
     }
     
-    private void SearchForColumnMatch(IStrategyManager strategyManager, List<SolvedNumber[]> pairs, int except)
+    private bool SearchForColumnMatch(IStrategyManager strategyManager, List<SolvedNumber[]> pairs, int except)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -150,7 +158,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                     OriginalBoard[pair[0].Row, col] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, pair[1].Row, col);
-                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
+                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, pair[0].Row, col));
                 }
 
@@ -159,7 +167,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                     OriginalBoard[pair[1].Row, col] == 0)
                 {
                     strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, pair[0].Row, col);
-                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Push(this,
+                    if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, pair[1].Row, col));
                 }
                 
@@ -182,10 +190,10 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                         }
 
                         if (strategyManager.ChangeBuffer.NotEmpty()){
-                            strategyManager.ChangeBuffer.Push(this,
+                            strategyManager.ChangeBuffer.Commit(this,
                                 new AvoidableRectanglesWithBiValuesReportBuilder(pair, pair[0].Row, col,
                                     pair[1].Row, col));
-                            return;
+                            return OnCommitBehavior == OnCommitBehavior.Return;
                         }
                     }
                 }
@@ -202,11 +210,17 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                     if (als.Possibilities.Equals(mashed))
                         RemovePossibilitiesInAllExcept(strategyManager, mashed, shared, als);
                     if (strategyManager.ChangeBuffer.NotEmpty())
-                        strategyManager.ChangeBuffer.Push(this,
+                    {
+                        strategyManager.ChangeBuffer.Commit(this,
                             new AvoidableRectanglesWithAlsReportBuilder(pair, als));
+                        return OnCommitBehavior == OnCommitBehavior.Return;
+                    }
+                        
                 }
             }
         }
+
+        return false;
     }
 
     private List<SolvedNumber[]> ColumnSolvedNumberPairs(IStrategyManager strategyManager, int col)

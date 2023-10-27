@@ -9,8 +9,11 @@ namespace Model.Solver.Strategies;
 public class HiddenSingleStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Single";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic){}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior){}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -41,7 +44,7 @@ public class HiddenSingleStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new HiddenSingleReportBuilder());
+        strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder());
     }
 }
 

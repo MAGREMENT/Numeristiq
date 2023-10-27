@@ -23,7 +23,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
     {
         loop.ForEachLink((one, two) => ProcessWeakLink(view, one, two), LinkStrength.Weak);
 
-        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.NiceLoop));
+        return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.NiceLoop));
     }
 
     private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two)
@@ -85,7 +85,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
         if (inference is not CellPossibility pos) return false;
         view.ChangeBuffer.AddPossibilityToRemove(pos.Possibility, pos.Row, pos.Col);
 
-        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
+        return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
@@ -93,6 +93,6 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
         if (inference is not CellPossibility pos) return false;
         view.ChangeBuffer.AddSolutionToAdd(pos.Possibility, pos.Row, pos.Col);
 
-        return view.ChangeBuffer.Push(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
+        return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
     }
 }

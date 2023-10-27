@@ -6,19 +6,24 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains;
 
+//TODO : Add commit behavior to other algorithms than V2
 public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILinkGraphElement
 {
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
     private readonly IAlternatingChainType<T> _chain;
     private readonly IAlternatingChainAlgorithm<T> _algorithm;
 
     public AlternatingChainGeneralization(IAlternatingChainType<T> chainType, IAlternatingChainAlgorithm<T> algo)
-        : base(chainType.Name, chainType.Difficulty)
+        : base(chainType.Name, chainType.Difficulty, DefaultBehavior)
     {
         _chain = chainType;
         _chain.Strategy = this;
         _algorithm = algo;
     }
-    
+
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
         _algorithm.Run(strategyManager, _chain.GetGraph(strategyManager), _chain);
@@ -29,7 +34,7 @@ public interface IAlternatingChainType<T> where T : ILinkGraphElement
 {
     public string Name { get; }
     public StrategyDifficulty Difficulty { get; }
-    IStrategy? Strategy { set; }
+    IStrategy? Strategy { set; get; }
     
     LinkGraph<T> GetGraph(IStrategyManager view);
 

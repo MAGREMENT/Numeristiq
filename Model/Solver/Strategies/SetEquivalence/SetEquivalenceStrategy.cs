@@ -9,11 +9,14 @@ namespace Model.Solver.Strategies.SetEquivalence;
 public class SetEquivalenceStrategy : AbstractStrategy
 {
     public const string OfficialName = "Set Equivalence";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly ISetEquivalenceSearcher _searcher;
     
     public SetEquivalenceStrategy(ISetEquivalenceSearcher searcher)
-        : base(OfficialName, StrategyDifficulty.Hard)
+        : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         _searcher = searcher;
     }
@@ -127,11 +130,10 @@ public class SetEquivalenceStrategy : AbstractStrategy
                 }
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty())
-            {
-                strategyManager.ChangeBuffer.Push(this, new GeometricEquivalenceReportBuilder(equivalence));
+            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    new GeometricEquivalenceReportBuilder(equivalence)) &&
+                    OnCommitBehavior == OnCommitBehavior.Return)
                 return;
-            }
         }
     }
 }

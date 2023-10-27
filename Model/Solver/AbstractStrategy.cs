@@ -7,13 +7,16 @@ public abstract class AbstractStrategy : IStrategy
     public string Name { get; protected init; }
     public StrategyDifficulty Difficulty { get; protected init; }
     public UniquenessDependency UniquenessDependency { get; protected init; }
+    public OnCommitBehavior OnCommitBehavior { get; set; }
+    public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
     public StatisticsTracker Tracker { get; } = new();
 
-    protected AbstractStrategy(string name, StrategyDifficulty difficulty)
+    protected AbstractStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
     {
         Name = name;
         Difficulty = difficulty;
         UniquenessDependency = UniquenessDependency.NotDependent;
+        OnCommitBehavior = defaultBehavior;
     }
     
     public abstract void ApplyOnce(IStrategyManager strategyManager);
@@ -25,9 +28,8 @@ public abstract class OriginalBoardBasedAbstractStrategy : AbstractStrategy
 {
     protected Sudoku OriginalBoard { get; private set; } = new();
     
-    protected OriginalBoardBasedAbstractStrategy(string name, StrategyDifficulty difficulty) : base(name, difficulty)
-    {
-    }
+    protected OriginalBoardBasedAbstractStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
+        : base(name, difficulty, defaultBehavior) { }
 
     public override void OnNewSudoku(Sudoku s)
     {

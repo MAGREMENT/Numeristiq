@@ -44,13 +44,13 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     private int _possibilityRemovedBuffer;
 
     private readonly LogManager _logManager;
+    private readonly StrategyLoader _strategyLoader = new();
 
     public Solver(Sudoku s)
     {
-        var strategyLoader = new StrategyLoader();
-        strategyLoader.Load();
-        Strategies = strategyLoader.Strategies;
-        _excludedStrategies = strategyLoader.ExcludedStrategies;
+        _strategyLoader.Load();
+        Strategies = _strategyLoader.Strategies;
+        _excludedStrategies = _strategyLoader.ExcludedStrategies;
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
@@ -109,6 +109,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
             
             if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StartUsing();
             Strategies[_currentStrategy].ApplyOnce(this);
+            ChangeBuffer.Push();
             if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
@@ -189,6 +190,33 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         }
     }
 
+    public void SetOnInstanceFound(OnInstanceFound found)
+    {
+        foreach (var strategy in Strategies)
+        {
+            switch (found)
+            {
+                case OnInstanceFound.Return :
+                    strategy.OnCommitBehavior = OnCommitBehavior.Return;
+                    break;
+                case OnInstanceFound.WaitForAll :
+                    strategy.OnCommitBehavior = OnCommitBehavior.WaitForAll;
+                    break;
+                case OnInstanceFound.ChooseBest :
+                    strategy.OnCommitBehavior = OnCommitBehavior.ChooseBest;
+                    break;
+                case OnInstanceFound.Default :
+                    strategy.OnCommitBehavior = strategy.DefaultOnCommitBehavior;
+                    break;
+                case OnInstanceFound.Customized :
+                    strategy.OnCommitBehavior = _strategyLoader.CustomizedOnInstanceFound.TryGetValue(strategy.Name,
+                        out var behavior) ? behavior : strategy.DefaultOnCommitBehavior;
+
+                    break;
+            }
+        }
+    }
+
     //PossibilityHolder-------------------------------------------------------------------------------------------------
     
     public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
@@ -240,7 +268,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     //ChangeManager-----------------------------------------------------------------------------------------------------
     
-    public IPossibilitiesHolder TakePossibilitiesSnapshot()
+    public IPossibilitiesHolder TakeSnapshot()
     {
         return SolverSnapshot.TakeSnapshot(this);
     }
@@ -255,7 +283,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         return RemovePossibility(possibility, row, col);
     }
 
-    public void PublishChangeReport(ChangeReport report, IStrategy strategy)
+    public void AddCommitLog(ChangeReport report, IStrategy strategy)
     {
         if (!LogsManaged) return;
         
@@ -521,5 +549,10 @@ public readonly struct CellState
     public IPossibilities AsPossibilities => BitPossibilities.FromBits(_bits);
     
     public int AsNumber => _bits >> 9;
+}
+
+public enum OnInstanceFound
+{
+    Default, Return, WaitForAll, ChooseBest, Customized
 }
 

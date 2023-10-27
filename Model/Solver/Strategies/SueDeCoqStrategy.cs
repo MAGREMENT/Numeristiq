@@ -11,8 +11,11 @@ namespace Model.Solver.Strategies;
 public class SueDeCoqStrategy : AbstractStrategy
 {
     public const string OfficialName = "Sue-De-Coq";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Extreme) {}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior) {}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -30,15 +33,15 @@ public class SueDeCoqStrategy : AbstractStrategy
                 }
 
                 if (cols.Count < 2) continue;
-                TrySearchRow(strategyManager, cols, row);
+                if (TrySearchRow(strategyManager, cols, row)) return;
                 
                 if(cols.Count != 3) continue;
                 foreach (var col in cols)
                 {
                     var copy = cols.Copy();
                     copy.Remove(col);
-                    
-                    TrySearchRow(strategyManager, copy, row);
+
+                    if (TrySearchRow(strategyManager, copy, row)) return;
                 }
             }
         }
@@ -57,7 +60,7 @@ public class SueDeCoqStrategy : AbstractStrategy
                 }
 
                 if (rows.Count < 2) continue;
-                TrySearchColumn(strategyManager, rows, col);
+                if (TrySearchColumn(strategyManager, rows, col)) return;
 
                 if (rows.Count != 3) continue;
                 foreach (var row in rows)
@@ -65,14 +68,14 @@ public class SueDeCoqStrategy : AbstractStrategy
                     var copy = rows.Copy();
                     copy.Remove(row);
 
-                    TrySearchColumn(strategyManager, copy, col);
+                    if (TrySearchColumn(strategyManager, copy, col)) return;
                 }
             }
         }
         
     }
 
-    private void TrySearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row)
+    private bool TrySearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row)
     {
         IPossibilities possibilities = IPossibilities.NewEmpty();
         foreach (var col in cols)
@@ -80,12 +83,12 @@ public class SueDeCoqStrategy : AbstractStrategy
             possibilities.Add(strategyManager.PossibilitiesAt(row, col));
         }
 
-        if (possibilities.Count - 2 < cols.Count) return;
+        if (possibilities.Count - 2 < cols.Count) return false;
 
-        SearchRow(strategyManager, cols, possibilities, row);
+        return SearchRow(strategyManager, cols, possibilities, row);
     }
 
-    private void SearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols,
+    private bool SearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols,
         IReadOnlyPossibilities possibilities, int row)
     {
         List<Cell> rowCoords = new();
@@ -120,13 +123,15 @@ public class SueDeCoqStrategy : AbstractStrategy
         {
             foreach (var mAls in miniAls)
             {
-                if (rAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities))
-                    ProcessSueDeCoq(strategyManager, row, cols, rAls, mAls, Unit.Row);
+                if (rAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities) && ProcessSueDeCoq(strategyManager,
+                        row, cols, rAls, mAls, Unit.Row)) return true;
             }
         }
+
+        return false;
     }
     
-    private void TrySearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col)
+    private bool TrySearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col)
     {
         IPossibilities possibilities = IPossibilities.NewEmpty();
         foreach (var row in rows)
@@ -134,12 +139,12 @@ public class SueDeCoqStrategy : AbstractStrategy
             possibilities.Add(strategyManager.PossibilitiesAt(row, col));
         }
 
-        if (possibilities.Count - 2 < rows.Count) return;
+        if (possibilities.Count - 2 < rows.Count) return false;
 
-        SearchColumn(strategyManager, rows, possibilities, col);
+        return SearchColumn(strategyManager, rows, possibilities, col);
     }
 
-    private void SearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows,
+    private bool SearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows,
         IReadOnlyPossibilities possibilities, int col)
     {
         List<Cell> colCoords = new();
@@ -173,13 +178,15 @@ public class SueDeCoqStrategy : AbstractStrategy
         {
             foreach (var mAls in miniAls)
             {
-                if (cAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities))
-                    ProcessSueDeCoq(strategyManager, col, rows, cAls, mAls, Unit.Column);
+                if (cAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities) && ProcessSueDeCoq(strategyManager,
+                        col, rows, cAls, mAls, Unit.Column)) return true;
             }
         }
+
+        return false;
     }
 
-    private void ProcessSueDeCoq(IStrategyManager strategyManager, int unitNumber, IReadOnlyLinePositions center,
+    private bool ProcessSueDeCoq(IStrategyManager strategyManager, int unitNumber, IReadOnlyLinePositions center,
        AlmostLockedSet unitAls, AlmostLockedSet miniAls, Unit unit)
     {
         for (int other = 0; other < 9; other++)
@@ -214,7 +221,8 @@ public class SueDeCoqStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new SueDeCoqReportBuilder(unitNumber, center, miniAls, unitAls, unit));
+        return strategyManager.ChangeBuffer.Commit(this, new SueDeCoqReportBuilder(unitNumber, center, miniAls,
+            unitAls, unit)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

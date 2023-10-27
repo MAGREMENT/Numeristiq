@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
@@ -13,10 +11,13 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 {
     public const string OfficialNameForType3 = "Finned Swordfish";
     public const string OfficialNameForType4 = "Finned Jellyfish";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly int _type;
 
-    public FinnedGridFormationStrategy(int type) : base("", StrategyDifficulty.Hard)
+    public FinnedGridFormationStrategy(int type) : base("", StrategyDifficulty.Hard, DefaultBehavior)
     {
         _type = type;
         Name = type switch
@@ -37,7 +38,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 
                 var here = new LinePositions { row };
 
-                SearchRowCandidate(strategyManager, row + 1, ppic, here, number);
+                if(SearchRowCandidate(strategyManager, row + 1, ppic, here, number)) return;
             }
             
             for (int col = 0; col < 9; col++)
@@ -47,12 +48,12 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 
                 var here = new LinePositions { col };
 
-                SearchColumnCandidate(strategyManager, col + 1, ppir, here, number);
+                if (SearchColumnCandidate(strategyManager, col + 1, ppir, here, number)) return;
             }
         }
     }
 
-    private void SearchRowCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
+    private bool SearchRowCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int row = start; row < 9; row++)
@@ -67,12 +68,16 @@ public class FinnedGridFormationStrategy : AbstractStrategy
             newVisited.Add(row);
 
             if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
-                SearchRowFinned(strategyManager, newMashed, newVisited, number);
+            {
+                if (SearchRowFinned(strategyManager, newMashed, newVisited, number)) return true;
+            }
             else if(newVisited.Count < _type) SearchRowCandidate(strategyManager, row + 1, newMashed, newVisited, number);
         }
+
+        return false;
     }
 
-    private void SearchRowFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchRowFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int row = 0; row < 9; row++)
@@ -110,14 +115,15 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                 }
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this,
-                    new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row));
-
+            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row)) &&
+                    OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
+
+        return false;
     }
     
-    private void SearchColumnCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
+    private bool SearchColumnCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int col = start; col < 9; col++)
@@ -132,12 +138,16 @@ public class FinnedGridFormationStrategy : AbstractStrategy
             newVisited.Add(col);
 
             if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
-                SearchColumnFinned(strategyManager, newMashed, newVisited, number);
+            {
+                if (SearchColumnFinned(strategyManager, newMashed, newVisited, number)) return true;
+            }
             else if(newVisited.Count < _type) SearchColumnCandidate(strategyManager, col + 1, newMashed, newVisited, number);
         }
+
+        return false;
     }
     
-    private void SearchColumnFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchColumnFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int col = 0; col < 9; col++)
@@ -175,11 +185,12 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                 }
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this,
-                    new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column));
-
+            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column))
+                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
+
+        return false;
     }
 }
 

@@ -8,8 +8,11 @@ namespace Model.Solver.Strategies;
 public class NakedSingleStrategy : AbstractStrategy
 {
     public const string OfficialName = "Naked Single";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
-    public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic) {}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior) {}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -22,7 +25,7 @@ public class NakedSingleStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, new NakedSingleReportBuilder());
+        strategyManager.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
     }
 }
 

@@ -9,8 +9,11 @@ namespace Model.Solver.Strategies;
 public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 {
     public const string OfficialName = "Junior Exocet";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Hard)
+    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
@@ -21,21 +24,21 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         
         foreach (var je in jes)
         {
-            Process(strategyManager, je);
+            if (Process(strategyManager, je)) return;
         }
 
         for (int i = 0; i < jes.Count - 1; i++)
         {
             for (int j = i + 1; j < jes.Count; j++)
             {
-                ProcessDouble(strategyManager, jes[i], jes[j]);
+                if (ProcessDouble(strategyManager, jes[i], jes[j])) return;
             }
         }
     }
 
-    private void ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2)
+    private bool ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2)
     {
-        if(!je1.BaseCandidates.Equals(je2.BaseCandidates) || je1.GetUnit() != je2.GetUnit()) return;
+        if(!je1.BaseCandidates.Equals(je2.BaseCandidates) || je1.GetUnit() != je2.GetUnit()) return false;
 
         var cells1 = new HashSet<Cell>();
         cells1.Add(je1.Base1);
@@ -43,16 +46,16 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         cells1.Add(je1.Target1);
         cells1.Add(je1.Target2);
 
-        if (cells1.Contains(je2.Base1)) return;
-        if (cells1.Contains(je2.Base2)) return;
-        if (cells1.Contains(je2.Target1)) return;
-        if (cells1.Contains(je2.Target2)) return;
+        if (cells1.Contains(je2.Base1)) return false;
+        if (cells1.Contains(je2.Base2)) return false;
+        if (cells1.Contains(je2.Target1)) return false;
+        if (cells1.Contains(je2.Target2)) return false;
 
         LinePositions lp1 = new();
         LinePositions lp2 = new();
         if (je1.GetUnit() == Unit.Row)
         {
-            if (je1.Base1.Row / 3 != je2.Base1.Row / 3) return;
+            if (je1.Base1.Row / 3 != je2.Base1.Row / 3) return false;
             
             lp1.Add(je1.Target1.Col);
             lp1.Add(je1.Target2.Col);
@@ -63,7 +66,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         }
         else
         {
-            if (je1.Base1.Col/ 3 != je2.Base1.Col / 3) return;
+            if (je1.Base1.Col/ 3 != je2.Base1.Col / 3) return false;
             
             lp1.Add(je1.Target1.Row);
             lp1.Add(je1.Target2.Row);
@@ -73,7 +76,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             lp2.Add(je2.EscapeCell.Row);
         }
 
-        if (!lp1.Equals(lp2)) return;
+        if (!lp1.Equals(lp2)) return false;
         
         //Perfectly overlapping double junior exocet
 
@@ -127,10 +130,11 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             //TODO : other cover houses
         }
 
-        strategyManager.ChangeBuffer.Push(this, new DoubleJuniorExocetReportBuilder(je1, je2));
+        return strategyManager.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
+            && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void Process(IStrategyManager strategyManager, JuniorExocet je)
+    private bool Process(IStrategyManager strategyManager, JuniorExocet je)
     {
         //---Base candidates rules---
         
@@ -222,12 +226,13 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         }
         
         //Rule 6 -> Done in rule 2
-        
-        if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this, new JuniorExocetReportBuilder(je));
+
+        if (strategyManager.ChangeBuffer.NotEmpty() &&
+            strategyManager.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
+            && OnCommitBehavior == OnCommitBehavior.Return) return true;
         
         //Incompatibility test TODO
-        if (!strategyManager.UniquenessDependantStrategiesAllowed) return; 
+        if (!strategyManager.UniquenessDependantStrategiesAllowed) return false; 
 
         //---Known true digits rules---
 
@@ -242,6 +247,8 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         //Rule 11
 
         //Rule 12
+
+        return false;
     }
     
     private static bool PossibilityPeekOrIsSolved(IStrategyManager strategyManager, Cell cell, int possibility)

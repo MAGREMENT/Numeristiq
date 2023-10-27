@@ -15,10 +15,13 @@ public class GridFormationStrategy : AbstractStrategy
     public const string OfficialNameForType2 = "X-Wing";
     public const string OfficialNameForType3 = "Swordfish";
     public const string OfficialNameForType4 = "Jellyfish";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly int _type;
 
-    public GridFormationStrategy(int type) : base("", StrategyDifficulty.None)
+    public GridFormationStrategy(int type) : base("", StrategyDifficulty.None, DefaultBehavior)
     {
         _type = type;
         switch (type)
@@ -40,12 +43,12 @@ public class GridFormationStrategy : AbstractStrategy
     { 
         for (int number = 1; number <= 9; number++)
         {
-            Search(strategyManager, 0, Unit.Row, number, new LinePositions(), new LinePositions());
-            Search(strategyManager, 0, Unit.Column, number, new LinePositions(), new LinePositions());
+            if (Search(strategyManager, 0, Unit.Row, number, new LinePositions(), new LinePositions())) return;
+            if (Search(strategyManager, 0, Unit.Column, number, new LinePositions(), new LinePositions())) return;
         }
     }
 
-    private void Search(IStrategyManager strategyManager, int start, Unit unit, int number, LinePositions or,
+    private bool Search(IStrategyManager strategyManager, int start, Unit unit, int number, LinePositions or,
         LinePositions visited)
     {
         for (int i = start; i < 9; i++)
@@ -63,13 +66,15 @@ public class GridFormationStrategy : AbstractStrategy
 
             if (newVisited.Count == _type)
             {
-                if (newOr.Count == _type) Process(strategyManager, newVisited, newOr, number, unit);
+                if (newOr.Count == _type && Process(strategyManager, newVisited, newOr, number, unit)) return true;
             }
             else Search(strategyManager, i + 1, unit, number, newOr, newVisited);
         }
+
+        return false;
     }
 
-    private void Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number, Unit unit)
+    private bool Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
         foreach (var first in toRemove)
         {
@@ -82,9 +87,10 @@ public class GridFormationStrategy : AbstractStrategy
             }
         }
 
-        strategyManager.ChangeBuffer.Push(this, unit == Unit.Row
+        return strategyManager.ChangeBuffer.Commit(this, unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
-                : new GridFormationReportBuilder(toRemove, visited, number));
+                : new GridFormationReportBuilder(toRemove, visited, number)) 
+               && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 

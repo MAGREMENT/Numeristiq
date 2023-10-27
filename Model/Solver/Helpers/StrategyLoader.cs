@@ -70,30 +70,54 @@ public class StrategyLoader
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
     public ulong ExcludedStrategies { get; private set; }
+    public Dictionary<string, OnCommitBehavior> CustomizedOnInstanceFound { get; } = new();
 
     public void Load()
     {
         if (!File.Exists(Path)) return;
 
         var result = IniFileReader.Read(Path);
-        if (!result.TryGetValue("Strategy Order", out var orderSection)) return;
-        
-        List<IStrategy> strategies = new();
-        ulong excluded = 0;
-        int count = 0;
-
-        foreach (var entry in orderSection)
+        if (result.TryGetValue("Strategy Order", out var orderSection))
         {
-            if (!StrategyPool.TryGetValue(entry.Key, out var strategy)) continue;
-            
-            strategies.Add(strategy);
-            if (entry.Value.Equals("false")) excluded |= 1ul << count;
+            List<IStrategy> strategies = new();
+            ulong excluded = 0;
+            int count = 0;
 
-            count++;
-        }
+            foreach (var entry in orderSection)
+            {
+                if (!StrategyPool.TryGetValue(entry.Key, out var strategy)) continue;
+            
+                strategies.Add(strategy);
+                if (entry.Value.Equals("false")) excluded |= 1ul << count;
+
+                count++;
+            }
         
-        Strategies = strategies.ToArray();
-        ExcludedStrategies = excluded;
+            Strategies = strategies.ToArray();
+            ExcludedStrategies = excluded;
+        }
+
+        if (result.TryGetValue("Customized On Instance Found", out var section))
+        {
+            foreach (var entry in section)
+            {
+                if (!StrategyPool.ContainsKey(entry.Key)) continue;
+                OnCommitBehavior behavior;
+
+                switch (entry.Value)
+                {
+                    case "Return" : behavior = OnCommitBehavior.Return;
+                        break;
+                    case "WaitForAll" : behavior = OnCommitBehavior.WaitForAll;
+                        break;
+                    case "ChooseBest" : behavior = OnCommitBehavior.ChooseBest;
+                        break;
+                    default : continue;
+                }
+
+                CustomizedOnInstanceFound.Add(entry.Key, behavior);
+            }
+        }
     }
 }
 

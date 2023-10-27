@@ -14,7 +14,7 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
     private CellUserControl? _current;
     private readonly int[] _currentPos = new int[2];
 
-    public delegate void OnLiveModification(int number, int row, int col, SolverNumberType numberType);
+    public delegate void OnLiveModification(int number, int row, int col, ChangeType numberType);
     public event OnLiveModification? LiveModified;
 
     public LiveModificationUserControl()
@@ -100,9 +100,9 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
     {
         if (_current is not null)
         {
-            SolverNumberType numberType;
-            if (A.IsChecked == true) numberType = SolverNumberType.Definitive;
-            else if (B.IsChecked == true) numberType = SolverNumberType.Possibility;
+            ChangeType numberType;
+            if (A.IsChecked == true) numberType = ChangeType.Solution;
+            else if (B.IsChecked == true) numberType = ChangeType.Possibility;
             else return;
             
             LiveModified?.Invoke(i, _currentPos[0], _currentPos[1], numberType);

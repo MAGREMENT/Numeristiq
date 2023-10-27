@@ -1,28 +1,28 @@
 ﻿namespace Model.Solver.Helpers.Changes;
 
-public class SolverChange
+public readonly struct SolverChange
 {
-    public SolverChange(SolverNumberType numberType, int number, int row, int column)
+    public SolverChange(ChangeType changeType, int number, int row, int column)
     {
-        NumberType = numberType;
+        ChangeType = changeType;
         Number = number;
         Row = row;
         Column = column;
     }
 
-    public SolverNumberType NumberType { get; }
+    public ChangeType ChangeType { get; }
     public int Number { get; }
     public int Row { get; }
     public int Column { get; }
 
     public override string ToString()
     {
-        string action = NumberType == SolverNumberType.Definitive ? "added as definitive" : "removed from possibilities";
+        string action = ChangeType == ChangeType.Solution ? "added as definitive" : "removed from possibilities";
         return $"[{Row + 1}, {Column + 1}] {Number} {action}";
     }
 }
 
-public enum SolverNumberType
+public enum ChangeType
 {
-    Possibility, Definitive
+    Possibility, Solution
 }

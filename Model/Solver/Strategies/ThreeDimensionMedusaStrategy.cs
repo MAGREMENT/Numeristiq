@@ -10,8 +10,11 @@ namespace Model.Solver.Strategies;
 public class ThreeDimensionMedusaStrategy : AbstractStrategy
 {
     public const string OfficialName = "3D Medusa";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard) {}
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -30,13 +33,16 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             if (SearchColor(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph) ||
                 SearchColor(strategyManager, coloredVertices.Off, coloredVertices.On, inGraph))
             {
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices, true));
+                if(strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                       new SimpleColoringReportBuilder(coloredVertices, true)) && 
+                        OnCommitBehavior == OnCommitBehavior.Return) return;
+                
                 continue;
             }
             
             SearchMix(strategyManager, coloredVertices.On, coloredVertices.Off, inGraph);
-            if (strategyManager.ChangeBuffer.NotEmpty())
-                strategyManager.ChangeBuffer.Push(this, new SimpleColoringReportBuilder(coloredVertices));
+            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }
 

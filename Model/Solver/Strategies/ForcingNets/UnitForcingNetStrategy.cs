@@ -11,10 +11,13 @@ namespace Model.Solver.Strategies.ForcingNets;
 public class UnitForcingNetStrategy : AbstractStrategy
 {
     public const string OfficialName = "Unit Forcing Net";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
     private readonly int _max;
 
-    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StrategyDifficulty.Extreme)
+    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _max = maxPossibilities;
     }
@@ -36,8 +39,8 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     colorings[cursor] = strategyManager.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
-                
-                Process(strategyManager, colorings);
+
+                if (Process(strategyManager, colorings)) return;
             }
 
             for (int col = 0; col < 9; col++)
@@ -53,8 +56,8 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     colorings[cursor] = strategyManager.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
-                
-                Process(strategyManager, colorings);
+
+                if (Process(strategyManager, colorings)) return;
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -72,14 +75,14 @@ public class UnitForcingNetStrategy : AbstractStrategy
                         colorings[cursor] = strategyManager.PreComputer.OnColoring(pos.Row, pos.Col, number);
                         cursor++;
                     }
-                
-                    Process(strategyManager, colorings);
+
+                    if (Process(strategyManager, colorings)) return;
                 }
             }
         }
     }
 
-    private void Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings)
+    private bool Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {
@@ -102,17 +105,21 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 if (col == Coloring.On)
                 {
                     view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
-                    if (view.ChangeBuffer.NotEmpty())
-                        view.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder(colorings, current, Coloring.On));
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                            new UnitForcingNetReportBuilder(colorings, current, Coloring.On)) &&
+                                OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
-                    if (view.ChangeBuffer.NotEmpty())
-                        view.ChangeBuffer.Push(this, new UnitForcingNetReportBuilder(colorings, current, Coloring.Off));
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                            new UnitForcingNetReportBuilder(colorings, current, Coloring.Off)) &&
+                                OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
+
+        return false;
     }
 }
 

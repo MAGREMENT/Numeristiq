@@ -9,8 +9,11 @@ namespace Model.Solver.Strategies;
 public class SKLoopsStrategy : AbstractStrategy
 {
     public const string OfficialName = "SK-Loops";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
-    public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard) { }
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    
+    public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) { }
 
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
@@ -46,8 +49,8 @@ public class SKLoopsStrategy : AbstractStrategy
                                             || !IsCellValid(strategyManager, nextRow, col)
                                             || !IsCellValid(strategyManager, nextRow, nextCol)) continue;
 
-                                        ConfirmPattern(strategyManager, new Cell(row, col), new Cell(row, nextCol),
-                                            new Cell(nextRow, nextCol), new Cell(nextRow, col));
+                                        if (ConfirmPattern(strategyManager, new Cell(row, col), new Cell(row, nextCol),
+                                                new Cell(nextRow, nextCol), new Cell(nextRow, col))) return;
                                     }
                                 }
                             }
@@ -85,19 +88,21 @@ public class SKLoopsStrategy : AbstractStrategy
         return countRow < 2 & countCol < 2;
     }
 
-    private void ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
+    private bool ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
     {
         var one = CrossColPossibilities(strategyManager, cells[0]);
         var two = CrossColPossibilities(strategyManager, cells[3]);
         var and = one.Possibilities.And(two.Possibilities);
-        if (and.Count == 0 || and.Equals(one.Possibilities) || and.Equals(two.Possibilities)) return;
+        if (and.Count == 0 || and.Equals(one.Possibilities) || and.Equals(two.Possibilities)) return false;
 
         var combinations = EachCombination(and);
         
         foreach (var combination in combinations)
         {
-            IsLoop(strategyManager, cells, combination);
+            if (IsLoop(strategyManager, cells, combination)) return true;
         }
+
+        return false;
     }
 
     private static List<IPossibilities> EachCombination(IPossibilities possibilities)
@@ -120,7 +125,7 @@ public class SKLoopsStrategy : AbstractStrategy
         }
     }
     
-    private void IsLoop(IStrategyManager strategyManager, Cell[] cells, IPossibilities start)
+    private bool IsLoop(IStrategyManager strategyManager, Cell[] cells, IPossibilities start)
     {
         int possibilityCount = 0;
         int cellCount = 0;
@@ -134,9 +139,9 @@ public class SKLoopsStrategy : AbstractStrategy
                 ? CrossRowPossibilities(strategyManager, cells[i / 2])
                 : CrossColPossibilities(strategyManager, cells[i / 2]);
             pan.Possibilities.Remove(poss);
-            if (pan.Possibilities.Count == 0) return;
+            if (pan.Possibilities.Count == 0) return false;
             
-            if (i == total - 1 && !pan.Possibilities.Equals(start)) return;
+            if (i == total - 1 && !pan.Possibilities.Equals(start)) return false;
             
             links[i] = pan.Possibilities;
             possibilityCount += pan.Possibilities.Count;
@@ -144,12 +149,12 @@ public class SKLoopsStrategy : AbstractStrategy
             poss = pan.Possibilities;
         }
 
-        if (possibilityCount > cellCount) return;
+        if (possibilityCount > cellCount) return false;
 
-        ProcessPattern(strategyManager, cells, links);
+        return ProcessPattern(strategyManager, cells, links);
     }
 
-    private void ProcessPattern(IStrategyManager strategyManager, Cell[] cells, IPossibilities[] links)
+    private bool ProcessPattern(IStrategyManager strategyManager, Cell[] cells, IPossibilities[] links)
     {
         var miniCol1 = cells[0].Col / 3;
         var miniCol2 = cells[1].Col / 3;
@@ -239,8 +244,8 @@ public class SKLoopsStrategy : AbstractStrategy
             }
         }
         
-        if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Push(this, new SKLoopsReportBuilder(cells, links));
+        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            new SKLoopsReportBuilder(cells, links)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private PossibilitiesAndNumber CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)

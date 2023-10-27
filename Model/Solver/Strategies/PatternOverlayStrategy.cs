@@ -11,11 +11,15 @@ namespace Model.Solver.Strategies;
 public class PatternOverlayStrategy : AbstractStrategy
 {
     public const string OfficialName = "Pattern Overlay";
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    
+    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly int _maxCombinationSize;
     private readonly int _maxPatternNumber;
 
-    public PatternOverlayStrategy(int maxCombinationSize, int maxPatternNumber) : base(OfficialName, StrategyDifficulty.Extreme)
+    public PatternOverlayStrategy(int maxCombinationSize, int maxPatternNumber)
+        : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _maxCombinationSize = maxCombinationSize;
         _maxPatternNumber = maxPatternNumber;
@@ -109,7 +113,8 @@ public class PatternOverlayStrategy : AbstractStrategy
             strategyManager.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
         }
 
-        return strategyManager.ChangeBuffer.Push(this, new PatternOverlayReportBuilder(patterns, number));
+        return strategyManager.ChangeBuffer.Commit(this, new PatternOverlayReportBuilder(patterns, number))
+            && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private List<GridPositions>[] GetPatterns(IStrategyManager strategyManager)
