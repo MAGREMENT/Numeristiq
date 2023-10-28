@@ -93,7 +93,7 @@ public class NakedDoublesStrategy : AbstractStrategy
 
             foreach (var possibility in possibilities)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
@@ -111,7 +111,7 @@ public class NakedDoublesStrategy : AbstractStrategy
 
             foreach (var possibility in possibilities)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
@@ -134,7 +134,7 @@ public class NakedDoublesStrategy : AbstractStrategy
                 int col = miniCol * 3 + gridCol;
                 foreach (var possibility in possibilities)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                 }
             }
         }

@@ -74,7 +74,7 @@ public class BruteForceStrategy : AbstractStrategy
             {
                 if(strategyManager.Sudoku[r, c] != 0) continue;
                     
-                strategyManager.ChangeBuffer.AddSolutionToAdd(s[r, c], r, c);
+                strategyManager.ChangeBuffer.ProposeSolutionAddition(s[r, c], r, c);
             }
         }
 

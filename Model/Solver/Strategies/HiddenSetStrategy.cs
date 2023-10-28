@@ -161,7 +161,7 @@ public class HiddenSetStrategy : AbstractStrategy
         {
             if (!except.Peek(number))
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
     }

@@ -85,7 +85,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
 
                     if (other1.Count == 0)
                     {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row1, col1);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row1, col1);
                         strategyManager.ChangeBuffer.Commit(this, 
                             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
                         return OnCommitBehavior == OnCommitBehavior.Return;
@@ -103,7 +103,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
 
                     if (other2.Count == 0)
                     {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row2, col2);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row2, col2);
                         strategyManager.ChangeBuffer.Commit(this,
                             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
                         return OnCommitBehavior == OnCommitBehavior.Return;

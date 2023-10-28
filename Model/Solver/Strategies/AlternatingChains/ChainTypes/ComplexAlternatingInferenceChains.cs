@@ -39,7 +39,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
             {
                 if (pos1.Peek(possibility) || pos2.Peek(possibility)) continue;
                 
-                view.ChangeBuffer.AddPossibilityToRemove(possibility, cp1[0].Cell.Row, cp1[0].Cell.Col);
+                view.ChangeBuffer.ProposePossibilityRemoval(possibility, cp1[0].Cell.Row, cp1[0].Cell.Col);
             }
 
             return;
@@ -75,7 +75,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
 
             foreach (var cell in Cells.SharedSeenCells(cells))
             {
-                view.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
             }
         }
     }
@@ -83,7 +83,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
     public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
-        view.ChangeBuffer.AddPossibilityToRemove(pos.Possibility, pos.Row, pos.Col);
+        view.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Col);
 
         return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
@@ -91,7 +91,7 @@ public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
-        view.ChangeBuffer.AddSolutionToAdd(pos.Possibility, pos.Row, pos.Col);
+        view.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Col);
 
         return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
     }

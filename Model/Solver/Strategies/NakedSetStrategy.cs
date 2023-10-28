@@ -113,7 +113,7 @@ public class NakedSetStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (!except.Peek(col)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
+                if (!except.Peek(col)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
             }
         }
         
@@ -168,7 +168,7 @@ public class NakedSetStrategy : AbstractStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                if (!except.Peek(row)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
+                if (!except.Peek(row)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
             }
         }
         
@@ -236,7 +236,7 @@ public class NakedSetStrategy : AbstractStrategy
                     int row = miniRow * 3 + gridRow;
                     int col = miniCol * 3 + gridCol;
                 
-                    if (!except.Peek(gridRow, gridCol)) strategyManager.ChangeBuffer.AddPossibilityToRemove(n, row, col);
+                    if (!except.Peek(gridRow, gridCol)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
                 }
             }
         }

@@ -55,7 +55,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         
                         foreach (var coord in Cells.SharedSeenCells(coords))
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
                     }
                 }
@@ -74,7 +74,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         
                         foreach (var coord in Cells.SharedSeenCells(where))
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
                     }
                     
@@ -90,7 +90,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         
                         foreach (var coord in Cells.SharedSeenCells(where))
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
                     }
                 }

@@ -28,10 +28,10 @@ public class SolverStateManager
 
     private void LogShowed(ISolverLog log)
     {
-        _shownState = log.SolverState;
+        _shownState = log.StateAfter;
             
         _llg.FocusLog(log);
-        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.SolverState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.StateAfter, _sg.TranslationType));
         _gm.ShowExplanation(log.Explanation);
     }
 
@@ -45,11 +45,11 @@ public class SolverStateManager
 
     private void ShowLogAsked(ISolverLog log)
     {
-        _shownState = log.SolverState;
+        _shownState = log.StateAfter;
         
-        _sg.ShowState(log.SolverState);
+        _sg.ShowState(log.StateAfter);
         _sg.HighLightLog(log);
-        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.SolverState, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.StateAfter, _sg.TranslationType));
         _gm.ShowExplanation(log.Explanation);
     }
 

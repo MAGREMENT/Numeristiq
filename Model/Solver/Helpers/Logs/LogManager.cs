@@ -1,83 +1,56 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 
 namespace Model.Solver.Helpers.Logs;
 
 public class LogManager
 {
+    private readonly ILogHolder _holder;
+
+    public bool IsEnabled { get; set; }
     public List<ISolverLog> Logs { get; } = new();
 
-    private ISolverLog? _current;
+    public delegate void OnLogsUpdated(List<ISolverLog> logs);
+    public event OnLogsUpdated? LogsUpdated;
+    
     private int _idCount = 1;
-
-    private readonly ILogHolder _holder;
-    
-    public delegate void OnLogsUpdate(List<ISolverLog> logs);
-    public event OnLogsUpdate? LogsUpdated;
-    
-    public SolverState StartState { get; private set; }
+    private SolverState? _stateBuffer;
 
     public LogManager(ILogHolder holder)
     {
         _holder = holder;
-        StartState = holder.State;
-    }
-
-    public void NumberAdded(int number, int row, int col, IStrategy strategy)
-    {
-        if (_current is not BuildUpLog)
-        {
-            Push();
-            _current = new BuildUpLog(_idCount++, strategy, _holder.State);
-        } 
-        
-        ((BuildUpLog)_current).DefinitiveAdded(number, row, col);
     }
     
-    public void PossibilityRemoved(int possibility, int row, int col, IStrategy strategy)
+    public void Clear()
     {
-        if (_current is not BuildUpLog)
-        {
-            Push();
-            _current = new BuildUpLog(_idCount++, strategy, _holder.State);
-        }
-        
-        ((BuildUpLog)_current).PossibilityRemoved(possibility, row, col);
-    }
+        if (!IsEnabled) return;
 
-    public void PossibilityRemovedByHand(int possibility, int row, int col)
-    {
-        FastPush(new ByHandRemovedLog(_idCount++, possibility, row, col, _holder.State));
-    }
-
-    public void ChangePushed(ChangeReport report, IStrategy strategy)
-    {
-        FastPush(new ChangeReportLog(_idCount++, strategy, report, _holder.State));
-    }
-
-    public void Push()
-    {
-        if (_current is null) return;
-        
-        Logs.Add(_current);
-        _current = null;
-        
+        _idCount = 1;
+        Logs.Clear();
         LogsUpdated?.Invoke(Logs);
     }
 
-    private void FastPush(ISolverLog log)
+    public void StartPush()
     {
-        Push();
-        _current = log;
-        Push();
+        _stateBuffer = _holder.State;
     }
 
-    public void Clear()
+    public void AddFromReport(ChangeReport report, List<SolverChange> changes, IStrategy strategy)
     {
-        Logs.Clear();
-        _idCount = 1;
-        StartState = _holder.State;
+        if (!IsEnabled || _stateBuffer == null) return;
+        Logs.Add(new ChangeReportLog(_idCount++, strategy, report, _stateBuffer, _stateBuffer.Apply(changes)));
+        LogsUpdated?.Invoke(Logs);
+    }
 
+    public void StopPush()
+    {
+        _stateBuffer = null;
+    }
+
+    public void AddByHand(int possibility, int row, int col)
+    {
+        //TODO correct this
+        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, _holder.State, _holder.State));
         LogsUpdated?.Invoke(Logs);
     }
 }

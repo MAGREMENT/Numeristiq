@@ -39,7 +39,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
                         switch (entry.Value)
                         {
                             case Coloring.Off when cs.AddOff(cell):
-                                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
                                         .Commit(this, new FromOffNishioForcingNetReportBuilder(coloring, row, col,
                                             possibility, cs.Cause, cell)) && OnCommitBehavior == OnCommitBehavior.Return)
@@ -47,7 +47,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
-                                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
                                         new NishioForcingNetReportBuilder(coloring, row, col, possibility)) && 
                                             OnCommitBehavior == OnCommitBehavior.Return) return;

@@ -107,7 +107,7 @@ public class FinnedXWingStrategy : AbstractStrategy
         {
             int row = startRow + i;
             if (row == normalRow || row == finnedRow) continue;
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, finnedCol);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, finnedCol);
         }
     }
     
@@ -130,7 +130,7 @@ public class FinnedXWingStrategy : AbstractStrategy
         {
             int col = startCol + i;
             if (col == finnedCol || col == normalCol) continue;
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(number, finnedRow, col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, finnedRow, col);
         }
     }
 }

@@ -84,7 +84,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         {
             foreach (var possibility in je1.BaseCandidates)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
             }
         }
         
@@ -92,7 +92,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         {
             foreach (var possibility in je1.BaseCandidates)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
             }
         }
 
@@ -109,7 +109,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
                         foreach (var row in or)
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(sPossibility.Possibility, row, col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(sPossibility.Possibility, row, col);
                         }
                     }
                 }
@@ -121,7 +121,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
                         foreach (var col in or)
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(sPossibility.Possibility, row, col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(sPossibility.Possibility, row, col);
                         }
                     }
                 }
@@ -146,11 +146,11 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
                 || (sCell.FromTarget1.Count == 0 && sCell.FromTarget2.Count == 0 && sCell.FromEscapeCell.Count > 0)
                 || sCell.FromTarget1.Or(sCell.FromTarget2).Or(sCell.FromEscapeCell).Count == 1)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target1.Row, je.Target1.Col);
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target2.Row, je.Target2.Col);
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Base1.Row, je.Base1.Col);
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Base2.Row, je.Base2.Col);
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.EscapeCell.Row,
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Base1.Row, je.Base1.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Base2.Row, je.Base2.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.EscapeCell.Row,
                     je.EscapeCell.Col);
             }
         }
@@ -166,7 +166,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             {
                 foreach (var mirror in t1Mirror)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, mirror.Row, mirror.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, mirror.Row, mirror.Col);
                 }
             }
             
@@ -174,17 +174,17 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             {
                 foreach (var mirror in t2Mirror)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, mirror.Row, mirror.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, mirror.Row, mirror.Col);
                 }
             }
             
             if(!PossibilityPeekOrIsSolved(strategyManager, t1Mirror[0], possibility) 
                && !PossibilityPeekOrIsSolved(strategyManager, t1Mirror[1], possibility))
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, je.Target1.Row, je.Target1.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1.Row, je.Target1.Col);
             
             if(!PossibilityPeekOrIsSolved(strategyManager, t2Mirror[0], possibility) 
                && !PossibilityPeekOrIsSolved(strategyManager, t2Mirror[1], possibility))
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, je.Target2.Row, je.Target2.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2.Row, je.Target2.Col);
         }
         
         //Rule 3
@@ -192,8 +192,8 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         {
             if(je.BaseCandidates.Peek(possibility)) continue;
             
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, je.Target1.Row, je.Target1.Col);
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, je.Target2.Row, je.Target2.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1.Row, je.Target1.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2.Row, je.Target2.Col);
         }
         
         //Rule 4 -> Added In LinkGraph
@@ -204,25 +204,25 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             if (sCell.IsDoubleParallel()) continue;
             
             if (sCell.FromTarget1.Count == 0 && sCell.FromTarget2.Count > 0)
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target2.Row, je.Target2.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
 
             if (sCell.FromTarget2.Count == 0 && sCell.FromTarget1.Count > 0)
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target1.Row, je.Target1.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
             
 
             if (sCell.FromEscapeCell.Count == 0)
             {
                 if(sCell.FromTarget2.Count > 0)
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target2.Row, je.Target2.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
                 if(sCell.FromTarget1.Count > 0)
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target1.Row, je.Target1.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
             }
 
             if (SPossibility.IsPerpendicularWithOneParallel(sCell.FromTarget1, sCell.FromTarget2, sCell.FromEscapeCell))
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target1.Row, je.Target1.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
             
             if (SPossibility.IsPerpendicularWithOneParallel(sCell.FromTarget2, sCell.FromTarget1, sCell.FromEscapeCell))
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(sCell.Possibility, je.Target2.Row, je.Target2.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
         }
         
         //Rule 6 -> Done in rule 2

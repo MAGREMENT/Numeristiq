@@ -49,7 +49,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                 if (strategyManager.Sudoku[row, pair[0].Column] == pair[1].Number &&
                     OriginalBoard[row, pair[0].Column] == 0)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, row, pair[1].Column);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(pair[0].Number, row, pair[1].Column);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, row, pair[0].Column));
                 }
@@ -58,7 +58,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                 if (strategyManager.Sudoku[row, pair[1].Column] == pair[0].Number &&
                     OriginalBoard[row, pair[1].Column] == 0)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, row, pair[0].Column);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(pair[1].Number, row, pair[0].Column);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, row, pair[1].Column));
                 }
@@ -78,7 +78,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                         foreach (var coord in Cells.SharedSeenCells(row, pair[0].Column,
                                      row, pair[1].Column))
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
 
                         if (strategyManager.ChangeBuffer.NotEmpty()){
@@ -157,7 +157,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                 if (strategyManager.Sudoku[pair[0].Row, col] == pair[1].Number &&
                     OriginalBoard[pair[0].Row, col] == 0)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[0].Number, pair[1].Row, col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(pair[0].Number, pair[1].Row, col);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, pair[0].Row, col));
                 }
@@ -166,7 +166,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                 if (strategyManager.Sudoku[pair[1].Row, col] == pair[0].Number &&
                     OriginalBoard[pair[1].Row, col] == 0)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(pair[1].Number, pair[0].Row, col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(pair[1].Number, pair[0].Row, col);
                     if(strategyManager.ChangeBuffer.NotEmpty())strategyManager.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(pair, pair[1].Row, col));
                 }
@@ -186,7 +186,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
                         foreach (var coord in Cells.SharedSeenCells(pair[0].Row, col,
                                      pair[1].Row, col))
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
 
                         if (strategyManager.ChangeBuffer.NotEmpty()){
@@ -257,7 +257,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
             if(except.Contains(coord) || !except.ShareAUnit(coord)) continue;
             foreach (var possibility in poss)
             {
-                view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+                view.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
             }
         }
     }

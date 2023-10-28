@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Positions;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Helpers.Changes;
@@ -19,24 +18,24 @@ public class ChangeBuffer
         _m = changeManager;
     }
 
-    public void AddPossibilityToRemove(int possibility, int row, int col)
+    public void ProposePossibilityRemoval(int possibility, int row, int col)
     {
-        AddPossibilityToRemove(new CellPossibility(row, col, possibility));
+        ProposePossibilityRemoval(new CellPossibility(row, col, possibility));
     }
 
-    public void AddPossibilityToRemove(CellPossibility cp)
+    public void ProposePossibilityRemoval(CellPossibility cp)
     {
         if (!_m.PossibilitiesAt(cp.Row, cp.Col).Peek(cp.Possibility)) return;
         
         _possibilityRemovedBuffer.Add(cp);
     }
 
-    public void AddSolutionToAdd(int number, int row, int col)
+    public void ProposeSolutionAddition(int number, int row, int col)
     {
-        AddSolutionToAdd(new CellPossibility(row, col, number));
+        ProposeSolutionAddition(new CellPossibility(row, col, number));
     }
 
-    public void AddSolutionToAdd(CellPossibility cp)
+    public void ProposeSolutionAddition(CellPossibility cp)
     {
         if(_m.Sudoku[cp.Row, cp.Col] != 0) return;
 
@@ -49,24 +48,44 @@ public class ChangeBuffer
     }
 
     public void Push()
-    { 
+    {
+        if(_m.LogManager.IsEnabled) PushWithLogsManaged();
+        else PushWithoutLogsManaged();
+    }
+
+    private void PushWithoutLogsManaged()
+    {
         foreach (var commit in _commits)
         {
-            bool yes = false;
-            
             foreach (var change in commit.Changes)
             {
-                if (change.ChangeType == ChangeType.Solution)
-                {
-                    if(_m.AddSolutionFromBuffer(change.Number, change.Row, change.Column)) yes = true;
-                }
-                else if (_m.RemovePossibilityFromBuffer(change.Number, change.Row, change.Column)) yes = true;
+                _m.ExecuteChange(change);
             }
-
-            if (yes && _m.LogsManaged && commit.Report is not null) _m.AddCommitLog(commit.Report, commit.Responsible);
         }
         
         _commits.Clear();
+    }
+
+    private void PushWithLogsManaged()
+    {
+        _m.LogManager.StartPush();
+        var snapshot = _m.TakeSnapshot();
+        
+        foreach (var commit in _commits)
+        {
+            List<SolverChange> impactfulChanges = new();
+            
+            foreach (var change in commit.Changes)
+            {
+                if (_m.ExecuteChange(change)) impactfulChanges.Add(change);
+            }
+
+            if (commit.Builder is null || impactfulChanges.Count == 0) continue;
+            _m.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, commit.Responsible);
+        }
+        
+        _commits.Clear();
+        _m.LogManager.StopPush();
     }
 
     public bool Commit(IStrategy strategy, IChangeReportBuilder builder)
@@ -74,8 +93,8 @@ public class ChangeBuffer
         if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
 
         var changes = BuffersToChangeList();
-        _commits.Add(_m.LogsManaged
-            ? new ChangeCommit(strategy, changes, builder.Build(changes, _m.TakeSnapshot()))
+        _commits.Add(_m.LogManager.IsEnabled
+            ? new ChangeCommit(strategy, changes, builder)
             : new ChangeCommit(strategy, changes));
 
         return true;
@@ -108,19 +127,19 @@ public class ChangeCommit
 {
     public IStrategy Responsible { get; }
     public List<SolverChange> Changes { get; }
-    public ChangeReport? Report { get; }
+    public IChangeReportBuilder? Builder { get; }
 
-    public ChangeCommit(IStrategy responsible, List<SolverChange> changes, ChangeReport report)
+    public ChangeCommit(IStrategy responsible, List<SolverChange> changes, IChangeReportBuilder builder)
     {
         Responsible = responsible;
         Changes = changes;
-        Report = report;
+        Builder = builder;
     }
 
     public ChangeCommit(IStrategy responsible, List<SolverChange> changes)
     {
         Responsible = responsible;
         Changes = changes;
-        Report = null;
+        Builder = null;
     }
 }

@@ -61,7 +61,7 @@ public class XYChainStrategy : AbstractStrategy
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(visited[0].Possibility, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Col);
         }
         
         return strategyManager.ChangeBuffer.Commit(this, new XYChainReportBuilder(visited))

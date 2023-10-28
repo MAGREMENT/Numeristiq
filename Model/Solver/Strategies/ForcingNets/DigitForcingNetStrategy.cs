@@ -50,10 +50,10 @@ public class DigitForcingNetStrategy : AbstractStrategy
                 switch (other)
                 {
                     case Coloring.Off when on.Value == Coloring.Off :
-                        view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, possOn.Row, possOn.Col);
+                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, possOn.Row, possOn.Col);
                         break;
                     case Coloring.On when on.Value == Coloring.On :
-                        view.ChangeBuffer.AddSolutionToAdd(possOn.Possibility, possOn.Row, possOn.Col);
+                        view.ChangeBuffer.ProposeSolutionAddition(possOn.Possibility, possOn.Row, possOn.Col);
                         break;
                 }
 
@@ -78,7 +78,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                 {
                     foreach (var coord in possOn.SharedSeenCells(possOff))
                     {
-                        view.ChangeBuffer.AddPossibilityToRemove(possOn.Possibility, coord.Row, coord.Col);
+                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Col);
                     }
                     
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
@@ -96,7 +96,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
         foreach (var possibility in view.PossibilitiesAt(row, col))
         {
             if (possibility == except1 || possibility == except2) continue;
-            view.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+            view.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
         }
     }
 }

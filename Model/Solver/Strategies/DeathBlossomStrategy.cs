@@ -118,7 +118,7 @@ public class DeathBlossomStrategy : AbstractStrategy
     private void Process(IStrategyManager strategyManager, Cell stem, Cell target, HashSet<AlmostLockedSet> sets, int possibility)
     {
         List<Cell> buffer = new();
-        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, stem.Row, stem.Col);
+        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Col);
 
         foreach (var als in sets)
         {
@@ -135,7 +135,7 @@ public class DeathBlossomStrategy : AbstractStrategy
             {
                 if (cell == stem) continue;
 
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
             }
         }
         

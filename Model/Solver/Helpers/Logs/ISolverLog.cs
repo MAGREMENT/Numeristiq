@@ -10,7 +10,8 @@ public interface ISolverLog
     public Intensity Intensity { get; }
     public string Changes { get; }
     public string Explanation { get; }
-    public SolverState SolverState { get; }
+    public SolverState StateBefore { get; }
+    public SolverState StateAfter { get; }
     public HighlightManager HighlightManager { get; }
 
 }

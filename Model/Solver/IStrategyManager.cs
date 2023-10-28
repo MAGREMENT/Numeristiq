@@ -9,10 +9,6 @@ namespace Model.Solver;
 public interface IStrategyManager : IPossibilitiesHolder
 { 
     bool LogsManaged { get; }
-    
-    bool AddSolution(int number, int row, int col, IStrategy strategy);
-
-    bool RemovePossibility(int possibility, int row, int col, IStrategy strategy);
 
     ChangeBuffer ChangeBuffer { get; }
     

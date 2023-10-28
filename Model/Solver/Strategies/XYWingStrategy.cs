@@ -95,7 +95,7 @@ public class XYWingStrategy : AbstractStrategy
     {
         foreach (var cell in Cells.SharedSeenCells(row1, col1, row2, col2))
         {
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Col);
         }
 
         return strategyManager.ChangeBuffer.Commit(this,

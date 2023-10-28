@@ -67,14 +67,14 @@ public class CellForcingNetStrategy : AbstractStrategy
             {
                 if (currentColoring == Coloring.On)
                 {
-                    view.ChangeBuffer.AddSolutionToAdd(cell.Possibility, cell.Row, cell.Col);
+                    view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Col);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new CellForcingNetBuilder(colorings, current.Row, current.Col, cell, Coloring.On))
                                 && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
-                    view.ChangeBuffer.AddPossibilityToRemove(cell.Possibility, cell.Row, cell.Col);
+                    view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Col);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new CellForcingNetBuilder(colorings, current.Row, current.Col, cell, Coloring.Off))
                                 && OnCommitBehavior == OnCommitBehavior.Return) return true;
@@ -141,7 +141,7 @@ public class CellForcingNetStrategy : AbstractStrategy
                     {
                         if (on.Peek(col)) continue;
 
-                        view.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                        view.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                     }
                 }
                 count.Clear();
@@ -174,7 +174,7 @@ public class CellForcingNetStrategy : AbstractStrategy
                     {
                         if(on.Peek(row)) continue;
 
-                        view.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                        view.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                     }
                 }
                 count.Clear();
@@ -209,7 +209,7 @@ public class CellForcingNetStrategy : AbstractStrategy
                         {
                             if (on.Peek(cell.Row % 3, cell.Col % 3)) continue;
 
-                            view.ChangeBuffer.AddPossibilityToRemove(number, cell.Row, cell.Col);
+                            view.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Col);
                         }
                     }
                     count.Clear();

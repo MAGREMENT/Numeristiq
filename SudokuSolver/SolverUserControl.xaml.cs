@@ -4,7 +4,6 @@ using System.Windows;
 using System.Windows.Controls;
 using Model;
 using Model.Solver;
-using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.StrategiesUtil;
@@ -18,15 +17,20 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
 {
     public const int CellSize = 60;
     private const int LineWidth = 3;
-    
-    private readonly Solver _solver = new(new Sudoku());
+
+    private readonly Solver _solver = new(new Sudoku())
+    {
+        LogsManaged = true,
+        StatisticsTracked = false
+    };
     private int _logBuffer;
 
     public SudokuTranslationType TranslationType { get; set; } = SudokuTranslationType.Shortcuts;
 
     public SolverState StartState => _solver.StartState;
     public SolverState CurrentState => _solver.State;
-    public int Delay { get; set; } = 400;
+    public int DelayBefore { get; set; } = 350;
+    public int DelayAfter { get; set; } = 350;
 
     private readonly SolverBackgroundManager _backgroundManager;
 
@@ -39,7 +43,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public delegate void OnSudokuAsStringChanged(string solverAsString);
     public event OnSudokuAsStringChanged? SudokuAsStringChanged;
 
-    public event LogManager.OnLogsUpdate? LogsUpdated; 
+    public event LogManager.OnLogsUpdated? LogsUpdated; 
 
     public event OnLogShowed? LogShowed;
     public event OnCurrentStateShowed? CurrentStateShowed;
@@ -171,32 +175,26 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public async void RunUntilProgress()
     {
         await _solver.SolveAsync(true);
-
-        if (_solver.Logs.Count > 0 && _solver.Logs[^1].Id == _logBuffer)
-        {
-            ShowCurrent();
-            CurrentStateShowed?.Invoke();
-            IsReady?.Invoke();
-            return;
-        }
-
-        int start = _logBuffer;
+        
         for (int n = _logBuffer; n < _solver.Logs.Count; n++)
         {
-            if(n != start) await Task.Delay(TimeSpan.FromMilliseconds(Delay));
-            
             _backgroundManager.Clear();
             
             var current = _solver.Logs[n];
             
             Highlight(current);
-            await Task.Delay(TimeSpan.FromMilliseconds(Delay));
+            ShowStateWithoutUpdatingBackground(current.StateBefore);
+            LogShowed?.Invoke(current);
+            await Task.Delay(TimeSpan.FromMilliseconds(DelayBefore));
             
-            ShowStateWithoutUpdatingBackground(_solver.Logs[n].SolverState);
-            LogShowed?.Invoke(_solver.Logs[n]);
+            ShowStateWithoutUpdatingBackground(current.StateAfter);
+            await Task.Delay(TimeSpan.FromMilliseconds(DelayAfter));
 
             _logBuffer = current.Id;
         }
+        
+        ShowCurrent();
+        CurrentStateShowed?.Invoke();
         
         IsReady?.Invoke();
     }

@@ -65,7 +65,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyManager.ChangeBuffer.AddSolutionToAdd(coord);
+                        strategyManager.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -100,7 +100,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyManager.ChangeBuffer.AddSolutionToAdd(coord);
+                        strategyManager.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -124,7 +124,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                     {
                         var current = new CellPossibility(coord.Row, coord.Col, first.Possibility);
                         if(inGraph.Contains(current)) continue; 
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(current);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(current);
                     }
                 }
                 else
@@ -135,11 +135,11 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                     {
                         if(strategyManager.PossibilitiesAt(first.Row, first.Col).Peek(second.Possibility) &&
                            !inGraph.Contains(new CellPossibility(first.Row, first.Col, second.Possibility)))
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(second.Possibility, first.Row, first.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(second.Possibility, first.Row, first.Col);
                         
                         if(strategyManager.PossibilitiesAt(second.Row, second.Col).Peek(first.Possibility) &&
                            !inGraph.Contains(new CellPossibility(second.Row, second.Col, first.Possibility)))
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(first.Possibility, second.Row, second.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(first.Possibility, second.Row, second.Col);
                     }
                 }
             }
@@ -152,7 +152,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
         {
             if (i != exceptOne && i != exceptTwo)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(i, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(i, row, col);
             }
         }
     }

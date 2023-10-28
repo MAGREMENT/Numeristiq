@@ -161,7 +161,7 @@ public class FireworksStrategy : AbstractStrategy
 
             foreach (var possibility in dual.Possibilities)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, opposite.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, opposite.Row, opposite.Col);
             }
 
 
@@ -181,7 +181,7 @@ public class FireworksStrategy : AbstractStrategy
                 if (strategyManager.PossibilitiesAt(opposite.Row, dual.Cross.Col).Peek(possibility) &&
                     strategyManager.RowPositionsAt(opposite.Row, possibility).Count == 2)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, dual.Cross.Row, opposite.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, dual.Cross.Row, opposite.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
                             new FireworksWithStrongLinkReportBuilder(dual, possibility, new Cell(opposite.Row,
                                 opposite.Col), new Cell(opposite.Row, dual.Cross.Col))) && OnCommitBehavior == OnCommitBehavior.Return) return;
@@ -190,7 +190,7 @@ public class FireworksStrategy : AbstractStrategy
                 if (strategyManager.PossibilitiesAt(dual.Cross.Row, opposite.Col).Peek(possibility) &&
                     strategyManager.ColumnPositionsAt(opposite.Col, possibility).Count == 2)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, opposite.Row, dual.Cross.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, opposite.Row, dual.Cross.Col);
                     if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
                             new FireworksWithStrongLinkReportBuilder(dual, possibility, new Cell(opposite.Row,
                                 opposite.Col), new Cell(dual.Cross.Row, opposite.Col))) && OnCommitBehavior == OnCommitBehavior.Return) return;
@@ -224,8 +224,8 @@ public class FireworksStrategy : AbstractStrategy
                             && unit != strictStacks[j].Wings[1].Row)
                         {
                         
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, unit, oppositeI.Col);
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, unit, oppositeI.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, unit, oppositeI.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, unit, oppositeI.Col);
                         }
                     
                         if (unit != strictStacks[i].Wings[0].Col
@@ -233,8 +233,8 @@ public class FireworksStrategy : AbstractStrategy
                             && unit != strictStacks[j].Wings[0].Col 
                             && unit != strictStacks[j].Wings[1].Col)
                         {
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, oppositeI.Row, unit);
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, oppositeI.Row, unit);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, oppositeI.Row, unit);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, oppositeI.Row, unit);
                         }    
                     }
                 }
@@ -266,7 +266,7 @@ public class FireworksStrategy : AbstractStrategy
         foreach (var possibility in strategyManager.PossibilitiesAt(coord.Row, coord.Col))
         {
             if(except.Peek(possibility)) continue;
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
         }
     }
 
@@ -276,7 +276,7 @@ public class FireworksStrategy : AbstractStrategy
         foreach (var possibility in strategyManager.PossibilitiesAt(one.Cross.Row, one.Cross.Col))
         {
             if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility)
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, one.Cross.Row, one.Cross.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Col);
         }
 
         foreach (var wing in wings)
@@ -284,7 +284,7 @@ public class FireworksStrategy : AbstractStrategy
             foreach (var possibility in strategyManager.PossibilitiesAt(wing.Row, wing.Col))
             {
                 if (possibility != one.Possibility && possibility != two.Possibility && possibility != three.Possibility) 
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, wing.Row, wing.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, wing.Row, wing.Col);
             }
         }
 

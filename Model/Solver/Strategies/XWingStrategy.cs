@@ -81,7 +81,7 @@ public class XWingStrategy : AbstractStrategy
             
             foreach (var col in cols)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
         
@@ -97,7 +97,7 @@ public class XWingStrategy : AbstractStrategy
             
             foreach (var row in rows)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
         

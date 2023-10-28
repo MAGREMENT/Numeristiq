@@ -62,7 +62,7 @@ public class SimpleColoringStrategy : AbstractStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyManager.ChangeBuffer.AddSolutionToAdd(coord);
+                        strategyManager.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -88,7 +88,7 @@ public class SimpleColoringStrategy : AbstractStrategy
                     var current = new CellPossibility(coord, on.Possibility);
                     if (inGraph.Contains(current)) continue;
                     
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(on.Possibility, coord.Row, coord.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Col);
                 }
             }
         }

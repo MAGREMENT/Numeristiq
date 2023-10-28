@@ -110,7 +110,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                     foreach (var possibility in possibilities)
                     {
                         if (difference2[possibility - 1] == 0)
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
                     }
                 }
             }
@@ -125,7 +125,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                     foreach (var possibility in possibilities)
                     {
                         if (difference1[possibility - 1] == 0)
-                            strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
                     }
                 }
             }

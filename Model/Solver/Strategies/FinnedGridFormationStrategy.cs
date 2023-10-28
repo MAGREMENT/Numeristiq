@@ -111,7 +111,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                     int eliminationRow = startRow + gridRow;
                     if (visited.Peek(eliminationRow) || row == eliminationRow) continue;
 
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(number, eliminationRow, col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, eliminationRow, col);
                 }
             }
 
@@ -181,7 +181,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                     int eliminationCol = startCol + gridCol;
                     if (visited.Peek(eliminationCol) || col == eliminationCol) continue;
 
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, eliminationCol);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, eliminationCol);
                 }
             }
 

@@ -166,12 +166,12 @@ public class SKLoopsStrategy : AbstractStrategy
 
             foreach (var possibility in links[1])
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cells[0].Row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[0].Row, col);
             }
             
             foreach (var possibility in links[5])
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cells[2].Row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[2].Row, col);
             }
         }
 
@@ -186,7 +186,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[0])
                     {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
                 
@@ -197,7 +197,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[2])
                     {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
                 
@@ -208,7 +208,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[4])
                     {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
                 
@@ -219,7 +219,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[6])
                     {
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
             }
@@ -235,12 +235,12 @@ public class SKLoopsStrategy : AbstractStrategy
             
             foreach (var possibility in links[3])
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, cells[1].Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Col);
             }
             
             foreach (var possibility in links[7])
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, cells[3].Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Col);
             }
         }
         

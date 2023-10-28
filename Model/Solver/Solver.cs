@@ -19,31 +19,34 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public IReadOnlySudoku Sudoku => _sudoku;
     public IStrategy[] Strategies { get; }
     public StrategyInfo[] StrategyInfos => GetStrategyInfo();
-    public List<ISolverLog> Logs => _logManager.Logs;
-
-    public bool LogsManaged { get; init; } = true;
+    public List<ISolverLog> Logs => LogManager.Logs;
+    
+    public bool LogsManaged
+    {
+        get => LogManager.IsEnabled;
+        init => LogManager.IsEnabled = value;
+    }
     public bool StatisticsTracked { get; init; }
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
 
     public SolverState State => new(this);
-    public SolverState StartState => _logManager.StartState;
+    public SolverState StartState { get; private set; }
 
-    public delegate void OnSolutionAdded(int row, int col);
-    public event OnSolutionAdded? SolutionAdded;
+    public delegate void SolutionAddition(int number, int row, int col);
+    public event SolutionAddition? GoingToAddSolution;
 
-    public delegate void OnPossibilityRemoved(int row, int col);
-    public event OnPossibilityRemoved? PossibilityRemoved;
+    public delegate void PossibilityRemoval(int number, int row, int col);
+    public event PossibilityRemoval? GoingToRemovePossibility;
 
-    public event LogManager.OnLogsUpdate? LogsUpdated;
+    public event LogManager.OnLogsUpdated? LogsUpdated;
 
     private int _currentStrategy = -1;
     private ulong _excludedStrategies;
     private ulong _lockedStrategies;
     
-    private int _solutionAddedBuffer;
+    private int _solutionAddedBuffer; //TODO move this in change buffer
     private int _possibilityRemovedBuffer;
 
-    private readonly LogManager _logManager;
     private readonly StrategyLoader _strategyLoader = new();
 
     public Solver(Sudoku s)
@@ -55,17 +58,18 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
 
-        SolutionAdded += (_, _) => _solutionAddedBuffer++;
-        PossibilityRemoved += (_, _) => _possibilityRemovedBuffer++;
+        GoingToAddSolution += (_, _, _) => _solutionAddedBuffer++;
+        GoingToRemovePossibility += (_, _, _) => _possibilityRemovedBuffer++;
 
         Init();
+        StartState = new SolverState(this);
 
         PreComputer = new PreComputer(this);
 
         GraphManager = new LinkGraphManager(this);
         
-        _logManager = new LogManager(this);
-        _logManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
+        LogManager = new LogManager(this);
+        LogManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
         
         ChangeBuffer = new ChangeBuffer(this);
     }
@@ -78,27 +82,28 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         CallOnNewSudokuForEachStrategy();
 
         Reset();
+        StartState = new SolverState(this);
 
-        if (LogsManaged) _logManager.Clear();
-
+        LogManager.Clear();
         PreComputer.Reset();
     }
     
     
-    public void SetSolutionByHand(int number, int row, int col)
+    public void SetSolutionByHand(int number, int row, int col) //TODO rework the by hand methods and add remove solution
     {
+        if (!_possibilities[row, col].Peek(number)) return;
+        
         _sudoku[row, col] = number;
         Reset();
-        
-        if(LogsManaged) _logManager.Clear();
+        LogManager.Clear();
     }
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
         if (!_possibilities[row, col].Remove(possibility)) return;
-        _positions[possibility - 1].Remove(row, col);
         
-        if (LogsManaged) _logManager.PossibilityRemovedByHand(possibility, row, col);
+        _positions[possibility - 1].Remove(row, col);
+        LogManager.AddByHand(possibility, row, col);
     }
     
     public void Solve(bool stopAtProgress = false)
@@ -106,20 +111,21 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
             if (!IsStrategyUsed(_currentStrategy)) continue;
-            
+
             if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StartUsing();
             Strategies[_currentStrategy].ApplyOnce(this);
             ChangeBuffer.Push();
             if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
-            
+
             _solutionAddedBuffer = 0;
             _possibilityRemovedBuffer = 0;
+            
             _currentStrategy = -1;
+
             PreComputer.Reset();
             GraphManager.Clear();
-            if(LogsManaged) _logManager.Push();
 
             if (stopAtProgress || _sudoku.IsComplete()) return;
         }
@@ -246,22 +252,6 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     //StrategyManager---------------------------------------------------------------------------------------------------
 
-    public bool AddSolution(int number, int row, int col, IStrategy strategy)
-    {
-        if (!AddSolution(number, row, col)) return false;
-        
-        if (LogsManaged) _logManager.NumberAdded(number, row, col, strategy);
-        return true;
-    }
-    
-    public bool RemovePossibility(int possibility, int row, int col, IStrategy strategy)
-    {
-        if (!RemovePossibility(possibility, row, col)) return false;
-        
-        if (LogsManaged) _logManager.PossibilityRemoved(possibility, row, col, strategy);
-        return true;
-    }
-
     public ChangeBuffer ChangeBuffer { get; }
     public LinkGraphManager GraphManager { get; }
     public PreComputer PreComputer { get; }
@@ -272,23 +262,15 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     {
         return SolverSnapshot.TakeSnapshot(this);
     }
-    
-    public bool AddSolutionFromBuffer(int number, int row, int col)
+
+    public bool ExecuteChange(SolverChange change)
     {
-        return AddSolution(number, row, col);
+        return change.ChangeType == ChangeType.Solution
+            ? AddSolution(change.Number, change.Row, change.Column)
+            : RemovePossibility(change.Number, change.Row, change.Column);
     }
 
-    public bool RemovePossibilityFromBuffer(int possibility, int row, int col)
-    {
-        return RemovePossibility(possibility, row, col);
-    }
-
-    public void AddCommitLog(ChangeReport report, IStrategy strategy)
-    {
-        if (!LogsManaged) return;
-        
-        _logManager.ChangePushed(report, strategy);
-    }
+    public LogManager LogManager { get; }
 
     //Private-----------------------------------------------------------------------------------------------------------
 
@@ -302,21 +284,22 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     
     private bool AddSolution(int number, int row, int col)
     {
-        if (_sudoku[row, col] != 0) return false;
+        if (_sudoku[row, col] != 0 || !_possibilities[row, col].Peek(number)) return false;
         
+        GoingToAddSolution?.Invoke(number, row, col);
         _sudoku[row, col] = number;
         UpdateAfterSolutionAdded(number, row, col);
         
-        SolutionAdded?.Invoke(row, col);
         return true;
     }
 
     private bool RemovePossibility(int possibility, int row, int col)
     {
         if (!_possibilities[row, col].Remove(possibility)) return false;
+        
+        GoingToRemovePossibility?.Invoke(possibility, row, col);
         _positions[possibility - 1].Remove(row, col);
         
-        PossibilityRemoved?.Invoke(row, col);
         return true;
     }
 
@@ -492,63 +475,6 @@ public class StrategyInfo
         Used = used;
         Locked = locked;
     }
-}
-
-public class SolverState : ITranslatable
-{
-    private readonly CellState[,] _cellStates = new CellState[9, 9];
-    
-    public SolverState(Solver solver)
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for(int col = 0; col < 9; col++)
-            {
-                if (solver.Sudoku[row, col] != 0) _cellStates[row, col] = new CellState(solver.Sudoku[row, col]);
-                else _cellStates[row, col] = solver.PossibilitiesAt(row, col).ToCellState();
-            }
-        }
-    }
-
-    public CellState At(int row, int col)
-    {
-        return _cellStates[row, col];
-    }
-
-    public int this[int row, int col]
-    {
-        get
-        {
-            var current = _cellStates[row, col];
-            return current.IsPossibilities ? 0 : current.AsNumber;
-        } 
-    }
-}
-
-public readonly struct CellState
-{
-    private readonly short _bits;
-
-    public CellState(int solved)
-    {
-        _bits = (short) (solved << 9);
-    }
-
-    private CellState(short bits)
-    {
-        _bits = bits;
-    }
-
-    public static CellState FromBits(short bits)
-    {
-        return new CellState(bits);
-    }
-
-    public bool IsPossibilities => _bits <= 0x1FF;
-    
-    public IPossibilities AsPossibilities => BitPossibilities.FromBits(_bits);
-    
-    public int AsNumber => _bits >> 9;
 }
 
 public enum OnInstanceFound

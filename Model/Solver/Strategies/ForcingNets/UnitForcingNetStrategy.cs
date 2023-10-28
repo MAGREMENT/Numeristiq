@@ -104,14 +104,14 @@ public class UnitForcingNetStrategy : AbstractStrategy
             {
                 if (col == Coloring.On)
                 {
-                    view.ChangeBuffer.AddSolutionToAdd(current.Possibility, current.Row, current.Col);
+                    view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Col);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.On)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
-                    view.ChangeBuffer.AddPossibilityToRemove(current.Possibility, current.Row, current.Col);
+                    view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Col);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.Off)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;

@@ -54,7 +54,7 @@ public class PointingSetStrategy : AbstractStrategy
                         int row = ppimg.First().Row;
                         for (int col = 0; col < 9; col++)
                         {
-                            if (col / 3 != miniCol) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                            if (col / 3 != miniCol) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
                         
                         if(strategyManager.ChangeBuffer.Commit(this,
@@ -66,7 +66,7 @@ public class PointingSetStrategy : AbstractStrategy
                         int col = ppimg.First().Col;
                         for (int row = 0; row < 9; row++)
                         {
-                            if (row / 3 != miniRow) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, row, col);
+                            if (row / 3 != miniRow) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
 
                         if (strategyManager.ChangeBuffer.Commit(this,

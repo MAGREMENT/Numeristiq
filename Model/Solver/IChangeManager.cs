@@ -1,12 +1,11 @@
 ﻿using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Logs;
 
 namespace Model.Solver;
 
 public interface IChangeManager : IPossibilitiesHolder
 {
     public IPossibilitiesHolder TakeSnapshot();
-    public bool LogsManaged { get; }
-    public bool AddSolutionFromBuffer(int number, int row, int col);
-    public bool RemovePossibilityFromBuffer(int possibility, int row, int col);
-    public void AddCommitLog(ChangeReport report, IStrategy strategy);
+    public bool ExecuteChange(SolverChange change);
+    public LogManager LogManager { get; }
 }

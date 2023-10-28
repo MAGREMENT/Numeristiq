@@ -39,14 +39,14 @@ public class ComplexXCycles : IAlternatingChainType<ILinkGraphElement>
     {
         foreach (var coord in coords)
         {
-            view.ChangeBuffer.AddPossibilityToRemove(possibility, coord.Row, coord.Col);
+            view.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
         }
     }
 
     public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility single) return false;
-        view.ChangeBuffer.AddPossibilityToRemove(single.Possibility, single.Row, single.Col);
+        view.ChangeBuffer.ProposePossibilityRemoval(single.Possibility, single.Row, single.Col);
 
         return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
@@ -54,7 +54,7 @@ public class ComplexXCycles : IAlternatingChainType<ILinkGraphElement>
     public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility single) return false;
-        view.ChangeBuffer.AddSolutionToAdd(single.Possibility, single.Row, single.Col);
+        view.ChangeBuffer.ProposeSolutionAddition(single.Possibility, single.Row, single.Col);
         
         return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
     }

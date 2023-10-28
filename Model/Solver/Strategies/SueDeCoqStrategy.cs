@@ -198,7 +198,7 @@ public class SueDeCoqStrategy : AbstractStrategy
 
             foreach (var possibility in unitAls.Possibilities)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, current.Row, current.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Col);
             }
         }
 
@@ -216,7 +216,7 @@ public class SueDeCoqStrategy : AbstractStrategy
                 
                 foreach (var possibility in miniAls.Possibilities)
                 {
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, current.Row, current.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Col);
                 }
             }
         }

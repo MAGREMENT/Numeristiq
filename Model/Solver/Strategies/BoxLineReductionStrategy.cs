@@ -60,7 +60,7 @@ public class BoxLineReductionStrategy : AbstractStrategy
 
                             if (removedFromRow != row)
                                 strategyManager.ChangeBuffer
-                                    .AddPossibilityToRemove(number, removedFromRow, removeFromCol);
+                                    .ProposePossibilityRemoval(number, removedFromRow, removeFromCol);
                         }
                     }
 
@@ -87,7 +87,7 @@ public class BoxLineReductionStrategy : AbstractStrategy
 
                             if (removedFromCol != col)
                                 strategyManager.ChangeBuffer
-                                    .AddPossibilityToRemove(number, removedFromRow, removedFromCol);
+                                    .ProposePossibilityRemoval(number, removedFromRow, removedFromCol);
                         }
                     }
 

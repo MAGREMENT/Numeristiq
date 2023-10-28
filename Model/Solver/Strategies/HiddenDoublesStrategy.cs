@@ -83,7 +83,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
@@ -100,7 +100,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
@@ -116,7 +116,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, cell.Row, cell.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
             }
         }
 

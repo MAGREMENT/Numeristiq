@@ -82,8 +82,8 @@ public class GridFormationStrategy : AbstractStrategy
             {
                 if (visited.Peek(other)) continue;
 
-                if (unit == Unit.Row) strategyManager.ChangeBuffer.AddPossibilityToRemove(number, other, first);
-                else strategyManager.ChangeBuffer.AddPossibilityToRemove(number, first, other);
+                if (unit == Unit.Row) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
+                else strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, first, other);
             }
         }
 

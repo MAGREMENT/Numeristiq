@@ -154,7 +154,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //Not optimal
         {
             for (int col = 0; col < 9; col++)
             {
-                if (!cols.Peek(col)) strategyManager.ChangeBuffer.AddPossibilityToRemove(row.Possibility, row.Row, col);
+                if (!cols.Peek(col)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(row.Possibility, row.Row, col);
             }
         }
 
@@ -163,7 +163,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //Not optimal
             for (int row = 0; row < 9; row++)
             {
                 if (!rows.Peek(row))
-                    strategyManager.ChangeBuffer.AddPossibilityToRemove(col.Possibility, row, col.Column);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(col.Possibility, row, col.Column);
             }
         }
 
@@ -177,7 +177,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy //Not optimal
                     int col = mini.MiniCol * 3 + gridCol;
 
                     if (!rows.Peek(row) && !cols.Peek(col))
-                        strategyManager.ChangeBuffer.AddPossibilityToRemove(mini.Possibility, row, col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(mini.Possibility, row, col);
                 }
             }
         }

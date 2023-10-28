@@ -48,7 +48,8 @@ namespace SudokuSolver;
             StrategyList.StrategyExcluded += Solver.ExcludeStrategy;
             StrategyList.StrategyUsed += Solver.UseStrategy;
 
-            DelaySlider.Value = Solver.Delay;
+            DelayBeforeSlider.Value = Solver.DelayBefore;
+            DelayAfterSlider.Value = Solver.DelayAfter;
         }
         
         public void ShowSudokuAsString(string asString)
@@ -98,10 +99,16 @@ namespace SudokuSolver;
             Solver.SetOnInstanceFound((OnInstanceFound) box.SelectedIndex);
         }
         
-        private void SetSolverDelay(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void SetSolverDelayBefore(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             if (sender is not Slider slider) return;
-            Solver.Delay = (int)slider.Value;
+            Solver.DelayBefore = (int)slider.Value;
+        }
+        
+        private void SetSolverDelayAfter(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (sender is not Slider slider) return;
+            Solver.DelayAfter = (int)slider.Value;
         }
 
         private void AllowUniqueness(object sender, RoutedEventArgs e)

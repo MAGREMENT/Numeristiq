@@ -21,51 +21,50 @@ public class SimpleAlternatingInferenceChains : IAlternatingChainType<CellPossib
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)
     {
-        bool wasProgressMade = false;
-        
         loop.ForEachLink((one, two)
-            => ProcessWeakLink(view, one, two, out wasProgressMade), LinkStrength.Weak);
-        return wasProgressMade;
+            => ProcessWeakLink(view, one, two), LinkStrength.Weak);
+        
+        return view.ChangeBuffer.Commit(Strategy!,
+            new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
     }
 
-    private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two)
     {
         if (one.Row == two.Row && one.Col == two.Col)
         {
-            if (RemoveAllExcept(view, one.Row, one.Col, one.Possibility, two.Possibility)) wasProgressMade = true;
+            RemoveAllExcept(view, one.Row, one.Col, one.Possibility, two.Possibility);
         }
         else
         {
             foreach (var coord in one.SharedSeenCells(two))
             {
-                if (view.RemovePossibility(one.Possibility, coord.Row, coord.Col, Strategy!)) wasProgressMade = true;
+                view.ChangeBuffer.ProposePossibilityRemoval(one.Possibility, coord.Row, coord.Col);
             }   
         }
-
-        wasProgressMade = false;
     }
     
-    private bool RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
+    private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
     {
-        bool wasProgressMade = false;
         foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
         {
             if (!except.Contains(possibility))
             {
-                if (strategyManager.RemovePossibility(possibility, row, col, Strategy!)) wasProgressMade = true;
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
-
-        return wasProgressMade;
     }
 
     public bool ProcessWeakInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
-        return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
+        view.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Col);
+        return view.ChangeBuffer.Commit(Strategy!,
+            new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
-        return view.AddSolution(inference.Possibility, inference.Row, inference.Col, Strategy!);
+        view.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Col);
+        return view.ChangeBuffer.Commit(Strategy!,
+            new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
     }
 }

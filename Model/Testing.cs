@@ -240,7 +240,7 @@ public static class Testing
 
         var solver = new Solver.Solver(sud);
         int numbersAdded = 0;
-        solver.SolutionAdded += (_, _) => numbersAdded++;
+        solver.GoingToAddSolution += (_, _, _) => numbersAdded++;
         solver.Solve();
         Console.WriteLine("After solving : ");
         Console.WriteLine(solver.Sudoku);

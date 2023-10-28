@@ -69,8 +69,8 @@ public class ReverseBUGStrategy : AbstractStrategy
         {
             foreach (var col in cols)
             {
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(n1, row, col);
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(n2, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(n1, row, col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(n2, row, col);
             }
         }
 

@@ -18,30 +18,32 @@ public class SimpleXCycles : IAlternatingChainType<CellPossibility>
 
     public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)
     {
-        bool wasProgressMade = false;
         loop.ForEachLink((one, two)
-            => ProcessWeakLink(view, one, two, out wasProgressMade), LinkStrength.Weak);
+            => ProcessWeakLink(view, one, two), LinkStrength.Weak);
 
-        return wasProgressMade;
+        return view.ChangeBuffer.Commit(Strategy!,
+            new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
     }
 
-    private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two, out bool wasProgressMade)
+    private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two)
     {
         foreach (var coord in one.SharedSeenCells(two))
         {
-            if (view.RemovePossibility(one.Possibility, coord.Row, coord.Col, Strategy!)) wasProgressMade = true;
+            view.ChangeBuffer.ProposePossibilityRemoval(one.Possibility, coord.Row, coord.Col);
         }
-
-        wasProgressMade = false;
     }
 
     public bool ProcessWeakInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
-        return view.RemovePossibility(inference.Possibility, inference.Row, inference.Col, Strategy!);
+        view.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Col);
+        return view.ChangeBuffer.Commit(Strategy!,
+            new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
     {
-        return view.AddSolution(inference.Possibility, inference.Row, inference.Col, Strategy!);
+        view.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Col);
+        return view.ChangeBuffer.Commit(Strategy!,
+            new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
     }
 }

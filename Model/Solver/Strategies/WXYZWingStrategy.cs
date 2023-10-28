@@ -250,7 +250,7 @@ public class WXYZWingStrategy : AbstractStrategy
 
         foreach (var coord in Cells.SharedSeenCells(cells))
         {
-            strategyManager.ChangeBuffer.AddPossibilityToRemove(buffer, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Col);
         }
 
         return strategyManager.ChangeBuffer.Commit(this,

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibilities;
+using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class GurthTheorem : AbstractStrategy //TODO : rotational symmetry + test
+public class GurthTheorem : AbstractStrategy
 {
     public const string OfficialName = "Gurth's Theorem";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
@@ -19,7 +20,8 @@ public class GurthTheorem : AbstractStrategy //TODO : rotational symmetry + test
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _symmetries = new List<Symmetry>
         {
-            new TopLeftToBottomRightCross(this), new TopRightToBottomLeftCross(this)
+            new TopLeftToBottomRightCross(this), new TopRightToBottomLeftCross(this),
+            new Rotational90(this), new Rotational180(this), new Rotational270(this)
         };
     }
 
@@ -45,8 +47,8 @@ public class GurthTheorem : AbstractStrategy //TODO : rotational symmetry + test
 public abstract class Symmetry
 {
     private readonly IStrategy _strategy;
-    protected int[] Mapping { get; private set; } = Array.Empty<int>();
 
+    private int[] _mapping = Array.Empty<int>();
     private bool _isSymmetric;
     private bool _appliedOnce;
 
@@ -59,10 +61,9 @@ public abstract class Symmetry
     {
         if (!_isSymmetric)
         {
-            if (Check(strategyManager, out var mapping))
+            if (Check(strategyManager))
             {
                 _isSymmetric = true;
-                Mapping = mapping;
             }
             else return;
         }
@@ -84,11 +85,110 @@ public abstract class Symmetry
         _isSymmetric = false;
     }
 
-    protected abstract void ApplyOnce(IStrategyManager strategyManager);
-    
-    protected abstract void ApplyEveryTime(IStrategyManager strategyManager);
+    protected abstract int MinimumSelfMapCount { get; }
+    protected abstract IEnumerable<Cell> CenterCells();
+    protected abstract Cell GetSymmetricalCell(int row, int col);
 
-    protected abstract bool Check(IStrategyManager strategyManager, out int[] mapping);
+    private void ApplyOnce(IStrategyManager strategyManager)
+    {
+        var selfMap = SelfMap();
+
+        foreach (var cell in CenterCells())
+        {
+            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            {
+                if (!selfMap.Peek(possibility))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                }
+            }
+        }
+    }
+
+    private void ApplyEveryTime(IStrategyManager strategyManager)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var symmetry = GetSymmetricalCell(row, col);
+                var solved = strategyManager.Sudoku[row, col];
+
+                if (solved != 0) strategyManager.ChangeBuffer.ProposeSolutionAddition(_mapping[solved - 1],
+                    symmetry.Row, symmetry.Col);
+                else
+                {
+                    var symmetricPossibilities = strategyManager.PossibilitiesAt(symmetry);
+                    var mappedPossibilities = GetMappedPossibilities(strategyManager.PossibilitiesAt(row, col));
+
+                    foreach (var possibility in symmetricPossibilities)
+                    {
+                        if(!mappedPossibilities.Peek(possibility)) strategyManager.ChangeBuffer
+                            .ProposePossibilityRemoval(possibility, symmetry.Row, symmetry.Col);
+                    }
+                }
+            }
+        }
+    }
+
+    private bool Check(IStrategyManager strategyManager)
+    {
+        _mapping = new int[9];
+        HashSet<Cell> centerCells = new HashSet<Cell>(CenterCells());
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (centerCells.Contains(new Cell(row, col))) continue;
+
+                var solved = strategyManager.Sudoku[row, col];
+                if (solved == 0) continue;
+
+                var symmetricCell = GetSymmetricalCell(row, col);
+
+                var symmetry = strategyManager.Sudoku[symmetricCell.Row, symmetricCell.Col];
+                if (symmetry == 0) return false;
+
+                var definedSymmetry = _mapping[solved - 1];
+                if (definedSymmetry == 0) _mapping[solved - 1] = symmetry;
+                else if (definedSymmetry != symmetry) return false;
+            }
+        }
+
+        int count = 0;
+        for (int i = 0; i < _mapping.Length; i++)
+        {
+            var symmetry = _mapping[i];
+            if (symmetry == 0) return false;
+            if (symmetry == i + 1) count++;
+        }
+
+        return count >= MinimumSelfMapCount;
+    }
+
+    private IPossibilities SelfMap()
+    {
+        IPossibilities selfMap = IPossibilities.NewEmpty();
+        for (int i = 0; i < _mapping.Length; i++)
+        {
+            if (_mapping[i] == i + 1) selfMap.Add(i + 1);
+        }
+
+        return selfMap;
+    }
+
+    private IPossibilities GetMappedPossibilities(IReadOnlyPossibilities possibilities)
+    {
+        IPossibilities result = IPossibilities.NewEmpty();
+        foreach (var possibility in possibilities)
+        {
+            result.Add(_mapping[possibility - 1]);
+        }
+
+        return result;
+    }
+
 }
 
 public class TopLeftToBottomRightCross : Symmetry
@@ -96,73 +196,20 @@ public class TopLeftToBottomRightCross : Symmetry
     public TopLeftToBottomRightCross(IStrategy strategy) : base(strategy)
     {
     }
-    
-    protected override void ApplyOnce(IStrategyManager strategyManager)
-    {
-        IPossibilities selfMap = IPossibilities.NewEmpty();
-        for (int i = 0; i < Mapping.Length; i++)
-        {
-            if (Mapping[i] == i + 1) selfMap.Add(i + 1);
-        }
 
+    protected override int MinimumSelfMapCount => 3;
+
+    protected override IEnumerable<Cell> CenterCells()
+    {
         for (int unit = 0; unit < 9; unit++)
         {
-            for (int possibility = 1; possibility <= 9; possibility++)
-            {
-                if (selfMap.Peek(possibility)) continue;
-                
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, unit, unit);
-            }
+            yield return new Cell(unit, unit);
         }
     }
 
-    protected override void ApplyEveryTime(IStrategyManager strategyManager)
+    protected override Cell GetSymmetricalCell(int row, int col)
     {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-                
-                if(strategyManager.Sudoku[col, row] == 0)
-                    strategyManager.ChangeBuffer.AddSolutionToAdd(Mapping[solved - 1], col, row);
-            }
-        }
-    }
-
-    protected override bool Check(IStrategyManager strategyManager, out int[] mapping)
-    {
-        mapping = new int[9];
-
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-
-                var symmetry = strategyManager.Sudoku[col, row];
-                if (symmetry == 0) return false;
-
-                var definedSymmetry = mapping[solved - 1];
-                if (definedSymmetry == 0) mapping[solved - 1] = symmetry;
-                else if (definedSymmetry != symmetry)
-                {
-                    if (row != col) return false;
-                }
-            }
-        }
-
-        int count = 0;
-        for (int i = 0; i < mapping.Length; i++)
-        {
-            var symmetry = mapping[i];
-            if (symmetry == 0) return false;
-            if (symmetry == i + 1) count++;
-        }
-
-        return count >= 3;
+        return new Cell(col, row);
     }
 }
 
@@ -171,73 +218,74 @@ public class TopRightToBottomLeftCross : Symmetry
     public TopRightToBottomLeftCross(IStrategy strategy) : base(strategy)
     {
     }
-    
-    protected override void ApplyOnce(IStrategyManager strategyManager)
-    {
-        IPossibilities selfMap = IPossibilities.NewEmpty();
-        for (int i = 0; i < Mapping.Length; i++)
-        {
-            if (Mapping[i] == i + 1) selfMap.Add(i + 1);
-        }
 
+    protected override int MinimumSelfMapCount => 3;
+
+    protected override IEnumerable<Cell> CenterCells()
+    {
         for (int unit = 0; unit < 9; unit++)
         {
-            for (int possibility = 1; possibility <= 9; possibility++)
-            {
-                if (selfMap.Peek(possibility)) continue;
-                
-                strategyManager.ChangeBuffer.AddPossibilityToRemove(possibility, unit, 8 - unit);
-            }
+            yield return new Cell(unit, 8 - unit);
         }
     }
-
-    protected override void ApplyEveryTime(IStrategyManager strategyManager)
+    
+    protected override Cell GetSymmetricalCell(int row, int col)
     {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
-                
-                if(strategyManager.Sudoku[8 - col, row] == 0)
-                    strategyManager.ChangeBuffer.AddSolutionToAdd(Mapping[solved - 1], 8 - col, row);
-            }
-        }
+        return new Cell(8 - col, 8 - row);
+    }
+}
+
+public class Rotational90 : Symmetry
+{
+    public Rotational90(IStrategy strategy) : base(strategy)
+    {
     }
 
-    protected override bool Check(IStrategyManager strategyManager, out int[] mapping)
+    protected override int MinimumSelfMapCount => 1;
+    protected override IEnumerable<Cell> CenterCells()
     {
-        mapping = new int[9];
+        yield return new Cell(4, 4);
+    }
 
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var solved = strategyManager.Sudoku[row, col];
-                if (solved == 0) continue;
+    protected override Cell GetSymmetricalCell(int row, int col)
+    {
+        return new Cell(col, 8 - row);
+    }
+}
 
-                var symmetry = strategyManager.Sudoku[8 - col, row];
-                if (symmetry == 0) return false;
+public class Rotational180 : Symmetry
+{
+    public Rotational180(IStrategy strategy) : base(strategy)
+    {
+    }
 
-                var definedSymmetry = mapping[solved - 1];
-                if (definedSymmetry == 0) mapping[solved - 1] = symmetry;
-                else if (definedSymmetry != symmetry)
-                {
-                    if (row != 8 - col) return false;
-                }
-            }
-        }
-        
-        int count = 0;
-        for (int i = 0; i < mapping.Length; i++)
-        {
-            var symmetry = mapping[i];
-            if (symmetry == 0) return false;
-            if (symmetry == i + 1) count++;
-        }
+    protected override int MinimumSelfMapCount => 1;
+    protected override IEnumerable<Cell> CenterCells()
+    {
+        yield return new Cell(4, 4);
+    }
 
-        return count >= 3;
+    protected override Cell GetSymmetricalCell(int row, int col)
+    {
+        return new Cell(8 - row, 8 - col);
+    }
+}
+
+public class Rotational270 : Symmetry
+{
+    public Rotational270(IStrategy strategy) : base(strategy)
+    {
+    }
+
+    protected override int MinimumSelfMapCount => 1;
+    protected override IEnumerable<Cell> CenterCells()
+    {
+        yield return new Cell(4, 4);
+    }
+
+    protected override Cell GetSymmetricalCell(int row, int col)
+    {
+        return new Cell(8 - col, row);
     }
 }
 

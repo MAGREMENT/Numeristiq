@@ -30,7 +30,7 @@ public class BUGStrategy : AbstractStrategy
                 strategyManager.MiniGridPositionsAt(triple.Row / 3, triple.Col / 3, possibility).Count != 3) 
                 continue;
             
-            strategyManager.ChangeBuffer.AddSolutionToAdd(possibility, triple.Row, triple.Col);
+            strategyManager.ChangeBuffer.ProposeSolutionAddition(possibility, triple.Row, triple.Col);
             break;
         }
 
