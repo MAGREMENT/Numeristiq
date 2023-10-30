@@ -39,7 +39,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void SimpleColoring<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ILinkGraphElement
+    public void ColorWithRules<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ILinkGraphElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -75,7 +75,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ComplexColoring<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
+    public void ColorWithRulesAndLinksJump<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
         where T : ILinkGraphElement
     {
         result.AddColoredElement(start, firstColor);
@@ -117,47 +117,69 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 bool colB = true;
                 T? mini = default;
                 bool miniB = true;
+                T? cell = default;
+                bool cellB = true;
+                
             
                 foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
                 {
                     if (friend is not CellPossibility friendPos) continue;
-                    if (rowB && friendPos.Row == pos.Row)
+                    if (friendPos.Possibility == pos.Possibility)
                     {
-                        if (result.TryGetColoredElement(friend, out var coloring))
+                        if (rowB && friendPos.Row == pos.Row)
                         {
-                            if (coloring == Coloring.On) rowB = false;
-                        }
-                        else
-                        {
-                            if (row is null) row = friend;
-                            else rowB = false;  
-                        }
+                            if (result.TryGetColoredElement(friend, out var coloring))
+                            {
+                                if (coloring == Coloring.On) rowB = false;
+                            }
+                            else
+                            {
+                                if (row is null) row = friend;
+                                else rowB = false;  
+                            }
                     
-                    }
+                        }
 
-                    if (colB && friendPos.Col == pos.Col)
-                    {
-                        if (result.TryGetColoredElement(friend, out var coloring))
+                        if (colB && friendPos.Col == pos.Col)
                         {
-                            if (coloring == Coloring.On) colB = false;
+                            if (result.TryGetColoredElement(friend, out var coloring))
+                            {
+                                if (coloring == Coloring.On) colB = false;
+                            }
+                            else
+                            {
+                                if (col is null) col = friend;
+                                else colB = false;
+                            }
                         }
-                        else
+
+                        if (miniB && friendPos.Row / 3 == pos.Row / 3 && friendPos.Col / 3 == pos.Col / 3)
                         {
-                            if (col is null) col = friend;
-                            else colB = false;
+                            if (result.TryGetColoredElement(friend, out var coloring))
+                            {
+                                if (coloring == Coloring.On) miniB = false;
+                            }
+                            else
+                            {
+                                if (mini is null) mini = friend;
+                                else miniB = false;
+                            }
                         }
                     }
-
-                    if (miniB && friendPos.Row / 3 == pos.Row / 3 && friendPos.Col / 3 == pos.Col / 3)
+                    else
                     {
-                        if (result.TryGetColoredElement(friend, out var coloring))
+                        if (cellB && friendPos.Row == pos.Row && friendPos.Col == pos.Col)
                         {
-                            if (coloring == Coloring.On) miniB = false;
-                        }
-                        else
-                        {
-                            if (mini is null) mini = friend;
-                            else miniB = false;
+                            if (result.TryGetColoredElement(friend, out var coloring))
+                            {
+                                if (coloring == Coloring.On) cellB = false;
+                            }
+                            else
+                            {
+                                if (cell is null) cell = friend;
+                                else cellB = false;  
+                            }
+                    
                         }
                     }
                 }
@@ -181,6 +203,13 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                     result.AddColoredElement(mini, Coloring.On, current.Element);
                     visited.Add(mini);
                     queue.Enqueue(new ColoredElement<T>(mini, Coloring.On));
+                }
+
+                if (cell is not null && cellB)
+                {
+                    result.AddColoredElement(cell, Coloring.On, current.Element);
+                    visited.Add(cell);
+                    queue.Enqueue(new ColoredElement<T>(cell, Coloring.On));
                 }
             }
         }
