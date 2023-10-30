@@ -43,7 +43,9 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public delegate void OnSudokuAsStringChanged(string solverAsString);
     public event OnSudokuAsStringChanged? SudokuAsStringChanged;
 
-    public event LogManager.OnLogsUpdated? LogsUpdated; 
+    public event LogManager.OnLogsUpdated? LogsUpdated;
+
+    public event Solver.OnCurrentStrategyChange? CurrentStrategyChanged;
 
     public event OnLogShowed? LogShowed;
     public event OnCurrentStateShowed? CurrentStateShowed;
@@ -53,6 +55,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
         InitializeComponent();
 
         _solver.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
+        _solver.CurrentStrategyChanged += index => CurrentStrategyChanged?.Invoke(index);
 
         //Init background
         _backgroundManager = new SolverBackgroundManager(CellSize, LineWidth);

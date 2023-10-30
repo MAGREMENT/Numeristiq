@@ -37,6 +37,8 @@ namespace SudokuSolver;
                 LogList.Dispatcher.Invoke(() => LogList.InitLogs(logs));
                 ExplanationBox.Dispatcher.Invoke(() => ExplanationBox.Text = "");
             };
+            Solver.CurrentStrategyChanged += index =>
+                StrategyList.Dispatcher.Invoke(() => StrategyList.HighlightStrategy(index));
 
             LiveModification.LiveModified += (number, row, col, action) =>
             {

@@ -127,7 +127,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
-            if (onPath.Count == 0) return; //TODO this should never happens but sometimes does => TO FIX
+            if (onPath.Count == 0) return; //TODO this should never happen but sometimes does => TO FIX
             
             onPath.Highlight(lighter);
             

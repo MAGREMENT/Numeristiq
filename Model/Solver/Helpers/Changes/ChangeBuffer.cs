@@ -3,7 +3,6 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Helpers.Changes;
 
-//TODO push options + multiple commits same state + current log visual + current strategy visual
 public class ChangeBuffer
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
@@ -12,6 +11,12 @@ public class ChangeBuffer
     private readonly List<ChangeCommit> _commits = new();
 
     private readonly IChangeManager _m;
+
+    private readonly IPushHandler[] _pushHandlers =
+    {
+        new ReturnPushHandler(), new WaitForAllPushHandler(), new ChooseBestPushHandler()
+        
+    };
 
     public ChangeBuffer(IChangeManager changeManager)
     {
@@ -47,45 +52,16 @@ public class ChangeBuffer
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
     }
 
-    public void Push()
+    public void Push(IStrategy pusher)
     {
-        if(_m.LogManager.IsEnabled) PushWithLogsManaged();
-        else PushWithoutLogsManaged();
-    }
+        if (_commits.Count == 0) return;
 
-    private void PushWithoutLogsManaged()
-    {
-        foreach (var commit in _commits)
-        {
-            foreach (var change in commit.Changes)
-            {
-                _m.ExecuteChange(change);
-            }
-        }
+        var handler = _pushHandlers[(int)pusher.OnCommitBehavior];
+
+        if (_m.LogManager.IsEnabled) handler.PushWithLogsManaged(_commits, _m);
+        else handler.PushWithoutLogsManaged(_commits, _m);
         
         _commits.Clear();
-    }
-
-    private void PushWithLogsManaged()
-    {
-        _m.LogManager.StartPush();
-        var snapshot = _m.TakeSnapshot();
-        
-        foreach (var commit in _commits)
-        {
-            List<SolverChange> impactfulChanges = new();
-            
-            foreach (var change in commit.Changes)
-            {
-                if (_m.ExecuteChange(change)) impactfulChanges.Add(change);
-            }
-
-            if (commit.Builder is null || impactfulChanges.Count == 0) continue;
-            _m.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, commit.Responsible);
-        }
-        
-        _commits.Clear();
-        _m.LogManager.StopPush();
     }
 
     public bool Commit(IStrategy strategy, IChangeReportBuilder builder)
@@ -141,5 +117,157 @@ public class ChangeCommit
         Responsible = responsible;
         Changes = changes;
         Builder = null;
+    }
+}
+
+public interface IPushHandler
+{
+    void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager);
+    void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager);
+}
+
+public class ReturnPushHandler : IPushHandler
+{
+    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    {
+        manager.LogManager.StartPush();
+        var snapshot = manager.TakeSnapshot();
+
+        var commit = commits[0];
+        
+        foreach (var change in commit.Changes)
+        { 
+            manager.ExecuteChange(change);
+        }
+
+        if (commit.Builder is not null) manager.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
+            commit.Changes, commit.Responsible);
+        
+        manager.LogManager.StopPush();
+    }
+
+    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    {
+        foreach (var change in commits[0].Changes)
+        {
+            manager.ExecuteChange(change);
+        }
+    }
+}
+
+public class WaitForAllPushHandler : IPushHandler
+{
+    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    {
+        manager.LogManager.StartPush();
+        var snapshot = manager.TakeSnapshot();
+        
+        foreach (var commit in commits)
+        {
+            List<SolverChange> impactfulChanges = new();
+            
+            foreach (var change in commit.Changes)
+            {
+                if (manager.ExecuteChange(change)) impactfulChanges.Add(change);
+            }
+
+            if (commit.Builder is null || impactfulChanges.Count == 0) continue;
+            manager.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, commit.Responsible);
+        }
+        
+        manager.LogManager.StopPush();
+    }
+
+    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    {
+        foreach (var commit in commits)
+        {
+            foreach (var change in commit.Changes)
+            {
+                manager.ExecuteChange(change);
+            }
+        }
+    }
+}
+
+public class ChooseBestPushHandler : IPushHandler
+{
+    private readonly ICustomCommitComparer _default = new DefaultCommitComparer();
+    
+    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    {
+        manager.LogManager.StartPush();
+        var snapshot = manager.TakeSnapshot();
+
+        var commit = GetBest(commits);
+        
+        foreach (var change in commit.Changes)
+        { 
+            manager.ExecuteChange(change);
+        }
+
+        if (commit.Builder is not null) manager.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
+            commit.Changes, commit.Responsible);
+        
+        manager.LogManager.StopPush();
+    }
+
+    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    {
+        foreach (var change in GetBest(commits).Changes)
+        {
+            manager.ExecuteChange(change);
+        }
+    }
+
+    private ChangeCommit GetBest(List<ChangeCommit> commits)
+    {
+        var best = commits[0];
+
+        for (int i = 1; i < commits.Count; i++)
+        {
+            var comparer = best.Responsible is ICustomCommitComparer c ? c : _default;
+            if (comparer.Compare(best, commits[i]) < 0) best = commits[i];
+        }
+
+        return best;
+    }
+}
+
+public interface ICustomCommitComparer
+{
+    /// <summary>
+    /// Compare two commits
+    /// more than 0 if first is better
+    /// == 0 if same
+    /// less than 0 if second is better
+    /// </summary>
+    /// <param name="first"></param>
+    /// <param name="second"></param>
+    /// <returns></returns>
+    public int Compare(ChangeCommit first, ChangeCommit second);
+}
+
+public class DefaultCommitComparer : ICustomCommitComparer
+{
+    private const int SolutionAddedValue = 3;
+    private const int PossibilityRemovedValue = 1;
+    
+    public int Compare(ChangeCommit first, ChangeCommit second)
+    {
+        int firstScore = 0;
+        int secondScore = 0;
+
+        foreach (var change in first.Changes)
+        {
+            firstScore += change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
+        }
+
+        foreach (var change in second.Changes)
+        {
+            secondScore += change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
+        }
+
+        return firstScore - secondScore;
     }
 }

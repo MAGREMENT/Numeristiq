@@ -11,6 +11,8 @@ public partial class StrategyListUserControl
 
     public delegate void OnStrategyUse(int number);
     public event OnStrategyUse? StrategyUsed;
+
+    private int _currentlyHighlighted = -1;
     
     public StrategyListUserControl()
     {
@@ -38,5 +40,20 @@ public partial class StrategyListUserControl
         {
             ((StrategyUserControl) List.Children[i]).Update(strategies[i]);
         }
+    }
+
+    public void HighlightStrategy(int index)
+    {
+        if (_currentlyHighlighted != -1)
+        {
+            ((StrategyUserControl) List.Children[_currentlyHighlighted]).UnHighlight();
+        }
+
+        if (index != -1)
+        {
+            ((StrategyUserControl) List.Children[index]).Highlight();
+        }
+
+        _currentlyHighlighted = index;
     }
 }

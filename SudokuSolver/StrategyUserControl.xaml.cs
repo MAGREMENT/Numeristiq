@@ -45,4 +45,14 @@ public partial class StrategyUserControl
         if (!_invoke) return;
         Excluded?.Invoke();
     }
+
+    public void Highlight()
+    {
+        Background = ColorUtil.Green;
+    }
+
+    public void UnHighlight()
+    {
+        Background = ColorUtil.Background1;
+    }
 }

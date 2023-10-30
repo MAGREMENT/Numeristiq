@@ -38,13 +38,16 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public delegate void PossibilityRemoval(int number, int row, int col);
     public event PossibilityRemoval? GoingToRemovePossibility;
 
+    public delegate void OnCurrentStrategyChange(int index);
+    public event OnCurrentStrategyChange? CurrentStrategyChanged;
+
     public event LogManager.OnLogsUpdated? LogsUpdated;
 
     private int _currentStrategy = -1;
     private ulong _excludedStrategies;
     private ulong _lockedStrategies;
     
-    private int _solutionAddedBuffer; //TODO move this in change buffer
+    private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
 
     private readonly StrategyLoader _strategyLoader = new();
@@ -112,10 +115,13 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         {
             if (!IsStrategyUsed(_currentStrategy)) continue;
 
-            if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StartUsing();
-            Strategies[_currentStrategy].ApplyOnce(this);
-            ChangeBuffer.Push();
-            if (StatisticsTracked) Strategies[_currentStrategy].Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
+            CurrentStrategyChanged?.Invoke(_currentStrategy);
+            var current = Strategies[_currentStrategy];
+
+            if (StatisticsTracked) current.Tracker.StartUsing();
+            current.ApplyOnce(this);
+            ChangeBuffer.Push(current);
+            if (StatisticsTracked) current.Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
 
@@ -123,12 +129,16 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
             _possibilityRemovedBuffer = 0;
             
             _currentStrategy = -1;
+            CurrentStrategyChanged?.Invoke(_currentStrategy);
 
             PreComputer.Reset();
             GraphManager.Clear();
 
             if (stopAtProgress || _sudoku.IsComplete()) return;
         }
+
+        _currentStrategy = -1;
+        CurrentStrategyChanged?.Invoke(_currentStrategy);
     }
 
     public Task SolveAsync(bool stopAtProgress = false)

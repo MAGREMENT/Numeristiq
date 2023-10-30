@@ -9,7 +9,7 @@ namespace Model.Solver.Strategies;
 public class HiddenDoublesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden Doubles";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     

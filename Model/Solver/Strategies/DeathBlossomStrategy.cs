@@ -108,6 +108,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                     }
                     
                     eliminations.Clear();
+                    eliminationsCauses.Clear();
                 }
                 
                 concernedAls.Clear();
