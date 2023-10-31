@@ -210,6 +210,26 @@ public class GridPositions : IReadOnlyGridPositions
         return Positions.MiniGridPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
     }
 
+    public Cell[] ToArray()
+    {
+        var result = new Cell[Count];
+        var cursor = 0;
+        
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Peek(row, col))
+                {
+                    result[cursor++] = new Cell(row, col);
+                    if (cursor == result.Length) return result;
+                }
+            }
+        }
+
+        return result;
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(_first, _second);

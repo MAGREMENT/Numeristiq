@@ -62,9 +62,8 @@ public class StrategyLoader
         {BruteForceStrategy.OfficialName, new BruteForceStrategy()},
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {GurthTheorem.OfficialName, new GurthTheorem()},
-        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new VoidSearcher())},
-        {MultiSectorLockedSetsStrategy.OfficialName,
-            new MultiSectorLockedSetsStrategy(2, 5, 2, 2)},
+        {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new RowsAndColumnsSearcher(2,
+            5, 5))},
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()}
     };
 

@@ -16,7 +16,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
     private readonly ISetEquivalenceSearcher _searcher;
     
     public SetEquivalenceStrategy(ISetEquivalenceSearcher searcher)
-        : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+        : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _searcher = searcher;
     }
@@ -25,12 +25,15 @@ public class SetEquivalenceStrategy : AbstractStrategy
     {
         foreach (var equivalence in _searcher.Search(strategyManager))
         {
+            //if(equivalence.FirstOrder != equivalence.SecondOrder) continue;
+            
             int[] solved1 = new int[9];
             int[] solved2 = new int[9];
             int count1 = 0;
             int count2 = 0;
+            int removed = 0;
 
-            foreach (var cell in equivalence.FirstGeometry)
+            foreach (var cell in equivalence.FirstSet)
             {
                 var solved = strategyManager.Sudoku[cell.Row, cell.Col];
                 if (solved == 0) continue;
@@ -39,7 +42,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                 count1++;
             }
 
-            foreach (var cell in equivalence.SecondGeometry)
+            foreach (var cell in equivalence.SecondSet)
             {
                 var solved = strategyManager.Sudoku[cell.Row, cell.Col];
                 if (solved == 0) continue;
@@ -48,83 +51,50 @@ public class SetEquivalenceStrategy : AbstractStrategy
                 count2++;
             }
             
-            var order = equivalence.FirstOrder - equivalence.SecondOrder;
-
-            switch (order)
-            {
-                case 0 : break;
-                case > 0 :
-                    for (int i = 0; i < solved2.Length; i++)
-                    {
-                        if (solved2[i] > 0)
-                        {
-                            solved2[i] += order;
-                            count2 += order;
-                        }
-                    }
-                    break;
-                case < 0 :
-                    for (int i = 0; i < solved1.Length; i++)
-                    {
-                        if (solved1[i] > 0)
-                        {
-                            solved1[i] -= order;
-                            count1 -= order;
-                        }
-                    }
-                    break;
-            }
-
-            int[] difference1 = new int[9];
-            Array.Copy(solved1, difference1, solved1.Length);
-            int[] difference2 = new int[9];
-            Array.Copy(solved2, difference2, solved1.Length);
-            int differenceCount1 = count1;
-            int differenceCount2 = count2;
-
-            for (int i = 0; i < solved1.Length; i++)
-            {
-                int buffer = difference2[i];
-                difference2[i] -= solved1[i];
-                difference2[i] = Math.Max(0, difference2[i]);
-
-                differenceCount2 -= buffer - difference2[i];
-            }
+            var digitCount1 = 0;
+            var digitCount2 = 0;
             
-            for (int i = 0; i < solved2.Length; i++)
+            for (int i = 0; i < 9; i++)
             {
-                int buffer = difference1[i];
-                difference1[i] -= solved2[i];
-                difference1[i] = Math.Max(0, difference1[i]);
+                var toRemove = Math.Min(solved1[i], solved2[i]);
 
-                differenceCount1 -= buffer - difference1[i];
+                solved1[i] -= toRemove;
+                solved2[i] -= toRemove;
+                count1 -= toRemove;
+                count2 -= toRemove;
+                removed += toRemove;
+
+                if (solved1[i] > 0) digitCount1++;
+                if (solved2[i] > 0) digitCount2++;
             }
 
-            if (count1 + differenceCount2 >= equivalence.FirstGeometry.Count)
+            var order = equivalence.SecondOrder - equivalence.FirstOrder;
+
+            if (count1 + order * digitCount1 >= equivalence.SecondSet.Length - removed - count2)
             {
-                foreach (var cell in equivalence.FirstGeometry)
+                foreach (var cell in equivalence.SecondSet)
                 {
                     var possibilities = strategyManager.PossibilitiesAt(cell);
                     if(possibilities.Count == 0) continue;
 
                     foreach (var possibility in possibilities)
                     {
-                        if (difference2[possibility - 1] == 0)
+                        if (solved1[possibility - 1] == 0)
                             strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
                     }
                 }
             }
 
-            if (count2 + differenceCount1 >= equivalence.SecondGeometry.Count)
+            if (count2 - order * digitCount2 >= equivalence.FirstSet.Length - removed - count1)
             {
-                foreach (var cell in equivalence.SecondGeometry)
+                foreach (var cell in equivalence.FirstSet)
                 {
                     var possibilities = strategyManager.PossibilitiesAt(cell);
                     if(possibilities.Count == 0) continue;
 
                     foreach (var possibility in possibilities)
                     {
-                        if (difference1[possibility - 1] == 0)
+                        if (solved2[possibility - 1] == 0)
                             strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
                     }
                 }
@@ -140,18 +110,18 @@ public class SetEquivalenceStrategy : AbstractStrategy
 
 public class SetEquivalence
 {
-    public SetEquivalence(List<Cell> firstGeometry, int firstOrder, List<Cell> secondGeometry, int secondOrder)
+    public SetEquivalence(Cell[] firstSet, int firstOrder, Cell[] secondSet, int secondOrder)
     {
-        FirstGeometry = firstGeometry;
+        FirstSet = firstSet;
         FirstOrder = firstOrder;
-        SecondGeometry = secondGeometry;
+        SecondSet = secondSet;
         SecondOrder = secondOrder;
     }
 
-    public List<Cell> FirstGeometry { get; }
+    public Cell[] FirstSet { get; }
     public int FirstOrder { get; }
     
-    public List<Cell> SecondGeometry { get; }
+    public Cell[] SecondSet { get; }
     public int SecondOrder { get; }
 }
 
@@ -168,12 +138,12 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            foreach (var cell in _equivalence.FirstGeometry)
+            foreach (var cell in _equivalence.FirstSet)
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOnOne);
             }
             
-            foreach (var cell in _equivalence.SecondGeometry)
+            foreach (var cell in _equivalence.SecondSet)
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
             }
