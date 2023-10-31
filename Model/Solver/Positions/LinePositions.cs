@@ -78,6 +78,18 @@ public class LinePositions : IReadOnlyLinePositions
         return -1;
     }
 
+    public int First(int except)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (i == except) continue;
+            
+            if(Peek(i)) return i;
+        }
+
+        return -1;
+    }
+
     public IEnumerator<int> GetEnumerator()
     {
         for (int i = 0; i < 9; i++)

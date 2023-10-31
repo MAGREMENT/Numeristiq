@@ -1,0 +1,40 @@
+/// A firework is a pattern where a candidate in an intersecting row and column is limited to a box, with one exception
+/// in the row and one exception in the column. Theses exceptions are called wings and the cell at the middle of the
+/// intersection is the cross. A firework means that the candidate must appear at least once in the wings and cross cells.
+/// On its own, this pattern doesn't tell us much, but its power come from multiple fireworks on the same cells.
+///
+/// Example :
+/// +-------+-------+-------+
+/// | x . . | 1 2 3 | 4 5 x |
+/// | . . . | . . . | . . . |
+/// | . . . | . . . | . . . |
+/// +-------+-------+-------+
+/// | 6 . . | . . . | . . . |
+/// | 7 . . | . . . | . . . |
+/// | 1 . . | . . . | . . . |
+/// +-------+-------+-------+
+/// | 2 . . | . . . | . . . |
+/// | 3 . . | . . . | . . . |
+/// | x . . | . . . | . . . |
+/// +-------+-------+-------+
+///
+/// 8 and 9 must be present at least once in the x-marked cells.
+///
+/// Moreover, a firework can miss a wing and still be useful as seen below. A firework with both wings is called a
+/// strict firework. Fireworks with different possibilities but the same cross and the amount of shared wings
+/// being equal to two is called a stack. The opposite of a stack is the cell on the opposite corner to the cross on
+/// the square created by the stack.
+///
+/// Applications :
+///
+/// - Triple fireworks : This is about a non-strict stack of size 3. This works the same way as a hidden set.
+/// 3 candidates must be present at least once in 3 cells, therefore discarding any other candidates in those cells.
+///
+/// - Quad fireworks : This is about 2 non-strict stacks of size 2. They must share the same same wings and not
+/// have any possibility in common. In that case, it works, like above, like a hidden set. 4 candidates must be present
+/// at least once in 4 cells, therefore discarding any other candidates in those cells
+///
+/// - W-wing : This is about a stack of size 2. If, for both wing, there is an almost locked set on the unit shared by
+/// that wing and the opposite that contains both possibilities of the stack, then we can remove those possibilities
+/// from the opposite.
+/// 

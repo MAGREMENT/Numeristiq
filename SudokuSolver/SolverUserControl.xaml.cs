@@ -18,7 +18,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public const int CellSize = 60;
     private const int LineWidth = 3;
 
-    private readonly Solver _solver = new(new Sudoku())
+    private readonly Solver _solver = new()
     {
         LogsManaged = true,
         StatisticsTracked = false

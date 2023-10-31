@@ -7,6 +7,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
 {
     public int Count { get; }
     public int First();
+    public int First(int except);
     public int Next(ref int cursor);
     
     public delegate void HandleCombination(int one, int two);

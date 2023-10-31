@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace SudokuSolver.Utils;
 
-public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTargetPossibility
+public class SolverBackgroundManager
 {
     private readonly Brush _strongLinkBrush = Brushes.Indigo;
     private const double LinkOffset = 20;
@@ -132,7 +132,7 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
             Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Cell.Col, pr.Possibility),
                 TopLeftY(mostLeft.Cell.Row, pr.Possibility),
                 (CellSize + Margin) * (mostRight.Cell.Col - mostLeft.Cell.Col) + _oneThird, _oneThird)),
-            Pen = new Pen()
+            Pen = new Pen
             {
             Thickness = 3.0,
             Brush = new SolidColorBrush(color),
@@ -157,7 +157,7 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
             Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Cell.Col, pc.Possibility),
                 TopLeftY(mostUp.Cell.Row, pc.Possibility), _oneThird,
                 (CellSize + Margin) * (mostDown.Cell.Row - mostUp.Cell.Row) + _oneThird)),
-            Pen = new Pen()
+            Pen = new Pen
             {
                 Thickness = 3.0,
                 Brush = new SolidColorBrush(color),
@@ -177,7 +177,7 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x, y), new Point(x + CellSize, y)),
-                    Pen = new Pen()
+                    Pen = new Pen
                     {
                     Thickness = 3.0,
                     Brush = new SolidColorBrush(color),
@@ -189,7 +189,7 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x, y + CellSize), new Point(x + CellSize, y + CellSize)),
-                    Pen = new Pen()
+                    Pen = new Pen
                     {
                         Thickness = 3.0,
                         Brush = new SolidColorBrush(color),
@@ -201,7 +201,7 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x, y), new Point(x, y + CellSize)),
-                    Pen = new Pen()
+                    Pen = new Pen
                     {
                         Thickness = 3.0,
                         Brush = new SolidColorBrush(color),
@@ -213,7 +213,7 @@ public class SolverBackgroundManager //TODO add visualisation for JuniorExocetTa
                 _groups.Children.Add(new GeometryDrawing()
                 {
                     Geometry = new LineGeometry(new Point(x + CellSize, y), new Point(x + CellSize, y + CellSize)),
-                    Pen = new Pen()
+                    Pen = new Pen
                     {
                         Thickness = 3.0,
                         Brush = new SolidColorBrush(color),

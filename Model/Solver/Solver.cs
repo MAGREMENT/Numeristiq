@@ -52,6 +52,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     private readonly StrategyLoader _strategyLoader = new();
 
+    public Solver() : this(new Sudoku()) { }
+
     public Solver(Sudoku s)
     {
         _strategyLoader.Load();
@@ -88,7 +90,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         StartState = new SolverState(this);
 
         LogManager.Clear();
-        PreComputer.Reset();
+        //PreComputer.Reset();
+        //GraphManager.Clear();
     }
     
     

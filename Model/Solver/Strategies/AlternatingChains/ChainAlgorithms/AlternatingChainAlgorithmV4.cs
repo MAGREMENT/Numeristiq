@@ -1,5 +1,6 @@
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
+using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -10,9 +11,11 @@ public class AlternatingChainAlgorithmV4 : IAlternatingChainAlgorithm<ILinkGraph
     {
         foreach (var start in graph)
         {
-            if (start is not CellPossibility cp) continue;
-            var onColoring = view.PreComputer.OnColoring(cp.Row, cp.Col, cp.Possibility);
-            var offColoring = view.PreComputer.OffColoring(cp.Row, cp.Col, cp.Possibility);
+            if (start is not CellPossibility) continue;
+            var onColoring = ColorHelper.ColorFromStart<ILinkGraphElement, ColoringDictionary<ILinkGraphElement>>(
+                ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.On, true);
+            var offColoring = ColorHelper.ColorFromStart<ILinkGraphElement, ColoringDictionary<ILinkGraphElement>>(
+                ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.Off, true);
 
             foreach (var entry in offColoring)
             {

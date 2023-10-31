@@ -46,7 +46,7 @@ public class RunTester
         
         _currentRunResult = new RunResult();
         
-        _currentSolver = new Solver.Solver(new Sudoku())
+        _currentSolver = new Solver.Solver
         {
             LogsManaged = false,
             StatisticsTracked = true
