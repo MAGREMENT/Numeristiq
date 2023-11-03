@@ -99,7 +99,7 @@ public class XYWingStrategy : AbstractStrategy
         }
 
         return strategyManager.ChangeBuffer.Commit(this,
-            new XYWingReportBuilder(hingeRow, hingeCol, row1, row2, col1, col2))
+            new XYWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

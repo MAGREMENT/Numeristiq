@@ -235,6 +235,11 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
         return result;
     }
 
+    public Cell ToCell()
+    {
+        return new Cell(Row, Col);
+    }
+
     public static bool operator ==(CellPossibility left, CellPossibility right)
     {
         return left.Possibility == right.Possibility && left.Row == right.Row && left.Col == right.Col;

@@ -6,6 +6,7 @@ using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
+using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
@@ -184,7 +185,7 @@ public class FireworksStrategy : AbstractStrategy
         //Quad
         for (int i = 0; i < fireworksList.Count; i++)
         {
-            for (int j = 0; j < fireworksList.Count; j++)
+            for (int j = i + 1; j < fireworksList.Count; j++)
             {
                 var one = fireworksList[i];
                 var two = fireworksList[j];
@@ -291,25 +292,24 @@ public class FireworksStrategy : AbstractStrategy
         }
 
         //L-Wing
+        manager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
+        var graph = manager.GraphManager.SimpleLinkGraph;
         foreach (var df in fireworksList)
         {
             foreach (var possibility in manager.PossibilitiesAt(df.ColumnWing))
             {
                 if (df.Possibilities.Peek(possibility)) continue;
 
-                var pos = manager.RowPositionsAt(df.ColumnWing.Row, possibility);
-                if (pos.Count != 2) continue;
-
-                foreach (var col in pos)
+                var current = new CellPossibility(df.ColumnWing, possibility);
+                foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
                 {
-                    if (col != df.ColumnWing.Col && col == df.RowWing.Col)
-                    {
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Col);
-                        if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
-                                new FireworksReportBuilder(df)) && OnCommitBehavior == OnCommitBehavior.Return) return;
-                        
-                        break;
-                    }
+                    if (!friend.ShareAUnit(df.RowWing)) continue;
+
+                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Col);
+                    if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                            new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
+                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                    break;
                 }
             }
             
@@ -317,19 +317,16 @@ public class FireworksStrategy : AbstractStrategy
             {
                 if (df.Possibilities.Peek(possibility)) continue;
 
-                var pos = manager.ColumnPositionsAt(df.RowWing.Col, possibility);
-                if (pos.Count != 2) continue;
-
-                foreach (var row in pos)
+                var current = new CellPossibility(df.RowWing, possibility);
+                foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
                 {
-                    if (row != df.RowWing.Row && row == df.ColumnWing.Row)
-                    {
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Col);
-                        if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
-                                new FireworksReportBuilder(df)) && OnCommitBehavior == OnCommitBehavior.Return) return;
-                        
-                        break;
-                    }
+                    if (!friend.ShareAUnit(df.ColumnWing)) continue;
+
+                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Col);
+                    if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                            new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
+                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                    break;
                 }
             }
         }
@@ -379,7 +376,8 @@ public class FireworksStrategy : AbstractStrategy
                 }
 
                 if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
-                        new FireworksReportBuilder(one, two)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                        new FireworksWithCellReportBuilder(center, one, two)) &&
+                            OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
     }
@@ -438,6 +436,28 @@ public class Fireworks
     public IPossibilities Possibilities { get; }
 }
 
+public static class FireworksHighlightUtils
+{
+    public static void Highlight(IHighlightable lighter, Fireworks firework, IPossibilitiesHolder snapshot, ref int startColor)
+    {
+        foreach (var possibility in firework.Possibilities)
+        {
+            if(snapshot.PossibilitiesAt(firework.ColumnWing).Peek(possibility))
+                lighter.HighlightPossibility(possibility, firework.ColumnWing.Row, firework.ColumnWing.Col,
+                    (ChangeColoration) startColor);
+                
+            if(snapshot.PossibilitiesAt(firework.RowWing).Peek(possibility))
+                lighter.HighlightPossibility(possibility, firework.RowWing.Row, firework.RowWing.Col,
+                    (ChangeColoration) startColor);
+                
+            lighter.HighlightPossibility(possibility, firework.Cross.Row, firework.Cross.Col,
+                (ChangeColoration) startColor);
+
+            startColor++;
+        }
+    }
+}
+
 public class FireworksReportBuilder : IChangeReportBuilder
 {
     private readonly Fireworks[] _fireworks;
@@ -455,21 +475,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
 
             foreach (var firework in _fireworks)
             {
-                foreach (var possibility in firework.Possibilities)
-                {
-                    if(snapshot.PossibilitiesAt(firework.ColumnWing).Peek(possibility))
-                        lighter.HighlightPossibility(possibility, firework.ColumnWing.Row, firework.ColumnWing.Col,
-                            (ChangeColoration) color);
-                
-                    if(snapshot.PossibilitiesAt(firework.RowWing).Peek(possibility))
-                        lighter.HighlightPossibility(possibility, firework.RowWing.Row, firework.RowWing.Col,
-                            (ChangeColoration) color);
-                
-                    lighter.HighlightPossibility(possibility, firework.Cross.Row, firework.Cross.Col,
-                        (ChangeColoration) color);
-
-                    color++;
-                }
+                FireworksHighlightUtils.Highlight(lighter, firework, snapshot, ref color);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -494,21 +500,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
         {
             var color = (int)ChangeColoration.CauseOffOne;
 
-            foreach (var possibility in _fireworks.Possibilities)
-            {
-                if(snapshot.PossibilitiesAt(_fireworks.ColumnWing).Peek(possibility))
-                    lighter.HighlightPossibility(possibility, _fireworks.ColumnWing.Row, _fireworks.ColumnWing.Col,
-                        (ChangeColoration) color);
-                
-                if(snapshot.PossibilitiesAt(_fireworks.RowWing).Peek(possibility))
-                    lighter.HighlightPossibility(possibility, _fireworks.RowWing.Row, _fireworks.RowWing.Col,
-                        (ChangeColoration) color);
-                
-                lighter.HighlightPossibility(possibility, _fireworks.Cross.Row, _fireworks.Cross.Col,
-                    (ChangeColoration) color);
-
-                color++;
-            }
+            FireworksHighlightUtils.Highlight(lighter, _fireworks, snapshot, ref color);
 
             foreach (var als in _als)
             {
@@ -519,6 +511,62 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
                 
                 color++;
             }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
+public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
+{
+    private readonly Fireworks _fireworks;
+    private readonly CellPossibility[] _cells;
+
+    public FireworksWithStrongLinkReportBuilder(Fireworks fireworks, params CellPossibility[] cells)
+    {
+        _fireworks = fireworks;
+        _cells = cells;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            int color = (int)ChangeColoration.CauseOffOne;
+            FireworksHighlightUtils.Highlight(lighter, _fireworks, snapshot, ref color);
+
+            foreach (var cell in _cells)
+            {
+                lighter.HighlightPossibility(cell, ChangeColoration.CauseOnOne);
+            }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
+public class FireworksWithCellReportBuilder : IChangeReportBuilder
+{
+    private readonly Fireworks[] _fireworks;
+    private readonly Cell _cell;
+
+    public FireworksWithCellReportBuilder(Cell cell, params Fireworks[] fireworks)
+    {
+        _fireworks = fireworks;
+        _cell = cell;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            int color = (int)ChangeColoration.CauseOffOne;
+            foreach (var f in _fireworks)
+            {
+                FireworksHighlightUtils.Highlight(lighter, f, snapshot, ref color);
+            }
+            
+            lighter.HighlightCell(_cell, ChangeColoration.CauseOnOne);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });

@@ -51,6 +51,7 @@ public class RunTester
             LogsManaged = false,
             StatisticsTracked = true
         };
+        _currentSolver.SetOnInstanceFound(OnInstanceFound.WaitForAll);
 
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);
 

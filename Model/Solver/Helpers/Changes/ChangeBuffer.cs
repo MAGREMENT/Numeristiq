@@ -23,6 +23,11 @@ public class ChangeBuffer
         _m = changeManager;
     }
 
+    public void ProposePossibilityRemoval(int possibility, Cell cell)
+    {
+        ProposePossibilityRemoval(new CellPossibility(cell, possibility));
+    }
+
     public void ProposePossibilityRemoval(int possibility, int row, int col)
     {
         ProposePossibilityRemoval(new CellPossibility(row, col, possibility));

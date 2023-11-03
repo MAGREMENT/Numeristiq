@@ -5,526 +5,357 @@ using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
+using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class UniqueRectanglesStrategy : AbstractStrategy //TODO look at this a bit and improve it
+public class UniqueRectanglesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Unique Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-
+    
     public UniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
-        UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
     public override void ApplyOnce(IStrategyManager strategyManager)
     {
-        Dictionary<BiValue, List<Cell>> map = new();
+        Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.PossibilitiesAt(row, col).Count == 2)
+                var possibilities = strategyManager.PossibilitiesAt(row, col);
+                if (possibilities.Count != 2) continue;
+
+                var asArray = possibilities.ToArray();
+                var biValue = new BiValue(asArray[0], asArray[1]);
+                var current = new Cell(row, col);
+
+                if (!biValueMap.TryGetValue(biValue, out var list))
                 {
-                    var asArray = strategyManager.PossibilitiesAt(row, col).ToArray();
-                    BiValue bi = new BiValue(asArray[0], asArray[1]);
-                    Cell current = new(row, col);
-
-                    if (map.TryGetValue(bi, out var value))
+                    list = new List<Cell>();
+                    biValueMap[biValue] = list;
+                }
+                else
+                {
+                    foreach (var cell in list)
                     {
-                        foreach (var b in value)
-                        {
-                            if (Process(strategyManager, bi, current, b)) return;
-                        }
-
-                        value.Add(current);
-                    }
-                    else
-                    {
-                        map[bi] = new List<Cell> { current };
+                        if (Search(strategyManager, biValue, cell, current)) return;
                     }
                 }
+
+                list.Add(current);
             }
         }
 
-        //Hidden type 1
-        for (int row = 0; row < 9; row++)
+        foreach (var entry in biValueMap)
         {
-            for (int col = 0; col < 9; col++)
+            foreach (var cell in entry.Value)
             {
-                if (strategyManager.PossibilitiesAt(row, col).Count <= 2) continue;
-                
-                foreach (var bi in strategyManager.PossibilitiesAt(row, col).EachBiValue())
-                {
-                    if (!map.TryGetValue(bi, out var potentialOpposites)) continue;
-                    foreach (var potentialOpposite in potentialOpposites)
-                    {
-                        if (potentialOpposite.Row == row || potentialOpposite.Col == col ||
-                            !AreSpreadOverOnlyTwoBoxes(row, col, potentialOpposite.Row, potentialOpposite.Col,
-                                potentialOpposite.Row, col, row, potentialOpposite.Col)) continue;
-                        
-                        if (strategyManager.PossibilitiesAt(row, potentialOpposite.Col).Peek(bi.One)
-                            && strategyManager.PossibilitiesAt(row, potentialOpposite.Col).Peek(bi.Two)
-                            && strategyManager.PossibilitiesAt(potentialOpposite.Row, col).Peek(bi.One)
-                            && strategyManager.PossibilitiesAt(potentialOpposite.Row, col).Peek(bi.Two))
-                        {
-                            if (strategyManager.RowPositionsAt(row, bi.One).Count == 2
-                                && strategyManager.ColumnPositionsAt(col, bi.One).Count == 2)
-                            {
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, col);
-                                if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(
-                                        new Cell(row, col), potentialOpposite,
-                                        new Cell(row, potentialOpposite.Col),
-                                        new Cell(potentialOpposite.Row, col)))
-                                    && OnCommitBehavior == OnCommitBehavior.Return) return;
-                            }
-                            
-                            if (strategyManager.RowPositionsAt(row, bi.Two).Count == 2
-                                && strategyManager.ColumnPositionsAt(col, bi.Two).Count == 2)
-                            {
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, col);
-                                if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(
-                                        new Cell(row, col), potentialOpposite,
-                                        new Cell(row, potentialOpposite.Col),
-                                        new Cell(potentialOpposite.Row, col)))
-                                    && OnCommitBehavior == OnCommitBehavior.Return) return;
-                            }
-                        }
-                    }
-                }
+                if (SearchHidden(strategyManager, entry.Key, cell)) return;
             }
         }
     }
 
-    private bool Process(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool Search(IStrategyManager strategyManager, BiValue values, params Cell[] floor)
     {
-        if (one.Row == two.Row)
+        if (floor[0].Row == floor[1].Row)
         {
-            return ProcessSameRow(view, bi, one, two);
+            if (floor[0].Col / 3 == floor[1].Col / 3)
+            {
+                var miniRow = floor[0].Row / 3;
+                for (int row = 0; row < 9; row++)
+                {
+                    if (miniRow == row / 3) continue;
+
+                    if (Try(strategyManager, values, floor, new Cell(row, floor[0].Col),
+                            new Cell(row, floor[1].Col))) return true;
+                }
+            }
+            else
+            {
+                var startRow = floor[0].Row / 3 * 3;
+                for (int row = startRow; row < startRow + 3; row++)
+                {
+                    if (row == floor[0].Row) continue;
+
+                    if (Try(strategyManager, values, floor, new Cell(row, floor[0].Col), new Cell(row, floor[1].Col)))
+                        return true;
+                }
+            }
+
+            return false;
         }
-        else if (one.Col == two.Col)
+        
+        if (floor[0].Col == floor[1].Col)
         {
-            return ProcessSameColumn(view, bi, one, two);
+            if (floor[0].Row / 3 == floor[1].Row / 3)
+            {
+                var miniCol = floor[0].Col / 3;
+                for (int col = 0; col < 9; col++)
+                {
+                    if (miniCol == col / 3) continue;
+
+                    if (Try(strategyManager, values, floor, new Cell(floor[0].Row, col),
+                            new Cell(floor[1].Row, col))) return true;
+                }
+            }
+            else
+            {
+                var startCol = floor[0].Col / 3 * 3;
+                for (int col = startCol; col < startCol + 3; col++)
+                {
+                    if (col == floor[0].Col) continue;
+
+                    if (Try(strategyManager, values, floor, new Cell(floor[0].Row, col), 
+                            new Cell(floor[1].Row, col))) return true;
+                }
+            }
+
+            return false;
+        }
+
+        if (!AreSpreadOverTwoBoxes(floor[0].Row, floor[0].Col, floor[1].Row, floor[1].Col)) return false;
+        
+        return Try(strategyManager, values, floor, new Cell(floor[0].Row, floor[1].Col),
+            new Cell(floor[1].Row, floor[0].Col));
+    }
+
+    private bool Try(IStrategyManager strategyManager, BiValue values, Cell[] floor, params Cell[] roof)
+    {
+        var roofOnePossibilities = strategyManager.PossibilitiesAt(roof[0]);
+        var roofTwoPossibilities = strategyManager.PossibilitiesAt(roof[1]);
+
+        if (!roofOnePossibilities.Peek(values.One) || !roofOnePossibilities.Peek(values.Two) ||
+            !roofTwoPossibilities.Peek(values.One) || !roofTwoPossibilities.Peek(values.Two)) return false;
+        
+        //Type 1
+        if (values.Equals(roofOnePossibilities))
+        {
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
+        }
+        else if (values.Equals(roofTwoPossibilities))
+        {
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+        }
+
+        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                new UniqueRectanglesReportBuilder(floor, roof)) &&
+                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+        
+        //Type 2
+        if (roofOnePossibilities.Count == 3 && roofTwoPossibilities.Count == 3 &&
+            roofOnePossibilities.Equals(roofTwoPossibilities))
+        {
+            foreach (var possibility in roofOnePossibilities)
+            {
+                if (possibility == values.One || possibility == values.Two) continue;
+
+                foreach (var cell in roof[0].SharedSeenCells(roof[1]))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                }
+            }
+        }
+        
+        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                new UniqueRectanglesReportBuilder(floor, roof)) &&
+                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+        
+        //Type 3
+        var notBiValuePossibilities = roofOnePossibilities.Or(roofTwoPossibilities);
+        notBiValuePossibilities.Remove(values.One);
+        notBiValuePossibilities.Remove(values.Two);
+
+        var ssc = new List<Cell>(roof[0].SharedSeenCells(roof[1]));
+        foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, ssc, 5))
+        {
+            if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
+
+            ProcessUrWithAls(strategyManager, roof, als);
+            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    new UniqueRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
+                        OnCommitBehavior == OnCommitBehavior.Return) return true;
+        }
+
+        //Type 4 & 5
+        bool oneOk = false;
+        bool twoOke = false;
+        if (roof[0].Row == roof[1].Row || roof[0].Col == roof[1].Col)
+        {
+            //Type 4
+            foreach (var cell in roof[0].SharedSeenCells(roof[1]))
+            {
+                if (strategyManager.PossibilitiesAt(cell).Peek(values.One)) oneOk = true;
+                if (strategyManager.PossibilitiesAt(cell).Peek(values.Two)) twoOke = true;
+
+                if (oneOk && twoOke) break;
+            }
+            
+            if (!oneOk)
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
+            }
+            else if (!twoOke)
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+            }
         }
         else
         {
-            return ProcessDiagonal(view, bi, one, two);
+            //Type 5
+            for (int unit = 0; unit < 9; unit++)
+            {
+                if (unit != roof[0].Col && unit != roof[1].Col)
+                {
+                    if (strategyManager.PossibilitiesAt(roof[0].Row, unit).Peek(values.One)) oneOk = true;
+                    if (strategyManager.PossibilitiesAt(roof[0].Row, unit).Peek(values.Two)) twoOke = true;
+                    
+                    if (strategyManager.PossibilitiesAt(roof[1].Row, unit).Peek(values.One)) oneOk = true;
+                    if (strategyManager.PossibilitiesAt(roof[1].Row, unit).Peek(values.Two)) twoOke = true;
+                }
+                
+                if (unit != roof[0].Row && unit != roof[1].Row)
+                {
+                    if (strategyManager.PossibilitiesAt(unit, roof[0].Col).Peek(values.One)) oneOk = true;
+                    if (strategyManager.PossibilitiesAt(unit, roof[0].Col).Peek(values.Two)) twoOke = true;
+                    
+                    if (strategyManager.PossibilitiesAt(unit, roof[1].Col).Peek(values.One)) oneOk = true;
+                    if (strategyManager.PossibilitiesAt(unit, roof[1].Col).Peek(values.Two)) twoOke = true;
+                }
+                
+                if (oneOk && twoOke) break;
+            }
+            
+            if (!oneOk)
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[0]);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[1]);
+            }
+            else if (!twoOke)
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[0]);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[1]);
+            }
+        }
+        
+        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                new UniqueRectanglesReportBuilder(floor, roof)) &&
+                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+        
+        //Type 6 (aka hidden type 2)
+        if (roof[0].Row == roof[1].Row || roof[0].Col == roof[1].Col)
+        {
+            strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
+            var graph = strategyManager.GraphManager.SimpleLinkGraph;
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    var cpf1 = new CellPossibility(floor[i], values.One);
+                    var cpr1 = new CellPossibility(roof[j], values.One);
+
+                    var cpf2 = new CellPossibility(floor[i], values.Two);
+                    var cpr2 = new CellPossibility(roof[j], values.Two);
+                
+                    if (graph.HasLinkTo(cpr1, cpf1, LinkStrength.Strong))
+                    {
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
+                        if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
+                                floor, roof, new Link<CellPossibility>(cpr1, cpf1)))
+                                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    }
+                
+                    if (graph.HasLinkTo(cpr2, cpf2, LinkStrength.Strong))
+                    {
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
+                        if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
+                                floor, roof, new Link<CellPossibility>(cpr2, cpf2)))
+                                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void ProcessUrWithAls(IStrategyManager strategyManager, Cell[] roof, AlmostLockedSet als)
+    {
+        List<Cell> buffer = new();
+        foreach (var possibility in als.Possibilities)
+        {
+            foreach (var cell in als.Cells)
+            {
+                if(strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+            }
+
+            foreach (var r in roof)
+            {
+                if (strategyManager.PossibilitiesAt(r).Peek(possibility)) buffer.Add(r);
+            }
+
+            foreach (var cell in Cells.SharedSeenCells(buffer))
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+            }
+            
+            buffer.Clear();
         }
     }
 
-    private bool ProcessSameRow(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool SearchHidden(IStrategyManager strategyManager, BiValue values, Cell cell)
     {
         for (int row = 0; row < 9; row++)
         {
-            if(row == one.Row) continue;
+            if(row == cell.Row) continue;
+            var rowPossibilities = strategyManager.PossibilitiesAt(row, cell.Col);
 
-            if (view.PossibilitiesAt(row, one.Col).Peek(bi.One) && view.PossibilitiesAt(row, two.Col).Peek(bi.One) &&
-                view.PossibilitiesAt(row, one.Col).Peek(bi.Two) && view.PossibilitiesAt(row, two.Col).Peek(bi.Two) &&
-                AreSpreadOverOnlyTwoBoxes(one.Row, one.Col, two.Row,
-                    two.Col, row, one.Col, row, two.Col))
+            if (!rowPossibilities.Peek(values.One) || !rowPossibilities.Peek(values.Two)) continue;
+
+            for (int col = 0; col < 9; col++)
             {
-                var roofOne = view.PossibilitiesAt(row, one.Col).Copy();
-                var roofTwo = view.PossibilitiesAt(row, two.Col).Copy();
-                roofOne.Remove(bi.One);
-                roofOne.Remove(bi.Two);
-                roofTwo.Remove(bi.One);
-                roofTwo.Remove(bi.Two);
-                
-                //Type 1
-                if (roofOne.Count == 0)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, two.Col);
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, two.Col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
+                if (col == cell.Col || !AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Col)) continue;
+                var colPossibilities = strategyManager.PossibilitiesAt(cell.Row, col);
 
-                if (roofTwo.Count == 0)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, one.Col);
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, one.Col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
+                if (!colPossibilities.Peek(values.One) || !colPossibilities.Peek(values.Two)) continue;
 
-                //Type 2
-                if (roofOne.Count == 1 && roofTwo.Count == 1 && roofOne.Equals(roofTwo))
-                {
-                    int possibility = roofOne.First();
-                    foreach (var coord in 
-                             Cells.SharedSeenCells(row, one.Col, row, two.Col))
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-                    }
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
+                var opposite = new Cell(row, col);
+                var oppositePossibilities = strategyManager.PossibilitiesAt(opposite);
 
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
+                if (!oppositePossibilities.Peek(values.One) || !oppositePossibilities.Peek(values.Two)) continue;
 
-                //Type 4
-                if (one.Col / 3 == two.Col / 3)
+                if (strategyManager.RowPositionsAt(row, values.One).Count == 2 &&
+                    strategyManager.ColumnPositionsAt(col, values.One).Count == 2)
                 {
-                    var ppimn = view.MiniGridPositionsAt(row / 3, one.Col / 3, bi.One);
-                    if (ppimn.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, one.Col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, two.Col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(row, one.Col), new Cell(row, two.Col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                    
-                    ppimn = view.MiniGridPositionsAt(row / 3, one.Col / 3, bi.Two);
-                    if (ppimn.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, one.Col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, two.Col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(row, one.Col), new Cell(row, two.Col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                }
-                else
-                {
-                    var ppir = view.RowPositionsAt(row, bi.One);
-                    if (ppir.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, one.Col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, two.Col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(row, one.Col), new Cell(row, two.Col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                    
-                    ppir = view.RowPositionsAt(row, bi.Two);
-                    if (ppir.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, one.Col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, two.Col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(row, one.Col), new Cell(row, two.Col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
+                    if (strategyManager.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
+                            cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 
-                //Hidden type 2
-                if (view.ColumnPositionsAt(one.Col, bi.One).Count == 2)
+                if (strategyManager.RowPositionsAt(row, values.Two).Count == 2 &&
+                    strategyManager.ColumnPositionsAt(col, values.Two).Count == 2)
                 {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, two.Col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-                if (view.ColumnPositionsAt(one.Col, bi.Two).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, two.Col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-                if (view.ColumnPositionsAt(two.Col, bi.One).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, row, one.Col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-                if (view.ColumnPositionsAt(two.Col, bi.Two).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, row, one.Col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(row, one.Col), new Cell(row, two.Col)));
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-
-                //Type 3
-                IPossibilities mashed = roofOne.Or(roofTwo);
-                List<Cell> shared = new List<Cell>(
-                    Cells.SharedSeenEmptyCells(view, row, one.Col, row, two.Col));
-
-                foreach (var als in AlmostLockedSetSearcher.InCells(view, shared, 4))
-                {
-                    if (als.Possibilities.Equals(mashed))
-                    {
-                        RemovePossibilitiesInAllExcept(view, mashed, shared, als);
-                        if (!view.ChangeBuffer.NotEmpty()) continue;
-
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
-                            new Cell(row, one.Col), new Cell(row, two.Col), als));
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
+                    if (strategyManager.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
+                            cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
-
+        
         return false;
     }
 
-    private bool ProcessSameColumn(IStrategyManager view, BiValue bi, Cell one, Cell two)
+    private bool AreSpreadOverTwoBoxes(int row1, int col1, int row2, int col2)
     {
-        for (int col = 0; col < 9; col++)
-        {
-            if(col == one.Col) continue;
-
-            if (view.PossibilitiesAt(one.Row, col).Peek(bi.One) && view.PossibilitiesAt(two.Row, col).Peek(bi.One) &&
-                view.PossibilitiesAt(one.Row, col).Peek(bi.Two) && view.PossibilitiesAt(two.Row, col).Peek(bi.Two) &&
-                AreSpreadOverOnlyTwoBoxes(one.Row, one.Col, two.Row,
-                    two.Col, one.Row, col, two.Row, col))
-            {
-                var roofOne = view.PossibilitiesAt(one.Row, col).Copy();
-                var roofTwo = view.PossibilitiesAt(two.Row, col).Copy();
-                roofOne.Remove(bi.One);
-                roofOne.Remove(bi.Two);
-                roofTwo.Remove(bi.One);
-                roofTwo.Remove(bi.Two);
-                
-                //Type 1
-                if (roofOne.Count == 0)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, two.Row, col);
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, two.Row, col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-
-                if (roofTwo.Count == 0)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, one.Row, col);
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, one.Row, col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-
-                //Type 2
-                if (roofOne.Count == 1 && roofTwo.Count == 1 && roofOne.Equals(roofTwo))
-                {
-                    int possibility = roofOne.First();
-                    foreach (var coord in 
-                             Cells.SharedSeenCells(one.Row, col, two.Row, col))
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-                    }
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-
-                //Type 4
-                if (one.Row / 3 == two.Row / 3)
-                {
-                    var ppimn = view.MiniGridPositionsAt(one.Row / 3, col / 3, bi.One);
-                    if (ppimn.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, one.Row, col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, two.Row, col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(one.Row, col), new Cell(two.Row, col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                    
-                    ppimn = view.MiniGridPositionsAt(one.Row / 3, col / 3, bi.Two);
-                    if (ppimn.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, one.Row, col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, two.Row, col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(one.Row, col), new Cell(two.Row, col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                }
-                else
-                {
-                    var ppic = view.ColumnPositionsAt(col, bi.One);
-                    if (ppic.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, one.Row, col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, two.Row, col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(one.Row, col), new Cell(two.Row, col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                    
-                    ppic = view.ColumnPositionsAt(col, bi.Two);
-                    if (ppic.Count == 2)
-                    {
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, one.Row, col);
-                        view.ChangeBuffer.ProposePossibilityRemoval(bi.One, two.Row, col);
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                            new Cell(one.Row, col), new Cell(two.Row, col)));
-                        
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                }
-                
-                //Hidden type 2
-                if (view.RowPositionsAt(one.Row, bi.One).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, two.Row, col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-                if (view.RowPositionsAt(one.Row, bi.Two).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, two.Row, col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-                if (view.RowPositionsAt(two.Row, bi.One).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, one.Row, col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-                if (view.RowPositionsAt(two.Row, bi.Two).Count == 2)
-                {
-                    view.ChangeBuffer.ProposePossibilityRemoval(bi.One, one.Row, col);
-                    view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                        new Cell(one.Row, col), new Cell(two.Row, col)));
-                    
-                    return OnCommitBehavior == OnCommitBehavior.Return;
-                }
-
-                //Type 3
-                IPossibilities mashed = roofOne.Or(roofTwo);
-                List<Cell> shared = new List<Cell>(
-                    Cells.SharedSeenEmptyCells(view, one.Row, col, two.Row, col));
-
-                foreach (var als in AlmostLockedSetSearcher.InCells(view, shared, 4))
-                {
-                    if (als.Possibilities.Equals(mashed))
-                    {
-                        RemovePossibilitiesInAllExcept(view, mashed, shared, als);
-                        if (!view.ChangeBuffer.NotEmpty()) continue;
-                        
-                        view.ChangeBuffer.Commit(this, new UniqueRectanglesWithAlsReportBuilder(one, two,
-                            new Cell(one.Row, col), new Cell(two.Row, col), als));
-                        return OnCommitBehavior == OnCommitBehavior.Return;
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private bool ProcessDiagonal(IStrategyManager view, BiValue bi, Cell one, Cell two)
-    {
-        if (view.PossibilitiesAt(one.Row, two.Col).Peek(bi.One) && view.PossibilitiesAt(one.Row, two.Col).Peek(bi.Two) &&
-            view.PossibilitiesAt(two.Row, one.Col).Peek(bi.One) && view.PossibilitiesAt(two.Row, one.Col).Peek(bi.Two) &&
-            AreSpreadOverOnlyTwoBoxes(one.Row, one.Col, two.Row,
-                two.Col, one.Row, two.Col, two.Row, one.Col))
-        {
-            var roofOne = view.PossibilitiesAt(one.Row, two.Col).Copy();
-            var roofTwo = view.PossibilitiesAt(two.Row, one.Col).Copy();
-            roofOne.Remove(bi.One);
-            roofOne.Remove(bi.Two);
-            roofTwo.Remove(bi.One);
-            roofTwo.Remove(bi.One);
-            
-            //Type 2
-            if (roofOne.Count == 1 && roofTwo.Count == 1 && roofOne.Equals(roofTwo))
-            {
-                int possibility = roofOne.First();
-                foreach (var coord in 
-                         Cells.SharedSeenCells(one.Row, two.Col, two.Row, one.Col))
-                {
-                    if ((coord.Row == one.Row && coord.Col == one.Col) ||
-                        (coord.Row == two.Row && coord.Col == two.Col)) continue;
-                    view.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-                }
-                view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                    new Cell(one.Row, two.Col), new Cell(two.Row, one.Col)));
-
-                return OnCommitBehavior == OnCommitBehavior.Return;
-            }
-            
-            //Type 5
-            if (view.RowPositionsAt(one.Row, bi.One).Count == 2 &&
-                view.RowPositionsAt(two.Row, bi.One).Count == 2 &&
-                view.ColumnPositionsAt(one.Col, bi.One).Count == 2 &&
-                view.ColumnPositionsAt(two.Col, bi.One).Count == 2)
-            {
-                view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, one.Row, one.Col);
-                view.ChangeBuffer.ProposePossibilityRemoval(bi.Two, two.Row, two.Col);
-                view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                    new Cell(one.Row, two.Col), new Cell(two.Row, one.Col)));
-                
-                return OnCommitBehavior == OnCommitBehavior.Return;
-            }
-            
-            if (view.RowPositionsAt(one.Row, bi.Two).Count == 2 &&
-                view.RowPositionsAt(two.Row, bi.Two).Count == 2 &&
-                view.ColumnPositionsAt(one.Col, bi.Two).Count == 2 &&
-                view.ColumnPositionsAt(two.Col, bi.Two).Count == 2)
-            {
-                view.ChangeBuffer.ProposePossibilityRemoval(bi.One, one.Row, one.Col);
-                view.ChangeBuffer.ProposePossibilityRemoval(bi.One, two.Row, two.Col);
-                view.ChangeBuffer.Commit(this, new UniqueRectanglesReportBuilder(one, two,
-                    new Cell(one.Row, two.Col), new Cell(two.Row, one.Col)));
-
-                return OnCommitBehavior == OnCommitBehavior.Return;
-            }
-        }
-
-        return false;
-    }
-
-    private bool AreSpreadOverOnlyTwoBoxes(int row1, int col1, int row2, int col2, int row3, int col3, int row4,
-        int col4)
-    {
-        HashSet<int> rows = new();
-        HashSet<int> cols = new();
-
-        rows.Add(row1 / 3);
-        rows.Add(row2 / 3);
-        rows.Add(row3 / 3);
-        rows.Add(row4 / 3);
-
-        cols.Add(col1 / 3);
-        cols.Add(col2 / 3);
-        cols.Add(col3 / 3);
-        cols.Add(col4 / 3);
-
-        return (rows.Count == 2 && cols.Count == 1) || (rows.Count == 1 && cols.Count == 2);
-    }
-
-    private void RemovePossibilitiesInAllExcept(IStrategyManager view, IPossibilities poss, List<Cell> coords,
-        AlmostLockedSet except)
-    {
-        foreach (var coord in coords)
-        {
-            if(except.Contains(coord) || !except.ShareAUnit(coord)) continue;
-            foreach (var possibility in poss)
-            {
-                view.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-            }
-        }
+        return (row1 / 3 != row2 / 3) ^ (col1 / 3 != col2 / 3);
     }
 }
 
@@ -544,10 +375,20 @@ public readonly struct BiValue
         return One ^ Two;
     }
 
+    public bool Equals(IReadOnlyPossibilities possibilities)
+    {
+        return possibilities.Count == 2 && possibilities.Peek(One) && possibilities.Peek(Two);
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not BiValue bi) return false;
         return (bi.One == One && bi.Two == Two) || (bi.One == Two && bi.Two == One);
+    }
+
+    public override string ToString()
+    {
+        return $"Bi-Value : {One}, {Two}";
     }
 
     public static bool operator ==(BiValue left, BiValue right)
@@ -563,64 +404,132 @@ public readonly struct BiValue
 
 public class UniqueRectanglesReportBuilder : IChangeReportBuilder
 {
-    private readonly Cell _floorOne;
-    private readonly Cell _floorTwo;
-    private readonly Cell _roofOne;
-    private readonly Cell _roofTwo;
+    private readonly Cell[] _floor;
+    private readonly Cell[] _roof;
 
-    public UniqueRectanglesReportBuilder(Cell floorOne, Cell floorTwo, Cell roofOne, Cell roofTwo)
+    public UniqueRectanglesReportBuilder(Cell[] floor, Cell[] roof)
     {
-        _floorOne = floorOne;
-        _floorTwo = floorTwo;
-        _roofOne = roofOne;
-        _roofTwo = roofTwo;
+        _floor = floor;
+        _roof = roof;
     }
-    
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            lighter.HighlightCell(_floorOne.Row, _floorOne.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_floorTwo.Row, _floorTwo.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_roofOne.Row, _roofOne.Col, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_roofTwo.Row, _roofTwo.Col, ChangeColoration.CauseOffTwo);
+            foreach (var floor in _floor)
+            {
+                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+            }
+
+            foreach (var roof in _roof)
+            {
+                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+            }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
 }
 
-public class UniqueRectanglesWithAlsReportBuilder : IChangeReportBuilder
+public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
 {
-    private readonly Cell _floorOne;
-    private readonly Cell _floorTwo;
-    private readonly Cell _roofOne;
-    private readonly Cell _roofTwo;
-    private readonly AlmostLockedSet _als;
+    private readonly Cell[] _floor;
+    private readonly Cell[] _roof;
+    private readonly Link<CellPossibility> _link;
 
-    public UniqueRectanglesWithAlsReportBuilder(Cell floorOne, Cell floorTwo, Cell roofOne,
-        Cell roofTwo, AlmostLockedSet als)
+    public UniqueRectanglesWithStrongLinkReportBuilder(Cell[] floor, Cell[] roof, Link<CellPossibility> link)
     {
-        _floorOne = floorOne;
-        _floorTwo = floorTwo;
-        _roofOne = roofOne;
-        _roofTwo = roofTwo;
-        _als = als;
+        _floor = floor;
+        _roof = roof;
+        _link = link;
     }
-    
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            lighter.HighlightCell(_floorOne.Row, _floorOne.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_floorTwo.Row, _floorTwo.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_roofOne.Row, _roofOne.Col, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_roofTwo.Row, _roofTwo.Col, ChangeColoration.CauseOffTwo);
-
-            foreach (var coord in _als.Cells)
+            foreach (var floor in _floor)
             {
-                lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffThree);
+                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
             }
+
+            foreach (var roof in _roof)
+            {
+                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+            }
+
+            lighter.CreateLink(_link.From, _link.To, LinkStrength.Strong);
+            
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
+public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder
+{
+    private readonly Cell[] _floor;
+    private readonly Cell[] _roof;
+    private readonly AlmostLockedSet _als;
+
+    public UniqueRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, AlmostLockedSet als)
+    {
+        _floor = floor;
+        _roof = roof;
+        _als = als;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            foreach (var floor in _floor)
+            {
+                lighter.HighlightCell(floor, ChangeColoration.CauseOffTwo);
+            }
+
+            foreach (var roof in _roof)
+            {
+                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+            }
+
+            foreach (var cell in _als.Cells)
+            {
+                lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
+            }
+            
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
+    }
+}
+
+public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
+{
+    private readonly Cell _initial;
+    private readonly Cell _opposite;
+    private readonly int _stronglyLinkedPossibility;
+
+    public HiddenUniqueRectanglesReportBuilder(Cell initial, Cell opposite, int stronglyLinkedPossibility)
+    {
+        _initial = initial;
+        _opposite = opposite;
+        _stronglyLinkedPossibility = stronglyLinkedPossibility;
+    }
+
+    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            lighter.HighlightCell(_initial, ChangeColoration.CauseOffTwo);
+
+            lighter.HighlightCell(_opposite, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_opposite.Row, _initial.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_initial.Row, _opposite.Col, ChangeColoration.CauseOffOne);
+
+            lighter.CreateLink(new CellPossibility(_opposite, _stronglyLinkedPossibility), new CellPossibility(
+                _opposite.Row, _initial.Col, _stronglyLinkedPossibility), LinkStrength.Strong);
+            lighter.CreateLink(new CellPossibility(_opposite, _stronglyLinkedPossibility), new CellPossibility(
+                _initial.Row, _opposite.Col, _stronglyLinkedPossibility), LinkStrength.Strong);
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
