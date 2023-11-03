@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
@@ -61,66 +62,12 @@ public class UniqueRectanglesStrategy : AbstractStrategy
 
     private bool Search(IStrategyManager strategyManager, BiValue values, params Cell[] floor)
     {
-        if (floor[0].Row == floor[1].Row)
+        foreach (var roof in Cells.DeadlyPatternRoofs(floor))
         {
-            if (floor[0].Col / 3 == floor[1].Col / 3)
-            {
-                var miniRow = floor[0].Row / 3;
-                for (int row = 0; row < 9; row++)
-                {
-                    if (miniRow == row / 3) continue;
-
-                    if (Try(strategyManager, values, floor, new Cell(row, floor[0].Col),
-                            new Cell(row, floor[1].Col))) return true;
-                }
-            }
-            else
-            {
-                var startRow = floor[0].Row / 3 * 3;
-                for (int row = startRow; row < startRow + 3; row++)
-                {
-                    if (row == floor[0].Row) continue;
-
-                    if (Try(strategyManager, values, floor, new Cell(row, floor[0].Col), new Cell(row, floor[1].Col)))
-                        return true;
-                }
-            }
-
-            return false;
-        }
-        
-        if (floor[0].Col == floor[1].Col)
-        {
-            if (floor[0].Row / 3 == floor[1].Row / 3)
-            {
-                var miniCol = floor[0].Col / 3;
-                for (int col = 0; col < 9; col++)
-                {
-                    if (miniCol == col / 3) continue;
-
-                    if (Try(strategyManager, values, floor, new Cell(floor[0].Row, col),
-                            new Cell(floor[1].Row, col))) return true;
-                }
-            }
-            else
-            {
-                var startCol = floor[0].Col / 3 * 3;
-                for (int col = startCol; col < startCol + 3; col++)
-                {
-                    if (col == floor[0].Col) continue;
-
-                    if (Try(strategyManager, values, floor, new Cell(floor[0].Row, col), 
-                            new Cell(floor[1].Row, col))) return true;
-                }
-            }
-
-            return false;
+            if (Try(strategyManager, values, floor, roof)) return true;
         }
 
-        if (!AreSpreadOverTwoBoxes(floor[0].Row, floor[0].Col, floor[1].Row, floor[1].Col)) return false;
-        
-        return Try(strategyManager, values, floor, new Cell(floor[0].Row, floor[1].Col),
-            new Cell(floor[1].Row, floor[0].Col));
+        return false;
     }
 
     private bool Try(IStrategyManager strategyManager, BiValue values, Cell[] floor, params Cell[] roof)
@@ -322,7 +269,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
 
             for (int col = 0; col < 9; col++)
             {
-                if (col == cell.Col || !AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Col)) continue;
+                if (col == cell.Col || !Cells.AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Col)) continue;
                 var colPossibilities = strategyManager.PossibilitiesAt(cell.Row, col);
 
                 if (!colPossibilities.Peek(values.One) || !colPossibilities.Peek(values.Two)) continue;
@@ -352,11 +299,6 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         
         return false;
     }
-
-    private bool AreSpreadOverTwoBoxes(int row1, int col1, int row2, int col2)
-    {
-        return (row1 / 3 != row2 / 3) ^ (col1 / 3 != col2 / 3);
-    }
 }
 
 public readonly struct BiValue
@@ -373,6 +315,11 @@ public readonly struct BiValue
     public override int GetHashCode()
     {
         return One ^ Two;
+    }
+
+    public bool Contains(int value)
+    {
+        return value == One || value == Two;
     }
 
     public bool Equals(IReadOnlyPossibilities possibilities)
@@ -424,7 +371,8 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(roof, snapshot.PossibilitiesAt(roof).Count == 2 ? 
+                    ChangeColoration.CauseOffTwo : ChangeColoration.CauseOffOne);
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);

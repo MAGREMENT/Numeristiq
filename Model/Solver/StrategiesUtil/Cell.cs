@@ -94,6 +94,89 @@ public static class Cells
     {
         return Searcher.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2);
     }
+    
+    public static bool AreSpreadOverTwoBoxes(int row1, int col1, int row2, int col2)
+    {
+        return (row1 / 3 != row2 / 3) ^ (col1 / 3 != col2 / 3);
+    }
+    
+    public static IEnumerable<Cell[]> DeadlyPatternRoofs(Cell[] floor)
+    {
+        if (floor.Length != 2) yield break;
+        
+        if (floor[0].Row == floor[1].Row)
+        {
+            if (floor[0].Col / 3 == floor[1].Col / 3)
+            {
+                var miniRow = floor[0].Row / 3;
+                for (int row = 0; row < 9; row++)
+                {
+                    if (miniRow == row / 3) continue;
+
+                    yield return new[]
+                    {
+                        new Cell(row, floor[0].Col),
+                        new Cell(row, floor[1].Col)
+                    };
+                }
+            }
+            else
+            {
+                var startRow = floor[0].Row / 3 * 3;
+                for (int row = startRow; row < startRow + 3; row++)
+                {
+                    if (row == floor[0].Row) continue;
+
+                    yield return new[]
+                    {
+                        new Cell(row, floor[0].Col),
+                        new Cell(row, floor[1].Col)
+                    };
+                }
+            }
+        }
+        else if (floor[0].Col == floor[1].Col)
+        {
+            if (floor[0].Row / 3 == floor[1].Row / 3)
+            {
+                var miniCol = floor[0].Col / 3;
+                for (int col = 0; col < 9; col++)
+                {
+                    if (miniCol == col / 3) continue;
+
+                    yield return new[]
+                    {
+                        new Cell(floor[0].Row, col),
+                        new Cell(floor[1].Row, col)
+                    };
+                }
+            }
+            else
+            {
+                var startCol = floor[0].Col / 3 * 3;
+                for (int col = startCol; col < startCol + 3; col++)
+                {
+                    if (col == floor[0].Col) continue;
+
+                    yield return new[]
+                    {
+                        new Cell(floor[0].Row, col), 
+                        new Cell(floor[1].Row, col)
+                    };
+                }
+            }
+        }
+        else
+        {
+            if (!AreSpreadOverTwoBoxes(floor[0].Row, floor[0].Col, floor[1].Row, floor[1].Col)) yield break;
+        
+            yield return new[]
+            {
+                new Cell(floor[0].Row, floor[1].Col),
+                new Cell(floor[1].Row, floor[0].Col)
+            };  
+        }
+    }
 }
 
 public readonly struct Cell
