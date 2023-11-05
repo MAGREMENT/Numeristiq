@@ -4,7 +4,7 @@ using System.Linq;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.SharedCellSearcher;
+using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
 using Model.Util;
 
 namespace Model;

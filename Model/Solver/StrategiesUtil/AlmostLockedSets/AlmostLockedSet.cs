@@ -47,16 +47,6 @@ public class AlmostLockedSet
         return false;
     }
 
-    public bool ShareAUnit(Cell coord)
-    {
-        foreach (var c in Cells)
-        {
-            if (!c.ShareAUnit(coord)) return false;
-        }
-
-        return true;
-    }
-
     public override bool Equals(object? obj)
     {
         if (obj is not AlmostLockedSet als) return false;

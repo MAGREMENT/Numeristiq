@@ -3,7 +3,7 @@ using Model.Solver.Possibilities;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
-public static class AlmostLockedSetSearcher
+public static class AlmostLockedSetSearcher //TODO => Generelize this into PositionPossibilitiesSearcher
 {
     public static List<AlmostLockedSet> InCells(IStrategyManager strategyManager, List<Cell> coords, int max = 9)
     {

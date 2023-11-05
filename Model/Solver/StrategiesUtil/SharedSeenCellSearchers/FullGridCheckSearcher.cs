@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Model.Solver.StrategiesUtil.SharedCellSearcher;
+namespace Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
 
 public class FullGridCheckSearcher : ISharedSeenCellSearcher
 {

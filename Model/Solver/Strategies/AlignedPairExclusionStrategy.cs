@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
-public class AlignedPairExclusionStrategy : AbstractStrategy
+public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned triple exclusion
 {
     public const string OfficialName = "Aligned Pair Exclusion";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
@@ -33,8 +33,8 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
             {
                 int row2 = j / 9;
                 int col2 = j % 9;
-
                 if (strategyManager.Sudoku[row2, col2] != 0) continue;
+                
                 if (Search(strategyManager, row1, col1, row2, col2)) return;
             }
         }
@@ -42,8 +42,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
 
     private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
-        List<Cell> shared = new List<Cell>(
-            Cells.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
+        var shared = new List<Cell>(Cells.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
 
         var poss1 = strategyManager.PossibilitiesAt(row1, col1);
         var poss2 = strategyManager.PossibilitiesAt(row2, col2);
@@ -68,10 +67,11 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
             two[possibility] = copy;
         }
 
-        HashSet<AlmostLockedSet> usefulAls = new();
+        List<AlmostLockedSet> usefulAls = new();
 
         foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, shared, _maxAlzSize))
         {
+            bool useful = false;
             foreach (var possibility in als.Possibilities)
             {
                 if (one.TryGetValue(possibility, out var other1))
@@ -79,16 +79,13 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                     foreach (var possibility2 in als.Possibilities)
                     {
                         if (possibility2 == possibility) continue;
-                        
-                        if(other1.Remove(possibility2)) usefulAls.Add(als);
+
+                        if (other1.Remove(possibility2)) useful = true;
                     }
 
                     if (other1.Count == 0)
                     {
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row1, col1);
-                        strategyManager.ChangeBuffer.Commit(this, 
-                            new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
-                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
                 
@@ -97,34 +94,35 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                     foreach (var possibility2 in als.Possibilities)
                     {
                         if (possibility2 == possibility) continue;
-                        
-                        if(other2.Remove(possibility2)) usefulAls.Add(als);
+
+                        if (other2.Remove(possibility2)) useful = true;
                     }
 
                     if (other2.Count == 0)
                     {
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row2, col2);
-                        strategyManager.ChangeBuffer.Commit(this,
-                            new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2));
-                        return OnCommitBehavior == OnCommitBehavior.Return;
                     }
                 }
             }
+
+            if (useful) usefulAls.Add(als);
         }
 
-        return false;
+        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this, 
+            new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2))
+                && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 
 public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
 {
-    private readonly HashSet<AlmostLockedSet> _als;
+    private readonly List<AlmostLockedSet> _als;
     private readonly int _row1;
     private readonly int _col1;
     private readonly int _row2;
     private readonly int _col2;
 
-    public AlignedPairExclusionReportBuilder(HashSet<AlmostLockedSet> als, int row1, int col1, int row2, int col2)
+    public AlignedPairExclusionReportBuilder(List<AlmostLockedSet> als, int row1, int col1, int row2, int col2)
     {
         _als = als;
         _row1 = row1;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Positions;
 
-namespace Model.Solver.StrategiesUtil.SharedCellSearcher;
+namespace Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
 
 public class GridPositionsSearcher : ISharedSeenCellSearcher
 {

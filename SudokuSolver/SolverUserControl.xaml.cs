@@ -130,10 +130,24 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
 
     public void NewSudoku(Sudoku sudoku)
     {
-        _solver.SetSudoku(sudoku);
+        SetSudoku(sudoku);
         ShowCurrent();
 
         _logBuffer = 0;
+    }
+
+    private void SetSudoku(Sudoku sudoku)
+    {
+        _solver.SetSudoku(sudoku);
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                GetTo(row, col).SetForeground(_solver.StartState[row, col] == 0
+                    ? CellForegroundType.Solved
+                    : CellForegroundType.Given);
+            }
+        }
     }
     
     private void Update()
@@ -162,7 +176,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     
     public void ClearSudoku()
     {
-        _solver.SetSudoku(new Sudoku());
+        SetSudoku(new Sudoku());
         Update();
     }
 

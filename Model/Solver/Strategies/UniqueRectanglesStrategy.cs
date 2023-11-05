@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
@@ -10,7 +9,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class UniqueRectanglesStrategy : AbstractStrategy
+public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other sizes
 {
     public const string OfficialName = "Unique Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

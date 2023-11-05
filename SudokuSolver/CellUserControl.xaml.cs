@@ -1,11 +1,16 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model.Solver.Possibilities;
+using SudokuSolver.Utils;
 
 namespace SudokuSolver;
 
 public partial class CellUserControl
 {
+    private readonly Brush _givenForeground = ColorUtil.Green;
+    private readonly Brush _solvedForeground = Brushes.Black;
+    
     private readonly Grid _small = new();
     private readonly TextBlock _big = new();
 
@@ -119,4 +124,21 @@ public partial class CellUserControl
     {
         Updated?.Invoke(_isPossibilities, _nums);
     }
+
+    public void SetForeground(CellForegroundType type)
+    {
+        var brush = type == CellForegroundType.Solved ? _solvedForeground : _givenForeground;
+        
+        _big.Foreground = brush;
+        foreach (var child in _small.Children)
+        {
+            var tb = (child as TextBlock)!;
+            tb.Foreground = brush;
+        }
+    }
+}
+
+public enum CellForegroundType
+{
+    Given, Solved
 }
