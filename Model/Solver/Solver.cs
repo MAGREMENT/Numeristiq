@@ -5,6 +5,7 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
@@ -77,6 +78,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         LogManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
         
         ChangeBuffer = new ChangeBuffer(this);
+
+        AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
+        AlmostLockedSetSearcher = new AlmostLockedSetSearcher(this);
     }
 
     //Solver------------------------------------------------------------------------------------------------------------
@@ -268,6 +272,8 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public ChangeBuffer ChangeBuffer { get; }
     public LinkGraphManager GraphManager { get; }
     public PreComputer PreComputer { get; }
+    public AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
+    public AlmostLockedSetSearcher AlmostLockedSetSearcher { get; }
 
     //ChangeManager-----------------------------------------------------------------------------------------------------
     

@@ -2,6 +2,7 @@
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
@@ -15,6 +16,10 @@ public interface IStrategyManager : IPossibilitiesHolder
     LinkGraphManager GraphManager { get; }
     
     PreComputer PreComputer { get; }
+    
+    AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
+    
+    AlmostLockedSetSearcher AlmostLockedSetSearcher { get; }
 
     bool UniquenessDependantStrategiesAllowed { get; }
 }

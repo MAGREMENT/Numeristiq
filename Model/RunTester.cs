@@ -18,6 +18,12 @@ public class RunTester
     private bool _running;
     private Solver.Solver? _currentSolver;
     private RunResult? _currentRunResult;
+    private OnInstanceFound _found;
+
+    public RunTester(OnInstanceFound found)
+    {
+        _found = found;
+    }
 
     public delegate void OnSolveDone(int number, string line, bool success, bool solverFail);
     public event OnSolveDone? SolveDone;
@@ -51,7 +57,7 @@ public class RunTester
             LogsManaged = false,
             StatisticsTracked = true
         };
-        _currentSolver.SetOnInstanceFound(OnInstanceFound.WaitForAll);
+        _currentSolver.SetOnInstanceFound(_found);
 
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);
 

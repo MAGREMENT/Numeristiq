@@ -116,8 +116,8 @@ public class SueDeCoqStrategy : AbstractStrategy
             }
         }
 
-        var rowAls = AlmostLockedSetSearcher.InCells(strategyManager, rowCoords, 4);
-        var miniAls = AlmostLockedSetSearcher.InCells(strategyManager, miniCoords, 4);
+        var rowAls = strategyManager.AlmostLockedSetSearcher.InCells(rowCoords);
+        var miniAls = strategyManager.AlmostLockedSetSearcher.InCells(miniCoords);
 
         foreach (var rAls in rowAls)
         {
@@ -171,8 +171,8 @@ public class SueDeCoqStrategy : AbstractStrategy
             }
         }
 
-        var colAls = AlmostLockedSetSearcher.InCells(strategyManager, colCoords, 4);
-        var miniAls = AlmostLockedSetSearcher.InCells(strategyManager, miniCoords, 4);
+        var colAls = strategyManager.AlmostLockedSetSearcher.InCells(colCoords);
+        var miniAls = strategyManager.AlmostLockedSetSearcher.InCells(miniCoords);
 
         foreach (var cAls in colAls)
         {

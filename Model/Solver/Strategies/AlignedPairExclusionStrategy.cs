@@ -69,7 +69,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
 
         List<AlmostLockedSet> usefulAls = new();
 
-        foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, shared, _maxAlzSize))
+        foreach (var als in strategyManager.AlmostLockedSetSearcher.InCells(shared))
         {
             bool useful = false;
             foreach (var possibility in als.Possibilities)

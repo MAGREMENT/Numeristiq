@@ -106,7 +106,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
         notBiValuePossibilities.Remove(values.One);
         notBiValuePossibilities.Remove(values.Two);
         var ssc = new List<Cell>(roof[0].SharedSeenCells(roof[1]));
-        foreach (var als in AlmostLockedSetSearcher.InCells(strategyManager, ssc, 5))
+        foreach (var als in strategyManager.AlmostLockedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
 

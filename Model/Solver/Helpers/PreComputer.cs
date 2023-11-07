@@ -74,7 +74,7 @@ public class PreComputer
 
     private List<AlmostLockedSet> DoAlmostLockedSets()
     {
-        return AlmostLockedSetSearcher.FullGrid(_strategyManager);
+        return _strategyManager.AlmostLockedSetSearcher.FullGrid();
     }
 
     private ColoringDictionary<ILinkGraphElement> DoColor(ILinkGraphElement start, Coloring firstColor)

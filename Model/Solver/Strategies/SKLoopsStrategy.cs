@@ -28,7 +28,7 @@ public class SKLoopsStrategy : AbstractStrategy
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (strategyManager.Sudoku[row, col] == 0 || !IsCellValid(strategyManager, row, col)) continue;
+                        if (!IsCellValid(strategyManager, row, col)) continue;
 
                         for (int nextMiniCol = miniCol + 1; nextMiniCol < 3; nextMiniCol++)
                         {
@@ -36,7 +36,7 @@ public class SKLoopsStrategy : AbstractStrategy
                             {
                                 int nextCol = nextMiniCol * 3 + nextGridCol;
                                 
-                                if(strategyManager.Sudoku[row, nextCol] == 0 || !IsCellValid(strategyManager, row, nextCol)) continue;
+                                if(!IsCellValid(strategyManager, row, nextCol)) continue;
 
                                 for (int nextMiniRow = miniRow + 1; nextMiniRow < 3; nextMiniRow++)
                                 {
@@ -44,9 +44,7 @@ public class SKLoopsStrategy : AbstractStrategy
                                     {
                                         int nextRow = nextMiniRow * 3 + nextGridRow;
 
-                                        if (strategyManager.Sudoku[nextRow, col] == 0
-                                            || strategyManager.Sudoku[nextRow, nextCol] == 0
-                                            || !IsCellValid(strategyManager, nextRow, col)
+                                        if (!IsCellValid(strategyManager, nextRow, col)
                                             || !IsCellValid(strategyManager, nextRow, nextCol)) continue;
 
                                         if (ConfirmPattern(strategyManager, new Cell(row, col), new Cell(row, nextCol),
@@ -63,6 +61,8 @@ public class SKLoopsStrategy : AbstractStrategy
     
     private bool IsCellValid(IStrategyManager strategyManager, int row, int col)
     {
+        if (strategyManager.Sudoku[row, col] == 0) return false;
+        
         int startCol = col / 3 * 3;
         int startRow = row / 3 * 3;
 
@@ -72,7 +72,6 @@ public class SKLoopsStrategy : AbstractStrategy
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
             int crossCol = startCol + gridCol;
-            if (crossCol == col) continue;
 
             if (strategyManager.Sudoku[row, crossCol] != 0) countRow++;
         }
@@ -80,12 +79,11 @@ public class SKLoopsStrategy : AbstractStrategy
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
             int crossRow = startRow + gridRow;
-            if (crossRow == row) continue;
 
             if (strategyManager.Sudoku[crossRow, col] != 0) countCol++;
         }
 
-        return countRow < 2 & countCol < 2;
+        return countRow <= 2 & countCol <= 2;
     }
 
     private bool ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)

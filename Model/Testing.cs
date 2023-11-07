@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Solver;
 using Model.Solver.Positions;
 using Model.Solver.Possibilities;
 using Model.Solver.StrategiesUtil;
@@ -165,8 +166,11 @@ public static class Testing
 
     private static void FullSudokuBankTest(string fileNameInDataFolder)
     {
-        RunTester runTester = new RunTester();
-        runTester.Path = PathsInfo.PathToData() + $"/SudokuBanks/{fileNameInDataFolder}";
+        var runTester = new RunTester(OnInstanceFound.WaitForAll)
+        {
+            Path = PathsInfo.PathToData() + $"/SudokuBanks/{fileNameInDataFolder}"
+        };
+        
         runTester.SolveDone += (number, line, success, fail) =>
         {
             Console.Write($"#{number} ");
