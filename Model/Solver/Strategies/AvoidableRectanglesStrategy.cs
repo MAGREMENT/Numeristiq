@@ -18,7 +18,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int i = 0; i < 81; i++)
         {
@@ -106,7 +106,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
         notBiValuePossibilities.Remove(values.One);
         notBiValuePossibilities.Remove(values.Two);
         var ssc = new List<Cell>(roof[0].SharedSeenCells(roof[1]));
-        foreach (var als in strategyManager.AlmostLockedSetSearcher.InCells(ssc))
+        foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
 

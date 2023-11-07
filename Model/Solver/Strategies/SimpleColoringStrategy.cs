@@ -17,7 +17,7 @@ public class SimpleColoringStrategy : AbstractStrategy
     
     public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
         var graph = strategyManager.GraphManager.SimpleLinkGraph;

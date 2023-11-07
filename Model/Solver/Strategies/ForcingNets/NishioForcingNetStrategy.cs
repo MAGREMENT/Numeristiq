@@ -21,7 +21,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
     public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     { }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         ContradictionSearcher cs = new ContradictionSearcher(strategyManager);
 

@@ -19,7 +19,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
         
     }
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

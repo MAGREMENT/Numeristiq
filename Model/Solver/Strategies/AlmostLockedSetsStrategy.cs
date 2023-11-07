@@ -18,7 +18,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
     {
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var allAls = strategyManager.PreComputer.AlmostLockedSets();
 

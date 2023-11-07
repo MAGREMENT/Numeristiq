@@ -20,7 +20,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy //TODO Look into making
     {
     }
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var allAhs = strategyManager.AlmostHiddenSetSearcher.FullGrid();
         strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);

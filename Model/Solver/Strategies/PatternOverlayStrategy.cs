@@ -25,7 +25,7 @@ public class PatternOverlayStrategy : AbstractStrategy
         _maxPatternNumber = maxPatternNumber;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var allPatterns = GetPatterns(strategyManager);
 

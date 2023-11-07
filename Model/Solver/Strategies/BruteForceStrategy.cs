@@ -13,7 +13,7 @@ public class BruteForceStrategy : AbstractStrategy
     
     public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultBehavior) { }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var positions = new GridPositions[] { new(), new(), new(), new(), new(), new(), new(), new(), new() };
 

@@ -15,7 +15,7 @@ public class FinnedXWingStrategy : AbstractStrategy
     
     public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior){}
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

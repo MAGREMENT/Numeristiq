@@ -11,7 +11,7 @@ public interface IStrategy
     public OnCommitBehavior DefaultOnCommitBehavior { get; }
     public StatisticsTracker Tracker { get; }
     
-    void ApplyOnce(IStrategyManager strategyManager);
+    void Apply(IStrategyManager strategyManager);
     void OnNewSudoku(Sudoku s);
 }
 

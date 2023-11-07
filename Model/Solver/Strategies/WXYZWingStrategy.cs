@@ -17,7 +17,7 @@ public class WXYZWingStrategy : AbstractStrategy
     
     public WXYZWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {

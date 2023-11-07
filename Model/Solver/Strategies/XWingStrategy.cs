@@ -40,7 +40,7 @@ public class XWingStrategy : AbstractStrategy
     
     public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         Dictionary<IReadOnlyLinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)

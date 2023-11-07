@@ -22,7 +22,7 @@ public class FireworksStrategy : AbstractStrategy
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         GridPositions[] limitations = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
         List<Fireworks> dualFireworks = new List<Fireworks>();

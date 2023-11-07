@@ -3,13 +3,13 @@ using Model.Solver.Possibilities;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
-public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
+public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
 {
     private readonly IStrategyManager _strategyManager;
 
     public int Max { get; set; } = 5;
 
-    public AlmostLockedSetSearcher(IStrategyManager strategyManager)
+    public AlmostNakedSetSearcher(IStrategyManager strategyManager)
     {
         _strategyManager = strategyManager;
     }
@@ -17,23 +17,9 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
     public List<AlmostLockedSet> InCells(List<Cell> coords)
     {
         List<AlmostLockedSet> result = new();
-        if (Max < 1) return result;
+
+        InCells(coords, new List<Cell>(), IPossibilities.NewEmpty(), 0, result);
         
-        var visited = new List<Cell>(coords.Count);
-        for(int i = 0; i < coords.Count; i++){
-            IReadOnlyPossibilities current = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Col);
-            if (current.Count == 0) continue;
-
-            if (current.Count == 2) result.Add(new AlmostLockedSet(coords[i], current));
-            
-            if (Max > 1)
-            {
-                visited.Add(coords[i]);
-                InCells(coords, visited, current, i + 1, result);
-                visited.RemoveAt(visited.Count - 1);
-            }
-        }
-
         return result;
     }
 
@@ -45,7 +31,7 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
             if (!coords[i].ShareAUnitWithAll(visited)) continue;
 
             var inspected = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Col);
-            if(inspected.Count == 0 || !current.PeekAny(inspected)) continue;
+            if(inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             IPossibilities or = current.Or(inspected);
             visited.Add(coords[i]);
@@ -64,22 +50,30 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
     public List<AlmostLockedSet> FullGrid()
     {
         var result = new List<AlmostLockedSet>();
+        var possibilities = IPossibilities.NewEmpty();
+        var cells = new List<Cell>();
 
         for (int row = 0; row < 9; row++)
         {
-            result.AddRange(InRow(row));
+            InRow(row, 0, possibilities, cells, result);
+            possibilities.RemoveAll();
+            cells.Clear();
         }
         
         for (int col = 0; col < 9; col++)
         {
-            result.AddRange(InColumn(col));
+            InColumn(col, 0, possibilities, cells, result);
+            possibilities.RemoveAll();
+            cells.Clear();
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                result.AddRange(InMiniGrid(miniRow, miniCol, true));
+                InMiniGrid(miniRow, miniCol, 0, possibilities, cells, result, true);
+                possibilities.RemoveAll();
+                cells.Clear();
             }
         }
 
@@ -89,19 +83,8 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
     public List<AlmostLockedSet> InRow(int row)
     {
         var result = new List<AlmostLockedSet>();
-        var visited = new List<Cell>();
-        
-        for (int col = 0; col < 9; col++)
-        {
-            if (_strategyManager.Sudoku[row, col] != 0) continue;
 
-            if (_strategyManager.PossibilitiesAt(row, col).Count == 2)
-                result.Add(new AlmostLockedSet(new Cell(row, col), _strategyManager.PossibilitiesAt(row, col)));
-
-            visited.Add(new Cell(row, col));
-            if(Max > 1) InRow(row, col + 1, _strategyManager.PossibilitiesAt(row, col), visited, result);
-            visited.RemoveAt(visited.Count - 1);
-        }
+        InRow(row, 0, IPossibilities.NewEmpty(), new List<Cell>(), result);
 
         return result;
     }
@@ -109,36 +92,17 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
     public List<AlmostLockedSet> InColumn(int col)
     {
         var result = new List<AlmostLockedSet>();
-        var visited = new List<Cell>();
-        
-        for (int row = 0; row < 9; row++)
-        {
-            if (_strategyManager.Sudoku[row, col] != 0) continue;
 
-            visited.Add(new Cell(row, col));
-            if(Max > 1) InColumn(col, row + 1, _strategyManager.PossibilitiesAt(row, col), visited, result);
-            visited.RemoveAt(visited.Count - 1);
-        }
+        InColumn(col, 0, IPossibilities.NewEmpty(), new List<Cell>(), result);
 
         return result;
     }
 
-    public List<AlmostLockedSet> InMiniGrid(int miniRow, int miniCol,
-        bool excludeSameLine = false)
+    public List<AlmostLockedSet> InMiniGrid(int miniRow, int miniCol)
     {
         var result = new List<AlmostLockedSet>();
-        var visited = new List<Cell>();
-        
-        for (int n = 0; n < 9; n++)
-        {
-            int row = miniRow * 3 + n / 3;
-            int col = miniCol * 3 + n % 3;
-            if (_strategyManager.Sudoku[row, col] != 0) continue;
 
-            visited.Add(new Cell(row, col));
-            if(Max > 1) InMiniGrid(miniRow, miniCol, n + 1, _strategyManager.PossibilitiesAt(row, col), visited, result, excludeSameLine);
-            visited.RemoveAt(visited.Count - 1);
-        }
+        InMiniGrid(miniRow, miniCol, 0, IPossibilities.NewEmpty(), new List<Cell>(), result, false);
 
         return result;
     }
@@ -149,7 +113,7 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
         for (int col = start; col < 9; col++)
         {
             var inspected = _strategyManager.PossibilitiesAt(row, col);
-            if (inspected.Count == 0 || !current.PeekAny(inspected)) continue;
+            if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             IPossibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
@@ -171,7 +135,7 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
         for (int row = start; row < 9; row++)
         {
             var inspected = _strategyManager.PossibilitiesAt(row, col);
-            if (inspected.Count == 0 || !current.PeekAny(inspected)) continue;
+            if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             IPossibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
@@ -196,7 +160,7 @@ public class AlmostLockedSetSearcher //TODO => replace ALS by IPP
             int col = miniCol * 3 + n % 3;
 
             var inspected = _strategyManager.PossibilitiesAt(row, col);
-            if (inspected.Count == 0 || !current.PeekAny(inspected)) continue;
+            if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             IPossibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));

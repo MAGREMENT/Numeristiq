@@ -24,7 +24,7 @@ public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILin
         _algorithm = algo;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         _algorithm.Run(strategyManager, _chain.GetGraph(strategyManager), _chain);
     }

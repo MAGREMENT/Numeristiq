@@ -27,7 +27,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
             _ => throw new ArgumentException("Type not valid")
         };
     }
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

@@ -39,7 +39,7 @@ public class BoxLineReductionStrategy : AbstractStrategy
     
     public BoxLineReductionStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

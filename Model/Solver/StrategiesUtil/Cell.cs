@@ -95,6 +95,31 @@ public static class Cells
         return Searcher.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2);
     }
     
+    public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, List<Cell> list)
+    {
+        if (list.Count == 0) return new List<Cell>();
+        if (list.Count == 1) return SeenCells(list[^1]); //TODO change to SeenEmptyCells
+
+        var result = new List<Cell>();
+        foreach (var coord in Searcher.SharedSeenEmptyCells(strategyManager, list[0].Row, list[0].Col,
+                     list[1].Row, list[1].Col))
+        {
+            bool ok = true;
+            for (int i = 2; i < list.Count; i++)
+            {
+                if (!list[i].ShareAUnit(coord) || list[i] == coord)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) result.Add(coord);
+        }
+
+        return result;
+    }
+    
     public static bool AreSpreadOverTwoBoxes(int row1, int col1, int row2, int col2)
     {
         return (row1 / 3 != row2 / 3) ^ (col1 / 3 != col2 / 3);

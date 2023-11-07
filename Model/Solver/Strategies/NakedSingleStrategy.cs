@@ -14,7 +14,7 @@ public class NakedSingleStrategy : AbstractStrategy
     
     public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior) {}
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

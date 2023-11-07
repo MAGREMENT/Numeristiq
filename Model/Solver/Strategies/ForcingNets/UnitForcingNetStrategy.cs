@@ -22,7 +22,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
         _max = maxPossibilities;
     }
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

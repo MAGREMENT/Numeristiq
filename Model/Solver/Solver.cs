@@ -80,7 +80,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         ChangeBuffer = new ChangeBuffer(this);
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
-        AlmostLockedSetSearcher = new AlmostLockedSetSearcher(this);
+        AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
     }
 
     //Solver------------------------------------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
             var current = Strategies[_currentStrategy];
 
             if (StatisticsTracked) current.Tracker.StartUsing();
-            current.ApplyOnce(this);
+            current.Apply(this);
             ChangeBuffer.Push(current);
             if (StatisticsTracked) current.Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
 
@@ -273,7 +273,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
     public LinkGraphManager GraphManager { get; }
     public PreComputer PreComputer { get; }
     public AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
-    public AlmostLockedSetSearcher AlmostLockedSetSearcher { get; }
+    public AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
     //ChangeManager-----------------------------------------------------------------------------------------------------
     

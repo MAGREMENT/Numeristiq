@@ -17,7 +17,7 @@ public class SueDeCoqStrategy : AbstractStrategy
     
     public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior) {}
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -116,8 +116,8 @@ public class SueDeCoqStrategy : AbstractStrategy
             }
         }
 
-        var rowAls = strategyManager.AlmostLockedSetSearcher.InCells(rowCoords);
-        var miniAls = strategyManager.AlmostLockedSetSearcher.InCells(miniCoords);
+        var rowAls = strategyManager.AlmostNakedSetSearcher.InCells(rowCoords);
+        var miniAls = strategyManager.AlmostNakedSetSearcher.InCells(miniCoords);
 
         foreach (var rAls in rowAls)
         {
@@ -171,8 +171,8 @@ public class SueDeCoqStrategy : AbstractStrategy
             }
         }
 
-        var colAls = strategyManager.AlmostLockedSetSearcher.InCells(colCoords);
-        var miniAls = strategyManager.AlmostLockedSetSearcher.InCells(miniCoords);
+        var colAls = strategyManager.AlmostNakedSetSearcher.InCells(colCoords);
+        var miniAls = strategyManager.AlmostNakedSetSearcher.InCells(miniCoords);
 
         foreach (var cAls in colAls)
         {

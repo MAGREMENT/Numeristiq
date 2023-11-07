@@ -40,7 +40,7 @@ public class PointingSetStrategy : AbstractStrategy
     
     public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {

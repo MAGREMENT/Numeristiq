@@ -21,7 +21,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
         _maxAlzSize = maxAlsSize;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for(int i = 0; i < 81; i++)
         {
@@ -69,7 +69,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
 
         List<AlmostLockedSet> usefulAls = new();
 
-        foreach (var als in strategyManager.AlmostLockedSetSearcher.InCells(shared))
+        foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(shared))
         {
             bool useful = false;
             foreach (var possibility in als.Possibilities)

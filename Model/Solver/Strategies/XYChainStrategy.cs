@@ -16,7 +16,7 @@ public class XYChainStrategy : AbstractStrategy
     
     public XYChainStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         strategyManager.GraphManager.ConstructSimple(ConstructRule.XYChainSpecific,
             ConstructRule.CellStrongLink);

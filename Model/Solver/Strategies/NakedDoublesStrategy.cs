@@ -15,7 +15,7 @@ public class NakedDoublesStrategy : AbstractStrategy
     
     public NakedDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         Dictionary<IReadOnlyPossibilities, int> dict = new();
         for (int row = 0; row < 9; row++)

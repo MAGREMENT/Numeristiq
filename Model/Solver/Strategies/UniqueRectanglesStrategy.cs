@@ -19,7 +19,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
     {
     }
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
@@ -118,7 +118,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
         notBiValuePossibilities.Remove(values.Two);
 
         var ssc = new List<Cell>(roof[0].SharedSeenCells(roof[1]));
-        foreach (var als in strategyManager.AlmostLockedSetSearcher.InCells(ssc))
+        foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
 

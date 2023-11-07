@@ -19,7 +19,7 @@ public interface IStrategyManager : IPossibilitiesHolder
     
     AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
     
-    AlmostLockedSetSearcher AlmostLockedSetSearcher { get; }
+    AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
     bool UniquenessDependantStrategiesAllowed { get; }
 }

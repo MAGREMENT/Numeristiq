@@ -15,7 +15,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
     
     public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         Dictionary<IReadOnlyLinePositions, int> lines = new();
         Dictionary<IReadOnlyMiniGridPositions, int> minis = new();

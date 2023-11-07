@@ -18,7 +18,7 @@ public class BUGStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var triple = OnlyDoublesAndOneTriple(strategyManager);
         if (triple.Row == -1) return;

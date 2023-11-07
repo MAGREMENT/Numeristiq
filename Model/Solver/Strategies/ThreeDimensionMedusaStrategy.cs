@@ -16,7 +16,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
     
     public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
     
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);
         var graph = strategyManager.GraphManager.SimpleLinkGraph;

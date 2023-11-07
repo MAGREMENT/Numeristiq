@@ -21,7 +21,7 @@ public class ReverseBUGStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         GridPositions[] positions = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
 

@@ -19,7 +19,7 @@ public class DeathBlossomStrategy : AbstractStrategy
     {
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var allAls = strategyManager.PreComputer.AlmostLockedSets();
         Dictionary<int, List<AlmostLockedSet>> concernedAls = new();

@@ -15,7 +15,7 @@ public class SKLoopsStrategy : AbstractStrategy
     
     public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) { }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         for (int miniCol = 0; miniCol < 2; miniCol++)
         {

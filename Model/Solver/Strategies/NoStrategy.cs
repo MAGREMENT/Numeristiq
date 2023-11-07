@@ -8,7 +8,7 @@ public class NoStrategy : AbstractStrategy
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     public NoStrategy() : base(OfficialName, StrategyDifficulty.None, DefaultBehavior){}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         
     }

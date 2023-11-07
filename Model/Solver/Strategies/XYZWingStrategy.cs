@@ -15,7 +15,7 @@ public class XYZWingStrategy : AbstractStrategy
     
     public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior) {}
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var map = new PositionsMap(strategyManager, Only2Possibilities);
 

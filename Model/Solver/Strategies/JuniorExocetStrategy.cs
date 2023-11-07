@@ -18,7 +18,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         var jes = strategyManager.PreComputer.JuniorExocet();
         

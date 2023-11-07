@@ -19,7 +19,7 @@ public abstract class AbstractStrategy : IStrategy
         OnCommitBehavior = defaultBehavior;
     }
     
-    public abstract void ApplyOnce(IStrategyManager strategyManager);
+    public abstract void Apply(IStrategyManager strategyManager);
     public virtual void OnNewSudoku(Sudoku s) { }
     
 }

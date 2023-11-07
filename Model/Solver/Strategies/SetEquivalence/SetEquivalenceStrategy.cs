@@ -21,7 +21,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
         _searchers = searchers;
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         foreach (var searcher in _searchers)
         {

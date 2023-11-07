@@ -25,7 +25,7 @@ public class GurthTheorem : AbstractStrategy
         };
     }
 
-    public override void ApplyOnce(IStrategyManager strategyManager)
+    public override void Apply(IStrategyManager strategyManager)
     {
         foreach (var symmetry in _symmetries)
         {
