@@ -31,6 +31,8 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public SolverState CurrentState => _solver.State;
     public int DelayBefore { get; set; } = 350;
     public int DelayAfter { get; set; } = 350;
+    public bool UniquenessAllowed => _solver.UniquenessDependantStrategiesAllowed;
+    public OnInstanceFound OnInstanceFound => _solver.OnInstanceFound;
 
     private readonly SolverBackgroundManager _backgroundManager;
 

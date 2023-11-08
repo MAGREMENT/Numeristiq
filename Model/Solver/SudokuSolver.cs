@@ -30,6 +30,7 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
     }
     public bool StatisticsTracked { get; init; }
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
+    public OnInstanceFound OnInstanceFound { get; private set; } = 0;
 
     public SolverState State => new(this);
     public SolverState StartState { get; private set; }
@@ -216,6 +217,8 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
 
     public void SetOnInstanceFound(OnInstanceFound found)
     {
+        OnInstanceFound = found;
+        
         foreach (var strategy in Strategies)
         {
             switch (found)

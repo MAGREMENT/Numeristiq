@@ -10,7 +10,6 @@ namespace SudokuSolver;
 
 public partial class LiveModificationUserControl //TODO disable when looking back at logs
 {
-
     private CellUserControl? _current;
     private readonly int[] _currentPos = new int[2];
 

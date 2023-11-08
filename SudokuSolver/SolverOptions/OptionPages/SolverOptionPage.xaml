@@ -1,0 +1,24 @@
+<solverOptions:OptionPage x:Class="SudokuSolver.SolverOptions.OptionPages.SolverOptionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:solverOptions="clr-namespace:SudokuSolver.SolverOptions"
+      mc:Ignorable="d"
+      Title="SolverOptionPage" Height="400" Width="450">
+    <StackPanel Height="400" Width="450">
+        <CheckBox Margin="10, 10, 0, 0" Checked="StepByStepOn" Unchecked="StepByStepOff" x:Name="StepByStep">Step by step</CheckBox> 
+        <CheckBox Margin="10, 10, 0, 0" Checked="AllowUniqueness" Unchecked="ForbidUniqueness" x:Name="Uniqueness">Unique solution</CheckBox>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" >
+            <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">On instance found</TextBlock>
+            <ComboBox Width="110" Focusable="False" IsEditable="True" IsReadOnly="True" SelectedIndex="0" x:Name="Box"
+                      VerticalAlignment="Center" SelectionChanged="SelectedOnInstanceFound">
+                <TextBlock Focusable="False">Default</TextBlock>
+                <TextBlock Focusable="False">Return</TextBlock>
+                <TextBlock Focusable="False">Wait for all</TextBlock>
+                <TextBlock Focusable="False">Choose best</TextBlock>
+                <TextBlock Focusable="False">Customized</TextBlock>
+            </ComboBox>
+        </StackPanel>
+    </StackPanel>
+</solverOptions:OptionPage>
