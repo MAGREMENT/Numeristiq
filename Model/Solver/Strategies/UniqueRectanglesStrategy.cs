@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Possibilities;
+using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
@@ -233,12 +233,12 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
         return false;
     }
 
-    private void ProcessUrWithAls(IStrategyManager strategyManager, Cell[] roof, AlmostLockedSet als)
+    private void ProcessUrWithAls(IStrategyManager strategyManager, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities)
         {
-            foreach (var cell in als.Cells)
+            foreach (var cell in als.EachCell())
             {
                 if(strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
             }
@@ -417,9 +417,9 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
-    private readonly AlmostLockedSet _als;
+    private readonly IPossibilitiesPositions _als;
 
-    public UniqueRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, AlmostLockedSet als)
+    public UniqueRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, IPossibilitiesPositions als)
     {
         _floor = floor;
         _roof = roof;
@@ -440,7 +440,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
                 lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
             }
 
-            foreach (var cell in _als.Cells)
+            foreach (var cell in _als.EachCell())
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
             }

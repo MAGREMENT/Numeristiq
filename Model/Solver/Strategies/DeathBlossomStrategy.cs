@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Possibilities;
+using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
@@ -22,7 +22,7 @@ public class DeathBlossomStrategy : AbstractStrategy
     public override void Apply(IStrategyManager strategyManager)
     {
         var allAls = strategyManager.PreComputer.AlmostLockedSets();
-        Dictionary<int, List<AlmostLockedSet>> concernedAls = new();
+        Dictionary<int, List<IPossibilitiesPositions>> concernedAls = new();
 
         for (int row = 0; row < 9; row++)
         {
@@ -34,12 +34,12 @@ public class DeathBlossomStrategy : AbstractStrategy
                 var current = new Cell(row, col);
                 foreach (var possibility in possibilities)
                 {
-                    concernedAls[possibility] = new List<AlmostLockedSet>();
+                    concernedAls[possibility] = new List<IPossibilitiesPositions>();
                 }
 
                 foreach (var als in allAls)
                 {
-                    if (als.Contains(current)) continue;
+                    if (als.Positions.Peek(current)) continue;
                     
                     var and = als.Possibilities.And(possibilities);
                     if (and.Count == 0) continue;
@@ -48,7 +48,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                     {
                         var ok = true;
 
-                        foreach (var cell in als.Cells)
+                        foreach (var cell in als.EachCell())
                         {
                             if (strategyManager.PossibilitiesAt(cell).Peek(possibilityInCommon) &&
                                 !cell.ShareAUnit(current))
@@ -65,8 +65,8 @@ public class DeathBlossomStrategy : AbstractStrategy
                     }
                 }
 
-                Dictionary<Cell, IPossibilities> eliminations = new();
-                Dictionary<Cell, HashSet<AlmostLockedSet>> eliminationsCauses = new();
+                Dictionary<Cell, Possibilities> eliminations = new();
+                Dictionary<Cell, HashSet<IPossibilitiesPositions>> eliminationsCauses = new();
                 List<Cell> buffer = new();
                 
                 foreach (var possibility in possibilities)
@@ -79,7 +79,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                         {
                             if(alsPossibility == possibility) continue;
 
-                            foreach (var cell in als.Cells)
+                            foreach (var cell in als.EachCell())
                             {
                                 if (strategyManager.PossibilitiesAt(cell).Peek(alsPossibility)) buffer.Add(cell);
                             }
@@ -92,7 +92,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                                 {
                                     value = strategyManager.PossibilitiesAt(seenCell).Copy();
                                     eliminations[seenCell] = value;
-                                    eliminationsCauses[seenCell] = new HashSet<AlmostLockedSet>();
+                                    eliminationsCauses[seenCell] = new HashSet<IPossibilitiesPositions>();
                                 }
 
                                 if (value.Remove(alsPossibility)) eliminationsCauses[seenCell].Add(als);
@@ -116,14 +116,14 @@ public class DeathBlossomStrategy : AbstractStrategy
         }
     }
 
-    private void Process(IStrategyManager strategyManager, Cell stem, Cell target, HashSet<AlmostLockedSet> sets, int possibility)
+    private void Process(IStrategyManager strategyManager, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
     {
         List<Cell> buffer = new();
         strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Col);
 
         foreach (var als in sets)
         {
-            foreach (var cell in als.Cells)
+            foreach (var cell in als.EachCell())
             {
                 if (strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
             }
@@ -148,9 +148,9 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
 {
     private readonly List<Cell> _stems;
     private readonly Cell _target;
-    private readonly IEnumerable<AlmostLockedSet> _als;
+    private readonly IEnumerable<IPossibilitiesPositions> _als;
 
-    public DeathBlossomReportBuilder(List<Cell> stems, Cell target, IEnumerable<AlmostLockedSet> als)
+    public DeathBlossomReportBuilder(List<Cell> stems, Cell target, IEnumerable<IPossibilitiesPositions> als)
     {
         _stems = stems;
         _target = target;
@@ -174,7 +174,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
             {
                 var coloration = (ChangeColoration)start;
 
-                foreach (var cell in als.Cells)
+                foreach (var cell in als.EachCell())
                 {
                     lighter.HighlightCell(cell, coloration);
                 }
@@ -189,7 +189,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
     private string Explanation()
     {
         var builder = new StringBuilder();
-        var asList = new List<AlmostLockedSet>(_als);
+        var asList = new List<IPossibilitiesPositions>(_als);
 
         for (int i = 0; i < asList.Count; i++)
         {

@@ -1,5 +1,5 @@
 ﻿using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver;

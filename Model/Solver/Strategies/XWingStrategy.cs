@@ -9,7 +9,7 @@ namespace Model.Solver.Strategies;
 /// <summary>
 /// A X-wing is when 2 row/column have the same possibility in only 2 of their cells and in the same column/row, forming
 /// an X or a square. When that happens, the cells in the columns or rows that aren't in the X-wing cannot contain that
-/// possibility.
+/// 
 ///
 /// Example :
 ///

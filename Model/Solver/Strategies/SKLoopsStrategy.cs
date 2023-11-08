@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -103,14 +103,14 @@ public class SKLoopsStrategy : AbstractStrategy
         return false;
     }
 
-    private static List<IPossibilities> EachCombination(IPossibilities possibilities)
+    private static List<Possibilities> EachCombination(Possibilities possibilities)
     {
-        List<IPossibilities> result = new();
-        EachCombination(result, possibilities, IPossibilities.NewEmpty(), 0);
+        List<Possibilities> result = new();
+        EachCombination(result, possibilities, Possibilities.NewEmpty(), 0);
         return result;
     }
 
-    private static void EachCombination(List<IPossibilities> result, IPossibilities total, IPossibilities toSearch, int cursor)
+    private static void EachCombination(List<Possibilities> result, Possibilities total, Possibilities toSearch, int cursor)
     {
         while(total.Next(ref cursor) != 0)
         {
@@ -123,13 +123,13 @@ public class SKLoopsStrategy : AbstractStrategy
         }
     }
     
-    private bool IsLoop(IStrategyManager strategyManager, Cell[] cells, IPossibilities start)
+    private bool IsLoop(IStrategyManager strategyManager, Cell[] cells, Possibilities start)
     {
         int possibilityCount = 0;
         int cellCount = 0;
         int total = cells.Length * 2;
         
-        IPossibilities[] links = new IPossibilities[total];
+        Possibilities[] links = new Possibilities[total];
         var poss = start;
         for (int i = 0; i < total; i++)
         {
@@ -152,7 +152,7 @@ public class SKLoopsStrategy : AbstractStrategy
         return ProcessPattern(strategyManager, cells, links);
     }
 
-    private bool ProcessPattern(IStrategyManager strategyManager, Cell[] cells, IPossibilities[] links)
+    private bool ProcessPattern(IStrategyManager strategyManager, Cell[] cells, Possibilities[] links)
     {
         var miniCol1 = cells[0].Col / 3;
         var miniCol2 = cells[1].Col / 3;
@@ -249,7 +249,7 @@ public class SKLoopsStrategy : AbstractStrategy
     private PossibilitiesAndNumber CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)
     {
         int startCol = cell.Col / 3 * 3;
-        IPossibilities result = IPossibilities.NewEmpty();
+        Possibilities result = Possibilities.NewEmpty();
         int count = 0;
 
         for (int gridCol = 0; gridCol < 3; gridCol++)
@@ -271,7 +271,7 @@ public class SKLoopsStrategy : AbstractStrategy
     private PossibilitiesAndNumber CrossColPossibilities(IStrategyManager strategyManager, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
-        IPossibilities result = IPossibilities.NewEmpty();
+        Possibilities result = Possibilities.NewEmpty();
         int count = 0;
 
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -293,22 +293,22 @@ public class SKLoopsStrategy : AbstractStrategy
 
 public class PossibilitiesAndNumber
 {
-    public PossibilitiesAndNumber(IPossibilities possibilities, int number)
+    public PossibilitiesAndNumber(Possibilities possibilities, int number)
     {
         Possibilities = possibilities;
         Number = number;
     }
 
-    public IPossibilities Possibilities { get; }
+    public Possibilities Possibilities { get; }
     public int Number { get; }
 }
 
 public class SKLoopsReportBuilder : IChangeReportBuilder
 {
     private readonly Cell[] _cells;
-    private readonly IPossibilities[] _links;
+    private readonly Possibilities[] _links;
 
-    public SKLoopsReportBuilder(Cell[] cells, IPossibilities[] links)
+    public SKLoopsReportBuilder(Cell[] cells, Possibilities[] links)
     {
         _cells = cells;
         _links = links;

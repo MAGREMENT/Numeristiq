@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil;
@@ -33,15 +32,15 @@ public class PointingRow : ILinkGraphElement
         }
     }
 
-    public PointingRow(int possibility, IEnumerable<CellPossibility> coords)
+    public PointingRow(int possibility, List<CellPossibility> coords)
     {
         Possibility = possibility;
-        Row = coords.First().Row;
+        Row = coords[0].Row;
         _pos = new LinePositions();
-        foreach (var coord in coords)
+        for (int i = 1; i < coords.Count; i++)
         {
-            if (coord.Row != Row) throw new ArgumentException("Not on same row");
-            _pos.Add(coord.Col);
+            if (coords[i].Row != Row) throw new ArgumentException("Not on same row");
+            _pos.Add(coords[i].Col);
         }
     }
 
@@ -107,9 +106,9 @@ public class PointingRow : ILinkGraphElement
         return result;
     }
 
-    public IPossibilities EveryPossibilities()
+    public Possibilities EveryPossibilities()
     {
-        var result = IPossibilities.NewEmpty();
+        var result = Possibilities.NewEmpty();
         result.Add(Possibility);
         return result;
     }

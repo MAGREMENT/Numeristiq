@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.Strategies;
 
@@ -40,12 +40,12 @@ public class HiddenSetStrategy : AbstractStrategy
     {
         for (int row = 0; row < 9; row++)
         {
-            if (RecursiveRowMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), row)) return;
+            if (RecursiveRowMashing(strategyManager, 1, new LinePositions(), Possibilities.NewEmpty(), row)) return;
         }
 
         for (int col = 0; col < 9; col++)
         {
-            if (RecursiveColumnMashing(strategyManager, 1, new LinePositions(), IPossibilities.NewEmpty(), col)) return;
+            if (RecursiveColumnMashing(strategyManager, 1, new LinePositions(), Possibilities.NewEmpty(), col)) return;
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
@@ -53,13 +53,13 @@ public class HiddenSetStrategy : AbstractStrategy
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
                 if (RecursiveMiniGridMashing(strategyManager, 1, new MiniGridPositions(miniRow, miniCol),
-                    IPossibilities.NewEmpty(), miniRow, miniCol)) return;
+                    Possibilities.NewEmpty(), miniRow, miniCol)) return;
             }
         }
     }
 
     private bool RecursiveRowMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
-        IPossibilities visited, int row)
+        Possibilities visited, int row)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -91,7 +91,7 @@ public class HiddenSetStrategy : AbstractStrategy
     }
     
     private bool RecursiveColumnMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
-        IPossibilities visited, int col)
+        Possibilities visited, int col)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -123,7 +123,7 @@ public class HiddenSetStrategy : AbstractStrategy
     }
     
     private bool RecursiveMiniGridMashing(IStrategyManager strategyManager, int start, MiniGridPositions mashed,
-        IPossibilities visited, int miniRow, int miniCol)
+        Possibilities visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -154,7 +154,7 @@ public class HiddenSetStrategy : AbstractStrategy
         return false;
     }
 
-    private void RemoveAllPossibilitiesExcept(int row, int col, IPossibilities except,
+    private void RemoveAllPossibilitiesExcept(int row, int col, Possibilities except,
         IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
@@ -169,13 +169,13 @@ public class HiddenSetStrategy : AbstractStrategy
 
 public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly IPossibilities _possibilities;
+    private readonly Possibilities _possibilities;
     private readonly LinePositions _linePos;
     private readonly int _unitNumber;
     private readonly Unit _unit;
 
 
-    public LineHiddenPossibilitiesReportBuilder(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineHiddenPossibilitiesReportBuilder(Possibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
@@ -218,10 +218,10 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 
 public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly IPossibilities _possibilities;
+    private readonly Possibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridHiddenPossibilitiesReportBuilder(IPossibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridHiddenPossibilitiesReportBuilder(Possibilities possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;

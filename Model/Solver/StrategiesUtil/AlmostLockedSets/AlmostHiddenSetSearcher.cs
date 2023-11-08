@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
 using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
@@ -20,7 +20,7 @@ public class AlmostHiddenSetSearcher
     {
         List<IPossibilitiesPositions> result = new();
 
-        var poss = IPossibilities.NewEmpty();
+        var poss = Possibilities.NewEmpty();
         
         var lp = new LinePositions();
         for (int row = 0; row < 9; row++)
@@ -54,13 +54,13 @@ public class AlmostHiddenSetSearcher
     {
         List<IPossibilitiesPositions> result = new();
         
-        InRow(row, result, 1, new LinePositions(), IPossibilities.NewEmpty());
+        InRow(row, result, 1, new LinePositions(), Possibilities.NewEmpty());
 
         return result;
     }
 
     private void InRow(int row, 
-        List<IPossibilitiesPositions> result, int start, LinePositions current, IPossibilities possibilities)
+        List<IPossibilitiesPositions> result, int start, LinePositions current, Possibilities possibilities)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -84,13 +84,13 @@ public class AlmostHiddenSetSearcher
     {
         List<IPossibilitiesPositions> result = new();
         
-        InColumn(column, result, 1, new LinePositions(), IPossibilities.NewEmpty());
+        InColumn(column, result, 1, new LinePositions(), Possibilities.NewEmpty());
 
         return result;
     }
     
     private void InColumn(int column, 
-        List<IPossibilitiesPositions> result, int start, LinePositions current, IPossibilities possibilities)
+        List<IPossibilitiesPositions> result, int start, LinePositions current, Possibilities possibilities)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -114,13 +114,13 @@ public class AlmostHiddenSetSearcher
     {
         List<IPossibilitiesPositions> result = new();
         
-        InMiniGrid(miniRow, miniCol, result, 1, new MiniGridPositions(miniRow, miniCol), IPossibilities.NewEmpty());
+        InMiniGrid(miniRow, miniCol, result, 1, new MiniGridPositions(miniRow, miniCol), Possibilities.NewEmpty());
 
         return result;
     }
     
     private void InMiniGrid(int miniRow, int miniCol, 
-        List<IPossibilitiesPositions> result, int start, MiniGridPositions current, IPossibilities possibilities,
+        List<IPossibilitiesPositions> result, int start, MiniGridPositions current, Possibilities possibilities,
         bool excludeSameLine = false)
     {
         for (int i = start; i <= 9; i++)

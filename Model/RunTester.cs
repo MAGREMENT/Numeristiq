@@ -18,7 +18,7 @@ public class RunTester
     private bool _running;
     private Solver.Solver? _currentSolver;
     private RunResult? _currentRunResult;
-    private OnInstanceFound _found;
+    private readonly OnInstanceFound _found;
 
     public RunTester(OnInstanceFound found)
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -167,9 +167,9 @@ public abstract class Symmetry
         return count >= MinimumSelfMapCount;
     }
 
-    private IPossibilities SelfMap()
+    private Possibilities SelfMap()
     {
-        IPossibilities selfMap = IPossibilities.NewEmpty();
+        Possibilities selfMap = Possibilities.NewEmpty();
         for (int i = 0; i < _mapping.Length; i++)
         {
             if (_mapping[i] == i + 1) selfMap.Add(i + 1);
@@ -178,9 +178,9 @@ public abstract class Symmetry
         return selfMap;
     }
 
-    private IPossibilities GetMappedPossibilities(IReadOnlyPossibilities possibilities)
+    private Possibilities GetMappedPossibilities(IReadOnlyPossibilities possibilities)
     {
-        IPossibilities result = IPossibilities.NewEmpty();
+        Possibilities result = Possibilities.NewEmpty();
         foreach (var possibility in possibilities)
         {
             result.Add(_mapping[possibility - 1]);

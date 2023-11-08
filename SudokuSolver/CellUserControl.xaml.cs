@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using SudokuSolver.Utils;
 
 namespace SudokuSolver;
@@ -15,12 +15,12 @@ public partial class CellUserControl
     private readonly TextBlock _big = new();
 
     private bool _isPossibilities;
-    private IPossibilities _nums = IPossibilities.NewEmpty();
+    private Possibilities _nums = Possibilities.NewEmpty();
 
     public delegate void OnClickedOn(CellUserControl sender);
     public event OnClickedOn? ClickedOn;
 
-    public delegate void OnUpdate(bool isPossibilities, IPossibilities numbers);
+    public delegate void OnUpdate(bool isPossibilities, Possibilities numbers);
     public event OnUpdate? Updated;
 
     public CellUserControl()
@@ -92,7 +92,7 @@ public partial class CellUserControl
         _big.Text = number.ToString();
         
         _isPossibilities = false;
-        _nums = IPossibilities.NewEmpty();
+        _nums = Possibilities.NewEmpty();
         _nums.Add(number);
         Updated?.Invoke(false, _nums);
     }

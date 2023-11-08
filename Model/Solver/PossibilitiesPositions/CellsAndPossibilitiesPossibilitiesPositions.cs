@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.PossibilitiesPositions;
@@ -11,7 +11,7 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
     private readonly IPossibilitiesHolder _snapshot;
     private GridPositions? _gp;
 
-    public CellsAndPossibilitiesPossibilitiesPositions(Cell[] cells, IPossibilities possibilities, IPossibilitiesHolder snapshot)
+    public CellsAndPossibilitiesPossibilitiesPositions(Cell[] cells, Possibilities possibilities, IPossibilitiesHolder snapshot)
     {
         _cells = cells;
         Possibilities = possibilities;
@@ -45,7 +45,7 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
         }
     }
 
-    public IPossibilities Possibilities { get; }
+    public Possibilities Possibilities { get; }
 
     public GridPositions Positions
     {
@@ -62,6 +62,11 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
 
             return _gp;
         }
+    }
+
+    public CellPossibilities[] ToCellPossibilitiesArray()
+    {
+        throw new System.NotImplementedException();
     }
 
     public int PossibilityCount => Possibilities.Count;

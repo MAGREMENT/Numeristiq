@@ -1,14 +1,14 @@
 ﻿using Model.Solver.Positions;
 
-namespace Model.Solver.Possibilities;
+namespace Model.Solver.Possibility;
 
 public class SolverSnapshot : IPossibilitiesHolder
 {
     private readonly Sudoku _sudoku;
-    private readonly IPossibilities[,] _possibilities;
+    private readonly Possibilities[,] _possibilities;
     private readonly GridPositions[] _positions;
 
-    private SolverSnapshot(Sudoku sudoku, IPossibilities[,] possibilities, GridPositions[] positions)
+    private SolverSnapshot(Sudoku sudoku, Possibilities[,] possibilities, GridPositions[] positions)
     {
         _sudoku = sudoku;
         _positions = positions;
@@ -17,7 +17,7 @@ public class SolverSnapshot : IPossibilitiesHolder
     
     public static IPossibilitiesHolder TakeSnapshot(IPossibilitiesHolder holder)
     {
-        var possibilities = new IPossibilities[9, 9];
+        var possibilities = new Possibilities[9, 9];
         var positions = new GridPositions[9];
         
         for (int row = 0; row < 9; row++)

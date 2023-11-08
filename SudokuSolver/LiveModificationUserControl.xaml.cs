@@ -3,7 +3,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Model;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using SudokuSolver.Utils;
 
 namespace SudokuSolver;
@@ -62,7 +62,7 @@ public partial class LiveModificationUserControl //TODO disable when looking bac
         Cell.Focus();
     }
 
-    private void Update(bool isPossibilities, IPossibilities numbers)
+    private void Update(bool isPossibilities, Possibilities numbers)
     {
         if (_current is not null)
         {

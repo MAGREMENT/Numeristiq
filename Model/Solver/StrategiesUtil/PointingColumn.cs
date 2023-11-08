@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil;
@@ -33,15 +33,15 @@ public class PointingColumn : ILinkGraphElement
         }
     }
     
-    public PointingColumn(int possibility, IEnumerable<CellPossibility> coords)
+    public PointingColumn(int possibility, List<CellPossibility> coords)
     {
         Possibility = possibility;
-        Column = coords.First().Col;
+        Column = coords[0].Col;
         _pos = new LinePositions();
-        foreach (var coord in coords)
+        for (int i = 1; i < coords.Count; i++)
         {
-            if (coord.Col != Column) throw new ArgumentException("Not on same column");
-            _pos.Add(coord.Row);
+            if (coords[i].Col != Column) throw new ArgumentException("Not on same column");
+            _pos.Add(coords[i].Row); 
         }
     }
 
@@ -107,9 +107,9 @@ public class PointingColumn : ILinkGraphElement
         return result;
     }
 
-    public IPossibilities EveryPossibilities()
+    public Possibilities EveryPossibilities()
     {
-        var result = IPossibilities.NewEmpty();
+        var result = Possibilities.NewEmpty();
         result.Add(Possibility);
         return result;
     }

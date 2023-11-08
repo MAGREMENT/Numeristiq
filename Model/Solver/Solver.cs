@@ -4,17 +4,18 @@ using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
+//BIG TODO => For each strategy using old als, revamp
 public class Solver : IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;
-    private readonly IPossibilities[,] _possibilities = new IPossibilities[9, 9];
+    private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
     private readonly GridPositions[] _positions = new GridPositions[9];
     
     public IReadOnlySudoku Sudoku => _sudoku;
@@ -346,7 +347,7 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
         {
             for (int j = 0; j < 9; j++)
             {
-                _possibilities[i, j] = IPossibilities.New();
+                _possibilities[i, j] = new Possibilities();
             }
         }
         

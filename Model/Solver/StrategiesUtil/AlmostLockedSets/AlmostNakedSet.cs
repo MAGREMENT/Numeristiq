@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
@@ -42,9 +42,9 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
         return result;
     }
 
-    public IPossibilities EveryPossibilities()
+    public Possibilities EveryPossibilities()
     {
-        IPossibilities result = IPossibilities.NewEmpty();
+        Possibilities result = Possibilities.NewEmpty();
 
         foreach (var cp in NakedSet)
         {

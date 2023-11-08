@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.PossibilitiesPositions;
@@ -13,8 +13,10 @@ public interface IPossibilitiesPositions
     IEnumerable<Cell> EachCellWithPossibility(int possibility);
     IEnumerable<int> EachPossibilityWithCell(Cell cell);
     
-    IPossibilities Possibilities { get; }
+    Possibilities Possibilities { get; }
     GridPositions Positions { get; }
+
+    CellPossibilities[] ToCellPossibilitiesArray();
     
     int PossibilityCount { get; }
     int PositionsCount { get; }

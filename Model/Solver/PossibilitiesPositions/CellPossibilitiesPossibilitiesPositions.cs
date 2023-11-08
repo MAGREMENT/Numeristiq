@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.PossibilitiesPositions;
@@ -46,11 +46,11 @@ public class CellPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
         return Enumerable.Empty<int>();
     }
 
-    public IPossibilities Possibilities
+    public Possibilities Possibilities
     {
         get
         {
-            IPossibilities result = IPossibilities.NewEmpty();
+            Possibilities result = Possibilities.NewEmpty();
             foreach (var cp in _cps)
             {
                 result.Add(cp.Possibilities);
@@ -72,6 +72,11 @@ public class CellPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
 
             return result;
         }
+    }
+
+    public CellPossibilities[] ToCellPossibilitiesArray()
+    {
+        return _cps;
     }
 
     public int PossibilityCount => Possibilities.Count;

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
+using Model.Solver.PossibilitiesPositions;
 using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
@@ -119,12 +119,12 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
         return false;
     }
     
-    private void ProcessArWithAls(IStrategyManager strategyManager, Cell[] roof, AlmostLockedSet als)
+    private void ProcessArWithAls(IStrategyManager strategyManager, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities)
         {
-            foreach (var cell in als.Cells)
+            foreach (var cell in als.EachCell())
             {
                 if(strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
             }
@@ -179,9 +179,9 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
-    private readonly AlmostLockedSet _als;
+    private readonly IPossibilitiesPositions _als;
 
-    public AvoidableRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, AlmostLockedSet als)
+    public AvoidableRectanglesWithAlmostLockedSetReportBuilder(Cell[] floor, Cell[] roof, IPossibilitiesPositions als)
     {
         _floor = floor;
         _roof = roof;
@@ -202,7 +202,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
                 lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
             }
 
-            foreach (var cell in _als.Cells)
+            foreach (var cell in _als.EachCell())
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
             }

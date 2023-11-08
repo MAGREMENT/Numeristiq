@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil;
 
@@ -12,11 +12,11 @@ public class JuniorExocet
     public Cell Base2 { get; }
     public Cell Target1 { get; }
     public Cell Target2 { get; }
-    public IPossibilities BaseCandidates { get; }
+    public Possibilities BaseCandidates { get; }
     public Cell EscapeCell { get; }
     public SPossibility[] SPossibilities { get; }
 
-    private JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, IPossibilities baseCandidates
+    private JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, Possibilities baseCandidates
         , Cell escapeCell, SPossibility[] sPossibilities)
     {
         Base1 = base1;
@@ -237,7 +237,7 @@ public class JuniorExocet
     }
 
     private static bool GeneralCheck(IStrategyManager strategyManager, Cell target1,
-        Cell target2, IPossibilities baseCandidates)
+        Cell target2, Possibilities baseCandidates)
     {
         //Check if companions doesn't have base candidates
         if (strategyManager.PossibilitiesAt(target1.Row, target2.Col).PeekAny(baseCandidates)) return false;
@@ -247,7 +247,7 @@ public class JuniorExocet
     }
 
     private static JuniorExocet? TryCreateFromRow(IStrategyManager strategyManager, Cell base1, Cell base2, Cell target1,
-        Cell target2, IPossibilities baseCandidates)
+        Cell target2, Possibilities baseCandidates)
     {
         if (!GeneralCheck(strategyManager, target1, target2, baseCandidates)) return null;
         
@@ -319,7 +319,7 @@ public class JuniorExocet
     }
     
     private static JuniorExocet? TryCreateFromColumn(IStrategyManager strategyManager, Cell base1, Cell base2, Cell target1,
-        Cell target2, IPossibilities baseCandidates)
+        Cell target2, Possibilities baseCandidates)
     {
         if (!GeneralCheck(strategyManager, target1, target2, baseCandidates)) return null;
         

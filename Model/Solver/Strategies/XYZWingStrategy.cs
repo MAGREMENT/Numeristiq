@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -33,7 +33,7 @@ public class XYZWingStrategy : AbstractStrategy
                     if (mini.Row == row && mini.Col == col) continue;
 
                     var firstCorner = strategyManager.PossibilitiesAt(mini.Row, mini.Col);
-                    IPossibilities and;
+                    Possibilities and;
                     if ((and = firstCorner.And(hinge)).Count != 2) continue;
 
                     foreach (var otherCol in map.Rows[row])

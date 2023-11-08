@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Possibilities;
+using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 
@@ -14,7 +14,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
-    private readonly int _maxAlzSize;
+    private readonly int _maxAlzSize; //TODO
 
     public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName,  StrategyDifficulty.Hard, DefaultBehavior)
     {
@@ -51,7 +51,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
 
         var inSameUnit = Cells.ShareAUnit(row1, col1, row2, col2);
 
-        Dictionary<int, IPossibilities> one = new();
+        Dictionary<int, Possibilities> one = new();
         foreach (var possibility in poss1)
         {
             var copy = poss2.Copy();
@@ -59,7 +59,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
             one[possibility] = copy;
         }
         
-        Dictionary<int, IPossibilities> two = new();
+        Dictionary<int, Possibilities> two = new();
         foreach (var possibility in poss2)
         {
             var copy = poss1.Copy();
@@ -67,7 +67,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
             two[possibility] = copy;
         }
 
-        List<AlmostLockedSet> usefulAls = new();
+        List<IPossibilitiesPositions> usefulAls = new();
 
         foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(shared))
         {
@@ -116,13 +116,13 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
 
 public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
 {
-    private readonly List<AlmostLockedSet> _als;
+    private readonly List<IPossibilitiesPositions> _als;
     private readonly int _row1;
     private readonly int _col1;
     private readonly int _row2;
     private readonly int _col2;
 
-    public AlignedPairExclusionReportBuilder(List<AlmostLockedSet> als, int row1, int col1, int row2, int col2)
+    public AlignedPairExclusionReportBuilder(List<IPossibilitiesPositions> als, int row1, int col1, int row2, int col2)
     {
         _als = als;
         _row1 = row1;
@@ -141,7 +141,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var als in _als)
             {
-                foreach (var coord in als.Cells)
+                foreach (var coord in als.EachCell())
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, (ChangeColoration) color);
                 }

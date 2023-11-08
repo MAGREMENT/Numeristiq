@@ -2,28 +2,33 @@
 using System.Collections.Generic;
 using Model.Solver.Strategies;
 
-namespace Model.Solver.Possibilities;
+namespace Model.Solver.Possibility;
 
-public class BitPossibilities : IPossibilities
+public class Possibilities : IReadOnlyPossibilities
 {
     private int _possibilities;
     public int Count { private set; get; }
 
-    private BitPossibilities(int possibilities, int count)
+    private Possibilities(int possibilities, int count)
     {
         _possibilities = possibilities;
         Count = count;
     }
 
-    public BitPossibilities()
+    public Possibilities()
     {
         _possibilities = 0x1FF;
         Count = 9;
     }
 
-    public static BitPossibilities FromBits(int bits)
+    public static Possibilities FromBits(int bits)
     {
-        return new BitPossibilities(bits, System.Numerics.BitOperations.PopCount((uint)bits));
+        return new Possibilities(bits, System.Numerics.BitOperations.PopCount((uint)bits));
+    }
+
+    public static Possibilities NewEmpty()
+    {
+        return new Possibilities(0, 0);
     }
     
     public bool Remove(int number)
@@ -34,15 +39,9 @@ public class BitPossibilities : IPossibilities
         return old;
     }
 
-    public void Remove(IPossibilities possibilities)
+    public void Remove(Possibilities possibilities)
     {
-        if (possibilities is not BitPossibilities bp)
-        {
-            IPossibilities.DefaultRemove(this, possibilities);
-            return;
-        }
-
-        _possibilities &= ~bp._possibilities;
+        _possibilities &= ~possibilities._possibilities;
         Count = System.Numerics.BitOperations.PopCount((uint)_possibilities);
     }
 
@@ -52,55 +51,40 @@ public class BitPossibilities : IPossibilities
         Count = 0;
     }
 
-    public void RemoveAll(int except)
+    public int Next(ref int cursor)
     {
-        _possibilities &= 1 << (except - 1);
-        Count = 1;
-    }
-
-    public void RemoveAll(params int[] except)
-    {
-        RemoveAll();
-        foreach (var num in except)
+        cursor++;
+        for (; cursor <= 9; cursor++)
         {
-            _possibilities |= 1 << (num - 1);
-            Count++;
+            if (Peek(cursor)) return cursor;
         }
+
+        return 0;
     }
 
-    public void RemoveAll(IEnumerable<int> except)
+    public Possibilities Or(IReadOnlyPossibilities possibilities)
     {
-        RemoveAll();
-        foreach (var num in except)
-        {
-            _possibilities |= 1 << (num - 1);
-            Count++;
-        }
-    }
-
-    public IPossibilities Or(IReadOnlyPossibilities possibilities)
-    {
-        if (possibilities is BitPossibilities bp)
+        if (possibilities is Possibilities bp)
         { 
             int or = _possibilities | bp._possibilities;
-            return new BitPossibilities(or, System.Numerics.BitOperations.PopCount((uint) or));
+            return new Possibilities(or, System.Numerics.BitOperations.PopCount((uint) or));
         }
-        return IPossibilities.DefaultOr(this, possibilities);
+        return IReadOnlyPossibilities.DefaultOr(this, possibilities);
     }
 
-    public IPossibilities And(IReadOnlyPossibilities possibilities)
+    public Possibilities And(IReadOnlyPossibilities possibilities)
     {
-        if (possibilities is BitPossibilities bp)
+        if (possibilities is Possibilities bp)
         { 
             int and = _possibilities & bp._possibilities;
-            return new BitPossibilities(and, System.Numerics.BitOperations.PopCount((uint) and));
+            return new Possibilities(and, System.Numerics.BitOperations.PopCount((uint) and));
         }
-        return IPossibilities.DefaultOr(this, possibilities);
+        return IReadOnlyPossibilities.DefaultAnd(this, possibilities);
     }
 
-    public IPossibilities Invert()
+    public Possibilities Invert()
     {
-        return new BitPossibilities(~_possibilities & 0x1FF, 9 - Count);
+        return new Possibilities(~_possibilities & 0x1FF, 9 - Count);
     }
 
     public bool Peek(int number)
@@ -110,22 +94,22 @@ public class BitPossibilities : IPossibilities
 
     public bool PeekAll(IReadOnlyPossibilities poss)
     {
-        if (poss is BitPossibilities bp) return (_possibilities | bp._possibilities) == _possibilities;
-        return IPossibilities.DefaultPeekAll(this, poss);
+        if (poss is Possibilities bp) return (_possibilities | bp._possibilities) == _possibilities;
+        return IReadOnlyPossibilities.DefaultPeekAll(this, poss);
     }
 
     public bool PeekAny(IReadOnlyPossibilities poss)
     {
-        if (poss is BitPossibilities bp)
+        if (poss is Possibilities bp)
             return System.Numerics.BitOperations.PopCount((uint)(bp._possibilities & _possibilities)) > 0;
-        return IPossibilities.DefaultPeekAny(this, poss);
+        return IReadOnlyPossibilities.DefaultPeekAny(this, poss);
     }
 
     public bool PeekOnlyOne(IReadOnlyPossibilities poss)
     {
-        if (poss is BitPossibilities bp)
+        if (poss is Possibilities bp)
             return System.Numerics.BitOperations.PopCount((uint)(bp._possibilities & _possibilities)) == 1;
-        return IPossibilities.DefaultPeekOnlyOne(this, poss);
+        return IReadOnlyPossibilities.DefaultPeekOnlyOne(this, poss);
     }
 
     public void Reset()
@@ -143,14 +127,11 @@ public class BitPossibilities : IPossibilities
 
     public void Add(IReadOnlyPossibilities possibilities)
     {
-        if (possibilities is BitPossibilities bp)
+        if (possibilities is Possibilities bp)
         {
             _possibilities |= bp._possibilities;
             Count = System.Numerics.BitOperations.PopCount((uint)_possibilities);
-            return;
         }
-
-        IPossibilities.DefaultAdd(this, possibilities);
     }
 
     public int First()
@@ -163,9 +144,9 @@ public class BitPossibilities : IPossibilities
         return 0;
     }
 
-    public IPossibilities Copy()
+    public Possibilities Copy()
     {
-        return new BitPossibilities(_possibilities, Count);
+        return new Possibilities(_possibilities, Count);
     }
 
     public IEnumerable<BiValue> EachBiValue()
@@ -204,7 +185,7 @@ public class BitPossibilities : IPossibilities
 
     public override bool Equals(object? obj)
     {
-        if (obj is not BitPossibilities p) return false;
+        if (obj is not Possibilities p) return false;
         return p._possibilities == _possibilities;
     }
 

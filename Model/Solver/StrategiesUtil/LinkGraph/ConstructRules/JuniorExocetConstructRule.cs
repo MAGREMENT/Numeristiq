@@ -1,5 +1,5 @@
 using System;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
@@ -68,9 +68,9 @@ public class JuniorExocetTargetPossibility : ILinkGraphElement
         return new Cell[] { new(Row, Col) };
     }
 
-    public IPossibilities EveryPossibilities()
+    public Possibilities EveryPossibilities()
     {
-        var result = IPossibilities.NewEmpty();
+        var result = Possibilities.NewEmpty();
         result.Add(Possibility);
         return result;
     }

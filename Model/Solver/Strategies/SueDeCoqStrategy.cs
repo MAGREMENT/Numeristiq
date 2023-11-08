@@ -2,7 +2,8 @@
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
@@ -77,7 +78,7 @@ public class SueDeCoqStrategy : AbstractStrategy
 
     private bool TrySearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row)
     {
-        IPossibilities possibilities = IPossibilities.NewEmpty();
+        Possibilities possibilities = Possibilities.NewEmpty();
         foreach (var col in cols)
         {
             possibilities.Add(strategyManager.PossibilitiesAt(row, col));
@@ -133,7 +134,7 @@ public class SueDeCoqStrategy : AbstractStrategy
     
     private bool TrySearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col)
     {
-        IPossibilities possibilities = IPossibilities.NewEmpty();
+        Possibilities possibilities = Possibilities.NewEmpty();
         foreach (var row in rows)
         {
             possibilities.Add(strategyManager.PossibilitiesAt(row, col));
@@ -187,14 +188,14 @@ public class SueDeCoqStrategy : AbstractStrategy
     }
 
     private bool ProcessSueDeCoq(IStrategyManager strategyManager, int unitNumber, IReadOnlyLinePositions center,
-       AlmostLockedSet unitAls, AlmostLockedSet miniAls, Unit unit)
+        IPossibilitiesPositions unitAls, IPossibilitiesPositions miniAls, Unit unit)
     {
         for (int other = 0; other < 9; other++)
         {
             Cell current = unit == Unit.Row
                 ? new Cell(unitNumber, other)
                 : new Cell(other, unitNumber);
-            if(unitAls.Contains(current) || center.Peek(other)) continue;
+            if(unitAls.Positions.Peek(current) || center.Peek(other)) continue;
 
             foreach (var possibility in unitAls.Possibilities)
             {
@@ -212,7 +213,7 @@ public class SueDeCoqStrategy : AbstractStrategy
                 Cell current = unit == Unit.Row 
                     ? new Cell(unitStart + gridUnit, otherStart + gridOther) 
                     : new Cell(otherStart + gridOther, unitStart + gridUnit);
-                if (miniAls.Contains(current)) continue;
+                if (miniAls.Positions.Peek(current)) continue;
                 
                 foreach (var possibility in miniAls.Possibilities)
                 {
@@ -230,12 +231,12 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _positions;
-    private readonly AlmostLockedSet _miniAls;
-    private readonly AlmostLockedSet _unitAls;
+    private readonly IPossibilitiesPositions _miniAls;
+    private readonly IPossibilitiesPositions _unitAls;
     private readonly Unit _unit;
 
-    public SueDeCoqReportBuilder(int unitNumber, IReadOnlyLinePositions positions, AlmostLockedSet miniAls,
-        AlmostLockedSet unitAls, Unit unit)
+    public SueDeCoqReportBuilder(int unitNumber, IReadOnlyLinePositions positions, IPossibilitiesPositions miniAls,
+        IPossibilitiesPositions unitAls, Unit unit)
     {
         _unitNumber = unitNumber;
         _positions = positions;
@@ -261,12 +262,12 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.Neutral);
                 }
 
-                foreach (var coord in _unitAls.Cells)
+                foreach (var coord in _unitAls.EachCell())
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffOne);
                 }
 
-                foreach (var coord in _miniAls.Cells)
+                foreach (var coord in _miniAls.EachCell())
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
                 }

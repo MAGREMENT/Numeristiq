@@ -91,7 +91,7 @@ public class CellForcingNetStrategy : AbstractStrategy
             {
                 if (current.Row == row && current.Col == col) continue;
                 
-                IPossibilities on = IPossibilities.NewEmpty();
+                Possibilities on = Possibilities.NewEmpty();
 
                 foreach (var possibility in view.PossibilitiesAt(row, col))
                 {

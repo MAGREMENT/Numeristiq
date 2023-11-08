@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
@@ -117,7 +117,7 @@ public class FireworksStrategy : AbstractStrategy
                         
                         if (or.Count == 3)
                         {
-                            var poss = IPossibilities.NewEmpty();
+                            var poss = Possibilities.NewEmpty();
                             poss.Add(i + 1);
                             poss.Add(j + 1);
                             dualFireworks.Add(new Fireworks(or, poss));
@@ -134,7 +134,7 @@ public class FireworksStrategy : AbstractStrategy
                                 
                                 if (or2.Count == 3)
                                 {
-                                    var poss = IPossibilities.NewEmpty();
+                                    var poss = Possibilities.NewEmpty();
                                     poss.Add(i + 1);
                                     poss.Add(j + 1);
                                     poss.Add(k + 1);
@@ -224,8 +224,8 @@ public class FireworksStrategy : AbstractStrategy
         
         //W-Wing
         var allAls = manager.PreComputer.AlmostLockedSets();
-        List<AlmostLockedSet> alsListOne = new();
-        List<AlmostLockedSet> alsListTwo = new();
+        List<IPossibilitiesPositions> alsListOne = new();
+        List<IPossibilitiesPositions> alsListTwo = new();
         foreach (var df in fireworksList)
         {
             foreach (var als in allAls)
@@ -235,7 +235,7 @@ public class FireworksStrategy : AbstractStrategy
                 bool one = true;
                 bool two = true;
 
-                foreach (var cell in als.Cells)
+                foreach (var cell in als.EachCell())
                 {
                     if (cell == df.Cross || cell == df.RowWing || cell == df.ColumnWing)
                     {
@@ -266,8 +266,8 @@ public class FireworksStrategy : AbstractStrategy
                 {
                     if (one.Equals(two)) continue;
 
-                    List<Cell> total = new(one.Cells);
-                    total.AddRange(two.Cells);
+                    List<Cell> total = new(one.EachCell());
+                    total.AddRange(two.EachCell());
 
                     foreach (var sharedSeenCell in Cells.SharedSeenCells(total))
                     {
@@ -385,7 +385,7 @@ public class FireworksStrategy : AbstractStrategy
 
 public class Fireworks
 {
-    public Fireworks(Cell cross, Cell rowWing, Cell columnWing, IPossibilities possibilities)
+    public Fireworks(Cell cross, Cell rowWing, Cell columnWing, Possibilities possibilities)
     {
         Cross = cross;
         RowWing = rowWing;
@@ -393,7 +393,7 @@ public class Fireworks
         Possibilities = possibilities;
     }
 
-    public Fireworks(GridPositions gp, IPossibilities possibilities)
+    public Fireworks(GridPositions gp, Possibilities possibilities)
     {
         var asArray = gp.ToArray();
         var first = asArray[0];
@@ -433,7 +433,7 @@ public class Fireworks
     public Cell Cross { get; }
     public Cell RowWing { get; }
     public Cell ColumnWing { get; }
-    public IPossibilities Possibilities { get; }
+    public Possibilities Possibilities { get; }
 }
 
 public static class FireworksHighlightUtils
@@ -486,9 +486,9 @@ public class FireworksReportBuilder : IChangeReportBuilder
 public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly Fireworks _fireworks;
-    private readonly AlmostLockedSet[] _als;
+    private readonly IPossibilitiesPositions[] _als;
 
-    public FireworksWithAlmostLockedSetsReportBuilder(Fireworks fireworks, params AlmostLockedSet[] als)
+    public FireworksWithAlmostLockedSetsReportBuilder(Fireworks fireworks, params IPossibilitiesPositions[] als)
     {
         _fireworks = fireworks;
         _als = als;
@@ -504,7 +504,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
 
             foreach (var als in _als)
             {
-                foreach (var cell in als.Cells)
+                foreach (var cell in als.EachCell())
                 {
                     lighter.HighlightCell(cell.Row, cell.Col, (ChangeColoration) color);
                 }

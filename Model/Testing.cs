@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Solver;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
 using Model.Util;
@@ -118,7 +118,7 @@ public static class Testing
         return new Cell((int) (from.Row + proportion * (to.Row - from.Row)), (int) (from.Col +proportion * (to.Col - from.Col)));
     }
 
-    private static void AlsSearch(int[] ints, List<IPossibilities> list, int start, IPossibilities current)
+    private static void AlsSearch(int[] ints, List<Possibilities> list, int start, Possibilities current)
     {
         for (int i = start; i < ints.Length; i++)
         {
@@ -129,7 +129,7 @@ public static class Testing
         }
     }
 
-    private static void CompareIPossibilitiesImplementation(IPossibilities one, IPossibilities two)
+    private static void CompareIPossibilitiesImplementation(Possibilities one, Possibilities two)
     {
         Console.WriteLine(one.Count);
         Console.WriteLine(two.Count);

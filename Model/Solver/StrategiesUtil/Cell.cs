@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
 
@@ -336,9 +336,9 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
         return new Cell[] { new(Row, Col) };
     }
 
-    public IPossibilities EveryPossibilities()
+    public Possibilities EveryPossibilities()
     {
-        var result = IPossibilities.NewEmpty();
+        var result = Possibilities.NewEmpty();
         result.Add(Possibility);
         return result;
     }
@@ -373,7 +373,7 @@ public class CellPossibilities
     public CellPossibilities(Cell cell, int possibility)
     {
         Cell = cell;
-        var buffer = IPossibilities.NewEmpty();
+        var buffer = Possibility.Possibilities.NewEmpty();
         buffer.Add(possibility);
         Possibilities = buffer;
     }
@@ -381,7 +381,7 @@ public class CellPossibilities
     public CellPossibilities(CellPossibility coord)
     {
         Cell = new Cell(coord.Row, coord.Col);
-        var buffer = IPossibilities.NewEmpty();
+        var buffer = Possibility.Possibilities.NewEmpty();
         buffer.Add(coord.Possibility);
         Possibilities = buffer;
     }

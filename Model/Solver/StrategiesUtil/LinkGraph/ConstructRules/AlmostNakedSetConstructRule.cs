@@ -8,14 +8,14 @@ public class AlmostNakedSetConstructRule : IConstructRule
     {
         foreach (var als in strategyManager.PreComputer.AlmostLockedSets())
         {
-            if (als.Cells.Length is < 2 or > 4) continue;
+            if (als.PositionsCount is < 2 or > 4) continue;
 
             CellPossibility buffer = default;
             bool found = false;
             foreach (var possibility in als.Possibilities)
             {
                 found = false;
-                foreach (var coord in als.Cells)
+                foreach (var coord in als.EachCell())
                 {
                     if (!strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) continue;
 
@@ -40,12 +40,14 @@ public class AlmostNakedSetConstructRule : IConstructRule
             if (!found) continue;
 
             //Almost naked possibility found
-            CellPossibilities[] buildUp = new CellPossibilities[als.Cells.Length];
-            for (int i = 0; i < als.Cells.Length; i++)
+            CellPossibilities[] buildUp = new CellPossibilities[als.PositionsCount];
+            var cursor = 0;
+            foreach (var cell in als.EachCell())
             {
-                var poss = strategyManager.PossibilitiesAt(als.Cells[i].Row, als.Cells[i].Col).Copy();
+                var poss = strategyManager.PossibilitiesAt(cell.Row, cell.Col).Copy();
                 poss.Remove(buffer.Possibility);
-                buildUp[i] = new CellPossibilities(als.Cells[i], poss);
+                buildUp[cursor] = new CellPossibilities(cell, poss);
+                cursor++;
             }
 
             AlmostNakedSet anp = new AlmostNakedSet(buildUp, buffer);
@@ -77,7 +79,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                         if (!strategyManager.PossibilitiesAt(sharedRow, col).Peek(possibility)) continue;
 
                         Cell current = new Cell(sharedRow, col);
-                        if (als.Contains(current)) continue;
+                        if (als.Positions.Peek(current)) continue;
                         
                         linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
                             LinkStrength.Weak, LinkType.MonoDirectional);
@@ -91,7 +93,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                         if (!strategyManager.PossibilitiesAt(row, sharedCol).Peek(possibility)) continue;
                         
                         Cell current = new Cell(row, sharedCol);
-                        if (als.Contains(current)) continue;
+                        if (als.Positions.Peek(current)) continue;
                         
                         linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
                             LinkStrength.Weak, LinkType.MonoDirectional);
@@ -110,7 +112,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                             if (!strategyManager.PossibilitiesAt(row, col).Peek(possibility)) continue;
                         
                             Cell current = new Cell(row, col);
-                            if (als.Contains(current)) continue;
+                            if (als.Positions.Peek(current)) continue;
                         
                             linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
                                 LinkStrength.Weak, LinkType.MonoDirectional);

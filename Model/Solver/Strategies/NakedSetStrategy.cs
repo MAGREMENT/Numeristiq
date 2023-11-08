@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -43,14 +43,14 @@ public class NakedSetStrategy : AbstractStrategy
         for (int row = 0; row < 9; row++)
         {
             var possibleCols = EveryRowCellWithLessPossibilities(strategyManager, row, _type + 1);
-            if (RecursiveRowMashing(strategyManager, IPossibilities.NewEmpty(), possibleCols, -1, row,
+            if (RecursiveRowMashing(strategyManager, Possibilities.NewEmpty(), possibleCols, -1, row,
                     new LinePositions())) return;
         }
         
         for (int col = 0; col < 9; col++)
         {
             var possibleRows = EveryColumnCellWithLessPossibilities(strategyManager, col, _type + 1);
-            if (RecursiveColumnMashing(strategyManager, IPossibilities.NewEmpty(), possibleRows, -1, col,
+            if (RecursiveColumnMashing(strategyManager, Possibilities.NewEmpty(), possibleRows, -1, col,
                     new LinePositions())) return;
         }
         
@@ -59,7 +59,7 @@ public class NakedSetStrategy : AbstractStrategy
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
                 var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(strategyManager, miniRow, miniCol, _type + 1);
-                if (RecursiveMiniGridMashing(strategyManager, IPossibilities.NewEmpty(), possibleGridNumbers, -1,
+                if (RecursiveMiniGridMashing(strategyManager, Possibilities.NewEmpty(), possibleGridNumbers, -1,
                         miniRow, miniCol, new MiniGridPositions(miniRow, miniCol))) return;
             }
         }
@@ -77,7 +77,7 @@ public class NakedSetStrategy : AbstractStrategy
         return result;
     }
 
-    private bool RecursiveRowMashing(IStrategyManager strategyManager, IPossibilities current,
+    private bool RecursiveRowMashing(IStrategyManager strategyManager, Possibilities current,
         LinePositions possibleCols, int cursor, int row, LinePositions visited)
     {
         int col;
@@ -107,7 +107,7 @@ public class NakedSetStrategy : AbstractStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, IPossibilities toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromRow(IStrategyManager strategyManager, int row, Possibilities toRemove, LinePositions except)
     {
         foreach (var n in toRemove)
         {
@@ -133,7 +133,7 @@ public class NakedSetStrategy : AbstractStrategy
         return result;
     }
     
-    private bool RecursiveColumnMashing(IStrategyManager strategyManager, IPossibilities current,
+    private bool RecursiveColumnMashing(IStrategyManager strategyManager, Possibilities current,
         LinePositions possibleRows, int cursor, int col, LinePositions visited)
     {
         int row;
@@ -162,7 +162,7 @@ public class NakedSetStrategy : AbstractStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, IPossibilities toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromColumn(IStrategyManager strategyManager, int col, Possibilities toRemove, LinePositions except)
     {
         foreach (var n in toRemove)
         {
@@ -194,7 +194,7 @@ public class NakedSetStrategy : AbstractStrategy
         return result;
     }
     
-    private bool RecursiveMiniGridMashing(IStrategyManager strategyManager, IPossibilities current,
+    private bool RecursiveMiniGridMashing(IStrategyManager strategyManager, Possibilities current,
         MiniGridPositions possiblePos, int cursor, int miniRow, int miniCol, MiniGridPositions visited)
     {
         Cell pos;
@@ -224,7 +224,7 @@ public class NakedSetStrategy : AbstractStrategy
         return false;
     }
     
-    private bool RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, IPossibilities toRemove,
+    private bool RemovePossibilitiesFromMiniGrid(IStrategyManager strategyManager, int miniRow, int miniCol, Possibilities toRemove,
         MiniGridPositions except)
     {
         foreach (var n in toRemove)
@@ -248,13 +248,13 @@ public class NakedSetStrategy : AbstractStrategy
 
 public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly IPossibilities _possibilities;
+    private readonly Possibilities _possibilities;
     private readonly LinePositions _linePos;
     private readonly int _unitNumber;
     private readonly Unit _unit;
 
 
-    public LineNakedPossibilitiesReportBuilder(IPossibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineNakedPossibilitiesReportBuilder(Possibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
@@ -297,10 +297,10 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
 public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly IPossibilities _possibilities;
+    private readonly Possibilities _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridNakedPossibilitiesReportBuilder(IPossibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridNakedPossibilitiesReportBuilder(Possibilities possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;

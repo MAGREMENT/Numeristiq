@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Possibilities;
+using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
@@ -14,17 +15,17 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
         _strategyManager = strategyManager;
     }
     
-    public List<AlmostLockedSet> InCells(List<Cell> coords)
+    public List<IPossibilitiesPositions> InCells(List<Cell> coords)
     {
-        List<AlmostLockedSet> result = new();
+        List<IPossibilitiesPositions> result = new();
 
-        InCells(coords, new List<Cell>(), IPossibilities.NewEmpty(), 0, result);
+        InCells(coords, new List<Cell>(), Possibilities.NewEmpty(), 0, result);
         
         return result;
     }
 
     private void InCells(List<Cell> coords, List<Cell> visited,
-        IReadOnlyPossibilities current, int start, List<AlmostLockedSet> result)
+        IReadOnlyPossibilities current, int start, List<IPossibilitiesPositions> result)
     {
         for (int i = start; i < coords.Count; i++)
         {
@@ -33,12 +34,12 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
             var inspected = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Col);
             if(inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
-            IPossibilities or = current.Or(inspected);
+            Possibilities or = current.Or(inspected);
             visited.Add(coords[i]);
 
             if (or.Count == visited.Count + 1)
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), or));
+                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), or, _strategyManager));
             }
 
             if (Max > visited.Count) InCells(coords, visited, or, i + 1, result);
@@ -47,10 +48,10 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
         }
     }
     
-    public List<AlmostLockedSet> FullGrid()
+    public List<IPossibilitiesPositions> FullGrid()
     {
-        var result = new List<AlmostLockedSet>();
-        var possibilities = IPossibilities.NewEmpty();
+        var result = new List<IPossibilitiesPositions>();
+        var possibilities = Possibilities.NewEmpty();
         var cells = new List<Cell>();
 
         for (int row = 0; row < 9; row++)
@@ -80,47 +81,47 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
         return result;
     }
 
-    public List<AlmostLockedSet> InRow(int row)
+    public List<IPossibilitiesPositions> InRow(int row)
     {
-        var result = new List<AlmostLockedSet>();
+        var result = new List<IPossibilitiesPositions>();
 
-        InRow(row, 0, IPossibilities.NewEmpty(), new List<Cell>(), result);
+        InRow(row, 0, Possibilities.NewEmpty(), new List<Cell>(), result);
 
         return result;
     }
 
-    public List<AlmostLockedSet> InColumn(int col)
+    public List<IPossibilitiesPositions> InColumn(int col)
     {
-        var result = new List<AlmostLockedSet>();
+        var result = new List<IPossibilitiesPositions>();
 
-        InColumn(col, 0, IPossibilities.NewEmpty(), new List<Cell>(), result);
+        InColumn(col, 0, Possibilities.NewEmpty(), new List<Cell>(), result);
 
         return result;
     }
 
-    public List<AlmostLockedSet> InMiniGrid(int miniRow, int miniCol)
+    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol)
     {
-        var result = new List<AlmostLockedSet>();
+        var result = new List<IPossibilitiesPositions>();
 
-        InMiniGrid(miniRow, miniCol, 0, IPossibilities.NewEmpty(), new List<Cell>(), result, false);
+        InMiniGrid(miniRow, miniCol, 0, Possibilities.NewEmpty(), new List<Cell>(), result, false);
 
         return result;
     }
     
     private void InRow(int row, int start, IReadOnlyPossibilities current,
-        List<Cell> visited, List<AlmostLockedSet> result)
+        List<Cell> visited, List<IPossibilitiesPositions> result)
     {
         for (int col = start; col < 9; col++)
         {
             var inspected = _strategyManager.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
-            IPossibilities mashed = current.Or(inspected);
+            Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
             if (mashed.Count == visited.Count + 1)
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
             if(Max > visited.Count) InRow(row, col + 1, mashed, visited, result);
@@ -130,19 +131,19 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
     }
     
     private void InColumn(int col, int start, IReadOnlyPossibilities current,
-        List<Cell> visited, List<AlmostLockedSet> result)
+        List<Cell> visited, List<IPossibilitiesPositions> result)
     {
         for (int row = start; row < 9; row++)
         {
             var inspected = _strategyManager.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
-            IPossibilities mashed = current.Or(inspected);
+            Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
             if (mashed.Count == visited.Count + 1)
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
             if(Max > visited.Count) InColumn(col, row + 1, mashed, visited, result);
@@ -152,7 +153,7 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
     }
 
     private void InMiniGrid(int miniRow, int miniCol, int start,
-        IReadOnlyPossibilities current, List<Cell> visited, List<AlmostLockedSet> result, bool excludeSameLine)
+        IReadOnlyPossibilities current, List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSameLine)
     {
         for (int n = start; n < 9; n++)
         {
@@ -162,12 +163,12 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
             var inspected = _strategyManager.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
-            IPossibilities mashed = current.Or(inspected);
+            Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
             if (mashed.Count == visited.Count + 1 && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
-                result.Add(new AlmostLockedSet(visited.ToArray(), mashed));
+                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
             if(Max > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);

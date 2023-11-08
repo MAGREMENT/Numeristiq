@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Positions;
-using Model.Solver.Possibilities;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
 using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
@@ -64,7 +64,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
 
 public class ContradictionSearcher
 {
-    private readonly Dictionary<int, IPossibilities> _offCells = new();
+    private readonly Dictionary<int, Possibilities> _offCells = new();
     private readonly Dictionary<int, LinePositions> _offRows = new();
     private readonly Dictionary<int, LinePositions> _offCols = new();
     private readonly Dictionary<int, MiniGridPositions> _offMinis = new();

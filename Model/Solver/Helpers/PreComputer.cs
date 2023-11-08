@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Solver.PossibilitiesPositions;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.CellColoring;
@@ -11,7 +12,7 @@ public class PreComputer
 {
     private readonly IStrategyManager _strategyManager;
 
-    private List<AlmostLockedSet>? _als;
+    private List<IPossibilitiesPositions>? _als;
 
     private readonly ColoringDictionary<ILinkGraphElement>?[,,] _onColoring
         = new ColoringDictionary<ILinkGraphElement>[9, 9, 9];
@@ -46,7 +47,7 @@ public class PreComputer
         _jes = null;
     }
 
-    public List<AlmostLockedSet> AlmostLockedSets()
+    public List<IPossibilitiesPositions> AlmostLockedSets()
     {
         _als ??= DoAlmostLockedSets();
         return _als;
@@ -72,7 +73,7 @@ public class PreComputer
         return _jes;
     }
 
-    private List<AlmostLockedSet> DoAlmostLockedSets()
+    private List<IPossibilitiesPositions> DoAlmostLockedSets()
     {
         return _strategyManager.AlmostNakedSetSearcher.FullGrid();
     }
