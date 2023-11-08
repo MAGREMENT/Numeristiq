@@ -10,50 +10,6 @@
     <StackPanel Orientation="Vertical">
         <local:CustomNavigationUserControl x:Name="Navigation"/>
         <StackPanel Orientation="Horizontal" Background="{x:Static inf:ColorUtil.Background1}">
-            <StackPanel Width="200" Height="700">
-                <StackPanel Width="200" Height="350">
-                    <TextBlock Text="Options" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
-                    <CheckBox HorizontalAlignment="Center" Margin="0, 10, 0, 0" IsChecked="True">Step by step</CheckBox>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 10, 0, 0" >
-                        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">Translation</TextBlock>
-                        <ComboBox Width="110" Focusable="False" IsEditable="True" IsReadOnly="True" SelectedIndex="0"
-                              VerticalAlignment="Center" SelectionChanged="SelectedTranslationType">
-                            <TextBlock Focusable="False">With shortcuts</TextBlock>
-                            <TextBlock Focusable="False">With 0's</TextBlock>
-                            <TextBlock Focusable="False">With .'s</TextBlock>
-                        </ComboBox>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 10, 0, 0">
-                        <TextBlock Margin="0, 0, 5, 0">Delay before</TextBlock>
-                        <Slider Maximum="2000" Width="100" TickFrequency="5" IsSnapToTickEnabled="True" Name="DelayBeforeSlider" ValueChanged="SetSolverDelayBefore" />
-                        <TextBox Text="{Binding ElementName=DelayBeforeSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                             TextAlignment="Right" Width="35" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 10, 0, 0">
-                        <TextBlock Margin="0, 0, 5, 0">Delay after</TextBlock>
-                        <Slider Maximum="2000" Width="100" TickFrequency="5" IsSnapToTickEnabled="True" Name="DelayAfterSlider" ValueChanged="SetSolverDelayAfter" />
-                        <TextBox Text="{Binding ElementName=DelayAfterSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                             TextAlignment="Right" Width="35" />
-                    </StackPanel>
-                    <CheckBox HorizontalAlignment="Center" Margin="0, 10, 0, 0" IsChecked="True"
-                          Checked="AllowUniqueness" Unchecked="ForbidUniqueness">Unique solution</CheckBox>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0, 10, 0, 0" >
-                        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">On instance found</TextBlock>
-                        <ComboBox Width="110" Focusable="False" IsEditable="True" IsReadOnly="True" SelectedIndex="0"
-                              VerticalAlignment="Center" SelectionChanged="SelectedOnInstanceFound">
-                            <TextBlock Focusable="False">Default</TextBlock>
-                            <TextBlock Focusable="False">Return</TextBlock>
-                            <TextBlock Focusable="False">Wait for all</TextBlock>
-                            <TextBlock Focusable="False">Choose best</TextBlock>
-                            <TextBlock Focusable="False">Customized</TextBlock>
-                        </ComboBox>
-                    </StackPanel>
-                </StackPanel>
-                <StackPanel Width="200" Height="350" x:Name="ModificationsPanel">
-                    <TextBlock Text="Modifications" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"></TextBlock>
-                    <local:LiveModificationUserControl x:Name="LiveModification"/>
-                </StackPanel>
-            </StackPanel>
         
             <StackPanel Orientation="Vertical" Width="590">
                 <local:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
