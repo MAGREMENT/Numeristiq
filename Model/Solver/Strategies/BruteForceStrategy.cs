@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 
 namespace Model.Solver.Strategies;
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;

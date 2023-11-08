@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Model.Solver;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
@@ -242,7 +242,7 @@ public static class Testing
         Console.WriteLine("Initial sudoku : ");
         Console.WriteLine(sud);
 
-        var solver = new Solver.Solver(sud);
+        var solver = new Solver.SudokuSolver(sud);
         int numbersAdded = 0;
         solver.GoingToAddSolution += (_, _, _) => numbersAdded++;
         solver.Solve();

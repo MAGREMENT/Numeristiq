@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
-namespace Model.Solver.PossibilitiesPositions;
+namespace Model.Solver.PossibilityPosition;
 
 public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
 {
@@ -29,7 +29,7 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
         return _cells;
     }
 
-    public IEnumerable<Cell> EachCellWithPossibility(int possibility)
+    public IEnumerable<Cell> EachCell(int possibility)
     {
         foreach (var cell in _cells)
         {
@@ -37,12 +37,9 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
         }
     }
 
-    public IEnumerable<int> EachPossibilityWithCell(Cell cell)
+    public IReadOnlyPossibilities PossibilitiesInCell(Cell cell)
     {
-        foreach (var possibility in Possibilities)
-        {
-            if (_snapshot.PossibilitiesAt(cell.Row, cell.Col).Peek(possibility)) yield return possibility;
-        }
+        return Possibilities.And(_snapshot.PossibilitiesAt(cell));
     }
 
     public Possibilities Possibilities { get; }

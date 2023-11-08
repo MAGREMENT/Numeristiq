@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Model.Solver.Positions;
-using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
+using Model.Solver.PossibilityPosition;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 

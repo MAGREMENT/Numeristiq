@@ -1,17 +1,16 @@
 using System.Collections.Generic;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
-namespace Model.Solver.PossibilitiesPositions;
+namespace Model.Solver.PossibilityPosition;
 
 public interface IPossibilitiesPositions
 {
-    IEnumerable<int> EachPossibility();
     IEnumerable<Cell> EachCell();
-
-    IEnumerable<Cell> EachCellWithPossibility(int possibility);
-    IEnumerable<int> EachPossibilityWithCell(Cell cell);
+    IEnumerable<Cell> EachCell(int with);
+    
+    IReadOnlyPossibilities PossibilitiesInCell(Cell cell);
     
     Possibilities Possibilities { get; }
     GridPositions Positions { get; }

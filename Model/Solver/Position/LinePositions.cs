@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Solver.StrategiesUtil;
 
-namespace Model.Solver.Positions;
+namespace Model.Solver.Position;
 
 public class LinePositions : IReadOnlyLinePositions
 {

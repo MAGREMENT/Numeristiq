@@ -1,4 +1,4 @@
-﻿using Model.Solver.Positions;
+﻿using Model.Solver.Position;
 using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil;

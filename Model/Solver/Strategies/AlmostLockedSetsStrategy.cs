@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
+using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
@@ -31,7 +32,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
 
                 if (one.Positions.PeakAny(two.Positions)) continue;
 
-                var restrictedCommons = RestrictedCommons(strategyManager, one, two);
+                var restrictedCommons = RestrictedCommons(one, two);
                 if (restrictedCommons.Count is 0 or > 2) continue;
 
                 foreach (var restrictedCommon in restrictedCommons)
@@ -41,18 +42,9 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                         if (!two.Possibilities.Peek(possibility) || possibility == restrictedCommon) continue;
 
                         List<Cell> coords = new();
-                        foreach (var oneCoord in one.EachCell())
-                        {
-                            if (strategyManager.PossibilitiesAt(oneCoord.Row, oneCoord.Col).Peek(possibility))
-                                coords.Add(oneCoord);
-                        }
+                        coords.AddRange(one.EachCell(possibility));
+                        coords.AddRange(two.EachCell(possibility));
 
-                        foreach (var twoCoord in two.EachCell())
-                        {
-                            if (strategyManager.PossibilitiesAt(twoCoord.Row, twoCoord.Col).Peek(possibility))
-                                coords.Add(twoCoord);
-                        }
-                        
                         foreach (var coord in Cells.SharedSeenCells(coords))
                         {
                             strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
@@ -66,13 +58,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                     {
                         if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
 
-                        List<Cell> where = new();
-                        foreach (var coord in one.EachCell())
-                        {
-                            if (strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) where.Add(coord);
-                        }
-                        
-                        foreach (var coord in Cells.SharedSeenCells(where))
+                        foreach (var coord in Cells.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
                         {
                             strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
@@ -82,13 +68,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                     {
                         if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
 
-                        List<Cell> where = new();
-                        foreach (var coord in two.EachCell())
-                        {
-                            if (strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) where.Add(coord);
-                        }
-                        
-                        foreach (var coord in Cells.SharedSeenCells(where))
+                        foreach (var coord in Cells.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
                         {
                             strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                         }
@@ -101,7 +81,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
         }
     }
 
-    private Possibilities RestrictedCommons(IStrategyManager strategyManager, IPossibilitiesPositions one, IPossibilitiesPositions two)
+    private Possibilities RestrictedCommons(IPossibilitiesPositions one, IPossibilitiesPositions two)
     {
         Possibilities result = Possibilities.NewEmpty();
 
@@ -109,24 +89,20 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
         {
             if (!two.Possibilities.Peek(possibility)) continue;
 
-            if (IsPossibilityRestricted(strategyManager, one, two, possibility)) result.Add(possibility);
+            if (IsPossibilityRestricted(one, two, possibility)) result.Add(possibility);
         }
 
         return result;
     }
 
-    private bool IsPossibilityRestricted(IStrategyManager strategyManager, IPossibilitiesPositions one, IPossibilitiesPositions two,
+    private bool IsPossibilityRestricted(IPossibilitiesPositions one, IPossibilitiesPositions two,
         int possibility)
     {
-        foreach (var oneCoord in one.EachCell())
+        foreach (var cell1 in one.EachCell(possibility))
         {
-            if (!strategyManager.PossibilitiesAt(oneCoord.Row, oneCoord.Col).Peek(possibility)) continue;
-
-            foreach (var twoCoord in two.EachCell())
+            foreach (var cell2 in two.EachCell(possibility))
             {
-                if (!strategyManager.PossibilitiesAt(twoCoord.Row, twoCoord.Col).Peek(possibility)) continue;
-
-                if (!oneCoord.ShareAUnit(twoCoord)) return false;
+                if (!cell1.ShareAUnit(cell2)) return false;
             }
         }
 

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -12,7 +12,7 @@ namespace Model.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //BIG TODO => For each strategy using old als, revamp
-public class Solver : IStrategyManager, IChangeManager, ILogHolder
+public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;
     private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
@@ -54,9 +54,9 @@ public class Solver : IStrategyManager, IChangeManager, ILogHolder
 
     private readonly StrategyLoader _strategyLoader = new();
 
-    public Solver() : this(new Sudoku()) { }
+    public SudokuSolver() : this(new Sudoku()) { }
 
-    public Solver(Sudoku s)
+    public SudokuSolver(Sudoku s)
     {
         _strategyLoader.Load();
         Strategies = _strategyLoader.Strategies;

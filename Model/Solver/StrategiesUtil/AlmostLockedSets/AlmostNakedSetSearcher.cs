@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.PossibilitiesPositions;
 using Model.Solver.Possibility;
+using Model.Solver.PossibilityPosition;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 

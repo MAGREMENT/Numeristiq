@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 
 namespace Model.Solver.Strategies.SetEquivalence.Searchers;
 

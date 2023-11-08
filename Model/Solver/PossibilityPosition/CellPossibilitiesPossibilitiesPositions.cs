@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 
-namespace Model.Solver.PossibilitiesPositions;
+namespace Model.Solver.PossibilityPosition;
 
 public class CellPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
 {
@@ -28,7 +28,7 @@ public class CellPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
         }
     }
 
-    public IEnumerable<Cell> EachCellWithPossibility(int possibility)
+    public IEnumerable<Cell> EachCell(int possibility)
     {
         foreach (var cp in _cps)
         {
@@ -36,14 +36,14 @@ public class CellPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
         }
     }
 
-    public IEnumerable<int> EachPossibilityWithCell(Cell cell)
+    public IReadOnlyPossibilities PossibilitiesInCell(Cell cell)
     {
         foreach (var cp in _cps)
         {
             if (cp.Cell == cell) return cp.Possibilities;
         }
-        
-        return Enumerable.Empty<int>();
+
+        return Possibilities.NewEmpty();
     }
 
     public Possibilities Possibilities

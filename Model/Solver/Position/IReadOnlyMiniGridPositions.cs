@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.StrategiesUtil;
 
-namespace Model.Solver.Positions;
+namespace Model.Solver.Position;
 
 public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
 {

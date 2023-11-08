@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 

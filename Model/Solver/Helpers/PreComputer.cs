@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.PossibilitiesPositions;
+using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.CellColoring;

@@ -16,7 +16,7 @@ public class RunTester
     public RunResult LastRunResult { get; private set; } = new();
 
     private bool _running;
-    private Solver.Solver? _currentSolver;
+    private SudokuSolver? _currentSolver;
     private RunResult? _currentRunResult;
     private readonly OnInstanceFound _found;
 
@@ -52,7 +52,7 @@ public class RunTester
         
         _currentRunResult = new RunResult();
         
-        _currentSolver = new Solver.Solver
+        _currentSolver = new SudokuSolver
         {
             LogsManaged = false,
             StatisticsTracked = true
@@ -92,14 +92,14 @@ public class RunResult
     
     private readonly List<StrategyReport> _reports = new();
 
-    public void SolveDone(Solver.Solver solver)
+    public void SolveDone(SudokuSolver solver)
     {
         Count++;
         if (solver.Sudoku.IsCorrect()) Success++;
         else if (solver.IsWrong()) SolverFails++;
     }
 
-    public void RunFinished(Solver.Solver solver)
+    public void RunFinished(SudokuSolver solver)
     {
         foreach (var strategy in solver.Strategies)
         {

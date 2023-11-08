@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Positions;
-using Model.Solver.PossibilitiesPositions;
+using Model.Solver.Position;
+using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.LinkGraph;
@@ -140,7 +140,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in _one.EachCell())
             {
-                foreach (var possibility in _one.EachPossibilityWithCell(cell))
+                foreach (var possibility in _one.PossibilitiesInCell(cell))
                 {
                     lighter.HighlightPossibility(possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
                 }
@@ -148,7 +148,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
             
             foreach (var cell in _two.EachCell())
             {
-                foreach (var possibility in _two.EachPossibilityWithCell(cell))
+                foreach (var possibility in _two.PossibilitiesInCell(cell))
                 {
                     lighter.HighlightPossibility(possibility, cell.Row, cell.Col, ChangeColoration.CauseOffTwo);
                 }

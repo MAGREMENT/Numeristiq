@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Solver.Positions;
+using Model.Solver.Position;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
 using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
