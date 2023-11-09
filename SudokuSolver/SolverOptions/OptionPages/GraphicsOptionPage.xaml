@@ -19,5 +19,15 @@
             <TextBox Text="{Binding ElementName=DelayAfterSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                      TextAlignment="Right" Width="35" />
         </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0">
+            <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">Given color</TextBlock>
+            <ComboBox Width="110" VerticalAlignment="Center" SelectedIndex="0" IsReadOnly="True"
+                      x:Name="GivenBox" SelectionChanged="SelectedGivenColor"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0">
+            <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">Solving color</TextBlock>
+            <ComboBox Width="110" VerticalAlignment="Center" SelectedIndex="0" IsReadOnly="True"
+                      x:Name="SolvingBox" SelectionChanged="SelectedSolvingColor"/>
+        </StackPanel>
     </StackPanel>
 </solverOptions:OptionPage>

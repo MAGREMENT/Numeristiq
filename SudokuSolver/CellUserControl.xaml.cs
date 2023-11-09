@@ -8,9 +8,6 @@ namespace SudokuSolver;
 
 public partial class CellUserControl
 {
-    private readonly Brush _givenForeground = ColorUtil.Green;
-    private readonly Brush _solvedForeground = Brushes.Black;
-    
     private readonly Grid _small = new();
     private readonly TextBlock _big = new();
 
@@ -114,20 +111,11 @@ public partial class CellUserControl
         
         Updated?.Invoke(_isPossibilities, _nums);
     }
-    
-    public void Void()
-    {
-        Case.Children.Clear();
-    }
-
-    public void FireUpdated()
-    {
-        Updated?.Invoke(_isPossibilities, _nums);
-    }
-
+   
     public void SetForeground(CellForegroundType type)
     {
-        var brush = type == CellForegroundType.Solved ? _solvedForeground : _givenForeground;
+        var instance = ColorManager.GetInstance();
+        var brush = type == CellForegroundType.Solving ? instance.SolvingForegroundColor : instance.GivenForegroundColor;
         
         _big.Foreground = brush;
         foreach (var child in _small.Children)
@@ -140,5 +128,5 @@ public partial class CellUserControl
 
 public enum CellForegroundType
 {
-    Given, Solved
+    Given, Solving
 }

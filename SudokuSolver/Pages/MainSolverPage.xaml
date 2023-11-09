@@ -1,4 +1,4 @@
-<Page x:Class="SudokuSolver.MainSolverPage"
+<Page x:Class="SudokuSolver.Pages.MainSolverPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -9,7 +9,7 @@
       Title="MainSolverPage">
     <StackPanel Orientation="Vertical">
         <local:CustomNavigationUserControl x:Name="Navigation"/>
-        <StackPanel Orientation="Horizontal" Background="{x:Static inf:ColorUtil.Background1}">
+        <StackPanel Orientation="Horizontal" Background="{x:Static inf:ColorManager.Background1}">
         
             <StackPanel Orientation="Vertical" Width="590">
                 <local:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
@@ -25,7 +25,7 @@
         
             <StackPanel Width="350">
                 <local:LogListUserControl x:Name="LogList"/>
-                <TextBox Width="320" Height="200" Background="{x:Static inf:ColorUtil.Background2}" x:Name="ExplanationBox"
+                <TextBox Width="320" Height="200" Background="{x:Static inf:ColorManager.Background2}" x:Name="ExplanationBox"
                      Margin="0, 10, 0, 0" TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="12"/>
             </StackPanel>
         

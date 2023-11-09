@@ -11,7 +11,7 @@
             <Button Width="140" Height="30" Margin="10, 0" Click="ShowStart">Start</Button>
             <Button Width="140" Height="30" Margin="10, 0" Click="ShowCurrent">Current</Button>
         </StackPanel>
-        <ScrollViewer Height="400" x:Name="Scroll" Background="{x:Static inf:ColorUtil.Background2}">
+        <ScrollViewer Height="400" x:Name="Scroll" Background="{x:Static inf:ColorManager.Background2}">
             <StackPanel Width="300" MinHeight="400" x:Name="List"/>
         </ScrollViewer>
     </StackPanel>

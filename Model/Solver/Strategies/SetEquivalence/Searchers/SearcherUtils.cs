@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Documents;
+using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies.SetEquivalence.Searchers;
 
 public static class SearcherUtils
 {
-    public static readonly IHouseFiller[] Fillers =
+    public static readonly HouseFiller[] Fillers =
     {
         new RowFiller(0),
         new RowFiller(1),
@@ -36,148 +38,29 @@ public static class SearcherUtils
         new MiniGridFiller(2, 1),
         new MiniGridFiller(2, 2)
     };
-    
-    public static void AllValidCombinations(int maxOrderDifference, int maxHouseCount)
+
+    public static void TestHouses(int minHouseCount, int maxHouseCount)
     {
-        One(maxOrderDifference, maxHouseCount, new List<int>(), 0);
-    }
-
-    private static void One(int maxOrderDifference, int maxHouseCount, List<int> one, int start)
-    {
-        if (one.Count >= maxHouseCount) return;
-        for (int i = start; i < Fillers.Length; i++)
-        {
-            one.Add(i);
-
-            Two(maxOrderDifference, maxHouseCount, one, new List<int>(), 0);
-            One(maxOrderDifference, maxHouseCount, one, i + 1);
-
-            one.RemoveAt(one.Count - 1);
-        }
-    }
-
-    private static void Two(int maxOrderDifference, int maxHouseCount, List<int> one, List<int> two, int start)
-    {
-        if (two.Count >= maxHouseCount || two.Count - one.Count >= maxOrderDifference) return;
-        for (int i = start; i < Fillers.Length; i++)
-        {
-            if (one.Contains(i)) continue;
-            two.Add(i);
-
-            if(Math.Abs(two.Count - one.Count) <= maxOrderDifference)Test(one, two);
-            Two(maxOrderDifference, maxHouseCount, one, two, i + 1);
-
-            two.RemoveAt(two.Count - 1);
-        }
-    }
-
-    public static void Test(List<int> one, List<int> two)
-    {
-        int[,] grid = new int[9, 9];
-
-        foreach (var i in one)
-        {
-            var filler = Fillers[i];
-            filler.Number = 1;
-            filler.Fill(grid);
-        }
+        HashSet<int> one = new();
+        HashSet<int> two = new();
         
-        foreach (var i in two)
-        {
-            var filler = Fillers[i];
-            filler.Number = -1;
-            filler.Fill(grid);
-        }
-
-        foreach (var value in grid)
-        {
-            if (value is > 1 or < -1) return;
-        }
-
-        for (int row = 0; row < 9; row++)
-        {
-            var value = grid[row, 0];
-            if (value == 0) continue;
-
-            bool notGood = true;
-
-            for (int col = 1; col < 9; col++)
-            {
-                if (grid[row, col] == 0 || grid[row, col] != value)
-                {
-                    notGood = false;
-                    break;
-                }
-            }
-
-            if (notGood) return;
-        }
-
-        for (int col = 0; col < 9; col++)
-        {
-            var value = grid[0, col];
-            if (value == 0) continue;
-
-            bool notGood = true;
-
-            for (int row = 1; row < 9; row++)
-            {
-                if (grid[row, col] == 0 || grid[row, col] != value)
-                {
-                    notGood = false;
-                    break;
-                }
-            }
-
-            if (notGood) return;
-        }
-
-        for (int miniRow = 0; miniRow < 3; miniRow++)
-        {
-            for (int miniCol = 0; miniCol < 3; miniCol++)
-            {
-                var value = grid[miniRow * 3, miniCol * 3];
-                if (value == 0) continue;
-
-                bool notGood = true;
-
-                for (int gridRow = 0; gridRow < 3; gridRow++)
-                {
-                    for (int gridCol = 0; gridCol < 3; gridCol++)
-                    {
-                        var row = miniRow * 3 + gridRow;
-                        var col = miniCol * 3 + gridCol;
-                        
-                        if (grid[row, col] == 0 || grid[row, col] != value)
-                        {
-                            notGood = false;
-                            break;
-                        }
-                    }
-                }
-                
-                if (notGood) return;
-            }
-        }
-        
-        //IsOk
-        Print(one, two);
+        //TODO
     }
 
-    private static void Print(List<int> one, List<int> two)
+    private static void Print(IEnumerable<int> one, IEnumerable<int> two)
     {
         var builder = new StringBuilder();
 
         foreach (var i in one)
         {
-            builder.Append(i + " ");
+            builder.Append(Fillers[i] + " ");
         }
 
         builder.Append("--- ");
 
         foreach (var j in two)
         {
-            builder.Append(j + " ");
+            builder.Append(Fillers[j] + " ");
         }
 
         Printer.Print(builder.ToString());
@@ -186,49 +69,92 @@ public static class SearcherUtils
 
 public static class Printer
 {
-    private static int count = 1;
+    private static int _count = 1;
 
     public static void Print(string s)
     {
-        Console.WriteLine($"#{count} : {s}");
-        count++;
+        Console.WriteLine($"#{_count} : {s}");
+        _count++;
     }
 }
 
-public interface IHouseFiller
+public struct IntSet
 {
-    int Number { get; set; }
-    void Fill(int[,] grid);
-    void UnFill(int[,] grid);
-}
+    private int _set;
 
-public class RowFiller : IHouseFiller
-{
-    private readonly int _row;
-    public RowFiller(int row)
+    public void Add(int n)
     {
-        _row = row;
+        _set |= 1 << n;
     }
+    
+    
+}
 
+public abstract class HouseFiller
+{
     public int Number { get; set; }
+
+    public abstract int HouseNumber { get; }
+    
     public void Fill(int[,] grid)
     {
-        for (int col = 0; col < 9; col++)
+        foreach (var cell in AllCells())
         {
-            grid[_row, col] += Number;
+            grid[cell.Row, cell.Col] += Number;
         }
     }
 
     public void UnFill(int[,] grid)
     {
+        foreach (var cell in AllCells())
+        {
+            grid[cell.Row, cell.Col] -= Number;
+        }
+    }
+
+    public bool CanFill(int[,] grid)
+    {
+        bool result = false;
+        
+        foreach (var cell in AllCells())
+        {
+            var current = grid[cell.Row, cell.Col];
+            if (current == Number) return false;
+            if (current == -Number) result = true;
+        }
+
+        return result;
+    }
+
+    protected abstract IEnumerable<Cell> AllCells();
+}
+
+public class RowFiller : HouseFiller
+{
+    private readonly int _row;
+
+    public RowFiller(int row)
+    {
+        _row = row;
+    }
+
+    public override int HouseNumber => _row;
+
+    protected override IEnumerable<Cell> AllCells()
+    {
         for (int col = 0; col < 9; col++)
         {
-            grid[_row, col] -= Number;
+            yield return new Cell(_row, col);
         }
+    }
+
+    public override string ToString()
+    {
+        return "r" + HouseNumber;
     }
 }
 
-public class ColumnFiller : IHouseFiller
+public class ColumnFiller : HouseFiller
 {
     private readonly int _col;
 
@@ -237,25 +163,23 @@ public class ColumnFiller : IHouseFiller
         _col = col;
     }
 
-    public int Number { get; set; }
-    public void Fill(int[,] grid)
+    public override int HouseNumber => _col;
+
+    protected override IEnumerable<Cell> AllCells()
     {
         for (int row = 0; row < 9; row++)
         {
-            grid[row, _col] += Number;
+            yield return new Cell(row, _col);
         }
     }
-
-    public void UnFill(int[,] grid)
+    
+    public override string ToString()
     {
-        for (int row = 0; row < 9; row++)
-        {
-            grid[row, _col] -= Number;
-        }
+        return "c" + HouseNumber;
     }
 }
 
-public class MiniGridFiller : IHouseFiller
+public class MiniGridFiller : HouseFiller
 {
     private readonly int _miniRow;
     private readonly int _miniCol;
@@ -266,26 +190,21 @@ public class MiniGridFiller : IHouseFiller
         _miniCol = miniCol;
     }
 
-    public int Number { get; set; }
-    public void Fill(int[,] grid)
+    public override int HouseNumber => _miniRow * 3 + _miniCol;
+
+    protected override IEnumerable<Cell> AllCells()
     {
-        for (int gridRow = 0; gridRow < 3; gridRow++)
+        for (int r = 0; r < 3; r++)
         {
-            for (int gridCol = 0; gridCol < 3; gridCol++)
+            for (int c = 0; c < 3; c++)
             {
-                grid[_miniRow * 3 + gridRow, _miniCol * 3 + gridCol] += Number;
+                yield return new Cell(_miniRow * 3 + r, _miniCol * 3 + c);
             }
         }
     }
-
-    public void UnFill(int[,] grid)
+    
+    public override string ToString()
     {
-        for (int gridRow = 0; gridRow < 3; gridRow++)
-        {
-            for (int gridCol = 0; gridCol < 3; gridCol++)
-            {
-                grid[_miniRow * 3 + gridRow, _miniCol * 3 + gridCol] -= Number;
-            }
-        }
+        return "m" + HouseNumber;
     }
 }

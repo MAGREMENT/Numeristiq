@@ -11,13 +11,13 @@
         <CheckBox Margin="10, 10, 0, 0" Checked="AllowUniqueness" Unchecked="ForbidUniqueness" x:Name="Uniqueness">Unique solution</CheckBox>
         <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" >
             <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">On instance found</TextBlock>
-            <ComboBox Width="110" Focusable="False" IsEditable="True" IsReadOnly="True" SelectedIndex="0" x:Name="Box"
+            <ComboBox Width="110" IsReadOnly="True" SelectedIndex="0" x:Name="Box"
                       VerticalAlignment="Center" SelectionChanged="SelectedOnInstanceFound">
-                <TextBlock Focusable="False">Default</TextBlock>
-                <TextBlock Focusable="False">Return</TextBlock>
-                <TextBlock Focusable="False">Wait for all</TextBlock>
-                <TextBlock Focusable="False">Choose best</TextBlock>
-                <TextBlock Focusable="False">Customized</TextBlock>
+                <ComboBoxItem>Default</ComboBoxItem>
+                <ComboBoxItem>Return</ComboBoxItem>
+                <ComboBoxItem>Wait for all</ComboBoxItem>
+                <ComboBoxItem>Choose best</ComboBoxItem>
+                <ComboBoxItem>Customized</ComboBoxItem>
             </ComboBox>
         </StackPanel>
     </StackPanel>

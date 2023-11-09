@@ -35,7 +35,7 @@ public partial class LogUserControl
         Log = log;
 
         Number.Text = "#" + log.Id;
-        Title.Foreground = new SolidColorBrush(ColorUtil.ToColor(log.Intensity));
+        Title.Foreground = new SolidColorBrush(ColorManager.ToColor(log.Intensity));
         Title.Text = log.Title;
         Text.Text = log.Changes;
 

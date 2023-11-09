@@ -48,7 +48,7 @@ public class SolverStateManager
         _shownState = log.StateAfter;
         
         _sg.ShowState(log.StateAfter);
-        _sg.HighLightLog(log);
+        _sg.HighlightLog(log);
         _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.StateAfter, _sg.TranslationType));
         _gm.ShowExplanation(log.Explanation);
     }
@@ -94,7 +94,7 @@ public interface ISolverGraphics
     public event OnLogShowed? LogShowed;
     public event OnCurrentStateShowed? CurrentStateShowed;
 
-    void HighLightLog(ISolverLog log);
+    void HighlightLog(ISolverLog log);
     void ShowState(SolverState state);
     void ShowCurrent();
 }

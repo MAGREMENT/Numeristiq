@@ -1,12 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using Model;
 using Model.Solver;
-using SudokuSolver.Pages;
+using Model.Solver.Helpers.Changes;
 using SudokuSolver.SolverOptions;
 using SudokuSolver.Utils;
 
-namespace SudokuSolver;
+namespace SudokuSolver.Pages;
 
 public partial class MainSolverPage : IGraphicsManager, ISolverOptionHandler
 {
@@ -32,11 +33,7 @@ public partial class MainSolverPage : IGraphicsManager, ISolverOptionHandler
             SolveButton.IsEnabled = true;
             ClearButton.IsEnabled = true;
         };
-        Solver.CellClickedOn += (sender, row, col) =>
-        {
-            //TODO
-        };
-        Solver.SudokuAsStringChanged += ShowSudokuAsString;
+        Solver.SudokuChanged += ShowSudokuAsString;
         Solver.LogsUpdated += logs =>
         {
             LogList.Dispatcher.Invoke(() => LogList.InitLogs(logs));
@@ -72,16 +69,13 @@ public partial class MainSolverPage : IGraphicsManager, ISolverOptionHandler
         SolveButton.IsEnabled = false;
         ClearButton.IsEnabled = false;
 
-        SolverUserControl suc = Solver;
-            
-        if (StepByStep) suc.RunUntilProgress();
-        else suc.SolveSudoku();
+        if (StepByStep) Solver.RunUntilProgress();
+        else Solver.SolveSudoku();
     }
 
     private void ClearSudoku(object sender, RoutedEventArgs e)
     {
-        SolverUserControl suc = Solver;
-        suc.ClearSudoku();
+        Solver.ClearSudoku();
     }
 
     //ISolverOptionHandler----------------------------------------------------------------------------------------------
@@ -126,5 +120,30 @@ public partial class MainSolverPage : IGraphicsManager, ISolverOptionHandler
     {
         get => Solver.OnInstanceFound;
         set => Solver.SetOnInstanceFound(value);
+    }
+
+    public ChangeType ActionOnKeyboardInput
+    {
+        get => Solver.ActionOnKeyboardInput;
+        set => Solver.ActionOnKeyboardInput = value;
+    }
+
+    public Brush GivenForegroundColor
+    {
+        get => ColorManager.GetInstance().GivenForegroundColor;
+        set
+        {
+            ColorManager.GetInstance().GivenForegroundColor = value;
+            Solver.UpdateForegroundColors();
+        }
+    }
+    public Brush SolvingForegroundColor
+    {
+        get => ColorManager.GetInstance().SolvingForegroundColor;
+        set
+        {
+            ColorManager.GetInstance().SolvingForegroundColor = value;
+            Solver.UpdateForegroundColors();
+        }
     }
 }

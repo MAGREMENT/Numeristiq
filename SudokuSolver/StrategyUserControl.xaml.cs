@@ -27,7 +27,7 @@ public partial class StrategyUserControl
         _invoke = false;
         
         StrategyName.Text = strategy.StrategyName;
-        StrategyName.Foreground = new SolidColorBrush(ColorUtil.ToColor(strategy.Locked ? StrategyDifficulty.None : strategy.Difficulty));
+        StrategyName.Foreground = new SolidColorBrush(ColorManager.ToColor(strategy.Locked ? StrategyDifficulty.None : strategy.Difficulty));
         StrategyUsage.IsChecked = strategy.Used;
         StrategyUsage.IsEnabled = !strategy.Locked;
 
@@ -48,11 +48,11 @@ public partial class StrategyUserControl
 
     public void Highlight()
     {
-        Background = ColorUtil.Green;
+        Background = ColorManager.Green;
     }
 
     public void UnHighlight()
     {
-        Background = ColorUtil.Background1;
+        Background = ColorManager.Background1;
     }
 }

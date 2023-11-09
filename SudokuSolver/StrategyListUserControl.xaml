@@ -6,7 +6,7 @@
              xmlns:inf="clr-namespace:SudokuSolver.Utils"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <ScrollViewer Height="700" Width="200" Background="{x:Static inf:ColorUtil.Background1}">
+    <ScrollViewer Height="700" Width="200" Background="{x:Static inf:ColorManager.Background1}">
         <StackPanel MinHeight="700" Width="180" x:Name="List" Orientation="Vertical"/>
     </ScrollViewer>
 </UserControl>

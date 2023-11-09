@@ -53,6 +53,8 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
     private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
 
+    private bool _startedSolving;
+
     private readonly StrategyLoader _strategyLoader = new();
 
     public SudokuSolver() : this(new Sudoku()) { }
@@ -96,30 +98,41 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
         StartState = new SolverState(this);
 
         LogManager.Clear();
-        //PreComputer.Reset();
-        //GraphManager.Clear();
+
+        _startedSolving = false;
     }
     
     
-    public void SetSolutionByHand(int number, int row, int col) //TODO rework the by hand methods and add remove solution
+    public void SetSolutionByHand(int number, int row, int col)
     {
-        if (!_possibilities[row, col].Peek(number)) return;
-        
-        _sudoku[row, col] = number;
-        Reset();
-        LogManager.Clear();
+        if (!_startedSolving && _sudoku[row, col] != 0) RemoveSolution(row, col);
+        if (!AddSolution(number, row, col, false)) return;
+
+        if (_startedSolving) LogManager.AddByHand(number, row, col, ChangeType.Solution);
+        else StartState = new SolverState(this);
+    }
+
+    public void RemoveSolutionByHand(int row, int col)
+    {
+        if (_startedSolving) return;
+
+        RemoveSolution(row, col);
+        StartState = new SolverState(this);
     }
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
-        if (!_possibilities[row, col].Remove(possibility)) return;
-        
-        _positions[possibility - 1].Remove(row, col);
-        LogManager.AddByHand(possibility, row, col);
+        if (!_startedSolving) return;
+
+        if (!RemovePossibility(possibility, row, col, false)) return;
+
+        LogManager.AddByHand(possibility, row, col, ChangeType.Possibility);
     }
     
     public void Solve(bool stopAtProgress = false)
     {
+        _startedSolving = true;
+        
         for (_currentStrategy = 0; _currentStrategy < Strategies.Length; _currentStrategy++)
         {
             if (!IsStrategyUsed(_currentStrategy)) continue;
@@ -305,22 +318,30 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
         }
     }
     
-    private bool AddSolution(int number, int row, int col)
+    private bool AddSolution(int number, int row, int col, bool callEvents = true)
     {
-        if (_sudoku[row, col] != 0 || !_possibilities[row, col].Peek(number)) return false;
+        if (!_possibilities[row, col].Peek(number)) return false;
         
-        GoingToAddSolution?.Invoke(number, row, col);
+        if(callEvents) GoingToAddSolution?.Invoke(number, row, col);
         _sudoku[row, col] = number;
         UpdateAfterSolutionAdded(number, row, col);
         
         return true;
     }
 
-    private bool RemovePossibility(int possibility, int row, int col)
+    private void RemoveSolution(int row, int col)
+    {
+        if (_sudoku[row, col] == 0) return;
+
+        _sudoku[row, col] = 0;
+        Reset();
+    }
+
+    private bool RemovePossibility(int possibility, int row, int col, bool callEvents = true)
     {
         if (!_possibilities[row, col].Remove(possibility)) return false;
         
-        GoingToRemovePossibility?.Invoke(possibility, row, col);
+        if(callEvents) GoingToRemovePossibility?.Invoke(possibility, row, col);
         _positions[possibility - 1].Remove(row, col);
         
         return true;

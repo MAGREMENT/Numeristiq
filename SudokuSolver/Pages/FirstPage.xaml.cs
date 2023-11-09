@@ -1,8 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
-using SudokuSolver.Pages;
 
-namespace SudokuSolver;
+namespace SudokuSolver.Pages;
 
 public partial class FirstPage : Page
 {

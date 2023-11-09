@@ -10,7 +10,7 @@ public partial class SolverOptionWindow
     {
         InitializeComponent();
 
-        OptionPage[] optionPages = { new GraphicsOptionPage(), new SolverOptionPage(), new TranslationOptionPage() };
+        OptionPage[] optionPages = { new GeneralOptionPage(), new GraphicsOptionPage(), new SolverOptionPage() };
 
         foreach (var page in optionPages)
         {

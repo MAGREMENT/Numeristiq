@@ -4,6 +4,7 @@ using System.Linq;
 using Model.Solver;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
+using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
 using Model.Util;
@@ -15,8 +16,8 @@ public static class Testing
     public static void Main(string[] args)
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        
-        FullSudokuBankTest("OnlineBank2.txt");
+
+        SearcherUtils.TestHouses(2, 4);
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

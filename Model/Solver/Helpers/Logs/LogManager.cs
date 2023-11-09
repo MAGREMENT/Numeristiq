@@ -47,10 +47,10 @@ public class LogManager
         _stateBuffer = null;
     }
 
-    public void AddByHand(int possibility, int row, int col)
+    public void AddByHand(int possibility, int row, int col, ChangeType changeType)
     {
         //TODO correct this
-        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, _holder.State, _holder.State));
+        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, _holder.State, _holder.State));
         LogsUpdated?.Invoke(Logs);
     }
 }

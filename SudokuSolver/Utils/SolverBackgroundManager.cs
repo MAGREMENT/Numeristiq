@@ -311,30 +311,30 @@ public class SolverBackgroundManager
         var startRow = col * _cellSize + (col + 1) * _margin;
         
         var oneFourth = _cellSize / 4;
-        
+
         //Top left corner
         _cursor.Children.Add(GetRectangle(startRow - _margin, startCol - _margin, 
-            oneFourth, _margin, ColorUtil.Green));
+            oneFourth, _margin, ColorManager.Green));
         _cursor.Children.Add(GetRectangle(startRow - _margin, startCol - _margin,
-            _margin, oneFourth, ColorUtil.Green));
+            _margin, oneFourth, ColorManager.Green));
 
         //Top right corner
         _cursor.Children.Add(GetRectangle(startRow + _cellSize + _margin - oneFourth, startCol - _margin,
-            oneFourth, _margin, ColorUtil.Green));
+            oneFourth, _margin, ColorManager.Green));
         _cursor.Children.Add(GetRectangle(startRow + _cellSize, startCol - _margin,
-            _margin, oneFourth, ColorUtil.Green));
+            _margin, oneFourth, ColorManager.Green));
 
         //Bottom left corner
         _cursor.Children.Add(GetRectangle(startRow - _margin, startCol + _cellSize,
-            oneFourth, _margin, ColorUtil.Green));
+            oneFourth, _margin, ColorManager.Green));
         _cursor.Children.Add(GetRectangle(startRow - _margin, startCol + _cellSize + _margin - oneFourth,
-            _margin, oneFourth, ColorUtil.Green));
+            _margin, oneFourth, ColorManager.Green));
 
         //Bottom right corner
         _cursor.Children.Add(GetRectangle(startRow + _cellSize + _margin - oneFourth, startCol + _cellSize,
-            oneFourth, _margin, ColorUtil.Green));
+            oneFourth, _margin, ColorManager.Green));
         _cursor.Children.Add(GetRectangle(startRow + _cellSize, startCol + _cellSize + _margin - oneFourth,
-            _margin, oneFourth, ColorUtil.Green));
+            _margin, oneFourth, ColorManager.Green));
     }
     
     private const double PenStrokeWidth = 0.5;

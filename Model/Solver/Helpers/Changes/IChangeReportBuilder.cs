@@ -11,10 +11,15 @@ public interface IChangeReportBuilder
     {
         foreach (var change in changes)
         {
-            if(change.ChangeType == ChangeType.Possibility)
-                highlightable.HighlightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
-            else highlightable.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
+            HighlightChange(highlightable, change);
         }
+    }
+    
+    public static void HighlightChange(IHighlightable highlightable, SolverChange change)
+    {
+        if(change.ChangeType == ChangeType.Possibility)
+            highlightable.HighlightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
+        else highlightable.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
     }
 
     public static string ChangesToString(List<SolverChange> changes)

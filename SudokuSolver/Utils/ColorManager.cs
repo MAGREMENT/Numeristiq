@@ -1,12 +1,11 @@
 ﻿using System.Windows.Media;
 using Model.Solver;
-using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Helpers.Logs;
 
 namespace SudokuSolver.Utils;
 
-public static class ColorUtil
+public class ColorManager
 {
     public static readonly Brush Background1 = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
     public static readonly Brush Background2 = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xEF));
@@ -60,4 +59,19 @@ public static class ColorUtil
             _ => Colors.Gray
         };
     }
+
+    private static ColorManager? _instance;
+
+    public static ColorManager GetInstance()
+    {
+        _instance ??= new ColorManager();
+        return _instance;
+    }
+
+    public Brush GivenForegroundColor { get; set; } = Brushes.Black;
+    public Brush SolvingForegroundColor { get; set; } = Brushes.Black;
+    
+    private ColorManager() { }
+    
+    
 }
