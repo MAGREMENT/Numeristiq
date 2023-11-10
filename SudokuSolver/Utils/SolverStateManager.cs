@@ -43,13 +43,13 @@ public class SolverStateManager
         _gm.ShowSudokuAsString(SudokuTranslator.Translate(_sg.CurrentState, _sg.TranslationType));
     }
 
-    private void ShowLogAsked(ISolverLog log)
+    private void ShowLogAsked(ISolverLog log, StateShownType type)
     {
-        _shownState = log.StateAfter;
+        _shownState = type == StateShownType.Before ? log.StateBefore : log.StateAfter;
         
-        _sg.ShowState(log.StateAfter);
+        _sg.ShowState(_shownState);
         _sg.HighlightLog(log);
-        _gm.ShowSudokuAsString(SudokuTranslator.Translate(log.StateAfter, _sg.TranslationType));
+        _gm.ShowSudokuAsString(SudokuTranslator.Translate(_shownState, _sg.TranslationType));
         _gm.ShowExplanation(log.Explanation);
     }
 
@@ -113,6 +113,11 @@ public interface ILogListGraphics
     void UnFocusLog();
 }
 
-public delegate void OnShowLogAsked(ISolverLog log);
+public delegate void OnShowLogAsked(ISolverLog log, StateShownType type);
 public delegate void OnShowCurrentAsked();
 public delegate void OnShowStartAsked();
+
+public enum StateShownType
+{
+    Before, After
+}

@@ -12,6 +12,7 @@ public partial class LogListUserControl : ILogListGraphics
     public event OnShowStartAsked? ShowStartAsked;
 
     private LogUserControl? _currentlyShowed;
+    private StateShownType _shownType = StateShownType.After;
 
     public LogListUserControl()
     {
@@ -26,17 +27,40 @@ public partial class LogListUserControl : ILogListGraphics
         {
             var luc = new LogUserControl();
             luc.InitLog(log);
+            luc.SetShownType(_shownType);
             luc.LogClicked += _ => ShowLog(luc);
+            luc.ShownTypeChanged += ChangeShownType;
             List.Children.Add(luc);
         }
         
         Scroll.ScrollToBottom();
     }
 
+    public void FocusLog(ISolverLog log)
+    {
+        var toFocus = (LogUserControl)List.Children[log.Id - 1];
+        if (toFocus.Log is null || toFocus.Log.Id != log.Id) return;
+
+        FocusLog(toFocus);
+    }
+    
+    public void UnFocusLog()
+    {
+        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed = null;
+    }
+
+    private void FocusLog(LogUserControl logUserControl)
+    {
+        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed = logUserControl;
+        _currentlyShowed.CurrentlyShowed();
+    }
+
     private void ShowLog(LogUserControl logUserControl)
     {
         FocusLog(logUserControl);
-        ShowLogAsked?.Invoke(logUserControl.Log!);
+        ShowLogAsked?.Invoke(logUserControl.Log!, _shownType);
     }
     
     private void ShowStart(object sender, RoutedEventArgs e)
@@ -51,24 +75,17 @@ public partial class LogListUserControl : ILogListGraphics
         ShowCurrentAsked?.Invoke();
     }
 
-    public void FocusLog(ISolverLog log)
+    private void ChangeShownType(StateShownType type)
     {
-        var toFocus = (LogUserControl)List.Children[log.Id - 1];
-        if (toFocus.Log is null || toFocus.Log.Id != log.Id) return;
+        if (_shownType == type) return;
 
-        FocusLog(toFocus);
-    }
-
-    private void FocusLog(LogUserControl logUserControl)
-    {
-        _currentlyShowed?.NotShowedAnymore();
-        _currentlyShowed = logUserControl;
-        _currentlyShowed.CurrentlyShowed();
-    }
-
-    public void UnFocusLog()
-    {
-        _currentlyShowed?.NotShowedAnymore();
-        _currentlyShowed = null;
+        _shownType = type;
+        foreach (var child in List.Children)
+        {
+            if (child is not LogUserControl luc) continue;
+            luc.SetShownType(type);
+        }
+        
+        if(_currentlyShowed is not null) ShowLogAsked?.Invoke(_currentlyShowed.Log!, _shownType);
     }
 }

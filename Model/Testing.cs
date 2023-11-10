@@ -17,7 +17,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        SearcherUtils.TestHouses(2, 4);
+        FullSudokuBankTest("OnlineBank2.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

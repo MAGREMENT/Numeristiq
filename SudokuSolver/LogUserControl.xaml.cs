@@ -11,6 +11,11 @@ public partial class LogUserControl
 
     public delegate void OnLogClicked(ISolverLog log);
     public event OnLogClicked? LogClicked;
+
+    public delegate void OnShownTypeChanged(StateShownType type);
+    public event OnShownTypeChanged? ShownTypeChanged;
+
+    private bool _invokeShowTypeEvent = true;
     
     public LogUserControl()
     {
@@ -73,5 +78,23 @@ public partial class LogUserControl
         Log.HighlightManager.ShiftRight();
         HighlightsNumber.Text = Log.HighlightManager.CursorPosition();
         LogClicked?.Invoke(Log);
+    }
+
+    private void TypeBefore_OnChecked(object sender, RoutedEventArgs e)
+    {
+        if(_invokeShowTypeEvent) ShownTypeChanged?.Invoke(StateShownType.Before);
+    }
+
+    private void TypeAfter_OnChecked(object sender, RoutedEventArgs e)
+    {
+        if(_invokeShowTypeEvent) ShownTypeChanged?.Invoke(StateShownType.After);
+    }
+
+    public void SetShownType(StateShownType type)
+    {
+        _invokeShowTypeEvent = false;
+        if (type == StateShownType.After) TypeAfter.IsChecked = true;
+        else TypeBefore.IsChecked = true;
+        _invokeShowTypeEvent = true;
     }
 }
