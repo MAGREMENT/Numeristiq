@@ -16,5 +16,5 @@ C:\Users\Zach\Desktop\Perso\SudokuSolver\SudokuSolver\App.xaml
 195-1239197289
 CellUserControl.xaml;CustomNavigationUserControl.xaml;LogListUserControl.xaml;LogUserControl.xaml;MainWindow.xaml;Pages\FirstPage.xaml;Pages\MainSolverPage.xaml;SolverOptions\OptionPages\GeneralOptionPage.xaml;SolverOptions\OptionPages\GraphicsOptionPage.xaml;SolverOptions\OptionPages\SolverOptionPage.xaml;SolverOptions\SolverOptionWindow.xaml;SolverUserControl.xaml;StrategyListUserControl.xaml;StrategyUserControl.xaml;
 
-False
+True
 
