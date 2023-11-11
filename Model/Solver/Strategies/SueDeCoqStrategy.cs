@@ -16,7 +16,7 @@ public class SueDeCoqStrategy : AbstractStrategy
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
-    public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior) {}
+    public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
     
     public override void Apply(IStrategyManager strategyManager)
     {

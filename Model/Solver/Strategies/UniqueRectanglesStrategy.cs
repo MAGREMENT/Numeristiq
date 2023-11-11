@@ -316,11 +316,6 @@ public readonly struct BiValue
         return One ^ Two;
     }
 
-    public bool Contains(int value)
-    {
-        return value == One || value == Two;
-    }
-
     public bool Equals(IReadOnlyPossibilities possibilities)
     {
         return possibilities.Count == 2 && possibilities.Peek(One) && possibilities.Peek(Two);

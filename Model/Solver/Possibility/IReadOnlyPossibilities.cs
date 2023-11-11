@@ -10,7 +10,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     
     public int Count { get; }
     public int First();
-    public int Next(ref int cursor);
+    public bool Next(ref int cursor);
     
     public Possibilities Or(IReadOnlyPossibilities possibilities);
     public Possibilities And(IReadOnlyPossibilities possibilities);

@@ -10,6 +10,7 @@ public class AlmostHiddenSetSearcher
     private readonly IStrategyManager _strategyManager;
 
     public int Max { get; set; } = 5;
+    public int Difference { get; set; } = 1;
 
     public AlmostHiddenSetSearcher(IStrategyManager strategyManager)
     {
@@ -70,7 +71,7 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities.Add(i);
 
-            if (or.Count == possibilities.Count + 1) result.Add(new CellsAndPossibilitiesPossibilitiesPositions(
+            if (or.Count == possibilities.Count + Difference) result.Add(new CellsAndPossibilitiesPossibilitiesPositions(
                 or.ToCellArray(Unit.Row, row), possibilities.Copy(), _strategyManager));
             
             if (possibilities.Count < Max)
@@ -100,7 +101,7 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities.Add(i);
 
-            if (or.Count == possibilities.Count + 1) result.Add(new CellsAndPossibilitiesPossibilitiesPositions(
+            if (or.Count == possibilities.Count + Difference) result.Add(new CellsAndPossibilitiesPossibilitiesPositions(
                 or.ToCellArray(Unit.Column, column), possibilities.Copy(), _strategyManager));
             
             if (possibilities.Count < Max)
@@ -131,7 +132,7 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities.Add(i);
 
-            if (or.Count == possibilities.Count + 1)
+            if (or.Count == possibilities.Count + Difference)
             {
                 if(!excludeSameLine || !(or.AreAllInSameColumn() || or.AreAllInSameColumn())) 
                     result.Add(new CellsAndPossibilitiesPossibilitiesPositions(or.ToCellArray(),

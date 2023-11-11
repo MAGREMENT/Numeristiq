@@ -34,6 +34,16 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
                 int row2 = j / 9;
                 int col2 = j % 9;
                 if (strategyManager.Sudoku[row2, col2] != 0) continue;
+
+                var usc = Cells.UnitSharedCount(row1, col1, row2, col2);
+                switch (usc)
+                {
+                    case 1 : 
+                        continue;
+                    case 0 :
+                        if (row1 / 3 != row2 / 3 && col1 / 3 != col2 / 3) continue;
+                        break;
+                }
                 
                 if (Search(strategyManager, row1, col1, row2, col2)) return;
             }
@@ -46,71 +56,61 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
 
         var poss1 = strategyManager.PossibilitiesAt(row1, col1);
         var poss2 = strategyManager.PossibilitiesAt(row2, col2);
+        var or = poss1.Or(poss2);
         
         if (shared.Count < poss1.Count || shared.Count < poss2.Count) return false;
 
         var inSameUnit = Cells.ShareAUnit(row1, col1, row2, col2);
-
-        Dictionary<int, Possibilities> one = new();
-        foreach (var possibility in poss1)
-        {
-            var copy = poss2.Copy();
-            if (inSameUnit) copy.Remove(possibility);
-            one[possibility] = copy;
-        }
         
-        Dictionary<int, Possibilities> two = new();
-        foreach (var possibility in poss2)
-        {
-            var copy = poss1.Copy();
-            if (inSameUnit) copy.Remove(possibility);
-            two[possibility] = copy;
-        }
-
         List<IPossibilitiesPositions> usefulAls = new();
+        HashSet<BiValue> forbidden = new();
 
         foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(shared))
         {
+            int i = 0;
             bool useful = false;
-            foreach (var possibility in als.Possibilities)
+            while (als.Possibilities.Next(ref i))
             {
-                if (one.TryGetValue(possibility, out var other1))
-                {
-                    foreach (var possibility2 in als.Possibilities)
-                    {
-                        if (possibility2 == possibility) continue;
-
-                        if (other1.Remove(possibility2)) useful = true;
-                    }
-
-                    if (other1.Count == 0)
-                    {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row1, col1);
-                    }
-                }
+                if (!or.Peek(i)) continue;
                 
-                if (two.TryGetValue(possibility, out var other2))
+                int j = i;
+                while (als.Possibilities.Next(ref j))
                 {
-                    foreach (var possibility2 in als.Possibilities)
-                    {
-                        if (possibility2 == possibility) continue;
-
-                        if (other2.Remove(possibility2)) useful = true;
-                    }
-
-                    if (other2.Count == 0)
-                    {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row2, col2);
-                    }
+                    if (!or.Peek(j)) continue;
+                    
+                    if(forbidden.Add(new BiValue(i, j))) useful = true;
                 }
             }
 
             if (useful) usefulAls.Add(als);
         }
 
+        SearchForElimination(strategyManager, poss1, poss2, forbidden, row1, col1, inSameUnit);
+        SearchForElimination(strategyManager, poss2, poss1, forbidden, row2, col2, inSameUnit);
+        
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this, 
             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2))
                 && OnCommitBehavior == OnCommitBehavior.Return;
+    }
+
+    private void SearchForElimination(IStrategyManager strategyManager, IReadOnlyPossibilities poss1,
+        IReadOnlyPossibilities poss2, HashSet<BiValue> forbidden, int row, int col, bool inSameUnit)
+    {
+        foreach (var p1 in poss1)
+        {
+            bool toDelete = true;
+            foreach (var p2 in poss2)
+            {
+                if (p1 == p2 && inSameUnit) continue;
+                if (!forbidden.Contains(new BiValue(p1, p2)))
+                {
+                    toDelete = false;
+                    break;
+                }
+            }
+            
+            if(toDelete) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, row, col);
+        }
     }
 }
 
@@ -137,10 +137,14 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
         {
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);
+
+            Possibilities removed = new Possibilities();
+            foreach (var change in changes) removed.Add(change.Number);
             
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var als in _als)
             {
+                if (!removed.PeekAny(als.Possibilities)) continue;
                 foreach (var coord in als.EachCell())
                 {
                     lighter.HighlightCell(coord.Row, coord.Col, (ChangeColoration) color);

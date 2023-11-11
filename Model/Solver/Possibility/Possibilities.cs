@@ -51,15 +51,15 @@ public class Possibilities : IReadOnlyPossibilities
         Count = 0;
     }
 
-    public int Next(ref int cursor)
+    public bool Next(ref int cursor)
     {
         cursor++;
         for (; cursor <= 9; cursor++)
         {
-            if (Peek(cursor)) return cursor;
+            if (Peek(cursor)) return true;
         }
 
-        return 0;
+        return false;
     }
 
     public Possibilities Or(IReadOnlyPossibilities possibilities)

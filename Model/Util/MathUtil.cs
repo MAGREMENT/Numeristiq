@@ -30,7 +30,7 @@ public static class MathUtil
         var result = new double[2, 2];
 
         var slope = y / x;
-        var sign = xB < 0 ? Math.PI : 0;
+        var sign = x < 0 ? Math.PI : 0;
         var baseAngle = Math.Atan(slope) + sign;
         var abLength = Math.Sqrt(x * x + y * y);
         var angleShift = Math.Atan(d / abLength);

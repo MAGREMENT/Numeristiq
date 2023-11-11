@@ -112,7 +112,7 @@ public class SKLoopsStrategy : AbstractStrategy
 
     private static void EachCombination(List<Possibilities> result, Possibilities total, Possibilities toSearch, int cursor)
     {
-        while(total.Next(ref cursor) != 0)
+        while(total.Next(ref cursor))
         {
             if (toSearch.Peek(cursor)) continue;
 

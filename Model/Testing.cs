@@ -17,10 +17,7 @@ public static class Testing
     {
         long start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        ShiftSecondPointPerpendicularlyTest(1, 1, 3, 1, 5);
-        ShiftSecondPointPerpendicularlyTest(1, 1, 1, 3, 5);
-        ShiftSecondPointPerpendicularlyTest(1, 1, 2, 3, 5);
-        ShiftSecondPointPerpendicularlyTest(-1, -1, -2, -3, 5);
+        FullSudokuBankTest("OnlineBank2.txt");
 
         long end = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         

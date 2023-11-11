@@ -12,9 +12,17 @@ public static class Cells
     
     public static bool ShareAUnit(int row1, int col1, int row2, int col2)
     {
-        return row1 == row2 || col1 == col2 ||
-               (row1 / 3 == row2 / 3
-                && col1 / 3 == col2 / 3);
+        return row1 == row2 || col1 == col2 || (row1 / 3 == row2 / 3 && col1 / 3 == col2 / 3);
+    }
+
+    public static int UnitSharedCount(int row1, int col1, int row2, int col2)
+    {
+        var result = 0;
+        if (row1 == row2) result++;
+        if (col1 == col2) result++;
+        if (row1 / 3 == row2 / 3 && col1 / 3 == col2 / 3) result++;
+
+        return result;
     }
 
     public static List<Cell> SeenCells(Cell cell)
@@ -108,6 +116,28 @@ public static class Cells
             for (int i = 2; i < list.Count; i++)
             {
                 if (!list[i].ShareAUnit(coord) || list[i] == coord)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) result.Add(coord);
+        }
+
+        return result;
+    }
+
+    public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, Cell one, Cell two,
+        params Cell[] others)
+    {
+        List<Cell> result = new List<Cell>();
+        foreach (var coord in SharedSeenEmptyCells(strategyManager, one.Row, one.Col, two.Row, two.Col))
+        {
+            bool ok = true;
+            foreach (var other in others)
+            {
+                if (!other.ShareAUnit(coord) || other == coord)
                 {
                     ok = false;
                     break;

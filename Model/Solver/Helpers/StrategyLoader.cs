@@ -65,7 +65,8 @@ public class StrategyLoader
         {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new RowsAndColumnsSearcher(2,
             5, 5))},
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
-        {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()}
+        {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
+        {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy()}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

@@ -4,11 +4,12 @@ using Model.Solver.PossibilityPosition;
 
 namespace Model.Solver.StrategiesUtil.AlmostLockedSets;
 
-public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
+public class AlmostNakedSetSearcher
 {
     private readonly IStrategyManager _strategyManager;
 
     public int Max { get; set; } = 5;
+    public int Difference { get; set; } = 1;
 
     public AlmostNakedSetSearcher(IStrategyManager strategyManager)
     {
@@ -37,7 +38,7 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
             Possibilities or = current.Or(inspected);
             visited.Add(coords[i]);
 
-            if (or.Count == visited.Count + 1)
+            if (or.Count == visited.Count + Difference)
             {
                 result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), or, _strategyManager));
             }
@@ -119,7 +120,7 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
             Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + 1)
+            if (mashed.Count == visited.Count + Difference)
             {
                 result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
@@ -141,7 +142,7 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
             Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + 1)
+            if (mashed.Count == visited.Count + Difference)
             {
                 result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
@@ -166,7 +167,7 @@ public class AlmostNakedSetSearcher //TODO => replace ALS by IPP
             Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + 1 && (!excludeSameLine || NotInSameRowOrColumn(visited)))
+            if (mashed.Count == visited.Count + Difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
                 result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }

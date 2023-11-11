@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
+using Model.Util;
 
 namespace SudokuSolver.Utils;
 
@@ -230,18 +231,16 @@ public class SolverBackgroundManager
         var to = new Point(CenterX(two.Col, two.Possibility), CenterY(two.Row, two.Possibility));
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
-        double angle = Math.Atan((to.Y - from.Y) / (to.X - from.X));
+        var offsets = MathUtil.ShiftSecondPointPerpendicularly(from.X, from.Y, middle.X, middle.Y, LinkOffset);
 
-        var deltaX = LinkOffset * Math.Sin(angle);
-        var deltaY = LinkOffset * Math.Cos(angle);
-        var offsetOne = new Point(middle.X - deltaX, middle.Y - deltaY);
+        var offsetOne = new Point(offsets[0, 0], offsets[0, 1]);
         if (offsetOne.X > 0 && offsetOne.X < Size && offsetOne.Y > 0 && offsetOne.Y < Size)
         {
             AddShortenedLine(from, offsetOne, to,  isWeak);
             return;
         }
         
-        var offsetTwo = new Point(middle.X + deltaX, middle.Y + deltaY);
+        var offsetTwo = new Point(offsets[1, 0], offsets[1, 1]);
         if (offsetTwo.X > 0 && offsetTwo.X < Size && offsetTwo.Y > 0 && offsetTwo.Y < Size)
         {
             AddShortenedLine(from, offsetTwo, to,  isWeak);
