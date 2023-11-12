@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
@@ -14,34 +15,176 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public AlignedTripleExclusionStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    private readonly int _minSharedSeenCells;
+
+    public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
+        _minSharedSeenCells = minSharedSeenCells;
     }
 
 
     public override void Apply(IStrategyManager strategyManager)
     {
-        for (int startRow = 0; startRow < 9; startRow += 3)
+        for (int start1 = 0; start1 < 9; start1 += 3)
         {
-            for (int startCol = 0; startCol < 9; startCol += 3)
+            if (_minSharedSeenCells > 12) continue;
+            
+            //Aligned in unit & box => 12 ssc
+            for (int start2 = 0; start2 < 9; start2 += 3)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    var c1 = new Cell(startRow + i, startCol);
-                    var c2 = new Cell(startRow + i, startCol + 1);
-                    var c3 = new Cell(startRow + i, startCol + 2);
+                    var c1 = new Cell(start1 + i, start2);
+                    var c2 = new Cell(start1 + i, start2 + 1);
+                    var c3 = new Cell(start1 + i, start2 + 2);
                     
                     if (strategyManager.Sudoku[c1.Row, c1.Col] == 0 && strategyManager.Sudoku[c2.Row, c2.Col] == 0 &&
                         strategyManager.Sudoku[c3.Row, c3.Col] == 0 && Search(strategyManager, c1, c2, c3)) return;
 
-                    c1 = new Cell(startRow, startCol + i);
-                    c2 = new Cell(startRow + 1, startCol + i);
-                    c3 = new Cell(startRow + 2, startCol + i);
+                    c1 = new Cell(start1, start2 + i);
+                    c2 = new Cell(start1 + 1, start2 + i);
+                    c3 = new Cell(start1 + 2, start2 + i);
                     
                     if (strategyManager.Sudoku[c1.Row, c1.Col] == 0 && strategyManager.Sudoku[c2.Row, c2.Col] == 0 &&
                         strategyManager.Sudoku[c3.Row, c3.Col] == 0 && Search(strategyManager, c1, c2, c3)) return;
                 }
             }
+            
+            if (_minSharedSeenCells > 6) continue;
+            
+            //2 aligned boxes & 2 in same unit => 6 ssc
+            for (int u = 0; u < 2; u++)
+            {
+                for (int v = u + 1; v < 3; v++)
+                {
+                    var unit1 = start1 + u;
+                    var unit2 = start1 + v;
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        int s = i / 3 * 3;
+                        for (int j = s; j < s + 3; j++)
+                        {
+                            if (i == j) continue;
+                            
+                            if (strategyManager.Sudoku[unit1, i] == 0 && strategyManager.Sudoku[unit1, j] == 0)
+                            {
+                                for (int k = 0; k < 9; k++)
+                                {
+                                    if(k / 3 == i / 3 || strategyManager.Sudoku[unit2, k] != 0) continue;
+
+                                    if (Search(strategyManager, new Cell(unit1, i), new Cell(unit1, j),
+                                            new Cell(unit2, k))) return;
+                                }
+                            }
+                            
+                            if (strategyManager.Sudoku[unit2, i] == 0 && strategyManager.Sudoku[unit2, j] == 0)
+                            {
+                                for (int k = 0; k < 9; k++)
+                                {
+                                    if(k / 3 == i / 3 || strategyManager.Sudoku[unit1, k] != 0) continue;
+
+                                    if (Search(strategyManager, new Cell(unit2, i), new Cell(unit2, j),
+                                            new Cell(unit1, k))) return;
+                                }
+                            }
+                            
+                            if (strategyManager.Sudoku[i, unit1] == 0 && strategyManager.Sudoku[j, unit1] == 0)
+                            {
+                                for (int k = 0; k < 9; k++)
+                                {
+                                    if(k / 3 == i / 3 || strategyManager.Sudoku[k, unit2] != 0) continue;
+
+                                    if (Search(strategyManager, new Cell(i, unit1), new Cell(j, unit1),
+                                            new Cell(k, unit2))) return;
+                                }
+                            }
+                            
+                            if (strategyManager.Sudoku[i, unit2] == 0 && strategyManager.Sudoku[j, unit2] == 0)
+                            {
+                                for (int k = 0; k < 9; k++)
+                                {
+                                    if(k / 3 == i / 3 || strategyManager.Sudoku[k, unit1] != 0) continue;
+
+                                    if (Search(strategyManager, new Cell(i, unit2), new Cell(j, unit2),
+                                            new Cell(k, unit1))) return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            if (_minSharedSeenCells > 5) continue;
+
+            //2 aligned boxes & different units => 5 ssc
+            for (int start2 = 0; start2 < 9; start2 += 3)
+            {
+                for (int u = 0; u < 2; u++)
+                {
+                    for (int v = u + 1; v < 3; v++)
+                    {
+                        var unit1 = start1 + u;
+                        var unit2 = start1 + v;
+                        var unit3 = start1 + LastUnitInBox(u, v);
+
+                        for (int i = 0; i < 3; i++)
+                        {
+                            for (int j = 0; j < 3; j++)
+                            {
+                                var other1 = start2 + i;
+                                var other2 = start2 + j;
+
+                                if (strategyManager.Sudoku[unit1, other1] == 0 & strategyManager.Sudoku[unit2, other2] == 0)
+                                {
+                                    for (int startOther = 0; startOther < 9; startOther += 3)
+                                    {
+                                        if (startOther == start2) continue;
+
+                                        for (int k = 0; k < 3; k++)
+                                        {
+                                            var other3 = startOther + k;
+                                            if(strategyManager.Sudoku[unit3, other3] != 0) continue;
+                                            
+                                            if(Search(strategyManager, new Cell(unit1, other1),
+                                                   new Cell(unit2, other2), new Cell(unit3, other3))) return;
+                                        }
+                                    }
+                                }
+                                
+                                if (strategyManager.Sudoku[other1, unit1] == 0 & strategyManager.Sudoku[other2, unit2] == 0)
+                                {
+                                    for (int startOther = 0; startOther < 3; startOther++)
+                                    {
+                                        if (startOther == start2) continue;
+
+                                        for (int k = 0; k < 3; k++)
+                                        {
+                                            var other3 = startOther + k;
+                                            if(strategyManager.Sudoku[other3, unit3] != 0) continue;
+                                            
+                                            if(Search(strategyManager, new Cell(other1, unit1),
+                                                   new Cell(other2, unit2), new Cell(other3, unit3))) return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private int LastUnitInBox(int one, int two)
+    {
+        var add = one + two;
+        switch (add)
+        {
+            case 1 : return 2;
+            case 2 : return 1;
+            case 3 : return 0;
+            default: throw new ArgumentException();
         }
     }
 

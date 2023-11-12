@@ -47,7 +47,7 @@ public class StrategyLoader
         {XYChainStrategy.OfficialName, new XYChainStrategy()},
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
-        {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy(5)},
+        {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
         {ComplexXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexXCycles(),
             new AlternatingChainAlgorithmV2<ILinkGraphElement>(20))},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
@@ -66,7 +66,7 @@ public class StrategyLoader
             5, 5))},
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
-        {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy()}
+        {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

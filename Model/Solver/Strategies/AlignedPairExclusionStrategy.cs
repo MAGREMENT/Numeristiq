@@ -13,39 +13,69 @@ public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned 
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    private readonly int _maxAlzSize; //TODO
 
-    public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName,  StrategyDifficulty.Hard, DefaultBehavior)
-    {
-        _maxAlzSize = maxAlsSize;
-    }
+    public AlignedPairExclusionStrategy() : base(OfficialName,  StrategyDifficulty.Hard, DefaultBehavior) { }
 
     public override void Apply(IStrategyManager strategyManager)
     {
-        for(int i = 0; i < 81; i++)
+        for (int start1 = 0; start1 < 9; start1 += 3)
         {
-            int row1 = i / 9;
-            int col1 = i % 9;
-            if(strategyManager.Sudoku[row1, col1] != 0) continue;
-
-            for (int j = i + 1; j < 81; j++)
+            for (int start2 = 0; start2 < 9; start2 += 3)
             {
-                int row2 = j / 9;
-                int col2 = j % 9;
-                if (strategyManager.Sudoku[row2, col2] != 0) continue;
-
-                var usc = Cells.UnitSharedCount(row1, col1, row2, col2);
-                switch (usc)
+                for (int i = 0; i < 3; i++)
                 {
-                    case 1 : 
-                        continue;
-                    case 0 :
-                        if (row1 / 3 != row2 / 3 && col1 / 3 != col2 / 3) continue;
-                        break;
+                    for (int j = 0; j < 2; j++)
+                    {
+                        for (int k = j + 1; k < 3; k++)
+                        {
+                            var r = start1 + i;
+                            var c1 = start2 + j;
+                            var c2 = start2 + k;
+
+                            if (strategyManager.Sudoku[r, c1] == 0 && strategyManager.Sudoku[r, c2] == 0 &&
+                                Search(strategyManager, r, c1, r, c2)) return;
+
+                            var c = start2 + i;
+                            var r1 = start1 + j;
+                            var r2 = start1 + k;
+
+                            if (strategyManager.Sudoku[r1, c] == 0 && strategyManager.Sudoku[r2, c] == 0 &&
+                                Search(strategyManager, r1, c, r2, c)) return;
+                        }
+                    }
                 }
-                
-                if (Search(strategyManager, row1, col1, row2, col2)) return;
+            }
+
+            for (int u = 0; u < 2; u++)
+            {
+                for (int v = u + 1; v < 3; v++)
+                {
+                    var unit1 = start1 + u;
+                    var unit2 = start1 + v;
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        if (strategyManager.Sudoku[unit1, i] == 0)
+                        {
+                            for (int j = 0; j < 9; j++)
+                            {
+                                if (i / 3 == j / 3 || strategyManager.Sudoku[unit2, j] != 0) continue;
+
+                                if (Search(strategyManager, unit1, i, unit2, j)) return;
+                            }
+                        }
+
+                        if (strategyManager.Sudoku[i, unit1] == 0)
+                        {
+                            for (int j = 0; j < 9; j++)
+                            {
+                                if (i / 3 == j / 3 || strategyManager.Sudoku[j, unit2] != 0) continue;
+
+                                if (Search(strategyManager, i, unit1, j, unit2)) return;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
