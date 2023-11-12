@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Model.Solver.StrategiesUtil;
+using Model.Util;
 
 namespace Model.Solver.Position;
 
@@ -230,6 +231,42 @@ public class GridPositions : IReadOnlyGridPositions
         return result;
     }
 
+    public bool CanBeCoveredByLines(int n, params Unit[] units)
+    {
+        if (Count == 0) return true;
+        
+        var copy = Copy();
+        int[] counts = new int[units.Length];
+        for (int i = 0; i < n; i++)
+        {
+            var first = copy.First();
+
+            for (int j= 0; j < units.Length; j++)
+            {
+                counts[j] = UnitMethods.GetMethods(units[j]).Count(copy, first);
+            }
+
+            UnitMethods.GetMethods(units[MathUtil.MaxIndex(counts)]).Void(copy, first);
+
+            if (copy.Count == 0) return true;
+        }
+        
+        return false;
+    }
+
+    public Cell First()
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Peek(row, col)) return new Cell(row, col);
+            }
+        }
+
+        return default;
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(_first, _second);
@@ -268,5 +305,78 @@ public class GridPositions : IReadOnlyGridPositions
         }
 
         return result;
+    }
+}
+
+public static class UnitMethods
+{
+    private static readonly IUnitMethods[] UnitMethodsArray = { new RowMethods(), new ColumnMethods(), new MiniGridMethods() };
+
+    public static IUnitMethods GetMethods(Unit u)
+    {
+        return UnitMethodsArray[(int)u];
+    }
+}
+
+public interface IUnitMethods
+{
+    int Count(GridPositions gp, Cell c);
+
+    void Fill(GridPositions gp, Cell c);
+
+    void Void(GridPositions gp, Cell c);
+}
+
+public class RowMethods : IUnitMethods
+{
+    public int Count(GridPositions gp, Cell c)
+    {
+        return gp.RowCount(c.Row);
+    }
+
+    public void Fill(GridPositions gp, Cell c)
+    {
+        gp.FillRow(c.Row);
+    }
+
+    public void Void(GridPositions gp, Cell c)
+    { 
+        gp.VoidRow(c.Row);
+    }
+}
+
+public class ColumnMethods : IUnitMethods
+{
+    public int Count(GridPositions gp, Cell c)
+    {
+        return gp.ColumnCount(c.Col);
+    }
+
+    public void Fill(GridPositions gp, Cell c)
+    {
+        gp.FillColumn(c.Col);
+    }
+
+    public void Void(GridPositions gp, Cell c)
+    { 
+        gp.VoidColumn(c.Col);
+    }
+}
+
+public class MiniGridMethods : IUnitMethods
+{
+    public int Count(GridPositions gp, Cell c)
+    {
+        return gp.MiniGridCount(c.Row / 3, c.Col / 3);
+    }
+
+    public void Fill(GridPositions gp, Cell c)
+    {
+        gp.FillMiniGrid(c.Row / 3, c.Col / 3);
+    }
+
+    public void Void(GridPositions gp, Cell c)
+    { 
+        gp.VoidMiniGrid(c.Row / 3, c.Col / 3);
     }
 }

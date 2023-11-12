@@ -39,97 +39,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
     private bool ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2)
     {
-        if(!je1.BaseCandidates.Equals(je2.BaseCandidates) || je1.GetUnit() != je2.GetUnit()) return false;
-
-        var cells1 = new HashSet<Cell>();
-        cells1.Add(je1.Base1);
-        cells1.Add(je1.Base2);
-        cells1.Add(je1.Target1);
-        cells1.Add(je1.Target2);
-
-        if (cells1.Contains(je2.Base1)) return false;
-        if (cells1.Contains(je2.Base2)) return false;
-        if (cells1.Contains(je2.Target1)) return false;
-        if (cells1.Contains(je2.Target2)) return false;
-
-        LinePositions lp1 = new();
-        LinePositions lp2 = new();
-        if (je1.GetUnit() == Unit.Row)
-        {
-            if (je1.Base1.Row / 3 != je2.Base1.Row / 3) return false;
-            
-            lp1.Add(je1.Target1.Col);
-            lp1.Add(je1.Target2.Col);
-            lp1.Add(je1.EscapeCell.Col);
-            lp2.Add(je2.Target1.Col);
-            lp2.Add(je2.Target2.Col);
-            lp2.Add(je2.EscapeCell.Col);
-        }
-        else
-        {
-            if (je1.Base1.Col/ 3 != je2.Base1.Col / 3) return false;
-            
-            lp1.Add(je1.Target1.Row);
-            lp1.Add(je1.Target2.Row);
-            lp1.Add(je1.EscapeCell.Row);
-            lp2.Add(je2.Target1.Row);
-            lp2.Add(je2.Target2.Row);
-            lp2.Add(je2.EscapeCell.Row);
-        }
-
-        if (!lp1.Equals(lp2)) return false;
-        
-        //Perfectly overlapping double junior exocet
-
-        foreach (var cell in Cells.SharedSeenCells(je1.Base1, je2.Base2, je1.Base2, je2.Base1))
-        {
-            foreach (var possibility in je1.BaseCandidates)
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
-            }
-        }
-        
-        foreach (var cell in Cells.SharedSeenCells(je1.Target1, je2.Target2, je1.Target2, je2.Target1))
-        {
-            foreach (var possibility in je1.BaseCandidates)
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
-            }
-        }
-
-        foreach (var sPossibility in je1.SPossibilities)
-        {
-            if (sPossibility.IsDoubleParallel())
-            {
-                var or = sPossibility.Or();
-                if (je1.GetUnit() == Unit.Row)
-                {
-                    for (int col = 0; col < 9; col++)
-                    {
-                        if (col == je1.EscapeCell.Col || col == je1.Target1.Col || col == je1.Target2.Col) continue;
-
-                        foreach (var row in or)
-                        {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(sPossibility.Possibility, row, col);
-                        }
-                    }
-                }
-                else
-                {
-                    for (int row = 0; row < 9; row++)
-                    {
-                        if (row == je1.EscapeCell.Row || row == je1.Target1.Row || row == je1.Target2.Row) continue;
-
-                        foreach (var col in or)
-                        {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(sPossibility.Possibility, row, col);
-                        }
-                    }
-                }
-            }   
-            
-            //TODO : other cover houses
-        }
+        //TODO
 
         return strategyManager.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
             && OnCommitBehavior == OnCommitBehavior.Return;
@@ -137,126 +47,161 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
     private bool Process(IStrategyManager strategyManager, JuniorExocet je)
     {
-        //---Base candidates rules---
-        
-        //Rule 1
-        foreach (var sCell in je.SPossibilities)
+        //Elimination 1
+        foreach (var entry in je.SCells)
         {
-            if ((sCell.FromTarget1.Count > 0 && sCell.FromTarget2.Count == 0 && sCell.FromEscapeCell.Count == 0)
-                || (sCell.FromTarget1.Count == 0 && sCell.FromTarget2.Count > 0 && sCell.FromEscapeCell.Count == 0)
-                || (sCell.FromTarget1.Count == 0 && sCell.FromTarget2.Count == 0 && sCell.FromEscapeCell.Count > 0)
-                || sCell.FromTarget1.Or(sCell.FromTarget2).Or(sCell.FromEscapeCell).Count == 1)
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Base1.Row, je.Base1.Col);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Base2.Row, je.Base2.Col);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.EscapeCell.Row,
-                    je.EscapeCell.Col);
-            }
+            if (!entry.Value.CanBeCoveredByLines(1, Unit.Row, Unit.Column)) continue;
+            
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Base1);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Base2);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.EscapeCell);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
         }
         
-        //Rule 2
-        var unit = je.GetUnit();
-        var t1Mirror = JuniorExocet.GetMirrorNodes(je.Target2, unit); //Yes, it's normal that it is je.Target2
-        var t2Mirror = JuniorExocet.GetMirrorNodes(je.Target1, unit); 
-        
+        //Elimination 2
         foreach (var possibility in je.BaseCandidates)
         {
-            if (!PossibilityPeekOrIsSolved(strategyManager, je.Target1, possibility))
+            if (!strategyManager.PossibilitiesAt(je.Target1).Peek(possibility))
             {
-                foreach (var mirror in t1Mirror)
+                foreach (var cell in je.Target1MirrorNodes)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, mirror.Row, mirror.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
             
-            if (!PossibilityPeekOrIsSolved(strategyManager, je.Target2, possibility))
+            if (!strategyManager.PossibilitiesAt(je.Target2).Peek(possibility))
             {
-                foreach (var mirror in t2Mirror)
+                foreach (var cell in je.Target2MirrorNodes)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, mirror.Row, mirror.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
-            
-            if(!PossibilityPeekOrIsSolved(strategyManager, t1Mirror[0], possibility) 
-               && !PossibilityPeekOrIsSolved(strategyManager, t1Mirror[1], possibility))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1.Row, je.Target1.Col);
-            
-            if(!PossibilityPeekOrIsSolved(strategyManager, t2Mirror[0], possibility) 
-               && !PossibilityPeekOrIsSolved(strategyManager, t2Mirror[1], possibility))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2.Row, je.Target2.Col);
         }
         
-        //Rule 3
-        for (int possibility = 1; possibility <= 9; possibility++)
+        //Elimination 3
+        foreach (var possibility in strategyManager.PossibilitiesAt(je.Target1))
         {
-            if(je.BaseCandidates.Peek(possibility)) continue;
-            
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1.Row, je.Target1.Col);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2.Row, je.Target2.Col);
+            if (!je.BaseCandidates.Peek(possibility))
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+        }
+
+        foreach (var possibility in strategyManager.PossibilitiesAt(je.Target2))
+        {
+            if (!je.BaseCandidates.Peek(possibility))
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
         
-        //Rule 4 -> Added In LinkGraph
+        //Elimination 4 => In LinkGraph
         
-        //Rule 5
-        foreach (var sCell in je.SPossibilities)
+        //Elimination 5
+        var methods = UnitMethods.GetMethods(je.GetUnit() == Unit.Row ? Unit.Column : Unit.Row);
+        foreach (var entry in je.SCells)
         {
-            if (sCell.IsDoubleParallel()) continue;
-            
-            if (sCell.FromTarget1.Count == 0 && sCell.FromTarget2.Count > 0)
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
+            if (entry.Value.CanBeCoveredByLines(2, je.GetUnit())) continue;
 
-            if (sCell.FromTarget2.Count == 0 && sCell.FromTarget1.Count > 0)
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
-            
-
-            if (sCell.FromEscapeCell.Count == 0)
+            //1 cover house goes by target 1
+            var copy = entry.Value.Copy();
+            methods.Void(copy, je.Target1);
+            if (copy.CanBeCoveredByLines(1, je.GetUnit()))
             {
-                if(sCell.FromTarget2.Count > 0)
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
-                if(sCell.FromTarget1.Count > 0)
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                continue;
+            }
+            
+            //1 cover house goes by target 2
+            copy = entry.Value.Copy();
+            methods.Void(copy, je.Target2);
+            if (copy.CanBeCoveredByLines(1, je.GetUnit()))
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                continue;
+            }
+            
+            //1 cover house goes by escape cell => no eliminations
+            copy = entry.Value.Copy();
+            methods.Void(copy, je.EscapeCell);
+            if (copy.CanBeCoveredByLines(1, je.GetUnit())) continue;
+            
+            //If arrived here, then the cover houses must both be perpendicular to the JE band
+            if(methods.Count(entry.Value, je.Target1) > 0)
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+            
+            if(methods.Count(entry.Value, je.Target2) > 0)
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+        }
+        
+        //Elimination 6
+        foreach (var possibility in je.BaseCandidates)
+        {
+            bool ok = false;
+            foreach (var cell in je.Target1MirrorNodes)
+            {
+                if (strategyManager.Contains(cell.Row, cell.Col, possibility)) ok = true;
             }
 
-            if (SPossibility.IsPerpendicularWithOneParallel(sCell.FromTarget1, sCell.FromTarget2, sCell.FromEscapeCell))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target1.Row, je.Target1.Col);
+            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
             
-            if (SPossibility.IsPerpendicularWithOneParallel(sCell.FromTarget2, sCell.FromTarget1, sCell.FromEscapeCell))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(sCell.Possibility, je.Target2.Row, je.Target2.Col);
+            ok = false;
+            foreach (var cell in je.Target2MirrorNodes)
+            {
+                if (strategyManager.Contains(cell.Row, cell.Col, possibility)) ok = true;
+            }
+
+            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
         
-        //Rule 6 -> Done in rule 2
+        //Compatibility check
+        HashSet<BiValue> forbiddenPairs = new();
 
-        if (strategyManager.ChangeBuffer.NotEmpty() &&
-            strategyManager.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
-            && OnCommitBehavior == OnCommitBehavior.Return) return true;
+        int i = 0;
+        while (je.BaseCandidates.Next(ref i))
+        {
+            int j = i;
+            while (je.BaseCandidates.Next(ref j))
+            {
+                if (!je.CompatibilityCheck(strategyManager, i, j)) forbiddenPairs.Add(new BiValue(i, j));
+            }
+        }
+
+        foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
+        {
+            bool ok = false;
+            foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
+            {
+                if(p1 == p2) continue;
+                
+                if (!forbiddenPairs.Contains(new BiValue(p1, p2)))
+                {
+                    ok = true;
+                    break;
+                }
+            }
+
+            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Col);
+        }
         
-        //Incompatibility test TODO
-        if (!strategyManager.UniquenessDependantStrategiesAllowed) return false; 
+        foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
+        {
+            bool ok = false;
+            foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
+            {
+                if(p1 == p2) continue;
 
-        //---Known true digits rules---
+                if (!forbiddenPairs.Contains(new BiValue(p2, p1)))
+                {
+                    ok = true;
+                    break;
+                }
+            }
 
-        //Rule 7
+            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Col);
+        }
 
-        //Rule 8
-
-        //Rule 9
-
-        //Rule 10
-
-        //Rule 11
-
-        //Rule 12
-
-        return false;
+        return strategyManager.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
+               && OnCommitBehavior == OnCommitBehavior.Return;
     }
     
-    private static bool PossibilityPeekOrIsSolved(IStrategyManager strategyManager, Cell cell, int possibility)
-    {
-        return strategyManager.Sudoku[cell.Row, cell.Col] == possibility ||
-               strategyManager.PossibilitiesAt(cell).Peek(possibility);
-    }
 }
 
 public class JuniorExocetReportBuilder : IChangeReportBuilder

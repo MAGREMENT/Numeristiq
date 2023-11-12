@@ -3,22 +3,11 @@ using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 
-public class JuniorExocetConstructRule : IConstructRule //TODO improve
+public class JuniorExocetConstructRule : IConstructRule //TODO
 {
     public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
     {
-        foreach (var je in strategyManager.PreComputer.JuniorExocet())
-        {
-            var bc = new[] { je.Base1, je.Base2 };
-            foreach (var possibility in je.BaseCandidates)
-            {
-                if (!strategyManager.PossibilitiesAt(je.Target1).Peek(possibility)
-                    || !strategyManager.PossibilitiesAt(je.Target2).Peek(possibility)) continue;
-
-                linkGraph.AddLink(new JuniorExocetTargetPossibility(possibility, je.Target1, bc),
-                    new JuniorExocetTargetPossibility(possibility, je.Target2, bc), LinkStrength.Weak);
-            }
-        }
+        
     }
 
     public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 
@@ -12,10 +13,15 @@ public class JuniorExocet
     public Cell Target2 { get; }
     public Possibilities BaseCandidates { get; }
     public Cell EscapeCell { get; }
-    public SPossibility[] SPossibilities { get; }
+    
+    public Cell[] Target1MirrorNodes { get; }
+    
+    public Cell[] Target2MirrorNodes { get; }
+    
+    public Dictionary<int, GridPositions> SCells { get; }
 
-    public JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, Possibilities baseCandidates
-        , Cell escapeCell, SPossibility[] sPossibilities)
+    public JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, Possibilities baseCandidates,
+        Cell escapeCell, Cell[] target1MirrorNodes, Cell[] target2MirrorNodes, Dictionary<int, GridPositions> sCells)
     {
         Base1 = base1;
         Base2 = base2;
@@ -23,17 +29,14 @@ public class JuniorExocet
         Target2 = target2;
         BaseCandidates = baseCandidates;
         EscapeCell = escapeCell;
-        SPossibilities = sPossibilities;
+        Target1MirrorNodes = target1MirrorNodes;
+        Target2MirrorNodes = target2MirrorNodes;
+        SCells = sCells;
     }
 
     public Unit GetUnit()
     {
         return Base1.Row == Base2.Row ? Unit.Row : Unit.Column;
-    }
-
-    public List<int[]> IncompatibilityTest(IStrategyManager strategyManager) //TODO
-    {
-        return new List<int[]>(0);
     }
 
     public List<Cell> GetSCells(){
@@ -64,85 +67,62 @@ public class JuniorExocet
         return sCells;
     }
 
-    public static Cell[] GetMirrorNodes(Cell t2, Unit unit)
+    public bool CompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
     {
-        Cell[] result = new Cell[2];
-        var cursor = 0;
+        if (!BaseCandidates.Peek(poss1) || !BaseCandidates.Peek(poss2))
+            throw new ArgumentException("Possibility not in base candidates");
         
-        if (unit == Unit.Row)
-        {
-            var startCol = t2.Col / 3 * 3;
-            for(int gridCol = 0; gridCol < 3; gridCol++)
-            {
-                var col = startCol + gridCol;
-                if (col == t2.Col) continue;
+        if (poss1 == poss2) return false;
 
-                result[cursor++] = new Cell(t2.Row, col);
+        return GetUnit() == Unit.Row
+            ? RowCompatibilityCheck(strategyManager, poss1, poss2)
+            : ColumnCompatibilityCheck(strategyManager, poss1, poss2);
+    }
+
+    private bool RowCompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
+    {
+        int urThreatCount = 0;
+        var possibilities = Possibilities.NewEmpty();
+        possibilities.Add(poss1);
+        possibilities.Add(poss2);
+
+        for (int miniRow = 0; miniRow < 3; miniRow++)
+        {
+            if (miniRow == Base1.Row / 3) continue;
+
+            for (int r = 0; r < 3; r++)
+            {
+                int row = miniRow * 3 + r;
+                
+                if (strategyManager.Contains(row, EscapeCell.Col, poss1) || strategyManager.Contains(row, EscapeCell.Col, poss2) ||
+                    strategyManager.Contains(row, Target1.Col, poss1) || strategyManager.Contains(row, Target1.Col, poss2) ||
+                    strategyManager.Contains(row, Target2.Col, poss1) || strategyManager.Contains(row, Target2.Col, poss2)) continue;
+
+                if (!strategyManager.PossibilitiesAt(row, Base1.Col).PeekAll(possibilities) ||
+                    !strategyManager.PossibilitiesAt(row, Base2.Col).PeekAll(possibilities)) continue;
+                
+                urThreatCount++;
+                break;
             }
         }
-        else
-        {
-            var startRow = t2.Row / 3 * 3;
-            for(int gridRow = 0; gridRow < 3; gridRow++)
-            {
-                var row = startRow + gridRow;
-                if (row == t2.Row) continue;
 
-                result[cursor++] = new Cell(row, t2.Col);
-            }
+        if (urThreatCount != 2) return true;
+
+        var oneS = SCells[poss1];
+        var twoS = SCells[poss2];
+
+        foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Col / 3))
+        {
+            if (oneS.MiniGridCount(diag.Key[0], diag.Key[1]) > 0 &&
+                twoS.MiniGridCount(diag.Value[0], diag.Value[1]) > 0) return true;
         }
 
-        return result;
+        return false;
     }
-}
-
-public class SPossibility
-{
-    public SPossibility(IReadOnlyLinePositions fromTarget1, IReadOnlyLinePositions fromTarget2,
-        IReadOnlyLinePositions fromEscapeCell, int possibility)
+    
+    private bool ColumnCompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
     {
-        FromTarget1 = fromTarget1;
-        FromTarget2 = fromTarget2;
-        FromEscapeCell = fromEscapeCell;
-        Possibility = possibility;
-    }
-
-    public IReadOnlyLinePositions FromTarget1 { get; }
-    public IReadOnlyLinePositions FromTarget2 { get; }
-    public IReadOnlyLinePositions FromEscapeCell { get; }
-    public int Possibility { get; }
-
-    public bool IsDoublePerpendicular()
-    {
-        return FromTarget1.Count == 0 || FromTarget2.Count == 0 || FromEscapeCell.Count == 0;
-    }
-
-    public bool IsDoubleParallel()
-    {
-        return FromTarget1.Or(FromTarget2).Or(FromEscapeCell).Count <= 2;
-    }
-
-    public bool IsOnePerpendicularAndOneParallel()
-    {
-        return IsPerpendicularWithOneParallel(FromTarget1, FromTarget2, FromEscapeCell)
-               || IsPerpendicularWithOneParallel(FromTarget2, FromTarget1, FromEscapeCell)
-               || IsPerpendicularWithOneParallel(FromEscapeCell, FromTarget2, FromTarget1);
-    }
-
-    public LinePositions Or()
-    {
-        return FromTarget1.Or(FromTarget2).Or(FromEscapeCell);
-    }
-
-    public static bool IsPerpendicularWithOneParallel(IReadOnlyLinePositions perp, IReadOnlyLinePositions par1,
-        IReadOnlyLinePositions par2)
-    {
-        if (perp.Count <= 1) return false;
-        return par1.Or(par2).Count == 1;
-    }
-
-    public bool IsValid()
-    {
-        return IsDoublePerpendicular() || IsDoubleParallel() || IsOnePerpendicularAndOneParallel();
+        //TODO
+        return true;
     }
 }

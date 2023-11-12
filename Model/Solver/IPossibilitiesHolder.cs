@@ -14,6 +14,18 @@ public interface IPossibilitiesHolder
     {
         return PossibilitiesAt(cell.Row, cell.Col);
     }
+
+    public bool ContainsAny(int row, int col, Possibilities possibilities)
+    {
+        var solved = Sudoku[row, col];
+        return solved == 0 ? PossibilitiesAt(row, col).PeekAny(possibilities) : possibilities.Peek(solved);
+    }
+
+    public bool Contains(int row, int col, int possibility)
+    {
+        var solved = Sudoku[row, col];
+        return solved == 0 ? PossibilitiesAt(row, col).Peek(possibility) : solved == possibility;
+    }
     
     IReadOnlyLinePositions ColumnPositionsAt(int col, int number);
 

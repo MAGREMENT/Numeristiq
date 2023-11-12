@@ -232,6 +232,31 @@ public static class Cells
             };  
         }
     }
+
+    public static Dictionary<int[], int[]> DiagonalMiniGridAssociation(int miniRowExcept, int miniColExcept)
+    {
+        var result = new Dictionary<int[], int[]>(4);
+        List<int[]> buffer = new(4);
+
+        for (int miniRow = 0; miniRow < 3; miniRow++)
+        {
+            if (miniRow == miniRowExcept) continue;
+            
+            for (int miniCol = 0; miniCol < 3; miniCol++)
+            {
+                if (miniCol == miniColExcept) continue;
+                
+                buffer.Add(new[] {miniRow, miniCol});
+            }
+        }
+        
+        result.Add(buffer[0], buffer[3]);
+        result.Add(buffer[1], buffer[2]);
+        result.Add(buffer[2], buffer[1]);
+        result.Add(buffer[3], buffer[0]);
+
+        return result;
+    }
 }
 
 public readonly struct Cell
