@@ -4,6 +4,7 @@ using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Solver.StrategiesUtil.CellColoring;
 using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
+using Model.Solver.StrategiesUtil.Exocet;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Helpers;
@@ -91,6 +92,6 @@ public class PreComputer
 
     private List<JuniorExocet> DoJuniorExocet()
     {
-        return StrategiesUtil.JuniorExocet.SearchFullGrid(_strategyManager);
+        return JuniorExocetSearcher.FullGrid(_strategyManager);
     }
 }

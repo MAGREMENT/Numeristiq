@@ -3,6 +3,7 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtil.Exocet;
 
 namespace Model.Solver.Strategies;
 
