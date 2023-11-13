@@ -2,6 +2,7 @@
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.Exocet;
 
@@ -14,7 +15,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
@@ -47,6 +48,8 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
     private bool Process(IStrategyManager strategyManager, JuniorExocet je)
     {
+        Possibilities[] removedBaseCandidates = { Possibilities.NewEmpty(), Possibilities.NewEmpty() };
+        
         //Elimination 1
         foreach (var entry in je.SCells)
         {
@@ -57,6 +60,9 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.EscapeCell);
             strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
             strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+
+            removedBaseCandidates[0].Add(entry.Key);
+            removedBaseCandidates[1].Add(entry.Key);
         }
         
         //Elimination 2
@@ -150,56 +156,166 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
 
             if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
-        
+
         //Compatibility check
-        HashSet<BiValue> forbiddenPairs = new();
-
-        int i = 0;
-        while (je.BaseCandidates.Next(ref i))
+        if (je.BaseCandidates.Count != 2)
         {
-            int j = i;
-            while (je.BaseCandidates.Next(ref j))
-            {
-                if (!je.CompatibilityCheck(strategyManager, i, j)) forbiddenPairs.Add(new BiValue(i, j));
-            }
-        }
+            HashSet<BiValue> forbiddenPairs = new();
 
-        foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
-        {
-            bool ok = false;
-            foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
+            int i = 0;
+            while (je.BaseCandidates.Next(ref i))
             {
-                if(p1 == p2) continue;
-                
-                if (!forbiddenPairs.Contains(new BiValue(p1, p2)))
+                int j = i;
+                while (je.BaseCandidates.Next(ref j))
                 {
-                    ok = true;
-                    break;
+                    if (!je.CompatibilityCheck(strategyManager, i, j)) forbiddenPairs.Add(new BiValue(i, j));
                 }
             }
 
-            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Col);
-        }
-        
-        foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
-        {
-            bool ok = false;
             foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
             {
-                if(p1 == p2) continue;
-
-                if (!forbiddenPairs.Contains(new BiValue(p2, p1)))
+                bool ok = false;
+                foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
                 {
-                    ok = true;
-                    break;
+                    if(p1 == p2) continue;
+                
+                    if (!forbiddenPairs.Contains(new BiValue(p1, p2)))
+                    {
+                        ok = true;
+                        break;
+                    }
+                }
+
+                if (!ok)
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Col);
+                    removedBaseCandidates[0].Add(p1);
                 }
             }
+        
+            foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
+            {
+                bool ok = false;
+                foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
+                {
+                    if(p1 == p2) continue;
 
-            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Col);
+                    if (!forbiddenPairs.Contains(new BiValue(p2, p1)))
+                    {
+                        ok = true;
+                        break;
+                    }
+                }
+
+                if (!ok)
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Col);
+                    removedBaseCandidates[1].Add(p2);
+                }
+            }
+        }
+
+        //Known base digits eliminations
+        var revisedB1 = strategyManager.PossibilitiesAt(je.Base1).Difference(removedBaseCandidates[0]);
+        var revisedB2 = strategyManager.PossibilitiesAt(je.Base2).Difference(removedBaseCandidates[1]);
+        var revisedBaseCandidates = revisedB1.Or(revisedB2);
+
+        if (revisedBaseCandidates.Count == 2)
+        {
+            //Elimination 7
+            for (int i = 0; i < 2; i++)
+            {
+                if (!strategyManager.ContainsAny(je.Target1MirrorNodes[i], revisedBaseCandidates))
+                    RemoveAll(strategyManager, je.Target1MirrorNodes[(i + 1) % 2], strategyManager.PossibilitiesAt(je.Target2));
+                
+                if(!strategyManager.ContainsAny(je.Target2MirrorNodes[i], revisedBaseCandidates))
+                    RemoveAll(strategyManager, je.Target2MirrorNodes[(i + 1) % 2], strategyManager.PossibilitiesAt(je.Target1));
+            }
+            
+            //Elimination 8
+            var or = strategyManager.PossibilitiesAt(je.Target1MirrorNodes[0])
+                .Or(strategyManager.PossibilitiesAt(je.Target1MirrorNodes[1]));
+            var diff = or.Difference(revisedBaseCandidates);
+            if (diff.Count == 1)
+            {
+                var p = diff.First();
+                foreach (var cell in Cells.SharedSeenCells(je.Target1MirrorNodes[0], je.Target1MirrorNodes[1]))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                }
+            }
+                
+            or = strategyManager.PossibilitiesAt(je.Target2MirrorNodes[0])
+                .Or(strategyManager.PossibilitiesAt(je.Target2MirrorNodes[1]));
+            diff = or.Difference(revisedBaseCandidates);
+            if (diff.Count == 1)
+            {
+                var p = diff.First();
+                foreach (var cell in Cells.SharedSeenCells(je.Target2MirrorNodes[0], je.Target2MirrorNodes[1]))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                }
+            }
+            
+            //Elimination 9 => ???
+            
+            //Elimination 10
+            foreach (var possibility in revisedBaseCandidates)
+            {
+                foreach (var cell in Cells.SharedSeenCells(je.Base1, je.Base2))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                }
+
+                foreach (var cell in Cells.SharedSeenCells(je.Target1, je.Target2))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                }
+            }
+            
+            
+            //Elimination 11
+            var unit = je.GetUnit();
+            var miniUnit = unit == Unit.Row ? je.Base1.Row / 3 : je.Base1.Col / 3;
+            var m = UnitMethods.GetMethods(unit);
+            foreach (var entry in je.SCells)
+            {
+                for (int u = 0; u < 9; u++)
+                {
+                    if (u / 3 == miniUnit) continue;
+
+                    var c = unit == Unit.Row ? new Cell(u, 0) : new Cell(0, u);
+                    if (m.Count(entry.Value, c) == 0) continue;
+
+                    var copy = entry.Value.Copy();
+                    m.Void(copy, c);
+                    if (!copy.CanBeCoveredByLines(1, Unit.Row, Unit.Column)) continue;
+
+                    for (int o = 0; o < 9; o++)
+                    {
+                        var eliminationCell = unit == Unit.Row ? new Cell(u, o) : new Cell(o, u);
+                        if (entry.Value.Peek(eliminationCell)) continue;
+                        
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, eliminationCell);
+                    }
+                }
+            }
+            
+            //Elimination 12 TODO
         }
 
         return strategyManager.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
                && OnCommitBehavior == OnCommitBehavior.Return;
+    }
+
+    private void RemoveAll(IStrategyManager strategyManager, Cell cell, IReadOnlyPossibilities except)
+    {
+        foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+        {
+            if (except.Peek(possibility)) continue;
+
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+        }
     }
     
 }

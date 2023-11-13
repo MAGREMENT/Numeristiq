@@ -122,7 +122,42 @@ public class JuniorExocet
     
     private bool ColumnCompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
     {
-        //TODO
-        return true;
+        int urThreatCount = 0;
+        var possibilities = Possibilities.NewEmpty();
+        possibilities.Add(poss1);
+        possibilities.Add(poss2);
+
+        for (int miniCol = 0; miniCol < 3; miniCol++)
+        {
+            if (miniCol == Base1.Col / 3) continue;
+
+            for (int c = 0; c < 3; c++)
+            {
+                int col = miniCol * 3 + c;
+                
+                if (strategyManager.Contains(EscapeCell.Row, col, poss1) || strategyManager.Contains(EscapeCell.Row, col, poss2) ||
+                    strategyManager.Contains(Target1.Row, col, poss1) || strategyManager.Contains(Target1.Row, col, poss2) ||
+                    strategyManager.Contains(Target2.Row, col, poss1) || strategyManager.Contains(Target2.Row, col, poss2)) continue;
+
+                if (!strategyManager.PossibilitiesAt(Base1.Row, col).PeekAll(possibilities) ||
+                    !strategyManager.PossibilitiesAt(Base2.Row, col).PeekAll(possibilities)) continue;
+                
+                urThreatCount++;
+                break;
+            }
+        }
+
+        if (urThreatCount != 2) return true;
+
+        var oneS = SCells[poss1];
+        var twoS = SCells[poss2];
+
+        foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Col / 3))
+        {
+            if (oneS.MiniGridCount(diag.Key[0], diag.Key[1]) > 0 &&
+                twoS.MiniGridCount(diag.Value[0], diag.Value[1]) > 0) return true;
+        }
+
+        return false;
     }
 }

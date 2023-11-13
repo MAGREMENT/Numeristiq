@@ -79,7 +79,19 @@ public class Possibilities : IReadOnlyPossibilities
             int and = _possibilities & bp._possibilities;
             return new Possibilities(and, System.Numerics.BitOperations.PopCount((uint) and));
         }
+        
         return IReadOnlyPossibilities.DefaultAnd(this, possibilities);
+    }
+
+    public Possibilities Difference(IReadOnlyPossibilities possibilities)
+    {
+        if (possibilities is Possibilities p)
+        {
+            var diff = _possibilities & ~p._possibilities;
+            return new Possibilities(diff, System.Numerics.BitOperations.PopCount((uint) diff));
+        }
+
+        return new Possibilities(); //TODO
     }
 
     public Possibilities Invert()

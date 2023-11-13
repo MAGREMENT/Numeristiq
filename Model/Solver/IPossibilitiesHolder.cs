@@ -21,6 +21,11 @@ public interface IPossibilitiesHolder
         return solved == 0 ? PossibilitiesAt(row, col).PeekAny(possibilities) : possibilities.Peek(solved);
     }
 
+    public bool ContainsAny(Cell cell, Possibilities possibilities)
+    {
+        return ContainsAny(cell.Row, cell.Col, possibilities);
+    }
+
     public bool Contains(int row, int col, int possibility)
     {
         var solved = Sudoku[row, col];

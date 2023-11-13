@@ -44,6 +44,11 @@ public class ChangeBuffer
     {
         ProposeSolutionAddition(new CellPossibility(row, col, number));
     }
+    
+    public void ProposeSolutionAddition(int number, Cell cell)
+    {
+        ProposeSolutionAddition(new CellPossibility(cell, number));
+    }
 
     public void ProposeSolutionAddition(CellPossibility cp)
     {

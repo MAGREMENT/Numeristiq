@@ -14,6 +14,7 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     
     public Possibilities Or(IReadOnlyPossibilities possibilities);
     public Possibilities And(IReadOnlyPossibilities possibilities);
+    public Possibilities Difference(IReadOnlyPossibilities possibilities);
     public Possibilities Invert();
     public bool Peek(int n);
     public bool PeekAll(IReadOnlyPossibilities poss);
