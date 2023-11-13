@@ -1,0 +1,24 @@
+<solverOptions1:OptionPage x:Class="View.SolverOptions.OptionPages.SolverOptionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:solverOptions1="clr-namespace:View.SolverOptions"
+      mc:Ignorable="d"
+      Title="SolverOptionPage" Height="400" Width="450">
+    <StackPanel Height="400" Width="450">
+        <CheckBox Margin="10, 10, 0, 0" Checked="StepByStepOn" Unchecked="StepByStepOff" x:Name="StepByStep">Step by step</CheckBox> 
+        <CheckBox Margin="10, 10, 0, 0" Checked="AllowUniqueness" Unchecked="ForbidUniqueness" x:Name="Uniqueness">Unique solution</CheckBox>
+        <StackPanel Orientation="Horizontal" Margin="10, 10, 0, 0" >
+            <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center">On instance found</TextBlock>
+            <ComboBox Width="110" IsReadOnly="True" SelectedIndex="0" x:Name="Box"
+                      VerticalAlignment="Center" SelectionChanged="SelectedOnInstanceFound">
+                <ComboBoxItem>Default</ComboBoxItem>
+                <ComboBoxItem>Return</ComboBoxItem>
+                <ComboBoxItem>Wait for all</ComboBoxItem>
+                <ComboBoxItem>Choose best</ComboBoxItem>
+                <ComboBoxItem>Customized</ComboBoxItem>
+            </ComboBox>
+        </StackPanel>
+    </StackPanel>
+</solverOptions1:OptionPage>

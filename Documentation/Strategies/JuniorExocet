@@ -1,0 +1,123 @@
+The pattern is designed to locate two target cells that together will hold the same digits as those in a pair of base
+cells in a mini-line.
+
+    JE2 Pattern					  JE+ Patterns
+  *-------*-------*-------*                         *-------*-------*-------*
+  | B B * | * . . | * . . |  B = Base Cells         | B B * | * . . | * . . |
+  | . . * | T . . | / . . |  T = Target Cells       | . . * | Q . . | R . . | Q = 1st Object Pair
+  | . . * | / . . | T . . |  / = Companion Cells    | . . * | Q . . | R . . | R = 2nd Object Pair
+  *-------*-------*-------*                         *-------*-------*-------*
+  | . . S | S . . | S . . |                         | . . S | S . . | S . . |
+  | . . S | S . . | S . . |                         | . . S | S . . | S . . |
+  | . . S | S . . | S . . |                         | . . S | S . . | S . . |
+  *-------*-------*-------*  S = Cross-line Cells   *-------*-------*-------*
+  | . . S | S . . | S . . |  * = 'Escape' Cells     | . . S | S . . | S . . |
+  | . . S | S . . | S . . |                         | . . S | S . . | S . . |
+  | . . S | S . . | S . . |                         | . . S | S . . | S . . |
+  *-------*-------*-------*                         *-------*-------*-------*
+       CLb  CL1     CL2      CL = Cross-Line             CLb  CL1     CL2
+
+In the maps above:
+1.	The two base cells lie in a mini-line in the direction of the JE band, and will usually contain a combined set of 3
+ or 4 candidates. ‡
+2.	The object cell pairs will occupy cross mini-lines in two boxes in the JE band out of sight of the base cells. These
+ cells must be selected so that each object pair can only hold one base digit at most either because:
+    a.	(JE patterns) base digits only appear in one (target) cell, and not in the other (companion) cell.
+    b.	(JE+ patterns) the cells contain a locked non-base digit which together with a true base digit will form a locked pair.
+ A single + sign indicates one of the object pairs holds a locked digit and ++ indicates they both do.           
+3.	As shown in the map, there is one cross line the base cell box that misses the base cells and two others that
+ contain the object cells. The cells in these lines external to the JE band are known as 'S' cells. For the pattern to
+  be valid, all instances of each base digit as a candidate or a given or solved value in the 'S' cells must be confined
+   to no more than two cover houses; a pair of rows, a pair of columns, or one row and one column.     
+
+One further test arises when exhaustive searches are being conducted that include digits that are givens in the JE band
+ or when the band is otherwise rich in givens/solved cells:  
+4.	It must be possible for at least two base digits to be true in one target cell and one non-target cell
+ (a mirror cell) in the two target boxes in the JE band when each is true in the base cells. If the potential mirror
+  cells in one of the target boxes can only hold non-base digits, the pattern can't be true   
+
+The 'escape' cells identified in the maps are the JE Band/Cross-Line intersection cells which can hold the candidates
+ that are found to be false in the base cells.   
+ 
+In the basic pattern the positions of the target and companion cells are known. They split into two types; those where
+ the two target cells are in diagonal mini-lines and those where they are aligned, giving these resolved patterns:  
+ 
+*----------*----------*----------*  *----------*----------*----------*   ab   = true base digit pair in the base cells
+| ab ab *  | *  *  *  | *  *  *  |  | ab ab *  | *  *  *  | *  *  *  |   a, b = true base digits in the target cells
+| *  *  *  | a  >  >  | \  *  *  |  | *  *  *  | a  *  *  | b  *  *  |   \    = companion cells (a & b false)  
+| *  *  *  | \  *  *  | b  <  <  |  | *  *  *  | \  >  >  | \  <  <  |   *    = a & b both false    
+*----------*----------*----------*  *----------*----------*----------*   <    = 2-cell mirror node containing a   
+ JE2D (diagonal)                     JE2A (aligned)                      >    = 2-cell mirror node containing b
+ 
+This test identifies when two base digits can't be true together because they would cause the base cells to become part
+ of a deadly UR.  This happens when two UR threats involving the base cells exist and it would be impossible to disrupt 
+ both of them.  
+
+..7..4.2.9.....7..63.7.........8....4....1.5...94..6....63..4...7...5.8.........1
+ *-----------------*----------------*---------------*       *-----------------*----------------*---------------*
+ | 158b 158b .     | .    .    .    | .    .    .   |       | 158b 158b .     | .    .    .    | .    .    .   |
+ | .    .    .     | 158t .    .    | .    .    .   |       | .    .    .     | 158t .    .    | .    .    .   |
+ | .    .    .     | .    .    .    | 158t .    .   |       | .    .    .     | .    .    .    | 158t .    .   |
+ *-----------------*----------------*---------------*       *-----------------*----------------*---------------*
+ | .    .    15x   | 5   <8>   .    | 1    1    .   |  15   | .    .    15x   | 5   <8>   .    | 1    1    .   |
+ | .    .    8x    | .    .   <1>   | 8   <5>   .   |  ..8  | .    .    8x    | .    .   <1>   | 8   <5>   .   |
+ | 158x 158x       | .    5    .    | .    1    8   |       | 158x 158x       | .    5    .    | .    1    8   |
+ *-----------------*----------------*---------------*       *-----------------*----------------*---------------*
+ | 158x 158x .     | .    1    8    | .    .    5   |       | 158x 158x .     | .    1    8    | .    .    5   |
+ | .    .    1x    | 1    1   <5>   | .   <8>   .   |  1..  | .    .    1x    | 1    1   <5>   | .   <8>   .   |
+ | .    .    58x   | 8    .    .    | 5    .    1   |  .58  | .    .    58x   | 8    .    .    | 5    .    1   |
+ *-----------------*----------------*---------------*       *-----------------*----------------*---------------*
+             CLb     CL1              CL2			               CLb     CL1              CL2
+             
+This is the starting grid stripped down to the essentials shown with two different colouring schemes. The threat cells
+are r6c12 and r7c12 in combination with  the base cells r1c12.
+
+If the true base digits in the base cross line (CLb) both occupy the same box they will both be eliminated from the same
+threat pair but they will become locked in the other threat pair. Therefore these digits must be true in different
+boxes so that one digit in each threat pair will be eliminated. However the true digits in the base cross line will
+be decided by the colouring chains resulting from their allocations in the target cells. This then reduces the
+checking required to confirming that it is possible for the candidate base digits  to be true in different bands in
+the target cross lines.
+
+In the left diagram whichever way round (5) and (8) could occupy the target cells their true instances in the target
+cross lines will both be in the same tier so they are incompatible. In the right diagram however they will be true in
+different bands and so they are a compatible base pair.
+
+It can now be appreciated that for a pair of base digits to be compatible they must have instances occupying 
+boxes in their target cross lines – so simplifying the check even further. It can now quickly be seen that (5) fails
+this test and so can never be a true base digit.
+
+When dual UR threats exist the simple rule is
+For a pair of digits to be compatible it must be possible for their their true 'S' cells in the target cross lines to
+occupy two diagonal boxes.
+
+Sometimes it happens that there is only one way the two digits can occupy diagonal 'S' cells which will then force which
+way round they would have to be true in the target cells.  
+
+When the cover houses for each digit are in different parallel bands this rule will always hold. Experience also shows
+it holds in other cases but there is a theoretical possibility that a true member digit could exist elsewhere in the
+unaffected box to eliminate the threat. A formal proof would therefore be required to show that this is never possible
+which might involve exhaustive case by case analysis. 
+
+
+Double JExocets occur when two JE2 patterns can be identified in a band with base cells in different mini-lines. When 
+the two patterns have no member digits in common there will be four target cells in all, and with one common member 
+there will be three. The combined inferences from the two patterns make them very powerful.       
+
+*----------*----------*----------*  *----------*----------*----------*   a#,b# = true base digit in base and target cells
+| a# b# .  | .  .  .  | .  .  .  |  | a# b# .  | .  .  .  | .  .  .  |   a, b  = mirror instance of true base digit
+| .  .  .  | a# b  .  | .  .  .  |  | .  .  .  | a# .  .  | b# .  .  |   
+| .  .  .  | .  .  .  | b# a  .  |  | .  .  .  | .  b  .  | .  a  .  |       
+*----------*----------*----------*  *----------*----------*----------*      
+ JE2D                                JE2C
+
+These diagrams show the distributions of the first JE2 pattern in the diagonal and aligned forms to allow the possible
+locations of the second pattern to be considered case by case. This analysis shows:   
+    1.	When the second pattern has no digit in common with the first, in addition to the targets for (a) & (b) there
+     will be two further targets for (c) & (d).
+    2.	When there is a common digit in both base sets, either a) they will share a common target cell for that digit,
+     or b) at least one of the targets will occur inside a pair of base cells.
+    3.	Hence every target cell that isn't also a base cell will contain a different digit.
+    
+
+  

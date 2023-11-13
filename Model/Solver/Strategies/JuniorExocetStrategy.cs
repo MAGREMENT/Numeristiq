@@ -1,17 +1,16 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.Exocet;
 
 namespace Model.Solver.Strategies;
 
-public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
+public class JuniorExocetStrategy : AbstractStrategy
 {
     public const string OfficialName = "Junior Exocet";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
@@ -38,33 +37,86 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         }
     }
 
-    private bool ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2)
+    private bool ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2) //TODO : correct this
     {
-        //TODO
+        var unit = je1.GetUnit();
+        if (unit != je2.GetUnit()) return false;
+
+        if ((unit == Unit.Row && je1.Base1.Row / 3 != je2.Base1.Row / 3) ||
+            (unit == Unit.Column && je1.Base1.Col / 3 != je2.Base1.Col / 3)) return false;
+        
+        HashSet<Cell> baseCells = new()
+        {
+            je1.Base1,
+            je1.Base2,
+            je2.Base1,
+            je2.Base2
+        };
+
+        if (baseCells.Count != 4) return false;
+
+        HashSet<Cell> targetCells = new()
+        {
+            je1.Target1,
+            je1.Target2,
+            je2.Target1,
+            je2.Target2,
+        };
+
+        if (baseCells.Overlaps(targetCells)) return false;
+
+        var or = je1.BaseCandidates.Or(je2.BaseCandidates);
+        if (targetCells.Count != or.Count) return false;
+
+        //Elimination 1
+        var bCells = new List<Cell>(baseCells);
+        var tCells = new List<Cell>(targetCells);
+        
+        foreach (var possibility in or)
+        {
+            foreach (var cell in Cells.SharedSeenCells(bCells))
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+            }
+            
+            foreach (var cell in Cells.SharedSeenCells(tCells))
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+            }
+        }
+
+        //Elimination 2
+        RemoveAllNonSCells(strategyManager, je1, je1.ComputeAllCoverHouses());
+        RemoveAllNonSCells(strategyManager, je2, je2.ComputeAllCoverHouses());
 
         return strategyManager.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+               && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private bool Process(IStrategyManager strategyManager, JuniorExocet je)
     {
         Possibilities[] removedBaseCandidates = { Possibilities.NewEmpty(), Possibilities.NewEmpty() };
+
+        var coverHouses = new Dictionary<int, List<JuniorExocetCoverHouse>>();
         
         //Elimination 1
-        foreach (var entry in je.SCells)
+        foreach (var possibility in je.BaseCandidates)
         {
-            if (!entry.Value.CanBeCoveredByLines(1, Unit.Row, Unit.Column)) continue;
+            var computed = je.ComputeCoverHouses(possibility);
+            coverHouses.Add(possibility, computed);
             
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Base1);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Base2);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.EscapeCell);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+            if (computed.Count > 1) continue;
+            
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base1);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base2);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.EscapeCell);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
 
-            removedBaseCandidates[0].Add(entry.Key);
-            removedBaseCandidates[1].Add(entry.Key);
+            removedBaseCandidates[0].Add(possibility);
+            removedBaseCandidates[1].Add(possibility);
         }
-        
+
         //Elimination 2
         foreach (var possibility in je.BaseCandidates)
         {
@@ -101,40 +153,30 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
         //Elimination 4 => In LinkGraph
         
         //Elimination 5
-        var methods = UnitMethods.GetMethods(je.GetUnit() == Unit.Row ? Unit.Column : Unit.Row);
+        var unit = je.GetUnit();
         foreach (var entry in je.SCells)
         {
-            if (entry.Value.CanBeCoveredByLines(2, je.GetUnit())) continue;
+            var computed = coverHouses[entry.Key];
 
-            //1 cover house goes by target 1
-            var copy = entry.Value.Copy();
-            methods.Void(copy, je.Target1);
-            if (copy.CanBeCoveredByLines(1, je.GetUnit()))
+            foreach (var coverHouse in computed)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
-                continue;
+                if (coverHouse.Unit == unit) continue;
+
+                if (coverHouse.Unit == Unit.Column)
+                {
+                    if(je.Target1.Col == coverHouse.Number)
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                    if (je.Target2.Col == coverHouse.Number)
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                }
+                else
+                {
+                    if(je.Target1.Row == coverHouse.Number)
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                    if (je.Target2.Row == coverHouse.Number)
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                }
             }
-            
-            //1 cover house goes by target 2
-            copy = entry.Value.Copy();
-            methods.Void(copy, je.Target2);
-            if (copy.CanBeCoveredByLines(1, je.GetUnit()))
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
-                continue;
-            }
-            
-            //1 cover house goes by escape cell => no eliminations
-            copy = entry.Value.Copy();
-            methods.Void(copy, je.EscapeCell);
-            if (copy.CanBeCoveredByLines(1, je.GetUnit())) continue;
-            
-            //If arrived here, then the cover houses must both be perpendicular to the JE band
-            if(methods.Count(entry.Value, je.Target1) > 0)
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
-            
-            if(methods.Count(entry.Value, je.Target2) > 0)
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
         }
         
         //Elimination 6
@@ -275,32 +317,8 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             
             
             //Elimination 11
-            var unit = je.GetUnit();
-            var miniUnit = unit == Unit.Row ? je.Base1.Row / 3 : je.Base1.Col / 3;
-            var m = UnitMethods.GetMethods(unit);
-            foreach (var entry in je.SCells)
-            {
-                for (int u = 0; u < 9; u++)
-                {
-                    if (u / 3 == miniUnit) continue;
+            RemoveAllNonSCells(strategyManager, je, coverHouses);
 
-                    var c = unit == Unit.Row ? new Cell(u, 0) : new Cell(0, u);
-                    if (m.Count(entry.Value, c) == 0) continue;
-
-                    var copy = entry.Value.Copy();
-                    m.Void(copy, c);
-                    if (!copy.CanBeCoveredByLines(1, Unit.Row, Unit.Column)) continue;
-
-                    for (int o = 0; o < 9; o++)
-                    {
-                        var eliminationCell = unit == Unit.Row ? new Cell(u, o) : new Cell(o, u);
-                        if (entry.Value.Peek(eliminationCell)) continue;
-                        
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, eliminationCell);
-                    }
-                }
-            }
-            
             //Elimination 12 TODO
         }
 
@@ -315,6 +333,29 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO other elims
             if (except.Peek(possibility)) continue;
 
             strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+        }
+    }
+
+    private void RemoveAllNonSCells(IStrategyManager strategyManager, JuniorExocet je,
+        Dictionary<int, List<JuniorExocetCoverHouse>> coverHouses)
+    {
+        foreach (var entry in je.SCells)
+        {
+            foreach (var coverHouse in coverHouses[entry.Key])
+            {
+                if (coverHouse.Unit != je.GetUnit()) continue;
+
+                for (int i = 0; i < 9; i++)
+                {
+                    var cell = je.GetUnit() == Unit.Row 
+                        ? new Cell(coverHouse.Number, i)
+                        : new Cell(i, coverHouse.Number);
+
+                    if (entry.Value.Peek(cell)) continue;
+
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                }
+            }
         }
     }
     

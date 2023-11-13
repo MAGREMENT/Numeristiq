@@ -160,4 +160,83 @@ public class JuniorExocet
 
         return false;
     }
+
+    public Dictionary<int, List<JuniorExocetCoverHouse>> ComputeAllCoverHouses()
+    {
+        var result = new Dictionary<int, List<JuniorExocetCoverHouse>>();
+
+        foreach (var possibility in BaseCandidates)
+        {
+            result.Add(possibility, ComputeCoverHouses(possibility));
+        }
+
+        return result;
+    }
+
+    public List<JuniorExocetCoverHouse> ComputeCoverHouses(int possibility)
+    {
+        List<JuniorExocetCoverHouse> result = new();
+        if (!BaseCandidates.Peek(possibility)) return result;
+
+        var methods = MethodsInPriorityOrder();
+        var copy = SCells[possibility].Copy();
+
+        while (copy.Count > 0)
+        {
+            Cell bCell = default;
+            var bCount = 0;
+            var bMethod = methods.Length + 1;
+            
+            foreach (var cell in copy)
+            {
+                var bestCount = 0;
+                var bestMethod = methods.Length + 1;
+
+                for (int i = 0; i < methods.Length; i++)
+                {
+                    var count = methods[i].Count(copy, cell);
+
+                    if (count > bestCount || (count == bestCount && i < bestMethod))
+                    {
+                        bestCount = count;
+                        bestMethod = i;
+                    }
+                }
+
+                if (bestCount > bCount || (bestCount == bCount && bestMethod < bMethod))
+                {
+                    bCount = bestCount;
+                    bMethod = bestMethod;
+                    bCell = cell;
+                }
+            }
+
+            var m = methods[bMethod];
+            m.Void(copy, bCell);
+
+            if (m is RowMethods) result.Add(new JuniorExocetCoverHouse(Unit.Row, bCell.Row));
+            if (m is ColumnMethods) result.Add(new JuniorExocetCoverHouse(Unit.Column, bCell.Col));
+        }
+
+        return result;
+    }
+
+    private IUnitMethods[] MethodsInPriorityOrder()
+    {
+        return GetUnit() == Unit.Row
+            ? new IUnitMethods[] { new RowMethods(), new ColumnMethods() } 
+            : new IUnitMethods[] { new ColumnMethods(), new RowMethods() };
+    }
+}
+
+public class JuniorExocetCoverHouse
+{
+    public JuniorExocetCoverHouse(Unit unit, int number)
+    {
+        Unit = unit;
+        Number = number;
+    }
+
+    public Unit Unit { get; }
+    public int Number { get; }
 }

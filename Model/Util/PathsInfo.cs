@@ -3,43 +3,44 @@ using System.IO;
 
 namespace Model.Util;
 
-public static class PathsInfo
+public class PathsManager
 {
-    private const string SolutionDirectoryName = "SudokuSolver";
+    private static PathsManager? _instance;
 
-    private static string _pathToSolution = "";
-    private static bool _pathToSolutionIsFound = false;
-
-    public static string PathToData()
+    public static PathsManager GetInstance()
     {
-        return GetPathToSolution() + @"\Model\Data";
+        _instance ??= new PathsManager();
+        return _instance;
     }
 
-    private static string GetPathToSolution()
+    private string _pathToIniFile = "";
+    private bool _pathToIniFileSearched;
+    
+    private PathsManager() {}
+
+    public string GetPathToIniFile()
     {
-        if (!_pathToSolutionIsFound)
+        if (!_pathToIniFileSearched)
         {
-            _pathToSolution = FindSolutionPath();
-            _pathToSolutionIsFound = true;
+            _pathToIniFile = SearchPathToIniFile();
+            _pathToIniFileSearched = true;
         }
 
-        return _pathToSolution;
+        return _pathToIniFile;
     }
 
     //This is stupid but whatever
-    private static string FindSolutionPath()
+    private static string SearchPathToIniFile()
     {
         var current = Directory.GetCurrentDirectory();
-        var dir = current.Substring(current.LastIndexOf("\\", StringComparison.Ordinal) + 1);
-        while (!dir.Equals(SolutionDirectoryName) || !File.Exists(current + @"\Model\Data\strategies.ini"))
+        while (!File.Exists(current + @"\strategies.ini"))
         {
             var buffer = Directory.GetParent(current);
             if (buffer is null) throw new Exception();
 
             current = buffer.FullName;
-            dir = current.Substring(current.LastIndexOf("\\", StringComparison.Ordinal) + 1);
         }
-        
-        return current;
+
+        return current + @"\strategies.ini";
     }
 }

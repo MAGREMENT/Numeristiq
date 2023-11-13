@@ -15,7 +15,7 @@ namespace Model.Solver.Helpers;
 
 public class StrategyLoader
 {
-    private static readonly string Path = PathsInfo.PathToData() + @"\strategies.ini";
+    private static readonly string Path = PathsManager.GetInstance().GetPathToIniFile();
 
     private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
