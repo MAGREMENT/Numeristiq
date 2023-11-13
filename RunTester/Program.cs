@@ -6,14 +6,15 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        if (args.Length != 2 || !args[0].Equals("-f")) return;
+        var argReader = GetArgumentsReader();
+        var argResult = argReader.Read(args);
 
         var runTester = new RunTester(OnInstanceFound.WaitForAll)
         {
-            Path = args[1]
+            Path = argResult.GetValue("f")
         };
         
-        runTester.SolveDone += (number, line, success, fail) =>
+        if(argResult.Contains("r")) runTester.SolveDone += (number, line, success, fail) =>
         {
             Console.Write($"#{number} ");
             if(success) Console.WriteLine("Ok !");
@@ -29,5 +30,15 @@ public static class Program
         runTester.Start();
 
         Console.WriteLine(runTester.LastRunResult);
+    }
+
+    private static ArgumentsReader GetArgumentsReader()
+    {
+        var result = new ArgumentsReader();
+
+        result.AddAllowedArgument("f", ArgumentValueType.Mandatory);
+        result.AddAllowedArgument("r", ArgumentValueType.None);
+        
+        return result;
     }
 }
