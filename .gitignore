@@ -1,7 +1,17 @@
 /.idea
 
 /Model/bin
+/Model/obj
 
-/SudokuSolver/bin
+/View/bin
+/View/obj
+/View/.idea
+
+/RunTester/bin
+/RunTester/obj
+
+/Tests/bin
+/Tests/obj
 
 *.user
+*.cache
