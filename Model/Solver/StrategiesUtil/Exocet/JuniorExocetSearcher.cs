@@ -4,7 +4,7 @@ using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil.Exocet;
 
-public static class JuniorExocetSearcher //TODO => Add columns
+public static class JuniorExocetSearcher
 {
     private const int Max = 4;
     

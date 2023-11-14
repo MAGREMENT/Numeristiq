@@ -9,7 +9,7 @@ using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class AlmostHiddenSetsStrategy : AbstractStrategy //TODO Look into making conditions less strict
+public class AlmostHiddenSetsStrategy : AbstractStrategy
 {
     public const string OfficialName = "Almost Hidden Sets";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

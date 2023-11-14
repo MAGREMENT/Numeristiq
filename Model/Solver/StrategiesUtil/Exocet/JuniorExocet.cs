@@ -39,7 +39,26 @@ public class JuniorExocet
         return Base1.Row == Base2.Row ? Unit.Row : Unit.Column;
     }
 
-    public List<Cell> GetSCells(){
+    public LinePositions SCellsLinePositions()
+    {
+        LinePositions result = new LinePositions();
+        if (GetUnit() == Unit.Row)
+        {
+            result.Add(EscapeCell.Col);
+            result.Add(Target1.Col);
+            result.Add(Target2.Col);
+        }
+        else
+        {
+            result.Add(EscapeCell.Row);
+            result.Add(Target1.Row);
+            result.Add(Target2.Row);
+        }
+
+        return result;
+    }
+
+    public List<Cell> AllPossibleSCells(){
         List<Cell> sCells = new();
         if (GetUnit() == Unit.Row)
         {
@@ -239,4 +258,14 @@ public class JuniorExocetCoverHouse
 
     public Unit Unit { get; }
     public int Number { get; }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is JuniorExocetCoverHouse jech && jech.Unit == Unit && jech.Number == Number;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Unit, Number);
+    }
 }

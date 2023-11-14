@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.CellColoring;
 using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
@@ -127,21 +128,18 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
             var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
-            if (onPath.Count == 0) return; //TODO this should never happen but sometimes does => TO FIX
             
             onPath.Highlight(lighter);
-            
-            var first = onPath.Elements[0];
-            if(first is CellPossibility cp) lighter.CirclePossibility(cp);
+            if(onPath.Elements[0] is CellPossibility cp) lighter.CirclePossibility(cp);
+            if (onPath.Count == 1) lighter.HighlightPossibility(_onPos, ChangeColoration.CauseOnOne);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, lighter =>
         {
             var offPath = _off.History!.GetPathToRoot(_offPos, _offColoring);
+            
             offPath.Highlight(lighter);
-
-            var first = offPath.Elements[0];
-            if(first is CellPossibility cp) lighter.CirclePossibility(cp);
+            if(offPath.Elements[0] is CellPossibility cp) lighter.CirclePossibility(cp);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });

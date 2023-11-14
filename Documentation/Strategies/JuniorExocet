@@ -119,5 +119,21 @@ locations of the second pattern to be considered case by case. This analysis sho
      or b) at least one of the targets will occur inside a pair of base cells.
     3.	Hence every target cell that isn't also a base cell will contain a different digit.
     
+Three Target Cells
+*----------*----------*----------*  *----------*----------*----------*  *----------*----------*----------*  
+| AB AB c  | .  /  .  | .  .  .  |  | AB AB /  | .  /  .  | .  .  .  |  | AB AB /  | .  /  .  | .  .  .  | / = No base set1 digit 
+| .  .  /  | .  b  .  | \  .  .  |  | .  .  c  | .  b  .  | \  .  .  |  | .  .  c  | .  b  .  | a  .  .  | \ = No base set2 digit  
+| .  .  .  | .  \  .  | a  BC BC |  | .  .  .  | .  \  .  | a  BC BC |  | .  .  .  | .  \  .  | \  BC BC | 
+*----------*----------*----------*  *----------*----------*----------*  *----------*----------*----------*  
+ JE3DD       b2r2=abc                JE3DA       b2r2=abx                JE3AA       b2r2=bxx    
+
+Four Target Cells
+*----------*----------*----------*  *----------*----------*----------*  *----------*----------*----------* 
+| AB AB /  | .  d  .  | .  .  .  |  | AB AB c  | .  d  .  | .  .  .  |  | AB AB c  | .  d  .  | .  .  .  |
+| .  .  c  | .  \/ .  | b  .  .  |  | .  .  /  | .  \/ .  | b  .  .  |  | .  .  /  | .  \/ .  | \  .  .  |
+| .  .  .  | .  a  .  | \  CD CD |  | .  .  .  | .  a  .  | \  CD CD |  | .  .  .  | .  a  .  | b  CD CD |
+*----------*----------*----------*  *----------*----------*----------*  *----------*----------*----------* 
+ JE4DD       b2r2=xxx                JE4DA       b2r2=cxx                JE4AA       b2r2=cbx 
+    
 
   

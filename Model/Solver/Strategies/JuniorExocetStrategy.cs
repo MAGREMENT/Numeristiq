@@ -63,10 +63,29 @@ public class JuniorExocetStrategy : AbstractStrategy
             je2.Target2,
         };
 
-        if (baseCells.Overlaps(targetCells)) return false;
+        bool commonTarget = targetCells.Count == 3;
+
+        targetCells.Remove(je1.Base1);
+        targetCells.Remove(je1.Base2);
+        targetCells.Remove(je2.Base1);
+        targetCells.Remove(je2.Base2);
+
+        bool baseAndTargetCommon = !commonTarget && targetCells.Count == 3;
 
         var or = je1.BaseCandidates.Or(je2.BaseCandidates);
         if (targetCells.Count != or.Count) return false;
+
+        //Elimination 0
+        if (commonTarget || baseAndTargetCommon)
+        {
+            var cell = FindFirstTargetNotIn(je1, je2, targetCells);
+            var and = je1.BaseCandidates.And(je2.BaseCandidates);
+
+            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            {
+                if (!and.Peek(possibility)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+            }
+        }
 
         //Elimination 1
         var bCells = new List<Cell>(baseCells);
@@ -86,11 +105,53 @@ public class JuniorExocetStrategy : AbstractStrategy
         }
 
         //Elimination 2
-        RemoveAllNonSCells(strategyManager, je1, je1.ComputeAllCoverHouses());
-        RemoveAllNonSCells(strategyManager, je2, je2.ComputeAllCoverHouses());
+        var crossLines = je1.SCellsLinePositions().Or(je2.SCellsLinePositions());
+        if (crossLines.Count == 3)
+        {
+            RemoveAllNonSCells(strategyManager, je1, je1.ComputeAllCoverHouses());
+            RemoveAllNonSCells(strategyManager, je2, je2.ComputeAllCoverHouses());
+        }
+        else
+        {
+            foreach (var possibility in je1.BaseCandidates)
+            {
+                if (!je2.BaseCandidates.Peek(possibility)) continue;
+
+                var cov1 = je1.ComputeCoverHouses(possibility);
+                var cov2 = je2.ComputeCoverHouses(possibility);
+
+                foreach (var house1 in cov1)
+                {
+                    foreach (var house2 in cov2)
+                    {
+                        if (!house1.Equals(house2) || house1.Unit != unit) continue;
+
+                        var totalMap = je1.SCells[possibility].Or(je2.SCells[possibility]);
+                        for (int other = 0; other < 9; other++)
+                        {
+                            var cell = unit == Unit.Row
+                                ? new Cell(house1.Number, other)
+                                : new Cell(other, house1.Number);
+
+                            if (!totalMap.Peek(cell))
+                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                        }
+                    }
+                }
+            }
+        }
 
         return strategyManager.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
                && OnCommitBehavior == OnCommitBehavior.Return;
+    }
+
+    private static Cell FindFirstTargetNotIn(JuniorExocet je1, JuniorExocet je2, HashSet<Cell> total)
+    {
+        if (!total.Contains(je1.Target1)) return je1.Target1;
+        if (!total.Contains(je1.Target2)) return je1.Target2;
+        if (!total.Contains(je2.Target1)) return je2.Target1;
+        if (!total.Contains(je2.Target2)) return je2.Target2;
+        return default;
     }
 
     private bool Process(IStrategyManager strategyManager, JuniorExocet je)
@@ -372,7 +433,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<Cell> sCells = _je.GetSCells();
+        List<Cell> sCells = _je.AllPossibleSCells();
 
         List<CellPossibility> sPossibilities = new();
         foreach (var cell in sCells)
@@ -430,7 +491,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<Cell> sCells = _je1.GetSCells();
+        List<Cell> sCells = _je1.AllPossibleSCells();
 
         List<CellPossibility> sPossibilities = new();
         foreach (var cell in sCells)

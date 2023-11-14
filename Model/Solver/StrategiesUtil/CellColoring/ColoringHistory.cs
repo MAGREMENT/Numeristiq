@@ -20,7 +20,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
         List<T> elementsToReverse = new();
         List<LinkStrength> linksToReverse = new();
         
-        if (!_parents.TryGetValue(from, out var parent)) return new Path<T>();
+        if (!_parents.TryGetValue(from, out var parent)) return new Path<T>(from);
 
         elementsToReverse.Add(from);
         elementsToReverse.Add(parent);
@@ -71,9 +71,9 @@ public class Path<T> where T : ILinkGraphElement
         Links = links;
     }
 
-    public Path()
+    public Path(T element)
     {
-        Elements = Array.Empty<T>();
+        Elements = new[] { element };
         Links = Array.Empty<LinkStrength>();
     }
 
@@ -92,7 +92,7 @@ public class Path<T> where T : ILinkGraphElement
             highlighter.CreateLink(Elements[i], Elements[i + 1], current);
         }
         
-        if(Elements.Length > 0) highlighter.HighlightLinkGraphElement(Elements[0], Links[0] == LinkStrength.Strong
+        if(Elements.Length > 0 && Links.Length > 0) highlighter.HighlightLinkGraphElement(Elements[0], Links[0] == LinkStrength.Strong
             ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
     }
 

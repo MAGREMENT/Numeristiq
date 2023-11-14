@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AlignedPairExclusionStrategy : AbstractStrategy //TODO add Aligned triple exclusion
+public class AlignedPairExclusionStrategy : AbstractStrategy
 {
     public const string OfficialName = "Aligned Pair Exclusion";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
