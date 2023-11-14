@@ -3,7 +3,7 @@ using Model;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
 
-namespace View.SolverOptions;
+namespace View.Settings;
 
 public interface ISolverOptionHandler
 {

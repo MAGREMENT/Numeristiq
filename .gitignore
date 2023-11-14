@@ -13,5 +13,7 @@
 /Tests/bin
 /Tests/obj
 
+/publish
+
 *.user
 *.cache

@@ -1,0 +1,14 @@
+﻿<settings:OptionCanvas x:Class="View.Settings.Options.ColorComboBoxOptionCanvas"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:View.Settings.Options"
+             xmlns:settings="clr-namespace:View.Settings"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <StackPanel Orientation="Horizontal">
+        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center" x:Name="Block"></TextBlock>
+        <ComboBox Width="110" IsReadOnly="True" VerticalAlignment="Center" SelectionChanged="OnSelectionChange" x:Name="Box"/>
+    </StackPanel>
+</settings:OptionCanvas>

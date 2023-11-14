@@ -4,7 +4,7 @@ using System.Windows.Media;
 using Model;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
-using View.SolverOptions;
+using View.Settings;
 using View.Utils;
 
 namespace View.Pages;
@@ -18,12 +18,12 @@ public partial class MainSolverPage : IGraphicsManager, ISolverOptionHandler
     public MainSolverPage(IPageHandler pageHandler)
     {
         InitializeComponent();
-
+        
         Navigation.PageHandler = pageHandler;
-        Navigation.AddCustomButton("Options", () =>
+        Navigation.AddCustomButton("Settings", () =>
         {
-            var optionWindow = new SolverOptionWindow(this);
-            optionWindow.Show();
+            var settingsWindow = new SolverSettingsWindow(this);
+            settingsWindow.Show();
         });
 
         var unused = new SolverStateManager(this, Solver, LogList);

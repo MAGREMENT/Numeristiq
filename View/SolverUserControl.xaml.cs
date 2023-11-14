@@ -20,7 +20,7 @@ public partial class SolverUserControl : IHighlightable, ISolverGraphics
     public const int CellSize = 60;
     private const int LineWidth = 3;
 
-    private readonly Model.Solver.SudokuSolver _solver = new()
+    private readonly SudokuSolver _solver = new()
     {
         LogsManaged = true,
         StatisticsTracked = false
