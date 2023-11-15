@@ -13,6 +13,12 @@
 /Tests/bin
 /Tests/obj
 
+/Global/bin
+/Global/obj
+
+/Presenter/bin
+/Presenter/obj
+
 /publish
 
 *.user
