@@ -31,6 +31,8 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
             settingsWindow.Show();
         });
 
+        LogList.ChangeStateShown(_presenter.Settings.StateShown);
+
         Solver.CellSelected += _presenter.SelectCell;
         Solver.CellUnselected += _presenter.UnSelectCell;
         Solver.CurrentCellChangeAsked += _presenter.ChangeCurrentCell;
@@ -38,6 +40,8 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
         LogList.LogSelected += _presenter.SelectLog;
         LogList.ShowStartStateAsked += _presenter.ShowStartState;
         LogList.ShowCurrentStateAsked += _presenter.ShowCurrentState;
+        LogList.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
+        LogList.LogHighlightShifted += _presenter.ShiftLogHighlight;
         StrategyList.StrategyUsed += _presenter.UseStrategy;
     }
     
@@ -96,6 +100,11 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     public void SetLogs(IReadOnlyList<ViewLog> logs)
     {
         LogList.Dispatcher.Invoke(() => LogList.SetLogs(logs));
+    }
+
+    public void UpdateFocusedLog(ViewLog log)
+    {
+        LogList.UpdateFocusedLog(log);
     }
 
     public void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies)
@@ -158,6 +167,11 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     {
         Solver.Dispatcher.Invoke(() => Solver.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo,
             possibilityTo, coloration));
+    }
+
+    public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.EncircleCellPatch(cells, coloration));
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,

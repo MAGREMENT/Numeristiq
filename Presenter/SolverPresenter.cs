@@ -2,6 +2,7 @@
 using Global.Enums;
 using Model;
 using Model.Solver;
+using Model.Solver.Helpers.Logs;
 using Presenter.Translator;
 
 namespace Presenter;
@@ -15,6 +16,7 @@ public class SolverPresenter
     private SolverState _shownState;
     private int _lastLogIndex = -1;
     private Cell? _currentlySelectedCell;
+    private int _currentlySelectedLog;
     private bool _shouldUpdateSudokuTranslation = true;
 
     public SolverSettings Settings { get; }
@@ -30,6 +32,7 @@ public class SolverPresenter
         _highlighterTranslator = new HighlighterTranslator(view);
 
         Settings = new SolverSettings();
+        Settings.ShownStateChanged += () => SelectLog(_currentlySelectedLog);
         Settings.TranslationTypeChanged += () =>
             _view.SetTranslation(SudokuTranslator.Translate(_shownState, Settings.TranslationType));
         Settings.UniquenessAllowedChanged += () =>
@@ -85,13 +88,28 @@ public class SolverPresenter
         var logs = _solver.Logs;
         if (number < 0 || number >= logs.Count) return;
 
+        _currentlySelectedLog = number;
         var log = logs[number];
         _view.FocusLog(number);
         _view.ShowExplanation(log.Explanation);
         ChangeShownState(Settings.StateShown == StateShown.Before ? log.StateBefore : log.StateAfter);
-        _view.ClearDrawings();
-        _highlighterTranslator.Translate(log.HighlightManager);
-        _view.UpdateBackground();
+        HighlightLog(log);
+    }
+
+    public void ShiftLogHighlight(int number, int shift)
+    {
+        var logs = _solver.Logs;
+        if (number < 0 || number >= logs.Count) return;
+
+        var log = logs[number];
+        if(shift < 0) log.HighlightManager.ShiftLeft();
+        else log.HighlightManager.ShiftRight();
+
+        if (number == _currentlySelectedLog)
+        {
+            HighlightLog(log);
+            _view.UpdateFocusedLog(ModelToViewTranslator.Translate(log));
+        }
     }
 
     public void ShowStartState()
@@ -194,7 +212,7 @@ public class SolverPresenter
         {
             for (int col = 0; col < 9; col++)
             {
-                if (_solver.Sudoku[row, col] != 0) givens.Add(new Cell(row, col));
+                if (_solver.StartState[row, col] != 0) givens.Add(new Cell(row, col));
             }
         }
 
@@ -219,8 +237,7 @@ public class SolverPresenter
                 _view.FocusLog(i);
 
                 ChangeShownState(current.StateBefore);
-                _highlighterTranslator.Translate(current.HighlightManager);
-                _view.UpdateBackground();
+                HighlightLog(current);
 
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.DelayBeforeTransition));
 
@@ -246,5 +263,12 @@ public class SolverPresenter
     {
         _view.UnFocusLog();
         _view.ShowExplanation("");
+    }
+
+    private void HighlightLog(ISolverLog log)
+    {
+        _view.ClearDrawings();
+        _highlighterTranslator.Translate(log.HighlightManager);
+        _view.UpdateBackground();
     }
 }

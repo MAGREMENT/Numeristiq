@@ -28,7 +28,7 @@ public class HighlighterTranslator : IHighlightable
 
     public void EncirclePossibility(int possibility, int row, int col)
     {
-        _view.EncirclePossibility(possibility, row, col);
+        _view.EncirclePossibility(row, col, possibility);
     }
 
     public void HighlightCell(int row, int col, ChangeColoration coloration)
@@ -73,7 +73,7 @@ public class HighlighterTranslator : IHighlightable
                     pc.Column, pc.Possibility, coloration);
                 break;
             case AlmostNakedSet ans :
-                //TODO
+                _view.EncircleCellPatch(ans.EveryCell(), coloration);
                 break;
         }
     }
@@ -120,7 +120,7 @@ public class HighlighterTranslator : IHighlightable
 
         foreach (var cellF in from.EveryCellPossibilities())
         {
-            foreach (var cellT in from.EveryCellPossibilities())
+            foreach (var cellT in to.EveryCellPossibilities())
             {
                 foreach (var possF in cellF.Possibilities)
                 {

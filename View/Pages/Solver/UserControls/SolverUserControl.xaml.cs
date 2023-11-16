@@ -121,8 +121,9 @@ public partial class SolverUserControl
         {
             for (int col = 0; col < 9; col++)
             {
-                if (givens.Contains(new Cell(row, col))) GetTo(row, col).SetForeground(CellForegroundType.Given);
-                else GetTo(row, col).SetForeground(CellForegroundType.Solving);
+                GetTo(row, col).SetForeground(givens.Contains(new Cell(row, col))
+                    ? CellForegroundType.Given
+                    : CellForegroundType.Solving);
             }
         }
     }
@@ -175,6 +176,11 @@ public partial class SolverUserControl
     {
         _backgroundManager.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo, 
             possibilityTo, ColorManager.ToColor(color));
+    }
+
+    public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
+    {
+        _backgroundManager.EncircleCellPatch(cells, ColorManager.ToColor(coloration));
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,

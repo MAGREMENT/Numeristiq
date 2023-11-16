@@ -1,4 +1,5 @@
-﻿using Global.Enums;
+﻿using Global;
+using Global.Enums;
 
 namespace Presenter;
 
@@ -11,6 +12,7 @@ public interface ISudokuDrawer
     public void EncircleCell(int row, int col);
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, ChangeColoration coloration);
+    public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration);
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength);
 }

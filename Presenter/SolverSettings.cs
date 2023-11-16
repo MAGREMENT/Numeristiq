@@ -1,23 +1,30 @@
-﻿using Global;
-using Global.Enums;
-using Model;
-using Model.Solver;
+﻿using Global.Enums;
 
 namespace Presenter;
 
 public class SolverSettings
 {
+    private StateShown _showState = StateShown.Before;
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
     private bool _uniquenessAllowed = true;
     private OnInstanceFound _onInstanceFound = OnInstanceFound.Default;
 
+    public event OnShowStateChange? ShownStateChanged;
     public event OnTranslationTypeChange? TranslationTypeChanged;
     public event OnUniquenessAllowedChange? UniquenessAllowedChanged;
     public event OnInstanceFoundChange? OnInstanceFoundChanged;
     public event OnGivensNeedUpdate? GivensNeedUpdate;
     
     public bool StepByStep { get; set; } = true;
-    public StateShown StateShown { get; set; } = StateShown.Before;
+    public StateShown StateShown
+    {
+        get => _showState;
+        set
+        {
+            _showState = value;
+            ShownStateChanged?.Invoke();
+        }
+    }
     public SudokuTranslationType TranslationType
     {
         get => _translationType;
@@ -55,6 +62,7 @@ public class SolverSettings
     }
 }
 
+public delegate void OnShowStateChange();
 public delegate void OnTranslationTypeChange();
 public delegate void OnUniquenessAllowedChange();
 public delegate void OnInstanceFoundChange();

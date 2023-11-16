@@ -7,9 +7,12 @@ using View.Utils;
 namespace View.Pages.Solver.UserControls;
 
 public partial class LogUserControl
-{ 
-    public delegate void OnStateShowChanged(StateShown ss);
-    public event OnStateShowChanged? ShownTypeChanged;
+{
+    public delegate void OnStateShownChange(StateShown ss);
+    public event OnStateShownChange? StateShownChanged;
+    
+    public delegate void OnHighlightShift(int shift);
+    public event OnHighlightShift? HighlightShifted;
 
     private bool _invokeStateShowEvent = true;
     
@@ -42,41 +45,43 @@ public partial class LogUserControl
         }
     }
 
-    public void CurrentlyShowed()
+    public void CurrentlyFocused()
     {
         Highlights.Visibility = Visibility.Visible;
     }
 
-    public void NotShowedAnymore()
+    public void NotFocusedAnymore()
     {
         Highlights.Visibility = Visibility.Hidden;
     }
 
-    private void ShiftLeft(object sender, RoutedEventArgs e)
+    private void ShowStateBefore(object sender, RoutedEventArgs e)
     {
-        //TODO
+        if(_invokeStateShowEvent) StateShownChanged?.Invoke(StateShown.Before);
     }
 
-    private void ShiftRight(object sender, RoutedEventArgs e)
+    private void ShowStateAfter(object sender, RoutedEventArgs e)
     {
-        //TODO
-    }
-
-    private void TypeBefore_OnChecked(object sender, RoutedEventArgs e)
-    {
-        if(_invokeStateShowEvent) ShownTypeChanged?.Invoke(StateShown.Before);
-    }
-
-    private void TypeAfter_OnChecked(object sender, RoutedEventArgs e)
-    {
-        if(_invokeStateShowEvent) ShownTypeChanged?.Invoke(StateShown.After);
+        if(_invokeStateShowEvent) StateShownChanged?.Invoke(StateShown.After);
     }
 
     public void SetShownType(StateShown type)
     {
         _invokeStateShowEvent = false;
+        
         if (type == StateShown.After) TypeAfter.IsChecked = true;
         else TypeBefore.IsChecked = true;
+        
         _invokeStateShowEvent = true;
+    }
+
+    private void ShiftLeft(object sender, RoutedEventArgs e)
+    {
+        HighlightShifted?.Invoke(-1);
+    }
+
+    private void ShiftRight(object sender, RoutedEventArgs e)
+    {
+        HighlightShifted?.Invoke(1);
     }
 }

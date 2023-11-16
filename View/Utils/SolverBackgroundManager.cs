@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Global;
@@ -132,60 +133,71 @@ public class SolverBackgroundManager
         });
     }
 
-    public void HighlightGroup(AlmostNakedSet anp, Color color) //TODO take margin into account + improve visually
+    public void EncircleCellPatch(Cell[] cells, Color color)
     {
-        foreach (var coord in anp.NakedSet)
+        foreach (var cell in cells)
         {
-            var x = TopLeftX(coord.Cell.Col);
-            var y = TopLeftY(coord.Cell.Row);
-            
-            if(!anp.Contains(coord.Cell.Row - 1, coord.Cell.Col))
-                _groups.Children.Add(new GeometryDrawing()
+            var topLeftX = TopLeftX(cell.Col) - _margin / 2;
+            var topLeftY = TopLeftY(cell.Row) - _margin / 2;
+
+            var bottomRightX = topLeftX + _cellSize + _margin;
+            var bottomRightY = topLeftY + _cellSize + _margin;
+
+            if (!cells.Contains(new Cell(cell.Row, cell.Col + 1)))
+            {
+                _groups.Children.Add(new GeometryDrawing
                 {
-                    Geometry = new LineGeometry(new Point(x, y), new Point(x + _cellSize, y)),
-                    Pen = new Pen
-                    {
-                    Thickness = 3.0,
-                    Brush = new SolidColorBrush(color),
-                    DashStyle = DashStyles.DashDot 
-                    }     
-                });
-            
-            if(!anp.Contains(coord.Cell.Row + 1, coord.Cell.Col))
-                _groups.Children.Add(new GeometryDrawing()
-                {
-                    Geometry = new LineGeometry(new Point(x, y + _cellSize), new Point(x + _cellSize, y + _cellSize)),
-                    Pen = new Pen
-                    {
+                    Geometry = new LineGeometry(new Point(bottomRightX, topLeftY),
+                        new Point(bottomRightX, bottomRightY)),
+                    Pen = new Pen{
                         Thickness = 3.0,
                         Brush = new SolidColorBrush(color),
-                        DashStyle = DashStyles.DashDot 
-                    }     
+                        DashStyle = DashStyles.DashDot
+                    }
                 });
-            
-            if(!anp.Contains(coord.Cell.Row, coord.Cell.Col - 1))
-                _groups.Children.Add(new GeometryDrawing()
+            }
+
+            if (!cells.Contains(new Cell(cell.Row, cell.Col - 1)))
+            {
+                _groups.Children.Add(new GeometryDrawing
                 {
-                    Geometry = new LineGeometry(new Point(x, y), new Point(x, y + _cellSize)),
-                    Pen = new Pen
-                    {
+                    Geometry = new LineGeometry(new Point(topLeftX, topLeftY),
+                        new Point(topLeftX, bottomRightY)),
+                    Pen = new Pen{
                         Thickness = 3.0,
                         Brush = new SolidColorBrush(color),
-                        DashStyle = DashStyles.DashDot 
-                    }     
+                        DashStyle = DashStyles.DashDot
+                    }
                 });
+            }
             
-            if(!anp.Contains(coord.Cell.Row, coord.Cell.Col + 1))
-                _groups.Children.Add(new GeometryDrawing()
+            if (!cells.Contains(new Cell(cell.Row + 1, cell.Col)))
+            {
+                _groups.Children.Add(new GeometryDrawing
                 {
-                    Geometry = new LineGeometry(new Point(x + _cellSize, y), new Point(x + _cellSize, y + _cellSize)),
-                    Pen = new Pen
-                    {
+                    Geometry = new LineGeometry(new Point(topLeftX, bottomRightY),
+                        new Point(bottomRightX, bottomRightY)),
+                    Pen = new Pen{
                         Thickness = 3.0,
                         Brush = new SolidColorBrush(color),
-                        DashStyle = DashStyles.DashDot 
-                    }     
+                        DashStyle = DashStyles.DashDot
+                    }
                 });
+            }
+
+            if (!cells.Contains(new Cell(cell.Row - 1, cell.Col)))
+            {
+                _groups.Children.Add(new GeometryDrawing
+                {
+                    Geometry = new LineGeometry(new Point(topLeftX, topLeftY),
+                        new Point(bottomRightX, topLeftY)),
+                    Pen = new Pen{
+                        Thickness = 3.0,
+                        Brush = new SolidColorBrush(color),
+                        DashStyle = DashStyles.DashDot
+                    }
+                });
+            }
         }
     }
 
@@ -297,6 +309,8 @@ public class SolverBackgroundManager
     {
         _cursor.Children.Clear();
     }
+    
+    //Private-----------------------------------------------------------------------------------------------------------
     
     private const double PenStrokeWidth = 0.5;
 

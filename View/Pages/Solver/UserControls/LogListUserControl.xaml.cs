@@ -8,7 +8,7 @@ namespace View.Pages.Solver.UserControls;
 public partial class LogListUserControl
 {
     private LogUserControl? _currentlyShowed;
-    private StateShown _shownType = StateShown.After;
+    private StateShown _shownType = StateShown.Before;
 
     public delegate void OnLogSelection(int number);
     public event OnLogSelection? LogSelected;
@@ -18,6 +18,11 @@ public partial class LogListUserControl
 
     public delegate void OnShowCurrentStateAsked();
     public event OnShowCurrentStateAsked? ShowCurrentStateAsked;
+    
+    public event LogUserControl.OnStateShownChange? StateShownChanged;
+
+    public delegate void OnLogHighlightShift(int number, int shift);
+    public event OnLogHighlightShift? LogHighlightShifted;
 
     public LogListUserControl()
     {
@@ -39,12 +44,25 @@ public partial class LogListUserControl
 
             var iForEvent = i;
             luc.MouseLeftButtonDown += (_, _) => LogSelected?.Invoke(iForEvent);
-            luc.ShownTypeChanged += ChangeShownType;
+            luc.StateShownChanged += ss =>
+            {
+                ChangeStateShown(ss);
+                StateShownChanged?.Invoke(ss);
+            };
+            luc.HighlightShifted += shift => LogHighlightShifted?.Invoke(iForEvent, shift);
             
             List.Children.Add(luc);
         }
 
         Scroll.ScrollToBottom();
+    }
+    
+    public void UpdateFocusedLog(ViewLog log)
+    {
+        if (_currentlyShowed == null) return;
+        
+        _currentlyShowed.InitLog(log);
+        _currentlyShowed.SetShownType(_shownType);
     }
 
     public void FocusLog(int n)
@@ -52,18 +70,18 @@ public partial class LogListUserControl
         var children = List.Children;
         if (n < 0 || n >= children.Count) return;
         
-        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed?.NotFocusedAnymore();
         _currentlyShowed = (LogUserControl)children[n];
-        _currentlyShowed.CurrentlyShowed();
+        _currentlyShowed.CurrentlyFocused();
     }
     
     public void UnFocusLog()
     {
-        _currentlyShowed?.NotShowedAnymore();
+        _currentlyShowed?.NotFocusedAnymore();
         _currentlyShowed = null;
     }
-    
-    private void ChangeShownType(StateShown ss)
+
+    public void ChangeStateShown(StateShown ss)
     {
         if (_shownType == ss) return;
 

@@ -7,14 +7,19 @@ namespace Presenter.Translator;
 
 public static class ModelToViewTranslator
 {
+    public static ViewLog Translate(ISolverLog log)
+    {
+        return new ViewLog(log.Id, log.Title, log.Changes, log.Intensity,
+            log.HighlightManager.CursorPosition(), log.HighlightManager.Count);
+    }
+    
     public static IReadOnlyList<ViewLog> Translate(IReadOnlyList<ISolverLog> logs)
     {
         var result = new List<ViewLog>(logs.Count);
 
         foreach (var log in logs)
         {
-            result.Add(new ViewLog(log.Id, log.Title, log.Changes, log.Intensity, 
-                log.HighlightManager.CursorPosition(), log.HighlightManager.Count));
+            result.Add(Translate(log));
         }
 
         return result;
