@@ -32,13 +32,16 @@ public class AlternatingChainAlgorithmV4 : IAlternatingChainAlgorithm<ILinkGraph
                     {
                         case (Coloring.On, Coloring.Off) :
                         case (Coloring.Off, Coloring.On) :
-                            chainType.ProcessFullLoop(view, loop);
+                            if (chainType.ProcessFullLoop(view, loop) &&
+                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                         case(Coloring.On, Coloring.On) :
-                            chainType.ProcessStrongInference(view, entry.Key, loop);
+                            if (chainType.ProcessStrongInference(view, entry.Key, loop) &&
+                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                         case (Coloring.Off, Coloring.Off) :
-                            chainType.ProcessWeakInference(view, entry.Key, loop);
+                            if (chainType.ProcessWeakInference(view, entry.Key, loop) &&
+                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                     }
                 }

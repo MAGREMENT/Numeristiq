@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains;
 
-//TODO : Add commit behavior to other algorithms than V2
-public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILinkGraphElement
+public class AlternatingChainGeneralization<T> : AbstractStrategy, ICustomCommitComparer where T : ILinkGraphElement
 {
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
@@ -28,6 +26,16 @@ public class AlternatingChainGeneralization<T> : AbstractStrategy where T : ILin
     public override void Apply(IStrategyManager strategyManager)
     {
         _algorithm.Run(strategyManager, _chain.GetGraph(strategyManager), _chain);
+    }
+
+    public int Compare(ChangeCommit first, ChangeCommit second)
+    {
+        var builder1 = first.Builder;
+        var builder2 = second.Builder;
+        if (builder1 is not AlternatingChainReportBuilder<T> r1 ||
+            builder2 is not AlternatingChainReportBuilder<T> r2) return 0;
+
+        return r2.Loop.Count - r1.Loop.Count;
     }
 }
 
@@ -53,12 +61,12 @@ public interface IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 
 public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : ILinkGraphElement
 {
-    private readonly Loop<T> _loop;
+    public Loop<T> Loop { get; }
     private readonly LoopType _type;
 
     public AlternatingChainReportBuilder(Loop<T> loop, LoopType type)
     {
-        _loop = loop;
+        Loop = loop;
         _type = type;
     }
 
@@ -67,11 +75,11 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
             lighter =>
             {
-                var coloring = _loop.Links[0] == LinkStrength.Strong
+                var coloring = Loop.Links[0] == LinkStrength.Strong
                     ? ChangeColoration.CauseOffOne
                     : ChangeColoration.CauseOnOne;
                 
-                foreach (var element in _loop)
+                foreach (var element in Loop)
                 {
                     lighter.HighlightLinkGraphElement(element, coloring);
                     coloring = coloring == ChangeColoration.CauseOnOne
@@ -79,8 +87,8 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
                         : ChangeColoration.CauseOnOne;
                 }
                 
-                _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
-                _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
+                Loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
+                Loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
                 
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
             });
@@ -96,7 +104,7 @@ public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : I
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return result + $" found\nLoop :: {_loop}";
+        return result + $" found\nLoop :: {Loop}";
     }
 }
 

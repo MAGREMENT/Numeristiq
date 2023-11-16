@@ -17,7 +17,6 @@ public class ChangeBuffer
     private readonly IPushHandler[] _pushHandlers =
     {
         new ReturnPushHandler(), new WaitForAllPushHandler(), new ChooseBestPushHandler()
-        
     };
 
     public ChangeBuffer(IChangeManager changeManager)
@@ -238,7 +237,7 @@ public class ChooseBestPushHandler : IPushHandler
 
         for (int i = 1; i < commits.Count; i++)
         {
-            var comparer = best.Responsible is ICustomCommitComparer c ? c : _default;
+            var comparer = best.Responsible as ICustomCommitComparer ?? _default;
             if (comparer.Compare(best, commits[i]) < 0) best = commits[i];
         }
 

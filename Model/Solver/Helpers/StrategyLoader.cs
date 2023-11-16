@@ -49,7 +49,7 @@ public class StrategyLoader
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
         {ComplexXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexXCycles(),
-            new AlternatingChainAlgorithmV2<ILinkGraphElement>(20))},
+            new AlternatingChainAlgorithmV4())},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
         {ComplexAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexAlternatingInferenceChains(),
@@ -119,19 +119,5 @@ public class StrategyLoader
                 CustomizedOnInstanceFound.Add(entry.Key, behavior);
             }
         }
-    }
-}
-
-public class StrategyUsage
-{
-    public string StrategyName { get; init; } = "";
-    public bool Used { get; init; }
-
-    public StrategyUsage() { }
-    
-    public StrategyUsage(string strategyName, bool used)
-    {
-        StrategyName = strategyName;
-        Used = used;
     }
 }
