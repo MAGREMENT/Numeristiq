@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Global.Enums;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph;
 
@@ -52,11 +53,6 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
     {
         return GetEnumerator();
     }
-}
-
-public enum LinkStrength
-{
-    None = 0, Strong = 1, Weak = 2
 }
 
 public enum LinkType

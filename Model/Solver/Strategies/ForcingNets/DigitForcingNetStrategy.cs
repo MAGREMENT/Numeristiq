@@ -131,7 +131,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
             var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
             
             onPath.Highlight(lighter);
-            if(onPath.Elements[0] is CellPossibility cp) lighter.CirclePossibility(cp);
+            if(onPath.Elements[0] is CellPossibility cp) lighter.EncirclePossibility(cp);
             if (onPath.Count == 1) lighter.HighlightPossibility(_onPos, ChangeColoration.CauseOnOne);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -140,7 +140,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
             var offPath = _off.History!.GetPathToRoot(_offPos, _offColoring);
             
             offPath.Highlight(lighter);
-            if(offPath.Elements[0] is CellPossibility cp) lighter.CirclePossibility(cp);
+            if(offPath.Elements[0] is CellPossibility cp) lighter.EncirclePossibility(cp);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });

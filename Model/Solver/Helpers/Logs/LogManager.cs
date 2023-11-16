@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 
@@ -16,6 +15,7 @@ public class LogManager
     
     private int _idCount = 1;
     private SolverState? _stateBuffer;
+    private int _lastLogCount;
 
     public LogManager(ILogHolder holder)
     {
@@ -28,11 +28,13 @@ public class LogManager
 
         _idCount = 1;
         Logs.Clear();
-        LogsUpdated?.Invoke();
+        TryCallLogsUpdatedEvent();
     }
 
     public void StartPush()
     {
+        if (!IsEnabled) return;
+
         _stateBuffer = _holder.CurrentState;
     }
 
@@ -40,18 +42,30 @@ public class LogManager
     {
         if (!IsEnabled || _stateBuffer == null) return;
         Logs.Add(new ChangeReportLog(_idCount++, strategy, report, _stateBuffer, _stateBuffer.Apply(changes)));
-        LogsUpdated?.Invoke();
     }
 
     public void StopPush()
     {
+        if (!IsEnabled) return;
+
         _stateBuffer = null;
+        TryCallLogsUpdatedEvent();
     }
 
     public void AddByHand(int possibility, int row, int col, ChangeType changeType)
     {
+        if (!IsEnabled) return;
+        
         //TODO correct this
         Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, _holder.CurrentState, _holder.CurrentState));
+        TryCallLogsUpdatedEvent();
+    }
+
+    private void TryCallLogsUpdatedEvent()
+    {
+        if (_lastLogCount == Logs.Count) return;
+        
         LogsUpdated?.Invoke();
+        _lastLogCount = Logs.Count;
     }
 }

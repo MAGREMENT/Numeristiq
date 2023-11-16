@@ -251,7 +251,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder
             {
                 _colorings[a].History!.GetPathToRoot(_target, _targetColoring).Highlight(lighter);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-                lighter.CircleCell(_row, _col);
+                lighter.EncircleCell(_row, _col);
             };
         }
         

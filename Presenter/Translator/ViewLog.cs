@@ -1,6 +1,6 @@
-﻿using Global;
-using Global.Enums;
+﻿using Global.Enums;
 
 namespace Presenter.Translator;
 
-public record ViewLog(int Id, string Title, string Changes, Intensity Intensity, int HighlightCount);
+public record ViewLog(int Id, string Title, string Changes, Intensity Intensity, string HighlightCursor,
+    int HighlightCount);

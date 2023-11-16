@@ -47,11 +47,6 @@ public partial class LogListUserControl
         Scroll.ScrollToBottom();
     }
 
-    public void ClearLogs()
-    {
-        List.Children.Clear();
-    }
-
     public void FocusLog(int n)
     {
         var children = List.Children;

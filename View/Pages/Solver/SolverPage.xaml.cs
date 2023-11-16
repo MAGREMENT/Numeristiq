@@ -31,6 +31,10 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
             settingsWindow.Show();
         });
 
+        Solver.CellSelected += _presenter.SelectCell;
+        Solver.CellUnselected += _presenter.UnSelectCell;
+        Solver.CurrentCellChangeAsked += _presenter.ChangeCurrentCell;
+        Solver.RemoveSolutionFromCurrentCellAsked += _presenter.RemoveCurrentCell;
         LogList.LogSelected += _presenter.SelectLog;
         LogList.ShowStartStateAsked += _presenter.ShowStartState;
         LogList.ShowCurrentStateAsked += _presenter.ShowCurrentState;
@@ -39,66 +43,128 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     
     //ISolverView-------------------------------------------------------------------------------------------------------
 
-    public void SetCellTo(int row, int col, int number)
+    public void DisableActions()
     {
-        Solver.SetCellTo(row, col, number);
+        SolveButton.IsEnabled = false;
+        ClearButton.IsEnabled = false;
+    }
+
+    public void EnableActions()
+    {
+        SolveButton.IsEnabled = true;
+        ClearButton.IsEnabled = true;
+    }
+
+    public void SetCellTo(int row, int col, int number)
+    { 
+        
+        Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, number));
     }
 
     public void SetCellTo(int row, int col, int[] possibilities)
     {
-        Solver.SetCellTo(row, col, possibilities);
+        Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, possibilities));
     }
 
     public void UpdateGivens(HashSet<Cell> givens)
     {
-        Solver.UpdateGivens(givens);
+        Solver.Dispatcher.Invoke(() => Solver.UpdateGivens(givens));
     }
 
     public void SetTranslation(string translation)
     {
         _createNewSudoku = false;
-        SudokuStringBox.Text = translation;
+        SudokuStringBox.Dispatcher.Invoke(() => SudokuStringBox.Text = translation);
         _createNewSudoku = true;
     }
 
     public void FocusLog(int number)
     {
-        LogList.FocusLog(number);
+        LogList.Dispatcher.Invoke(() => LogList.FocusLog(number));
     }
 
     public void UnFocusLog()
     {
-        LogList.UnFocusLog();
+        LogList.Dispatcher.Invoke(() => LogList.UnFocusLog());
     }
 
     public void ShowExplanation(string explanation)
     { 
-        ExplanationBox.Text = explanation;
+        ExplanationBox.Dispatcher.Invoke(() => ExplanationBox.Text = explanation);
     }
 
     public void SetLogs(IReadOnlyList<ViewLog> logs)
     {
-        LogList.SetLogs(logs);
-    }
-
-    public void ClearLogs()
-    {
-        LogList.ClearLogs();
+        LogList.Dispatcher.Invoke(() => LogList.SetLogs(logs));
     }
 
     public void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies)
     {
-        StrategyList.InitializeStrategies(strategies);
+        StrategyList.Dispatcher.Invoke(() => StrategyList.InitializeStrategies(strategies));
     }
 
     public void UpdateStrategies(IReadOnlyList<ViewStrategy> strategies)
-    {
-        StrategyList.UpdateStrategies(strategies);
+    { 
+        StrategyList.Dispatcher.Invoke(() => StrategyList.UpdateStrategies(strategies));
     }
 
     public void LightUpStrategy(int number)
     {
         StrategyList.Dispatcher.Invoke(() => StrategyList.LightUpStrategy(number));
+    }
+
+    public void PutCursorOn(Cell cell)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.PutCursorOn(cell));
+    }
+
+    public void ClearCursor()
+    {
+        Solver.Dispatcher.Invoke(Solver.ClearCursor);
+    }
+
+    public void UpdateBackground()
+    {
+        Solver.Dispatcher.Invoke(Solver.UpdateBackground);
+    }
+
+    public void ClearDrawings()
+    {
+        Solver.Dispatcher.Invoke(Solver.ClearBackground);
+    }
+
+    public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.FillPossibility(row, col, possibility, coloration));
+    }
+
+    public void FillCell(int row, int col, ChangeColoration coloration)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.FillCell(row, col, coloration));
+    }
+
+    public void EncirclePossibility(int row, int col, int possibility)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.EncirclePossibility(row, col, possibility));
+    }
+
+    public void EncircleCell(int row, int col)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.EncircleCell(row, col));
+    }
+
+    public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
+        ChangeColoration coloration)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo,
+            possibilityTo, coloration));
+    }
+
+    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
+        LinkStrength strength)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.CreateLink(rowFrom, colFrom, possibilityFrom, rowTo, colTo,
+            possibilityTo, strength));
     }
 
     //ISolverOptionHandler----------------------------------------------------------------------------------------------
@@ -143,8 +209,8 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
 
     public ChangeType ActionOnKeyboardInput
     {
-        get => Solver.ActionOnKeyboardInput;
-        set => Solver.ActionOnKeyboardInput = value;
+        get => _presenter.Settings.ActionOnCellChange;
+        set => _presenter.Settings.ActionOnCellChange = value;
     }
 
     public Brush GivenForegroundColor

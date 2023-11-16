@@ -87,11 +87,11 @@ public readonly struct HighlightInstruction
                     (_bits >> 12) & 0xF, (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CirclePossibility :
-                highlightable.CirclePossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
+                highlightable.EncirclePossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF);
                 break;
             case InstructionType.CircleCell :
-                highlightable.CircleCell((_bits >> 16) & 0xF,
+                highlightable.EncircleCell((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF);
                 break;
             case InstructionType.HighlightLinkGraphElement :
@@ -146,7 +146,7 @@ public class HighlightCompiler : IHighlightable
         _instructions.Add(new HighlightInstruction(InstructionType.HighlightPossibility, possibility, row, col, coloration));
     }
 
-    public void CirclePossibility(int possibility, int row, int col)
+    public void EncirclePossibility(int possibility, int row, int col)
     {
         _instructions.Add(new HighlightInstruction(InstructionType.CirclePossibility, possibility, row, col));
     }
@@ -156,7 +156,7 @@ public class HighlightCompiler : IHighlightable
         _instructions.Add(new HighlightInstruction(InstructionType.HighlightCell, row, col, coloration));
     }
 
-    public void CircleCell(int row, int col)
+    public void EncircleCell(int row, int col)
     {
         _instructions.Add(new HighlightInstruction(InstructionType.CircleCell, row, col, ChangeColoration.None));
     }

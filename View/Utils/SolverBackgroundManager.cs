@@ -41,8 +41,6 @@ public class SolverBackgroundManager
     private readonly DrawingGroup _groups = new();
     private readonly DrawingGroup _links = new();
 
-    private Cell? _currentCursor;
-
     public SolverBackgroundManager(int cellSize, int margin)
     {
         _cellSize = cellSize;
@@ -81,17 +79,17 @@ public class SolverBackgroundManager
         _links.Children.Clear();
     }
 
-    public void HighlightCell(int row, int col, Color color)
+    public void FillCell(int row, int col, Color color)
     {
         _cells.Children.Add(GetSquare(TopLeftX(col), TopLeftY(row), _cellSize, new SolidColorBrush(color)));
     }
 
-    public void HighlightPossibility(int row, int col, int possibility, Color color)
+    public void FillPossibility(int row, int col, int possibility, Color color)
     {
         _cells.Children.Add(GetSquare(TopLeftX(col, possibility), TopLeftY(row, possibility), _possibilitySize, new SolidColorBrush(color)));
     }
 
-    public void CirclePossibility(int row, int col, int possibility)
+    public void EncirclePossibility(int row, int col, int possibility)
     {
         _groups.Children.Add(new GeometryDrawing
         {
@@ -105,7 +103,7 @@ public class SolverBackgroundManager
         });
     }
 
-    public void CircleCell(int row, int col)
+    public void EncircleCell(int row, int col)
     {
         _groups.Children.Add(new GeometryDrawing
         {
@@ -118,54 +116,19 @@ public class SolverBackgroundManager
             }
         });
     }
-    
-    public void HighlightGroup(PointingRow pr, Color color)
+
+    public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
+        int possibilityTo, Color color)
     {
-        var coords = pr.EveryCellPossibilities();
-        var mostLeft = coords[0];
-        var mostRight = coords[0];
-        for (int i = 1; i < coords.Length; i++)
+        _groups.Children.Add(new GeometryDrawing
         {
-            if (coords[i].Cell.Col < mostLeft.Cell.Col) mostLeft = coords[i];
-            if (coords[i].Cell.Col > mostRight.Cell.Col) mostRight = coords[i];
-        }
-
-        _groups.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostLeft.Cell.Col, pr.Possibility),
-                TopLeftY(mostLeft.Cell.Row, pr.Possibility),
-                (_cellSize + _margin) * (mostRight.Cell.Col - mostLeft.Cell.Col) + _possibilitySize, _possibilitySize)),
-            Pen = new Pen
-            {
-            Thickness = 3.0,
-            Brush = new SolidColorBrush(color),
-            DashStyle = DashStyles.DashDot
-            }          
-        });
-    }
-
-    public void HighlightGroup(PointingColumn pc, Color color)
-    {
-        var coords = pc.EveryCellPossibilities();
-        var mostUp = coords[0];
-        var mostDown = coords[0];
-        for (int i = 1; i < coords.Length; i++)
-        {
-            if (coords[i].Cell.Row < mostUp.Cell.Row) mostUp = coords[i];
-            if (coords[i].Cell.Row > mostDown.Cell.Row) mostDown = coords[i];
-        }
-
-        _groups.Children.Add(new GeometryDrawing()
-        {
-            Geometry = new RectangleGeometry(new Rect(TopLeftX(mostUp.Cell.Col, pc.Possibility),
-                TopLeftY(mostUp.Cell.Row, pc.Possibility), _possibilitySize,
-                (_cellSize + _margin) * (mostDown.Cell.Row - mostUp.Cell.Row) + _possibilitySize)),
-            Pen = new Pen
-            {
+            Geometry = new RectangleGeometry(new Rect(new Point(TopLeftX(colFrom, possibilityFrom), TopLeftY(rowFrom, possibilityFrom)),
+                new Point(BottomRightX(colTo, possibilityTo), BottomRightY(rowTo, possibilityTo)))),
+            Pen = new Pen{
                 Thickness = 3.0,
                 Brush = new SolidColorBrush(color),
                 DashStyle = DashStyles.DashDot
-            }          
+            }
         });
     }
 
@@ -226,10 +189,10 @@ public class SolverBackgroundManager
         }
     }
 
-    public void CreateLink(CellPossibility one, CellPossibility two, bool isWeak)
+    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo, bool isWeak)
     {
-        var from = new Point(CenterX(one.Col, one.Possibility), CenterY(one.Row, one.Possibility));
-        var to = new Point(CenterX(two.Col, two.Possibility), CenterY(two.Row, two.Possibility));
+        var from = new Point(CenterX(colFrom, possibilityFrom), CenterY(rowFrom, possibilityFrom));
+        var to = new Point(CenterX(colTo, possibilityTo), CenterY(rowTo, possibilityTo));
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
         var offsets = MathUtil.ShiftSecondPointPerpendicularly(from.X, from.Y, middle.X, middle.Y, LinkOffset);
@@ -300,13 +263,6 @@ public class SolverBackgroundManager
     {
         _cursor.Children.Clear();
         
-        if (_currentCursor is not null && _currentCursor == new Cell(row, col))
-        {
-            _currentCursor = null;
-            return;
-        }
-
-        _currentCursor = new Cell(row, col);
         var startCol = row * _cellSize + (row + 1) * _margin;
         var startRow = col * _cellSize + (col + 1) * _margin;
         
@@ -335,6 +291,11 @@ public class SolverBackgroundManager
             oneFourth, _margin, ColorManager.Green));
         _cursor.Children.Add(GetRectangle(startRow + _cellSize, startCol + _cellSize + _margin - oneFourth,
             _margin, oneFourth, ColorManager.Green));
+    }
+
+    public void ClearCursor()
+    {
+        _cursor.Children.Clear();
     }
     
     private const double PenStrokeWidth = 0.5;
@@ -367,6 +328,11 @@ public class SolverBackgroundManager
         return col * _cellSize + (col + 1) * _margin + (possibility - 1) % 3 * _possibilitySize;
     }
 
+    private double BottomRightX(int col, int possibility)
+    {
+        return col * _cellSize + (col + 1) * _margin + (possibility - 1) % 3 * _possibilitySize + _possibilitySize;
+    }
+
     private double CenterX(int col)
     {
         return TopLeftX(col) + _cellSize / 2;
@@ -385,6 +351,11 @@ public class SolverBackgroundManager
     private double TopLeftY(int row, int possibility)
     {
         return row * _cellSize + (row + 1) * _margin + (possibility - 1) / 3 * _possibilitySize;
+    }
+    
+    private double BottomRightY(int row, int possibility)
+    {
+        return row * _cellSize + (row + 1) * _margin + (possibility - 1) / 3 * _possibilitySize + _possibilitySize;
     }
 
     private double CenterY(int row)

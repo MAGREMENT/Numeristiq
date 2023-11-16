@@ -6,7 +6,6 @@ using Presenter.Translator;
 
 namespace Presenter;
 
-//TODO : highlighting + by hand methods
 public class SolverPresenter
 {
     private readonly ISolver _solver;
@@ -14,9 +13,13 @@ public class SolverPresenter
 
     private bool _bound;
     private SolverState _shownState;
-    private int _lastLogIndex;
+    private int _lastLogIndex = -1;
+    private Cell? _currentlySelectedCell;
+    private bool _shouldUpdateSudokuTranslation = true;
 
     public SolverSettings Settings { get; }
+
+    private readonly HighlighterTranslator _highlighterTranslator;
 
     private SolverPresenter(ISolver solver, ISolverView view)
     {
@@ -24,6 +27,7 @@ public class SolverPresenter
         _view = view;
 
         _shownState = _solver.CurrentState;
+        _highlighterTranslator = new HighlighterTranslator(view);
 
         Settings = new SolverSettings();
         Settings.TranslationTypeChanged += () =>
@@ -59,7 +63,9 @@ public class SolverPresenter
 
     public void NewSudokuFromString(string s)
     {
+        _shouldUpdateSudokuTranslation = false;
         NewSudoku(SudokuTranslator.Translate(s));
+        _shouldUpdateSudokuTranslation = true;
     }
 
     public void ClearSudoku()
@@ -67,9 +73,11 @@ public class SolverPresenter
         NewSudoku(new Sudoku());
     }
 
-    public void Solve()
+    public async void Solve()
     {
-        _solver.SolveAsync(Settings.StepByStep);
+        _view.DisableActions();
+        await Task.Run(() => _solver.Solve(Settings.StepByStep));
+        _view.EnableActions();
     }
     
     public void SelectLog(int number)
@@ -81,24 +89,69 @@ public class SolverPresenter
         _view.FocusLog(number);
         _view.ShowExplanation(log.Explanation);
         ChangeShownState(Settings.StateShown == StateShown.Before ? log.StateBefore : log.StateAfter);
+        _view.ClearDrawings();
+        _highlighterTranslator.Translate(log.HighlightManager);
+        _view.UpdateBackground();
     }
 
     public void ShowStartState()
     {
         ClearLogFocus();
         ChangeShownState(_solver.StartState);
+        _view.ClearDrawings();
+        _view.UpdateBackground();
     }
 
     public void ShowCurrentState()
     {
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
+        _view.ClearDrawings();
+        _view.UpdateBackground();
     }
 
     public void UseStrategy(int number, bool yes)
     {
         if (yes) _solver.UseStrategy(number);
         else _solver.ExcludeStrategy(number);
+    }
+
+    public void SelectCell(Cell cell)
+    {
+        if (_currentlySelectedCell is null || _currentlySelectedCell != cell)
+        {
+            _currentlySelectedCell = cell;
+            _view.PutCursorOn(cell);
+            _view.UpdateBackground();
+        }
+        else
+        {
+            _currentlySelectedCell = null;
+            _view.ClearCursor();
+            _view.UpdateBackground();
+        }
+    }
+
+    public void UnSelectCell()
+    {
+        _currentlySelectedCell = null;
+        _view.ClearCursor();
+        _view.UpdateBackground();
+    }
+
+    public void ChangeCurrentCell(int number)
+    {
+        if (_currentlySelectedCell is null) return;
+
+        if (Settings.ActionOnCellChange == ChangeType.Possibility) _solver.RemovePossibilityByHand(number,
+                _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Col);
+        else _solver.SetSolutionByHand(number, _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Col);
+    }
+
+    public void RemoveCurrentCell()
+    {
+        if (_currentlySelectedCell is not null) _solver.RemoveSolutionByHand(_currentlySelectedCell.Value.Row,
+                _currentlySelectedCell.Value.Col);
     }
     
     //Private-----------------------------------------------------------------------------------------------------------
@@ -118,18 +171,20 @@ public class SolverPresenter
             }
         }
         
-        _view.SetTranslation(SudokuTranslator.Translate(state, Settings.TranslationType));
+        if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.Translate(state, Settings.TranslationType));
     }
 
     private void NewSudoku(Sudoku sudoku)
     {
         _solver.SetSudoku(sudoku);
-        if (_bound) return;
+        if (!_bound) return;
         
         ClearLogs();
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
         UpdateGivens();
+        _view.ClearDrawings();
+        _view.UpdateBackground();
     }
 
     private void UpdateGivens()
@@ -151,7 +206,7 @@ public class SolverPresenter
         var logs = _solver.Logs;
         _view.SetLogs(ModelToViewTranslator.Translate(logs));
 
-        if (Settings.StepByStep) _lastLogIndex = logs.Count - 1;
+        if (!Settings.StepByStep) _lastLogIndex = logs.Count - 1;
         else
         {
             for (int i = _lastLogIndex + 1; i < logs.Count; i++)
@@ -161,27 +216,30 @@ public class SolverPresenter
                 if (!current.FromSolving) continue;
 
                 _view.ShowExplanation(current.Explanation);
+                _view.FocusLog(i);
 
                 ChangeShownState(current.StateBefore);
-                //TODO highligting
+                _highlighterTranslator.Translate(current.HighlightManager);
+                _view.UpdateBackground();
 
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.DelayBeforeTransition));
 
                 ChangeShownState(current.StateAfter);
 
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.DelayAfterTransition));
-            
-                //TODO clear highlight
+
+                _view.ClearDrawings();
+                _view.UpdateBackground();
             }   
         }
         
+        ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
     }
 
     private void ClearLogs()
     {
         _lastLogIndex = -1;
-        _view.ClearLogs();
     }
 
     private void ClearLogFocus()

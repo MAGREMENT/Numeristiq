@@ -14,11 +14,11 @@ public interface IHighlightable
         HighlightPossibility(coord.Possibility, coord.Row, coord.Col, coloration);
     }
 
-    public void CirclePossibility(int possibility, int row, int col);
+    public void EncirclePossibility(int possibility, int row, int col);
 
-    public void CirclePossibility(CellPossibility coord)
+    public void EncirclePossibility(CellPossibility coord)
     {
-        CirclePossibility(coord.Possibility, coord.Row, coord.Col);
+        EncirclePossibility(coord.Possibility, coord.Row, coord.Col);
     }
 
     public void HighlightCell(int row, int col, ChangeColoration coloration);
@@ -28,11 +28,11 @@ public interface IHighlightable
         HighlightCell(coord.Row, coord.Col, coloration);
     }
 
-    public void CircleCell(int row, int col);
+    public void EncircleCell(int row, int col);
 
-    public void CircleCell(Cell coord)
+    public void EncircleCell(Cell coord)
     {
-        CircleCell(coord.Row, coord.Col);
+        EncircleCell(coord.Row, coord.Col);
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration);

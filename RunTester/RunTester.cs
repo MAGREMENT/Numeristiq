@@ -30,11 +30,6 @@ public class RunTester
     public delegate void OnRunStatusChanged(bool running);
     public event OnRunStatusChanged? RunStatusChanged;
 
-    public void StartAsync()
-    {
-        Task.Run(Run);
-    }
-
     public void Start()
     {
         Run();

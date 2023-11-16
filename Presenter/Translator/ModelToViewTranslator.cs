@@ -13,7 +13,8 @@ public static class ModelToViewTranslator
 
         foreach (var log in logs)
         {
-            result.Add(new ViewLog(log.Id, log.Title, log.Changes, log.Intensity, log.HighlightManager.Count));
+            result.Add(new ViewLog(log.Id, log.Title, log.Changes, log.Intensity, 
+                log.HighlightManager.CursorPosition(), log.HighlightManager.Count));
         }
 
         return result;

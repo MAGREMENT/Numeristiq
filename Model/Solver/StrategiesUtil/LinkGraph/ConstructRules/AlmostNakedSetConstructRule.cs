@@ -1,4 +1,5 @@
 ﻿using Global;
+using Global.Enums;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;

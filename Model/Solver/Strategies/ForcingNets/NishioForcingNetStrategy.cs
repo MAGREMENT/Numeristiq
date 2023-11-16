@@ -236,7 +236,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
             {
                 ForcingNetsUtil.HighlightColoring(lighter, c);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-                lighter.CirclePossibility(_possibility, _row, _col);
+                lighter.EncirclePossibility(_possibility, _row, _col);
             });
     }
 }
@@ -278,7 +278,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                     {
                         _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, _lastChecked.Col, possibility), Coloring.Off)
                             .Highlight(lighter);
-                        lighter.CirclePossibility(_possibility, _row, _col);
+                        lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
                     cursor++;
@@ -295,7 +295,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                     {
                         _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, col, _possibility), Coloring.Off)
                             .Highlight(lighter);
-                        lighter.CirclePossibility(_possibility, _row, _col);
+                        lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
                     cursor++;
@@ -313,7 +313,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                     {
                         _coloring.History!.GetPathToRoot(new CellPossibility(row, _lastChecked.Col, _possibility), Coloring.Off)
                             .Highlight(lighter);
-                        lighter.CirclePossibility(_possibility, _row, _col);
+                        lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
                     cursor++;
@@ -332,7 +332,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                     {
                         _coloring.History!.GetPathToRoot(new CellPossibility(cell.Row, cell.Col, _possibility), Coloring.Off)
                             .Highlight(lighter);
-                        lighter.CirclePossibility(_possibility, _row, _col);
+                        lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
                     cursor++;

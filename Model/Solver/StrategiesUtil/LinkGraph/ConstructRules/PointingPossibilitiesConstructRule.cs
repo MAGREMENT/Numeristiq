@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Global.Enums;
 using Model.Solver.Position;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;

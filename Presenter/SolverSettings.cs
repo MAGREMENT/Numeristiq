@@ -38,7 +38,6 @@ public class SolverSettings
             UniquenessAllowedChanged?.Invoke();
         }
     }
-
     public OnInstanceFound OnInstanceFound
     {
         get => _onInstanceFound;
@@ -48,6 +47,7 @@ public class SolverSettings
             OnInstanceFoundChanged?.Invoke();
         }
     }
+    public ChangeType ActionOnCellChange { get; set; } = ChangeType.Solution;
 
     public void NotifyGivensNeedingUpdate()
     {

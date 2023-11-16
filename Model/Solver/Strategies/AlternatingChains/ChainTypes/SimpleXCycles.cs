@@ -1,4 +1,5 @@
-﻿using Model.Solver.StrategiesUtil;
+﻿using Global.Enums;
+using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;

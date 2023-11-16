@@ -148,7 +148,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
                 var path = _colorings[a].History!.GetPathToRoot(_target, _targetColoring);
                 path.Highlight(lighter);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-                if (path.Elements[0] is CellPossibility start) lighter.CirclePossibility(start);
+                if (path.Elements[0] is CellPossibility start) lighter.EncirclePossibility(start);
             };
         }
         

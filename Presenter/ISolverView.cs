@@ -3,8 +3,10 @@ using Presenter.Translator;
 
 namespace Presenter;
 
-public interface ISolverView
+public interface ISolverView : ISudokuDrawer
 {
+    void DisableActions();
+    void EnableActions();
     void SetCellTo(int row, int col, int number);
     void SetCellTo(int row, int col, int[] possibilities);
     void UpdateGivens(HashSet<Cell> givens);
@@ -13,8 +15,10 @@ public interface ISolverView
     void UnFocusLog();
     void ShowExplanation(string explanation);
     void SetLogs(IReadOnlyList<ViewLog> logs);
-    void ClearLogs();
     void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies);
     void UpdateStrategies(IReadOnlyList<ViewStrategy> strategies);
     void LightUpStrategy(int number);
+    void PutCursorOn(Cell cell);
+    void ClearCursor();
+    void UpdateBackground();
 }
