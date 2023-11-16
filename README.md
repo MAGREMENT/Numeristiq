@@ -20,4 +20,4 @@ Everything is written in C# with dotnet 6.0 and the visuals are done with WPF.
 
 ## How to install
 
-If you wish to use the solver, simply download the latest release and launch the application ! Nothing more is needed as long as you are on windows
+To use and modify this project, you'll need dotnet 6.0 on windows
