@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Helpers.Changes;

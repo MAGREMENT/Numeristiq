@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Global;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
 
@@ -30,7 +31,7 @@ public class AlmostNakedSetSearcher
     {
         for (int i = start; i < coords.Count; i++)
         {
-            if (!coords[i].ShareAUnitWithAll(visited)) continue;
+            if (!Cells.ShareAUnitWithAll(coords[i], visited)) continue;
 
             var inspected = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Col);
             if(inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;

@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.PossibilityPosition;
@@ -92,7 +94,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
             if (and.Count == 1)
             {
                 var possibility = and.First();
-                foreach (var cell in roof[0].SharedSeenCells(roof[1]))
+                foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
                 {
                     strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
@@ -105,7 +107,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
         var notBiValuePossibilities = possibilitiesRoofOne.Or(possibilitiesRoofTwo);
         notBiValuePossibilities.Remove(values.One);
         notBiValuePossibilities.Remove(values.Two);
-        var ssc = new List<Cell>(roof[0].SharedSeenCells(roof[1]));
+        var ssc = new List<Cell>(Cells.SharedSeenCells(roof[0], roof[1]));
         foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;

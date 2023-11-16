@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Global;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 

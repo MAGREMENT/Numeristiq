@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Global;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil.LinkGraph;
 using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
@@ -15,14 +16,19 @@ public static class Cells
         return row1 == row2 || col1 == col2 || (row1 / 3 == row2 / 3 && col1 / 3 == col2 / 3);
     }
 
-    public static int UnitSharedCount(int row1, int col1, int row2, int col2)
+    public static bool ShareAUnit(Cell one, Cell two)
     {
-        var result = 0;
-        if (row1 == row2) result++;
-        if (col1 == col2) result++;
-        if (row1 / 3 == row2 / 3 && col1 / 3 == col2 / 3) result++;
+        return ShareAUnit(one.Row, one.Col, two.Row, two.Col);
+    }
 
-        return result;
+    public static bool ShareAUnitWithAll(Cell cell, List<Cell> cells)
+    {
+        foreach (var c in cells)
+        {
+            if (!ShareAUnit(cell, c)) return false;
+        }
+
+        return true;
     }
 
     public static List<Cell> SeenCells(Cell cell)
@@ -56,14 +62,19 @@ public static class Cells
         return Searcher.SharedSeenCells(row1, col1, row2, col2);
     }
 
+    public static IEnumerable<Cell> SharedSeenCells(Cell one, Cell two)
+    {
+        return SharedSeenCells(one.Row, one.Col, two.Row, two.Col);
+    }
+
     public static IEnumerable<Cell> SharedSeenCells(Cell one, Cell two, params Cell[] others)
     {
-        foreach (var coord in one.SharedSeenCells(two))
+        foreach (var coord in SharedSeenCells(one, two))
         {
             bool ok = true;
             foreach (var other in others)
             {
-                if (!other.ShareAUnit(coord) || other == coord)
+                if (!ShareAUnit(other, coord) || other == coord)
                 {
                     ok = false;
                     break;
@@ -80,12 +91,12 @@ public static class Cells
         if (list.Count == 1) return SeenCells(list[^1]);
 
         var result = new List<Cell>();
-        foreach (var coord in list[0].SharedSeenCells(list[1]))
+        foreach (var coord in SharedSeenCells(list[0], list[1]))
         {
             bool ok = true;
             for (int i = 2; i < list.Count; i++)
             {
-                if (!list[i].ShareAUnit(coord) || list[i] == coord)
+                if (!ShareAUnit(list[i], coord) || list[i] == coord)
                 {
                     ok = false;
                     break;
@@ -115,7 +126,7 @@ public static class Cells
             bool ok = true;
             for (int i = 2; i < list.Count; i++)
             {
-                if (!list[i].ShareAUnit(coord) || list[i] == coord)
+                if (!ShareAUnit(list[i], coord) || list[i] == coord)
                 {
                     ok = false;
                     break;
@@ -137,7 +148,7 @@ public static class Cells
             bool ok = true;
             foreach (var other in others)
             {
-                if (!other.ShareAUnit(coord) || other == coord)
+                if (!ShareAUnit(other, coord) || other == coord)
                 {
                     ok = false;
                     break;
@@ -256,65 +267,6 @@ public static class Cells
         result.Add(buffer[3], buffer[0]);
 
         return result;
-    }
-}
-
-public readonly struct Cell
-{
-    public int Row { get; }
-    public int Col { get; }
-
-
-    public Cell(int row, int col)
-    {
-        Row = row;
-        Col = col;
-    }
-
-    public bool ShareAUnit(Cell coord)
-    {
-        return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
-    }
-    
-    public bool ShareAUnitWithAll(List<Cell> coordinates)
-    {
-        foreach (var coord in coordinates)
-        {
-            if (!ShareAUnit(coord)) return false;
-        }
-
-        return true;
-    }
-
-    public IEnumerable<Cell> SharedSeenCells(Cell coord)
-    {
-        return Cells.SharedSeenCells(Row, Col, coord.Row, coord.Col);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Row, Col);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not Cell coord) return false;
-        return Row == coord.Row && Col == coord.Col;
-    }
-
-    public override string ToString()
-    {
-        return $"[{Row + 1}, {Col + 1}]";
-    }
-
-    public static bool operator ==(Cell left, Cell right)
-    {
-        return left.Row == right.Row && left.Col == right.Col;
-    }
-
-    public static bool operator !=(Cell left, Cell right)
-    {
-        return !(left == right);
     }
 }
 

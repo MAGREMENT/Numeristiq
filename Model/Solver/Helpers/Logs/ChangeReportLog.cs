@@ -1,4 +1,6 @@
-﻿using Model.Solver.Helpers.Changes;
+﻿using Global;
+using Global.Enums;
+using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.Helpers.Logs;
@@ -13,6 +15,8 @@ public class ChangeReportLog : ISolverLog
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager  { get; }
+    public bool FromSolving => true;
+
 
     public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, SolverState stateBefore, SolverState stateAfter)
     {

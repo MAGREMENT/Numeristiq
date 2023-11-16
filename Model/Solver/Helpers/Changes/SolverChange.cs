@@ -1,4 +1,7 @@
-﻿namespace Model.Solver.Helpers.Changes;
+﻿using Global;
+using Global.Enums;
+
+namespace Model.Solver.Helpers.Changes;
 
 public readonly struct SolverChange
 {
@@ -20,9 +23,4 @@ public readonly struct SolverChange
         string action = ChangeType == ChangeType.Solution ? "added as definitive" : "removed from possibilities";
         return $"[{Row + 1}, {Column + 1}] {Number} {action}";
     }
-}
-
-public enum ChangeType
-{
-    Possibility, Solution
 }

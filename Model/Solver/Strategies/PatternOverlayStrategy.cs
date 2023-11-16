@@ -1,10 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
@@ -144,7 +145,7 @@ public class PatternOverlayStrategy : AbstractStrategy
         }
         
         var cols = strategyManager.RowPositionsAt(row, number);
-        LinePositions nextMCU;
+        LinePositions nextMcu;
         
         if (cols.Count != 0)
         {
@@ -156,14 +157,14 @@ public class PatternOverlayStrategy : AbstractStrategy
                 current.Add(cell);
                 
                 colsUsed.Add(col);
-                if ((row + 1) % 3 == 0) nextMCU = new LinePositions();
+                if ((row + 1) % 3 == 0) nextMcu = new LinePositions();
                 else
                 {
-                    nextMCU = miniColsUsed.Copy();
-                    nextMCU.FillMiniGrid(col / 3);
+                    nextMcu = miniColsUsed.Copy();
+                    nextMcu.FillMiniGrid(col / 3);
                 }
 
-                SearchForPattern(strategyManager, colsUsed, nextMCU, current, number, result, row + 1);
+                SearchForPattern(strategyManager, colsUsed, nextMcu, current, number, result, row + 1);
 
                 current.Remove(cell);
                 colsUsed.Remove(col);
@@ -178,14 +179,14 @@ public class PatternOverlayStrategy : AbstractStrategy
             }
 
             colsUsed.Add(col);
-            if ((row + 1) % 3 == 0) nextMCU = new LinePositions();
+            if ((row + 1) % 3 == 0) nextMcu = new LinePositions();
             else
             {
-                nextMCU = miniColsUsed.Copy();
-                nextMCU.FillMiniGrid(col / 3);
+                nextMcu = miniColsUsed.Copy();
+                nextMcu.FillMiniGrid(col / 3);
             }
 
-            SearchForPattern(strategyManager, colsUsed, nextMCU, current, number, result, row + 1);
+            SearchForPattern(strategyManager, colsUsed, nextMcu, current, number, result, row + 1);
         }
     }
 }

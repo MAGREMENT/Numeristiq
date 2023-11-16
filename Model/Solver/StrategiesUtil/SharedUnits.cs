@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Global;
 
 namespace Model.Solver.StrategiesUtil;
 
@@ -10,7 +11,7 @@ public class SharedUnits : IEnumerable<SharedUnit>
     private int _units;
     public int Count { get; private set; }
 
-    public SharedUnits(int row, int col)
+    private SharedUnits(int row, int col)
     {
         _units = row | 1 << 4 | col << 5 | 1 << 9 | ToGridNumber(row, col) << 10 | 1 << 14;
         Count = 3;
@@ -21,7 +22,7 @@ public class SharedUnits : IEnumerable<SharedUnit>
         
     }
 
-    public void IsShared(int row, int col)
+    private void IsShared(int row, int col)
     {
         if (Peek(4))
         {

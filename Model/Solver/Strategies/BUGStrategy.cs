@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using Global;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.AlmostLockedSets;
 using Model.Util;

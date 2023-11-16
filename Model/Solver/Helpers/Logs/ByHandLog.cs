@@ -1,4 +1,6 @@
 ﻿using System;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 
@@ -14,6 +16,7 @@ public class ByHandLog : ISolverLog
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager => new(new DelegateHighlighter(HighLight));
+    public bool FromSolving => false;
 
     private readonly SolverChange _change;
 

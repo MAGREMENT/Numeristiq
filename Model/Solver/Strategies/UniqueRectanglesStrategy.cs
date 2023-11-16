@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
@@ -101,7 +103,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
             {
                 if (possibility == values.One || possibility == values.Two) continue;
 
-                foreach (var cell in roof[0].SharedSeenCells(roof[1]))
+                foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
                 {
                     strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
@@ -117,7 +119,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
         notBiValuePossibilities.Remove(values.One);
         notBiValuePossibilities.Remove(values.Two);
 
-        var ssc = new List<Cell>(roof[0].SharedSeenCells(roof[1]));
+        var ssc = new List<Cell>(Cells.SharedSeenCells(roof[0], roof[1]));
         foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
@@ -134,7 +136,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
         if (roof[0].Row == roof[1].Row || roof[0].Col == roof[1].Col)
         {
             //Type 4
-            foreach (var cell in roof[0].SharedSeenCells(roof[1]))
+            foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
             {
                 if (strategyManager.PossibilitiesAt(cell).Peek(values.One)) oneOk = true;
                 if (strategyManager.PossibilitiesAt(cell).Peek(values.Two)) twoOke = true;

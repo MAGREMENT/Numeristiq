@@ -1,4 +1,5 @@
-﻿using Model.Solver.Possibility;
+﻿using Global;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph;
 

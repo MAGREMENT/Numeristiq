@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Documents;
+using Global;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies.SetEquivalence.Searchers;

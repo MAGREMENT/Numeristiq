@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Global;
 using Model.Solver.Position;
 
 namespace Model.Solver.StrategiesUtil.SharedSeenCellSearchers;

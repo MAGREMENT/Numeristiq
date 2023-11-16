@@ -9,6 +9,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Model\Model.csproj" />
+      <ProjectReference Include="..\Presenter\Presenter.csproj" />
     </ItemGroup>
 
 </Project>

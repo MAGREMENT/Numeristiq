@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
@@ -12,7 +14,7 @@ namespace Model.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //BIG TODO => For each strategy using old als, revamp
-public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
+public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;
     private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
@@ -21,7 +23,7 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
     public IReadOnlySudoku Sudoku => _sudoku;
     public IStrategy[] Strategies { get; }
     public StrategyInfo[] StrategyInfos => GetStrategyInfo();
-    public List<ISolverLog> Logs => LogManager.Logs;
+    public IReadOnlyList<ISolverLog> Logs => LogManager.Logs;
     
     public bool LogsManaged
     {
@@ -32,7 +34,7 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
     public OnInstanceFound OnInstanceFound { get; private set; } = 0;
 
-    public SolverState State => new(this);
+    public SolverState CurrentState => new(this);
     public SolverState StartState { get; private set; }
 
     public delegate void SolutionAddition(int number, int row, int col);
@@ -40,11 +42,9 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
 
     public delegate void PossibilityRemoval(int number, int row, int col);
     public event PossibilityRemoval? GoingToRemovePossibility;
-
-    public delegate void OnCurrentStrategyChange(int index);
+    
     public event OnCurrentStrategyChange? CurrentStrategyChanged;
-
-    public event LogManager.OnLogsUpdated? LogsUpdated;
+    public event OnLogsUpdate? LogsUpdated;
 
     private int _currentStrategy = -1;
     private ulong _excludedStrategies;
@@ -79,7 +79,7 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
         GraphManager = new LinkGraphManager(this);
         
         LogManager = new LogManager(this);
-        LogManager.LogsUpdated += logs => LogsUpdated?.Invoke(logs);
+        LogManager.LogsUpdated += () => LogsUpdated?.Invoke();
         
         ChangeBuffer = new ChangeBuffer(this);
 
@@ -163,9 +163,9 @@ public class SudokuSolver : IStrategyManager, IChangeManager, ILogHolder
         CurrentStrategyChanged?.Invoke(_currentStrategy);
     }
 
-    public Task SolveAsync(bool stopAtProgress = false)
+    public void SolveAsync(bool stopAtProgress = false)
     {
-        return Task.Run(() => Solve(stopAtProgress));
+        Task.Run(() => Solve(stopAtProgress));
     }
 
     public bool IsWrong()
@@ -519,10 +519,5 @@ public class StrategyInfo
         Used = used;
         Locked = locked;
     }
-}
-
-public enum OnInstanceFound
-{
-    Default, Return, WaitForAll, ChooseBest, Customized
 }
 

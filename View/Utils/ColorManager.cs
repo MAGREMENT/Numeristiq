@@ -1,7 +1,5 @@
 ﻿using System.Windows.Media;
-using Model.Solver;
-using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Helpers.Logs;
+using Global.Enums;
 
 namespace View.Utils;
 
@@ -42,20 +40,6 @@ public class ColorManager
             Intensity.Four => Colors.Red,
             Intensity.Five => Colors.Purple,
             Intensity.Six => Colors.Black,
-            _ => Colors.Gray
-        };
-    }
-    
-    public static Color ToColor(StrategyDifficulty difficulty)
-    {
-        return difficulty switch
-        {
-            StrategyDifficulty.Basic => Colors.RoyalBlue,
-            StrategyDifficulty.Easy => Colors.Green,
-            StrategyDifficulty.Medium => Colors.Orange,
-            StrategyDifficulty.Hard => Colors.Red,
-            StrategyDifficulty.Extreme => Colors.Purple,
-            StrategyDifficulty.ByTrial => Colors.Black,
             _ => Colors.Gray
         };
     }

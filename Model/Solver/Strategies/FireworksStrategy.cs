@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
@@ -249,8 +251,8 @@ public class FireworksStrategy : AbstractStrategy
                     {
                         if (!possibilities.Peek(possibility)) continue;
 
-                        if (!cell.ShareAUnit(df.RowWing)) one = false;
-                        if (!cell.ShareAUnit(df.ColumnWing)) two = false;
+                        if (!Cells.ShareAUnit(cell, df.RowWing)) one = false;
+                        if (!Cells.ShareAUnit(cell, df.ColumnWing)) two = false;
                     }
 
                     if (!one && !two) break;
@@ -272,8 +274,8 @@ public class FireworksStrategy : AbstractStrategy
                     foreach (var sharedSeenCell in Cells.SharedSeenCells(total))
                     {
                         if (sharedSeenCell == df.Cross || sharedSeenCell == df.RowWing ||
-                            sharedSeenCell == df.ColumnWing || !sharedSeenCell.ShareAUnit(df.RowWing) ||
-                            !sharedSeenCell.ShareAUnit(df.ColumnWing)) continue;
+                            sharedSeenCell == df.ColumnWing || !Cells.ShareAUnit(sharedSeenCell, df.RowWing) ||
+                            !Cells.ShareAUnit(sharedSeenCell, df.ColumnWing)) continue;
 
                         foreach (var possibility in df.Possibilities)
                         {

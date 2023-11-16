@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Model.Solver.StrategiesUtil;
+using Global;
 
 namespace Model.Solver.Position;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Global;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtil;

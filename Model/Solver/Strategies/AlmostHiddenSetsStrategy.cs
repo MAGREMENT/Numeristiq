@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;

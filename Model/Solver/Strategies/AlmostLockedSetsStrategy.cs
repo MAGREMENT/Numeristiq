@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtil;
@@ -102,7 +103,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
         {
             foreach (var cell2 in two.EachCell(possibility))
             {
-                if (!cell1.ShareAUnit(cell2)) return false;
+                if (!Cells.ShareAUnit(cell1, cell2)) return false;
             }
         }
 

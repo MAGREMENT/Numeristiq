@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
@@ -51,7 +53,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                         foreach (var cell in als.EachCell())
                         {
                             if (strategyManager.PossibilitiesAt(cell).Peek(possibilityInCommon) &&
-                                !cell.ShareAUnit(current))
+                                !Cells.ShareAUnit(cell, current))
                             {
                                 ok = false;
                                 break;

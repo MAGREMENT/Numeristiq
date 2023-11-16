@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.Strategies;
 

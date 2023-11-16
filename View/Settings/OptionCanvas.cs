@@ -2,7 +2,7 @@
 
 namespace View.Settings;
 
-public abstract class OptionCanvas : UserControl //TODO Finish transitionning from multi option page to options canvas
+public abstract class OptionCanvas : UserControl
 {
     public abstract string Explanation { get; }
 }

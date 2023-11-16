@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using View.Pages;
+using View.Pages.Solver;
 
 namespace View;
 
@@ -15,7 +16,7 @@ public partial class MainWindow : IPageHandler
         InitializeComponent();
         _pages = new Page[]
         {
-            new FirstPage(this), new MainSolverPage(this)
+            new FirstPage(this), new SolverPage(this)
         };
 
         ShowPage(PagesName.First);

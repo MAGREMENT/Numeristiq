@@ -1,4 +1,6 @@
-﻿using Model.Solver.Helpers.Changes;
+﻿using Global;
+using Global.Enums;
+using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.Helpers.Logs;
@@ -13,10 +15,6 @@ public interface ISolverLog
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager { get; }
+    public bool FromSolving { get; }
 
-}
-
-public enum Intensity
-{
-    Zero, One, Two, Three, Four, Five, Six
 }

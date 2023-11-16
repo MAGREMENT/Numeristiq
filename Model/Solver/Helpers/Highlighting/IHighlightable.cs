@@ -1,3 +1,5 @@
+using Global;
+using Global.Enums;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;
 
@@ -38,10 +40,4 @@ public interface IHighlightable
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength);
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength);
-}
-
-public enum ChangeColoration
-{
-    None = 0, ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree,
-    CauseOffFour, CauseOffFive, CauseOffSix, CauseOnOne, Neutral
 }

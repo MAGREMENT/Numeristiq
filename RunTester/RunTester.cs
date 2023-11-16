@@ -1,5 +1,7 @@
 ﻿using System.Globalization;
 using System.Text;
+using Global;
+using Global.Enums;
 using Model;
 using Model.Solver;
 using Model.Solver.Helpers;
@@ -189,13 +191,11 @@ public class RunResult
 public class StrategyReport
 {
     public string StrategyName { get; }
-    public StrategyDifficulty Difficulty { get; }
     public IReadOnlyTracker Tracker { get; }
 
     public StrategyReport(IStrategy strategy)
     {
         StrategyName = strategy.Name;
-        Difficulty = strategy.Difficulty;
         Tracker = strategy.Tracker;
     }
 }

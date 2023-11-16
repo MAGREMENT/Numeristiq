@@ -1,8 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
-using Model;
-using Model.Solver;
-using Model.Solver.Helpers.Changes;
+using Global.Enums;
 using View.Settings.Options;
 
 namespace View.Settings;
@@ -59,9 +57,9 @@ public partial class SolverSettingsWindow
                     "With 0's", "With .'s")),
             new("Graphics",
                 new SliderOptionCanvas("Delay before", "Sets the delay between showing the start state and the highlight of a log", 2000, 0, 
-                    handler.DelayBefore, i => handler.DelayBefore = i),
+                    handler.DelayBeforeTransition, i => handler.DelayBeforeTransition = i),
                 new SliderOptionCanvas("Delay after", "Sets the delay between showing the highlight and the after state of a log", 2000, 0,
-                    handler.DelayAfter, i => handler.DelayAfter = i),
+                    handler.DelayAfterTransition, i => handler.DelayAfterTransition = i),
                 new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", 0, 
                     brush => handler.GivenForegroundColor = brush),
                 new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", 0,

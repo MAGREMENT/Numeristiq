@@ -7,6 +7,10 @@
         <RootNamespace>Model</RootNamespace>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Global\Global.csproj" />
+    </ItemGroup>
+
 
 
 

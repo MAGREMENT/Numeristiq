@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Global;
 using Model.Solver.StrategiesUtil;
 using Model.Util;
 

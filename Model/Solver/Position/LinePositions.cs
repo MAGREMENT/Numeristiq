@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Global;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Position;

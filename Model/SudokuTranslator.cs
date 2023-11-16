@@ -1,4 +1,6 @@
 ﻿using System;
+using Global;
+using Global.Enums;
 using Model.Util;
 
 namespace Model;
@@ -99,9 +101,4 @@ public static class SudokuTranslator
 public interface ITranslatable
 {
     int this[int row, int col] { get; }
-}
-
-public enum SudokuTranslationType
-{
-    Shortcuts, Zeros, Points
 }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtil;
 using Model.Solver.StrategiesUtil.LinkGraph;

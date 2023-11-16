@@ -1,14 +1,12 @@
 using System.Windows.Media;
-using Model;
-using Model.Solver;
-using Model.Solver.Helpers.Changes;
+using Global.Enums;
 
 namespace View.Settings;
 
 public interface ISolverOptionHandler
 {
-    public int DelayBefore { get; set; }
-    public int DelayAfter { get; set; }
+    public int DelayBeforeTransition { get; set; }
+    public int DelayAfterTransition { get; set; }
     public SudokuTranslationType TranslationType { get; set; }
     public bool StepByStep { get; set; }
     public bool UniquenessAllowed { get; set; }

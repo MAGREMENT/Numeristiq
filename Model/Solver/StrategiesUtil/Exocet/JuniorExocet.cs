@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Global;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 

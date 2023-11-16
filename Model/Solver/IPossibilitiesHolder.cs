@@ -1,6 +1,6 @@
-﻿using Model.Solver.Position;
+﻿using Global;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver;
 

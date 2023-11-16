@@ -1,4 +1,5 @@
-﻿using Model.Solver.StrategiesUtil.AlmostLockedSets;
+﻿using Global;
+using Model.Solver.StrategiesUtil.AlmostLockedSets;
 
 namespace Model.Solver.StrategiesUtil.LinkGraph.ConstructRules;
 

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
@@ -269,13 +271,13 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
             var toDelete = true;
             foreach (var p2 in poss2)
             {
-                if (p1 == p2 && c1.ShareAUnit(c2)) continue;
+                if (p1 == p2 && Cells.ShareAUnit(c1, c2)) continue;
 
                 if (forbiddenBi.Contains(new BiValue(p1, p2))) continue;
 
                 foreach (var p3 in poss3)
                 {
-                    if((p1 == p3 && c1.ShareAUnit(c3)) || (p2 == p3 && c2.ShareAUnit(c3))) continue;
+                    if((p1 == p3 && Cells.ShareAUnit(c1, c3)) || (p2 == p3 && Cells.ShareAUnit(c2, c3))) continue;
 
                     if (forbiddenBi.Contains(new BiValue(p1, p3)) 
                         || forbiddenBi.Contains(new BiValue(p2, p3))) continue;
