@@ -102,8 +102,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
 
                 if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
                         new GeometricEquivalenceReportBuilder(equivalence)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return)
-                    return;
+                            OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
     }

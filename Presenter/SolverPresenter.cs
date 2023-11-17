@@ -22,6 +22,7 @@ public class SolverPresenter
     public SolverSettings Settings { get; }
 
     private readonly HighlighterTranslator _highlighterTranslator;
+    private readonly SolverActionEnabler _solverActionEnabler;
 
     private SolverPresenter(ISolver solver, ISolverView view)
     {
@@ -30,6 +31,7 @@ public class SolverPresenter
 
         _shownState = _solver.CurrentState;
         _highlighterTranslator = new HighlighterTranslator(view);
+        _solverActionEnabler = new SolverActionEnabler(view);
 
         Settings = new SolverSettings();
         Settings.ShownStateChanged += () => SelectLog(_currentlySelectedLog);
@@ -78,8 +80,9 @@ public class SolverPresenter
 
     public async void Solve()
     {
-        _view.DisableActions();
+        _solverActionEnabler.DisableActions(1);
         await Task.Run(() => _solver.Solve(Settings.StepByStep));
+        _solverActionEnabler.EnableActions(1);
     }
     
     public void SelectLog(int number)
@@ -222,6 +225,8 @@ public class SolverPresenter
 
     private async void UpdateLogs()
     {
+        _solverActionEnabler.DisableActions(2);
+        
         var logs = _solver.Logs;
         _view.SetLogs(ModelToViewTranslator.Translate(logs));
 
@@ -253,7 +258,7 @@ public class SolverPresenter
         
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
-        _view.EnableActions();
+        _solverActionEnabler.EnableActions(2);
     }
 
     private void ClearLogs()

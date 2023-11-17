@@ -63,7 +63,7 @@ public class StrategyLoader
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {GurthTheorem.OfficialName, new GurthTheorem()},
         {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new RowsAndColumnsSearcher(2,
-            5, 5))},
+            5, 5), new PhistomefelRingLikeSearcher())},
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
