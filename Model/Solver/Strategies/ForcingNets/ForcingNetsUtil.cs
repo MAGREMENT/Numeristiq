@@ -2,9 +2,9 @@
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.CellColoring;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.CellColoring;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 

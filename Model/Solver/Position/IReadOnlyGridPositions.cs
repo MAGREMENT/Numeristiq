@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Global;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Position;
 

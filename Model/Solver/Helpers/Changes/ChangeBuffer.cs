@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Global;
 using Global.Enums;
-using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Helpers.Changes;
 

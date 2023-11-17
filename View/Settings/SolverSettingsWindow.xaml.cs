@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Global.Enums;
 using View.Settings.Options;
+using View.Utils;
 
 namespace View.Settings;
 
@@ -63,7 +64,10 @@ public partial class SolverSettingsWindow
                 new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", 0, 
                     brush => handler.GivenForegroundColor = brush),
                 new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", 0,
-                    brush => handler.SolvingForegroundColor = brush)),
+                    brush => handler.SolvingForegroundColor = brush),
+                new ComboBoxOptionCanvas("Link offset side priority", "Defines which side of a link is prioritized when offsetting its center",
+                    (int)handler.SidePriority, i => handler.SidePriority = (LinkOffsetSidePriority)i, 
+                    "Any", "Left", "Right")),
             new("Solver",
                 new CheckBoxOptionCanvas("Step by step", "Defines whether the solver stops when progress is made or not", handler.StepByStep,
                     b => handler.StepByStep = b),

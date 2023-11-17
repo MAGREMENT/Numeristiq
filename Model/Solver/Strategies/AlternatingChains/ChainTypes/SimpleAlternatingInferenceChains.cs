@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Global.Enums;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 

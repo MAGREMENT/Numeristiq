@@ -4,8 +4,8 @@ using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.Exocet;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.Exocet;
 
 namespace Model.Solver.Strategies;
 

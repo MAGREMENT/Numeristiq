@@ -1,7 +1,7 @@
 ﻿using System;
 using Global;
 using Global.Enums;
-using Model.Util;
+using Model.Utility;
 
 namespace Model;
 
@@ -35,7 +35,7 @@ public static class SudokuTranslator
                 {
                     if (voidCount != 0)
                     {
-                        result += voidCount > 3 ? "s" + voidCount + "s" : StringUtil.Repeat(" ", voidCount);
+                        result += voidCount > 3 ? "s" + voidCount + "s" : StringUtility.Repeat(" ", voidCount);
                         voidCount = 0;
                     }
 

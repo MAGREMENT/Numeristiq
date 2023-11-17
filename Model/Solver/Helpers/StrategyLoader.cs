@@ -8,8 +8,8 @@ using Model.Solver.Strategies.AlternatingChains.ChainTypes;
 using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
-using Model.Solver.StrategiesUtil.LinkGraph;
-using Model.Util;
+using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Utility;
 
 namespace Model.Solver.Helpers;
 
@@ -49,11 +49,11 @@ public class StrategyLoader
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
         {ComplexXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexXCycles(),
-            new AlternatingChainAlgorithmV4())},
+            new AlternatingChainAlgorithmV4<ILinkGraphElement>())},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
         {ComplexAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexAlternatingInferenceChains(),
-            new AlternatingChainAlgorithmV2<ILinkGraphElement>(15))},
+            new AlternatingChainAlgorithmV4<ILinkGraphElement>())},
         {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
         {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},

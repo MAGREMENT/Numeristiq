@@ -14,6 +14,12 @@ public partial class SolverUserControl
     private const int LineWidth = 3;
 
     private readonly SolverBackgroundManager _backgroundManager;
+    
+    public LinkOffsetSidePriority SidePriority
+    {
+        get => _backgroundManager.SidePriority;
+        set => _backgroundManager.SidePriority = value;
+    }
 
     public delegate void OnCellSelection(Cell cell);
     public event OnCellSelection? CellSelected;

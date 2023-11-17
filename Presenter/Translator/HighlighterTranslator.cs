@@ -1,9 +1,9 @@
 ﻿using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.AlmostLockedSets;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Presenter.Translator;
 

@@ -2,7 +2,7 @@
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
-using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 

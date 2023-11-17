@@ -1,20 +1,20 @@
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.CellColoring;
-using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.CellColoring;
+using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 
-public class AlternatingChainAlgorithmV4 : IAlternatingChainAlgorithm<ILinkGraphElement> //TODO fix -> Take into account mono-directionnal links
+public class AlternatingChainAlgorithmV4<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement //TODO fix -> Take into account mono-directionnal links
 {
-    public void Run(IStrategyManager view, LinkGraph<ILinkGraphElement> graph, IAlternatingChainType<ILinkGraphElement> chainType)
+    public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         foreach (var start in graph)
         {
             if (start is not CellPossibility) continue;
-            var onColoring = ColorHelper.ColorFromStart<ILinkGraphElement, ColoringDictionary<ILinkGraphElement>>(
+            var onColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
                 ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.On, true);
-            var offColoring = ColorHelper.ColorFromStart<ILinkGraphElement, ColoringDictionary<ILinkGraphElement>>(
+            var offColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
                 ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.Off, true);
 
             foreach (var entry in offColoring)

@@ -4,9 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Global;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
-using Model.Util;
 
 namespace View.Utils;
 
@@ -16,6 +13,8 @@ public class SolverBackgroundManager
     private const double LinkOffset = 20;
 
     public double Size { get; }
+
+    public LinkOffsetSidePriority SidePriority { get; set; } = LinkOffsetSidePriority.Right;
     
     private readonly double _cellSize;
     private readonly double _possibilitySize;
@@ -207,23 +206,33 @@ public class SolverBackgroundManager
         var to = new Point(CenterX(colTo, possibilityTo), CenterY(rowTo, possibilityTo));
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
-        var offsets = MathUtil.ShiftSecondPointPerpendicularly(from.X, from.Y, middle.X, middle.Y, LinkOffset);
+        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from.X, from.Y, middle.X, middle.Y, LinkOffset);
 
-        var offsetOne = new Point(offsets[0, 0], offsets[0, 1]);
-        if (offsetOne.X > 0 && offsetOne.X < Size && offsetOne.Y > 0 && offsetOne.Y < Size)
+        var validOffsets = new List<Point>();
+        for (int i = 0; i < 2; i++)
         {
-            AddShortenedLine(from, offsetOne, to,  isWeak);
-            return;
-        }
-        
-        var offsetTwo = new Point(offsets[1, 0], offsets[1, 1]);
-        if (offsetTwo.X > 0 && offsetTwo.X < Size && offsetTwo.Y > 0 && offsetTwo.Y < Size)
-        {
-            AddShortenedLine(from, offsetTwo, to,  isWeak);
-            return;
+            var p = new Point(offsets[i, 0], offsets[i, 1]);
+            if(p.X > 0 && p.X < Size && p.Y > 0 && p.Y < Size) validOffsets.Add(p);
         }
 
-        AddShortenedLine(from, to, isWeak);
+        switch (validOffsets.Count)
+        {
+            case 0 : 
+                AddShortenedLine(from, to, isWeak);
+                break;
+            case 1 :
+                AddShortenedLine(from, validOffsets[0], to, isWeak);
+                break;
+            case 2 :
+                if(SidePriority == LinkOffsetSidePriority.Any) AddShortenedLine(from, validOffsets[0], to, isWeak);
+                else
+                {
+                    var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
+                    if(SidePriority == LinkOffsetSidePriority.Left) AddShortenedLine(from, validOffsets[left], to, isWeak);
+                    else AddShortenedLine(from, validOffsets[(left + 1) % 2], to, isWeak);
+                }
+                break;
+        }
     }
 
     private void AddShortenedLine(Point from, Point to, bool isWeak)
@@ -381,4 +390,9 @@ public class SolverBackgroundManager
     {
         return TopLeftY(row, possibility) + _possibilitySize / 2;
     }
+}
+
+public enum LinkOffsetSidePriority
+{
+    Any, Left, Right
 }

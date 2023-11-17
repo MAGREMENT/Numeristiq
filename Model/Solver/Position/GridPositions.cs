@@ -2,8 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Global;
-using Model.Solver.StrategiesUtil;
-using Model.Util;
+using Model.Utility;
 
 namespace Model.Solver.Position;
 
@@ -247,7 +246,7 @@ public class GridPositions : IReadOnlyGridPositions
                 counts[j] = UnitMethods.GetMethods(units[j]).Count(copy, first);
             }
 
-            UnitMethods.GetMethods(units[MathUtil.MaxIndex(counts)]).Void(copy, first);
+            UnitMethods.GetMethods(units[MathUtility.MaxIndex(counts)]).Void(copy, first);
 
             if (copy.Count == 0) return true;
         }

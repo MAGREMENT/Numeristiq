@@ -6,7 +6,6 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 

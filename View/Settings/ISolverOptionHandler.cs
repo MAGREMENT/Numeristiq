@@ -1,5 +1,6 @@
 using System.Windows.Media;
 using Global.Enums;
+using View.Utils;
 
 namespace View.Settings;
 
@@ -14,4 +15,5 @@ public interface ISolverOptionHandler
     public ChangeType ActionOnKeyboardInput { get; set; }
     public Brush GivenForegroundColor { get; set; }
     public Brush SolvingForegroundColor { get; set; }
+    public LinkOffsetSidePriority SidePriority { get; set; }
 }

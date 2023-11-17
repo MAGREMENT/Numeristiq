@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Global.Enums;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains;
 
@@ -35,7 +35,8 @@ public class AlternatingChainGeneralization<T> : AbstractStrategy, ICustomCommit
         if (builder1 is not AlternatingChainReportBuilder<T> r1 ||
             builder2 is not AlternatingChainReportBuilder<T> r2) return 0;
 
-        return r2.Loop.Count - r1.Loop.Count;
+        var rankDiff = r2.Loop.MaxRank() - r1.Loop.MaxRank();
+        return rankDiff == 0 ? r2.Loop.Count - r1.Loop.Count : rankDiff;
     }
 }
 

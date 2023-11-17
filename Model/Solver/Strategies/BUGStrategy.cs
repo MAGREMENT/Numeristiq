@@ -4,7 +4,6 @@ using Global.Enums;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 

@@ -3,9 +3,9 @@ using Model;
 using Model.Solver;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.SharedSeenCellSearchers;
-using Model.Util;
+using Model.Solver.StrategiesUtility.SharedSeenCellSearchers;
+using View.Utils;
+using MathUtility = View.Utils.MathUtility;
 
 namespace Tests;
 
@@ -14,7 +14,7 @@ public static class Testing //TODO put this in unit tests
 
     private static void ShiftSecondPointPerpendicularlyTest(double xA, double yA, double xB, double yB, double d)
     {
-         var result = MathUtil.ShiftSecondPointPerpendicularly(xA, yA, xB, yB, d);
+         var result = MathUtility.ShiftSecondPointPerpendicularly(xA, yA, xB, yB, d);
         Console.WriteLine($"First point : {result[0, 0]}, {result[0, 1]} | Second point : {result[1, 0]}, {result[1, 1]}");
     }
 

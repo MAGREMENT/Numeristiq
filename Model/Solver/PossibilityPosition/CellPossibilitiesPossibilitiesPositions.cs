@@ -3,7 +3,7 @@ using System.Linq;
 using Global;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.PossibilityPosition;
 

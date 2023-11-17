@@ -5,7 +5,7 @@ using Global.Enums;
 using Model;
 using Model.Solver;
 using Model.Solver.Helpers;
-using Model.Util;
+using Model.Utility;
 
 namespace RunTester;
 
@@ -134,35 +134,35 @@ public class RunResult
             totalWidth += width;
         }
 
-        var result = new StringBuilder(StringUtil.FillEvenlyWith("Result", '-', totalWidth) + "\n\n");
+        var result = new StringBuilder(StringUtility.FillEvenlyWith("Result", '-', totalWidth) + "\n\n");
 
         result.Append($"Completion rate : {Success} / {Count}\n");
         result.Append($"Solver fails : {SolverFails}\n\n");
 
-        result.Append(StringUtil.FillEvenlyWith(columnTitles[0], ' ', widthCap[0]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[1], ' ', widthCap[1]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[2], ' ', widthCap[2]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[3], ' ', widthCap[3]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[4], ' ', widthCap[4]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[5], ' ', widthCap[5]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[6], ' ', widthCap[6]) + "|"
-            + StringUtil.FillEvenlyWith(columnTitles[7], ' ', widthCap[7]) + "\n");
+        result.Append(StringUtility.FillEvenlyWith(columnTitles[0], ' ', widthCap[0]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[1], ' ', widthCap[1]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[2], ' ', widthCap[2]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[3], ' ', widthCap[3]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[4], ' ', widthCap[4]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[5], ' ', widthCap[5]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[6], ' ', widthCap[6]) + "|"
+            + StringUtility.FillEvenlyWith(columnTitles[7], ' ', widthCap[7]) + "\n");
         result.Append(CrossRow(widthCap));
         
         var totalStrategyTime = 0L;
 
         foreach (var report in Reports)
         {
-            result.Append(StringUtil.FillEvenlyWith(report.StrategyName, ' ', widthCap[0]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.Usage.ToString(), ' ', widthCap[1]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.Score.ToString(), ' ', widthCap[2]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.SolutionsAdded.ToString(), ' ', widthCap[3]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.PossibilitiesRemoved.ToString(), ' ', widthCap[4]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.ScorePercentage()
+            result.Append(StringUtility.FillEvenlyWith(report.StrategyName, ' ', widthCap[0]) + "|"
+                + StringUtility.FillEvenlyWith(report.Tracker.Usage.ToString(), ' ', widthCap[1]) + "|"
+                + StringUtility.FillEvenlyWith(report.Tracker.Score.ToString(), ' ', widthCap[2]) + "|"
+                + StringUtility.FillEvenlyWith(report.Tracker.SolutionsAdded.ToString(), ' ', widthCap[3]) + "|"
+                + StringUtility.FillEvenlyWith(report.Tracker.PossibilitiesRemoved.ToString(), ' ', widthCap[4]) + "|"
+                + StringUtility.FillEvenlyWith(report.Tracker.ScorePercentage()
                     .ToString(CultureInfo.InvariantCulture) + "%", ' ', widthCap[5]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.TotalTimeInSecond()
+                + StringUtility.FillEvenlyWith(report.Tracker.TotalTimeInSecond()
                     .ToString(CultureInfo.InvariantCulture) + "s", ' ', widthCap[6]) + "|"
-                + StringUtil.FillEvenlyWith(report.Tracker.AverageTime()
+                + StringUtility.FillEvenlyWith(report.Tracker.AverageTime()
                     .ToString(CultureInfo.InvariantCulture) + "ms", ' ', widthCap[7]) + "\n");
             result.Append(CrossRow(widthCap));
             
@@ -176,10 +176,10 @@ public class RunResult
 
     private static string CrossRow(int[] widthCap)
     {
-        return StringUtil.Repeat('-', widthCap[0]) + "+" + StringUtil.Repeat('-', widthCap[1]) + "+"
-               + StringUtil.Repeat('-', widthCap[2]) + "+" + StringUtil.Repeat('-', widthCap[3]) + "+"
-               + StringUtil.Repeat('-', widthCap[4]) + "+" + StringUtil.Repeat('-', widthCap[5]) + "+"
-               + StringUtil.Repeat('-', widthCap[6]) + "+" + StringUtil.Repeat('-', widthCap[7]) + "\n";
+        return StringUtility.Repeat('-', widthCap[0]) + "+" + StringUtility.Repeat('-', widthCap[1]) + "+"
+               + StringUtility.Repeat('-', widthCap[2]) + "+" + StringUtility.Repeat('-', widthCap[3]) + "+"
+               + StringUtility.Repeat('-', widthCap[4]) + "+" + StringUtility.Repeat('-', widthCap[5]) + "+"
+               + StringUtility.Repeat('-', widthCap[6]) + "+" + StringUtility.Repeat('-', widthCap[7]) + "\n";
     }
 }
 

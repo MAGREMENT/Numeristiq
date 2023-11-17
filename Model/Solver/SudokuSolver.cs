@@ -7,8 +7,8 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility.AlmostLockedSets;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver;
 

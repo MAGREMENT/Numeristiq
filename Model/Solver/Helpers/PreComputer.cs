@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.PossibilityPosition;
-using Model.Solver.StrategiesUtil;
-using Model.Solver.StrategiesUtil.AlmostLockedSets;
-using Model.Solver.StrategiesUtil.CellColoring;
-using Model.Solver.StrategiesUtil.CellColoring.ColoringResults;
-using Model.Solver.StrategiesUtil.Exocet;
-using Model.Solver.StrategiesUtil.LinkGraph;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.CellColoring;
+using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
+using Model.Solver.StrategiesUtility.Exocet;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Helpers;
 

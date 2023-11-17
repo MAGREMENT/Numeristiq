@@ -252,7 +252,13 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
             _presenter.Settings.NotifyGivensNeedingUpdate();
         } 
     }
-    
+
+    public LinkOffsetSidePriority SidePriority
+    {
+        get => Solver.SidePriority;
+        set => Solver.SidePriority = value;
+    }
+
     //EventHandling-----------------------------------------------------------------------------------------------------
 
     private void NewSudoku(object sender, TextChangedEventArgs e)

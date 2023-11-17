@@ -3,10 +3,9 @@ using System.Text;
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
-using Model.Solver.StrategiesUtil;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
