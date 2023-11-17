@@ -19,6 +19,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
     
     public UniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
     public override void Apply(IStrategyManager strategyManager)

@@ -263,7 +263,7 @@ public class JuniorExocetStrategy : AbstractStrategy
         }
 
         //Compatibility check
-        if (je.BaseCandidates.Count != 2)
+        if (je.BaseCandidates.Count != 2 && strategyManager.UniquenessDependantStrategiesAllowed)
         {
             HashSet<BiValue> forbiddenPairs = new();
 

@@ -2,6 +2,7 @@
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
+using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
@@ -43,13 +44,13 @@ public class ReverseBUGStrategy : AbstractStrategy
                 var or = pos1.Or(pos2);
                 if (or.Count >= 17) continue;
 
-                var soloRow = CheckForSoloRow(or);
+                var soloRow = UniquenessHelper.CheckForSoloRow(or);
                 if (soloRow == -1) continue;
 
-                var soloCol = CheckForSoloColumn(or);
+                var soloCol = UniquenessHelper.CheckForSoloColumn(or);
                 if (soloCol == -1) continue;
 
-                var soloMini = CheckForSoloMini(or);
+                var soloMini = UniquenessHelper.CheckForSoloMini(or);
                 if (soloMini == -1) continue;
 
                 var miniRow = soloMini / 3;
@@ -65,66 +66,6 @@ public class ReverseBUGStrategy : AbstractStrategy
                         new ReverseBugReportBuilder(or, n1)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
-    }
-
-    private static int CheckForSoloRow(GridPositions gp)
-    {
-        var result = -1;
-
-        for (int row = 0; row < 9; row++)
-        {
-            var count = gp.RowCount(row);
-            if (count is 0 or 2) continue;
-
-            if (count == 1)
-            {
-                if (result == -1) result = row;
-                else return -1;
-            }
-        }
-
-        return result;
-    }
-    
-    private static int CheckForSoloColumn(GridPositions gp)
-    {
-        var result = -1;
-
-        for (int col = 0; col < 9; col++)
-        {
-            var count = gp.ColumnCount(col);
-            if (count is 0 or 2) continue;
-
-            if (count == 1)
-            {
-                if (result == -1) result = col;
-                else return -1;
-            }
-        }
-
-        return result;
-    }
-
-    private static int CheckForSoloMini(GridPositions gp)
-    {
-        var result = -1;
-
-        for (int miniRow = 0; miniRow < 3; miniRow++)
-        {
-            for (int miniCol = 0; miniCol < 3; miniCol++)
-            {
-                var count = gp.MiniGridCount(miniRow, miniCol);
-                if (count is 0 or 2) continue;
-
-                if (count == 1)
-                {
-                    if (result == -1) result = miniRow * 3 + miniCol;
-                    else return -1;
-                }
-            }
-        }
-
-        return result;
     }
 }
 

@@ -66,7 +66,8 @@ public class StrategyLoader
             5, 5))},
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
-        {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)}
+        {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
+        {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
