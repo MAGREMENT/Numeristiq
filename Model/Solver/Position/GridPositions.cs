@@ -323,9 +323,15 @@ public interface IUnitMethods
 {
     int Count(GridPositions gp, Cell c);
 
+    int Count(GridPositions gp, int unit);
+
     void Fill(GridPositions gp, Cell c);
+    
+    void Fill(GridPositions gp, int unit);
 
     void Void(GridPositions gp, Cell c);
+    
+    void Void(GridPositions gp, int unit);
 }
 
 public class RowMethods : IUnitMethods
@@ -335,14 +341,29 @@ public class RowMethods : IUnitMethods
         return gp.RowCount(c.Row);
     }
 
+    public int Count(GridPositions gp, int unit)
+    {
+        return gp.RowCount(unit);
+    }
+
     public void Fill(GridPositions gp, Cell c)
     {
         gp.FillRow(c.Row);
     }
 
+    public void Fill(GridPositions gp, int unit)
+    {
+        gp.FillRow(unit);
+    }
+
     public void Void(GridPositions gp, Cell c)
     { 
         gp.VoidRow(c.Row);
+    }
+
+    public void Void(GridPositions gp, int unit)
+    {
+        gp.VoidRow(unit);
     }
 }
 
@@ -353,14 +374,29 @@ public class ColumnMethods : IUnitMethods
         return gp.ColumnCount(c.Col);
     }
 
+    public int Count(GridPositions gp, int unit)
+    {
+        return gp.ColumnCount(unit);
+    }
+
     public void Fill(GridPositions gp, Cell c)
     {
         gp.FillColumn(c.Col);
     }
 
+    public void Fill(GridPositions gp, int unit)
+    {
+        gp.FillColumn(unit);
+    }
+
     public void Void(GridPositions gp, Cell c)
     { 
         gp.VoidColumn(c.Col);
+    }
+
+    public void Void(GridPositions gp, int unit)
+    {
+        gp.VoidColumn(unit);
     }
 }
 
@@ -371,13 +407,28 @@ public class MiniGridMethods : IUnitMethods
         return gp.MiniGridCount(c.Row / 3, c.Col / 3);
     }
 
+    public int Count(GridPositions gp, int unit)
+    {
+        return gp.MiniGridCount(unit / 3, unit % 3);
+    }
+
     public void Fill(GridPositions gp, Cell c)
     {
         gp.FillMiniGrid(c.Row / 3, c.Col / 3);
     }
 
+    public void Fill(GridPositions gp, int unit)
+    {
+        gp.FillMiniGrid(unit / 3, unit % 3);
+    }
+
     public void Void(GridPositions gp, Cell c)
     { 
         gp.VoidMiniGrid(c.Row / 3, c.Col / 3);
+    }
+
+    public void Void(GridPositions gp, int unit)
+    {
+        gp.VoidMiniGrid(unit / 3, unit % 3);
     }
 }

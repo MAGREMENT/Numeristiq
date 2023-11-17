@@ -44,13 +44,13 @@ public class ReverseBUGStrategy : AbstractStrategy
                 var or = pos1.Or(pos2);
                 if (or.Count >= 17) continue;
 
-                var soloRow = UniquenessHelper.CheckForSoloRow(or);
+                var soloRow = UniquenessHelper.SearchExceptionInUnit(Unit.Row, 2, or);
                 if (soloRow == -1) continue;
 
-                var soloCol = UniquenessHelper.CheckForSoloColumn(or);
+                var soloCol = UniquenessHelper.SearchExceptionInUnit(Unit.Column, 2, or);
                 if (soloCol == -1) continue;
 
-                var soloMini = UniquenessHelper.CheckForSoloMini(or);
+                var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.MiniGrid, 2, or);
                 if (soloMini == -1) continue;
 
                 var miniRow = soloMini / 3;

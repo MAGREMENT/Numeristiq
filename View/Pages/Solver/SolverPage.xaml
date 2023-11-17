@@ -15,7 +15,7 @@
         
             <StackPanel Orientation="Vertical" Width="590">
                 <userControls:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
-                <TextBox Width="500" Height="30" FontSize="20" Margin="10" TextChanged="NewSudoku"
+                <TextBox Width="500" FontSize="20" VerticalContentAlignment="Center" Height="30" Margin="10" TextChanged="NewSudoku"
                      HorizontalAlignment="Center" x:Name="SudokuStringBox"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Button Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"

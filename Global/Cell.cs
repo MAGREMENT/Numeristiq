@@ -1,4 +1,6 @@
-﻿namespace Global;
+﻿using System;
+
+namespace Global;
 
 public readonly struct Cell
 {
