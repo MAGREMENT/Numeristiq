@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Global;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Position;
 
@@ -68,7 +67,17 @@ public class LinePositions : IReadOnlyLinePositions
         //000 111 111
         return Count is < 4 and > 0 && ((_pos & 0x1F8) == 0 || (_pos & 0x1C7) == 0 || (_pos & 0x3F) == 0);
     }
-    
+
+    public int MiniGridCount()
+    {
+        var count = 0;
+        if ((_pos & 0x7) > 1) count++;
+        if ((_pos & 0x38) > 1) count++;
+        if ((_pos & 0x1B0) > 1) count++;
+        
+        return count;
+    }
+
     public int First()
     {
         for (int i = 0; i < 9; i++)

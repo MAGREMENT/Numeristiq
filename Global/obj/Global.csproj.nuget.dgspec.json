@@ -1,27 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj": {}
+    "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj": {
+    "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj",
+        "projectUniqueName": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj",
         "projectName": "Global",
-        "projectPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj",
-        "packagesPath": "C:\\Users\\Zach\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Zach\\Desktop\\Perso\\SudokuSolver\\Global\\obj\\",
+        "projectPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Global\\Global.csproj",
+        "packagesPath": "C:\\Users\\zacha\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zacha\\Desktop\\Perso\\SudokuSolver\\Global\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\Zach\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\zacha\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0-windows"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -50,12 +48,26 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
+              "version": "[6.0.20, 6.0.20]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Users\\zacha\\.dotnet\\sdk\\7.0.306\\RuntimeIdentifierGraph.json"
         }
       }
     }

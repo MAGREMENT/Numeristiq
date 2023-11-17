@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Global;
 using Global.Enums;
 using Presenter;
@@ -49,14 +50,20 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
 
     public void DisableActions()
     {
-        SolveButton.IsEnabled = false;
-        ClearButton.IsEnabled = false;
+        Dispatcher.Invoke(() =>
+        {
+            SolveButton.IsEnabled = false;
+            ClearButton.IsEnabled = false; 
+        });
     }
 
     public void EnableActions()
     {
-        SolveButton.IsEnabled = true;
-        ClearButton.IsEnabled = true;
+        Dispatcher.Invoke(() =>
+        {
+            SolveButton.IsEnabled = true;
+            ClearButton.IsEnabled = true;
+        });
     }
 
     public void SetCellTo(int row, int col, int number)

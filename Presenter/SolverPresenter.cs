@@ -80,7 +80,6 @@ public class SolverPresenter
     {
         _view.DisableActions();
         await Task.Run(() => _solver.Solve(Settings.StepByStep));
-        _view.EnableActions();
     }
     
     public void SelectLog(int number)
@@ -254,6 +253,7 @@ public class SolverPresenter
         
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
+        _view.EnableActions();
     }
 
     private void ClearLogs()

@@ -17,6 +17,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
     public bool Peek(int i);
     public LinePositions Or(IReadOnlyLinePositions pos);
     public bool AreAllInSameMiniGrid();
+    public int MiniGridCount();
     public LinePositions Copy();
     public string ToString(Unit unit, int unitNumber);
     public Cell[] ToCellArray(Unit unit, int unitNumber);
