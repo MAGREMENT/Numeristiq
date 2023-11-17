@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
-using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
@@ -17,7 +14,7 @@ public class ReverseBUGStrategy : AbstractStrategy
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
+
     public ReverseBUGStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
@@ -36,78 +33,121 @@ public class ReverseBUGStrategy : AbstractStrategy
             }
         }
 
-        for (int n1 = 1; n1 <= 9; n1++)
+        for (int n1 = 1; n1 <= 8; n1++)
         {
             var pos1 = positions[n1 - 1];
-            if(pos1.Count is > 2 or < 1) continue;
-            
+
             for (int n2 = 1; n2 <= 9; n2++)
             {
                 var pos2 = positions[n2 - 1];
-                if (pos2.Count is > 2 or < 1) continue;
-
                 var or = pos1.Or(pos2);
-                if(or.Count is >= 4 or <= 1) continue;
+                if (or.Count >= 17) continue;
 
-                if (Process(strategyManager, n1, n2, or)) return;
+                var soloRow = CheckForSoloRow(or);
+                if (soloRow == -1) continue;
+
+                var soloCol = CheckForSoloColumn(or);
+                if (soloCol == -1) continue;
+
+                var soloMini = CheckForSoloMini(or);
+                if (soloMini == -1) continue;
+
+                var miniRow = soloMini / 3;
+                var miniCol = soloCol / 3;
+
+                if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(n1, soloRow, soloCol);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(n2, soloRow, soloCol);
+                }
+
+                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        new ReverseBugReportBuilder(or, n1)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
     }
 
-    private bool Process(IStrategyManager strategyManager, int n1, int n2, GridPositions or)
+    private static int CheckForSoloRow(GridPositions gp)
     {
-        LinePositions rows = new LinePositions();
-        LinePositions cols = new LinePositions();
+        var result = -1;
 
-        foreach (var pos in or)
+        for (int row = 0; row < 9; row++)
         {
-            rows.Add(pos.Row);
-            cols.Add(pos.Col);
-        }
+            var count = gp.RowCount(row);
+            if (count is 0 or 2) continue;
 
-        if (rows.Count != 2 || cols.Count != 2 || (!rows.AreAllInSameMiniGrid() && !cols.AreAllInSameMiniGrid())) return false;
-
-        foreach (var row in rows)
-        {
-            foreach (var col in cols)
+            if (count == 1)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(n1, row, col);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(n2, row, col);
+                if (result == -1) result = row;
+                else return -1;
             }
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-            new ReverseBugReportBuilder(rows, cols)) && OnCommitBehavior == OnCommitBehavior.Return;
+        return result;
+    }
+    
+    private static int CheckForSoloColumn(GridPositions gp)
+    {
+        var result = -1;
+
+        for (int col = 0; col < 9; col++)
+        {
+            var count = gp.ColumnCount(col);
+            if (count is 0 or 2) continue;
+
+            if (count == 1)
+            {
+                if (result == -1) result = col;
+                else return -1;
+            }
+        }
+
+        return result;
+    }
+
+    private static int CheckForSoloMini(GridPositions gp)
+    {
+        var result = -1;
+
+        for (int miniRow = 0; miniRow < 3; miniRow++)
+        {
+            for (int miniCol = 0; miniCol < 3; miniCol++)
+            {
+                var count = gp.MiniGridCount(miniRow, miniCol);
+                if (count is 0 or 2) continue;
+
+                if (count == 1)
+                {
+                    if (result == -1) result = miniRow * 3 + miniCol;
+                    else return -1;
+                }
+            }
+        }
+
+        return result;
     }
 }
 
 public class ReverseBugReportBuilder : IChangeReportBuilder
 {
-    private readonly LinePositions _rows;
-    private readonly LinePositions _cols;
+    private readonly GridPositions _gp;
+    private readonly int _n1;
 
-    public ReverseBugReportBuilder(LinePositions rows, LinePositions cols)
+    public ReverseBugReportBuilder(GridPositions gp, int n1)
     {
-        _rows = rows;
-        _cols = cols;
+        _gp = gp;
+        _n1 = n1;
     }
     
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<Cell> cells = new(4);
-        foreach (var row in _rows)
-        {
-            foreach (var col in _cols)
-            {
-                if (snapshot.PossibilitiesAt(row, col).Count == 0) cells.Add(new Cell(row, col));
-            }
-        }
-        
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            foreach (var cell in cells)
+            foreach (var cell in _gp)
             {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(cell.Row, cell.Col, snapshot.Sudoku[cell.Row, cell.Col] == _n1
+                        ? ChangeColoration.CauseOffOne
+                        : ChangeColoration.CauseOffTwo);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

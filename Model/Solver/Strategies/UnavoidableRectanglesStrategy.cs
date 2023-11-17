@@ -2,20 +2,19 @@ using System.Collections.Generic;
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtil;
 
 namespace Model.Solver.Strategies;
 
-public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
+public class UnavoidableRectanglesStrategy : AbstractStrategy
 {
-    public const string OfficialName = "Avoidable Rectangles";
+    public const string OfficialName = "Unavoidable Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public AvoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public UnavoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -27,14 +26,14 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
             var row1 = i / 9;
             var col1 = i % 9;
 
-            if (strategyManager.Sudoku[row1, col1] == 0 || OriginalBoard[row1, col1] != 0) continue;
+            if (strategyManager.Sudoku[row1, col1] == 0 || strategyManager.StartState[row1, col1] != 0) continue;
             
             for (int j = i + 1; j < 81; j++)
             {
                 var row2 = j / 9;
                 var col2 = j % 9;
 
-                if (strategyManager.Sudoku[row2, col2] == 0 || OriginalBoard[row2, col2] != 0) continue;
+                if (strategyManager.Sudoku[row2, col2] == 0 || strategyManager.StartState[row2, col2] != 0) continue;
 
                 if (Search(strategyManager, new BiValue(strategyManager.Sudoku[row1, col1],
                         strategyManager.Sudoku[row2, col2]), new Cell(row1, col1), new Cell(row2, col2))) return;
@@ -54,7 +53,7 @@ public class AvoidableRectanglesStrategy : OriginalBoardBasedAbstractStrategy
 
     private bool Try(IStrategyManager strategyManager, BiValue values, Cell[] floor, Cell[] roof)
     {
-        if (OriginalBoard[roof[0].Row, roof[0].Col] != 0 || OriginalBoard[roof[1].Row, roof[1].Col] != 0) return false;
+        if (strategyManager.StartState[roof[0].Row, roof[0].Col] != 0 || strategyManager.StartState[roof[1].Row, roof[1].Col] != 0) return false;
         
         var solved1 = strategyManager.Sudoku[roof[0].Row, roof[0].Col];
         var solved2 = strategyManager.Sudoku[roof[1].Row, roof[1].Col];

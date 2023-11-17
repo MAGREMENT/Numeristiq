@@ -43,7 +43,7 @@ public class StrategyLoader
         {FinnedGridFormationStrategy.OfficialNameForType4, new FinnedGridFormationStrategy(4)},
         {FireworksStrategy.OfficialName, new FireworksStrategy()},
         {UniqueRectanglesStrategy.OfficialName, new UniqueRectanglesStrategy()},
-        {AvoidableRectanglesStrategy.OfficialName, new AvoidableRectanglesStrategy()},
+        {UnavoidableRectanglesStrategy.OfficialName, new UnavoidableRectanglesStrategy()},
         {XYChainStrategy.OfficialName, new XYChainStrategy()},
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},

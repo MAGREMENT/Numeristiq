@@ -9,6 +9,8 @@ namespace Model.Solver;
 
 public interface IStrategyManager : IPossibilitiesHolder
 { 
+    SolverState StartState { get; }
+    
     bool LogsManaged { get; }
 
     ChangeBuffer ChangeBuffer { get; }

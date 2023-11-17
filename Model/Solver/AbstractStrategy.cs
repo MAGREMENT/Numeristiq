@@ -23,17 +23,3 @@ public abstract class AbstractStrategy : IStrategy
     public virtual void OnNewSudoku(Sudoku s) { }
     
 }
-
-public abstract class OriginalBoardBasedAbstractStrategy : AbstractStrategy
-{
-    protected Sudoku OriginalBoard { get; private set; } = new();
-    
-    protected OriginalBoardBasedAbstractStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
-        : base(name, difficulty, defaultBehavior) { }
-
-    public override void OnNewSudoku(Sudoku s)
-    {
-        base.OnNewSudoku(s);
-        OriginalBoard = s.Copy();
-    }
-}
