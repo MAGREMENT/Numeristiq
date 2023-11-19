@@ -326,6 +326,19 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004
 
         if (revisedBaseCandidates.Count == 2)
         {
+            //Elimination 3 update
+            foreach (var possibility in strategyManager.PossibilitiesAt(je.Target1))
+            {
+                if (!revisedBaseCandidates.Peek(possibility))
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+            }
+
+            foreach (var possibility in strategyManager.PossibilitiesAt(je.Target2))
+            {
+                if (!revisedBaseCandidates.Peek(possibility))
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+            }
+            
             //Elimination 7
             for (int i = 0; i < 2; i++)
             {
@@ -379,7 +392,26 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004
             
             
             //Elimination 11
-            RemoveAllNonSCells(strategyManager, je, coverHouses);
+            foreach (var entry in je.SCells)
+            {
+                if (!revisedBaseCandidates.Peek(entry.Key)) continue;
+                
+                foreach (var coverHouse in coverHouses[entry.Key])
+                {
+                    if (coverHouse.Unit != je.GetUnit()) continue;
+
+                    for (int i = 0; i < 9; i++)
+                    {
+                        var cell = je.GetUnit() == Unit.Row 
+                            ? new Cell(coverHouse.Number, i)
+                            : new Cell(i, coverHouse.Number);
+
+                        if (entry.Value.Peek(cell)) continue;
+
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                    }
+                }
+            }
 
             //Elimination 12 TODO
         }

@@ -51,6 +51,18 @@ public class Possibilities : IReadOnlyPossibilities
         Count = 0;
     }
 
+    public int First(int except)
+    {
+        for (int i = 1; i <= 9; i++)
+        {
+            if (i == except) continue;
+
+            if (Peek(i)) return i;
+        }
+
+        return 0;
+    }
+
     public bool Next(ref int cursor)
     {
         cursor++;

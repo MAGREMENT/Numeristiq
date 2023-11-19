@@ -70,7 +70,10 @@ public class StrategyLoader
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
         {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()},
         {RectangleEliminationStrategy.OfficialName, new RectangleEliminationStrategy()},
-        {NRCChainStrategy.OfficialName, new NRCChainStrategy()}
+        {NRCZTChainStrategy.OfficialNameForDefault, new NRCZTChainStrategy()},
+        {NRCZTChainStrategy.OfficialNameForTCondition, new NRCZTChainStrategy(new TCondition())},
+        {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
+        {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new ZCondition(), new TCondition())},
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

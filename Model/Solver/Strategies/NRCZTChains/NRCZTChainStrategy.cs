@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtility;
@@ -7,15 +8,32 @@ using Model.Solver.StrategiesUtility.NRCZTChains;
 
 namespace Model.Solver.Strategies.NRCZTChains;
 
-public class NRCChainStrategy : AbstractStrategy
+public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 {
-    public const string OfficialName = "NRC-Chains";
+    public const string OfficialNameForDefault = "NRC-Chains";
+    public const string OfficialNameForTCondition = "NRCT-Chains";
+    public const string OfficialNameForZCondition = "NRCZ-Chains";
+    public const string OfficialNameForZAndTCondition = "NRCZT-Chains";
+    
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+
+    private readonly INRCZTCondition[] _conditions;
     
-    public NRCChainStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public NRCZTChainStrategy(params INRCZTCondition[] conditions) : base("", StrategyDifficulty.None, DefaultBehavior)
     {
+        _conditions = conditions;
+
+        Difficulty = _conditions.Length > 0 ? StrategyDifficulty.Extreme : StrategyDifficulty.Hard;
+
+        var builder = new StringBuilder();
+        foreach (var c in _conditions)
+        {
+            builder.Append(c.Name);
+        }
+
+        Name = $"NRC{builder}-Chains";
     }
 
     public override void Apply(IStrategyManager strategyManager)
@@ -68,6 +86,28 @@ public class NRCChainStrategy : AbstractStrategy
                 
                 chain.RemoveLast();
             }
+
+            foreach (var condition in _conditions)
+            {
+                foreach (var tuple in condition.SearchEndUnderCondition(strategyManager,
+                             graph, chain, bStart))
+                {
+                    var bEnd = tuple.Item1;
+                    if (endVisited.Contains(bEnd) || bStart == bEnd || bEnd == chain[0].Start) continue;
+
+                    endVisited.Add(bEnd);
+                    var block = new Block(bStart, bEnd);
+                    chain.Add(block);
+
+                    if (Check(strategyManager, chain)) return true;
+                    
+                    tuple.Item2.BeforeSearch(chain);
+                    if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true;
+                    tuple.Item2.AfterSearch(chain);
+                
+                    chain.RemoveLast();
+                }
+            }
         }
 
         return false;
@@ -106,36 +146,49 @@ public class NRCChainStrategy : AbstractStrategy
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
             new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
+
+    public int Compare(ChangeCommit first, ChangeCommit second)
+    {
+        if (first.Builder is not NRCChainReportBuilder r1 ||
+            second.Builder is not NRCChainReportBuilder r2) return 0;
+
+        return r2.Chain.Count - r1.Chain.Count;
+    }
 }
 
 public class NRCChainReportBuilder : IChangeReportBuilder
 {
-    private readonly BlockChain _chain;
+    public BlockChain Chain { get; }
 
     public NRCChainReportBuilder(BlockChain chain)
     {
-        _chain = chain;
+        Chain = chain;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {
-            for (int i = 0; i < _chain.Count; i++)
+            for (int i = 0; i < Chain.Count; i++)
             {
-                var current = _chain[i];
+                var current = Chain[i];
                 
-                lighter.HighlightPossibility(current.Start, ChangeColoration.CauseOnOne);
-                lighter.HighlightPossibility(current.End, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(current.Start, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(current.End, ChangeColoration.CauseOnOne);
                 lighter.EncircleRectangle(current.Start, current.End, ChangeColoration.CauseOffFour);
 
-                if (i + 1 < _chain.Count)
+                if (i + 1 < Chain.Count)
                 {
-                    lighter.CreateLink(current.End, _chain[i + 1].Start, LinkStrength.Weak);
+                    lighter.CreateLink(current.End, Chain[i + 1].Start, LinkStrength.Weak);
                 }
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation()
+    {
+        return Chain.ToString();
     }
 }

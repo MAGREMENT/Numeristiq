@@ -32,4 +32,20 @@ public readonly struct Block
     {
         return !(left == right);
     }
+
+    public override string ToString()
+    {
+        if (Start.Possibility == End.Possibility)
+        {
+            return $"n{Start.Possibility}" + " {" + $"r{Start.Row + 1}c{Start.Col + 1} " +
+                   $"r{End.Row + 1}c{End.Col + 1}" + "}";
+        }
+
+        if (Start.Row == End.Row && Start.Col == End.Col)
+        {
+            return $"n{Start.Possibility} n{End.Possibility}" + " {" + $"r{Start.Row + 1}c{Start.Col + 1}" + "}";
+        }
+
+        return "?";
+    }
 }

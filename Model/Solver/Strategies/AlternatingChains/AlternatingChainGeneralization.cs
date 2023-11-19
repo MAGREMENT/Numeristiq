@@ -30,10 +30,8 @@ public class AlternatingChainGeneralization<T> : AbstractStrategy, ICustomCommit
 
     public int Compare(ChangeCommit first, ChangeCommit second)
     {
-        var builder1 = first.Builder;
-        var builder2 = second.Builder;
-        if (builder1 is not AlternatingChainReportBuilder<T> r1 ||
-            builder2 is not AlternatingChainReportBuilder<T> r2) return 0;
+        if (first.Builder is not AlternatingChainReportBuilder<T> r1 ||
+            second.Builder is not AlternatingChainReportBuilder<T> r2) return 0;
 
         var rankDiff = r2.Loop.MaxRank() - r1.Loop.MaxRank();
         return rankDiff == 0 ? r2.Loop.Count - r1.Loop.Count : rankDiff;
