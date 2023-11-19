@@ -189,7 +189,7 @@ public class WXYZWingStrategy : AbstractStrategy
                 if (sharedUnits is null) sharedUnits = new SharedUnits(current);
                 else
                 {
-                    sharedUnits.IsShared(current);
+                    sharedUnits.Share(current);
                     if (sharedUnits.Count != 0) continue;
 
                     if (buffer != -1) return false;
@@ -216,7 +216,7 @@ public class WXYZWingStrategy : AbstractStrategy
                 if (sharedUnits is null) sharedUnits = new SharedUnits(current);
                 else
                 {
-                    sharedUnits.IsShared(current);
+                    sharedUnits.Share(current);
                     if (sharedUnits.Count != 0) continue;
 
                     if (buffer != -1) return false;

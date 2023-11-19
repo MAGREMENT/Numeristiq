@@ -46,13 +46,11 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
         return result;
     }
 
-    public static Possibilities DefaultInvert(IReadOnlyPossibilities possibilities)
+    public static Possibilities DefaultDifference(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)
     {
-        var result = new Possibilities();
-        for (int i = Min; i <= Max; i++)
-        {
-            if (!possibilities.Peek(i)) result.Add(i);
-        }
+        var result = poss1.Copy();
+
+        foreach (var poss in poss2) result.Remove(poss);
 
         return result;
     }

@@ -1,14 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
+using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
-using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
-public class BUGLiteStrategy : AbstractStrategy
+public class BUGLiteStrategy : AbstractStrategy //TODO check if working => #574
 {
     public const string OfficialName = "BUG-Lite";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
@@ -22,7 +21,7 @@ public class BUGLiteStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        Dictionary<BiValue, GridPositions> biValueMap = new();
+        Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -39,109 +38,70 @@ public class BUGLiteStrategy : AbstractStrategy
 
                 if (!biValueMap.TryGetValue(bi, out var list))
                 {
-                    list = new GridPositions();
+                    list = new List<Cell>();
                     biValueMap[bi] = list;
                 }
 
-                list.Add(row, col);
+                list.Add(new Cell(row, col));
             }
         }
 
         foreach (var entry in biValueMap)
         {
             if (entry.Value.Count < 3) continue;
-            
-            var soloRow = UniquenessHelper.SearchExceptionInUnit(Unit.Row, 2, entry.Value);
-            if (soloRow == -1) continue;
 
-            var soloCol = UniquenessHelper.SearchExceptionInUnit(Unit.Column, 2, entry.Value);
-            if (soloCol == -1) continue;
-
-            var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.MiniGrid, 2, entry.Value);
-            if (soloMini == -1) continue;
-
-            var miniRow = soloMini / 3;
-            var miniCol = soloCol / 3;
-
-            if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key.One, soloRow, soloCol);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key.Two, soloRow, soloCol);
-            }
-
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-                    new BUGLiteReportBuilder(entry.Value, soloRow, soloCol)))
-            {
-                if(OnCommitBehavior == OnCommitBehavior.Return) return;
-            } 
+            if (Search(strategyManager, entry.Value, 0, new GridPositions(), entry.Key)) return;
         }
+    }
 
-        var asArray = biValueMap.Keys.ToArray();
-
-        for (int i = 0; i < asArray.Length - 2; i++)
+    private bool Search(IStrategyManager strategyManager, List<Cell> cells, int start, GridPositions positions, BiValue bi)
+    {
+        for (int i = start; i < cells.Count; i++)
         {
-            for (int j = i + 1; j < asArray.Length - 1; j++)
-            {
-                for (int k = j + 1; j < asArray.Length; j++)
-                {
-                    var one = asArray[i];
-                    var two = asArray[j];
-                    var three = asArray[k];
+            positions.Add(cells[i]);
 
-                    var possibilities = Possibilities.NewEmpty();
-                    possibilities.Add(one.One);
-                    possibilities.Add(one.Two);
-                    possibilities.Add(two.One);
-                    possibilities.Add(two.Two);
-                    possibilities.Add(three.One);
-                    possibilities.Add(three.Two);
-                    
-                    if(possibilities.Count != 3) continue;
+            if (positions.Count >= 3 && positions.Count % 2 == 1 && Try(strategyManager, positions, bi)) return true;
 
-                    var or = biValueMap[one].Or(biValueMap[two].Or(biValueMap[three]));
-                    if (or.Count < 5) continue;
-
-                    var soloRow = UniquenessHelper.SearchExceptionInUnit(Unit.Row, 
-                        UniquenessHelper.ComputeExpectedCount(Unit.Row, biValueMap[one], biValueMap[two], biValueMap[three]), or);
-                    if (soloRow == -1) continue;
-
-                    var soloCol = UniquenessHelper.SearchExceptionInUnit(Unit.Column, 
-                        UniquenessHelper.ComputeExpectedCount(Unit.Column, biValueMap[one], biValueMap[two], biValueMap[three]), or);
-                    if (soloCol == -1) continue;
-
-                    var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.MiniGrid, 
-                        UniquenessHelper.ComputeExpectedCount(Unit.MiniGrid, biValueMap[one], biValueMap[two], biValueMap[three]), or);
-                    if (soloMini == -1) continue;
-
-                    var miniRow = soloMini / 3;
-                    var miniCol = soloCol / 3;
-
-                    if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
-                    {
-                        foreach (var p in possibilities)
-                        {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, soloRow, soloCol);
-                        }
-                    }
-
-                    if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-                            new BUGLiteReportBuilder(or, soloRow, soloCol)))
-                    {
-                        if(OnCommitBehavior == OnCommitBehavior.Return) return;
-                    } 
-                }
-            }
+            Search(strategyManager, cells, i + 1, positions, bi);
+            
+            positions.Remove(cells[i]);
         }
+
+        return false;
+    }
+
+    private bool Try(IStrategyManager strategyManager, GridPositions positions, BiValue bi)
+    {
+        var soloRow = UniquenessHelper.SearchExceptionInUnit(Unit.Row, 2, positions);
+        if (soloRow == -1) return false;
+
+        var soloCol = UniquenessHelper.SearchExceptionInUnit(Unit.Column, 2, positions);
+        if (soloCol == -1) return false;
+
+        var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.MiniGrid, 2, positions);
+        if (soloMini == -1) return false;
+
+        var miniRow = soloMini / 3;
+        var miniCol = soloCol / 3;
+        
+        if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
+        {
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(bi.One, soloRow, soloCol);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(bi.Two, soloRow, soloCol);
+        }
+
+        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            new BUGLiteReportBuilder(positions, soloRow, soloCol)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 
 public class BUGLiteReportBuilder : IChangeReportBuilder
 {
-    private readonly GridPositions _gp;
+    private readonly IEnumerable<Cell> _gp;
     private readonly int _row;
     private readonly int _col;
 
-    public BUGLiteReportBuilder(GridPositions gp, int row, int col)
+    public BUGLiteReportBuilder(IEnumerable<Cell> gp, int row, int col)
     {
         _gp = gp;
         _row = row;

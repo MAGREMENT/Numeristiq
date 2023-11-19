@@ -6,7 +6,7 @@ namespace Model.Solver.StrategiesUtility;
 
 public class SharedUnits : IEnumerable<SharedUnit>
 {
-    //3 times 4 bits representing the unit number and then 1 bit for if it is shared (1) or not (2)
+    //3 times 4 bits representing the unit number and then 1 bit for if it is shared (1) or not (0)
     //1mmmm1cccc1rrrr
     private int _units;
     public int Count { get; private set; }
@@ -22,7 +22,7 @@ public class SharedUnits : IEnumerable<SharedUnit>
         
     }
 
-    private void IsShared(int row, int col)
+    private void Share(int row, int col)
     {
         if (Peek(4))
         {
@@ -52,9 +52,9 @@ public class SharedUnits : IEnumerable<SharedUnit>
         }
     }
 
-    public void IsShared(Cell cell)
+    public void Share(Cell cell)
     {
-        IsShared(cell.Row, cell.Col);
+        Share(cell.Row, cell.Col);
     }
 
     private int ToGridNumber(int row, int col)

@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 
-public class AlternatingChainAlgorithmV4<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement //TODO fix -> Take into account mono-directionnal links
+public class AlternatingChainAlgorithmV4<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 {
     public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
