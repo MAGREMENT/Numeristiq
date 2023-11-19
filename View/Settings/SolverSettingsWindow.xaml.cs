@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Global.Enums;
 using View.Settings.Options;
-using View.Utils;
+using View.Utility;
 
 namespace View.Settings;
 

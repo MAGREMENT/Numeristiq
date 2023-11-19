@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Global;
 using Global.Enums;
-using View.Utils;
+using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
 

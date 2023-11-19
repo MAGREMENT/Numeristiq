@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using View.Utils;
+using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
 

@@ -229,12 +229,12 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var c = ForcingNetsUtil.FilterPossibilityCoordinates(_coloring);
+        var c = ForcingNetsUtility.FilterPossibilityCoordinates(_coloring);
         
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter =>
             {
-                ForcingNetsUtil.HighlightColoring(lighter, c);
+                ForcingNetsUtility.HighlightColoring(lighter, c);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
                 lighter.EncirclePossibility(_possibility, _row, _col);
             });

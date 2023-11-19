@@ -4,8 +4,7 @@ using Model.Solver;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility.SharedSeenCellSearchers;
-using View.Utils;
-using MathUtility = View.Utils.MathUtility;
+using MathUtility = View.Utility.MathUtility;
 
 namespace Tests;
 

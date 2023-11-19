@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using Global;
 
-namespace View.Utils;
+namespace View.Utility;
 
 public class SolverBackgroundManager
 {
@@ -120,10 +120,40 @@ public class SolverBackgroundManager
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, Color color)
     {
+        var xFrom = CenterX(colFrom, possibilityFrom);
+        var yFrom = CenterY(rowFrom, possibilityFrom);
+        
+        var xTo = CenterX(colTo, possibilityTo);
+        var yTo = CenterY(rowTo, possibilityTo);
+
+        double leftX, topY, rightX, bottomY;
+
+        if (xFrom < xTo)
+        {
+            leftX = TopLeftX(colFrom, possibilityFrom) - _margin / 2;
+            rightX = BottomRightX(colTo, possibilityTo) + _margin / 2;
+        }
+        else
+        {
+            leftX = TopLeftX(colTo, possibilityTo) - _margin / 2;
+            rightX = BottomRightX(colFrom, possibilityFrom) + _margin / 2;
+        }
+
+        if (yFrom < yTo)
+        {
+            topY = TopLeftY(rowFrom, possibilityFrom) - _margin / 2;
+            bottomY = BottomRightY(rowTo, possibilityTo) + _margin / 2;
+        }
+        else
+        {
+            topY = TopLeftY(rowTo, possibilityTo) - _margin / 2;
+            bottomY = BottomRightY(rowFrom, possibilityFrom) + _margin / 2;
+        }
+        
         _groups.Children.Add(new GeometryDrawing
         {
-            Geometry = new RectangleGeometry(new Rect(new Point(TopLeftX(colFrom, possibilityFrom), TopLeftY(rowFrom, possibilityFrom)),
-                new Point(BottomRightX(colTo, possibilityTo), BottomRightY(rowTo, possibilityTo)))),
+            Geometry = new RectangleGeometry(new Rect(new Point(leftX, topY),
+                new Point(rightX, bottomY))),
             Pen = new Pen{
                 Thickness = 3.0,
                 Brush = new SolidColorBrush(color),

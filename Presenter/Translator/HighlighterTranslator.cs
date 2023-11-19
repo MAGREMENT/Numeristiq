@@ -41,6 +41,12 @@ public class HighlighterTranslator : IHighlightable
         _view.EncircleCell(row, col);
     }
 
+    public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
+    {
+        _view.EncircleRectangle(from.Row, from.Col, from.Possibility, to.Row,
+            to.Col, to.Possibility, coloration);
+    }
+
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
     {
         switch (element)

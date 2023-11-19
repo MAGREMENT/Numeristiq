@@ -34,6 +34,8 @@ public interface IHighlightable
     {
         EncircleCell(coord.Row, coord.Col);
     }
+    
+    public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration);
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration);
 

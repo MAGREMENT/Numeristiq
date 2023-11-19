@@ -8,7 +8,7 @@ using Global.Enums;
 using Presenter;
 using Presenter.Translator;
 using View.Settings;
-using View.Utils;
+using View.Utility;
 
 namespace View.Pages.Solver;
 

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.StrategiesUtility;
@@ -74,6 +75,13 @@ public readonly struct HighlightInstruction
                 | col1 << 12 | possibility2 << 8 | row2 << 4 | col2;
     }
     
+    public HighlightInstruction(InstructionType type, int possibility1, int row1, int col1, int possibility2, int row2,
+        int col2, ChangeColoration coloration)
+    {
+        _bits = (int)coloration << 28 | (int)type << 24 | possibility1 << 20 | row1 << 16
+                | col1 << 12 | possibility2 << 8 | row2 << 4 | col2;
+    }
+    
     public void Apply(IHighlightable highlightable, ILinkGraphElement[] registers)
     {
         switch ((InstructionType)((_bits >> 24) & 0xF))
@@ -107,6 +115,13 @@ public readonly struct HighlightInstruction
                 highlightable.CreateLink(registers[(_bits >> 12) & 0xFFF], registers[_bits & 0xFFF],
                     (LinkStrength)((_bits >> 28) & 0xF));
                 break;
+            case InstructionType.CircleRectangle:
+                highlightable.EncircleRectangle(new CellPossibility((_bits >> 16) & 0xF,
+                    (_bits >> 12) & 0xF, (_bits >> 20) & 0xF), new CellPossibility((_bits >> 4) & 0xF,
+                    _bits & 0xF, (_bits >> 8) & 0xF), (ChangeColoration)((_bits >> 28) & 0xF));
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 }
@@ -114,7 +129,7 @@ public readonly struct HighlightInstruction
 public enum InstructionType
 {
     HighlightPossibility = 0, HighlightCell = 1, CirclePossibility = 2, CircleCell = 3, 
-    HighlightLinkGraphElement = 4, CreateSimpleLink = 5, CreateGroupLink = 6
+    HighlightLinkGraphElement = 4, CreateSimpleLink = 5, CreateGroupLink = 6, CircleRectangle = 7
 }
 
 public class HighlightCompiler : IHighlightable
@@ -159,6 +174,12 @@ public class HighlightCompiler : IHighlightable
     public void EncircleCell(int row, int col)
     {
         _instructions.Add(new HighlightInstruction(InstructionType.CircleCell, row, col, ChangeColoration.None));
+    }
+
+    public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
+    {
+        _instructions.Add(new HighlightInstruction(InstructionType.CircleRectangle, from.Possibility, from.Row,
+            from.Col, to.Possibility, to.Row, to.Col, coloration));
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)

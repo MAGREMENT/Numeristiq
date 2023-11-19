@@ -1,7 +1,7 @@
 using System;
 using System.Windows;
 
-namespace View.Utils;
+namespace View.Utility;
 
 public class MathUtility
 {

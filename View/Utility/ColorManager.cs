@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
 using Global.Enums;
 
-namespace View.Utils;
+namespace View.Utility;
 
 public class ColorManager
 {

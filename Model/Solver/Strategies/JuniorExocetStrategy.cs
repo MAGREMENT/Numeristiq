@@ -2,14 +2,13 @@
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Exocet;
 
 namespace Model.Solver.Strategies;
 
-public class JuniorExocetStrategy : AbstractStrategy
+public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004930000600600300000000000050200010008006900400003700900020050001000008000
 {
     public const string OfficialName = "Junior Exocet";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

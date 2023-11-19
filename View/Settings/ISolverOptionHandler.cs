@@ -1,6 +1,6 @@
 using System.Windows.Media;
 using Global.Enums;
-using View.Utils;
+using View.Utility;
 
 namespace View.Settings;
 

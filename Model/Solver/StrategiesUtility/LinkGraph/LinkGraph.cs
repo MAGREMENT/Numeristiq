@@ -34,6 +34,21 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
         return _links.TryGetValue(from, out var resume) ? resume[(int)strength - 1] : Enumerable.Empty<T>();
     }
 
+    public IEnumerable<T> GetLinks(T from)
+    {
+        if (!_links.TryGetValue(from, out var resume)) yield break;
+        
+        foreach (var friend in resume[0])
+        {
+            yield return friend;
+        }
+            
+        foreach (var friend in resume[1])
+        {
+            yield return friend;
+        }
+    }
+
     public bool HasLinkTo(T from, T to, LinkStrength strength)
     {
         return _links.TryGetValue(from, out var resume) && resume[(int)strength - 1].Contains(to);

@@ -8,7 +8,7 @@ using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.ForcingNets;
 
-public static class ForcingNetsUtil
+public static class ForcingNetsUtility
 {
     public static Dictionary<CellPossibility, Coloring> FilterPossibilityCoordinates(
         Dictionary<ILinkGraphElement, Coloring> coloring)

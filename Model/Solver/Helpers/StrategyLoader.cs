@@ -6,6 +6,7 @@ using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Solver.Strategies.AlternatingChains.ChainTypes;
 using Model.Solver.Strategies.ForcingNets;
+using Model.Solver.Strategies.NRCZTChains;
 using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtility.LinkGraph;
@@ -67,7 +68,8 @@ public class StrategyLoader
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
-        {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()}
+        {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()},
+        {NRCChainStrategy.OfficialName, new NRCChainStrategy()}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
