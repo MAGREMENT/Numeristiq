@@ -6,9 +6,6 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
-/// <summary>
-/// http://forum.enjoysudoku.com/the-reverse-bug-t4431.html
-/// </summary>
 public class ReverseBUGStrategy : AbstractStrategy
 {
     public const string OfficialName = "Reverse BUG";

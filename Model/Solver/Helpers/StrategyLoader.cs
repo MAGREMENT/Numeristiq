@@ -69,6 +69,7 @@ public class StrategyLoader
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
         {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()},
+        {RectangleEliminationStrategy.OfficialName, new RectangleEliminationStrategy()},
         {NRCChainStrategy.OfficialName, new NRCChainStrategy()}
     };
 

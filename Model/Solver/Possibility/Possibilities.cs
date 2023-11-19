@@ -91,7 +91,7 @@ public class Possibilities : IReadOnlyPossibilities
             return new Possibilities(diff, System.Numerics.BitOperations.PopCount((uint) diff));
         }
 
-        return new Possibilities(); //TODO
+        return IReadOnlyPossibilities.DefaultDifference(this, possibilities);
     }
 
     public Possibilities Invert()
