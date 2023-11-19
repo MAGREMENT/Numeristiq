@@ -542,6 +542,8 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(cell, ChangeColoration.CauseOnOne);
             }
 
+            lighter.CreateLink(_cells[0], _cells[1], LinkStrength.Strong);
+
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
