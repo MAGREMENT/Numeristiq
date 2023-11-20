@@ -7,6 +7,7 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
 {
     public int Count { get; }
     public Cell First();
+    public Cell First(Cell except);
     public Cell Next(ref int cursor);
     
     public delegate void HandleCombination(Cell one, Cell two);
@@ -21,6 +22,7 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
     public bool Peek(int gridNumber);
     
     public MiniGridPositions Or(IReadOnlyMiniGridPositions pos);
+    public MiniGridPositions Difference(IReadOnlyMiniGridPositions pos);
 
     public MiniGridPositions Copy();
 
@@ -37,6 +39,17 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
             {
                 if (one.Peek(i, j) || two.Peek(i, j)) result.Add(i, j);
             }
+        }
+
+        return result;
+    }
+
+    public static MiniGridPositions DefaultDifference(IReadOnlyMiniGridPositions one, IReadOnlyMiniGridPositions two)
+    {
+        var result = one.Copy();
+        foreach (var c in two)
+        {
+            result.Remove(c.Row % 3, c.Col % 3);
         }
 
         return result;

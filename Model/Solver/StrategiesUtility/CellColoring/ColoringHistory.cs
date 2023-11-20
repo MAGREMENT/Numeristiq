@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.StrategiesUtility.LinkGraph;
@@ -13,33 +14,34 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
         _parents.TryAdd(element, parent);
     }
 
-    public Path<T> GetPathToRoot(T from, Coloring coloring)
+    public Path<T> GetPathToRoot(T from, Coloring coloring, bool reverse = true) //TODO look into using the reverse bit (in AIC notably)
     {
-        List<T> elementsToReverse = new();
-        List<LinkStrength> linksToReverse = new();
+        List<T> elements = new();
+        List<LinkStrength> links = new();
         
         if (!_parents.TryGetValue(from, out var parent)) return new Path<T>(from);
 
-        elementsToReverse.Add(from);
-        elementsToReverse.Add(parent);
-        linksToReverse.Add(coloring == Coloring.On ? LinkStrength.Strong : LinkStrength.Weak);
+        elements.Add(from);
+        elements.Add(parent);
+        links.Add(coloring == Coloring.On ? LinkStrength.Strong : LinkStrength.Weak);
 
         while (_parents.TryGetValue(parent, out var next))
         {
-            elementsToReverse.Add(next);
+            elements.Add(next);
             parent = next;
-            linksToReverse.Add(linksToReverse[^1] == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong);
+            links.Add(links[^1] == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong);
         }
 
-        List<T> elementsResult = new(elementsToReverse.Count);
-        List<LinkStrength> linksResult = new(linksToReverse.Count);
-        for (int i = elementsToReverse.Count - 1; i >= 0; i--)
+        var eArray = elements.ToArray();
+        var lArray = links.ToArray();
+
+        if (reverse)
         {
-            elementsResult.Add(elementsToReverse[i]);
-            if (i < linksToReverse.Count) linksResult.Add(linksToReverse[i]);
+            Array.Reverse(eArray);
+            Array.Reverse(lArray);
         }
 
-        return new Path<T>(elementsResult.ToArray(), linksResult.ToArray());
+        return new Path<T>(eArray, lArray);
     }
 
     public void ForeachLink(HandleChildToParentLink<T> handler)
@@ -55,7 +57,7 @@ public delegate void HandleChildToParentLink<in T>(T child, T parent);
 
 public interface IReadOnlyColoringHistory<T> where T : ILinkGraphElement
 {
-    public Path<T> GetPathToRoot(T from, Coloring coloring);
+    public Path<T> GetPathToRoot(T to, Coloring coloring, bool reverse = true);
 
     public void ForeachLink(HandleChildToParentLink<T> handler);
 }

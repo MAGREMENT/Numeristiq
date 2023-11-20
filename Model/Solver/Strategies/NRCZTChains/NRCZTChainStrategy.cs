@@ -1,5 +1,5 @@
+using System;
 using System.Collections.Generic;
-using System.Text;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtility;
@@ -27,13 +27,13 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 
         Difficulty = _conditions.Length > 0 ? StrategyDifficulty.Extreme : StrategyDifficulty.Hard;
 
-        var builder = new StringBuilder();
-        foreach (var c in _conditions)
+        Name = conditions.Length switch
         {
-            builder.Append(c.Name);
-        }
-
-        Name = $"NRC{builder}-Chains";
+            0 => OfficialNameForDefault,
+            1 => $"NRC{conditions[0].Name}-Chains",
+            2 => OfficialNameForZAndTCondition,
+            _ => throw new ArgumentException("Too many conditions")
+        };
     }
 
     public override void Apply(IStrategyManager strategyManager)
@@ -175,7 +175,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder
                 
                 lighter.HighlightPossibility(current.Start, ChangeColoration.CauseOffOne);
                 lighter.HighlightPossibility(current.End, ChangeColoration.CauseOnOne);
-                lighter.EncircleRectangle(current.Start, current.End, ChangeColoration.CauseOffFour);
+                lighter.CreateLink(current.Start, current.End, LinkStrength.Strong);
 
                 if (i + 1 < Chain.Count)
                 {

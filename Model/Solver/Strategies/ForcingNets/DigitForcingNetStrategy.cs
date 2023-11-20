@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.CellColoring;
 using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -61,7 +60,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
                 if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(this,
                         new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
-                            possOn, other)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            possOn, other, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
 
             if (on.Value != Coloring.On) continue;
@@ -74,7 +73,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                     RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                possOff, off.Value, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
@@ -85,7 +84,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                     
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                possOff, off.Value, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
@@ -111,10 +110,11 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
     private readonly Coloring _onColoring;
     private readonly CellPossibility _offPos;
     private readonly Coloring _offColoring;
+    private readonly LinkGraph<ILinkGraphElement> _graph;
 
     public DigitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> on, 
         ColoringDictionary<ILinkGraphElement> off, CellPossibility onPos, Coloring onColoring,
-        CellPossibility offPos, Coloring offColoring)
+        CellPossibility offPos, Coloring offColoring, LinkGraph<ILinkGraphElement> graph)
     {
         _on = on;
         _off = off;
@@ -122,27 +122,34 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         _onColoring = onColoring;
         _offPos = offPos;
         _offColoring = offColoring;
+        _graph = graph;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
+        var offPath = _off.History!.GetPathToRoot(_offPos, _offColoring);
+        
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(onPath, offPath), lighter =>
         {
-            var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
-            
             onPath.Highlight(lighter);
+            ForcingNetsUtility.HighlightJumpLinks(lighter, onPath, _on, _graph, snapshot);
             if(onPath.Elements[0] is CellPossibility cp) lighter.EncirclePossibility(cp);
             if (onPath.Count == 1) lighter.HighlightPossibility(_onPos, ChangeColoration.CauseOnOne);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, lighter =>
         {
-            var offPath = _off.History!.GetPathToRoot(_offPos, _offColoring);
-            
             offPath.Highlight(lighter);
+            ForcingNetsUtility.HighlightJumpLinks(lighter, offPath, _off, _graph, snapshot);
             if(offPath.Elements[0] is CellPossibility cp) lighter.EncirclePossibility(cp);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Explanation(Path<ILinkGraphElement> onPath, Path<ILinkGraphElement> offPath)
+    {
+        return $"Path if on : \n{onPath}\n\nPath if off : \n{offPath}";
     }
 }

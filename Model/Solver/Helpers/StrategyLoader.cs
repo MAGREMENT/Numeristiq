@@ -73,7 +73,7 @@ public class StrategyLoader
         {NRCZTChainStrategy.OfficialNameForDefault, new NRCZTChainStrategy()},
         {NRCZTChainStrategy.OfficialNameForTCondition, new NRCZTChainStrategy(new TCondition())},
         {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
-        {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new ZCondition(), new TCondition())},
+        {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new TCondition(), new ZCondition())},
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

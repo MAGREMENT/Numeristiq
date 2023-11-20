@@ -138,7 +138,20 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
         return new Cell(-1, -1);
     }
-    
+
+    public Cell First(Cell except)
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            if (!Peek(i)) continue;
+
+            var current = new Cell(_startRow + i / 3, _startCol + i % 3);
+            if (current != except) return current;
+        }
+
+        return new Cell(-1, -1);
+    }
+
     public Cell Next(ref int cursor)
     {
         cursor++;
@@ -161,6 +174,17 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public MiniGridPositions Difference(IReadOnlyMiniGridPositions pos)
+    {
+        if (pos is MiniGridPositions mgp)
+        {
+            var diff = _pos &= ~mgp._pos;
+            return new MiniGridPositions(diff, System.Numerics.BitOperations.PopCount((uint)diff), _startRow, _startCol);
+        }
+
+        return IReadOnlyMiniGridPositions.DefaultDifference(this, pos);
     }
 
     public MiniGridPositions Copy()

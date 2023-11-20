@@ -74,7 +74,7 @@ public class Path<T> where T : ILinkGraphElement
     public override string ToString()
     {
         var builder = new StringBuilder();
-        for (int i = 0; i < Elements.Length; i++)
+        for (int i = 0; i < Elements.Length - 1; i++)
         {
             builder.Append(Elements[i] + (Links[i] == LinkStrength.Strong ? " = " : " - "));
         }

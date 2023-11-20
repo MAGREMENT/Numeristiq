@@ -60,6 +60,17 @@ public class LinePositions : IReadOnlyLinePositions
         Count = System.Numerics.BitOperations.PopCount((uint)_pos);
     }
 
+    public LinePositions Difference(IReadOnlyLinePositions pos)
+    {
+        if (pos is LinePositions lp)
+        {
+            var diff = _pos &= ~lp._pos;
+            return new LinePositions(diff, System.Numerics.BitOperations.PopCount((uint)diff));
+        }
+
+        return IReadOnlyLinePositions.DefaultDifference(this, pos);
+    }
+
     public bool AreAllInSameMiniGrid()
     {
         //111 111 000
