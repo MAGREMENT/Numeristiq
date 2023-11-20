@@ -312,6 +312,11 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
         return Cells.SharedSeenCells(Row, Col, coord.Row, coord.Col);
     }
 
+    public bool AreWeaklyLinked(CellPossibility cp)
+    {
+        return (cp.Row == Row && cp.Col == Col) || (cp.Possibility == Possibility && ShareAUnit(cp));
+    }
+
     public override int GetHashCode()
     {
         return HashCode.Combine(Possibility, Row, Col);

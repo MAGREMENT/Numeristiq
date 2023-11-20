@@ -54,6 +54,12 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
         return _links.TryGetValue(from, out var resume) && resume[(int)strength - 1].Contains(to);
     }
 
+    public bool HasLinkTo(T from, T to)
+    {
+        return _links.TryGetValue(from, out var resume) && (resume[0].Contains(to) ||
+                                                            resume[1].Contains(to));
+    }
+
     public void Clear()
     {
         _links.Clear();

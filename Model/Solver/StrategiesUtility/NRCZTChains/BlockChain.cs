@@ -6,6 +6,8 @@ namespace Model.Solver.StrategiesUtility.NRCZTChains;
 
 public class BlockChain : List<Block>
 {
+    public List<CellPossibility>? MustTarget { get; } = null;
+    
     public void RemoveLast()
     {
         if (Count == 0) return;
