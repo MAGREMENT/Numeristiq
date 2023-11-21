@@ -57,7 +57,7 @@ public class RunTester
 
         while (_running && reader.ReadLine() is { } line)
         {
-            _currentSolver.SetSudoku(SudokuTranslator.LineTranslate(line));
+            _currentSolver.SetSudoku(SudokuTranslator.TranslateToSudoku(line));
             _currentSolver.Solve();
 
             _currentRunResult.SolveDone(_currentSolver);

@@ -293,6 +293,11 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
 
     private void FullScan(object sender, RoutedEventArgs e)
     {
-        throw new System.NotImplementedException();
+        
+    }
+
+    private void Paste(object sender, RoutedEventArgs e)
+    {
+        _presenter.PasteGrid(Clipboard.GetText());
     }
 }

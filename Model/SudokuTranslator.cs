@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using Global.Enums;
+using Model.Solver;
 using Model.Solver.Possibility;
 using Model.Utility;
 
@@ -8,7 +9,7 @@ namespace Model;
 
 public static class SudokuTranslator
 {
-    public static string LineTranslate(ITranslatable translatable, SudokuTranslationType type)
+    public static string TranslateToLine(ITranslatable translatable, SudokuTranslationType type)
     {
         string result = "";
         int voidCount = 0;
@@ -48,7 +49,7 @@ public static class SudokuTranslator
         return result;
     }
     
-    public static Sudoku LineTranslate(string asString)
+    public static Sudoku TranslateToSudoku(string asString)
     {
         Sudoku s = new();
         int n = 0;
@@ -98,14 +99,29 @@ public static class SudokuTranslator
         return s;
     }
 
-    public static string GridTranslate(ITranslatable translatable)
+    public static Sudoku TranslateToSudoku(ITranslatable translatable)
+    {
+        Sudoku result = new();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                result[row, col] = translatable[row, col];
+            }
+        }
+
+        return result;
+    }
+
+    public static string TranslateToGrid(ITranslatable translatable)
     {
         var maxWidth = 0;
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var width = translatable[row, col] == 0 ? translatable.PossibilitiesAt(row, col).Count : 1;
+                var width = translatable[row, col] == 0 ? translatable.PossibilitiesAt(row, col).Count : 3;
                 maxWidth = Math.Max(width, maxWidth);
             }
         }
@@ -131,7 +147,7 @@ public static class SudokuTranslator
                 
                 var toPut = translatable[row, col] == 0
                     ? translatable.PossibilitiesAt(row, col).ToSlimString()
-                    : translatable[row, col].ToString();
+                    : $"<{translatable[row, col]}>";
                 builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
             }
 
@@ -147,6 +163,70 @@ public static class SudokuTranslator
         builder.Append("+\n");
 
         return builder.ToString();
+    }
+
+    public static SolverState TranslateToState(string grid)
+    {
+        var split = grid.Split("\n");
+        if (split.Length < 12) return new SolverState();
+
+        var cellStates = new CellState[9, 9];
+        try
+        {
+            var row = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                if (i % 4 == 0) continue;
+
+                var col = 0;
+                var numberBuffer = -1;
+                var isNumber = false;
+                Possibilities? possibilitiesBuffer = null;
+                foreach (var c in split[i])
+                {
+                    if (c == '<')
+                    {
+                        isNumber = true;
+                    }
+                    if (char.IsDigit(c))
+                    {
+                        var asInt = int.Parse(c.ToString());
+
+                        if (isNumber) numberBuffer = asInt;
+                        else
+                        {
+                            possibilitiesBuffer ??= Possibilities.NewEmpty();
+                            possibilitiesBuffer.Add(asInt);
+                        }
+                    }
+                    else
+                    {
+                        if (isNumber && numberBuffer != -1)
+                        {
+                            cellStates[row, col] = new CellState(numberBuffer);
+                            isNumber = false;
+                            numberBuffer = -1;
+                            col++;
+                        }
+                        else if (possibilitiesBuffer is not null)
+                        {
+                            cellStates[row, col] = possibilitiesBuffer.ToCellState();
+                            possibilitiesBuffer = null;
+                            col++;
+                        }
+                    }
+                }
+
+                row++;
+            }
+        }
+        catch (Exception)
+        {
+            return new SolverState();
+        }
+
+
+        return new SolverState(cellStates);
     }
 }
 

@@ -207,7 +207,7 @@ public static class Testing //TODO put this in unit tests
 
     private static void SudokuResolutionTest(string asString)
     {
-        var sud = SudokuTranslator.LineTranslate(asString);
+        var sud = SudokuTranslator.TranslateToSudoku(asString);
         Console.WriteLine("Initial sudoku : ");
         Console.WriteLine(sud);
 

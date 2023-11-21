@@ -8,8 +8,8 @@ namespace Model;
 
 public interface ISolver
 {
-    public IReadOnlySudoku Sudoku { get; }
     public void SetSudoku(Sudoku sudoku);
+    public void SetState(SolverState state);
     public void Solve(bool stopAtProgress);
     public SolverState CurrentState { get; }
     public SolverState StartState { get; }

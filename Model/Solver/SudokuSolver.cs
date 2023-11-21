@@ -101,7 +101,33 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
         _startedSolving = false;
     }
-    
+
+    public void SetState(SolverState state)
+    {
+        _sudoku = SudokuTranslator.TranslateToSudoku(state);
+        CallOnNewSudokuForEachStrategy();
+        
+        Reset();
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var at = state.At(row, col);
+                if (!at.IsPossibilities) continue;
+
+                var asPoss = at.AsPossibilities;
+                foreach (var p in PossibilitiesAt(row, col))
+                {
+                    if (!asPoss.Peek(p)) RemovePossibility(p, row, col, false);
+                }
+            }
+        }
+        StartState = new SolverState(this);
+
+        LogManager.Clear();
+
+        _startedSolving = false;
+    }
     
     public void SetSolutionByHand(int number, int row, int col)
     {

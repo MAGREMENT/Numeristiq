@@ -9,10 +9,11 @@ namespace Model.Solver;
 
 public class SolverState : ITranslatable
 {
-    private readonly CellState[,] _cellStates = new CellState[9, 9];
+    private readonly CellState[,] _cellStates;
 
     public SolverState(IPossibilitiesHolder solver)
     {
+        _cellStates = new CellState[9, 9];
         for (int row = 0; row < 9; row++)
         {
             for(int col = 0; col < 9; col++)
@@ -23,8 +24,21 @@ public class SolverState : ITranslatable
         }
     }
 
-    private SolverState(CellState[,] cellStates)
+    public SolverState()
     {
+        _cellStates = new CellState[9, 9];
+        for (int row = 0; row < 9; row++)
+        {
+            for(int col = 0; col < 9; col++)
+            {
+                _cellStates[row, col] = CellState.FromBits(0x1FF);
+            }
+        }
+    }
+
+    public SolverState(CellState[,] cellStates)
+    {
+        if (cellStates.Length != 81) throw new ArgumentException("Not enough cells");
         _cellStates = cellStates;
     }
 

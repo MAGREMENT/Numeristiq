@@ -12,8 +12,5 @@
       <ProjectReference Include="..\Presenter\Presenter.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="GlobalUserControls\" />
-    </ItemGroup>
 
 </Project>

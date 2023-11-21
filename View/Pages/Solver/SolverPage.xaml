@@ -15,7 +15,7 @@
             </MenuItem>
             <MenuItem Header="Edit" FontSize="15">
                 <MenuItem FontSize="12" Header="Copy" Click="Copy"></MenuItem>
-                <MenuItem FontSize="12" Header="Paste"></MenuItem>
+                <MenuItem FontSize="12" Header="Paste" Click="Paste"></MenuItem>
             </MenuItem>
             <MenuItem Header="Tools" FontSize="15">
                 <MenuItem FontSize="12" Header="Full scan" Click="FullScan"></MenuItem>
