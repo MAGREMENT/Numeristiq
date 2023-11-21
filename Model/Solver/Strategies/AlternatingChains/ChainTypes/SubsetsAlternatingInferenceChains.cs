@@ -6,9 +6,9 @@ using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class ComplexAlternatingInferenceChains : IAlternatingChainType<ILinkGraphElement>
+public class SubsetsAlternatingInferenceChains : IAlternatingChainType<ILinkGraphElement>
 {
-    public const string OfficialName = "Alternating Inference Chain";
+    public const string OfficialName = "Subsets Alternating Inference Chain";
     
     public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;

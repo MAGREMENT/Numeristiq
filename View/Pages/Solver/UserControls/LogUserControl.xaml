@@ -8,7 +8,7 @@
     <StackPanel Width="300" Orientation="Vertical" x:Name="Main">
         <StackPanel Width="300" Orientation="Horizontal">
             <TextBlock x:Name="Number" FontSize="22" FontWeight="Heavy" Margin="0, 0, 5, 0"/>
-            <TextBlock x:Name="Title" FontSize="22" FontWeight="Heavy"/>
+            <TextBlock x:Name="Title" FontSize="22" FontWeight="Heavy" TextWrapping="Wrap"/>
         </StackPanel>
         <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
         <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0, 0, 0, 5">

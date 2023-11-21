@@ -6,6 +6,6 @@
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
         ResizeMode="NoResize"
-        Title="MainWindow">
+        Title="SudokuSolver">
     <Frame x:Name="Main" NavigationUIVisibility="Hidden" />
 </Window>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -9,6 +10,7 @@ using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.NRCZTChains;
 using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
+using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.LinkGraph;
 using Model.Utility;
 
@@ -49,11 +51,11 @@ public class StrategyLoader
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
-        {ComplexXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexXCycles(),
+        {SubsetsXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new SubsetsXCycles(),
             new AlternatingChainAlgorithmV4<ILinkGraphElement>())},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
-        {ComplexAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new ComplexAlternatingInferenceChains(),
+        {SubsetsAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new SubsetsAlternatingInferenceChains(),
             new AlternatingChainAlgorithmV4<ILinkGraphElement>())},
         {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
@@ -74,6 +76,10 @@ public class StrategyLoader
         {NRCZTChainStrategy.OfficialNameForTCondition, new NRCZTChainStrategy(new TCondition())},
         {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
         {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new TCondition(), new ZCondition())},
+        {AlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new AlternatingInferenceChains(),
+            new AlternatingChainAlgorithmV4<CellPossibility>())},
+        {XCycles.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new XCycles(),
+            new AlternatingChainAlgorithmV4<CellPossibility>())}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
@@ -126,5 +132,17 @@ public class StrategyLoader
                 CustomizedOnInstanceFound.Add(entry.Key, behavior);
             }
         }
+    }
+
+    public string AllStrategies()
+    {
+        var builder = new StringBuilder();
+
+        foreach (var name in StrategyPool.Keys)
+        {
+            builder.Append(name + "\n");
+        }
+
+        return builder.ToString();
     }
 }

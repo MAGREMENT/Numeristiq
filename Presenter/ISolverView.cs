@@ -23,4 +23,6 @@ public interface ISolverView : ISudokuDrawer
     void ClearCursor();
     void UpdateBackground();
     void ToClipboard(string s);
+    void ShowFullScan(string s);
+    void ShowAllStrategies(string s);
 }

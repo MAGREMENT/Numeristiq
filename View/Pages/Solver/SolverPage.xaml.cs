@@ -6,7 +6,8 @@ using Global;
 using Global.Enums;
 using Presenter;
 using Presenter.Translator;
-using View.Settings;
+using View.HelperWindows.Print;
+using View.HelperWindows.Settings;
 using View.Utility;
 
 namespace View.Pages.Solver;
@@ -141,6 +142,18 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     public void ToClipboard(string s)
     {
         Clipboard.SetText(s);
+    }
+
+    public void ShowFullScan(string s)
+    {
+        var printWindow = new PrintWindow("All Strategies", s);
+        printWindow.Show();
+    }
+
+    public void ShowAllStrategies(string s)
+    {
+        var printWindow = new PrintWindow("Full Scan", s);
+        printWindow.Show();
     }
 
     public void ClearDrawings()
@@ -293,11 +306,16 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
 
     private void FullScan(object sender, RoutedEventArgs e)
     {
-        
+        _presenter.GetFullScan();
     }
 
     private void Paste(object sender, RoutedEventArgs e)
     {
         _presenter.PasteGrid(Clipboard.GetText());
+    }
+
+    private void AllStrategies(object sender, RoutedEventArgs e)
+    {
+        _presenter.GetAllStrategies();
     }
 }

@@ -22,6 +22,7 @@ public interface ISolver
     public void SetSolutionByHand(int number, int row, int col);
     public void RemoveSolutionByHand(int row, int col);
     public void RemovePossibilityByHand(int possibility, int row, int col);
+    public string AllStrategies();
     
     
     public event OnLogsUpdate? LogsUpdated;

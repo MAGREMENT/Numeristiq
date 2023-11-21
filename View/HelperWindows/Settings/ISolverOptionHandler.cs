@@ -2,7 +2,7 @@ using System.Windows.Media;
 using Global.Enums;
 using View.Utility;
 
-namespace View.Settings;
+namespace View.HelperWindows.Settings;
 
 public interface ISolverOptionHandler
 {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace View.Settings.Options;
+namespace View.HelperWindows.Settings.Options;
 
 public partial class SliderOptionCanvas : OptionCanvas
 {

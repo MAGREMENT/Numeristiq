@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace View.Settings.Options;
+namespace View.HelperWindows.Settings.Options;
 
 public partial class ComboBoxOptionCanvas : OptionCanvas
 {

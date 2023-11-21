@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -11,30 +12,38 @@ public static class IniFileReader
     {
         var builder = new IniFileResultBuilder();
 
-        using TextReader reader = new StreamReader(path, Encoding.UTF8);
-
-        while (reader.ReadLine() is { } line)
+        try
         {
-            if(line.Length == 0) continue;
-            var firstChar = line[0];
+            using var reader = new StreamReader(path, Encoding.UTF8);
 
-            switch (firstChar)
+            while (reader.ReadLine() is { } line)
             {
-                case '#' :
-                    break;
-                case '[' :
-                    if (line[^1] != ']') continue;
-                    
-                    builder.AddSection(line.Substring(1, line.Length - 2));
-                    break;
-                default:
-                    var split = line.Split('=');
-                    if (split.Length != 2) continue;
+                if (line.Length == 0) continue;
+                var firstChar = line[0];
 
-                    builder.AddEntry(split[0], split[1]);
-                    break;
+                switch (firstChar)
+                {
+                    case '#':
+                        break;
+                    case '[':
+                        if (line[^1] != ']') continue;
+
+                        builder.AddSection(line.Substring(1, line.Length - 2));
+                        break;
+                    default:
+                        var split = line.Split('=');
+                        if (split.Length != 2) continue;
+
+                        builder.AddEntry(split[0], split[1]);
+                        break;
+                }
             }
         }
+        catch (Exception)
+        {
+            // ignored
+        }
+
 
         return builder.GetResult();
     }

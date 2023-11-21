@@ -1,19 +1,22 @@
-﻿using Global.Enums;
+﻿using System.Linq;
+using Global.Enums;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class SimpleXCycles : IAlternatingChainType<CellPossibility>
+public class AlternatingInferenceChains : IAlternatingChainType<CellPossibility>
 {
-    public const string OfficialName = "X-Cycles";
+    public const string OfficialName = "Alternating Inference Chains";
     
     public string Name => OfficialName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
+    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public IStrategy? Strategy { get; set; }
+
     public LinkGraph<CellPossibility> GetGraph(IStrategyManager view)
     {
-        view.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+        view.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
         return view.GraphManager.SimpleLinkGraph;
     }
 
@@ -21,16 +24,34 @@ public class SimpleXCycles : IAlternatingChainType<CellPossibility>
     {
         loop.ForEachLink((one, two)
             => ProcessWeakLink(view, one, two), LinkStrength.Weak);
-
+        
         return view.ChangeBuffer.Commit(Strategy!,
             new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
     }
 
     private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two)
     {
-        foreach (var coord in one.SharedSeenCells(two))
+        if (one.Row == two.Row && one.Col == two.Col)
         {
-            view.ChangeBuffer.ProposePossibilityRemoval(one.Possibility, coord.Row, coord.Col);
+            RemoveAllExcept(view, one.Row, one.Col, one.Possibility, two.Possibility);
+        }
+        else
+        {
+            foreach (var coord in one.SharedSeenCells(two))
+            {
+                view.ChangeBuffer.ProposePossibilityRemoval(one.Possibility, coord.Row, coord.Col);
+            }   
+        }
+    }
+    
+    private void RemoveAllExcept(IStrategyManager strategyManager, int row, int col, params int[] except)
+    {
+        foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+        {
+            if (!except.Contains(possibility))
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+            }
         }
     }
 

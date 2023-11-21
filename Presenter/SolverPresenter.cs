@@ -186,6 +186,16 @@ public class SolverPresenter
         _solver.SetState(SudokuTranslator.TranslateToState(grid));
         ChangeShownState(_solver.CurrentState);
     }
+
+    public void GetFullScan()
+    {
+        
+    }
+
+    public void GetAllStrategies()
+    {
+        _view.ShowAllStrategies(_solver.AllStrategies());
+    }
     
     //Private-----------------------------------------------------------------------------------------------------------
 

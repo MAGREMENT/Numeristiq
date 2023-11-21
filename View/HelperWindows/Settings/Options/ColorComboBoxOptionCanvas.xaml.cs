@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace View.Settings.Options;
+namespace View.HelperWindows.Settings.Options;
 
 public partial class ColorComboBoxOptionCanvas : OptionCanvas
 {

@@ -1,10 +1,10 @@
 using System.Windows;
 using System.Windows.Controls;
 using Global.Enums;
-using View.Settings.Options;
+using View.HelperWindows.Settings.Options;
 using View.Utility;
 
-namespace View.Settings;
+namespace View.HelperWindows.Settings;
 
 public partial class SolverSettingsWindow
 {

@@ -6,9 +6,9 @@ using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainTypes;
 
-public class ComplexXCycles : IAlternatingChainType<ILinkGraphElement>
+public class SubsetsXCycles : IAlternatingChainType<ILinkGraphElement>
 {
-    public const string OfficialName = "X-Cycles";
+    public const string OfficialName = "Subsets X-Cycles";
     
     public string Name => OfficialName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;

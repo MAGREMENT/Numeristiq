@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Global;
 using Global.Enums;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
@@ -44,6 +43,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     public event PossibilityRemoval? GoingToRemovePossibility;
     
     public event OnCurrentStrategyChange? CurrentStrategyChanged;
+
     public event OnLogsUpdate? LogsUpdated;
 
     private int _currentStrategy = -1;
@@ -281,6 +281,11 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
                     break;
             }
         }
+    }
+    
+    public string AllStrategies()
+    {
+        return _strategyLoader.AllStrategies();
     }
 
     //PossibilityHolder-------------------------------------------------------------------------------------------------

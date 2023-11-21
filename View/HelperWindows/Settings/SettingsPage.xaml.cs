@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace View.Settings;
+namespace View.HelperWindows.Settings;
 
 public partial class SettingsPage : Page
 {
