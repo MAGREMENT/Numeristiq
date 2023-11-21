@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Global;
 using Global.Enums;
 using Model.Solver.StrategiesUtility;
+using Model.Utility;
 
 namespace Model.Solver.Helpers.Changes;
 
@@ -107,6 +109,33 @@ public class ChangeBuffer
         _solutionAddedBuffer.Clear();
 
         return changes;
+    }
+
+    public string CommitDump()
+    {
+        var builder = new StringBuilder();
+        IStrategy? lastStrategy= null;
+        var changeSet = new HashSet<SolverChange>();
+
+        foreach (var commit in _commits)
+        {
+            if (lastStrategy is null || !lastStrategy.Name.Equals(commit.Responsible.Name))
+            {
+                if (changeSet.Count > 0)
+                {
+                    builder.Append(StringUtility.FillWith(lastStrategy!.Name, '-', 50) + "\n\n");
+                    builder.Append($"{IChangeReportBuilder.ChangesToString(changeSet)}\n");
+                    changeSet.Clear();
+                }
+                
+                lastStrategy = commit.Responsible;
+            }
+
+            changeSet.UnionWith(commit.Changes);
+        }
+
+        _commits.Clear();
+        return builder.ToString();
     }
 }
 

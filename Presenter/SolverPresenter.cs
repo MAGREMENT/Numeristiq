@@ -189,7 +189,7 @@ public class SolverPresenter
 
     public void GetFullScan()
     {
-        
+        _view.ShowFullScan(_solver.FullScan());
     }
 
     public void GetAllStrategies()

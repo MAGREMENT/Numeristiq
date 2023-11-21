@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using Global.Enums;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
@@ -31,7 +30,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     }
     public bool StatisticsTracked { get; init; }
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
-    public OnInstanceFound OnInstanceFound { get; private set; } = 0;
 
     public SolverState CurrentState => new(this);
     public SolverState StartState { get; private set; }
@@ -54,6 +52,8 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     private int _possibilityRemovedBuffer;
 
     private bool _startedSolving;
+
+    private OnInstanceFound _lastOnInstanceFound = OnInstanceFound.Default;
 
     private readonly StrategyLoader _strategyLoader = new();
 
@@ -189,11 +189,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         CurrentStrategyChanged?.Invoke(_currentStrategy);
     }
 
-    public void SolveAsync(bool stopAtProgress = false)
-    {
-        Task.Run(() => Solve(stopAtProgress));
-    }
-
     public bool IsWrong()
     {
         for (int row = 0; row < 9; row++)
@@ -256,7 +251,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     public void SetOnInstanceFound(OnInstanceFound found)
     {
-        OnInstanceFound = found;
+        _lastOnInstanceFound = found;
         
         foreach (var strategy in Strategies)
         {
@@ -288,6 +283,25 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         return _strategyLoader.AllStrategies();
     }
 
+    public string FullScan()
+    {
+        var last = _lastOnInstanceFound;
+        SetOnInstanceFound(OnInstanceFound.WaitForAll);
+        
+        for (int i = 0; i < Strategies.Length; i++)
+        {
+            if (!IsStrategyUsed(i)) continue;
+            
+            var current = Strategies[i];
+            current.Apply(this);
+
+            if (_sudoku.IsComplete()) break;
+        }
+
+        SetOnInstanceFound(last);
+        return "FULL SCAN :\n\n" + SudokuTranslator.TranslateToGrid(CurrentState) + "\n" + ChangeBuffer.CommitDump();
+    }
+    
     //PossibilityHolder-------------------------------------------------------------------------------------------------
     
     public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
