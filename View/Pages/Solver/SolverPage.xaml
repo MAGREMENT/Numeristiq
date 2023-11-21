@@ -3,14 +3,25 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:view="clr-namespace:View"
       xmlns:userControls="clr-namespace:View.Pages.Solver.UserControls"
-      xmlns:globalUserControls="clr-namespace:View.GlobalUserControls"
       xmlns:utils="clr-namespace:View.Utility"
       mc:Ignorable="d"
       Title="SolverPage">
     <StackPanel Orientation="Vertical">
-        <globalUserControls:CustomNavigationUserControl x:Name="Navigation"/>
+        <Menu Height="25">
+            <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
+            <MenuItem Header="File" FontSize="15">
+                <MenuItem FontSize="12"  Header="Settings" Click="ShowSettingsWindow"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Edit" FontSize="15">
+                <MenuItem FontSize="12" Header="Copy" Click="Copy"></MenuItem>
+                <MenuItem FontSize="12" Header="Paste"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Tools" FontSize="15">
+                <MenuItem FontSize="12" Header="Full scan" Click="FullScan"></MenuItem>
+            </MenuItem>
+        </Menu>
+        
         <StackPanel Orientation="Horizontal" Background="{x:Static utils:ColorManager.Background1}">
         
             <StackPanel Orientation="Vertical" Width="590">

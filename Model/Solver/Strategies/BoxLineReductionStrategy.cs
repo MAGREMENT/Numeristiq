@@ -149,8 +149,8 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
     {
         var first = changes[0];
         var miniGirdNumber = first.Row / 3 * 3 + first.Column / 3 + 1;
-        return $"{_number} is present only in the cells {_linePos.ToString(_unit, _unitNumber)} in mini" +
-               $" {_unit.ToString().ToLower()} {_unitNumber}, so it can be removed from any other cells in" +
-               $" mini grid {miniGirdNumber}";
+        return $"{_number} is present only in the cells {_linePos.ToString(_unit, _unitNumber)} in" +
+               $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so it can be removed from any other cells in" +
+               $" box {miniGirdNumber}";
     }
 }

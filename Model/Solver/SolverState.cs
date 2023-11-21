@@ -42,6 +42,11 @@ public class SolverState : ITranslatable
         } 
     }
 
+    public Possibilities PossibilitiesAt(int row, int col)
+    {
+        return At(row, col).AsPossibilities;
+    }
+
     public SolverState Apply(List<SolverChange> changes)
     {
         var buffer = new CellState[9, 9];

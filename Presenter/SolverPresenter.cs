@@ -36,7 +36,7 @@ public class SolverPresenter
         Settings = new SolverSettings();
         Settings.ShownStateChanged += () => SelectLog(_currentlySelectedLog);
         Settings.TranslationTypeChanged += () =>
-            _view.SetTranslation(SudokuTranslator.Translate(_shownState, Settings.TranslationType));
+            _view.SetTranslation(SudokuTranslator.LineTranslate(_shownState, Settings.TranslationType));
         Settings.UniquenessAllowedChanged += () =>
         {
             _solver.AllowUniqueness(Settings.UniquenessAllowed);
@@ -69,7 +69,7 @@ public class SolverPresenter
     public void NewSudokuFromString(string s)
     {
         _shouldUpdateSudokuTranslation = false;
-        NewSudoku(SudokuTranslator.Translate(s));
+        NewSudoku(SudokuTranslator.LineTranslate(s));
         _shouldUpdateSudokuTranslation = true;
     }
 
@@ -175,6 +175,11 @@ public class SolverPresenter
                 _currentlySelectedCell.Value.Col);
         ChangeShownState(_solver.CurrentState);
     }
+
+    public void CopyGrid()
+    {
+        _view.ToClipboard(SudokuTranslator.GridTranslate(_shownState));
+    }
     
     //Private-----------------------------------------------------------------------------------------------------------
 
@@ -193,7 +198,7 @@ public class SolverPresenter
             }
         }
         
-        if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.Translate(state, Settings.TranslationType));
+        if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.LineTranslate(state, Settings.TranslationType));
     }
 
     private void NewSudoku(Sudoku sudoku)

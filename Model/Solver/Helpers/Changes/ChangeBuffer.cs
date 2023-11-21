@@ -9,7 +9,7 @@ public class ChangeBuffer
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
-
+        
     private readonly List<ChangeCommit> _commits = new();
 
     private readonly IChangeManager _m;

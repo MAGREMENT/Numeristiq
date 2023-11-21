@@ -200,7 +200,7 @@ public class LinePositions : IReadOnlyLinePositions
             }
         }
 
-        return builder.ToString()[..^1] + ")";
+        return builder.ToString()[..^1];
     }
 
     public Cell[] ToCellArray(Unit unit, int unitNumber)

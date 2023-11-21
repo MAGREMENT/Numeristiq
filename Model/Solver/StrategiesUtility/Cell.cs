@@ -330,7 +330,7 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
 
     public override string ToString()
     {
-        return $"{Possibility}[{Row + 1}, {Col + 1}]";
+        return $"{Possibility}r{Row + 1}c{Col + 1}";
     }
 
     public int Rank => 1;

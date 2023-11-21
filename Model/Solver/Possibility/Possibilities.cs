@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Model.Solver.Strategies;
 
 namespace Model.Solver.Possibility;
@@ -223,6 +224,18 @@ public class Possibilities : IReadOnlyPossibilities
 
         if (result.Length != 1) result = result[..^2];
         return result + ")";
+    }
+
+    public string ToSlimString()
+    {
+        var builder = new StringBuilder();
+
+        foreach (var poss in this)
+        {
+            builder.Append(poss.ToString());
+        }
+        
+        return builder.ToString();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

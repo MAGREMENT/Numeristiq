@@ -1,13 +1,14 @@
 ﻿using System;
-using Global;
+using System.Text;
 using Global.Enums;
+using Model.Solver.Possibility;
 using Model.Utility;
 
 namespace Model;
 
 public static class SudokuTranslator
 {
-    public static string Translate (ITranslatable translatable, SudokuTranslationType type)
+    public static string LineTranslate(ITranslatable translatable, SudokuTranslationType type)
     {
         string result = "";
         int voidCount = 0;
@@ -47,7 +48,7 @@ public static class SudokuTranslator
         return result;
     }
     
-    public static Sudoku Translate(string asString)
+    public static Sudoku LineTranslate(string asString)
     {
         Sudoku s = new();
         int n = 0;
@@ -96,9 +97,61 @@ public static class SudokuTranslator
 
         return s;
     }
+
+    public static string GridTranslate(ITranslatable translatable)
+    {
+        var maxWidth = 0;
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var width = translatable[row, col] == 0 ? translatable.PossibilitiesAt(row, col).Count : 1;
+                maxWidth = Math.Max(width, maxWidth);
+            }
+        }
+
+        var builder = new StringBuilder();
+
+        for (int row = 0; row < 9; row++)
+        {
+            if (row % 3 == 0)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    var first = i % 3 == 0 ? "+" : "-";
+                    builder.Append(first + StringUtility.Repeat('-', maxWidth));
+                }
+
+                builder.Append("+\n");
+            }
+            
+            for (int col = 0; col < 9; col++)
+            {
+                var first = col % 3 == 0 ? "|" : " ";
+                
+                var toPut = translatable[row, col] == 0
+                    ? translatable.PossibilitiesAt(row, col).ToSlimString()
+                    : translatable[row, col].ToString();
+                builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
+            }
+
+            builder.Append("|\n");
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            var first = i % 3 == 0 ? "+" : "-";
+            builder.Append(first + StringUtility.Repeat('-', maxWidth));
+        }
+
+        builder.Append("+\n");
+
+        return builder.ToString();
+    }
 }
 
 public interface ITranslatable
 {
     int this[int row, int col] { get; }
+    Possibilities PossibilitiesAt(int row, int col);
 }

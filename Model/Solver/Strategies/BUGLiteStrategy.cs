@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
-public class BUGLiteStrategy : AbstractStrategy //TODO check if working => #574
+public class BUGLiteStrategy : AbstractStrategy
 {
     public const string OfficialName = "BUG-Lite";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

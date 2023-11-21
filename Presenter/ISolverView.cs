@@ -22,4 +22,5 @@ public interface ISolverView : ISudokuDrawer
     void PutCursorOn(Cell cell);
     void ClearCursor();
     void UpdateBackground();
+    void ToClipboard(string s);
 }

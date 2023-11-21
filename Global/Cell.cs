@@ -27,7 +27,7 @@ public readonly struct Cell
 
     public override string ToString()
     {
-        return $"[{Row + 1}, {Col + 1}]";
+        return $"r{Row + 1}c{Col + 1}";
     }
 
     public static bool operator ==(Cell left, Cell right)

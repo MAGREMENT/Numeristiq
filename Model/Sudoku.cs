@@ -1,4 +1,5 @@
-﻿using Model.Utility;
+﻿using Model.Solver.Possibility;
+using Model.Utility;
 
 namespace Model;
 
@@ -78,6 +79,11 @@ public class Sudoku : IReadOnlySudoku
             if (value is < 0 or > GridSize) return;
             _grid[row, column] = value;
         }
+    }
+
+    public Possibilities PossibilitiesAt(int row, int col)
+    {
+        return Possibilities.NewEmpty();
     }
 
     public int RowCount(int row, int number)

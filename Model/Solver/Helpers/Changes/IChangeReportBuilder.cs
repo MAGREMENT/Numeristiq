@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Global;
+using System.Text;
 using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
 
@@ -24,16 +24,16 @@ public interface IChangeReportBuilder
 
     public static string ChangesToString(List<SolverChange> changes)
     {
-        var s = "";
+        var builder = new StringBuilder();
         foreach (var change in changes)
         {
             var action = change.ChangeType == ChangeType.Possibility
-                ? "removed from the possibilities"
-                : "added as definitive";
-            s += $"[{change.Row + 1}, {change.Column + 1}] {change.Number} {action}\n";
+                ? "<>"
+                : "==";
+            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}\n");
         }
 
-        return s;
+        return builder.ToString();
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot);

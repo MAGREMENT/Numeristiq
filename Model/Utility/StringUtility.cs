@@ -34,4 +34,10 @@ public static class StringUtility
         var db2 = toAdd / 2;
         return Repeat(fill, db2 + toAdd % 2) + s + Repeat(fill, db2);
     }
+    
+    public static string FillWith(string s, char fill, int desiredLength)
+    {
+        var toAdd = desiredLength - s.Length;
+        return s + Repeat(fill, toAdd);
+    }
 }

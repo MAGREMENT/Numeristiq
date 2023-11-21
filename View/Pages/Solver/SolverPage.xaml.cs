@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 using Global;
 using Global.Enums;
 using Presenter;
@@ -17,6 +16,7 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     private bool _createNewSudoku = true;
 
     private readonly SolverPresenter _presenter;
+    private readonly IPageHandler _pageHandler;
 
     public SolverPage(IPageHandler pageHandler)
     {
@@ -24,13 +24,7 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
 
         _presenter = SolverPresenter.FromView(this);
         _presenter.Bind();
-        
-        Navigation.PageHandler = pageHandler;
-        Navigation.AddCustomButton("Settings", () =>
-        {
-            var settingsWindow = new SolverSettingsWindow(this);
-            settingsWindow.Show();
-        });
+        _pageHandler = pageHandler;
 
         LogList.ChangeStateShown(_presenter.Settings.StateShown);
 
@@ -142,6 +136,11 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     public void UpdateBackground()
     {
         Solver.Dispatcher.Invoke(Solver.UpdateBackground);
+    }
+
+    public void ToClipboard(string s)
+    {
+        Clipboard.SetText(s);
     }
 
     public void ClearDrawings()
@@ -274,5 +273,26 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     private void ClearSudoku(object sender, RoutedEventArgs e)
     {
         _presenter.ClearSudoku();
+    }
+
+    private void GoBack(object sender, RoutedEventArgs e)
+    {
+        _pageHandler.ShowPage(PagesName.First);
+    }
+
+    private void ShowSettingsWindow(object sender, RoutedEventArgs e)
+    {
+        var settingsWindow = new SolverSettingsWindow(this);
+        settingsWindow.Show();
+    }
+
+    private void Copy(object sender, RoutedEventArgs e)
+    {
+        _presenter.CopyGrid();
+    }
+
+    private void FullScan(object sender, RoutedEventArgs e)
+    {
+        throw new System.NotImplementedException();
     }
 }
