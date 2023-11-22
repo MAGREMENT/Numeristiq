@@ -104,14 +104,6 @@ public static class Testing //TODO put this in unit tests
         Console.WriteLine("Two time : " + (end - start) + "ms");
     }
 
-    private static Cell LineBullshit(Cell from, Cell to)
-    {
-        var space = 10;
-        var proportion = space / Math.Sqrt(Math.Pow(to.Row - from.Row, 2) + Math.Pow(to.Col - from.Col, 2));
-
-        return new Cell((int) (from.Row + proportion * (to.Row - from.Row)), (int) (from.Col +proportion * (to.Col - from.Col)));
-    }
-
     private static void AlsSearch(int[] ints, List<Possibilities> list, int start, Possibilities current)
     {
         for (int i = start; i < ints.Length; i++)

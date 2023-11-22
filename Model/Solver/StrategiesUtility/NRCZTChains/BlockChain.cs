@@ -1,17 +1,39 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.StrategiesUtility.NRCZTChains;
 
 public class BlockChain : List<Block>
 {
-    public List<CellPossibility>? MustTarget { get; } = null;
+    public HashSet<CellPossibility> PossibleTargets { get; } = new();
     
-    public void RemoveLast()
+    public BlockChain(Block first, LinkGraph<CellPossibility> graph)
+    {
+        Add(first);
+        foreach (var friend in graph.GetLinks(first.Start))
+        {
+            if (friend != first.End) PossibleTargets.Add(friend);
+        }
+    }
+    
+    private BlockChain(){}
+
+    public new void Add(Block b)
+    {
+        base.Add(b);
+        PossibleTargets.Remove(b.Start);
+        PossibleTargets.Remove(b.End);
+    }
+    
+    public void RemoveLast(LinkGraph<CellPossibility> graph)
     {
         if (Count == 0) return;
 
+        var b = this[Count - 1];
+        if (graph.HasLinkTo(b.Start, this[0].Start)) PossibleTargets.Add(b.Start);
+        if (graph.HasLinkTo(b.End, this[0].Start)) PossibleTargets.Add(b.End);
         RemoveAt(Count - 1);
     }
 

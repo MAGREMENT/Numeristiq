@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.LinkGraph;
 using Model.Solver.StrategiesUtility.NRCZTChains;
@@ -32,10 +31,166 @@ public class ZCondition : INRCZTCondition
 
             if (ok)
             {
+                var copy = possibilities.Copy();
+                copy.Remove(bStart.Possibility);
                 
+                foreach (var possibility in possibilities)
+                {
+                    if (possibility == bStart.Possibility) continue;
+
+                    var other = copy.First(possibility);
+                    yield return (new CellPossibility(bStart.Row, bStart.Col, possibility),
+                        new TargetMustSeeChainManipulation(new CellPossibility(bStart.Row, bStart.Col, other)));
+                }
+            }
+        }
+
+        var rowPositions = strategyManager.RowPositionsAt(bStart.Row, bStart.Possibility);
+        if (rowPositions.Count > 2)
+        {
+            bool ok = true;
+            
+            foreach (var col in rowPositions)
+            {
+                if (all.Contains(new CellPossibility(bStart.Row, col, bStart.Possibility)))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok)
+            {
+                var copy = rowPositions.Copy();
+                copy.Remove(bStart.Col);
+
+                foreach (var col in copy)
+                {
+                    var other = copy.Copy();
+                    other.Remove(col);
+
+                    List<CellPossibility> others = new List<CellPossibility>();
+                    foreach (var c in other)
+                    {
+                        others.Add(new CellPossibility(bStart.Row, c, bStart.Possibility));
+                    }
+
+                    yield return (new CellPossibility(bStart.Row, col, bStart.Possibility),
+                        new TargetMustSeeChainManipulation(others));
+                }
             }
         }
         
-        yield break;
+        var colPositions = strategyManager.ColumnPositionsAt(bStart.Col, bStart.Possibility);
+        if (colPositions.Count > 2)
+        {
+            bool ok = true;
+            
+            foreach (var row in colPositions)
+            {
+                if (all.Contains(new CellPossibility(row, bStart.Col, bStart.Possibility)))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok)
+            {
+                var copy = rowPositions.Copy();
+                copy.Remove(bStart.Row);
+
+                foreach (var row in copy)
+                {
+                    var other = copy.Copy();
+                    other.Remove(row);
+
+                    List<CellPossibility> others = new List<CellPossibility>();
+                    foreach (var r in other)
+                    {
+                        others.Add(new CellPossibility(r, bStart.Col, bStart.Possibility));
+                    }
+
+                    yield return (new CellPossibility(row, bStart.Col, bStart.Possibility),
+                        new TargetMustSeeChainManipulation(others));
+                }
+            }
+        }
+        
+        var boxPositions = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Col / 3,
+            bStart.Possibility);
+        if (boxPositions.Count > 2)
+        {
+            bool ok = true;
+            
+            foreach (var cell in boxPositions)
+            {
+                if (all.Contains(new CellPossibility(cell, bStart.Possibility)))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok)
+            {
+                var copy = boxPositions.Copy();
+                copy.Remove(bStart.Row % 3, bStart.Col % 3);
+
+                foreach (var pos in copy)
+                {
+                    var other = copy.Copy();
+                    other.Remove(pos.Row % 3, pos.Col % 3);
+
+                    List<CellPossibility> others = new List<CellPossibility>();
+                    foreach (var p in other)
+                    {
+                        others.Add(new CellPossibility(p, bStart.Possibility));
+                    }
+
+                    yield return (new CellPossibility(pos, bStart.Possibility),
+                        new TargetMustSeeChainManipulation(others));
+                }
+            }
+        }
+    }
+}
+
+public class TargetMustSeeChainManipulation : INRCZTConditionChainManipulation
+{
+    private readonly List<CellPossibility> _mustSee;
+    private readonly List<CellPossibility> _removed;
+
+    public TargetMustSeeChainManipulation(List<CellPossibility> mustSee)
+    {
+        _mustSee = mustSee;
+        _removed = new List<CellPossibility>();
+    }
+    
+    public TargetMustSeeChainManipulation(CellPossibility mustSee)
+    {
+        _mustSee = new List<CellPossibility>(1) { mustSee };
+        _removed = new List<CellPossibility>(1);
+    }
+
+    public void BeforeSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
+    {
+        foreach (var cp in _mustSee)
+        {
+            foreach (var t in chain.PossibleTargets)
+            {
+                if (!graph.HasLinkTo(t, cp))
+                {
+                    _removed.Add(t);
+                }
+            } 
+        }
+
+        chain.PossibleTargets.ExceptWith(_removed);
+    }
+
+    public void AfterSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
+    {
+        chain.PossibleTargets.UnionWith(_removed);
     }
 }

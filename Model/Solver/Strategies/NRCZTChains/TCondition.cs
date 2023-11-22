@@ -158,12 +158,12 @@ public class TCondition : INRCZTCondition
 
 public class EmptyChainManipulation : INRCZTConditionChainManipulation
 {
-    public void BeforeSearch(BlockChain chain)
+    public void BeforeSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
     {
         
     }
 
-    public void AfterSearch(BlockChain chain)
+    public void AfterSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
     {
        
     }

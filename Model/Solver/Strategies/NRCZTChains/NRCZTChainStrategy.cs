@@ -42,8 +42,6 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
             ConstructRule.CellStrongLink, ConstructRule.CellWeakLink);
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
-        var chain = new BlockChain();
-
         foreach (var start in graph)
         {
             HashSet<CellPossibility> startVisited = new();
@@ -54,14 +52,10 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
             foreach (var friend in graph.GetLinks(start, LinkStrength.Strong))
             {
                 if (start == friend || endVisited.Contains(friend)) continue;
-                
-                var block = new Block(start, friend);
-                chain.Add(block);
-                endVisited.Add(friend);
 
-                if (Search(strategyManager, graph, startVisited, endVisited, chain)) return;
-                
-                chain.RemoveLast();
+                endVisited.Add(friend);
+                if (Search(strategyManager, graph, startVisited, endVisited,
+                        new BlockChain(new Block(start, friend), graph))) return;
             }
         }
     }
@@ -69,24 +63,29 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
     private bool Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph,
         HashSet<CellPossibility> startVisited, HashSet<CellPossibility> endVisited, BlockChain chain)
     {
+        var all = chain.AllCellPossibilities();
+        
         foreach(var bStart in graph.GetLinks(chain.Last().End))
         {
-            if (startVisited.Contains(bStart)) continue;
+            if (all.Contains(bStart) || startVisited.Contains(bStart)) continue;
 
             startVisited.Add(bStart);
             
             foreach (var bEnd in graph.GetLinks(bStart, LinkStrength.Strong))
             {
-                if (bStart == bEnd || bEnd == chain[0].Start || endVisited.Contains(bEnd)) continue;
+                if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
                 
                 var block = new Block(bStart, bEnd);
                 chain.Add(block);
                 endVisited.Add(bEnd);
 
-                if (Check(strategyManager, chain, graph)) return true;
-                if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true;
+                if (chain.PossibleTargets.Count > 0)
+                {
+                    if (Check(strategyManager, chain, graph)) return true;
+                    if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true; 
+                }
                 
-                chain.RemoveLast();
+                chain.RemoveLast(graph);
             }
 
             foreach (var condition in _conditions)
@@ -94,18 +93,23 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
                 foreach (var (bEnd, manipulation) in condition.SearchEndUnderCondition(strategyManager,
                              graph, chain, bStart))
                 {
-                    if (bStart == bEnd || bEnd == chain[0].Start || endVisited.Contains(bEnd)) continue;
+                    if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
                     
                     var block = new Block(bStart, bEnd);
                     chain.Add(block);
                     endVisited.Add(bEnd);
 
-                    manipulation.BeforeSearch(chain);
-                    if (Check(strategyManager, chain, graph)) return true;
-                    if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true;
-                    manipulation.AfterSearch(chain);
+                    manipulation.BeforeSearch(chain, graph);
+
+                    if (chain.PossibleTargets.Count > 0)
+                    {
+                        if (Check(strategyManager, chain, graph)) return true;
+                        if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true; 
+                    }
+                    
+                    manipulation.AfterSearch(chain, graph);
                 
-                    chain.RemoveLast();
+                    chain.RemoveLast(graph);
                 }
             }
         }
@@ -115,24 +119,11 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 
     private bool Check(IStrategyManager strategyManager, BlockChain chain, LinkGraph<CellPossibility> graph)
     {
-        var first = chain[0].Start;
         var last = chain.Last().End;
-
-        if (chain.MustTarget is not null)
+        
+        foreach (var target in chain.PossibleTargets)
         {
-            foreach (var t in chain.MustTarget)
-            {
-                if (first.AreWeaklyLinked(t) && last.AreWeaklyLinked(t)) 
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(t);
-            }
-
-            return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-                new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
-        }
-
-        foreach (var weakLink in graph.GetLinks(first))
-        {
-            if (graph.HasLinkTo(weakLink, last)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(weakLink);
+            if (graph.HasLinkTo(target, last)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
