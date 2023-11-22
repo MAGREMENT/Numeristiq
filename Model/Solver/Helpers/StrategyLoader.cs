@@ -47,7 +47,7 @@ public class StrategyLoader
         {FireworksStrategy.OfficialName, new FireworksStrategy()},
         {UniqueRectanglesStrategy.OfficialName, new UniqueRectanglesStrategy()},
         {UnavoidableRectanglesStrategy.OfficialName, new UnavoidableRectanglesStrategy()},
-        {XYChainStrategy.OfficialName, new XYChainStrategy()},
+        {XYChainsStrategy.OfficialName, new XYChainsStrategy()},
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},

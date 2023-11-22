@@ -8,14 +8,14 @@ using Model.Solver.StrategiesUtility.LinkGraph;
 
 namespace Model.Solver.Strategies;
 
-public class XYChainStrategy : AbstractStrategy
+public class XYChainsStrategy : AbstractStrategy
 {
-    public const string OfficialName = "XY-Chain";
+    public const string OfficialName = "XY-Chains";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
-    public XYChainStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
+    public XYChainsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
 
     public override void Apply(IStrategyManager strategyManager)
     {
