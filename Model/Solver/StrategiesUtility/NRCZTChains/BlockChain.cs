@@ -8,6 +8,8 @@ namespace Model.Solver.StrategiesUtility.NRCZTChains;
 public class BlockChain : List<Block>
 {
     public HashSet<CellPossibility> PossibleTargets { get; } = new();
+
+    private readonly Dictionary<Block, List<CellPossibility>> _removed = new();
     
     public BlockChain(Block first, LinkGraph<CellPossibility> graph)
     {
@@ -23,8 +25,10 @@ public class BlockChain : List<Block>
     public new void Add(Block b)
     {
         base.Add(b);
-        PossibleTargets.Remove(b.Start);
-        PossibleTargets.Remove(b.End);
+        List<CellPossibility> removed = new();
+        if(PossibleTargets.Remove(b.Start)) removed.Add(b.Start);
+        if(PossibleTargets.Remove(b.End)) removed.Add(b.End);
+        _removed[b] = removed;
     }
     
     public void RemoveLast(LinkGraph<CellPossibility> graph)
@@ -32,8 +36,10 @@ public class BlockChain : List<Block>
         if (Count == 0) return;
 
         var b = this[Count - 1];
-        if (graph.HasLinkTo(b.Start, this[0].Start)) PossibleTargets.Add(b.Start);
-        if (graph.HasLinkTo(b.End, this[0].Start)) PossibleTargets.Add(b.End);
+        foreach (var removed in _removed[b])
+        {
+            PossibleTargets.Add(removed);
+        }
         RemoveAt(Count - 1);
     }
 

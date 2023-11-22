@@ -97,7 +97,7 @@ public class ZCondition : INRCZTCondition
 
             if (ok)
             {
-                var copy = rowPositions.Copy();
+                var copy = colPositions.Copy();
                 copy.Remove(bStart.Row);
 
                 foreach (var row in copy)
@@ -179,7 +179,7 @@ public class TargetMustSeeChainManipulation : INRCZTConditionChainManipulation
         {
             foreach (var t in chain.PossibleTargets)
             {
-                if (!graph.HasLinkTo(t, cp))
+                if (!graph.HasLinkTo(t, cp) || cp == t)
                 {
                     _removed.Add(t);
                 }

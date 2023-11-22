@@ -1,6 +1,4 @@
-﻿using Global;
-using Global.Enums;
-using Model.Solver;
+﻿using Global.Enums;
 
 namespace RunTester;
 

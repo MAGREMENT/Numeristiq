@@ -64,13 +64,13 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
         HashSet<CellPossibility> startVisited, HashSet<CellPossibility> endVisited, BlockChain chain)
     {
         var all = chain.AllCellPossibilities();
-        
-        foreach(var bStart in graph.GetLinks(chain.Last().End))
+
+        foreach (var bStart in graph.GetLinks(chain.Last().End))
         {
             if (all.Contains(bStart) || startVisited.Contains(bStart)) continue;
 
             startVisited.Add(bStart);
-            
+
             foreach (var bEnd in graph.GetLinks(bStart, LinkStrength.Strong))
             {
                 if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
