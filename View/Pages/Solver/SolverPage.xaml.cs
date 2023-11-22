@@ -146,13 +146,13 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
 
     public void ShowFullScan(string s)
     {
-        var printWindow = new PrintWindow("All Strategies", s);
+        var printWindow = new PrintWindow("Full Scan", s);
         printWindow.Show();
     }
 
     public void ShowAllStrategies(string s)
     {
-        var printWindow = new PrintWindow("Full Scan", s);
+        var printWindow = new PrintWindow("All Strategies", s);
         printWindow.Show();
     }
 
