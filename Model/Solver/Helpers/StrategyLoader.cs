@@ -79,7 +79,8 @@ public class StrategyLoader
         {AlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new AlternatingInferenceChains(),
             new AlternatingChainAlgorithmV4<CellPossibility>())},
         {XCycles.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new XCycles(),
-            new AlternatingChainAlgorithmV4<CellPossibility>())}
+            new AlternatingChainAlgorithmV4<CellPossibility>())},
+        {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

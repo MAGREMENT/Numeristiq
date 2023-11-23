@@ -60,6 +60,17 @@ public class LinePositions : IReadOnlyLinePositions
         Count = System.Numerics.BitOperations.PopCount((uint)_pos);
     }
 
+    public LinePositions And(IReadOnlyLinePositions pos)
+    {
+        if (pos is LinePositions lp)
+        {
+            var and = lp._pos & _pos;
+            return new LinePositions(and, System.Numerics.BitOperations.PopCount((uint)and));
+        }
+
+        return IReadOnlyLinePositions.DefaultAnd(this, pos);
+    }
+
     public LinePositions Difference(IReadOnlyLinePositions pos)
     {
         if (pos is LinePositions lp)
@@ -168,19 +179,6 @@ public class LinePositions : IReadOnlyLinePositions
     public LinePositions Copy()
     {
         return new LinePositions(_pos, Count);
-    }
-
-    public void ForEachCombination(IReadOnlyLinePositions.HandleCombination handler)
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            if (((_pos >> i) & 1) == 0) continue;
-            for (int j = i + 1; j < 9; j++)
-            {
-                if (((_pos >> j) & 1) == 0) continue;
-                handler(i, j);
-            }
-        }
     }
 
     public string ToString(Unit unit, int unitNumber)

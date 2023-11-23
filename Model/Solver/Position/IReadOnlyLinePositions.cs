@@ -9,12 +9,10 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
     public int First();
     public int First(int except);
     public int Next(ref int cursor);
-    
-    public delegate void HandleCombination(int one, int two);
-    public void ForEachCombination(HandleCombination handler);
 
     public bool Peek(int i);
     public LinePositions Or(IReadOnlyLinePositions pos);
+    public LinePositions And(IReadOnlyLinePositions pos);
     public LinePositions Difference(IReadOnlyLinePositions pos);
     public bool AreAllInSameMiniGrid();
     public int MiniGridCount();
@@ -28,6 +26,17 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
         for (int i = 0; i < 9; i++)
         {
             if (one.Peek(i) || two.Peek(i)) result.Add(i);
+        }
+
+        return result;
+    }
+    
+    public static LinePositions DefaultAnd(IReadOnlyLinePositions one, IReadOnlyLinePositions two)
+    {
+        var result = new LinePositions();
+        for (int i = 0; i < 9; i++)
+        {
+            if (one.Peek(i) && two.Peek(i)) result.Add(i);
         }
 
         return result;
