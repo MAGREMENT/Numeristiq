@@ -126,7 +126,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004
                 {
                     foreach (var house2 in cov2)
                     {
-                        if (!house1.Equals(house2) || house1.Unit != unit) continue;
+                        if (house1 != house2 || house1.Unit != unit) continue;
 
                         var totalMap = je1.SCells[possibility].Or(je2.SCells[possibility]);
                         for (int other = 0; other < 9; other++)

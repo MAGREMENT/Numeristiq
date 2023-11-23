@@ -13,7 +13,7 @@ public interface ISolverOptionHandler
     public bool UniquenessAllowed { get; set; }
     public OnInstanceFound OnInstanceFound { get; set; }
     public ChangeType ActionOnKeyboardInput { get; set; }
-    public Brush GivenForegroundColor { get; set; }
-    public Brush SolvingForegroundColor { get; set; }
+    public CellColor GivenColor { get; set; }
+    public CellColor SolvingColor { get; set; }
     public LinkOffsetSidePriority SidePriority { get; set; }
 }

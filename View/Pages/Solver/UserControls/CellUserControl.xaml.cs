@@ -91,7 +91,7 @@ public partial class CellUserControl
     public void SetForeground(CellForegroundType type)
     {
         var instance = ColorManager.GetInstance();
-        var brush = type == CellForegroundType.Solving ? instance.SolvingForegroundColor : instance.GivenForegroundColor;
+        var brush = ColorManager.GetCellBrush(type == CellForegroundType.Solving ? instance.SolvingColor : instance.GivenColor);
         
         _big.Foreground = brush;
         foreach (var child in _small.Children)

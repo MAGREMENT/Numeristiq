@@ -246,21 +246,21 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
         set => _presenter.Settings.ActionOnCellChange = value;
     }
 
-    public Brush GivenForegroundColor
+    public CellColor GivenColor
     {
-        get => ColorManager.GetInstance().GivenForegroundColor;
+        get => ColorManager.GetInstance().GivenColor;
         set
         {
-            ColorManager.GetInstance().GivenForegroundColor = value;
+            ColorManager.GetInstance().GivenColor = value;
             _presenter.Settings.NotifyGivensNeedingUpdate();
         }
     }
-    public Brush SolvingForegroundColor
+    public CellColor SolvingColor
     {
-        get => ColorManager.GetInstance().SolvingForegroundColor;
+        get => ColorManager.GetInstance().SolvingColor;
         set
         {
-            ColorManager.GetInstance().SolvingForegroundColor = value;
+            ColorManager.GetInstance().SolvingColor = value;
             _presenter.Settings.NotifyGivensNeedingUpdate();
         } 
     }

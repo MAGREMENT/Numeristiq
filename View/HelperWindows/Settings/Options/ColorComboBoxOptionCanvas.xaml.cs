@@ -1,35 +1,28 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using View.Utility;
 
 namespace View.HelperWindows.Settings.Options;
 
 public partial class ColorComboBoxOptionCanvas : OptionCanvas
 {
-    private static readonly BrushAndNameAssociation[] AvailableColors =
-    {
-        new(Brushes.Black, "Black"),
-        new(Brushes.Gray, "Gray"),
-        new(Brushes.Red, "Red"),
-        new(Brushes.Green, "Green"),
-        new(Brushes.Blue, "Blue"),
-    };
-    
-    private readonly OnChange<Brush> _onChange;
+    private readonly OnChange<int> _onChange;
     private readonly bool _callOnChange;
     
-    public ColorComboBoxOptionCanvas(string name, string explanation, int startIndex, OnChange<Brush> onChange)
+    public ColorComboBoxOptionCanvas(string name, string explanation, int startIndex, OnChange<int> onChange)
     {
         InitializeComponent();
 
         Block.Text = name;
         
         _onChange = onChange;
-        
-        for (int i = 0; i < AvailableColors.Length; i++)
+
+        foreach (var availableColor in Enum.GetValues<CellColor>())
         {
-            var brush = AvailableColors[i].Brush;
-            var n = AvailableColors[i].Name;
+            var brush = ColorManager.GetCellBrush(availableColor);
+            var n = availableColor.ToString();
 
             var item = new ComboBoxItem();
             var sp = new StackPanel
@@ -65,18 +58,6 @@ public partial class ColorComboBoxOptionCanvas : OptionCanvas
 
     private void OnSelectionChange(object sender, SelectionChangedEventArgs e)
     {
-        if (_callOnChange) _onChange(AvailableColors[Box.SelectedIndex].Brush);
-    }
-    
-    private class BrushAndNameAssociation
-    {
-        public BrushAndNameAssociation(Brush brush, string name)
-        {
-            Brush = brush;
-            Name = name;
-        }
-
-        public Brush Brush { get; }
-        public string Name { get; }
+        if (_callOnChange) _onChange(Box.SelectedIndex);
     }
 }

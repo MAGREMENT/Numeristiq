@@ -184,7 +184,12 @@ public class SolverPresenter
     public void PasteGrid(string grid)
     {
         _solver.SetState(SudokuTranslator.TranslateToState(grid));
+        ClearLogs();
+        ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
+        UpdateGivens();
+        _view.ClearDrawings();
+        _view.UpdateBackground();
     }
 
     public void GetFullScan()

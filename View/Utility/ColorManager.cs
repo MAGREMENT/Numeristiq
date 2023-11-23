@@ -11,6 +11,20 @@ public class ColorManager
     public static readonly Brush Green = new SolidColorBrush(Color.FromRgb(0x50, 0xC1, 0x31));
     public static readonly Brush Purple = new SolidColorBrush(Color.FromRgb(0xBA, 0x7B, 0xC8));
 
+    public static readonly Brush[] CellBrushes =
+    {
+        Brushes.Black,
+        Brushes.Gray,
+        Brushes.Red,
+        Brushes.Green,
+        Brushes.Blue
+    };
+    
+    public static Brush GetCellBrush(CellColor cc)
+    {
+        return CellBrushes[(int)cc];
+    }
+
     public static Color ToColor(ChangeColoration coloration)
     {
         return coloration switch
@@ -52,10 +66,15 @@ public class ColorManager
         return _instance;
     }
 
-    public Brush GivenForegroundColor { get; set; } = Brushes.Black;
-    public Brush SolvingForegroundColor { get; set; } = Brushes.Black;
-    
-    private ColorManager() { }
-    
-    
+    public CellColor GivenColor { get; set; } = CellColor.Black;
+    public CellColor SolvingColor { get; set; } = CellColor.Black;
+
+    private ColorManager()
+    {
+    }
+}
+
+public enum CellColor
+{
+    Black, Gray, Red, Green, Blue
 }
