@@ -80,7 +80,8 @@ public class StrategyLoader
             new AlternatingChainAlgorithmV4<CellPossibility>())},
         {XCycles.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new XCycles(),
             new AlternatingChainAlgorithmV4<CellPossibility>())},
-        {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()}
+        {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
+        {FishStrategy.OfficialName, new FishStrategy(3, 4)}
     };
 
     public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();

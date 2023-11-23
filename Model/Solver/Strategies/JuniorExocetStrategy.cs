@@ -2,6 +2,7 @@
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Exocet;
@@ -159,7 +160,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004
     {
         Possibilities[] removedBaseCandidates = { Possibilities.NewEmpty(), Possibilities.NewEmpty() };
 
-        var coverHouses = new Dictionary<int, List<JuniorExocetCoverHouse>>();
+        var coverHouses = new Dictionary<int, List<CoverHouse>>();
         
         //Elimination 1
         foreach (var possibility in je.BaseCandidates)
@@ -431,7 +432,7 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004
     }
 
     private void RemoveAllNonSCells(IStrategyManager strategyManager, JuniorExocet je,
-        Dictionary<int, List<JuniorExocetCoverHouse>> coverHouses)
+        Dictionary<int, List<CoverHouse>> coverHouses)
     {
         foreach (var entry in je.SCells)
         {

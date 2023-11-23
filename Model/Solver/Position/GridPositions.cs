@@ -17,7 +17,8 @@ public class GridPositions : IReadOnlyGridPositions
     private ulong _first; //0 to 53 => First 6 boxes
     private ulong _second; // 54 to 80 => Last 3 boxes
 
-    public int Count => System.Numerics.BitOperations.PopCount(_first) + System.Numerics.BitOperations.PopCount(_second);
+    public int Count =>
+        System.Numerics.BitOperations.PopCount(_first) + System.Numerics.BitOperations.PopCount(_second);
 
     public GridPositions()
     {
@@ -58,11 +59,11 @@ public class GridPositions : IReadOnlyGridPositions
     {
         return (gp._first & _first) != 0ul || (gp._second & _second) != 0ul;
     }
-    
+
     public void Remove(int row, int col)
     {
         int n = row * 9 + col;
-        if(n > FirstLimit) _second &= ~(1ul << (n - FirstLimit - 1));
+        if (n > FirstLimit) _second &= ~(1ul << (n - FirstLimit - 1));
         else _first &= ~(1ul << n);
     }
 
@@ -73,7 +74,7 @@ public class GridPositions : IReadOnlyGridPositions
 
     public int RowCount(int row)
     {
-        return row < 6 
+        return row < 6
             ? System.Numerics.BitOperations.PopCount(_first & (RowMask << (row * 9)))
             : System.Numerics.BitOperations.PopCount(_second & (RowMask << ((row - 6) * 9)));
     }
@@ -144,9 +145,14 @@ public class GridPositions : IReadOnlyGridPositions
         return new GridPositions(_first, _second);
     }
 
-    public GridPositions And(GridPositions other)
+    public GridPositions And(IReadOnlyGridPositions p)
     {
-        return new GridPositions(_first & other._first, _second & other._second);
+        if (p is GridPositions other)
+        {
+            return new GridPositions(_first & other._first, _second & other._second);
+        }
+
+        return IReadOnlyGridPositions.DefaultAnd(this, p);
     }
 
     public GridPositions And(List<GridPositions> gps)
@@ -215,7 +221,7 @@ public class GridPositions : IReadOnlyGridPositions
     {
         var result = new Cell[Count];
         var cursor = 0;
-        
+
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -234,14 +240,14 @@ public class GridPositions : IReadOnlyGridPositions
     public bool CanBeCoveredByLines(int n, params Unit[] units)
     {
         if (Count == 0) return true;
-        
+
         var copy = Copy();
         int[] counts = new int[units.Length];
         for (int i = 0; i < n; i++)
         {
             var first = copy.First();
 
-            for (int j= 0; j < units.Length; j++)
+            for (int j = 0; j < units.Length; j++)
             {
                 counts[j] = UnitMethods.GetMethods(units[j]).Count(copy, first);
             }
@@ -250,8 +256,82 @@ public class GridPositions : IReadOnlyGridPositions
 
             if (copy.Count == 0) return true;
         }
-        
+
         return false;
+    }
+
+    public List<CoverHouse> BestCoverHouses(params IUnitMethods[] methods)
+    {
+        List<CoverHouse> result = new();
+        var copy = Copy();
+
+        while (copy.Count > 0)
+        {
+            Cell bCell = default;
+            var bCount = 0;
+            var bMethod = methods.Length + 1;
+
+            foreach (var cell in copy)
+            {
+                var bestCount = 0;
+                var bestMethod = methods.Length + 1;
+
+                for (int i = 0; i < methods.Length; i++)
+                {
+                    var count = methods[i].Count(copy, cell);
+
+                    if (count > bestCount || (count == bestCount && i < bestMethod))
+                    {
+                        bestCount = count;
+                        bestMethod = i;
+                    }
+                }
+
+                if (bestCount > bCount || (bestCount == bCount && bestMethod < bMethod))
+                {
+                    bCount = bestCount;
+                    bMethod = bestMethod;
+                    bCell = cell;
+                }
+            }
+
+            var m = methods[bMethod];
+            m.Void(copy, bCell);
+
+            result.Add(m.ToCoverHouse(bCell));
+        }
+
+        return result;
+    }
+
+    public List<CoverHouse[]> PossibleCoverHouses(int count, HashSet<CoverHouse> forbidden, params IUnitMethods[] methods)
+    {
+        var result = new List<CoverHouse[]>();
+
+        PossibleCoverHouses(count, methods, 1, this, result,
+            new List<CoverHouse>(), forbidden);
+        
+        return result;
+    }
+
+    private void PossibleCoverHouses(int max, IUnitMethods[] methods, int count, GridPositions gp,
+        List<CoverHouse[]> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
+    {
+        var first = gp.First();
+        foreach (var method in methods)
+        {
+            var ch = method.ToCoverHouse(first);
+            if (forbidden.Contains(ch)) continue;
+            
+            var copy = gp.Copy();
+            method.Void(copy, first);
+            current.Add(ch);
+
+            if (copy.Count == 0) result.Add(current.ToArray());
+            if (count < max) PossibleCoverHouses(max, methods, count + 1, copy, result, current, forbidden);
+            
+            current.RemoveAt(current.Count - 1);
+        }
     }
 
     public Cell First()
@@ -300,7 +380,7 @@ public class GridPositions : IReadOnlyGridPositions
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Peek(row, col)) result += $"[{row + 1}, {col + 1}] ";
+                if (Peek(row, col)) result += $"r{row + 1}c{col + 1} ";
             }
         }
 
@@ -310,19 +390,19 @@ public class GridPositions : IReadOnlyGridPositions
 
 public static class UnitMethods
 {
-    private static readonly IUnitMethods[] UnitMethodsArray = { new RowMethods(), new ColumnMethods(), new MiniGridMethods() };
+    public static readonly IUnitMethods[] AllUnitMethods = { new RowMethods(), new ColumnMethods(), new MiniGridMethods() };
 
     public static IUnitMethods GetMethods(Unit u)
     {
-        return UnitMethodsArray[(int)u];
+        return AllUnitMethods[(int)u];
     }
 }
 
 public interface IUnitMethods
 {
-    int Count(GridPositions gp, Cell c);
+    int Count(IReadOnlyGridPositions gp, Cell c);
 
-    int Count(GridPositions gp, int unit);
+    int Count(IReadOnlyGridPositions gp, int unit);
 
     void Fill(GridPositions gp, Cell c);
     
@@ -331,16 +411,18 @@ public interface IUnitMethods
     void Void(GridPositions gp, Cell c);
     
     void Void(GridPositions gp, int unit);
+
+    CoverHouse ToCoverHouse(Cell cell);
 }
 
 public class RowMethods : IUnitMethods
 {
-    public int Count(GridPositions gp, Cell c)
+    public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.RowCount(c.Row);
     }
 
-    public int Count(GridPositions gp, int unit)
+    public int Count(IReadOnlyGridPositions gp, int unit)
     {
         return gp.RowCount(unit);
     }
@@ -364,16 +446,21 @@ public class RowMethods : IUnitMethods
     {
         gp.VoidRow(unit);
     }
+
+    public CoverHouse ToCoverHouse(Cell cell)
+    {
+        return new CoverHouse(Unit.Row, cell.Row);
+    }
 }
 
 public class ColumnMethods : IUnitMethods
 {
-    public int Count(GridPositions gp, Cell c)
+    public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.ColumnCount(c.Col);
     }
 
-    public int Count(GridPositions gp, int unit)
+    public int Count(IReadOnlyGridPositions gp, int unit)
     {
         return gp.ColumnCount(unit);
     }
@@ -397,16 +484,21 @@ public class ColumnMethods : IUnitMethods
     {
         gp.VoidColumn(unit);
     }
+    
+    public CoverHouse ToCoverHouse(Cell cell)
+    {
+        return new CoverHouse(Unit.Column, cell.Col);
+    }
 }
 
 public class MiniGridMethods : IUnitMethods
 {
-    public int Count(GridPositions gp, Cell c)
+    public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.MiniGridCount(c.Row / 3, c.Col / 3);
     }
 
-    public int Count(GridPositions gp, int unit)
+    public int Count(IReadOnlyGridPositions gp, int unit)
     {
         return gp.MiniGridCount(unit / 3, unit % 3);
     }
@@ -429,5 +521,77 @@ public class MiniGridMethods : IUnitMethods
     public void Void(GridPositions gp, int unit)
     {
         gp.VoidMiniGrid(unit / 3, unit % 3);
+    }
+
+    public CoverHouse ToCoverHouse(Cell cell)
+    {
+        return new CoverHouse(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Col / 3);
+    }
+}
+
+public readonly struct CoverHouse
+{
+    public CoverHouse(Unit unit, int number)
+    {
+        Unit = unit;
+        Number = number;
+    }
+
+    public Unit Unit { get; }
+    public int Number { get; }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CoverHouse ch && ch == this;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Unit, Number);
+    }
+
+    public override string ToString()
+    {
+        var s = Unit switch
+        {
+            Unit.Row => "r",
+            Unit.Column => "c",
+            Unit.MiniGrid => "b"
+        };
+
+        return $"{s}{Number + 1}";
+    }
+
+    public static bool operator ==(CoverHouse left, CoverHouse right)
+    {
+        return left.Unit == right.Unit && left.Number == right.Number;
+    }
+
+    public static bool operator !=(CoverHouse left, CoverHouse right)
+    {
+        return !(left == right);
+    }
+
+    public bool Overlaps(CoverHouse house)
+    {
+        switch (Unit, house.Unit)
+        {
+            case (Unit.Row, Unit.Column) :
+            case (Unit.Column, Unit.Row) :
+                return true;
+            case (Unit.Row, Unit.MiniGrid) :
+            case (Unit.MiniGrid, Unit.Row) :
+                return Number / 3 == house.Number / 3;
+            case (Unit.Column, Unit.MiniGrid) :
+                return Number / 3 == house.Number % 3;
+            case (Unit.MiniGrid, Unit.Column) :
+                return Number % 3 == Number / 3;
+            case (Unit.Row, Unit.Row) :
+            case (Unit.Column, Unit.Column) :
+            case (Unit.MiniGrid, Unit.MiniGrid) :
+                return Number == house.Number;
+        }
+
+        return false;
     }
 }
