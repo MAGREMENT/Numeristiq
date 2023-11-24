@@ -9,7 +9,7 @@ using Model.Solver.StrategiesUtility.Exocet;
 
 namespace Model.Solver.Strategies;
 
-public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004930000600600300000000000050200010008006900400003700900020050001000008000
+public class JuniorExocetStrategy : AbstractStrategy
 {
     public const string OfficialName = "Junior Exocet";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
@@ -414,7 +414,45 @@ public class JuniorExocetStrategy : AbstractStrategy //TODO BUG FIX => 007020004
                 }
             }
 
-            //Elimination 12 TODO
+            //Elimination 12
+            foreach (var possibility in revisedBaseCandidates)
+            {
+                var gp = je.SCells[possibility];
+                foreach (var cell in gp)
+                {
+                    if (strategyManager.Sudoku[cell.Row, cell.Col] != 0) continue;
+
+                    var copy = gp.Copy();
+                    copy.VoidRow(cell.Row);
+                    copy.VoidColumn(cell.Col);
+                    copy.VoidMiniGrid(cell.Row / 3, cell.Col / 3);
+
+                    if (copy.Count == 0) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                }
+            }
+
+            foreach (var cell in je.AllPossibleSCells())
+            {
+                if (strategyManager.Sudoku[cell.Row, cell.Col] != 0) continue;
+
+                var count = 0;
+                foreach (var poss in revisedBaseCandidates)
+                {
+                    if (je.SCells[poss].Peek(cell))
+                    {
+                        count++;
+                    }
+                }
+
+                if (count < 2) continue;
+
+                foreach (var p in strategyManager.PossibilitiesAt(cell))
+                {
+                    if (revisedBaseCandidates.Peek(p)) continue;
+
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                }
+            }
         }
 
         return strategyManager.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
