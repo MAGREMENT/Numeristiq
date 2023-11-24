@@ -19,7 +19,6 @@
             </MenuItem>
             <MenuItem Header="Tools" FontSize="15">
                 <MenuItem FontSize="12" Header="Full Scan" Click="FullScan"></MenuItem>
-                <MenuItem FontSize="12" Header="All Strategies" Click="AllStrategies"></MenuItem>
             </MenuItem>
         </Menu>
         

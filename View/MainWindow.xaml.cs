@@ -1,6 +1,8 @@
 ﻿using System.Windows.Controls;
+using Presenter;
 using View.Pages;
 using View.Pages.Solver;
+using View.Pages.StrategyManager;
 
 namespace View;
 
@@ -14,9 +16,12 @@ public partial class MainWindow : IPageHandler
     public MainWindow()
     {
         InitializeComponent();
+
+        var factory = new PresenterFactory();
+        
         _pages = new Page[]
         {
-            new FirstPage(this), new SolverPage(this)
+            new FirstPage(this), new SolverPage(this, factory), new StrategyManagerPage(this, factory)
         };
 
         ShowPage(PagesName.First);

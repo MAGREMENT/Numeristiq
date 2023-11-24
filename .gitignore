@@ -19,6 +19,9 @@
 /Presenter/bin
 /Presenter/obj
 
+/Repository/bin
+/Repository/obj
+
 /publish
 
 *.user

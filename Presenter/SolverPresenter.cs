@@ -24,7 +24,7 @@ public class SolverPresenter
     private readonly HighlighterTranslator _highlighterTranslator;
     private readonly SolverActionEnabler _solverActionEnabler;
 
-    private SolverPresenter(ISolver solver, ISolverView view)
+    public SolverPresenter(ISolver solver, ISolverView view)
     {
         _solver = solver;
         _view = view;
@@ -40,19 +40,10 @@ public class SolverPresenter
         Settings.UniquenessAllowedChanged += () =>
         {
             _solver.AllowUniqueness(Settings.UniquenessAllowed);
-            _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.StrategyInfos));
+            _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
         };
         Settings.OnInstanceFoundChanged += () => _solver.SetOnInstanceFound(Settings.OnInstanceFound);
         Settings.GivensNeedUpdate += UpdateGivens;
-    }
-
-    public static SolverPresenter FromView(ISolverView view)
-    {
-        return new SolverPresenter(new SudokuSolver
-        {
-            LogsManaged = true,
-            StatisticsTracked = false
-        }, view);
     }
 
     public void Bind()
@@ -63,7 +54,7 @@ public class SolverPresenter
         _solver.CurrentStrategyChanged += i => _view.LightUpStrategy(i);
 
         ChangeShownState(_shownState);
-        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.StrategyInfos));
+        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
     }
 
     public void NewSudokuFromString(string s)
@@ -195,11 +186,6 @@ public class SolverPresenter
     public void GetFullScan()
     {
         _view.ShowFullScan(_solver.FullScan());
-    }
-
-    public void GetAllStrategies()
-    {
-        _view.ShowAllStrategies(_solver.AllStrategies());
     }
     
     //Private-----------------------------------------------------------------------------------------------------------

@@ -8,6 +8,7 @@ namespace Model;
 
 public interface ISolver
 {
+    public IStrategyLoader StrategyLoader { get; }
     public void SetSudoku(Sudoku sudoku);
     public void SetState(SolverState state);
     public void Solve(bool stopAtProgress);
@@ -18,11 +19,10 @@ public interface ISolver
     public void SetOnInstanceFound(OnInstanceFound found);
     public void UseStrategy(int number);
     public void ExcludeStrategy(int number);
-    public StrategyInfo[] StrategyInfos { get; }
+    public StrategyInfo[] GetStrategyInfo();
     public void SetSolutionByHand(int number, int row, int col);
     public void RemoveSolutionByHand(int row, int col);
     public void RemovePossibilityByHand(int possibility, int row, int col);
-    public string AllStrategies();
     public string FullScan();
     
     

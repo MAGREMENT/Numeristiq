@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using Global;
 using Global.Enums;
 using Presenter;
@@ -19,11 +18,11 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     private readonly SolverPresenter _presenter;
     private readonly IPageHandler _pageHandler;
 
-    public SolverPage(IPageHandler pageHandler)
+    public SolverPage(IPageHandler pageHandler, PresenterFactory factory)
     {
         InitializeComponent();
 
-        _presenter = SolverPresenter.FromView(this);
+        _presenter = factory.Create(this);
         _presenter.Bind();
         _pageHandler = pageHandler;
 
@@ -312,10 +311,5 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     private void Paste(object sender, RoutedEventArgs e)
     {
         _presenter.PasteGrid(Clipboard.GetText());
-    }
-
-    private void AllStrategies(object sender, RoutedEventArgs e)
-    {
-        _presenter.GetAllStrategies();
     }
 }

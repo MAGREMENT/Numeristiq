@@ -19,4 +19,9 @@ public partial class FirstPage : Page
     {
         _pageHandler.ShowPage(PagesName.Solver);
     }
+
+    private void GoToStrategyManager(object sender, RoutedEventArgs e)
+    {
+        _pageHandler.ShowPage(PagesName.StrategyManager);
+    }
 }

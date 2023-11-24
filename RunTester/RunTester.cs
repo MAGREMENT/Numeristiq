@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using System.Text;
-using Global;
 using Global.Enums;
 using Model;
 using Model.Solver;
@@ -95,7 +94,7 @@ public class RunResult
 
     public void RunFinished(SudokuSolver solver)
     {
-        foreach (var strategy in solver.Strategies)
+        foreach (var strategy in solver.GetStrategyInfo())
         {
             _reports.Add(new StrategyReport(strategy));
         }
@@ -188,9 +187,9 @@ public class StrategyReport
     public string StrategyName { get; }
     public IReadOnlyTracker Tracker { get; }
 
-    public StrategyReport(IStrategy strategy)
+    public StrategyReport(StrategyInfo strategy)
     {
-        StrategyName = strategy.Name;
+        StrategyName = strategy.StrategyName;
         Tracker = strategy.Tracker;
     }
 }

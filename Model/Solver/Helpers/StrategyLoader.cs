@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -16,7 +14,7 @@ using Model.Utility;
 
 namespace Model.Solver.Helpers;
 
-public class StrategyLoader
+public class StrategyLoader : IStrategyLoader
 {
     private static readonly string Path = PathsManager.GetInstance().GetPathToIniFile();
 
@@ -85,33 +83,36 @@ public class StrategyLoader
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()}
     };
 
-    public IStrategy[] Strategies { get; private set; } = Array.Empty<IStrategy>();
-    public ulong ExcludedStrategies { get; private set; }
+    private readonly IStrategyHolder _holder;
+
+    public StrategyLoader(IStrategyHolder holder)
+    {
+        _holder = holder;
+    }
+    
     public Dictionary<string, OnCommitBehavior> CustomizedOnInstanceFound { get; } = new();
 
     public void Load()
     {
         if (!File.Exists(Path)) return;
+        
+        _holder.ClearStrategies();
+        _holder.ClearExcluded();
 
         var result = IniFileReader.Read(Path);
         if (result.TryGetValue("Strategy Order", out var orderSection))
         {
-            List<IStrategy> strategies = new();
-            ulong excluded = 0;
             int count = 0;
 
             foreach (var entry in orderSection)
             {
                 if (!StrategyPool.TryGetValue(entry.Key, out var strategy)) continue;
             
-                strategies.Add(strategy);
-                if (entry.Value.Equals("false")) excluded |= 1ul << count;
+                _holder.AddStrategy(strategy);
+                if (entry.Value.Equals("false")) _holder.ExcludeStrategy(count);
 
                 count++;
             }
-        
-            Strategies = strategies.ToArray();
-            ExcludedStrategies = excluded;
         }
 
         if (result.TryGetValue("Customized On Instance Found", out var section))
@@ -137,15 +138,16 @@ public class StrategyLoader
         }
     }
 
-    public string AllStrategies()
+    public List<string> FindStrategies(string filter)
     {
-        var builder = new StringBuilder();
+        List<string> result = new();
+        var lFilter = filter.ToLower();
 
         foreach (var name in StrategyPool.Keys)
         {
-            builder.Append(name + "\n");
+            if (name.ToLower().Contains(lFilter)) result.Add(name);
         }
 
-        return builder.ToString();
+        return result;
     }
 }
