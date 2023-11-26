@@ -264,6 +264,12 @@ public partial class SolverPage : HandledPage, ISolverView, ISolverOptionHandler
         set => Solver.SidePriority = value;
     }
 
+    public bool TransformSoloPossibilityIntoGiven
+    {
+        get => _presenter.Settings.TransformSoloPossibilityIntoGiven;
+        set => _presenter.Settings.TransformSoloPossibilityIntoGiven = value;
+    }
+
     //EventHandling-----------------------------------------------------------------------------------------------------
 
     private void NewSudoku(object sender, TextChangedEventArgs e)

@@ -165,59 +165,58 @@ public static class SudokuTranslator
         return builder.ToString();
     }
 
-    public static SolverState TranslateToState(string grid)
+    public static SolverState TranslateToState(string grid, bool soloPossibilityToGiven)
     {
-        var split = grid.Split("\n");
-        if (split.Length < 12) return new SolverState();
-
         var cellStates = new CellState[9, 9];
         try
         {
-            var row = 0;
-            for (int i = 0; i < 12; i++)
+            int i = 0;
+            int pos = 0;
+            var numberBuffer = -1;
+            var isNumber = false;
+            Possibilities? possibilitiesBuffer = null;
+            while (pos < 81)
             {
-                if (i % 4 == 0) continue;
-
-                var col = 0;
-                var numberBuffer = -1;
-                var isNumber = false;
-                Possibilities? possibilitiesBuffer = null;
-                foreach (var c in split[i])
+                var c = grid[i];
+                    
+                if (c == '<')
                 {
-                    if (c == '<')
-                    {
-                        isNumber = true;
-                    }
-                    if (char.IsDigit(c))
-                    {
-                        var asInt = int.Parse(c.ToString());
+                    isNumber = true;
+                }
+                if (char.IsDigit(c))
+                {
+                    var asInt = int.Parse(c.ToString());
 
-                        if (isNumber) numberBuffer = asInt;
-                        else
-                        {
-                            possibilitiesBuffer ??= Possibilities.NewEmpty();
-                            possibilitiesBuffer.Add(asInt);
-                        }
-                    }
+                    if (isNumber) numberBuffer = asInt;
                     else
                     {
-                        if (isNumber && numberBuffer != -1)
-                        {
-                            cellStates[row, col] = new CellState(numberBuffer);
-                            isNumber = false;
-                            numberBuffer = -1;
-                            col++;
-                        }
-                        else if (possibilitiesBuffer is not null)
-                        {
-                            cellStates[row, col] = possibilitiesBuffer.ToCellState();
-                            possibilitiesBuffer = null;
-                            col++;
-                        }
+                        possibilitiesBuffer ??= Possibilities.NewEmpty();
+                        possibilitiesBuffer.Add(asInt);
+                    }
+                }
+                else
+                {
+                    var row = pos / 9;
+                    var col = pos % 9;
+                        
+                    if (isNumber && numberBuffer != -1)
+                    {
+                        cellStates[row, col] = new CellState(numberBuffer);
+                        isNumber = false;
+                        numberBuffer = -1;
+                        pos++;
+                    }
+                    else if (possibilitiesBuffer is not null)
+                    {
+                        cellStates[row, col] = soloPossibilityToGiven && possibilitiesBuffer.Count == 1 
+                            ? new CellState(possibilitiesBuffer.First()) 
+                            : possibilitiesBuffer.ToCellState();
+                        possibilitiesBuffer = null;
+                        pos++;
                     }
                 }
 
-                row++;
+                i++;
             }
         }
         catch (Exception)

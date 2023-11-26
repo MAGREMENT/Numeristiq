@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
+using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
@@ -9,7 +9,7 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
-public class FishStrategy : AbstractStrategy
+public class FishStrategy : AbstractStrategy //TODO => Doesn't find hodoku 2nd example
 {
     public const string OfficialName = "Fish";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
@@ -82,11 +82,6 @@ public class FishStrategy : AbstractStrategy
 
     private bool Try(IStrategyManager strategyManager, int number, int[] combination)
     {
-        if (combination.Contains(0) && combination.Contains(1) && combination.Contains(4) && combination.Contains(24))
-        {
-            int a = 0;
-        }
-        
         var gp = new GridPositions();
         HashSet<CoverHouse> baseSet = new();
         
@@ -102,20 +97,38 @@ public class FishStrategy : AbstractStrategy
 
         gp = gp.And(strategyManager.PositionsFor(number));
 
+        bool foundPerfectFit = false;
         foreach (var coverSet in gp.PossibleCoverHouses(combination.Length, baseSet,
                      UnitMethods.AllUnitMethods))
         {
+            if (coverSet.Remaining.Count != 0 && foundPerfectFit) continue;
+            
             var gpOfCoverSet = new GridPositions();
-            foreach (var set in coverSet)
+            foreach (var set in coverSet.CoverHouses)
             {
                 UnitMethods.GetMethods(set.Unit).Fill(gpOfCoverSet, set.Number);
             }
-
-            foreach (var cell in gpOfCoverSet.Difference(gp))
+            var diff = gpOfCoverSet.Difference(gp);
+            
+            if (coverSet.Remaining.Count == 0)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell);
-            }
+                foreach (var cell in diff)
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell);
+                }
 
+                foundPerfectFit = true;
+            }
+            else
+            {
+                var cells = new List<Cell>(coverSet.Remaining);
+
+                foreach (var ssc in Cells.SharedSeenCells(cells))
+                {
+                    if (diff.Peek(ssc)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, ssc);
+                }
+            }
+            
             if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
                     new FishReportBuilder(baseSet, coverSet, number, gp)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
@@ -128,14 +141,14 @@ public class FishStrategy : AbstractStrategy
 public class FishReportBuilder : IChangeReportBuilder
 {
     private readonly HashSet<CoverHouse> _baseSet;
-    private readonly CoverHouse[] _coverSet;
+    private readonly CoveredGrid _coveredSet;
     private readonly int _possibility;
     private readonly GridPositions _inCommon;
 
-    public FishReportBuilder(HashSet<CoverHouse> baseSet, CoverHouse[] coverSet, int possibility, GridPositions inCommon)
+    public FishReportBuilder(HashSet<CoverHouse> baseSet, CoveredGrid coveredSet, int possibility, GridPositions inCommon)
     {
         _baseSet = baseSet;
-        _coverSet = coverSet;
+        _coveredSet = coveredSet;
         _possibility = possibility;
         _inCommon = inCommon;
     }
@@ -147,6 +160,11 @@ public class FishReportBuilder : IChangeReportBuilder
             foreach (var cell in _inCommon)
             {
                 lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+            }
+
+            foreach (var cell in _coveredSet.Remaining)
+            {
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffTwo);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -168,12 +186,21 @@ public class FishReportBuilder : IChangeReportBuilder
             baseSetBuilder.Append(ch + ", ");
         }
 
-        var coverSetBuilder = new StringBuilder(_coverSet[0].ToString());
-        for (int i = 1; i < _coverSet.Length; i++)
+        var coverSetBuilder = new StringBuilder(_coveredSet.CoverHouses[0].ToString());
+        for (int i = 1; i < _coveredSet.CoverHouses.Length; i++)
         {
-            coverSetBuilder.Append(", " + _coverSet[i]);
+            coverSetBuilder.Append(", " + _coveredSet.CoverHouses[i]);
         }
 
-        return $"{type} found :\nBase set : {baseSetBuilder.ToString()[..^2]}\nCover set : {coverSetBuilder}";
+        var finBuilder = new StringBuilder();
+        foreach (var cell in _coveredSet.Remaining)
+        {
+            finBuilder.Append(cell + ", ");
+        }
+
+        var fins = _coveredSet.Remaining.Count == 0 ? "" : finBuilder.ToString()[..^2];
+
+        return $"{type} found :\nBase set : {baseSetBuilder.ToString()[..^2]}\nCover set : {coverSetBuilder}" +
+               $"\nFins : {fins}";
     }
 }

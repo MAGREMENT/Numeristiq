@@ -15,4 +15,5 @@ public interface ISolverOptionHandler
     public CellColor GivenColor { get; set; }
     public CellColor SolvingColor { get; set; }
     public LinkOffsetSidePriority SidePriority { get; set; }
+    public bool TransformSoloPossibilityIntoGiven { get; set; }
 }

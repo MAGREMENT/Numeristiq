@@ -44,6 +44,7 @@ public class SolverSettings
         }
     }
     public ChangeType ActionOnCellChange { get; set; } = ChangeType.Solution;
+    public bool TransformSoloPossibilityIntoGiven { get; set; } = true;
 
     public void NotifyGivensNeedingUpdate()
     {

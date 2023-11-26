@@ -66,6 +66,18 @@
     "args": {}
   },
   {
+    "Name": "Fish",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Gurth\u0027s Theorem",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
     "Name": "X-Wing",
     "Used": true,
     "Behavior": 1,
@@ -114,9 +126,27 @@
     "args": {}
   },
   {
+    "Name": "Empty Rectangle",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
     "Name": "Junior Exocet",
     "Used": true,
     "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Skyscraper",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Two-String Kite",
+    "Used": true,
+    "Behavior": 0,
     "args": {}
   },
   {
@@ -159,6 +189,12 @@
     "Name": "XY-Chains",
     "Used": true,
     "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "NRC-Chains",
+    "Used": true,
+    "Behavior": 2,
     "args": {}
   },
   {
@@ -217,7 +253,7 @@
   },
   {
     "Name": "Subsets Alternating Inference Chain",
-    "Used": true,
+    "Used": false,
     "Behavior": 2,
     "args": {}
   },
@@ -253,7 +289,7 @@
   },
   {
     "Name": "Pattern Overlay",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "args": {}
   },

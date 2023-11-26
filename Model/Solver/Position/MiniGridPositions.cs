@@ -98,13 +98,13 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
     public override string ToString()
     {
-        var builder = new StringBuilder("(");
+        var builder = new StringBuilder();
         foreach (var coord in this)
         {
-            builder.Append(coord);
+            builder.Append(coord + " ");
         }
 
-        return builder.ToString()[..^1] + ")";
+        return builder.ToString();
     }
 
     public LinePositions OnGridRow(int gridRow)

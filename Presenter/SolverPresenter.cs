@@ -178,7 +178,7 @@ public class SolverPresenter
 
     public void PasteGrid(string grid)
     {
-        _solver.SetState(SudokuTranslator.TranslateToState(grid));
+        _solver.SetState(SudokuTranslator.TranslateToState(grid, Settings.TransformSoloPossibilityIntoGiven));
         ClearLogs();
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);

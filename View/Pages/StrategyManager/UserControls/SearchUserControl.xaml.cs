@@ -8,7 +8,7 @@ namespace View.Pages.StrategyManager.UserControls;
 
 public partial class SearchUserControl
 {
-    private const int ListLimit = 30;
+    private const int ListLimit = 100;
     
     private bool _callSearchBarEvent = true;
     private bool _searchTextShown;

@@ -9,10 +9,11 @@ using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Utility;
 
 namespace Model.Solver.Helpers;
 
-public class StrategyLoader : IStrategyLoader
+public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false and strategy shuffle
 {
     private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
@@ -65,7 +66,7 @@ public class StrategyLoader : IStrategyLoader
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
         {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()},
-        {RectangleEliminationStrategy.OfficialName, new RectangleEliminationStrategy()},
+        {EmptyRectangleStrategy.OfficialName, new EmptyRectangleStrategy()},
         {NRCZTChainStrategy.OfficialNameForDefault, new NRCZTChainStrategy()},
         {NRCZTChainStrategy.OfficialNameForTCondition, new NRCZTChainStrategy(new TCondition())},
         {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
@@ -80,8 +81,8 @@ public class StrategyLoader : IStrategyLoader
     };
 
     private readonly List<IStrategy> _strategies = new();
-    private ulong _excludedStrategies;
-    private ulong _lockedStrategies;
+    private readonly BitSet _excludedStrategies = new();
+    private readonly BitSet _lockedStrategies = new();
     
     public IReadOnlyList<IStrategy> Strategies => _strategies;
     private readonly IStrategyRepository _repository;
@@ -100,14 +101,15 @@ public class StrategyLoader : IStrategyLoader
         _callEvent = false;
         
         _strategies.Clear();
-        _excludedStrategies = 0;
-        _lockedStrategies = 0;
+        _excludedStrategies.Clear();
+        _lockedStrategies.Clear();
 
         var download = _repository.DownloadStrategies();
         var count = 0;
         foreach (var dao in download)
         {
-            var strategy = StrategyPool[dao.Name];
+            if (!StrategyPool.TryGetValue(dao.Name, out var strategy)) continue;
+            
             strategy.OnCommitBehavior = dao.Behavior;
             _strategies.Add(StrategyPool[dao.Name]);
             if (!dao.Used) ExcludeStrategy(count);
@@ -115,32 +117,33 @@ public class StrategyLoader : IStrategyLoader
         }
 
         _callEvent = true;
+        TryCallEvent();
     }
     
     public void ExcludeStrategy(int number)
     {
         if (IsStrategyLocked(number)) return;
-        
-        _excludedStrategies |= 1ul << number;
+
+        _excludedStrategies.Set(number);
         TryCallEvent();
     }
     
     public void UseStrategy(int number)
     {
         if (IsStrategyLocked(number)) return;
-        
-        _excludedStrategies &= ~(1ul << number);
+
+        _excludedStrategies.Unset(number);
         TryCallEvent();
     }
 
     public bool IsStrategyUsed(int number)
     {
-        return ((_excludedStrategies >> number) & 1) == 0;
+        return !_excludedStrategies.IsSet(number);
     }
 
     public bool IsStrategyLocked(int number)
     {
-        return ((_lockedStrategies >> number) & 1) > 0;
+        return _lockedStrategies.IsSet(number);
     }
     
     public void AllowUniqueness(bool yes)
@@ -218,12 +221,12 @@ public class StrategyLoader : IStrategyLoader
     
     private void LockStrategy(int n)
     {
-        _lockedStrategies |= 1ul << n;
+        _lockedStrategies.Set(n);
     }
 
     private void UnLockStrategy(int n)
     {
-        _lockedStrategies &= ~(1ul << n);
+        _lockedStrategies.Unset(n);
     }
 
     private void TryCallEvent()

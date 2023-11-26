@@ -6,14 +6,14 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
-public class RectangleEliminationStrategy : AbstractStrategy
+public class EmptyRectangleStrategy : AbstractStrategy
 {
-    public const string OfficialName = "Rectangle Elimination";
+    public const string OfficialName = "Empty Rectangle";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
-    public RectangleEliminationStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    public EmptyRectangleStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
     }
 
