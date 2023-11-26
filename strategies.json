@@ -1,0 +1,254 @@
+[
+  {
+    "Name": "Naked Single",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Hidden Single",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Naked Doubles",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Hidden Doubles",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Box-Line Reduction",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Pointing Set",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Naked Triple",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Hidden Triple",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Naked Quad",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Naked Quad",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Hidden Quad",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "X-Wing",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "XY-Wing",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "XYZ-Wing",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Swordfish",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Jellyfish",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Simple Coloring",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "BUG",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Reverse BUG",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Junior Exocet",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Finned X-Wing",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Finned Swordfish",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Finned Jellyfish",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Fireworks",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Unique Rectangles",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Unavoidable Rectangles",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "XY-Chains",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "3D Medusa",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "WXYZ-Wing",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Aligned Pair Exclusion",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Subsets X-Cycles",
+    "Used": true,
+    "Behavior": 2,
+    "args": {}
+  },
+  {
+    "Name": "SK-Loops",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Almost Locked Sets",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Almost Hidden Sets",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Alternating Inference Chains",
+    "Used": true,
+    "Behavior": 2,
+    "args": {}
+  },
+  {
+    "Name": "Set Equivalence",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Digit Forcing Net",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Cell Forcing Net",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Unit Forcing Net",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Nishio Forcing Net",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Pattern Overlay",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Brute Force",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  }
+]
