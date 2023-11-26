@@ -1,11 +1,24 @@
 ﻿using Model;
 using Model.Solver;
+using Repository;
 
 namespace Presenter;
 
 public class PresenterFactory
 {
-    private readonly ISolver _solver = new SudokuSolver();
+    private readonly ISolver _solver;
+
+    public PresenterFactory()
+    {
+        var repository = new JSONStrategyRepository();
+        repository.Initialize();
+        
+        _solver = new SudokuSolver(repository)
+        {
+            StatisticsTracked = false,
+            LogsManaged = true
+        };
+    }
 
     public SolverPresenter Create(ISolverView view)
     {

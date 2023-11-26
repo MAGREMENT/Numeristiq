@@ -72,10 +72,7 @@ public partial class SolverSettingsWindow
                 new CheckBoxOptionCanvas("Step by step", "Defines whether the solver stops when progress is made or not", handler.StepByStep,
                     b => handler.StepByStep = b),
                 new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", handler.UniquenessAllowed,
-                    b => handler.UniquenessAllowed = b),
-                new ComboBoxOptionCanvas("On instance found", "Defines the behavior of the solver when an instance of a strategy is found", (int)handler.OnInstanceFound,
-                    i => handler.OnInstanceFound = (OnInstanceFound)i, "Default", "Return",
-                    "Wait for all", "Choose best", "Customized"))
+                    b => handler.UniquenessAllowed = b))
         };
     }
 }

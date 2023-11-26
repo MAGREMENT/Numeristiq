@@ -1,6 +1,7 @@
 ﻿using Global;
 using Global.Enums;
 using Model.Solver;
+using Model.Solver.Helpers;
 using Model.Solver.Helpers.Logs;
 
 namespace Presenter.Translator;
@@ -25,7 +26,7 @@ public static class ModelToViewTranslator
         return result;
     }
 
-    public static IReadOnlyList<ViewStrategy> Translate(StrategyInfo[] infos)
+    public static IReadOnlyList<ViewStrategy> Translate(StrategyInformation[] infos)
     {
         var result = new List<ViewStrategy>(infos.Length);
 

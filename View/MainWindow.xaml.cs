@@ -1,5 +1,4 @@
-﻿using System.Windows.Controls;
-using Presenter;
+﻿using Presenter;
 using View.Pages;
 using View.Pages.Solver;
 using View.Pages.StrategyManager;
@@ -11,15 +10,16 @@ namespace View;
 /// </summary>
 public partial class MainWindow : IPageHandler
 {
-    private readonly Page[] _pages;
+    private readonly HandledPage[] _pages;
+    private HandledPage? _currentlyShown;
     
     public MainWindow()
     {
         InitializeComponent();
 
-        var factory = new PresenterFactory();
+        var factory = new PresenterFactory(); //TODO => in case of error
         
-        _pages = new Page[]
+        _pages = new HandledPage[]
         {
             new FirstPage(this), new SolverPage(this, factory), new StrategyManagerPage(this, factory)
         };
@@ -29,6 +29,12 @@ public partial class MainWindow : IPageHandler
 
     public void ShowPage(PagesName pageName)
     {
-        Main.Content = _pages[(int)pageName];
+        if(_currentlyShown is not null) _currentlyShown.OnQuit();
+
+        var page = _pages[(int)pageName];
+        Main.Content = page;
+        _currentlyShown = page;
+        
+        page.OnShow();
     }
 }

@@ -1,6 +1,4 @@
 using System.IO;
-using System.Net;
-using System.Text;
 using System.Windows;
 using System.Windows.Forms;
 using Clipboard = System.Windows.Forms.Clipboard;
@@ -39,7 +37,7 @@ public partial class PrintWindow : Window
         else if (TextFileRadioButton.IsChecked == true)
         {
             var file = FileLocation.Text + @$"\{Title.Text}.txt";
-            using var writer = new StreamWriter(file, new FileStreamOptions()
+            using var writer = new StreamWriter(file, new FileStreamOptions
             {
                 Mode = FileMode.Create,
                 Access = FileAccess.ReadWrite,

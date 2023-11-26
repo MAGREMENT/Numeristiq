@@ -42,7 +42,6 @@ public class SolverPresenter
             _solver.AllowUniqueness(Settings.UniquenessAllowed);
             _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
         };
-        Settings.OnInstanceFoundChanged += () => _solver.SetOnInstanceFound(Settings.OnInstanceFound);
         Settings.GivensNeedUpdate += UpdateGivens;
     }
 
@@ -54,6 +53,11 @@ public class SolverPresenter
         _solver.CurrentStrategyChanged += i => _view.LightUpStrategy(i);
 
         ChangeShownState(_shownState);
+        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
+    }
+
+    public void RefreshStrategies()
+    {
         _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
     }
 

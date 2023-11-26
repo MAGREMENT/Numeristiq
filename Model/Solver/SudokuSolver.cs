@@ -12,7 +12,7 @@ namespace Model.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //BIG TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeManager, ILogHolder
+public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;
     private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
@@ -33,41 +33,37 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
     public SolverState StartState { get; private set; }
 
     public delegate void SolutionAddition(int number, int row, int col);
-    public event SolutionAddition? GoingToAddSolution;
+    public event SolutionAddition? SolutionAdded;
 
     public delegate void PossibilityRemoval(int number, int row, int col);
-    public event PossibilityRemoval? GoingToRemovePossibility;
+    public event PossibilityRemoval? PossibilityRemoved;
     
     public event OnCurrentStrategyChange? CurrentStrategyChanged;
 
     public event OnLogsUpdate? LogsUpdated;
 
-    private List<IStrategy> _strategies = new();
+    private IReadOnlyList<IStrategy> Strategies => _strategyLoader.Strategies;
     private int _currentStrategy = -1;
-    private ulong _excludedStrategies;
-    private ulong _lockedStrategies;
     
     private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
 
     private bool _startedSolving;
 
-    private OnInstanceFound _lastOnInstanceFound = OnInstanceFound.Default;
-
     private readonly StrategyLoader _strategyLoader;
 
-    public SudokuSolver() : this(new Sudoku()) { }
+    public SudokuSolver(IStrategyRepository repository) : this(new Sudoku(), repository) { }
 
-    public SudokuSolver(Sudoku s)
+    private SudokuSolver(Sudoku s, IStrategyRepository repository)
     {
-        _strategyLoader = new StrategyLoader(this);
+        _strategyLoader = new StrategyLoader(repository);
         _strategyLoader.Load();
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
 
-        GoingToAddSolution += (_, _, _) => _solutionAddedBuffer++;
-        GoingToRemovePossibility += (_, _, _) => _possibilityRemovedBuffer++;
+        SolutionAdded += (_, _, _) => _solutionAddedBuffer++;
+        PossibilityRemoved += (_, _, _) => _possibilityRemovedBuffer++;
 
         Init();
         StartState = new SolverState(this);
@@ -159,12 +155,12 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
     {
         _startedSolving = true;
         
-        for (_currentStrategy = 0; _currentStrategy < _strategies.Count; _currentStrategy++)
+        for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
         {
-            if (!IsStrategyUsed(_currentStrategy)) continue;
+            if (!_strategyLoader.IsStrategyUsed(_currentStrategy)) continue;
 
             CurrentStrategyChanged?.Invoke(_currentStrategy);
-            var current = _strategies[_currentStrategy];
+            var current = Strategies[_currentStrategy];
 
             if (StatisticsTracked) current.Tracker.StartUsing();
             current.Apply(this);
@@ -202,127 +198,49 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
         return false;
     }
 
-    public void ClearStrategies()
-    {
-        _strategies.Clear();
-    }
-
-    public void AddStrategy(IStrategy strategy)
-    {
-        _strategies.Add(strategy);
-    }
-
-    public void ClearExcluded()
-    {
-        _excludedStrategies = 0;
-        _lockedStrategies = 0;
-    }
-
     public void ExcludeStrategy(int number)
     {
-        if (IsStrategyLocked(number)) return;
-        _excludedStrategies |= 1ul << number;
-    }
-
-    public void ExcludeStrategies(StrategyDifficulty difficulty)
-    {
-        for (int i = 0; i < _strategies.Count; i++)
-        {
-            if (_strategies[i].Difficulty == difficulty && !IsStrategyLocked(i)) ExcludeStrategy(i);
-        }
+        _strategyLoader.ExcludeStrategy(number);
     }
 
     public void UseStrategy(int number)
     {
-        if (IsStrategyLocked(number)) return;
-        _excludedStrategies &= ~(1ul << number);
-    }
-
-    public bool IsStrategyUsed(int number)
-    {
-        return ((_excludedStrategies >> number) & 1) == 0;
-    }
-
-    public bool IsStrategyLocked(int number)
-    {
-        return ((_lockedStrategies >> number) & 1) > 0;
+        _strategyLoader.UseStrategy(number);
     }
 
     public void AllowUniqueness(bool yes)
     {
         UniquenessDependantStrategiesAllowed = yes;
-        
-        for (int i = 0; i < _strategies.Count; i++)
-        {
-            if (_strategies[i].UniquenessDependency != UniquenessDependency.FullyDependent) continue;
-            
-            if (yes) UnLockStrategy(i);
-            else
-            {
-                ExcludeStrategy(i);
-                LockStrategy(i);
-            }
-        }
-    }
-
-    public void SetOnInstanceFound(OnInstanceFound found)
-    {
-        _lastOnInstanceFound = found;
-        
-        foreach (var strategy in _strategies)
-        {
-            switch (found)
-            {
-                case OnInstanceFound.Return :
-                    strategy.OnCommitBehavior = OnCommitBehavior.Return;
-                    break;
-                case OnInstanceFound.WaitForAll :
-                    strategy.OnCommitBehavior = OnCommitBehavior.WaitForAll;
-                    break;
-                case OnInstanceFound.ChooseBest :
-                    strategy.OnCommitBehavior = OnCommitBehavior.ChooseBest;
-                    break;
-                case OnInstanceFound.Default :
-                    strategy.OnCommitBehavior = strategy.DefaultOnCommitBehavior;
-                    break;
-                case OnInstanceFound.Customized :
-                    strategy.OnCommitBehavior = _strategyLoader.CustomizedOnInstanceFound.TryGetValue(strategy.Name,
-                        out var behavior) ? behavior : strategy.DefaultOnCommitBehavior;
-
-                    break;
-            }
-        }
+        _strategyLoader.AllowUniqueness(yes);
     }
 
     public string FullScan()
     {
-        var last = _lastOnInstanceFound;
-        SetOnInstanceFound(OnInstanceFound.WaitForAll);
+        var oldBehavior = new List<OnCommitBehavior>();
         
-        for (int i = 0; i < _strategies.Count; i++)
+        for (int i = 0; i < Strategies.Count; i++)
         {
-            if (!IsStrategyUsed(i)) continue;
-            
-            var current = _strategies[i];
+            var current = Strategies[i];
+            oldBehavior.Add(current.OnCommitBehavior);
+            if (!_strategyLoader.IsStrategyUsed(i)) continue;
+
+            current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
             current.Apply(this);
 
             if (_sudoku.IsComplete()) break;
         }
 
-        SetOnInstanceFound(last);
+        for (int i = 0; i < oldBehavior.Count; i++)
+        {
+            Strategies[i].OnCommitBehavior = oldBehavior[i];
+        }
+        
         return "FULL SCAN :\n\n" + SudokuTranslator.TranslateToGrid(CurrentState) + "\n" + ChangeBuffer.CommitDump();
     }
     
-    public StrategyInfo[] GetStrategyInfo()
+    public StrategyInformation[] GetStrategyInfo()
     {
-        StrategyInfo[] result = new StrategyInfo[_strategies.Count];
-
-        for (int i = 0; i < _strategies.Count; i++)
-        {
-            result[i] = new StrategyInfo(_strategies[i], IsStrategyUsed(i), IsStrategyLocked(i));
-        }
-
-        return result;
+        return _strategyLoader.GetStrategyInfo();
     }
     
     //PossibilityHolder-------------------------------------------------------------------------------------------------
@@ -380,7 +298,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
 
     private void CallOnNewSudokuForEachStrategy()
     {
-        foreach (var s in _strategies)
+        foreach (var s in Strategies)
         {
             s.OnNewSudoku(_sudoku);
         }
@@ -390,9 +308,9 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
     {
         if (!_possibilities[row, col].Peek(number)) return false;
         
-        if(callEvents) GoingToAddSolution?.Invoke(number, row, col);
         _sudoku[row, col] = number;
         UpdateAfterSolutionAdded(number, row, col);
+        if(callEvents) SolutionAdded?.Invoke(number, row, col);
         
         return true;
     }
@@ -409,8 +327,8 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
     {
         if (!_possibilities[row, col].Remove(possibility)) return false;
         
-        if(callEvents) GoingToRemovePossibility?.Invoke(possibility, row, col);
         _positions[possibility - 1].Remove(row, col);
+        if(callEvents) PossibilityRemoved?.Invoke(possibility, row, col);
         
         return true;
     }
@@ -548,35 +466,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IStrategyHolder, IChangeM
         pos.VoidRow(row);
         pos.VoidColumn(col);
         pos.VoidMiniGrid(row / 3, col / 3);
-    }
-
-    private void LockStrategy(int n)
-    {
-        _lockedStrategies |= 1ul << n;
-    }
-
-    private void UnLockStrategy(int n)
-    {
-        _lockedStrategies &= ~(1ul << n);
-    }
-}
-
-public class StrategyInfo
-{
-    public string StrategyName { get; }
-    public StrategyDifficulty Difficulty { get; }
-    public bool Used { get; }
-    public bool Locked { get; }
-    
-    public IReadOnlyTracker Tracker { get; }
-
-    public StrategyInfo(IStrategy strategy, bool used, bool locked)
-    {
-        StrategyName = strategy.Name;
-        Difficulty = strategy.Difficulty;
-        Used = used;
-        Locked = locked;
-        Tracker = strategy.Tracker;
     }
 }
 

@@ -9,7 +9,7 @@ using Model.Solver.StrategiesUtility.Exocet;
 
 namespace Model.Solver.Strategies;
 
-public class JuniorExocetStrategy : AbstractStrategy
+public class JuniorExocetStrategy : AbstractStrategy //BUG : 12.3.....3.4...1...56....3.2..5...7.....8.9.......6..4.7..9.8....21...5......4..6
 {
     public const string OfficialName = "Junior Exocet";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

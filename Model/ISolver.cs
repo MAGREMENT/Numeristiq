@@ -2,6 +2,7 @@
 using Global;
 using Global.Enums;
 using Model.Solver;
+using Model.Solver.Helpers;
 using Model.Solver.Helpers.Logs;
 
 namespace Model;
@@ -16,10 +17,9 @@ public interface ISolver
     public SolverState StartState { get; }
     public IReadOnlyList<ISolverLog> Logs { get; }
     public void AllowUniqueness(bool yes);
-    public void SetOnInstanceFound(OnInstanceFound found);
     public void UseStrategy(int number);
     public void ExcludeStrategy(int number);
-    public StrategyInfo[] GetStrategyInfo();
+    public StrategyInformation[] GetStrategyInfo();
     public void SetSolutionByHand(int number, int row, int col);
     public void RemoveSolutionByHand(int row, int col);
     public void RemovePossibilityByHand(int possibility, int row, int col);

@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace View.Pages;
 
-public partial class FirstPage : Page
+public partial class FirstPage : HandledPage
 {
     private readonly IPageHandler _pageHandler;
     
@@ -23,5 +23,15 @@ public partial class FirstPage : Page
     private void GoToStrategyManager(object sender, RoutedEventArgs e)
     {
         _pageHandler.ShowPage(PagesName.StrategyManager);
+    }
+
+    public override void OnShow()
+    {
+        
+    }
+
+    public override void OnQuit()
+    {
+        
     }
 }

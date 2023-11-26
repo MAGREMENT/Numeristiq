@@ -2,7 +2,6 @@
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
 
@@ -85,7 +84,7 @@ public class SKLoopsStrategy : AbstractStrategy
             if (strategyManager.Sudoku[crossRow, col] != 0) countCol++;
         }
 
-        return countRow <= 2 & countCol <= 2;
+        return countRow <= 2 && countCol <= 2;
     }
 
     private bool ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
@@ -93,12 +92,13 @@ public class SKLoopsStrategy : AbstractStrategy
         var one = CrossColPossibilities(strategyManager, cells[0]);
         var two = CrossColPossibilities(strategyManager, cells[3]);
         var and = one.Possibilities.And(two.Possibilities);
-        if (and.Count == 0 || and.Equals(one.Possibilities) || and.Equals(two.Possibilities)) return false;
+        if (and.Count == 0) return false;
 
         var combinations = EachCombination(and);
         
         foreach (var combination in combinations)
         {
+            if (combination.Equals(one.Possibilities) || combination.Equals(two.Possibilities)) continue;
             if (IsLoop(strategyManager, cells, combination)) return true;
         }
 

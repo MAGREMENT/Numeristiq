@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -10,14 +9,11 @@ using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.LinkGraph;
-using Model.Utility;
 
 namespace Model.Solver.Helpers;
 
 public class StrategyLoader : IStrategyLoader
 {
-    private static readonly string Path = PathsManager.GetInstance().GetPathToIniFile();
-
     private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
         {NakedSingleStrategy.OfficialName, new NakedSingleStrategy()},
@@ -83,59 +79,95 @@ public class StrategyLoader : IStrategyLoader
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()}
     };
 
-    private readonly IStrategyHolder _holder;
-
-    public StrategyLoader(IStrategyHolder holder)
-    {
-        _holder = holder;
-    }
+    private readonly List<IStrategy> _strategies = new();
+    private ulong _excludedStrategies;
+    private ulong _lockedStrategies;
     
-    public Dictionary<string, OnCommitBehavior> CustomizedOnInstanceFound { get; } = new();
+    public IReadOnlyList<IStrategy> Strategies => _strategies;
+    private readonly IStrategyRepository _repository;
+
+    public event OnListUpdate? ListUpdated;
+    private bool _callEvent = true;
+
+    public StrategyLoader(IStrategyRepository repository)
+    {
+        _repository = repository;
+        ListUpdated += UpdateRepository;
+    }
 
     public void Load()
     {
-        if (!File.Exists(Path)) return;
+        _callEvent = false;
         
-        _holder.ClearStrategies();
-        _holder.ClearExcluded();
+        _strategies.Clear();
+        _excludedStrategies = 0;
+        _lockedStrategies = 0;
 
-        var result = IniFileReader.Read(Path);
-        if (result.TryGetValue("Strategy Order", out var orderSection))
+        var download = _repository.DownloadStrategies();
+        var count = 0;
+        foreach (var dao in download)
         {
-            int count = 0;
+            var strategy = StrategyPool[dao.Name];
+            strategy.OnCommitBehavior = dao.Behavior;
+            _strategies.Add(StrategyPool[dao.Name]);
+            if (!dao.Used) ExcludeStrategy(count);
+            count++;
+        }
 
-            foreach (var entry in orderSection)
-            {
-                if (!StrategyPool.TryGetValue(entry.Key, out var strategy)) continue;
+        _callEvent = true;
+    }
+    
+    public void ExcludeStrategy(int number)
+    {
+        if (IsStrategyLocked(number)) return;
+        
+        _excludedStrategies |= 1ul << number;
+        TryCallEvent();
+    }
+    
+    public void UseStrategy(int number)
+    {
+        if (IsStrategyLocked(number)) return;
+        
+        _excludedStrategies &= ~(1ul << number);
+        TryCallEvent();
+    }
+
+    public bool IsStrategyUsed(int number)
+    {
+        return ((_excludedStrategies >> number) & 1) == 0;
+    }
+
+    public bool IsStrategyLocked(int number)
+    {
+        return ((_lockedStrategies >> number) & 1) > 0;
+    }
+    
+    public void AllowUniqueness(bool yes)
+    {
+        for (int i = 0; i < Strategies.Count; i++)
+        {
+            if (Strategies[i].UniquenessDependency != UniquenessDependency.FullyDependent) continue;
             
-                _holder.AddStrategy(strategy);
-                if (entry.Value.Equals("false")) _holder.ExcludeStrategy(count);
-
-                count++;
-            }
-        }
-
-        if (result.TryGetValue("Customized On Instance Found", out var section))
-        {
-            foreach (var entry in section)
+            if (yes) UnLockStrategy(i);
+            else
             {
-                if (!StrategyPool.ContainsKey(entry.Key)) continue;
-                OnCommitBehavior behavior;
-
-                switch (entry.Value)
-                {
-                    case "Return" : behavior = OnCommitBehavior.Return;
-                        break;
-                    case "WaitForAll" : behavior = OnCommitBehavior.WaitForAll;
-                        break;
-                    case "ChooseBest" : behavior = OnCommitBehavior.ChooseBest;
-                        break;
-                    default : continue;
-                }
-
-                CustomizedOnInstanceFound.Add(entry.Key, behavior);
+                ExcludeStrategy(i);
+                LockStrategy(i);
             }
         }
+    }
+    
+    public StrategyInformation[] GetStrategyInfo()
+    {
+        StrategyInformation[] result = new StrategyInformation[Strategies.Count];
+
+        for (int i = 0; i < Strategies.Count; i++)
+        {
+            result[i] = new StrategyInformation(Strategies[i], IsStrategyUsed(i), IsStrategyLocked(i));
+        }
+
+        return result;
     }
 
     public List<string> FindStrategies(string filter)
@@ -150,4 +182,86 @@ public class StrategyLoader : IStrategyLoader
 
         return result;
     }
+    
+    public void AddStrategy(string name)
+    {
+        _strategies.Add(StrategyPool[name]);
+        TryCallEvent();
+    }
+
+    public void AddStrategy(string name, int position)
+    {
+        if (position == _strategies.Count)
+        {
+            AddStrategy(name);
+            return;
+        }
+        
+        _strategies.Insert(position, StrategyPool[name]);
+        TryCallEvent();
+    }
+    
+    public void RemoveStrategy(int position)
+    {
+        _strategies.RemoveAt(position);
+        TryCallEvent();
+    }
+    
+    public void InterchangeStrategies(int positionOne, int positionTwo)
+    {
+        (_strategies[positionOne], _strategies[positionTwo]) = (_strategies[positionTwo], _strategies[positionOne]);
+        TryCallEvent();
+    }
+    
+    //Private-----------------------------------------------------------------------------------------------------------
+    
+    private void LockStrategy(int n)
+    {
+        _lockedStrategies |= 1ul << n;
+    }
+
+    private void UnLockStrategy(int n)
+    {
+        _lockedStrategies &= ~(1ul << n);
+    }
+
+    private void TryCallEvent()
+    {
+        if (!_callEvent) return;
+        
+        ListUpdated?.Invoke();
+    }
+
+    private void UpdateRepository()
+    {
+        var list = new List<StrategyDAO>(_strategies.Count);
+        for (int i = 0; i < _strategies.Count; i++)
+        {
+            var s = _strategies[i];
+            list.Add(new StrategyDAO(s.Name, IsStrategyUsed(i), s.OnCommitBehavior, new Dictionary<string, string>()));
+        }
+
+        _repository.UploadStrategies(list);
+    }
 }
+
+public class StrategyInformation
+{
+    public string StrategyName { get; }
+    public StrategyDifficulty Difficulty { get; }
+    public bool Used { get; }
+    public bool Locked { get; }
+    
+    public IReadOnlyTracker Tracker { get; }
+
+    public StrategyInformation(IStrategy strategy, bool used, bool locked)
+    {
+        StrategyName = strategy.Name;
+        Difficulty = strategy.Difficulty;
+        Used = used;
+        Locked = locked;
+        Tracker = strategy.Tracker;
+    }
+}
+
+public delegate void OnListUpdate();

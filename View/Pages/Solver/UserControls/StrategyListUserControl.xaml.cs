@@ -17,6 +17,8 @@ public partial class StrategyListUserControl
     
     public void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies)
     {
+        List.Children.Clear();
+        
         for (int i = 0; i < strategies.Count; i++)
         {
             StrategyUserControl suc = new StrategyUserControl();

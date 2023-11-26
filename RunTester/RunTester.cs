@@ -5,6 +5,7 @@ using Model;
 using Model.Solver;
 using Model.Solver.Helpers;
 using Model.Utility;
+using Repository;
 
 namespace RunTester;
 
@@ -16,18 +17,19 @@ public class RunTester
     private bool _running;
     private SudokuSolver? _currentSolver;
     private RunResult? _currentRunResult;
-    private readonly OnInstanceFound _found;
-
-    public RunTester(OnInstanceFound found)
-    {
-        _found = found;
-    }
 
     public delegate void OnSolveDone(int number, string line, bool success, bool solverFail);
     public event OnSolveDone? SolveDone;
 
     public delegate void OnRunStatusChanged(bool running);
     public event OnRunStatusChanged? RunStatusChanged;
+
+    private readonly IStrategyRepository _repository;
+
+    public RunTester(IStrategyRepository repository)
+    {
+        _repository = repository;
+    }
 
     public void Start()
     {
@@ -45,12 +47,11 @@ public class RunTester
         
         _currentRunResult = new RunResult();
         
-        _currentSolver = new SudokuSolver
+        _currentSolver = new SudokuSolver(_repository)
         {
             LogsManaged = false,
             StatisticsTracked = true
         };
-        _currentSolver.SetOnInstanceFound(_found);
 
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);
 
@@ -187,7 +188,7 @@ public class StrategyReport
     public string StrategyName { get; }
     public IReadOnlyTracker Tracker { get; }
 
-    public StrategyReport(StrategyInfo strategy)
+    public StrategyReport(StrategyInformation strategy)
     {
         StrategyName = strategy.StrategyName;
         Tracker = strategy.Tracker;

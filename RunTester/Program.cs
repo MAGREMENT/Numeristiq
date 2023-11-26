@@ -1,4 +1,6 @@
 ﻿using Global.Enums;
+using Model;
+using Repository;
 
 namespace RunTester;
 
@@ -6,10 +8,21 @@ public static class Program
 {
     public static void Main(string[] args)
     {
+        var repo = new JSONStrategyRepository();
+        try
+        {
+            repo.Initialize();
+        }
+        catch (StrategyRepositoryInitializationException e)
+        {
+            Console.WriteLine("Exception while initializing repository : " + e.Message);
+            return;
+        }
+        
         var argReader = GetArgumentsReader();
         var argResult = argReader.Read(args);
 
-        var runTester = new RunTester(OnInstanceFound.WaitForAll)
+        var runTester = new RunTester(repo)
         {
             Path = argResult.GetValue("f")
         };

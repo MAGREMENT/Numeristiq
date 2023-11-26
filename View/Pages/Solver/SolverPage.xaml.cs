@@ -11,7 +11,7 @@ using View.Utility;
 
 namespace View.Pages.Solver;
 
-public partial class SolverPage : ISolverView, ISolverOptionHandler
+public partial class SolverPage : HandledPage, ISolverView, ISolverOptionHandler
 {
     private bool _createNewSudoku = true;
 
@@ -233,12 +233,6 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
         set => _presenter.Settings.UniquenessAllowed = value;
     }
 
-    public OnInstanceFound OnInstanceFound
-    {
-        get => _presenter.Settings.OnInstanceFound;
-        set => _presenter.Settings.OnInstanceFound = value;
-    }
-
     public ChangeType ActionOnKeyboardInput
     {
         get => _presenter.Settings.ActionOnCellChange;
@@ -311,5 +305,15 @@ public partial class SolverPage : ISolverView, ISolverOptionHandler
     private void Paste(object sender, RoutedEventArgs e)
     {
         _presenter.PasteGrid(Clipboard.GetText());
+    }
+
+    public override void OnShow()
+    {
+        _presenter.RefreshStrategies();
+    }
+
+    public override void OnQuit()
+    {
+        
     }
 }

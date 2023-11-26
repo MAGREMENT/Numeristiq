@@ -11,7 +11,6 @@ public interface ISolverOptionHandler
     public SudokuTranslationType TranslationType { get; set; }
     public bool StepByStep { get; set; }
     public bool UniquenessAllowed { get; set; }
-    public OnInstanceFound OnInstanceFound { get; set; }
     public ChangeType ActionOnKeyboardInput { get; set; }
     public CellColor GivenColor { get; set; }
     public CellColor SolvingColor { get; set; }

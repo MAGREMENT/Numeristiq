@@ -1,8 +1,9 @@
-<Page x:Class="View.Pages.FirstPage"
+<pages:HandledPage x:Class="View.Pages.FirstPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:pages="clr-namespace:View.Pages"
       mc:Ignorable="d"
       Title="FirstPage">
     <Grid Margin="50">
@@ -15,4 +16,4 @@
         <Button Grid.Row="1" Height="50" Width="150" Margin="0, 20, 0, 0">Player</Button>
         <Button Grid.Row="2" Click="GoToStrategyManager" Height="50" Width="150" Margin="0, 20, 0, 0">Strategy Manager</Button>
     </Grid>
-</Page>
+</pages:HandledPage>

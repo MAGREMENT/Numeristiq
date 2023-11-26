@@ -196,20 +196,4 @@ public static class Testing //TODO put this in unit tests
             Console.WriteLine("Has : " + n.Row + ", " + n.Col);
         }
     }
-
-    private static void SudokuResolutionTest(string asString)
-    {
-        var sud = SudokuTranslator.TranslateToSudoku(asString);
-        Console.WriteLine("Initial sudoku : ");
-        Console.WriteLine(sud);
-
-        var solver = new SudokuSolver(sud);
-        int numbersAdded = 0;
-        solver.GoingToAddSolution += (_, _, _) => numbersAdded++;
-        solver.Solve();
-        Console.WriteLine("After solving : ");
-        Console.WriteLine(solver.Sudoku);
-        Console.WriteLine("Numbers added : " + numbersAdded);
-        Console.WriteLine("Is correct ? : " + sud.IsCorrect());
-    }
 }

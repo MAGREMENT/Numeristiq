@@ -6,12 +6,12 @@ using System.Windows.Media;
 
 namespace View.Pages.StrategyManager.UserControls;
 
-public partial class SearchUserControl : UserControl
+public partial class SearchUserControl
 {
     private const int ListLimit = 30;
     
     private bool _callSearchBarEvent = true;
-    private bool _searchTextShown = false;
+    private bool _searchTextShown;
 
     public delegate void OnSearchTextChange(string text);
     public event OnSearchTextChange? SearchTextChanged;
@@ -21,6 +21,7 @@ public partial class SearchUserControl : UserControl
         InitializeComponent();
         
         SearchBarUnfocus(null, new RoutedEventArgs());
+        SearchBar.AllowDrop = false;
     }
 
     private void SearchBarUnfocus(object? sender, RoutedEventArgs args)
@@ -59,14 +60,8 @@ public partial class SearchUserControl : UserControl
         var upper = Math.Min(ListLimit, search.Count);
         for (int i = 0; i < upper; i++)
         {
-            var tb = new TextBlock
-            {
-                FontSize = 16,
-                Margin = new Thickness(0, 2.5, 0, 2.5),
-                Text = search[i]
-            };
-
-            List.Children.Add(tb);
+            var item = new SearchItemUserControl(search[i]);
+            List.Children.Add(item);
         }
     }
 }
