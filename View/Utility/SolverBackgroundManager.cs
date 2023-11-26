@@ -359,7 +359,7 @@ public class SolverBackgroundManager
         {
             Geometry = new RectangleGeometry(new Rect(topLeftX, topLeftY, width, height)),
             Brush = brush,
-            Pen = new Pen{
+            Pen = new Pen {
                 Brush = brush,
                 Thickness = PenStrokeWidth
             }

@@ -209,8 +209,9 @@ public class StrategyLoader : IStrategyLoader
     
     public void InterchangeStrategies(int positionOne, int positionTwo)
     {
-        (_strategies[positionOne], _strategies[positionTwo]) = (_strategies[positionTwo], _strategies[positionOne]);
-        TryCallEvent();
+        var buffer = _strategies[positionOne].Name;
+        _strategies.RemoveAt(positionOne);
+        AddStrategy(buffer, positionTwo > positionOne ? positionTwo - 1 : positionTwo);
     }
     
     //Private-----------------------------------------------------------------------------------------------------------

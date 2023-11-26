@@ -24,13 +24,13 @@
     "args": {}
   },
   {
-    "Name": "Box-Line Reduction",
+    "Name": "Pointing Set",
     "Used": true,
     "Behavior": 1,
     "args": {}
   },
   {
-    "Name": "Pointing Set",
+    "Name": "Box-Line Reduction",
     "Used": true,
     "Behavior": 1,
     "args": {}
@@ -180,15 +180,21 @@
     "args": {}
   },
   {
-    "Name": "Subsets X-Cycles",
+    "Name": "Aligned Triple Exclusion",
     "Used": true,
-    "Behavior": 2,
+    "Behavior": 0,
     "args": {}
   },
   {
     "Name": "SK-Loops",
     "Used": true,
     "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Subsets X-Cycles",
+    "Used": true,
+    "Behavior": 2,
     "args": {}
   },
   {
@@ -204,7 +210,13 @@
     "args": {}
   },
   {
-    "Name": "Alternating Inference Chains",
+    "Name": "Death Blossom",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
+    "Name": "Subsets Alternating Inference Chain",
     "Used": true,
     "Behavior": 2,
     "args": {}

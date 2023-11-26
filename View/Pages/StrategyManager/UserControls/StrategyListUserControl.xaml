@@ -6,8 +6,8 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
-        <TextBlock Width="250" Height="50" FontSize="25" x:Name="Trash" Margin="0, 0, 0, 10"
-                   TextAlignment="Center" Background="LightGray" VerticalAlignment="Center">Trash</TextBlock>
+        <StackPanel Width="250" Height="50" x:Name="Trash" Margin="0, 0, 0, 10" 
+                    VerticalAlignment="Center" Background="DarkGray"></StackPanel>
         <ScrollViewer Width="250" Height="450">
             <StackPanel Width="250" MinHeight="450" x:Name="List"/>
         </ScrollViewer>

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Media;
 using Presenter.Translator;
 
 namespace View.Pages.StrategyManager.UserControls;
