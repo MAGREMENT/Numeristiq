@@ -18,13 +18,13 @@
     "args": {}
   },
   {
-    "Name": "Hidden Doubles",
+    "Name": "Naked Triple",
     "Used": true,
     "Behavior": 1,
     "args": {}
   },
   {
-    "Name": "Pointing Set",
+    "Name": "Hidden Doubles",
     "Used": true,
     "Behavior": 1,
     "args": {}
@@ -36,7 +36,7 @@
     "args": {}
   },
   {
-    "Name": "Naked Triple",
+    "Name": "Pointing Set",
     "Used": true,
     "Behavior": 1,
     "args": {}
@@ -68,7 +68,7 @@
   {
     "Name": "Fish",
     "Used": true,
-    "Behavior": 0,
+    "Behavior": 1,
     "args": {}
   },
   {

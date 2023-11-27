@@ -304,9 +304,9 @@ public class GridPositions : IReadOnlyGridPositions
         return result;
     }
 
-    public List<CoveredGrid> PossibleCoverHouses(int count, HashSet<CoverHouse> forbidden, params IUnitMethods[] methods)
+    public List<CoverHouse[]> PossibleCoverHouses(int count, HashSet<CoverHouse> forbidden, params IUnitMethods[] methods)
     {
-        var result = new List<CoveredGrid>();
+        var result = new List<CoverHouse[]>();
 
         PossibleCoverHouses(count, methods, 1, this, result,
             new List<CoverHouse>(), forbidden);
@@ -317,7 +317,7 @@ public class GridPositions : IReadOnlyGridPositions
     private const int FinnedLimit = 3;
     
     private void PossibleCoverHouses(int max, IUnitMethods[] methods, int count, GridPositions gp,
-        List<CoveredGrid> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
+        List<CoverHouse[]> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
     {
         var first = gp.First();
         foreach (var method in methods)
@@ -329,8 +329,7 @@ public class GridPositions : IReadOnlyGridPositions
             method.Void(copy, first);
             current.Add(ch);
 
-            if (copy.Count == 0 || (count == max && copy.Count <= FinnedLimit))
-                result.Add(new CoveredGrid(current.ToArray(), copy));
+            if (copy.Count == 0) result.Add(current.ToArray());
             if (count < max) PossibleCoverHouses(max, methods, count + 1, copy, result, current, forbidden);
             
             current.RemoveAt(current.Count - 1);
@@ -598,5 +597,3 @@ public readonly struct CoverHouse
         return false;
     }
 }
-
-public record CoveredGrid(CoverHouse[] CoverHouses, GridPositions Remaining);

@@ -11,6 +11,7 @@ public partial class StrategyListUserControl
     public event OnStrategyAddition? StrategyAdded;
     public event OnStrategyRemoval? StrategyRemoved;
     public event OnStrategiesInterchange? StrategiesInterchanged;
+    public event OnShowAsked? ShowAsked;
     
     public StrategyListUserControl()
     {
@@ -44,6 +45,7 @@ public partial class StrategyListUserControl
             var s = new StrategyUserControl(strategies[i], i);
             s.StrategyAdded += (strategy, position) => StrategyAdded?.Invoke(strategy, position);
             s.StrategiesInterchanged += (pos1, pos2) => StrategiesInterchanged?.Invoke(pos1, pos2);
+            s.ShowAsked += pos => ShowAsked?.Invoke(pos);
             
             List.Children.Add(s);
         }

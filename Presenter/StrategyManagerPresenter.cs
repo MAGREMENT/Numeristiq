@@ -46,4 +46,9 @@ public class StrategyManagerPresenter
     {
         _loader.InterchangeStrategies(position1, position2);
     }
+
+    public void ShowStrategy(int position)
+    {
+        _view.ShowStrategy(ModelToViewTranslator.Translate(_loader.GetStrategyInfo()[position]));
+    }
 }

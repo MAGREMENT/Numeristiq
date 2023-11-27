@@ -25,6 +25,11 @@ public static class ModelToViewTranslator
 
         return result;
     }
+    
+    public static ViewStrategy Translate(StrategyInformation info)
+    {
+        return new ViewStrategy(info.StrategyName, (Intensity)info.Difficulty, info.Used, info.Locked);
+    }
 
     public static IReadOnlyList<ViewStrategy> Translate(StrategyInformation[] infos)
     {
@@ -32,7 +37,7 @@ public static class ModelToViewTranslator
 
         foreach (var info in infos)
         {
-            result.Add(new ViewStrategy(info.StrategyName, (Intensity)info.Difficulty, info.Used, info.Locked));
+            result.Add(Translate(info));
         }
         
         return result;

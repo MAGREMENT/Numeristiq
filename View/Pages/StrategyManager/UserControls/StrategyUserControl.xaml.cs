@@ -7,10 +7,11 @@ namespace View.Pages.StrategyManager.UserControls;
 
 public partial class StrategyUserControl
 {
-    private const double LineWidth = 3;
+    private const double TotalBorderThickness = 4;
     
     public event OnStrategyAddition? StrategyAdded;
     public event OnStrategiesInterchange? StrategiesInterchanged;
+    public event OnShowAsked? ShowAsked;
     
     public StrategyUserControl(ViewStrategy strategy, int position)
     {
@@ -24,6 +25,7 @@ public partial class StrategyUserControl
         {
             DragDrop.DoDragDrop(this, new StrategyShuffleData(TextBlock.Text, false, position),
                 DragDropEffects.All);
+            ShowAsked?.Invoke(position);
         };
         Drop += (_, args) =>
         {
@@ -37,45 +39,38 @@ public partial class StrategyUserControl
         };
         DragOver += (_, args) =>
         {
-            var pos = args.GetPosition(this);
-            Background = DragBackground(pos.Y <= ActualHeight  / 2);
+            DragBorder(args.GetPosition(this).Y <= ActualHeight  / 2);
         };
         DragLeave += (_, _) =>
         {
+            DefaultBorder();
+        };
+        
+        MouseEnter += (_, _) =>
+        {
+            Background = Brushes.LightGray;
+        };
+        MouseLeave += (_, _) =>
+        {
             Background = ColorManager.Background1;
         };
+        
+        DefaultBorder();
     }
 
-    private Brush DragBackground(bool upper)
+    private void DefaultBorder()
     {
-        var y = upper ? 0 : ActualHeight - LineWidth - 1;
-        var group = new DrawingGroup();
-        
-        group.Children.Add(new GeometryDrawing
-        {
-            Geometry = new RectangleGeometry(new Rect(0, 0, ActualWidth, ActualHeight)),
-            Brush = Brushes.Transparent
-        });
-        
-        group.Children.Add(new GeometryDrawing
-        {
-            Geometry = new RectangleGeometry(new Rect(0, y, ActualWidth, LineWidth)),
-            Pen = new Pen
-            {
-                Thickness = LineWidth,
-                Brush = Brushes.Aqua
-            }
-        });
-        
-        var brush = new DrawingBrush
-        {
-            TileMode = TileMode.None,
-            Stretch = Stretch.None,
-            AlignmentX = AlignmentX.Left,
-            AlignmentY = AlignmentY.Top,
-            Drawing = group
-        };
+        Border.BorderThickness = new Thickness(0, TotalBorderThickness / 2, 0, TotalBorderThickness / 2);
+        Border.BorderBrush = Brushes.Transparent;
+    }
 
-        return brush;
+    private void DragBorder(bool upper)
+    {
+        Border.BorderThickness = upper 
+            ? new Thickness(0, TotalBorderThickness, 0, 0) 
+            : new Thickness(0, 0, 0, TotalBorderThickness);
+        Border.BorderBrush = Brushes.Aqua;
     }
 }
+
+public delegate void OnShowAsked(int position);

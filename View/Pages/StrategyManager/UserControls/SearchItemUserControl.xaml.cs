@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 using View.Utility;
 
 namespace View.Pages.StrategyManager.UserControls;
@@ -13,7 +14,7 @@ public partial class SearchItemUserControl
         
         MouseEnter += (_, _) =>
         {
-            Background = ColorManager.Background2;
+            Background = Brushes.LightGray;
         };
         MouseLeave += (_, _) =>
         {

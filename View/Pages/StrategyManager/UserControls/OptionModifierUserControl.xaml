@@ -1,0 +1,23 @@
+﻿<UserControl x:Class="View.Pages.StrategyManager.UserControls.OptionModifierUserControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Border BorderBrush="Gray" BorderThickness="1" Width="400" Height="500" Padding="5">
+        <StackPanel Orientation="Vertical" x:Name="Panel" Visibility="Hidden">
+            <TextBlock FontSize="30" Margin="0, 0, 0, 5" HorizontalAlignment="Center"
+                       FontWeight="DemiBold" TextWrapping="Wrap" x:Name="StrategyName">Name</TextBlock>
+            <CheckBox FontSize="15" Margin="0, 5, 0, 0" VerticalContentAlignment="Center" x:Name="StrategyUsage">Enabled</CheckBox>
+            <StackPanel Orientation="Horizontal" Margin="0, 5, 0, 0">
+                <TextBlock FontSize="15" Margin="0, 0, 5, 0" x:Name="StrategyBehavior">Behavior on instance found</TextBlock>
+                <ComboBox Width="110" IsReadOnly="True" VerticalAlignment="Center">
+                    <ComboBoxItem FontSize="13">Return</ComboBoxItem>
+                    <ComboBoxItem FontSize="13">Wait for all</ComboBoxItem>
+                    <ComboBoxItem FontSize="13">Choose best</ComboBoxItem>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -5,11 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Orientation="Vertical" Width="250" Height="500" Margin="10">
-        <StackPanel Orientation="Horizontal" Width="250" Height="50">
-            <TextBox Height="40" Width="250" x:Name="SearchBar" LostFocus="SearchBarUnfocus"
-                     GotFocus="SearchBarFocus" TextChanged="SearchBarTextChange" FontSize="18" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-        </StackPanel>
+    <StackPanel Orientation="Vertical" Width="250" Height="500" Margin="0">
+        <TextBox Height="40" Width="250" x:Name="SearchBar" LostFocus="SearchBarUnfocus"
+                 GotFocus="SearchBarFocus" TextChanged="SearchBarTextChange" FontSize="18" VerticalContentAlignment="Center"
+                 Margin="0, 0, 0, 10"/>
         <ScrollViewer Width="250" Height="450">
             <StackPanel Width="250" MinHeight="450" x:Name="List"/>
         </ScrollViewer>

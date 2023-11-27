@@ -3,6 +3,8 @@ using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 using Model.Solver.Strategies.AlternatingChains.ChainTypes;
+using Model.Solver.Strategies.FishGeneralization;
+using Model.Solver.Strategies.FishGeneralization.FishTypes;
 using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.NRCZTChains;
 using Model.Solver.Strategies.SetEquivalence;
@@ -76,7 +78,7 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {XCycles.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new XCycles(),
             new AlternatingChainAlgorithmV4<CellPossibility>())},
         {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
-        {FishStrategy.OfficialName, new FishStrategy(3, 4)},
+        {FishGeneralization.OfficialNameForBasic, new FishGeneralization(3, 4, new BasicFish())},
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()}
     };
 

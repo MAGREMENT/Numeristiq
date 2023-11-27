@@ -13,8 +13,9 @@
         </Menu>
         
         <StackPanel Orientation="Horizontal">
-            <local:SearchUserControl x:Name="SearchBar"/>
-            <local:StrategyListUserControl Margin="50, 0, 0, 0" x:Name="StrategyList"/>
+            <local:SearchUserControl x:Name="SearchBar" Margin="10"/>
+            <local:OptionModifierUserControl x:Name="OptionModifier" Margin="10"/>
+            <local:StrategyListUserControl x:Name="StrategyList" Margin="10"/>
         </StackPanel>
     </StackPanel>
 </pages:HandledPage>

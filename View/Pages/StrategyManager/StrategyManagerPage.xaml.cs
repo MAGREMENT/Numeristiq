@@ -22,6 +22,7 @@ public partial class StrategyManagerPage : HandledPage, IStrategyManagerView
         StrategyList.StrategyAddedAtEnd += _presenter.AddStrategy;
         StrategyList.StrategyRemoved += _presenter.RemoveStrategy;
         StrategyList.StrategiesInterchanged += _presenter.InterchangeStrategies;
+        StrategyList.ShowAsked += _presenter.ShowStrategy;
         
         _presenter.Start();
     }
@@ -34,6 +35,11 @@ public partial class StrategyManagerPage : HandledPage, IStrategyManagerView
     public void SetStrategiesUsed(IReadOnlyList<ViewStrategy> strategies)
     {
         StrategyList.SetStrategies(strategies);
+    }
+
+    public void ShowStrategy(ViewStrategy strategy)
+    {
+        OptionModifier.Show(strategy);
     }
 
     private void GoBack(object sender, RoutedEventArgs e)

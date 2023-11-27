@@ -6,8 +6,17 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
-        <StackPanel Width="250" Height="50" x:Name="Trash" Margin="0, 0, 0, 10" 
-                    VerticalAlignment="Center" Background="DarkGray"></StackPanel>
+        <Border BorderBrush="LightGray" BorderThickness="0, 0, 0, 1" Margin="0, 0, 0, 5">
+            <Grid Margin="0, 0, 0, 5" Height="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="220"></ColumnDefinition>
+                    <ColumnDefinition Width="30"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+            
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" FontSize="20">List</TextBlock>
+                <StackPanel Grid.Column="1" x:Name="Trash" Background="LightGray"></StackPanel>
+            </Grid>
+        </Border>
         <ScrollViewer Width="250" Height="450">
             <StackPanel Width="250" MinHeight="450" x:Name="List"/>
         </ScrollViewer>
