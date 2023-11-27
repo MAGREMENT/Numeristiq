@@ -23,7 +23,7 @@ Everything is written in C# with dotnet 6.0 and the visuals are done with WPF.
 ## How to use
 
 If you simply want to use the solver, go to the release section of this Github page select the latest release. Then, download the SudokuSolver.exe
-and strateggies.ini files and put them in the same folder. As long as you're on windows, the application should work just fine.
+and strateggies.json files and put them in the same folder. As long as you're on windows, the application should work just fine.
 
 ## How to contribute
 
