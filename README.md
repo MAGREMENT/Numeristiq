@@ -8,8 +8,8 @@ This application allows you to enter a specifi Sudoku that you'd like to solve a
 Theses steps are saved as "logs" that you can go back to. They show you the state of the sudoku before the step, after and highlights the board
 with the different elements of the strategy. There is also an explanation for each step in the text block below but that is WIP for now. 
 All the strategies currently in use are also shown and it is possible to toggle them ON/Off.
-The strategies.ini file is essential and dictate multiple characteristics of the strategies (for now : their order; if they are enabled and their behavior on instance found).
-You can modify this file however you want to change these characteristics.
+The strategies.json file is essential and dictate multiple characteristics of the strategies (for now : their order; if they are enabled and their behavior on instance found).
+You can modify this file however you want in the "Strategy Manager" page of the application.
 
 Everything is written in C# with dotnet 6.0 and the visuals are done with WPF.
 
