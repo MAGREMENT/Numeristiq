@@ -60,12 +60,6 @@
     "args": {}
   },
   {
-    "Name": "Fish",
-    "Used": true,
-    "Behavior": 1,
-    "args": {}
-  },
-  {
     "Name": "Gurth\u0027s Theorem",
     "Used": true,
     "Behavior": 1,
@@ -225,6 +219,12 @@
     "Name": "Subsets X-Cycles",
     "Used": true,
     "Behavior": 2,
+    "args": {}
+  },
+  {
+    "Name": "Fish",
+    "Used": true,
+    "Behavior": 1,
     "args": {}
   },
   {
