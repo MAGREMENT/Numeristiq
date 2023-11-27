@@ -5,7 +5,7 @@ using Presenter.Translator;
 
 namespace View.Pages.StrategyManager;
 
-public partial class StrategyManagerPage : HandledPage, IStrategyManagerView
+public partial class StrategyManagerPage : IStrategyManagerView
 {
     private readonly StrategyManagerPresenter _presenter;
     private readonly IPageHandler _handler;
@@ -23,6 +23,8 @@ public partial class StrategyManagerPage : HandledPage, IStrategyManagerView
         StrategyList.StrategyRemoved += _presenter.RemoveStrategy;
         StrategyList.StrategiesInterchanged += _presenter.InterchangeStrategies;
         StrategyList.ShowAsked += _presenter.ShowStrategy;
+        OptionModifier.BehaviorChanged += _presenter.ChangeStrategyBehavior;
+        OptionModifier.UsageChanged += _presenter.ChangeStrategyUsage;
         
         _presenter.Start();
     }

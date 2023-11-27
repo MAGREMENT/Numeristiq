@@ -46,4 +46,11 @@
       </PackageReference>
     </ItemGroup>
 
+
+    <ItemGroup>
+      <None Remove="Images\bin2.png" />
+      <None Remove="Images\bin.png" />
+      <Resource Include="Images\bin.png" />
+    </ItemGroup>
+
 </Project>

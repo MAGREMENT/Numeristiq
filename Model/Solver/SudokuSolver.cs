@@ -240,7 +240,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     
     public StrategyInformation[] GetStrategyInfo()
     {
-        return _strategyLoader.GetStrategyInfo();
+        return _strategyLoader.GetStrategiesInformation();
     }
     
     //PossibilityHolder-------------------------------------------------------------------------------------------------

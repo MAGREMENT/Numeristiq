@@ -28,7 +28,7 @@ public static class ModelToViewTranslator
     
     public static ViewStrategy Translate(StrategyInformation info)
     {
-        return new ViewStrategy(info.StrategyName, (Intensity)info.Difficulty, info.Used, info.Locked);
+        return new ViewStrategy(info.StrategyName, (Intensity)info.Difficulty, info.Used, info.Locked, info.Behavior);
     }
 
     public static IReadOnlyList<ViewStrategy> Translate(StrategyInformation[] infos)

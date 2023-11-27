@@ -1,4 +1,5 @@
 ﻿using Model;
+using Model.Solver;
 using Presenter.Translator;
 
 namespace Presenter;
@@ -14,12 +15,12 @@ public class StrategyManagerPresenter
         _view = view;
 
         _loader.ListUpdated +=
-            () => _view.SetStrategiesUsed(ModelToViewTranslator.Translate(_loader.GetStrategyInfo()));
+            () => _view.SetStrategiesUsed(ModelToViewTranslator.Translate(_loader.GetStrategiesInformation()));
     }
 
     public void Start()
     {
-        _view.SetStrategiesUsed(ModelToViewTranslator.Translate(_loader.GetStrategyInfo()));
+        _view.SetStrategiesUsed(ModelToViewTranslator.Translate(_loader.GetStrategiesInformation()));
     }
 
     public void Search(string filter)
@@ -49,6 +50,17 @@ public class StrategyManagerPresenter
 
     public void ShowStrategy(int position)
     {
-        _view.ShowStrategy(ModelToViewTranslator.Translate(_loader.GetStrategyInfo()[position]));
+        var info = _loader.GetStrategiesInformation();
+        if(position < info.Length) _view.ShowStrategy(ModelToViewTranslator.Translate(info[position]));
+    }
+
+    public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior)
+    {
+        _loader.ChangeStrategyBehavior(name, behavior);
+    }
+
+    public void ChangeStrategyUsage(string name, bool yes)
+    {
+        _loader.ChangeStrategyUsage(name, yes);
     }
 }

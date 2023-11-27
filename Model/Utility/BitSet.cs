@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace Model.Utility;
 
@@ -45,32 +46,76 @@ public class BitSet
         {
             if (j < n) continue;
             
-            var bufferBuffer = (_bits[i] >> (BitSize - 1)) & 1ul;
+            var bufferBuffer = (_bits[j] >> (BitSize - 1)) & 1ul;
             if (j == n)
             {
-                var x = _bits[i];
+                var x = _bits[j];
                 var y = x;
                 var l = i % BitSize;
-                var mask = (ulong)Math.Pow(2, l);
+                var mask = GetMask(l);
 
                 x &= mask;
-                y = (y & ~mask) << 1;
-                _bits[i] = x | y;
+                y = (y << 1) & ~mask;
+                _bits[j] = x | y;
             }
             else
             {
-                _bits[i] = (_bits[i] << 1) | buffer;
+                _bits[j] = (_bits[j] << 1) | buffer;
             }
 
             buffer = bufferBuffer;
         }
     }
 
-    public void Delete(int n)
+    public void Delete(int i)
     {
-        //TODO
+        if (i < 0 || i > _bits.Length * BitSize) return;
+
+        var n = i / BitSize;
+        for (int j = 0; j < _bits.Length; j++)
+        {
+            if (j < n) continue;
+            
+            if (j == n)
+            {
+                var x = _bits[j];
+                var y = x;
+                var l = i % BitSize;
+                var mask = GetMask(l);
+
+                x &= mask;
+                y = (y >> 1) & ~mask;
+                _bits[j] = x | y;
+            }
+            else
+            {
+                var before = j + 1 < _bits.Length ? _bits[j + 1] & 1 : 0;
+                _bits[j] = (_bits[j] >> 1) | (before << 63);
+            }
+            
+        }
     }
-    
+
+    private ulong GetMask(int to)
+    {
+        return ~(ulong.MaxValue << to);
+    }
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+
+        foreach (var l in _bits)
+        {
+            for (int i = 0; i < 64; i++)
+            {
+                builder.Append(((l >> i) & 1) > 0 ? "1" : "0");
+            }
+        }
+        
+        return builder.ToString();
+    }
+
     //Private-----------------------------------------------------------------------------------------------------------
 
     private void GrowIfNecessary(int i)

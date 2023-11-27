@@ -18,12 +18,6 @@
     "args": {}
   },
   {
-    "Name": "Naked Triple",
-    "Used": true,
-    "Behavior": 1,
-    "args": {}
-  },
-  {
     "Name": "Hidden Doubles",
     "Used": true,
     "Behavior": 1,
@@ -42,13 +36,13 @@
     "args": {}
   },
   {
-    "Name": "Hidden Triple",
+    "Name": "Naked Triple",
     "Used": true,
     "Behavior": 1,
     "args": {}
   },
   {
-    "Name": "Naked Quad",
+    "Name": "Hidden Triple",
     "Used": true,
     "Behavior": 1,
     "args": {}
@@ -289,7 +283,7 @@
   },
   {
     "Name": "Pattern Overlay",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "args": {}
   },

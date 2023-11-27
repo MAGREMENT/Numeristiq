@@ -82,7 +82,7 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()}
     };
 
-    private readonly List<IStrategy> _strategies = new();
+    private readonly UniqueList<IStrategy> _strategies = new();
     private readonly BitSet _excludedStrategies = new();
     private readonly BitSet _lockedStrategies = new();
     
@@ -113,7 +113,7 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
             if (!StrategyPool.TryGetValue(dao.Name, out var strategy)) continue;
             
             strategy.OnCommitBehavior = dao.Behavior;
-            _strategies.Add(StrategyPool[dao.Name]);
+            _strategies.Add(StrategyPool[dao.Name], _ => {});
             if (!dao.Used) ExcludeStrategy(count);
             count++;
         }
@@ -163,7 +163,7 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         }
     }
     
-    public StrategyInformation[] GetStrategyInfo()
+    public StrategyInformation[] GetStrategiesInformation()
     {
         StrategyInformation[] result = new StrategyInformation[Strategies.Count];
 
@@ -190,7 +190,7 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
     
     public void AddStrategy(string name)
     {
-        _strategies.Add(StrategyPool[name]);
+        _strategies.Add(StrategyPool[name], i => InterchangeStrategies(i, _strategies.Count));
         TryCallEvent();
     }
 
@@ -201,14 +201,16 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
             AddStrategy(name);
             return;
         }
-        
-        _strategies.Insert(position, StrategyPool[name]);
+
+        _strategies.InsertAt(StrategyPool[name], position, i => InterchangeStrategies(i, position));
+        InsertInBitSets(position);
         TryCallEvent();
     }
     
     public void RemoveStrategy(int position)
     {
         _strategies.RemoveAt(position);
+        DeleteInBitSets(position);
         TryCallEvent();
     }
     
@@ -216,9 +218,26 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
     {
         var buffer = _strategies[positionOne].Name;
         _strategies.RemoveAt(positionOne);
+        DeleteInBitSets(positionOne);
         AddStrategy(buffer, positionTwo > positionOne ? positionTwo - 1 : positionTwo);
     }
+
+    public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior)
+    {
+        var i = _strategies.Find(s => s.Name.Equals(name));
+        if (i != 0) _strategies[i].OnCommitBehavior = behavior;
+    }
     
+    public void ChangeStrategyUsage(string name, bool yes)
+    {
+        var i = _strategies.Find(s => s.Name.Equals(name));
+        if (i != 0)
+        {
+            if (yes) _excludedStrategies.Unset(i);
+            else _excludedStrategies.Set(i);
+        }
+    }
+
     //Private-----------------------------------------------------------------------------------------------------------
     
     private void LockStrategy(int n)
@@ -229,6 +248,18 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
     private void UnLockStrategy(int n)
     {
         _lockedStrategies.Unset(n);
+    }
+
+    private void DeleteInBitSets(int n)
+    {
+        _lockedStrategies.Delete(n);
+        _excludedStrategies.Delete(n);
+    }
+
+    private void InsertInBitSets(int n)
+    {
+        _lockedStrategies.Insert(n);
+        _excludedStrategies.Insert(n);
     }
 
     private void TryCallEvent()
@@ -257,7 +288,7 @@ public class StrategyInformation
     public StrategyDifficulty Difficulty { get; }
     public bool Used { get; }
     public bool Locked { get; }
-    
+    public OnCommitBehavior Behavior { get; }
     public IReadOnlyTracker Tracker { get; }
 
     public StrategyInformation(IStrategy strategy, bool used, bool locked)
@@ -266,6 +297,7 @@ public class StrategyInformation
         Difficulty = strategy.Difficulty;
         Used = used;
         Locked = locked;
+        Behavior = strategy.OnCommitBehavior;
         Tracker = strategy.Tracker;
     }
 }

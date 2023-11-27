@@ -13,8 +13,12 @@
                     <ColumnDefinition Width="30"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
             
-                <TextBlock Grid.Column="0" VerticalAlignment="Center" FontSize="20">List</TextBlock>
-                <StackPanel Grid.Column="1" x:Name="Trash" Background="LightGray"></StackPanel>
+                <TextBlock Grid.Column="0" VerticalAlignment="Center" FontSize="20">Strategies</TextBlock>
+                <Image Grid.Column="1" x:Name="Trash">
+                    <Image.Source>
+                        <BitmapImage UriSource="../../../Images/bin.png"/>
+                    </Image.Source>
+                </Image>
             </Grid>
         </Border>
         <ScrollViewer Width="250" Height="450">
