@@ -80,7 +80,8 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
         {FishGeneralization.OfficialNameForBasic, new FishGeneralization(3, 4, new BasicFish())},
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()},
-        {AlmostLockedSetsChainStrategy.OfficialName, new AlmostLockedSetsChainStrategy(false)}
+        {AlmostLockedSetsChainStrategy.OfficialName, new AlmostLockedSetsChainStrategy(false)},
+        {AlmostHiddenSetsChainStrategy.OfficialName, new AlmostHiddenSetsChainStrategy(false)}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

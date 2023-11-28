@@ -234,6 +234,12 @@
     "args": {}
   },
   {
+    "Name": "Almost Hidden Sets Chain",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
     "Name": "Almost Locked Sets Chain",
     "Used": true,
     "Behavior": 0,
