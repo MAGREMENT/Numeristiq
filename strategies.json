@@ -1,7 +1,7 @@
 [
   {
     "Name": "Naked Single",
-    "Used": false,
+    "Used": true,
     "Behavior": 1,
     "args": {}
   },
@@ -253,7 +253,7 @@
   },
   {
     "Name": "Set Equivalence",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "args": {}
   },

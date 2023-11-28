@@ -29,6 +29,7 @@ public partial class StrategyUserControl
         };
         Drop += (_, args) =>
         {
+            DefaultBorder();
             if (args.Data.GetData(typeof(StrategyShuffleData)) is not StrategyShuffleData data) return;
 
             var relativePosition = args.GetPosition(this).Y > ActualHeight / 2 ? position + 1 : position;
@@ -40,7 +41,6 @@ public partial class StrategyUserControl
         DragOver += (_, args) =>
         {
             DragBorder(args.GetPosition(this).Y <= ActualHeight  / 2);
-            DefaultBorder();
         };
         DragLeave += (_, _) =>
         {
