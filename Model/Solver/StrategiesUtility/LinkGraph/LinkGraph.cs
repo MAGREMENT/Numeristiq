@@ -20,7 +20,6 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
         
         if (type != LinkType.BiDirectional) return;
         
-        
         if (!_links.TryGetValue(to, out resume))
         {
             resume = new[] { new HashSet<T>(), new HashSet<T>() };
@@ -74,9 +73,4 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
     {
         return GetEnumerator();
     }
-}
-
-public enum LinkType
-{
-    BiDirectional, MonoDirectional
 }

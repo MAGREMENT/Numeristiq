@@ -51,7 +51,7 @@ public partial class StrategyManagerPage : IStrategyManagerView
 
     public override void OnShow()
     {
-        
+        _presenter.Start();
     }
 
     public override void OnQuit()

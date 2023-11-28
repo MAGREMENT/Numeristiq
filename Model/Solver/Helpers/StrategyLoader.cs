@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -216,10 +217,24 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
     
     public void InterchangeStrategies(int positionOne, int positionTwo)
     {
+        if (positionTwo - positionOne == 1) return;
+        
         var buffer = _strategies[positionOne].Name;
+        var wasUsed = IsStrategyUsed(positionOne);
+        var wasLocked = IsStrategyLocked(positionOne);
+        
         _strategies.RemoveAt(positionOne);
         DeleteInBitSets(positionOne);
-        AddStrategy(buffer, positionTwo > positionOne ? positionTwo - 1 : positionTwo);
+        var newPosTwo = positionTwo > positionOne ? positionTwo - 1 : positionTwo;
+        
+        _callEvent = false;
+        
+        AddStrategy(buffer, newPosTwo);
+        if (!wasUsed) ExcludeStrategy(newPosTwo);
+        if (wasLocked) LockStrategy(newPosTwo);
+        
+        _callEvent = true;
+        TryCallEvent();
     }
 
     public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior)
@@ -231,7 +246,7 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
     public void ChangeStrategyUsage(string name, bool yes)
     {
         var i = _strategies.Find(s => s.Name.Equals(name));
-        if (i != 0)
+        if (i != -1)
         {
             if (yes) _excludedStrategies.Unset(i);
             else _excludedStrategies.Set(i);

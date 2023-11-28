@@ -223,7 +223,7 @@
   },
   {
     "Name": "Fish",
-    "Used": true,
+    "Used": false,
     "Behavior": 1,
     "args": {}
   },
@@ -247,13 +247,13 @@
   },
   {
     "Name": "Subsets Alternating Inference Chain",
-    "Used": false,
+    "Used": true,
     "Behavior": 2,
     "args": {}
   },
   {
     "Name": "Set Equivalence",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "args": {}
   },

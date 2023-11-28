@@ -2,7 +2,6 @@
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtility;
@@ -33,7 +32,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
 
                 if (one.Positions.PeakAny(two.Positions)) continue;
 
-                var restrictedCommons = RestrictedCommons(one, two);
+                var restrictedCommons = one.RestrictedCommons(two);
                 if (restrictedCommons.Count is 0 or > 2) continue;
 
                 foreach (var restrictedCommon in restrictedCommons)
@@ -80,34 +79,6 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
                        two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
-    }
-
-    private Possibilities RestrictedCommons(IPossibilitiesPositions one, IPossibilitiesPositions two)
-    {
-        Possibilities result = Possibilities.NewEmpty();
-
-        foreach (var possibility in one.Possibilities)
-        {
-            if (!two.Possibilities.Peek(possibility)) continue;
-
-            if (IsPossibilityRestricted(one, two, possibility)) result.Add(possibility);
-        }
-
-        return result;
-    }
-
-    private bool IsPossibilityRestricted(IPossibilitiesPositions one, IPossibilitiesPositions two,
-        int possibility)
-    {
-        foreach (var cell1 in one.EachCell(possibility))
-        {
-            foreach (var cell2 in two.EachCell(possibility))
-            {
-                if (!Cells.ShareAUnit(cell1, cell2)) return false;
-            }
-        }
-
-        return true;
     }
 }
 

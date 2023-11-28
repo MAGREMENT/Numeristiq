@@ -36,7 +36,7 @@ public class BitSet
         _bits = new ulong[1];
     }
 
-    public void Insert(int i) //TODO test this
+    public void Insert(int i)
     {
         if (i < 0 || i > _bits.Length * BitSize) return;
 

@@ -29,17 +29,17 @@ public partial class OptionModifierUserControl
 
     private void ChangeBehavior(object sender, SelectionChangedEventArgs e)
     {
-        BehaviorChanged?.Invoke(StrategyName.Text, (OnCommitBehavior)StrategyBehavior.SelectedIndex);
+        if(_callEvents) BehaviorChanged?.Invoke(StrategyName.Text, (OnCommitBehavior)StrategyBehavior.SelectedIndex);
     }
 
     private void ChangeUsageToYes(object sender, RoutedEventArgs e)
     {
-        UsageChanged?.Invoke(StrategyName.Text, true);
+        if(_callEvents) UsageChanged?.Invoke(StrategyName.Text, true);
     }
     
     private void ChangeUsageToNo(object sender, RoutedEventArgs e)
     {
-        UsageChanged?.Invoke(StrategyName.Text, false);
+        if(_callEvents) UsageChanged?.Invoke(StrategyName.Text, false);
     }
 }
 

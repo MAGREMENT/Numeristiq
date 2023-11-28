@@ -6,7 +6,7 @@
              xmlns:utils="clr-namespace:View.Utility"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <ScrollViewer Height="700" Width="200" Background="{x:Static utils:ColorManager.Background1}">
-        <StackPanel MinHeight="700" Width="180" x:Name="List" Orientation="Vertical"/>
+    <ScrollViewer Height="650" Background="{x:Static utils:ColorManager.Background1}">
+        <StackPanel MinHeight="650" Width="180" x:Name="List" Orientation="Vertical"/>
     </ScrollViewer>
 </UserControl>

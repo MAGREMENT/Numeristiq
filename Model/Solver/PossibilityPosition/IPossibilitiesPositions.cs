@@ -20,4 +20,31 @@ public interface IPossibilitiesPositions
     
     int PossibilityCount { get; }
     int PositionsCount { get; }
+    
+    public Possibilities RestrictedCommons(IPossibilitiesPositions other)
+    {
+        Possibilities result = Possibilities.NewEmpty();
+
+        foreach (var possibility in Possibilities)
+        {
+            if (!other.Possibilities.Peek(possibility)) continue;
+
+            if (IsPossibilityRestricted(other, possibility)) result.Add(possibility);
+        }
+
+        return result;
+    }
+
+    private bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
+    {
+        foreach (var cell1 in EachCell(possibility))
+        {
+            foreach (var cell2 in other.EachCell(possibility))
+            {
+                if (!Cells.ShareAUnit(cell1, cell2)) return false;
+            }
+        }
+
+        return true;
+    }
 }
