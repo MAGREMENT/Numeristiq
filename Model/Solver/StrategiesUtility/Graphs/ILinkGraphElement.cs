@@ -1,7 +1,7 @@
 ﻿using Global;
 using Model.Solver.Possibility;
 
-namespace Model.Solver.StrategiesUtility.LinkGraph;
+namespace Model.Solver.StrategiesUtility.Graphs;
 
 public interface ILinkGraphElement
 {

@@ -1,6 +1,6 @@
-﻿using Model.Solver.StrategiesUtility.LinkGraph.ConstructRules;
+﻿using Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
-namespace Model.Solver.StrategiesUtility.LinkGraph;
+namespace Model.Solver.StrategiesUtility.Graphs;
 
 public class LinkGraphManager
 {

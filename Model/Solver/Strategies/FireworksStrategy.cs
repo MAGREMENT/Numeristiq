@@ -8,7 +8,7 @@ using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 

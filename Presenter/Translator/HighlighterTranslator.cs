@@ -3,7 +3,7 @@ using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.AlmostLockedSets;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Presenter.Translator;
 

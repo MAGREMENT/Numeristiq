@@ -2,7 +2,7 @@
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 using Model.Solver.StrategiesUtility.NRCZTChains;
 
 namespace Model.Solver.Strategies.NRCZTChains;

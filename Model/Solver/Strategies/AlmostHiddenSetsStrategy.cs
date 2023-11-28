@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Position;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 
@@ -22,32 +20,18 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        var allAhs = strategyManager.AlmostHiddenSetSearcher.FullGrid();
         strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
-        
 
-        for (int i = 0; i < allAhs.Count; i++)
+        foreach (var linked in strategyManager.PreComputer.ConstructAlmostHiddenSetGraph())
         {
-            for (int j = i + 1; j < allAhs.Count; j++)
-            {
-                var one = allAhs[i];
-                var two = allAhs[j];
+            if (linked.Cells.Length > 2) continue;
 
-                if (one.Possibilities.PeekAny(two.Possibilities)) continue;
-
-                var and = one.Positions.And(two.Positions);
-
-                switch (and.Count)
-                {
-                    case 2:
-                        if (Process2CommonCells(strategyManager, one, two)) return;
-                        continue;
-                    case 1 :
-                        if (Process1CommonCell(strategyManager, one, two, and, graph)) return;
-                        break;
-                }
-            }
+            var one = linked.One;
+            var two = linked.Two;
+            
+            if (Process1CommonCell(strategyManager, one, two, graph)) return;
+            if (linked.Cells.Length == 2 && Process2CommonCells(strategyManager, one, two)) return;
         }
     }
 
@@ -84,14 +68,12 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
     }
 
     private bool Process1CommonCell(IStrategyManager strategyManager, IPossibilitiesPositions one,
-        IPossibilitiesPositions two, GridPositions inCommon, LinkGraph<CellPossibility> graph)
+        IPossibilitiesPositions two, LinkGraph<CellPossibility> graph)
     {
         List<Link<CellPossibility>> links = new();
 
         foreach (var cell in one.EachCell())
         {
-            if (inCommon.Peek(cell)) continue;
-
             foreach (var possibility in strategyManager.PossibilitiesAt(cell))
             {
                 if (one.Possibilities.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
@@ -103,7 +85,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                     {
                         var asCell = friendOfFriend.ToCell();
 
-                        if (two.Positions.Peek(asCell) && !inCommon.Peek(asCell))
+                        if (two.Positions.Peek(asCell) && asCell != cell)
                         {
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));

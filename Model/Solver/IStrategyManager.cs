@@ -2,7 +2,7 @@
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtility.AlmostLockedSets;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver;
 

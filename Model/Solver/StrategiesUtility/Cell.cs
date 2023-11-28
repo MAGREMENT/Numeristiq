@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Global;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 using Model.Solver.StrategiesUtility.SharedSeenCellSearchers;
 
 namespace Model.Solver.StrategiesUtility;

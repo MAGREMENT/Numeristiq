@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 using Model.Solver.StrategiesUtility.NRCZTChains;
 
 namespace Model.Solver.Strategies.NRCZTChains;

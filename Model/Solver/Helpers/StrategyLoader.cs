@@ -11,7 +11,7 @@ using Model.Solver.Strategies.NRCZTChains;
 using Model.Solver.Strategies.SetEquivalence;
 using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 
 namespace Model.Solver.Helpers;

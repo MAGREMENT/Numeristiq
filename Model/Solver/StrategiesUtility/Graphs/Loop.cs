@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Global.Enums;
 
-namespace Model.Solver.StrategiesUtility.LinkGraph;
+namespace Model.Solver.StrategiesUtility.Graphs;
 
 public class Loop<T> : IEnumerable<T> where T : ILinkGraphElement
 {

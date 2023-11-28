@@ -8,7 +8,7 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
-public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
+public class AlmostLockedSetsStrategy : AbstractStrategy
 {
     public const string OfficialName = "Almost Locked Sets";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
@@ -21,63 +21,56 @@ public class AlmostLockedSetsStrategy : AbstractStrategy //TODO add chains
 
     public override void Apply(IStrategyManager strategyManager)
     {
-        var allAls = strategyManager.PreComputer.AlmostLockedSets();
-
-        for (int i = 0; i < allAls.Count; i++)
+        foreach (var linked in strategyManager.PreComputer.ConstructAlmostLockedSetGraph())
         {
-            for (int j = i + 1; j < allAls.Count; j++)
+            if (linked.RestrictedCommons.Count > 2) continue;
+
+            var restrictedCommons = linked.RestrictedCommons;
+            var one = linked.One;
+            var two = linked.Two;
+            
+            foreach (var restrictedCommon in restrictedCommons)
             {
-                var one = allAls[i];
-                var two = allAls[j];
-
-                if (one.Positions.PeakAny(two.Positions)) continue;
-
-                var restrictedCommons = one.RestrictedCommons(two);
-                if (restrictedCommons.Count is 0 or > 2) continue;
-
-                foreach (var restrictedCommon in restrictedCommons)
+                foreach (var possibility in one.Possibilities)
                 {
-                    foreach (var possibility in one.Possibilities)
+                    if (!two.Possibilities.Peek(possibility) || possibility == restrictedCommon) continue;
+
+                    List<Cell> coords = new();
+                    coords.AddRange(one.EachCell(possibility));
+                    coords.AddRange(two.EachCell(possibility));
+
+                    foreach (var coord in Cells.SharedSeenCells(coords))
                     {
-                        if (!two.Possibilities.Peek(possibility) || possibility == restrictedCommon) continue;
-
-                        List<Cell> coords = new();
-                        coords.AddRange(one.EachCell(possibility));
-                        coords.AddRange(two.EachCell(possibility));
-
-                        foreach (var coord in Cells.SharedSeenCells(coords))
-                        {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-                        }
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
                     }
                 }
-
-                if (restrictedCommons.Count == 2)
-                {
-                    foreach (var possibility in one.Possibilities)
-                    {
-                        if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
-
-                        foreach (var coord in Cells.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
-                        {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-                        }
-                    }
-                    
-                    foreach (var possibility in two.Possibilities)
-                    {
-                        if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
-
-                        foreach (var coord in Cells.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
-                        {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
-                        }
-                    }
-                }
-
-                if(strategyManager.ChangeBuffer.Commit(this, new AlmostLockedSetsReportBuilder(one,
-                       two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
+
+            if (restrictedCommons.Count == 2)
+            {
+                foreach (var possibility in one.Possibilities)
+                {
+                    if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
+
+                    foreach (var coord in Cells.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
+                    {
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
+                    }
+                }
+                    
+                foreach (var possibility in two.Possibilities)
+                {
+                    if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
+
+                    foreach (var coord in Cells.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
+                    {
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
+                    }
+                }
+            }
+
+            if(strategyManager.ChangeBuffer.Commit(this, new AlmostLockedSetsReportBuilder(one,
+                   two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }
 }

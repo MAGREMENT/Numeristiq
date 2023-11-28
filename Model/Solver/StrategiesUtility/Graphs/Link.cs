@@ -1,4 +1,4 @@
-﻿namespace Model.Solver.StrategiesUtility.LinkGraph;
+﻿namespace Model.Solver.StrategiesUtility.Graphs;
 
 public class Link<T>
 {

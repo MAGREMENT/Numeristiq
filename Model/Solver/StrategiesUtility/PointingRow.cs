@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Global;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility;
 

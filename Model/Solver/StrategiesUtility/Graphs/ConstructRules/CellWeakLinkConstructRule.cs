@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using Global.Enums;
 
-namespace Model.Solver.StrategiesUtility.LinkGraph.ConstructRules;
+namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class CellWeakLinkConstructRule : IConstructRule
 {

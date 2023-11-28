@@ -2,7 +2,7 @@
 using Global.Enums;
 using Model.Solver.Position;
 
-namespace Model.Solver.StrategiesUtility.LinkGraph.ConstructRules;
+namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class PointingPossibilitiesConstructRule : IConstructRule
 {

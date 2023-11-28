@@ -180,12 +180,6 @@
     "args": {}
   },
   {
-    "Name": "NRC-Chains",
-    "Used": true,
-    "Behavior": 2,
-    "args": {}
-  },
-  {
     "Name": "3D Medusa",
     "Used": true,
     "Behavior": 0,
@@ -228,13 +222,13 @@
     "args": {}
   },
   {
-    "Name": "Almost Locked Sets",
+    "Name": "Almost Hidden Sets",
     "Used": true,
     "Behavior": 0,
     "args": {}
   },
   {
-    "Name": "Almost Hidden Sets",
+    "Name": "Almost Locked Sets",
     "Used": true,
     "Behavior": 0,
     "args": {}

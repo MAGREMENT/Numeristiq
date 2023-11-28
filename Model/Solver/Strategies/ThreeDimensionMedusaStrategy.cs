@@ -3,7 +3,7 @@ using Model.Solver.Position;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.CellColoring;
 using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 

@@ -2,7 +2,7 @@
 using System.Linq;
 using Global;
 using Model.Solver.Possibility;
-using Model.Solver.StrategiesUtility.LinkGraph;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.AlmostLockedSets;
 
