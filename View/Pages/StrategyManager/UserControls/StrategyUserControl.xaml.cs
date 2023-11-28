@@ -40,6 +40,7 @@ public partial class StrategyUserControl
         DragOver += (_, args) =>
         {
             DragBorder(args.GetPosition(this).Y <= ActualHeight  / 2);
+            DefaultBorder();
         };
         DragLeave += (_, _) =>
         {

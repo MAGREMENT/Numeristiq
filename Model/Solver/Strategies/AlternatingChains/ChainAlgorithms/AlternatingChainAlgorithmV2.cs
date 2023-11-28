@@ -7,7 +7,7 @@ namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 {
     private readonly int _maxLoopSize;
-    private readonly HashSet<Loop<T>> _loopsProcessed = new();
+    private readonly HashSet<LinkGraphLoop<T>> _loopsProcessed = new();
 
     public AlternatingChainAlgorithmV2(int maxLoopSize)
     {

@@ -44,4 +44,4 @@ public class PositionsGraph<T> : IEnumerable<T> where T : notnull
     }
 }
 
-public record PositionsLink<T>(T to, Cell[] pos);
+public record PositionsLink<T>(T To, Cell[] Cells);

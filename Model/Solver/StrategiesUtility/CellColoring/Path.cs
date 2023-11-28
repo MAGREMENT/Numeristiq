@@ -41,7 +41,7 @@ public class Path<T> where T : ILinkGraphElement
             ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
     }
 
-    public Loop<T>? TryMakeLoop(Path<T> path)
+    public LinkGraphLoop<T>? TryMakeLoop(Path<T> path)
     {
         if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
         HashSet<T> present = new HashSet<T>(Elements);
@@ -68,7 +68,7 @@ public class Path<T> where T : ILinkGraphElement
             links[cursor++] = path.Links[i];
         }
 
-        return new Loop<T>(elements, links);
+        return new LinkGraphLoop<T>(elements, links);
     }
     
     public override string ToString()

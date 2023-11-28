@@ -46,11 +46,11 @@ public interface IAlternatingChainType<T> where T : ILinkGraphElement
     
     LinkGraph<T> GetGraph(IStrategyManager view);
 
-    bool ProcessFullLoop(IStrategyManager view, Loop<T> loop);
+    bool ProcessFullLoop(IStrategyManager view, LinkGraphLoop<T> loop);
 
-    bool ProcessWeakInference(IStrategyManager view, T inference, Loop<T> loop);
+    bool ProcessWeakInference(IStrategyManager view, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessStrongInference(IStrategyManager view, T inference, Loop<T> loop);
+    bool ProcessStrongInference(IStrategyManager view, T inference, LinkGraphLoop<T> loop);
 }
 
 public interface IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
@@ -60,10 +60,10 @@ public interface IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 
 public class AlternatingChainReportBuilder<T> : IChangeReportBuilder where T : ILinkGraphElement
 {
-    public Loop<T> Loop { get; }
+    public LinkGraphLoop<T> Loop { get; }
     private readonly LoopType _type;
 
-    public AlternatingChainReportBuilder(Loop<T> loop, LoopType type)
+    public AlternatingChainReportBuilder(LinkGraphLoop<T> loop, LoopType type)
     {
         Loop = loop;
         _type = type;

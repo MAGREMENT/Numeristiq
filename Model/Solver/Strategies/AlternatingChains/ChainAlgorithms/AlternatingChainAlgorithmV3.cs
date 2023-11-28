@@ -1,105 +1,50 @@
-using System.Collections.Generic;
-using Global.Enums;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.CellColoring;
+using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
 
 public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
 {
-    private readonly int _maxSearchRadius;
-
-    public AlternatingChainAlgorithmV3(int maxSearchRadius)
-    {
-        _maxSearchRadius = maxSearchRadius;
-    }
-
     public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
     {
         foreach (var start in graph)
         {
-            Dictionary<T, LoopBuilder<T>> paths = new();
-            LoopBuilder<T> builder = new(start);
+            if (start is not CellPossibility) continue;
+            var onColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
+                ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.On, true);
+            var offColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
+                ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.Off, true);
 
-            foreach (var friend in graph.GetLinks(start, LinkStrength.Strong))
+            foreach (var entry in offColoring)
             {
-                AddToPaths(graph, paths, builder.Add(friend, LinkStrength.Strong));
-            }
+                if (onColoring.TryGetColoredElement(entry.Key, out var coloring))
+                {
+                    var path1 = onColoring.History!.GetPathToRoot(entry.Key, coloring);
+                    var path2 = offColoring.History!.GetPathToRoot(entry.Key, entry.Value);
+                    if(path2.Count < 2 || path1.Count < 2 || path1.Count + path2.Count < 6) continue;
+                    
+                    var loop = path1.TryMakeLoop(path2);
+                    if (loop is null) continue;
 
-            foreach (var friend in graph.GetLinks(start, LinkStrength.Weak))
-            {
-                TryMakeLoop(graph, view, chainType, paths, builder.Add(friend, LinkStrength.Weak));
-            }
-        }
-    }
-    
-    private void AddToPaths(LinkGraph<T> graph, Dictionary<T, LoopBuilder<T>> paths, LoopBuilder<T> builder)
-    {
-        if (builder.Count > _maxSearchRadius) return;
-        
-        var current = builder.LastElement();
-        if (!paths.TryAdd(current, builder)) return;
-
-        var nextLink = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
-        foreach (var friend in graph.GetLinks(current, nextLink))
-        {
-            if(builder.ContainsElement(friend)) continue;
-            AddToPaths(graph, paths, builder.Add(friend, nextLink));
-        }
-
-        if (nextLink == LinkStrength.Weak)
-        {
-            foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
-            {
-                if(builder.ContainsElement(friend)) continue;
-                AddToPaths(graph, paths, builder.Add(friend, LinkStrength.Weak));
-            }
-        }
-    }
-
-    private void TryMakeLoop(LinkGraph<T> graph, IStrategyManager strategyManager, IAlternatingChainType<T> chainType,
-        Dictionary<T, LoopBuilder<T>> paths, LoopBuilder<T> builder)
-    {
-        if (builder.Count > _maxSearchRadius) return;
-
-        var current = builder.LastElement();
-        if (paths.TryGetValue(current, out var otherBuilder))
-        {
-            var merged = builder.TryMerging(otherBuilder);
-            if (merged == null || merged.Count < 4) return;
-
-            var ll1 = builder.LastLink();
-            var ll2 = otherBuilder.LastLink();
-
-            switch (ll1, ll2)
-            {
-                case(LinkStrength.Strong, LinkStrength.Weak) :
-                case(LinkStrength.Weak, LinkStrength.Strong) :
-                    chainType.ProcessFullLoop(strategyManager, merged);
-                    break;
-                case(LinkStrength.Strong, LinkStrength.Strong) :
-                    chainType.ProcessStrongInference(strategyManager, current, merged);
-                    break;
-                case(LinkStrength.Weak, LinkStrength.Weak) :
-                    chainType.ProcessWeakInference(strategyManager, current, merged);
-                    break;
-            }
-            
-            return;
-        }
-
-        var nextLink = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
-        foreach (var friend in graph.GetLinks(current, nextLink))
-        {
-            if(builder.ContainsElement(friend)) continue;
-            TryMakeLoop(graph, strategyManager, chainType, paths, builder.Add(friend, nextLink));
-        }
-
-        if (nextLink == LinkStrength.Weak)
-        {
-            foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
-            {
-                if(builder.ContainsElement(friend)) continue;
-                TryMakeLoop(graph, strategyManager, chainType, paths, builder.Add(friend, LinkStrength.Weak));
+                    switch (entry.Value, coloring)
+                    {
+                        case (Coloring.On, Coloring.Off) :
+                        case (Coloring.Off, Coloring.On) :
+                            if (chainType.ProcessFullLoop(view, loop) &&
+                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                            break;
+                        case(Coloring.On, Coloring.On) :
+                            if (chainType.ProcessStrongInference(view, entry.Key, loop) &&
+                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                            break;
+                        case (Coloring.Off, Coloring.Off) :
+                            if (chainType.ProcessWeakInference(view, entry.Key, loop) &&
+                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                            break;
+                    }
+                }
             }
         }
     }

@@ -55,7 +55,7 @@ public class BitSet
                 var mask = GetMask(l);
 
                 x &= mask;
-                y = (y << 1) & ~mask;
+                y = (y & ~mask) << 1;
                 _bits[j] = x | y;
             }
             else
@@ -107,7 +107,7 @@ public class BitSet
 
         foreach (var l in _bits)
         {
-            for (int i = 0; i < 64; i++)
+            for (int i = 63; i >= 0; i--)
             {
                 builder.Append(((l >> i) & 1) > 0 ? "1" : "0");
             }

@@ -7,11 +7,11 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.PossibilityPosition;
 
-public class CellPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
+public class CPPossibilitiesPositions : IPossibilitiesPositions
 {
     private readonly CellPossibilities[] _cps;
 
-    public CellPossibilitiesPossibilitiesPositions(CellPossibilities[] cps)
+    public CPPossibilitiesPositions(CellPossibilities[] cps)
     {
         _cps = cps;
     }

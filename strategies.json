@@ -1,7 +1,7 @@
 [
   {
     "Name": "Naked Single",
-    "Used": true,
+    "Used": false,
     "Behavior": 1,
     "args": {}
   },
@@ -24,25 +24,25 @@
     "args": {}
   },
   {
-    "Name": "Box-Line Reduction",
-    "Used": true,
-    "Behavior": 1,
-    "args": {}
-  },
-  {
     "Name": "Pointing Set",
     "Used": true,
     "Behavior": 1,
     "args": {}
   },
   {
-    "Name": "Naked Triple",
+    "Name": "Box-Line Reduction",
     "Used": true,
     "Behavior": 1,
     "args": {}
   },
   {
     "Name": "Hidden Triple",
+    "Used": true,
+    "Behavior": 1,
+    "args": {}
+  },
+  {
+    "Name": "Naked Triple",
     "Used": true,
     "Behavior": 1,
     "args": {}
@@ -234,6 +234,12 @@
     "args": {}
   },
   {
+    "Name": "Almost Locked Sets Chain",
+    "Used": true,
+    "Behavior": 0,
+    "args": {}
+  },
+  {
     "Name": "Death Blossom",
     "Used": true,
     "Behavior": 0,
@@ -247,7 +253,7 @@
   },
   {
     "Name": "Set Equivalence",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "args": {}
   },

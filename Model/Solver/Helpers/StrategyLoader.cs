@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingChains;
 using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
@@ -50,11 +49,11 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
         {SubsetsXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new SubsetsXCycles(),
-            new AlternatingChainAlgorithmV4<ILinkGraphElement>())},
+            new AlternatingChainAlgorithmV3<ILinkGraphElement>())},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
         {SubsetsAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new SubsetsAlternatingInferenceChains(),
-            new AlternatingChainAlgorithmV4<ILinkGraphElement>())},
+            new AlternatingChainAlgorithmV3<ILinkGraphElement>())},
         {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
         {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},
@@ -75,12 +74,13 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
         {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new TCondition(), new ZCondition())},
         {AlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new AlternatingInferenceChains(),
-            new AlternatingChainAlgorithmV4<CellPossibility>())},
+            new AlternatingChainAlgorithmV3<CellPossibility>())},
         {XCycles.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new XCycles(),
-            new AlternatingChainAlgorithmV4<CellPossibility>())},
+            new AlternatingChainAlgorithmV3<CellPossibility>())},
         {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
         {FishGeneralization.OfficialNameForBasic, new FishGeneralization(3, 4, new BasicFish())},
-        {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()}
+        {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()},
+        {AlmostLockedSetsChainStrategy.OfficialName, new AlmostLockedSetsChainStrategy(false)}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();
@@ -217,7 +217,8 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
     
     public void InterchangeStrategies(int positionOne, int positionTwo)
     {
-        if (positionTwo - positionOne == 1) return;
+        var diff = positionTwo - positionOne;
+        if (diff is 1 or 0) return;
         
         var buffer = _strategies[positionOne].Name;
         var wasUsed = IsStrategyUsed(positionOne);

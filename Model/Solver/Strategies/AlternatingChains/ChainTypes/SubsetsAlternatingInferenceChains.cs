@@ -21,7 +21,7 @@ public class SubsetsAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
         return view.GraphManager.ComplexLinkGraph;
     }
 
-    public bool ProcessFullLoop(IStrategyManager view, Loop<ILinkGraphElement> loop)
+    public bool ProcessFullLoop(IStrategyManager view, LinkGraphLoop<ILinkGraphElement> loop)
     {
         loop.ForEachLink((one, two) => ProcessWeakLink(view, one, two), LinkStrength.Weak);
 
@@ -82,7 +82,7 @@ public class SubsetsAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
         }
     }
 
-    public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
+    public bool ProcessWeakInference(IStrategyManager view, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
         view.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Col);
@@ -90,7 +90,7 @@ public class SubsetsAlternatingInferenceChains : IAlternatingChainType<ILinkGrap
         return view.ChangeBuffer.Commit(Strategy!, new AlternatingChainReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, Loop<ILinkGraphElement> loop)
+    public bool ProcessStrongInference(IStrategyManager view, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
         view.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Col);

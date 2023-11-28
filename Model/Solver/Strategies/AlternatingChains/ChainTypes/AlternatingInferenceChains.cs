@@ -20,7 +20,7 @@ public class AlternatingInferenceChains : IAlternatingChainType<CellPossibility>
         return view.GraphManager.SimpleLinkGraph;
     }
 
-    public bool ProcessFullLoop(IStrategyManager view, Loop<CellPossibility> loop)
+    public bool ProcessFullLoop(IStrategyManager view, LinkGraphLoop<CellPossibility> loop)
     {
         loop.ForEachLink((one, two)
             => ProcessWeakLink(view, one, two), LinkStrength.Weak);
@@ -55,14 +55,14 @@ public class AlternatingInferenceChains : IAlternatingChainType<CellPossibility>
         }
     }
 
-    public bool ProcessWeakInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
+    public bool ProcessWeakInference(IStrategyManager view, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
         view.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Col);
         return view.ChangeBuffer.Commit(Strategy!,
             new AlternatingChainReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
     }
 
-    public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, Loop<CellPossibility> loop)
+    public bool ProcessStrongInference(IStrategyManager view, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
         view.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Col);
         return view.ChangeBuffer.Commit(Strategy!,

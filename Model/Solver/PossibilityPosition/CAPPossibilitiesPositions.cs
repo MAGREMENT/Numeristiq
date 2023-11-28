@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Global;
 using Model.Solver.Position;
@@ -6,13 +7,17 @@ using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.PossibilityPosition;
 
-public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositions
+public class CAPPossibilitiesPositions : IPossibilitiesPositions
 {
     private readonly Cell[] _cells;
     private readonly IPossibilitiesHolder _snapshot;
     private GridPositions? _gp;
+    
+    public Possibilities Possibilities { get; }
+    public int PossibilityCount => Possibilities.Count;
+    public int PositionsCount => _cells.Length;
 
-    public CellsAndPossibilitiesPossibilitiesPositions(Cell[] cells, Possibilities possibilities, IPossibilitiesHolder snapshot)
+    public CAPPossibilitiesPositions(Cell[] cells, Possibilities possibilities, IPossibilitiesHolder snapshot)
     {
         _cells = cells;
         Possibilities = possibilities;
@@ -43,8 +48,6 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
         return Possibilities.And(_snapshot.PossibilitiesAt(cell));
     }
 
-    public Possibilities Possibilities { get; }
-
     public GridPositions Positions
     {
         get
@@ -64,9 +67,17 @@ public class CellsAndPossibilitiesPossibilitiesPositions : IPossibilitiesPositio
 
     public CellPossibilities[] ToCellPossibilitiesArray()
     {
-        throw new System.NotImplementedException();
+        throw new NotImplementedException();
     }
 
-    public int PossibilityCount => Possibilities.Count;
-    public int PositionsCount => _cells.Length;
+    public override bool Equals(object? obj)
+    {
+        return obj is CAPPossibilitiesPositions pp && Possibilities.Equals(pp.Possibilities)
+                                                                     && Positions.Equals(pp.Positions);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Possibilities.GetHashCode(), Positions.GetHashCode());
+    }
 }

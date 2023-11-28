@@ -6,14 +6,14 @@ using Global.Enums;
 
 namespace Model.Solver.StrategiesUtility.Graphs;
 
-public class Loop<T> : IEnumerable<T> where T : ILinkGraphElement
+public class LinkGraphLoop<T> : IEnumerable<T> where T : ILinkGraphElement
 {
     public T[] Elements { get; }
     public LinkStrength[] Links { get; }
 
     public int Count => Elements.Length;
 
-    public Loop(T[] elements, LinkStrength[] links)
+    public LinkGraphLoop(T[] elements, LinkStrength[] links)
     {
         Elements = elements;
         Links = links;
@@ -55,7 +55,7 @@ public class Loop<T> : IEnumerable<T> where T : ILinkGraphElement
 
     public override bool Equals(object? obj)
     {
-        if (obj is not Loop<T> loop) return false;
+        if (obj is not LinkGraphLoop<T> loop) return false;
         if (loop.Elements.Length != Elements.Length) return false;
         foreach (var element in Elements)
         {
@@ -129,13 +129,13 @@ public class LoopBuilder<T> where T : ILinkGraphElement
         return new LoopBuilder<T>(eBuffer, lBuffer);
     }
 
-    public Loop<T> End(LinkStrength strength)
+    public LinkGraphLoop<T> End(LinkStrength strength)
     {
         LinkStrength[] lBuffer = new LinkStrength[_links.Length + 1];
         Array.Copy(_links, lBuffer, _links.Length);
         lBuffer[_links.Length] = strength;
 
-        return new Loop<T>(_elements, lBuffer);
+        return new LinkGraphLoop<T>(_elements, lBuffer);
     }
 
     public bool ContainsElement(T element)
@@ -177,31 +177,6 @@ public class LoopBuilder<T> where T : ILinkGraphElement
     public LinkStrength FirstLink()
     {
         return _links.Length == 0 ? LinkStrength.None : _links[0];
-    }
-
-    public LinkStrength LastLink()
-    {
-        return _links.Length == 0 ? LinkStrength.None : _links[^1];
-    }
-    
-    public Loop<T>? TryMerging(LoopBuilder<T> builder)
-    {
-        if (!LastElement().Equals(builder.LastElement()) || !FirstElement().Equals(builder.FirstElement())) return null;
-        var fromFirst = new HashSet<T>(_elements);
-        var elements = new List<T>(_elements);
-        var links = new List<LinkStrength>(_links);
-
-        for (int i = builder._elements.Length - 2; i > 0; i--)
-        {
-            var current = builder._elements[i];
-            if (fromFirst.Contains(current)) return null;
-            elements.Add(current);
-            links.Add(builder._links[i]);
-        }
-
-        links.Add(builder._links[0]);
-
-        return new Loop<T>(elements.ToArray(), links.ToArray());
     }
 
     public override string ToString()

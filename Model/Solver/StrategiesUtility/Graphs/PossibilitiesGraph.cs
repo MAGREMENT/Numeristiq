@@ -44,4 +44,4 @@ public class PossibilitiesGraph<T> : IEnumerable<T> where T : notnull
     }
 }
 
-public record PossibilitiesLink<T>(T to, IReadOnlyPossibilities poss);
+public record PossibilitiesLink<T>(T To, IReadOnlyPossibilities Possibilities);

@@ -41,7 +41,7 @@ public class AlmostNakedSetSearcher
 
             if (or.Count == visited.Count + Difference)
             {
-                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), or, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), or, _strategyManager));
             }
 
             if (Max > visited.Count) InCells(coords, visited, or, i + 1, result);
@@ -123,7 +123,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + Difference)
             {
-                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
             if(Max > visited.Count) InRow(row, col + 1, mashed, visited, result);
@@ -145,7 +145,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + Difference)
             {
-                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
             if(Max > visited.Count) InColumn(col, row + 1, mashed, visited, result);
@@ -170,7 +170,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + Difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
-                result.Add(new CellsAndPossibilitiesPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
             if(Max > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);
