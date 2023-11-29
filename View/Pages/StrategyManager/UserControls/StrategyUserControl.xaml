@@ -5,7 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border x:Name="Border">
-        <TextBlock FontSize="18" x:Name="TextBlock" TextWrapping="Wrap"/>
+    <Border x:Name="LowerBorder" BorderThickness="0, 0, 0, 2.5" BorderBrush="Transparent"> 
+        <Border x:Name="UpperBorder" BorderThickness="0, 2.5, 0, 0" BorderBrush="Transparent">
+            <TextBlock FontSize="18" x:Name="TextBlock" TextWrapping="Wrap"/>
+        </Border>
     </Border>
 </UserControl>
