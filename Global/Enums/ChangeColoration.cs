@@ -2,6 +2,7 @@
 
 public enum ChangeColoration
 {
-    None = 0, ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree,
-    CauseOffFour, CauseOffFive, CauseOffSix, CauseOnOne, Neutral
+    None = 0, Neutral, ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree,
+    CauseOffFour, CauseOffFive, CauseOffSix, CauseOffSeven, CauseOffEight, CauseOffNine,
+    CauseOffTen, CauseOnOne
 }

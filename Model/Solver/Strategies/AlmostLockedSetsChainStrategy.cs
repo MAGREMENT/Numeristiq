@@ -30,8 +30,8 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
 
         foreach (var start in graph)
         {
-            if(Search(strategyManager, graph, new GridPositions(), new HashSet<IPossibilitiesPositions>(),
-                new ChainBuilder<IPossibilitiesPositions, int>(start))) return;
+            if(Search(strategyManager, graph, start.Positions, new HashSet<IPossibilitiesPositions> {start},
+                   new ChainBuilder<IPossibilitiesPositions, int>(start))) return;
         }
     }
 
@@ -102,7 +102,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _chain.ToString(), lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var als in _chain.Elements)
@@ -113,6 +113,21 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
                 }
 
                 color++;
+            }
+
+            for (int i = 0; i < _chain.Links.Length; i++)
+            {
+                var poss = _chain.Links[i];
+
+                foreach (var cell in _chain.Elements[i].EachCell(poss))
+                {
+                    lighter.HighlightPossibility(poss, cell.Row, cell.Col, ChangeColoration.Neutral);
+                }
+                
+                foreach (var cell in _chain.Elements[i + 1].EachCell(poss))
+                {
+                    lighter.HighlightPossibility(poss, cell.Row, cell.Col, ChangeColoration.Neutral);
+                }
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

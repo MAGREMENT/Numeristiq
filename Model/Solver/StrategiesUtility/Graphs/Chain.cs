@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Model.Solver.StrategiesUtility.Graphs;
 
-public class Chain<TElement, TLink> where TElement : notnull where TLink : notnull
+public class Chain<TElement, TLink> where TElement : notnull where TLink : notnull //TODO merge with Path & LinkGraphChain classes
 {
     public TElement[] Elements { get; }
     public TLink[] Links { get; }
@@ -38,6 +39,20 @@ public class Chain<TElement, TLink> where TElement : notnull where TLink : notnu
         }
 
         return hash ^ Elements[^1].GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+
+        for (int i = 0; i < Links.Length; i++)
+        {
+            builder.Append($"{Elements[i]} -{Links[i]}- ");
+        }
+
+        builder.Append(Elements[^1]);
+
+        return builder.ToString();
     }
 }
 

@@ -27,6 +27,7 @@ public partial class StrategyUserControl
         };
         Drop += (_, args) =>
         {
+            DefaultBorder();
             if (args.Data.GetData(typeof(StrategyShuffleData)) is not StrategyShuffleData data) return;
 
             DefaultBorder();

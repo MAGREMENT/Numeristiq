@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Global;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
@@ -79,5 +80,25 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     public override int GetHashCode()
     {
         return HashCode.Combine(Possibilities.GetHashCode(), Positions.GetHashCode());
+    }
+
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+
+        foreach (var pos in Possibilities)
+        {
+            builder.Append(pos);
+        }
+
+        builder.Append("{ ");
+        foreach(var cell in EachCell())
+        {
+            builder.Append(cell + " ");
+        }
+
+        builder.Append('}');
+
+        return builder.ToString();
     }
 }

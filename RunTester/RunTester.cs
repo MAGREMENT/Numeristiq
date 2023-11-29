@@ -1,11 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
-using Global.Enums;
 using Model;
 using Model.Solver;
 using Model.Solver.Helpers;
 using Model.Utility;
-using Repository;
 
 namespace RunTester;
 
