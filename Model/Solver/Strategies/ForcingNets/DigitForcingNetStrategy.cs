@@ -148,7 +148,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         });
     }
 
-    private string Explanation(Path<ILinkGraphElement> onPath, Path<ILinkGraphElement> offPath)
+    private string Explanation(LinkGraphChain<ILinkGraphElement> onPath, LinkGraphChain<ILinkGraphElement> offPath)
     {
         return $"Path if on : \n{onPath}\n\nPath if off : \n{offPath}";
     }

@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.CellColoring;
 using Model.Solver.StrategiesUtility.Graphs;
@@ -32,7 +31,7 @@ public static class ForcingNetsUtility
         }
     }
 
-    public static void HighlightJumpLinks(IHighlightable lighter, Path<ILinkGraphElement> path, IColoringResult<ILinkGraphElement> result,
+    public static void HighlightJumpLinks(IHighlightable lighter, LinkGraphChain<ILinkGraphElement> path, IColoringResult<ILinkGraphElement> result,
         LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot) //TODO => use everywhere
     {
         for (int i = 0; i < path.Links.Length; i++)

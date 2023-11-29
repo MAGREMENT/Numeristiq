@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Strategies;
-using Model.Solver.Strategies.AlternatingChains;
-using Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
-using Model.Solver.Strategies.AlternatingChains.ChainTypes;
+using Model.Solver.Strategies.AlternatingInference;
+using Model.Solver.Strategies.AlternatingInference.Algorithms;
+using Model.Solver.Strategies.AlternatingInference.Types;
 using Model.Solver.Strategies.FishGeneralization;
 using Model.Solver.Strategies.FishGeneralization.FishTypes;
 using Model.Solver.Strategies.ForcingNets;
@@ -15,7 +15,7 @@ using Model.Utility;
 
 namespace Model.Solver.Helpers;
 
-public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false and strategy shuffle
+public class StrategyLoader : IStrategyLoader
 {
     private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
@@ -48,12 +48,8 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
-        {SubsetsXCycles.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new SubsetsXCycles(),
-            new AlternatingChainAlgorithmV3<ILinkGraphElement>())},
         {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
-        {SubsetsAlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<ILinkGraphElement>(new SubsetsAlternatingInferenceChains(),
-            new AlternatingChainAlgorithmV3<ILinkGraphElement>())},
         {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},
         {UnitForcingNetStrategy.OfficialName, new UnitForcingNetStrategy(4)},
@@ -73,15 +69,27 @@ public class StrategyLoader : IStrategyLoader //TODO => Handle isUsed on false a
         {NRCZTChainStrategy.OfficialNameForTCondition, new NRCZTChainStrategy(new TCondition())},
         {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
         {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new TCondition(), new ZCondition())},
-        {AlternatingInferenceChains.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new AlternatingInferenceChains(),
-            new AlternatingChainAlgorithmV3<CellPossibility>())},
-        {XCycles.OfficialName, new AlternatingChainGeneralization<CellPossibility>(new XCycles(),
-            new AlternatingChainAlgorithmV3<CellPossibility>())},
         {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
         {FishGeneralization.OfficialNameForBasic, new FishGeneralization(3, 4, new BasicFish())},
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()},
         {AlmostLockedSetsChainStrategy.OfficialName, new AlmostLockedSetsChainStrategy(false)},
-        {AlmostHiddenSetsChainStrategy.OfficialName, new AlmostHiddenSetsChainStrategy(false)}
+        {AlmostHiddenSetsChainStrategy.OfficialName, new AlmostHiddenSetsChainStrategy(false)},
+        {XType.OfficialLoopName, new AlternatingInferenceGeneralization<CellPossibility>(new XType(),
+            new AILoopAlgorithmV3<CellPossibility>())},
+        {AIType.OfficialLoopName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
+            new AILoopAlgorithmV3<CellPossibility>())},
+        {SubsetsXType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
+            new AILoopAlgorithmV3<ILinkGraphElement>())},
+        {SubsetsAIType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
+            new AILoopAlgorithmV3<ILinkGraphElement>())},
+        {XType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new XType(),
+            new AIChainAlgorithmV1<CellPossibility>())},
+        {AIType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
+            new AIChainAlgorithmV1<CellPossibility>())},
+        {SubsetsXType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
+            new AIChainAlgorithmV1<ILinkGraphElement>())},
+        {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
+            new AIChainAlgorithmV1<ILinkGraphElement>())},
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

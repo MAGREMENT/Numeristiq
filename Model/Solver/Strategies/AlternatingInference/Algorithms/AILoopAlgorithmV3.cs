@@ -3,11 +3,13 @@ using Model.Solver.StrategiesUtility.CellColoring;
 using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtility.Graphs;
 
-namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
+namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
+public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
 {
-    public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
+    public AlgorithmType Type => AlgorithmType.Loop;
+    
+    public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
     {
         foreach (var start in graph)
         {
@@ -32,16 +34,16 @@ public class AlternatingChainAlgorithmV3<T> : IAlternatingChainAlgorithm<T> wher
                     {
                         case (Coloring.On, Coloring.Off) :
                         case (Coloring.Off, Coloring.On) :
-                            if (chainType.ProcessFullLoop(view, loop) &&
-                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                            if (type.ProcessFullLoop(strategyManager, loop) &&
+                                type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                         case(Coloring.On, Coloring.On) :
-                            if (chainType.ProcessStrongInference(view, entry.Key, loop) &&
-                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                            if (type.ProcessStrongInferenceLoop(strategyManager, entry.Key, loop) &&
+                                type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                         case (Coloring.Off, Coloring.Off) :
-                            if (chainType.ProcessWeakInference(view, entry.Key, loop) &&
-                                chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                            if (type.ProcessWeakInferenceLoop(strategyManager, entry.Key, loop) &&
+                                type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                     }
                 }

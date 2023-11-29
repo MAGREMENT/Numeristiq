@@ -14,12 +14,12 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
         _parents.TryAdd(element, parent);
     }
 
-    public Path<T> GetPathToRoot(T from, Coloring coloring, bool reverse = true) //TODO look into using the reverse bit (in AIC notably)
+    public LinkGraphChain<T> GetPathToRoot(T from, Coloring coloring, bool reverse = true) //TODO look into using the reverse bit (in AIC notably)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
         
-        if (!_parents.TryGetValue(from, out var parent)) return new Path<T>(from);
+        if (!_parents.TryGetValue(from, out var parent)) return new LinkGraphChain<T>(from);
 
         elements.Add(from);
         elements.Add(parent);
@@ -41,7 +41,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
             Array.Reverse(lArray);
         }
 
-        return new Path<T>(eArray, lArray);
+        return new LinkGraphChain<T>(eArray, lArray);
     }
 
     public void ForeachLink(HandleChildToParentLink<T> handler)
@@ -57,7 +57,7 @@ public delegate void HandleChildToParentLink<in T>(T child, T parent);
 
 public interface IReadOnlyColoringHistory<T> where T : ILinkGraphElement
 {
-    public Path<T> GetPathToRoot(T to, Coloring coloring, bool reverse = true);
+    public LinkGraphChain<T> GetPathToRoot(T to, Coloring coloring, bool reverse = true);
 
     public void ForeachLink(HandleChildToParentLink<T> handler);
 }

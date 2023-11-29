@@ -2,36 +2,38 @@
 using Global.Enums;
 using Model.Solver.StrategiesUtility.Graphs;
 
-namespace Model.Solver.Strategies.AlternatingChains.ChainAlgorithms;
+namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> where T : ILinkGraphElement
+public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
 {
     private readonly int _maxLoopSize;
     private readonly HashSet<LinkGraphLoop<T>> _loopsProcessed = new();
+    
+    public AlgorithmType Type => AlgorithmType.Loop;
 
-    public AlternatingChainAlgorithmV2(int maxLoopSize)
+    public AILoopAlgorithmV2(int maxLoopSize)
     {
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType)
+    public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
     {
         Dictionary<T, HashSet<T>> globallySearched = new();
         Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
         {
-            if (Search(view, graph, chainType, new LoopBuilder<T>(start), globallySearched, locallySearched)) return;
+            if (Search(strategyManager, graph, type, new LinkGraphChainBuilder<T>(start), globallySearched, locallySearched)) return;
             locallySearched.Clear();
         }
     }
 
-    private bool Search(IStrategyManager view, LinkGraph<T> graph, IAlternatingChainType<T> chainType, LoopBuilder<T> builder,
+    private bool Search(IStrategyManager view, LinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
         Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return false;
 
         var last = builder.LastElement();
-        var before = builder.ElementBefore();
+        var before = builder.BeforeLastElement();
         bool isPair = builder.Count % 2 == 0;
         HashSet<T>? globalFriends = globallySearched.TryGetValue(last, out var a) ? a : null;
         HashSet<T>? localFriends = locallySearched.TryGetValue(last, out var b) ? b : null;
@@ -47,7 +49,9 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
             
             if (index == -1)
             {
-                Search(view, graph, chainType, builder.Add(friend, linkStrength), globallySearched, locallySearched);
+                builder.Add(linkStrength, friend);
+                Search(view, graph, inferenceType, builder, globallySearched, locallySearched);
+                builder.RemoveLast();
 
                 if (globallySearched.TryGetValue(last, out var to)) to.Add(friend);
                 else globallySearched.Add(last, new HashSet<T> {friend});
@@ -59,17 +63,17 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
                 {
                     if (cut.Count % 2 == 0)
                     {
-                        var loop = cut.End(LinkStrength.Weak);
+                        var loop = cut.ToLoop(LinkStrength.Weak);
                         if (_loopsProcessed.Contains(loop)) continue;
 
-                        if (chainType.ProcessFullLoop(view, loop) &&
-                            chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        if (inferenceType.ProcessFullLoop(view, loop) &&
+                            inferenceType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                         _loopsProcessed.Add(loop);
                     }
                     else
                     {
-                        if (chainType.ProcessStrongInference(view, cut.FirstElement(), cut.End(LinkStrength.Strong))
-                            && chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        if (inferenceType.ProcessStrongInferenceLoop(view, cut.FirstElement(), cut.ToLoop(LinkStrength.Strong))
+                            && inferenceType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
                 }
                 AddToSearched(locallySearched, cut.FirstElement(), last);
@@ -86,8 +90,12 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
 
             if (index == -1)
             {
-                if(builder.Count % 2 == 0) Search(view, graph, chainType, builder.Add(friend, LinkStrength.Weak),
-                    globallySearched, locallySearched);
+                if(builder.Count % 2 == 0)
+                {
+                    builder.Add(LinkStrength.Weak, friend);
+                    Search(view, graph, inferenceType, builder, globallySearched, locallySearched);
+                    builder.RemoveLast();
+                }
             }
             else
             {
@@ -96,17 +104,17 @@ public class AlternatingChainAlgorithmV2<T> : IAlternatingChainAlgorithm<T> wher
                 {
                     if (cut.Count % 2 == 0)
                     {
-                        var loop = cut.End(LinkStrength.Weak);
+                        var loop = cut.ToLoop(LinkStrength.Weak);
                         if (_loopsProcessed.Contains(loop)) continue;
 
-                        if (chainType.ProcessFullLoop(view, loop) &&
-                            chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        if (inferenceType.ProcessFullLoop(view, loop) &&
+                            inferenceType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                         _loopsProcessed.Add(loop);
                     }
                     else
                     {
-                        if (chainType.ProcessWeakInference(view, cut.LastElement(), cut.End(LinkStrength.Weak))
-                            && chainType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        if (inferenceType.ProcessWeakInferenceLoop(view, cut.LastElement(), cut.ToLoop(LinkStrength.Weak))
+                            && inferenceType.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
                 }
 
