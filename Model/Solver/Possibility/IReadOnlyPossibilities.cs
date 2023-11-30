@@ -22,7 +22,6 @@ public interface IReadOnlyPossibilities : IEnumerable<int>
     public bool PeekAny(IReadOnlyPossibilities poss);
     public bool PeekOnlyOne(IReadOnlyPossibilities poss);
     public Possibilities Copy();
-    public IEnumerable<BiValue> EachBiValue();
     public CellState ToCellState();
 
     public static Possibilities DefaultOr(IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2)

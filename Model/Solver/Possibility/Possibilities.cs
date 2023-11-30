@@ -18,7 +18,7 @@ public class Possibilities : IReadOnlyPossibilities
 
     public Possibilities()
     {
-        _possibilities = 0x1FF;
+        _possibilities = 0x3FE;
         Count = 9;
     }
 
@@ -35,7 +35,7 @@ public class Possibilities : IReadOnlyPossibilities
     public bool Remove(int number)
     {
         bool old = Peek(number);
-        _possibilities &= ~(1 << (number - 1));
+        _possibilities &= ~(1 << number);
         if (old) Count--;
         return old;
     }
@@ -109,12 +109,12 @@ public class Possibilities : IReadOnlyPossibilities
 
     public Possibilities Invert()
     {
-        return new Possibilities(~_possibilities & 0x1FF, 9 - Count);
+        return new Possibilities(~_possibilities & 0x3FE, 9 - Count);
     }
 
     public bool Peek(int number)
     {
-        return ((_possibilities >> (number - 1)) & 1) > 0;
+        return ((_possibilities >> number) & 1) > 0;
     }
 
     public bool PeekAll(IReadOnlyPossibilities poss)
@@ -139,14 +139,14 @@ public class Possibilities : IReadOnlyPossibilities
 
     public void Reset()
     {
-        _possibilities = 0x1FF;
+        _possibilities = 0x3FE;
         Count = 9;
     }
 
     public void Add(int n)
     {
         if (Peek(n)) return;
-        _possibilities |= 1 << (n - 1);
+        _possibilities |= 1 << n;
         Count++;
     }
 
@@ -161,9 +161,9 @@ public class Possibilities : IReadOnlyPossibilities
 
     public int First()
     {
-        for (int i = 0; i < 9; i++)
+        for (int i = 1; i <= 9; i++)
         {
-            if (((_possibilities >> i) & 1) > 0) return i + 1;
+            if (Peek(i)) return i;
         }
         
         return 0;
@@ -172,18 +172,6 @@ public class Possibilities : IReadOnlyPossibilities
     public Possibilities Copy()
     {
         return new Possibilities(_possibilities, Count);
-    }
-
-    public IEnumerable<BiValue> EachBiValue()
-    {
-        for (int i = 1; i <= 9; i++)
-        {
-            if (!Peek(i)) continue;
-            for (int j = i + 1; j <= 9; j++)
-            {
-                if (Peek(j)) yield return new BiValue(i, j);
-            }
-        }
     }
 
     public CellState ToCellState()
@@ -195,17 +183,6 @@ public class Possibilities : IReadOnlyPossibilities
     {
         // ReSharper disable once NonReadonlyMemberInGetHashCode
         return _possibilities;
-    }
-
-    public IEnumerator<int> GetEnumerator()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            if (((_possibilities >> i) & 1) > 0)
-            {
-                yield return i + 1;
-            }
-        }
     }
 
     public override bool Equals(object? obj)
@@ -236,6 +213,14 @@ public class Possibilities : IReadOnlyPossibilities
         }
         
         return builder.ToString();
+    }
+    
+    public IEnumerator<int> GetEnumerator()
+    {
+        for (int i = 1; i <= 9; i++)
+        {
+            if (Peek(i)) yield return i;
+        }
     }
 
     IEnumerator IEnumerable.GetEnumerator()

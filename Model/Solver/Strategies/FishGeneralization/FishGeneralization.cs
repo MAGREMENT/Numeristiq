@@ -91,6 +91,7 @@ public class FishReportBuilder : IChangeReportBuilder
     private readonly CoverHouse[] _coveredSet;
     private readonly int _possibility;
     private readonly GridPositions _inCommon;
+    private readonly GridPositions _fins;
 
     public FishReportBuilder(HashSet<CoverHouse> baseSet, CoverHouse[] coveredSet, int possibility, GridPositions inCommon)
     {
@@ -98,6 +99,16 @@ public class FishReportBuilder : IChangeReportBuilder
         _coveredSet = coveredSet;
         _possibility = possibility;
         _inCommon = inCommon;
+        _fins = new GridPositions();
+    }
+    public FishReportBuilder(HashSet<CoverHouse> baseSet, CoverHouse[] coveredSet, int possibility, GridPositions inCommon,
+        GridPositions fins)
+    {
+        _baseSet = baseSet;
+        _coveredSet = coveredSet;
+        _possibility = possibility;
+        _inCommon = inCommon;
+        _fins = fins;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -107,6 +118,11 @@ public class FishReportBuilder : IChangeReportBuilder
             foreach (var cell in _inCommon)
             {
                 lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+            }
+
+            foreach (var cell in _fins)
+            {
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffTwo);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -131,10 +147,12 @@ public class FishReportBuilder : IChangeReportBuilder
         var coverSetBuilder = new StringBuilder(_coveredSet.ToString());
         for (int i = 1; i < _coveredSet.Length; i++)
         {
-            coverSetBuilder.Append(", " + _coveredSet);
+            coverSetBuilder.Append(", " + _coveredSet[i]);
         }
 
-        return $"{type} found :\nBase set : {baseSetBuilder.ToString()[..^2]}\nCover set : {coverSetBuilder}";
+        string isFinned = _fins.Count > 0 ? "Finned " : "";
+
+        return $"{isFinned}{type} found :\nBase set : {baseSetBuilder.ToString()[..^2]}\nCover set : {coverSetBuilder}";
     }
 }
 

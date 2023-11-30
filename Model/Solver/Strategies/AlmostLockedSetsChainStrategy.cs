@@ -77,8 +77,8 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
             if (!last.Possibilities.Peek(possibility) || nope.Peek(possibility)) continue;
 
             var cells = new List<Cell>();
-            cells.AddRange(first.EachCell());
-            cells.AddRange(last.EachCell());
+            cells.AddRange(first.EachCell(possibility));
+            cells.AddRange(last.EachCell(possibility));
 
             foreach (var ssc in Cells.SharedSeenCells(cells))
             {
@@ -128,6 +128,26 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
                 {
                     lighter.HighlightPossibility(poss, cell.Row, cell.Col, ChangeColoration.Neutral);
                 }
+
+                var minDistance = double.MaxValue;
+                var minCells = new CellPossibility[2];
+                
+                foreach (var cell1 in _chain.Elements[i].EachCell(poss))
+                {
+                    foreach (var cell2 in _chain.Elements[i + 1].EachCell(poss))
+                    {
+                        var dist = Cells.Distance(cell1, poss, cell2, poss);
+
+                        if (dist < minDistance)
+                        {
+                            minDistance = dist;
+                            minCells[0] = new CellPossibility(cell1, poss);
+                            minCells[1] = new CellPossibility(cell2, poss);
+                        }
+                    }
+                }
+                
+                lighter.CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

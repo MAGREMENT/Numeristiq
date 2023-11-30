@@ -71,6 +71,7 @@ public class StrategyLoader : IStrategyLoader
         {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new TCondition(), new ZCondition())},
         {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
         {FishGeneralization.OfficialNameForBasic, new FishGeneralization(3, 4, new BasicFish())},
+        {FishGeneralization.OfficialNameForFinned, new FishGeneralization(3, 4, new FinnedFish())},
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()},
         {AlmostLockedSetsChainStrategy.OfficialName, new AlmostLockedSetsChainStrategy(false)},
         {AlmostHiddenSetsChainStrategy.OfficialName, new AlmostHiddenSetsChainStrategy(false)},

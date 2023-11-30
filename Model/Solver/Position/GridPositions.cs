@@ -71,6 +71,19 @@ public class GridPositions : IReadOnlyGridPositions
     {
         Remove(cell.Row, cell.Col);
     }
+    
+    public Cell First()
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Peek(row, col)) return new Cell(row, col);
+            }
+        }
+
+        return default;
+    }
 
     public int RowCount(int row)
     {
@@ -90,6 +103,29 @@ public class GridPositions : IReadOnlyGridPositions
         return miniRow < 2
             ? System.Numerics.BitOperations.PopCount(_first & (MiniGridMask << (miniRow * 27 + miniCol * 3)))
             : System.Numerics.BitOperations.PopCount(_second & (MiniGridMask << (miniCol * 3)));
+    }
+    
+    public LinePositions RowPositions(int row)
+    {
+        var i = row >= 6 ? (_second >> ((row - 6) * 9)) & RowMask : (_first >> (row * 9)) & RowMask;
+        return LinePositions.FromBits((int)i);
+    }
+
+    public LinePositions ColumnPositions(int col)
+    {
+        var i = _first >> col;
+        var j = _second >> col;
+        var k = i & 1 | (i & 0x200) >> 8 | (i & 0x40000) >> 16 |
+                (i & 0x8000000) >> 24 | (i & 0x1000000000) >> 32 | (i & 0x200000000000) >> 40 |
+                (j & 1) << 6 | (j & 0x200) >> 2 | (j & 0x40000) >> 10;
+        return LinePositions.FromBits((int)k);
+    }
+
+    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol)
+    {
+        var i = miniRow == 2 ? _second >> (miniCol * 3) : _first >> (miniRow * 27 + miniCol * 3);
+        var j = (i & 0x7) | (i & 0xE00) >> 6 | (i & 0x1C0000) >> 12;
+        return Position.MiniGridPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
     }
 
     public void Fill()
@@ -194,29 +230,6 @@ public class GridPositions : IReadOnlyGridPositions
         return new GridPositions(_first & ~gp._first, _second & ~gp._second);
     }
 
-    public LinePositions RowPositions(int row)
-    {
-        var i = row >= 6 ? (_second >> ((row - 6) * 9)) & RowMask : (_first >> (row * 9)) & RowMask;
-        return LinePositions.FromBits((int)i);
-    }
-
-    public LinePositions ColumnPositions(int col)
-    {
-        var i = _first >> col;
-        var j = _second >> col;
-        var k = i & 1 | (i & 0x200) >> 8 | (i & 0x40000) >> 16 |
-                (i & 0x8000000) >> 24 | (i & 0x1000000000) >> 32 | (i & 0x200000000000) >> 40 |
-                (j & 1) << 6 | (j & 0x200) >> 2 | (j & 0x40000) >> 10;
-        return LinePositions.FromBits((int)k);
-    }
-
-    public MiniGridPositions MiniGridPositions(int miniRow, int miniCol)
-    {
-        var i = miniRow == 2 ? _second >> (miniCol * 3) : _first >> (miniRow * 27 + miniCol * 3);
-        var j = (i & 0x7) | (i & 0xE00) >> 6 | (i & 0x1C0000) >> 12;
-        return Position.MiniGridPositions.FromBits(miniRow * 3, miniCol * 3, (int)j);
-    }
-
     public Cell[] ToArray()
     {
         var result = new Cell[Count];
@@ -308,15 +321,13 @@ public class GridPositions : IReadOnlyGridPositions
     {
         var result = new List<CoverHouse[]>();
 
-        PossibleCoverHouses(count, methods, 1, this, result,
+        PossibleCoverHouses(count, methods, this, result,
             new List<CoverHouse>(), forbidden);
         
         return result;
     }
-
-    private const int FinnedLimit = 3;
     
-    private void PossibleCoverHouses(int max, IUnitMethods[] methods, int count, GridPositions gp,
+    private void PossibleCoverHouses(int max, IUnitMethods[] methods, GridPositions gp,
         List<CoverHouse[]> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
     {
         var first = gp.First();
@@ -330,44 +341,56 @@ public class GridPositions : IReadOnlyGridPositions
             current.Add(ch);
 
             if (copy.Count == 0) result.Add(current.ToArray());
-            if (count < max) PossibleCoverHouses(max, methods, count + 1, copy, result, current, forbidden);
+            else if (current.Count < max) PossibleCoverHouses(max, methods, copy, result, current, forbidden);
             
             current.RemoveAt(current.Count - 1);
         }
     }
 
-    public Cell First()
+    public List<CoveredGrid> PossibleCoveredGrids(int count, int maxRemaining, HashSet<CoverHouse> forbidden,
+        params IUnitMethods[] methods)
     {
-        for (int row = 0; row < 9; row++)
+        var result = new List<CoveredGrid>();
+
+        PossibleCoveredGrids(count, maxRemaining, ToArray(), 0, methods, this, result,
+            new List<CoverHouse>(), forbidden);
+
+        return result;
+    }
+
+    private void PossibleCoveredGrids(int max, int maxRemaining, Cell[] cells, int start, IUnitMethods[] methods,
+        GridPositions gp, List<CoveredGrid> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
+    {
+        for (int i = start; i < cells.Length; i++)
         {
-            for (int col = 0; col < 9; col++)
+            var c = cells[i];
+            if (!gp.Peek(c)) continue;
+
+            foreach (var method in methods)
             {
-                if (Peek(row, col)) return new Cell(row, col);
+                var ch = method.ToCoverHouse(c);
+                if (forbidden.Contains(ch)) continue;
+
+                var copy = gp.Copy();
+                method.Void(copy, c);
+                current.Add(ch);
+                
+                if(copy.Count == 0) result.Add(new CoveredGrid(copy, current.ToArray()));
+                else if (current.Count == max)
+                {
+                    if(copy.Count <= maxRemaining) result.Add(new CoveredGrid(copy, current.ToArray()));
+                }
+                else if (current.Count < max) PossibleCoveredGrids(max, maxRemaining, cells, i + 1,
+                        methods, copy, result, current, forbidden);
+
+                current.RemoveAt(current.Count - 1);
             }
         }
-
-        return default;
     }
 
     public override int GetHashCode()
     {
         return HashCode.Combine(_first, _second);
-    }
-    
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public IEnumerator<Cell> GetEnumerator()
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (Peek(row, col)) yield return new Cell(row, col);
-            }
-        }
     }
 
     public override bool Equals(object? obj)
@@ -387,6 +410,22 @@ public class GridPositions : IReadOnlyGridPositions
         }
 
         return result;
+    }
+    
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public IEnumerator<Cell> GetEnumerator()
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (Peek(row, col)) yield return new Cell(row, col);
+            }
+        }
     }
 }
 
@@ -597,3 +636,5 @@ public readonly struct CoverHouse
         return false;
     }
 }
+
+public record CoveredGrid(GridPositions Remaining, CoverHouse[] CoverHouses);

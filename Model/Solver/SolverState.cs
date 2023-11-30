@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibility;
@@ -126,7 +125,7 @@ public readonly struct CellState
 
     public CellState(int solved)
     {
-        _bits = (short) (solved << 9);
+        _bits = (short) (solved << 10);
     }
 
     private CellState(short bits)
@@ -139,9 +138,9 @@ public readonly struct CellState
         return new CellState(bits);
     }
 
-    public bool IsPossibilities => _bits <= 0x1FF;
+    public bool IsPossibilities => _bits <= 0x3FE;
     
-    public Possibilities AsPossibilities => Possibilities.FromBits(_bits & 0x1FF);
+    public Possibilities AsPossibilities => Possibilities.FromBits(_bits & 0x3FE);
 
-    public int AsNumber => _bits >> 9;
+    public int AsNumber => _bits >> 10;
 }

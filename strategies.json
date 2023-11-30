@@ -216,12 +216,6 @@
     "args": {}
   },
   {
-    "Name": "Fish",
-    "Used": false,
-    "Behavior": 1,
-    "args": {}
-  },
-  {
     "Name": "Almost Hidden Sets",
     "Used": true,
     "Behavior": 0,

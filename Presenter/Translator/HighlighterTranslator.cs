@@ -137,7 +137,7 @@ public class HighlighterTranslator : IHighlightable
                     {
                         if (possibilitySearch != -1 && possT != possibilitySearch) continue;
 
-                        var dist = GetDistance(cellF.Cell, possF, cellT.Cell, possT);
+                        var dist = Cells.Distance(cellF.Cell, possF, cellT.Cell, possT);
                         if (dist < minDist)
                         {
                             minDist = dist;
@@ -150,19 +150,5 @@ public class HighlighterTranslator : IHighlightable
         }
 
         CreateLink(minCells[0], minCells[1], linkStrength);
-    }
-
-    private double GetDistance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
-    {
-        var oneX = oneCell.Col * 3 + onePoss % 3;
-        var oneY = oneCell.Row * 3 + onePoss / 3;
-
-        var twoX = twoCell.Col * 3 + twoPoss % 3;
-        var twoY = twoCell.Row * 3 + twoPoss / 3;
-
-        var dx = twoX - oneX;
-        var dy = twoY - oneY;
-
-        return Math.Sqrt(dx * dx + dy * dy);
     }
 }

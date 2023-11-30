@@ -85,7 +85,7 @@ public static class Cells
         }
     }
     
-    public static List<Cell> SharedSeenCells(List<Cell> list)
+    public static List<Cell> SharedSeenCells(IReadOnlyList<Cell> list)
     {
         if (list.Count == 0) return new List<Cell>();
         if (list.Count == 1) return SeenCells(list[^1]);
@@ -114,7 +114,7 @@ public static class Cells
         return Searcher.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2);
     }
     
-    public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, List<Cell> list)
+    public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, IReadOnlyList<Cell> list)
     {
         if (list.Count == 0) return new List<Cell>();
         if (list.Count == 1) return SeenCells(list[^1]); //TODO change to SeenEmptyCells
@@ -267,6 +267,20 @@ public static class Cells
         result.Add(buffer[3], buffer[0]);
 
         return result;
+    }
+    
+    public static double Distance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
+    {
+        var oneX = oneCell.Col * 3 + onePoss % 3;
+        var oneY = oneCell.Row * 3 + onePoss / 3;
+
+        var twoX = twoCell.Col * 3 + twoPoss % 3;
+        var twoY = twoCell.Row * 3 + twoPoss / 3;
+
+        var dx = twoX - oneX;
+        var dy = twoY - oneY;
+
+        return Math.Sqrt(dx * dx + dy * dy);
     }
 }
 
