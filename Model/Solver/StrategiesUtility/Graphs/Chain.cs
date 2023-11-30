@@ -78,7 +78,7 @@ public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : not
 
 public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : notnull where TLink : notnull
 {
-    private readonly TLink _lastLink;
+    protected readonly TLink _lastLink;
     
     public Loop(TElement[] elements, TLink[] links, TLink lastLink) : base(elements, links)
     {
@@ -241,7 +241,7 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
             ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
     }
 
-    public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path)
+    public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path) //Take into account mono-directionality
     {
         if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
         HashSet<T> present = new HashSet<T>(Elements);
@@ -344,7 +344,8 @@ public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ILinkGraphElemen
         string result = Elements[0] + (Links[0] == LinkStrength.Strong ? " = " : " - ");
         for (int i = 1; i < Elements.Length; i++)
         {
-            result += Elements[i] + (Links[i] == LinkStrength.Strong ? " = " : " - ");
+            if(i == Elements.Length - 1) result += Elements[i] + (_lastLink == LinkStrength.Strong ? " = " : " - ");
+            else result += Elements[i] + (Links[i] == LinkStrength.Strong ? " = " : " - ");
         }
 
         return result;

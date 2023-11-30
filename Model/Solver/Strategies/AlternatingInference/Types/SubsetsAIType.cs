@@ -2,6 +2,7 @@
 using Global;
 using Global.Enums;
 using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Types;
@@ -23,7 +24,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
         return strategyManager.GraphManager.ComplexLinkGraph;
     }
 
-    public bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<ILinkGraphElement> loop) //TODO ALS elims
+    public bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<ILinkGraphElement> loop)
     {
         loop.ForEachLink((one, two) => ProcessWeakLink(strategyManager, one, two), LinkStrength.Weak);
 
@@ -49,37 +50,45 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
             return;
         }
 
-        var or = pos1.Or(pos2);
+        var and = pos1.And(pos2);
 
-        foreach (var possibility in or)
+        foreach (var possibility in and)
         {
             List<Cell> cells = new();
-            bool yes1 = false;
-            bool yes2 = false;
-
+            
             foreach (var cp in cp1)
             {
-                if (cp.Possibilities.Peek(possibility))
-                {
-                    yes1 = true;
-                    cells.Add(cp.Cell);
-                }
+                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
             }
             
             foreach (var cp in cp2)
             {
-                if (cp.Possibilities.Peek(possibility))
-                {
-                    yes2 = true;
-                    cells.Add(cp.Cell);
-                }
+                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
             }
-
-            if (!yes1 || !yes2) continue;
 
             foreach (var cell in Cells.SharedSeenCells(cells))
             {
                 view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+            }
+        }
+
+        if (one is AlmostNakedSet ans && two is CellPossibility cellPossibility)
+        {
+            foreach (var possibility in ans.EveryPossibilities())
+            {
+                if (possibility == cellPossibility.Possibility || possibility == ans.OddOne.Possibility) continue;
+                
+                List<Cell> cells = new();
+
+                foreach (var cp in ans.NakedSet)
+                {
+                    if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                }
+                
+                foreach (var cell in Cells.SharedSeenCells(cells))
+                {
+                    view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                }
             }
         }
     }

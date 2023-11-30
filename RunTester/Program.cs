@@ -1,5 +1,4 @@
-﻿using Global.Enums;
-using Model;
+﻿using Model;
 using Repository;
 
 namespace RunTester;
@@ -22,7 +21,7 @@ public static class Program
         var argReader = GetArgumentsReader();
         var argResult = argReader.Read(args);
 
-        var runTester = new RunTester(repo)
+        var runTester = new RunTester(repo, argResult.Contains("w"))
         {
             Path = argResult.GetValue("f")
         };
@@ -51,6 +50,7 @@ public static class Program
 
         result.AddAllowedArgument("f", ArgumentValueType.Mandatory);
         result.AddAllowedArgument("r", ArgumentValueType.None);
+        result.AddAllowedArgument("w", ArgumentValueType.None);
         
         return result;
     }

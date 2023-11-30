@@ -83,13 +83,13 @@ public class StrategyLoader : IStrategyLoader
         {SubsetsAIType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
             new AILoopAlgorithmV3<ILinkGraphElement>())},
         {XType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new XType(),
-            new AIChainAlgorithmV1<CellPossibility>())},
+            new AIChainAlgorithmV2<CellPossibility>())},
         {AIType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
-            new AIChainAlgorithmV1<CellPossibility>())},
+            new AIChainAlgorithmV2<CellPossibility>())},
         {SubsetsXType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
-            new AIChainAlgorithmV1<ILinkGraphElement>())},
+            new AIChainAlgorithmV2<ILinkGraphElement>())},
         {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
-            new AIChainAlgorithmV1<ILinkGraphElement>())},
+            new AIChainAlgorithmV2<ILinkGraphElement>())},
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();
@@ -250,9 +250,23 @@ public class StrategyLoader : IStrategyLoader
     public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior)
     {
         var i = _strategies.Find(s => s.Name.Equals(name));
-        if (i != 0) _strategies[i].OnCommitBehavior = behavior;
+        if (i != 0)
+        {
+            _strategies[i].OnCommitBehavior = behavior;
+            TryCallEvent();
+        }
     }
-    
+
+    public void ChangeStrategyBehaviorForAll(OnCommitBehavior behavior)
+    {
+        foreach (var strategy in _strategies)
+        {
+            strategy.OnCommitBehavior = behavior;
+        }
+        
+        TryCallEvent();
+    }
+
     public void ChangeStrategyUsage(string name, bool yes)
     {
         var i = _strategies.Find(s => s.Name.Equals(name));
@@ -260,6 +274,8 @@ public class StrategyLoader : IStrategyLoader
         {
             if (yes) _excludedStrategies.Unset(i);
             else _excludedStrategies.Set(i);
+            
+            TryCallEvent();
         }
     }
 

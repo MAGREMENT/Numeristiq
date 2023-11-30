@@ -52,6 +52,7 @@ public partial class StrategyManagerPage : IStrategyManagerView
     public override void OnShow()
     {
         _presenter.Start();
+        OptionModifier.Hide();
     }
 
     public override void OnQuit()

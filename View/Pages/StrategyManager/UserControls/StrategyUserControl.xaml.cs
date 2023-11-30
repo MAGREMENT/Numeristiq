@@ -29,8 +29,7 @@ public partial class StrategyUserControl
         {
             DefaultBorder();
             if (args.Data.GetData(typeof(StrategyShuffleData)) is not StrategyShuffleData data) return;
-
-            DefaultBorder();
+            
             var relativePosition = args.GetPosition(this).Y > ActualHeight / 2 ? position + 1 : position;
             if (data.FromSearch) StrategyAdded?.Invoke(data.Name, relativePosition);
             else if (data.CurrentPosition != -1) StrategiesInterchanged?.Invoke(data.CurrentPosition, relativePosition);
@@ -39,7 +38,7 @@ public partial class StrategyUserControl
         };
         DragOver += (_, args) =>
         {
-            DragBorder(args.GetPosition(this).Y <= ActualHeight  / 2);
+            HighlightedBorder(args.GetPosition(this).Y <= ActualHeight  / 2);
         };
         DragLeave += (_, _) =>
         {
@@ -56,17 +55,24 @@ public partial class StrategyUserControl
         };
     }
 
-    private void DefaultBorder()
+    public void DefaultBorder()
     {
         UpperBorder.BorderBrush = Brushes.Transparent;
         LowerBorder.BorderBrush = Brushes.Transparent;
     }
 
-    private void DragBorder(bool upper)
+    public void HighlightedBorder(bool upper)
     {
-        DefaultBorder();
-        if (upper) UpperBorder.BorderBrush = Brushes.Aqua;
-        else LowerBorder.BorderBrush = Brushes.Aqua;
+        if (upper)
+        {
+            UpperBorder.BorderBrush = Brushes.Aqua;
+            LowerBorder.BorderBrush = Brushes.Transparent;
+        }
+        else
+        {
+            LowerBorder.BorderBrush = Brushes.Aqua;
+            UpperBorder.BorderBrush = Brushes.Transparent;
+        }
     }
 }
 

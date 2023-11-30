@@ -92,7 +92,8 @@ public class HighlighterTranslator : IHighlightable
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
     {
-        if (from is CellPossibility && to is AlmostNakedSet) return;
+        if ((from is AlmostNakedSet ansFrom && to is CellPossibility cpTo && ansFrom.OddOne == cpTo) ||
+            (from is CellPossibility cpFrom && to is AlmostNakedSet ansTo && ansTo.OddOne == cpFrom)) return;
         
         var possibilitiesFrom = from.EveryPossibilities();
         var possibilitiesTo = to.EveryPossibilities();

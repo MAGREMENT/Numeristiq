@@ -14,6 +14,7 @@ public interface IStrategyLoader
     public void RemoveStrategy(int position);
     public void InterchangeStrategies(int positionOne, int positionTwo);
     public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior);
+    public void ChangeStrategyBehaviorForAll(OnCommitBehavior behavior);
     public void ChangeStrategyUsage(string name, bool yes);
     
     public event OnListUpdate? ListUpdated;

@@ -27,6 +27,11 @@ public partial class OptionModifierUserControl
         _callEvents = true;
     }
 
+    public void Hide()
+    {
+        Panel.Visibility = Visibility.Hidden;
+    }
+
     private void ChangeBehavior(object sender, SelectionChangedEventArgs e)
     {
         if(_callEvents) BehaviorChanged?.Invoke(StrategyName.Text, (OnCommitBehavior)StrategyBehavior.SelectedIndex);

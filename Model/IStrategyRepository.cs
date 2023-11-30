@@ -6,6 +6,8 @@ namespace Model;
 
 public interface IStrategyRepository
 {
+    public bool UploadAllowed { get; set; }
+    
     public void Initialize();
     public List<StrategyDAO> DownloadStrategies();
     public void UploadStrategies(List<StrategyDAO> DAOs);

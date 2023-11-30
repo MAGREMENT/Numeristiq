@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
     public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
@@ -14,43 +14,48 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
         foreach (var start in graph)
         {
             if (Search(strategyManager, graph, type, new LinkGraphChainBuilder<T>(start),
-                    new HashSet<T> { start }, processed)) return;
+                    new HashSet<T> { start }, new HashSet<T>(), new HashSet<T> {start}, processed)) return;
             processed.Add(start);
         }
     }
 
     private bool Search(IStrategyManager manager, LinkGraph<T> graph, IAlternatingInferenceType<T> type,
-        LinkGraphChainBuilder<T> builder, HashSet<T> explored, HashSet<T> processed)
+        LinkGraphChainBuilder<T> builder, HashSet<T> current, HashSet<T> onExplored, HashSet<T> offExplored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
+        var explored = next == LinkStrength.Strong ? onExplored : offExplored;
         var last = builder.LastElement();
 
         foreach (var friend in graph.GetLinks(last, next))
         {
-            if (explored.Contains(friend)) continue;
+            if (current.Contains(friend) || explored.Contains(friend)) continue;
 
             builder.Add(next, friend);
+            current.Add(friend);
             explored.Add(friend);
             
             if (builder.Count >= 3 && !processed.Contains(friend) && next == LinkStrength.Strong &&
                 Check(manager, graph, type, builder.ToChain())) return true;
-            if (Search(manager, graph, type, builder, explored, processed)) return true;
+            if (Search(manager, graph, type, builder, current, onExplored, offExplored, processed)) return true;
             
             builder.RemoveLast();
+            current.Remove(friend);
         }
 
         if (next == LinkStrength.Weak)
         {
             foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
             {
-                if (explored.Contains(friend)) continue;
+                if (current.Contains(friend)) continue;
 
                 builder.Add(next, friend);
-                explored.Add(friend);
+                current.Add(friend);
+                offExplored.Add(friend);
                 
-                if (Search(manager, graph, type, builder, explored, processed)) return true;
+                if (Search(manager, graph, type, builder, current, onExplored, offExplored, processed)) return true;
             
                 builder.RemoveLast();
+                current.Remove(friend);
             }
         }
         

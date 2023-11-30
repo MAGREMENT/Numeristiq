@@ -8,6 +8,8 @@ public class JSONStrategyRepository : IStrategyRepository
 {
     private string _path = "";
     private bool _pathSearched;
+
+    public bool UploadAllowed { get; set; } = true;
     
     public void Initialize()
     {
@@ -36,6 +38,8 @@ public class JSONStrategyRepository : IStrategyRepository
 
     public void UploadStrategies(List<StrategyDAO> DAOs)
     {
+        if (!UploadAllowed) return;
+        
         using var writer = new StreamWriter(_path, new FileStreamOptions
         {
             Mode = FileMode.Truncate,

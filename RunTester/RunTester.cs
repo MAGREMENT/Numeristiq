@@ -23,10 +23,14 @@ public class RunTester
     public event OnRunStatusChanged? RunStatusChanged;
 
     private readonly IStrategyRepository _repository;
+    private readonly bool _toWaitForAll;
 
-    public RunTester(IStrategyRepository repository)
+    public RunTester(IStrategyRepository repository, bool toWaitForAll)
     {
         _repository = repository;
+        _repository.UploadAllowed = false;
+        
+        _toWaitForAll = toWaitForAll;
     }
 
     public void Start()
@@ -50,6 +54,7 @@ public class RunTester
             LogsManaged = false,
             StatisticsTracked = true
         };
+        if(_toWaitForAll) _currentSolver.StrategyLoader.ChangeStrategyBehaviorForAll(OnCommitBehavior.WaitForAll);
 
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);
 

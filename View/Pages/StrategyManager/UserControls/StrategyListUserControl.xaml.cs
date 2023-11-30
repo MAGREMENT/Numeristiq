@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Media;
 using Presenter.Translator;
 
 namespace View.Pages.StrategyManager.UserControls;
@@ -43,6 +41,7 @@ public partial class StrategyListUserControl
         for (int i = 0; i < strategies.Count; i++)
         {
             var s = new StrategyUserControl(strategies[i], i);
+            
             s.StrategyAdded += (strategy, position) => StrategyAdded?.Invoke(strategy, position);
             s.StrategiesInterchanged += (pos1, pos2) => StrategiesInterchanged?.Invoke(pos1, pos2);
             s.ShowAsked += pos => ShowAsked?.Invoke(pos);
