@@ -36,11 +36,11 @@ public class PointingColumn : ILinkGraphElement
     public PointingColumn(int possibility, List<CellPossibility> coords)
     {
         Possibility = possibility;
-        Column = coords[0].Col;
+        Column = coords[0].Column;
         _pos = new LinePositions();
         for (int i = 1; i < coords.Count; i++)
         {
-            if (coords[i].Col != Column) throw new ArgumentException("Not on same column");
+            if (coords[i].Column != Column) throw new ArgumentException("Not on same column");
             _pos.Add(coords[i].Row); 
         }
     }
@@ -70,13 +70,13 @@ public class PointingColumn : ILinkGraphElement
     
     public override string ToString()
     {
-        var result = $"PC : {Possibility}";
+        var result = $"PC : {Possibility}r";
         foreach (var row in _pos)
         {
-            result += $"[{row + 1}, {Column + 1}], ";
+            result += $"{row + 1}";
         }
 
-        return result[..^2];
+        return result + $"c{Column + 1}";
     }
 
     public int Rank => 2;

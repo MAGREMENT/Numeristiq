@@ -122,12 +122,12 @@ public class SkyscraperReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in _pos1.ToCellArray(_unit, _unit1))
             {
-                lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
             
             foreach (var cell in _pos2.ToCellArray(_unit, _unit2))
             {
-                lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

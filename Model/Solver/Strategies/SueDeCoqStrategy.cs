@@ -199,7 +199,7 @@ public class SueDeCoqStrategy : AbstractStrategy
 
             foreach (var possibility in unitAls.Possibilities)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Column);
             }
         }
 
@@ -217,7 +217,7 @@ public class SueDeCoqStrategy : AbstractStrategy
                 
                 foreach (var possibility in miniAls.Possibilities)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Column);
                 }
             }
         }
@@ -259,17 +259,17 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
             {
                 foreach (var coord in center)
                 {
-                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.Neutral);
+                    lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.Neutral);
                 }
 
                 foreach (var coord in _unitAls.EachCell())
                 {
-                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                    lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffOne);
                 }
 
                 foreach (var coord in _miniAls.EachCell())
                 {
-                    lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
+                    lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
                 }
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
             });

@@ -17,7 +17,7 @@ public class SharedUnits : IEnumerable<SharedUnit>
         Count = 3;
     }
 
-    public SharedUnits(Cell cell) : this(cell.Row, cell.Col)
+    public SharedUnits(Cell cell) : this(cell.Row, cell.Column)
     {
         
     }
@@ -54,7 +54,7 @@ public class SharedUnits : IEnumerable<SharedUnit>
 
     public void Share(Cell cell)
     {
-        Share(cell.Row, cell.Col);
+        Share(cell.Row, cell.Column);
     }
 
     private int ToGridNumber(int row, int col)

@@ -51,10 +51,10 @@ public class DigitForcingNetStrategy : AbstractStrategy
                 switch (other)
                 {
                     case Coloring.Off when on.Value == Coloring.Off :
-                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, possOn.Row, possOn.Col);
+                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, possOn.Row, possOn.Column);
                         break;
                     case Coloring.On when on.Value == Coloring.On :
-                        view.ChangeBuffer.ProposeSolutionAddition(possOn.Possibility, possOn.Row, possOn.Col);
+                        view.ChangeBuffer.ProposeSolutionAddition(possOn.Possibility, possOn.Row, possOn.Column);
                         break;
                 }
 
@@ -68,9 +68,9 @@ public class DigitForcingNetStrategy : AbstractStrategy
             foreach (var off in offColoring)
             {
                 if (off.Value != Coloring.On || off.Key is not CellPossibility possOff) continue;
-                if (possOff.Row == possOn.Row && possOn.Col == possOff.Col)
+                if (possOff.Row == possOn.Row && possOn.Column == possOff.Column)
                 {
-                    RemoveAll(view, possOn.Row, possOn.Col, possOn.Possibility, possOff.Possibility);
+                    RemoveAll(view, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
                                 possOff, off.Value, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
@@ -79,7 +79,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                 {
                     foreach (var coord in possOn.SharedSeenCells(possOff))
                     {
-                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Col);
+                        view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Column);
                     }
                     
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,

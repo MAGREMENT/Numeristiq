@@ -42,7 +42,7 @@ public class TwoStringKiteStrategy : AbstractStrategy
                             var rCommon = rowCell[i];
                             var cCommon = colCell[j];
                             if (rCommon == cCommon) continue;
-                            if(rCommon.Row / 3 != cCommon.Row / 3 || rCommon.Col / 3 != cCommon.Col / 3) continue;
+                            if(rCommon.Row / 3 != cCommon.Row / 3 || rCommon.Column / 3 != cCommon.Column / 3) continue;
 
                             var rOther = rowCell[(i + 1) % 2];
                             var cOther = colCell[(j + 1) % 2];
@@ -84,10 +84,10 @@ public class TwoStringKiteReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightPossibility(_possibility, _other1.Row, _other1.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightPossibility(_possibility, _other2.Row, _other2.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Column, ChangeColoration.CauseOffOne);
+            lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Column, ChangeColoration.CauseOffOne);
+            lighter.HighlightPossibility(_possibility, _other1.Row, _other1.Column, ChangeColoration.CauseOffOne);
+            lighter.HighlightPossibility(_possibility, _other2.Row, _other2.Column, ChangeColoration.CauseOffOne);
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });

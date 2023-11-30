@@ -66,7 +66,7 @@ public static class JuniorExocetSearcher
                 var t2 = targetCandidates[j];
 
                 if (!strategyManager.PossibilitiesAt(t1).Or(strategyManager.PossibilitiesAt(t2))
-                    .PeekAll(basePossibilities) || (t1.Row / 3 == t2.Row / 3 && t1.Col / 3 == t2.Col / 3) ) continue;
+                    .PeekAll(basePossibilities) || (t1.Row / 3 == t2.Row / 3 && t1.Column / 3 == t2.Column / 3) ) continue;
 
                 Cell[] t1MirrorNodes;
                 Cell[] t2MirrorNodes;
@@ -78,12 +78,12 @@ public static class JuniorExocetSearcher
 
                 foreach (var cell in t1MirrorNodes)
                 {
-                    if (strategyManager.ContainsAny(cell.Row, cell.Col, basePossibilities)) notOk = false;
+                    if (strategyManager.ContainsAny(cell.Row, cell.Column, basePossibilities)) notOk = false;
                 }
                 
                 foreach (var cell in t2MirrorNodes)
                 {
-                    if (strategyManager.ContainsAny(cell.Row, cell.Col, basePossibilities)) notOk = false;
+                    if (strategyManager.ContainsAny(cell.Row, cell.Column, basePossibilities)) notOk = false;
                 }
 
                 if (notOk) continue;
@@ -110,8 +110,8 @@ public static class JuniorExocetSearcher
                 if (notOk) continue;
 
                 var escapeCell = isRowJe
-                    ? new Cell(base1.Row, OtherUnitInBox(base1.Col, base2.Col))
-                    : new Cell(OtherUnitInBox(base1.Row, base2.Row), base1.Col);
+                    ? new Cell(base1.Row, OtherUnitInBox(base1.Column, base2.Column))
+                    : new Cell(OtherUnitInBox(base1.Row, base2.Row), base1.Column);
                 result.Add(new JuniorExocet(base1, base2, t1, t2, basePossibilities, escapeCell,
                     t1MirrorNodes, t2MirrorNodes, sCellsPositions));
             }
@@ -124,7 +124,7 @@ public static class JuniorExocetSearcher
         //Rule 2
         List<Cell> result = new();
         var rows = OtherUnitsInBox(base1.Row);
-        var baseGridCol = base1.Col / 3;
+        var baseGridCol = base1.Column / 3;
 
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
@@ -152,7 +152,7 @@ public static class JuniorExocetSearcher
     {
         //Rule 2
         List<Cell> result = new();
-        var cols = OtherUnitsInBox(base1.Col);
+        var cols = OtherUnitsInBox(base1.Column);
         var baseGridRow = base1.Row / 3;
 
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -179,8 +179,8 @@ public static class JuniorExocetSearcher
     private static void ComputeRowMirrorNode(out Cell[] t1MirrorCells, out Cell[]
         t2MirrorCells, Cell t1, Cell t2, Cell baseC)
     {
-        var t1StartCol = t1.Col / 3 * 3;
-        var t2StartCol = t2.Col / 3 * 3;
+        var t1StartCol = t1.Column / 3 * 3;
+        var t2StartCol = t2.Column / 3 * 3;
                 
         t1MirrorCells = new Cell[2];
         t2MirrorCells = new Cell[2];
@@ -197,8 +197,8 @@ public static class JuniorExocetSearcher
                 var col1 = t1StartCol + c;
                 var col2 = t2StartCol + c;
 
-                if (col1 != t1.Col) t2MirrorCells[cursor2++] = new Cell(lastRow, col1);
-                if (col2 != t2.Col) t1MirrorCells[cursor1++] = new Cell(lastRow, col2);
+                if (col1 != t1.Column) t2MirrorCells[cursor2++] = new Cell(lastRow, col1);
+                if (col2 != t2.Column) t1MirrorCells[cursor1++] = new Cell(lastRow, col2);
             }
         }
         else
@@ -208,8 +208,8 @@ public static class JuniorExocetSearcher
                 var col1 = t1StartCol + c;
                 var col2 = t2StartCol + c;
 
-                if (col1 != t1.Col) t2MirrorCells[cursor2++] = new Cell(t1.Row, col1);
-                if (col2 != t2.Col) t1MirrorCells[cursor1++] = new Cell(t2.Row, col2);
+                if (col1 != t1.Column) t2MirrorCells[cursor2++] = new Cell(t1.Row, col1);
+                if (col2 != t2.Column) t1MirrorCells[cursor1++] = new Cell(t2.Row, col2);
             }
         }
     }
@@ -226,9 +226,9 @@ public static class JuniorExocetSearcher
         var cursor1 = 0;
         var cursor2 = 0;
                 
-        if (t1.Col == t2.Col)
+        if (t1.Column == t2.Column)
         {
-            var lastCol = OtherUnitInBox(t1.Col, baseC.Col);
+            var lastCol = OtherUnitInBox(t1.Column, baseC.Column);
 
             for (int r = 0; r < 3; r++)
             {
@@ -246,8 +246,8 @@ public static class JuniorExocetSearcher
                 var row1 = t1StartRow + r;
                 var row2 = t2StartRow + r;
 
-                if (row1 != t1.Row) t2MirrorCells[cursor2++] = new Cell(row1, t1.Col);
-                if (row2 != t2.Row) t1MirrorCells[cursor1++] = new Cell(row2, t2.Col);
+                if (row1 != t1.Row) t2MirrorCells[cursor2++] = new Cell(row1, t1.Column);
+                if (row2 != t2.Row) t1MirrorCells[cursor1++] = new Cell(row2, t2.Column);
             }
         }
     }
@@ -255,7 +255,7 @@ public static class JuniorExocetSearcher
     private static void FillRowSCells(IStrategyManager strategyManager, Dictionary<int, GridPositions> sCellsPositions,
         Cell base1, Cell base2, Cell t1, Cell t2, Possibilities basePossibilities)
     {
-        var lastBaseCol = OtherUnitInBox(base1.Col, base2.Col);
+        var lastBaseCol = OtherUnitInBox(base1.Column, base2.Column);
         for (int row = 0; row < 9; row++)
         {
             if (row / 3 == base1.Row / 3) continue;
@@ -265,11 +265,11 @@ public static class JuniorExocetSearcher
                 if(strategyManager.Contains(row, lastBaseCol, possibility))
                     sCellsPositions[possibility].Add(row, lastBaseCol);
                         
-                if(strategyManager.Contains(row, t1.Col, possibility))
-                    sCellsPositions[possibility].Add(row, t1.Col);
+                if(strategyManager.Contains(row, t1.Column, possibility))
+                    sCellsPositions[possibility].Add(row, t1.Column);
                         
-                if(strategyManager.Contains(row, t2.Col, possibility))
-                    sCellsPositions[possibility].Add(row, t2.Col);
+                if(strategyManager.Contains(row, t2.Column, possibility))
+                    sCellsPositions[possibility].Add(row, t2.Column);
             }
         }
     }
@@ -280,7 +280,7 @@ public static class JuniorExocetSearcher
         var lastBaseRow = OtherUnitInBox(base1.Row, base2.Row);
         for (int col = 0; col < 9; col++)
         {
-            if (col / 3 == base1.Col / 3) continue;
+            if (col / 3 == base1.Column / 3) continue;
 
             foreach (var possibility in basePossibilities)
             {

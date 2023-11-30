@@ -41,7 +41,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
                     foreach (var coord in Cells.SharedSeenCells(coords))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
             }
@@ -54,7 +54,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
                     foreach (var coord in Cells.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
                     
@@ -64,7 +64,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
                     foreach (var coord in Cells.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
             }
@@ -94,12 +94,12 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
         {
             foreach (var coord in _one.EachCell())
             {
-                lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffOne);
             }
 
             foreach (var coord in _two.EachCell())
             {
-                lighter.HighlightCell(coord.Row, coord.Col, ChangeColoration.CauseOffTwo);
+                lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
             }
 
             foreach (var possibility in _restrictedCommons)
@@ -107,13 +107,13 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
                 foreach (var coord in _one.EachCell())
                 {
                     if(snapshot.PossibilitiesAt(coord).Peek(possibility))
-                        lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.Neutral);
+                        lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
                 }
                 
                 foreach (var coord in _two.EachCell())
                 {
                     if(snapshot.PossibilitiesAt(coord).Peek(possibility))
-                        lighter.HighlightPossibility(possibility, coord.Row, coord.Col, ChangeColoration.Neutral);
+                        lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
                 }
             }
 

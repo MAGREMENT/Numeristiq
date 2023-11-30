@@ -35,7 +35,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
 
                 foreach (var cell in equivalence.FirstSet)
                 {
-                    var solved = strategyManager.Sudoku[cell.Row, cell.Col];
+                    var solved = strategyManager.Sudoku[cell.Row, cell.Column];
                     if (solved == 0) continue;
                 
                     solved1[solved - 1]++;
@@ -44,7 +44,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
 
                 foreach (var cell in equivalence.SecondSet)
                 {
-                    var solved = strategyManager.Sudoku[cell.Row, cell.Col];
+                    var solved = strategyManager.Sudoku[cell.Row, cell.Column];
                     if (solved == 0) continue;
                 
                     solved2[solved - 1]++;
@@ -80,7 +80,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                         foreach (var possibility in possibilities)
                         {
                             if (solved1[possibility - 1] == 0)
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                         }
                     }
                 }
@@ -95,7 +95,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                         foreach (var possibility in possibilities)
                         {
                             if (solved2[possibility - 1] == 0)
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                         }
                     }
                 }

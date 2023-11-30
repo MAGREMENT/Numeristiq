@@ -33,7 +33,7 @@ public class AlmostNakedSetSearcher
         {
             if (!Cells.ShareAUnitWithAll(coords[i], visited)) continue;
 
-            var inspected = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Col);
+            var inspected = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Column);
             if(inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             Possibilities or = current.Or(inspected);
@@ -182,7 +182,7 @@ public class AlmostNakedSetSearcher
     private bool NotInSameRowOrColumn(List<Cell> cells)
     {
         int row = cells[0].Row;
-        int col = cells[0].Col;
+        int col = cells[0].Column;
 
         bool rowOk = false;
         bool colOk = false;
@@ -190,7 +190,7 @@ public class AlmostNakedSetSearcher
         for (int i = 1; i < cells.Count; i++)
         {
             if (!rowOk && cells[i].Row != row) rowOk = true;
-            if (!colOk && cells[i].Col != col) colOk = true;
+            if (!colOk && cells[i].Column != col) colOk = true;
 
             if (rowOk && colOk) return true;
         }

@@ -40,15 +40,15 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                     var c2 = new Cell(start1 + i, start2 + 1);
                     var c3 = new Cell(start1 + i, start2 + 2);
                     
-                    if (strategyManager.Sudoku[c1.Row, c1.Col] == 0 && strategyManager.Sudoku[c2.Row, c2.Col] == 0 &&
-                        strategyManager.Sudoku[c3.Row, c3.Col] == 0 && Search(strategyManager, c1, c2, c3)) return;
+                    if (strategyManager.Sudoku[c1.Row, c1.Column] == 0 && strategyManager.Sudoku[c2.Row, c2.Column] == 0 &&
+                        strategyManager.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyManager, c1, c2, c3)) return;
 
                     c1 = new Cell(start1, start2 + i);
                     c2 = new Cell(start1 + 1, start2 + i);
                     c3 = new Cell(start1 + 2, start2 + i);
                     
-                    if (strategyManager.Sudoku[c1.Row, c1.Col] == 0 && strategyManager.Sudoku[c2.Row, c2.Col] == 0 &&
-                        strategyManager.Sudoku[c3.Row, c3.Col] == 0 && Search(strategyManager, c1, c2, c3)) return;
+                    if (strategyManager.Sudoku[c1.Row, c1.Column] == 0 && strategyManager.Sudoku[c2.Row, c2.Column] == 0 &&
+                        strategyManager.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyManager, c1, c2, c3)) return;
                 }
             }
             
@@ -368,7 +368,7 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder
                 if (!removed.PeekAny(als.Possibilities)) continue;
                 foreach (var coord in als.EachCell())
                 {
-                    lighter.HighlightCell(coord.Row, coord.Col, (ChangeColoration) color);
+                    lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);
                 }
 
                 color++;

@@ -179,7 +179,7 @@ public class HighlightCompiler : IHighlightable
     public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
     {
         _instructions.Add(new HighlightInstruction(InstructionType.CircleRectangle, from.Possibility, from.Row,
-            from.Col, to.Possibility, to.Row, to.Col, coloration));
+            from.Column, to.Possibility, to.Row, to.Column, coloration));
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
@@ -192,7 +192,7 @@ public class HighlightCompiler : IHighlightable
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
         _instructions.Add(new HighlightInstruction(InstructionType.CreateSimpleLink,
-            from.Possibility, from.Row, from.Col, to.Possibility, to.Row, to.Col, linkStrength));
+            from.Possibility, from.Row, from.Column, to.Possibility, to.Row, to.Column, linkStrength));
     }
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)

@@ -64,7 +64,7 @@ public class PointingSetStrategy : AbstractStrategy
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
-                        int col = ppimg.First().Col;
+                        int col = ppimg.First().Column;
                         for (int row = 0; row < 9; row++)
                         {
                             if (row / 3 != miniRow) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
@@ -97,7 +97,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         {
             foreach (var pos in _miniPos)
             {
-                lighter.HighlightPossibility(_number, pos.Row, pos.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -116,7 +116,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
             lineNumber = firstChange.Row;
             unit = Unit.Row;
         }
-        else if (firstChange.Column == firstMini.Col)
+        else if (firstChange.Column == firstMini.Column)
         {
             lineNumber = firstChange.Column;
             unit = Unit.Column;

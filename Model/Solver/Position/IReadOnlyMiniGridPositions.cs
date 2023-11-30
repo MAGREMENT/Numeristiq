@@ -49,7 +49,7 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
         var result = one.Copy();
         foreach (var c in two)
         {
-            result.Remove(c.Row % 3, c.Col % 3);
+            result.Remove(c.Row % 3, c.Column % 3);
         }
 
         return result;

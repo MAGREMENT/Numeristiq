@@ -166,13 +166,13 @@ public class SolverBackgroundManager
     {
         foreach (var cell in cells)
         {
-            var topLeftX = TopLeftX(cell.Col) - _margin / 2;
+            var topLeftX = TopLeftX(cell.Column) - _margin / 2;
             var topLeftY = TopLeftY(cell.Row) - _margin / 2;
 
             var bottomRightX = topLeftX + _cellSize + _margin;
             var bottomRightY = topLeftY + _cellSize + _margin;
 
-            if (!cells.Contains(new Cell(cell.Row, cell.Col + 1)))
+            if (!cells.Contains(new Cell(cell.Row, cell.Column + 1)))
             {
                 _groups.Children.Add(new GeometryDrawing
                 {
@@ -186,7 +186,7 @@ public class SolverBackgroundManager
                 });
             }
 
-            if (!cells.Contains(new Cell(cell.Row, cell.Col - 1)))
+            if (!cells.Contains(new Cell(cell.Row, cell.Column - 1)))
             {
                 _groups.Children.Add(new GeometryDrawing
                 {
@@ -200,7 +200,7 @@ public class SolverBackgroundManager
                 });
             }
             
-            if (!cells.Contains(new Cell(cell.Row + 1, cell.Col)))
+            if (!cells.Contains(new Cell(cell.Row + 1, cell.Column)))
             {
                 _groups.Children.Add(new GeometryDrawing
                 {
@@ -214,7 +214,7 @@ public class SolverBackgroundManager
                 });
             }
 
-            if (!cells.Contains(new Cell(cell.Row - 1, cell.Col)))
+            if (!cells.Contains(new Cell(cell.Row - 1, cell.Column)))
             {
                 _groups.Children.Add(new GeometryDrawing
                 {

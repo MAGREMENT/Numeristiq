@@ -140,7 +140,7 @@ public class HiddenSetStrategy : AbstractStrategy
             {
                 foreach (var position in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(position.Row, position.Col, newVisited, strategyManager);
+                    RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, strategyManager);
                 }
 
                 if (strategyManager.ChangeBuffer.Commit(this,
@@ -235,8 +235,8 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
             {
                 foreach (var pos in _miniPos)
                 {
-                    if (snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
-                        lighter.HighlightPossibility(possibility, pos.Row, pos.Col, ChangeColoration.CauseOffOne);
+                    if (snapshot.PossibilitiesAt(pos.Row, pos.Column).Peek(possibility))
+                        lighter.HighlightPossibility(possibility, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
                 }
             }
 

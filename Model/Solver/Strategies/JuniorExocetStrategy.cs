@@ -45,7 +45,7 @@ public class JuniorExocetStrategy : AbstractStrategy
         if (unit != je2.GetUnit()) return false;
 
         if ((unit == Unit.Row && je1.Base1.Row / 3 != je2.Base1.Row / 3) ||
-            (unit == Unit.Column && je1.Base1.Col / 3 != je2.Base1.Col / 3)) return false;
+            (unit == Unit.Column && je1.Base1.Column / 3 != je2.Base1.Column / 3)) return false;
         
         HashSet<Cell> baseCells = new()
         {
@@ -227,9 +227,9 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                 if (coverHouse.Unit == Unit.Column)
                 {
-                    if(je.Target1.Col == coverHouse.Number)
+                    if(je.Target1.Column == coverHouse.Number)
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
-                    if (je.Target2.Col == coverHouse.Number)
+                    if (je.Target2.Column == coverHouse.Number)
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
                 }
                 else
@@ -248,7 +248,7 @@ public class JuniorExocetStrategy : AbstractStrategy
             bool ok = false;
             foreach (var cell in je.Target1MirrorNodes)
             {
-                if (strategyManager.Contains(cell.Row, cell.Col, possibility)) ok = true;
+                if (strategyManager.Contains(cell.Row, cell.Column, possibility)) ok = true;
             }
 
             if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
@@ -256,7 +256,7 @@ public class JuniorExocetStrategy : AbstractStrategy
             ok = false;
             foreach (var cell in je.Target2MirrorNodes)
             {
-                if (strategyManager.Contains(cell.Row, cell.Col, possibility)) ok = true;
+                if (strategyManager.Contains(cell.Row, cell.Column, possibility)) ok = true;
             }
 
             if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
@@ -293,7 +293,7 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                 if (!ok)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Column);
                     removedBaseCandidates[0].Add(p1);
                 }
             }
@@ -314,7 +314,7 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                 if (!ok)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Column);
                     removedBaseCandidates[1].Add(p2);
                 }
             }
@@ -420,12 +420,12 @@ public class JuniorExocetStrategy : AbstractStrategy
                 var gp = je.SCells[possibility];
                 foreach (var cell in gp)
                 {
-                    if (strategyManager.Sudoku[cell.Row, cell.Col] != 0) continue;
+                    if (strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
 
                     var copy = gp.Copy();
                     copy.VoidRow(cell.Row);
-                    copy.VoidColumn(cell.Col);
-                    copy.VoidMiniGrid(cell.Row / 3, cell.Col / 3);
+                    copy.VoidColumn(cell.Column);
+                    copy.VoidMiniGrid(cell.Row / 3, cell.Column / 3);
 
                     if (copy.Count == 0) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
@@ -433,7 +433,7 @@ public class JuniorExocetStrategy : AbstractStrategy
 
             foreach (var cell in je.AllPossibleSCells())
             {
-                if (strategyManager.Sudoku[cell.Row, cell.Col] != 0) continue;
+                if (strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
 
                 var count = 0;
                 foreach (var poss in revisedBaseCandidates)
@@ -519,7 +519,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
         List<Cell> sSolved = new();
         foreach (var cell in sCells)
         {
-            if (_je.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Col])) sSolved.Add(cell);
+            if (_je.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Column])) sSolved.Add(cell);
         }
 
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
@@ -577,7 +577,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
         List<Cell> sSolved = new();
         foreach (var cell in sCells)
         {
-            if (_je1.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Col])) sSolved.Add(cell);
+            if (_je1.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Column])) sSolved.Add(cell);
         }
         
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>

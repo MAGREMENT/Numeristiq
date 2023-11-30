@@ -121,12 +121,12 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
 
                 foreach (var cell in _chain.Elements[i].EachCell(poss))
                 {
-                    lighter.HighlightPossibility(poss, cell.Row, cell.Col, ChangeColoration.Neutral);
+                    lighter.HighlightPossibility(poss, cell.Row, cell.Column, ChangeColoration.Neutral);
                 }
                 
                 foreach (var cell in _chain.Elements[i + 1].EachCell(poss))
                 {
-                    lighter.HighlightPossibility(poss, cell.Row, cell.Col, ChangeColoration.Neutral);
+                    lighter.HighlightPossibility(poss, cell.Row, cell.Column, ChangeColoration.Neutral);
                 }
 
                 var minDistance = double.MaxValue;

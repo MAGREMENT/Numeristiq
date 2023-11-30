@@ -46,7 +46,7 @@ public class SubsetsXType : IAlternatingInferenceType<ILinkGraphElement>
     public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility single) return false;
-        strategyManager.ChangeBuffer.ProposePossibilityRemoval(single.Possibility, single.Row, single.Col);
+        strategyManager.ChangeBuffer.ProposePossibilityRemoval(single.Possibility, single.Row, single.Column);
 
         return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
@@ -54,7 +54,7 @@ public class SubsetsXType : IAlternatingInferenceType<ILinkGraphElement>
     public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility single) return false;
-        strategyManager.ChangeBuffer.ProposeSolutionAddition(single.Possibility, single.Row, single.Col);
+        strategyManager.ChangeBuffer.ProposeSolutionAddition(single.Possibility, single.Row, single.Column);
         
         return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
     }

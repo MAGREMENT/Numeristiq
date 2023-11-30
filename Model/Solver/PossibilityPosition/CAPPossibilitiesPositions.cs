@@ -40,7 +40,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     {
         foreach (var cell in _cells)
         {
-            if (_snapshot.PossibilitiesAt(cell.Row, cell.Col).Peek(possibility)) yield return cell;
+            if (_snapshot.PossibilitiesAt(cell.Row, cell.Column).Peek(possibility)) yield return cell;
         }
     }
 

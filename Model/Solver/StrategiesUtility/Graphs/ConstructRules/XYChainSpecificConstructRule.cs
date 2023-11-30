@@ -70,8 +70,8 @@ public class XYChainSpecificConstructRule : IConstructRule
                         {
                             if (strategyManager.PossibilitiesAt(asArray[j]).Count != 2) continue;
                             
-                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Col, number),
-                                new CellPossibility(asArray[j].Row, asArray[j].Col, number), LinkStrength.Weak);
+                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
+                                new CellPossibility(asArray[j].Row, asArray[j].Column, number), LinkStrength.Weak);
                         }
                     }
                 }

@@ -18,7 +18,7 @@ public static class Cells
 
     public static bool ShareAUnit(Cell one, Cell two)
     {
-        return ShareAUnit(one.Row, one.Col, two.Row, two.Col);
+        return ShareAUnit(one.Row, one.Column, two.Row, two.Column);
     }
 
     public static bool ShareAUnitWithAll(Cell cell, List<Cell> cells)
@@ -37,12 +37,12 @@ public static class Cells
         
         for (int i = 0; i < 9; i++)
         {
-            if (i != cell.Row) result.Add(new Cell(i, cell.Col));
-            if (i != cell.Col) result.Add(new Cell(cell.Row, i));
+            if (i != cell.Row) result.Add(new Cell(i, cell.Column));
+            if (i != cell.Column) result.Add(new Cell(cell.Row, i));
         }
 
         var startRow = cell.Row / 3 * 3;
-        var startCol = cell.Col / 3 * 3;
+        var startCol = cell.Column / 3 * 3;
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -50,7 +50,7 @@ public static class Cells
                 var row = startRow + i;
                 var col = startCol + i;
 
-                if (row != cell.Row && col != cell.Col) result.Add(new Cell(row, col));
+                if (row != cell.Row && col != cell.Column) result.Add(new Cell(row, col));
             }
         }
 
@@ -64,7 +64,7 @@ public static class Cells
 
     public static IEnumerable<Cell> SharedSeenCells(Cell one, Cell two)
     {
-        return SharedSeenCells(one.Row, one.Col, two.Row, two.Col);
+        return SharedSeenCells(one.Row, one.Column, two.Row, two.Column);
     }
 
     public static IEnumerable<Cell> SharedSeenCells(Cell one, Cell two, params Cell[] others)
@@ -120,8 +120,8 @@ public static class Cells
         if (list.Count == 1) return SeenCells(list[^1]); //TODO change to SeenEmptyCells
 
         var result = new List<Cell>();
-        foreach (var coord in Searcher.SharedSeenEmptyCells(strategyManager, list[0].Row, list[0].Col,
-                     list[1].Row, list[1].Col))
+        foreach (var coord in Searcher.SharedSeenEmptyCells(strategyManager, list[0].Row, list[0].Column,
+                     list[1].Row, list[1].Column))
         {
             bool ok = true;
             for (int i = 2; i < list.Count; i++)
@@ -143,7 +143,7 @@ public static class Cells
         params Cell[] others)
     {
         List<Cell> result = new List<Cell>();
-        foreach (var coord in SharedSeenEmptyCells(strategyManager, one.Row, one.Col, two.Row, two.Col))
+        foreach (var coord in SharedSeenEmptyCells(strategyManager, one.Row, one.Column, two.Row, two.Column))
         {
             bool ok = true;
             foreach (var other in others)
@@ -172,7 +172,7 @@ public static class Cells
         
         if (floor[0].Row == floor[1].Row)
         {
-            if (floor[0].Col / 3 == floor[1].Col / 3)
+            if (floor[0].Column / 3 == floor[1].Column / 3)
             {
                 var miniRow = floor[0].Row / 3;
                 for (int row = 0; row < 9; row++)
@@ -181,8 +181,8 @@ public static class Cells
 
                     yield return new[]
                     {
-                        new Cell(row, floor[0].Col),
-                        new Cell(row, floor[1].Col)
+                        new Cell(row, floor[0].Column),
+                        new Cell(row, floor[1].Column)
                     };
                 }
             }
@@ -195,17 +195,17 @@ public static class Cells
 
                     yield return new[]
                     {
-                        new Cell(row, floor[0].Col),
-                        new Cell(row, floor[1].Col)
+                        new Cell(row, floor[0].Column),
+                        new Cell(row, floor[1].Column)
                     };
                 }
             }
         }
-        else if (floor[0].Col == floor[1].Col)
+        else if (floor[0].Column == floor[1].Column)
         {
             if (floor[0].Row / 3 == floor[1].Row / 3)
             {
-                var miniCol = floor[0].Col / 3;
+                var miniCol = floor[0].Column / 3;
                 for (int col = 0; col < 9; col++)
                 {
                     if (miniCol == col / 3) continue;
@@ -219,10 +219,10 @@ public static class Cells
             }
             else
             {
-                var startCol = floor[0].Col / 3 * 3;
+                var startCol = floor[0].Column / 3 * 3;
                 for (int col = startCol; col < startCol + 3; col++)
                 {
-                    if (col == floor[0].Col) continue;
+                    if (col == floor[0].Column) continue;
 
                     yield return new[]
                     {
@@ -234,12 +234,12 @@ public static class Cells
         }
         else
         {
-            if (!AreSpreadOverTwoBoxes(floor[0].Row, floor[0].Col, floor[1].Row, floor[1].Col)) yield break;
+            if (!AreSpreadOverTwoBoxes(floor[0].Row, floor[0].Column, floor[1].Row, floor[1].Column)) yield break;
         
             yield return new[]
             {
-                new Cell(floor[0].Row, floor[1].Col),
-                new Cell(floor[1].Row, floor[0].Col)
+                new Cell(floor[0].Row, floor[1].Column),
+                new Cell(floor[1].Row, floor[0].Column)
             };  
         }
     }
@@ -271,10 +271,10 @@ public static class Cells
     
     public static double Distance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
     {
-        var oneX = oneCell.Col * 3 + onePoss % 3;
+        var oneX = oneCell.Column * 3 + onePoss % 3;
         var oneY = oneCell.Row * 3 + onePoss / 3;
 
-        var twoX = twoCell.Col * 3 + twoPoss % 3;
+        var twoX = twoCell.Column * 3 + twoPoss % 3;
         var twoY = twoCell.Row * 3 + twoPoss / 3;
 
         var dx = twoX - oneX;
@@ -288,63 +288,63 @@ public interface ICellPossibility
 {
     public int Possibility { get; }
     public int Row { get; }
-    public int Col { get; } 
+    public int Column { get; } 
 }
 
 public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
 {
     public int Possibility { get; }
     public int Row { get; }
-    public int Col { get; }
+    public int Column { get; }
 
     public CellPossibility(int row, int col, int possibility)
     {
         Possibility = possibility;
         Row = row;
-        Col = col;
+        Column = col;
     }
 
     public CellPossibility(Cell coord, int possibility)
     {
         Possibility = possibility;
         Row = coord.Row;
-        Col = coord.Col;
+        Column = coord.Column;
     }
     
     public bool ShareAUnit(CellPossibility coord)
     {
-        return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
+        return Cells.ShareAUnit(Row, Column, coord.Row, coord.Column);
     }
     
     public bool ShareAUnit(Cell coord)
     {
-        return Cells.ShareAUnit(Row, Col, coord.Row, coord.Col);
+        return Cells.ShareAUnit(Row, Column, coord.Row, coord.Column);
     }
 
     public IEnumerable<Cell> SharedSeenCells(CellPossibility coord)
     {
-        return Cells.SharedSeenCells(Row, Col, coord.Row, coord.Col);
+        return Cells.SharedSeenCells(Row, Column, coord.Row, coord.Column);
     }
 
     public bool AreWeaklyLinked(CellPossibility cp)
     {
-        return (cp.Row == Row && cp.Col == Col) || (cp.Possibility == Possibility && ShareAUnit(cp));
+        return (cp.Row == Row && cp.Column == Column) || (cp.Possibility == Possibility && ShareAUnit(cp));
     }
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Possibility, Row, Col);
+        return HashCode.Combine(Possibility, Row, Column);
     }
 
     public override bool Equals(object? obj)
     {
         return (obj is CellPossibility cp && cp == this) ||
-               (obj is ICellPossibility icp && icp.Possibility == Possibility && icp.Row == Row && icp.Col == Col);
+               (obj is ICellPossibility icp && icp.Possibility == Possibility && icp.Row == Row && icp.Column == Column);
     }
 
     public override string ToString()
     {
-        return $"{Possibility}r{Row + 1}c{Col + 1}";
+        return $"{Possibility}r{Row + 1}c{Column + 1}";
     }
 
     public int Rank => 1;
@@ -356,7 +356,7 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
 
     public Cell[] EveryCell()
     {
-        return new Cell[] { new(Row, Col) };
+        return new Cell[] { new(Row, Column) };
     }
 
     public Possibilities EveryPossibilities()
@@ -368,12 +368,12 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
 
     public Cell ToCell()
     {
-        return new Cell(Row, Col);
+        return new Cell(Row, Column);
     }
 
     public static bool operator ==(CellPossibility left, CellPossibility right)
     {
-        return left.Possibility == right.Possibility && left.Row == right.Row && left.Col == right.Col;
+        return left.Possibility == right.Possibility && left.Row == right.Row && left.Column == right.Column;
     }
 
     public static bool operator !=(CellPossibility left, CellPossibility right)
@@ -403,24 +403,10 @@ public class CellPossibilities
     
     public CellPossibilities(CellPossibility coord)
     {
-        Cell = new Cell(coord.Row, coord.Col);
+        Cell = new Cell(coord.Row, coord.Column);
         var buffer = Possibility.Possibilities.NewEmpty();
         buffer.Add(coord.Possibility);
         Possibilities = buffer;
-    }
-
-    public CellPossibility[] ToCellPossibility()
-    {
-        var result = new CellPossibility[Possibilities.Count];
-
-        var cursor = 0;
-        foreach (var possibility in Possibilities)
-        {
-            result[cursor] = new CellPossibility(Cell.Row, Cell.Col, possibility);
-            cursor++;
-        }
-
-        return result;
     }
 
     public override bool Equals(object? obj)

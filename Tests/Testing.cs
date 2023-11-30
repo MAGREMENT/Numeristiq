@@ -193,7 +193,7 @@ public static class Testing //TODO put this in unit tests
         Console.WriteLine("Count : " + pos.Count);
         foreach (var n in pos)
         {
-            Console.WriteLine("Has : " + n.Row + ", " + n.Col);
+            Console.WriteLine("Has : " + n.Row + ", " + n.Column);
         }
     }
 }

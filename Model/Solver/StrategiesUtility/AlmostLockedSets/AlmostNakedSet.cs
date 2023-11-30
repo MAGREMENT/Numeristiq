@@ -21,7 +21,7 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
     {
         foreach (var coord in NakedSet)
         {
-            if (coord.Cell.Row == row && coord.Cell.Col == col) return true;
+            if (coord.Cell.Row == row && coord.Cell.Column == col) return true;
         }
 
         return false;

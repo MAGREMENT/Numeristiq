@@ -141,7 +141,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                     
                         }
 
-                        if (colB && friendPos.Col == pos.Col)
+                        if (colB && friendPos.Column == pos.Column)
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {
@@ -154,7 +154,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                             }
                         }
 
-                        if (miniB && friendPos.Row / 3 == pos.Row / 3 && friendPos.Col / 3 == pos.Col / 3)
+                        if (miniB && friendPos.Row / 3 == pos.Row / 3 && friendPos.Column / 3 == pos.Column / 3)
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {
@@ -169,7 +169,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                     }
                     else
                     {
-                        if (cellB && friendPos.Row == pos.Row && friendPos.Col == pos.Col)
+                        if (cellB && friendPos.Row == pos.Row && friendPos.Column == pos.Column)
                         {
                             if (result.TryGetColoredElement(friend, out var coloring))
                             {

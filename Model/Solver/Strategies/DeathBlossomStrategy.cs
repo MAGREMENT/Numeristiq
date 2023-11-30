@@ -87,7 +87,7 @@ public class DeathBlossomStrategy : AbstractStrategy
 
                             foreach (var seenCell in Cells.SharedSeenCells(buffer))
                             {
-                                if (seenCell == current || strategyManager.Sudoku[seenCell.Row, seenCell.Col] != 0) continue;
+                                if (seenCell == current || strategyManager.Sudoku[seenCell.Row, seenCell.Column] != 0) continue;
 
                                 if (!eliminations.TryGetValue(seenCell, out var value))
                                 {
@@ -120,7 +120,7 @@ public class DeathBlossomStrategy : AbstractStrategy
     private void Process(IStrategyManager strategyManager, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
     {
         List<Cell> buffer = new();
-        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Col);
+        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
 
         foreach (var als in sets)
         {
@@ -137,7 +137,7 @@ public class DeathBlossomStrategy : AbstractStrategy
             {
                 if (cell == stem) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
         
@@ -164,7 +164,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
         {
             foreach (var stem in _stems)
             {
-                if (snapshot.Sudoku[stem.Row, stem.Col] != 0) continue;
+                if (snapshot.Sudoku[stem.Row, stem.Column] != 0) continue;
                 lighter.HighlightCell(stem, ChangeColoration.Neutral);
             }
             

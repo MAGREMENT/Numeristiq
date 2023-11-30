@@ -38,7 +38,7 @@ public class ChangeBuffer
 
     public void ProposePossibilityRemoval(CellPossibility cp)
     {
-        if (!_m.PossibilitiesAt(cp.Row, cp.Col).Peek(cp.Possibility)) return;
+        if (!_m.PossibilitiesAt(cp.Row, cp.Column).Peek(cp.Possibility)) return;
         
         _possibilityRemovedBuffer.Add(cp);
     }
@@ -55,7 +55,7 @@ public class ChangeBuffer
 
     public void ProposeSolutionAddition(CellPossibility cp)
     {
-        if(_m.Sudoku[cp.Row, cp.Col] != 0) return;
+        if(_m.Sudoku[cp.Row, cp.Column] != 0) return;
 
         _solutionAddedBuffer.Add(cp);
     }
@@ -96,13 +96,13 @@ public class ChangeBuffer
         foreach (var solution in _solutionAddedBuffer)
         {
             changes.Add(new SolverChange(ChangeType.Solution, solution.Possibility, 
-                solution.Row, solution.Col));
+                solution.Row, solution.Column));
         }
         
         foreach (var possibility in _possibilityRemovedBuffer)
         {
             changes.Add(new SolverChange(ChangeType.Possibility, 
-                possibility.Possibility, possibility.Row, possibility.Col));
+                possibility.Possibility, possibility.Row, possibility.Column));
         }
         
         _possibilityRemovedBuffer.Clear();

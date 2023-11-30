@@ -58,7 +58,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             {
                 var second = toSearch[j];
 
-                bool sameCell = first.Row == second.Row && first.Col == second.Col;
+                bool sameCell = first.Row == second.Row && first.Column == second.Column;
                 bool sameUnitAndPossibility = first.Possibility == second.Possibility && first.ShareAUnit(second);
 
                 if (sameCell || sameUnitAndPossibility)
@@ -74,8 +74,8 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
 
             var current = seen[first.Possibility - 1];
             current.FillRow(first.Row);
-            current.FillColumn(first.Col);
-            current.FillMiniGrid(first.Row / 3, first.Col / 3);
+            current.FillColumn(first.Column);
+            current.FillMiniGrid(first.Row / 3, first.Column / 3);
         }
 
         for (int row = 0; row < 9; row++)
@@ -122,24 +122,24 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                 {
                     foreach (var coord in first.SharedSeenCells(second))
                     {
-                        var current = new CellPossibility(coord.Row, coord.Col, first.Possibility);
+                        var current = new CellPossibility(coord.Row, coord.Column, first.Possibility);
                         if(inGraph.Contains(current)) continue; 
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(current);
                     }
                 }
                 else
                 {
-                    if (first.Row == second.Row && first.Col == second.Col)
-                        RemoveAllExcept(strategyManager, first.Row, first.Col, first.Possibility, second.Possibility);
+                    if (first.Row == second.Row && first.Column == second.Column)
+                        RemoveAllExcept(strategyManager, first.Row, first.Column, first.Possibility, second.Possibility);
                     else if(first.ShareAUnit(second))
                     {
-                        if(strategyManager.PossibilitiesAt(first.Row, first.Col).Peek(second.Possibility) &&
-                           !inGraph.Contains(new CellPossibility(first.Row, first.Col, second.Possibility)))
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(second.Possibility, first.Row, first.Col);
+                        if(strategyManager.PossibilitiesAt(first.Row, first.Column).Peek(second.Possibility) &&
+                           !inGraph.Contains(new CellPossibility(first.Row, first.Column, second.Possibility)))
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(second.Possibility, first.Row, first.Column);
                         
-                        if(strategyManager.PossibilitiesAt(second.Row, second.Col).Peek(first.Possibility) &&
-                           !inGraph.Contains(new CellPossibility(second.Row, second.Col, first.Possibility)))
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(first.Possibility, second.Row, second.Col);
+                        if(strategyManager.PossibilitiesAt(second.Row, second.Column).Peek(first.Possibility) &&
+                           !inGraph.Contains(new CellPossibility(second.Row, second.Column, first.Possibility)))
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(first.Possibility, second.Row, second.Column);
                     }
                 }
             }

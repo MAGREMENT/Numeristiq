@@ -134,7 +134,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
         //Type 4 & 5
         bool oneOk = false;
         bool twoOke = false;
-        if (roof[0].Row == roof[1].Row || roof[0].Col == roof[1].Col)
+        if (roof[0].Row == roof[1].Row || roof[0].Column == roof[1].Column)
         {
             //Type 4
             foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
@@ -161,7 +161,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
             //Type 5
             for (int unit = 0; unit < 9; unit++)
             {
-                if (unit != roof[0].Col && unit != roof[1].Col)
+                if (unit != roof[0].Column && unit != roof[1].Column)
                 {
                     if (strategyManager.PossibilitiesAt(roof[0].Row, unit).Peek(values.One)) oneOk = true;
                     if (strategyManager.PossibilitiesAt(roof[0].Row, unit).Peek(values.Two)) twoOke = true;
@@ -172,11 +172,11 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
                 
                 if (unit != roof[0].Row && unit != roof[1].Row)
                 {
-                    if (strategyManager.PossibilitiesAt(unit, roof[0].Col).Peek(values.One)) oneOk = true;
-                    if (strategyManager.PossibilitiesAt(unit, roof[0].Col).Peek(values.Two)) twoOke = true;
+                    if (strategyManager.PossibilitiesAt(unit, roof[0].Column).Peek(values.One)) oneOk = true;
+                    if (strategyManager.PossibilitiesAt(unit, roof[0].Column).Peek(values.Two)) twoOke = true;
                     
-                    if (strategyManager.PossibilitiesAt(unit, roof[1].Col).Peek(values.One)) oneOk = true;
-                    if (strategyManager.PossibilitiesAt(unit, roof[1].Col).Peek(values.Two)) twoOke = true;
+                    if (strategyManager.PossibilitiesAt(unit, roof[1].Column).Peek(values.One)) oneOk = true;
+                    if (strategyManager.PossibilitiesAt(unit, roof[1].Column).Peek(values.Two)) twoOke = true;
                 }
                 
                 if (oneOk && twoOke) break;
@@ -199,7 +199,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
         //Type 6 (aka hidden type 2)
-        if (roof[0].Row == roof[1].Row || roof[0].Col == roof[1].Col)
+        if (roof[0].Row == roof[1].Row || roof[0].Column == roof[1].Column)
         {
             strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
             var graph = strategyManager.GraphManager.SimpleLinkGraph;
@@ -265,13 +265,13 @@ public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other size
         for (int row = 0; row < 9; row++)
         {
             if(row == cell.Row) continue;
-            var rowPossibilities = strategyManager.PossibilitiesAt(row, cell.Col);
+            var rowPossibilities = strategyManager.PossibilitiesAt(row, cell.Column);
 
             if (!rowPossibilities.Peek(values.One) || !rowPossibilities.Peek(values.Two)) continue;
 
             for (int col = 0; col < 9; col++)
             {
-                if (col == cell.Col || !Cells.AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Col)) continue;
+                if (col == cell.Column || !Cells.AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Column)) continue;
                 var colPossibilities = strategyManager.PossibilitiesAt(cell.Row, col);
 
                 if (!colPossibilities.Peek(values.One) || !colPossibilities.Peek(values.Two)) continue;
@@ -468,13 +468,13 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
             lighter.HighlightCell(_initial, ChangeColoration.CauseOffTwo);
 
             lighter.HighlightCell(_opposite, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_opposite.Row, _initial.Col, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_initial.Row, _opposite.Col, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_opposite.Row, _initial.Column, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_initial.Row, _opposite.Column, ChangeColoration.CauseOffOne);
 
             lighter.CreateLink(new CellPossibility(_opposite, _stronglyLinkedPossibility), new CellPossibility(
-                _opposite.Row, _initial.Col, _stronglyLinkedPossibility), LinkStrength.Strong);
+                _opposite.Row, _initial.Column, _stronglyLinkedPossibility), LinkStrength.Strong);
             lighter.CreateLink(new CellPossibility(_opposite, _stronglyLinkedPossibility), new CellPossibility(
-                _initial.Row, _opposite.Col, _stronglyLinkedPossibility), LinkStrength.Strong);
+                _initial.Row, _opposite.Column, _stronglyLinkedPossibility), LinkStrength.Strong);
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });

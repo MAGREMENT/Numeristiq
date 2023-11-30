@@ -87,7 +87,7 @@ public class WXYZWingStrategy : AbstractStrategy
     {
         for (int col = 0; col < 9; col++)
         {
-            if(col / 3 == hinge.Col / 3) continue;
+            if(col / 3 == hinge.Column / 3) continue;
 
             var third = strategyManager.PossibilitiesAt(hinge.Row, col);
             if(third.Count is > 4 or < 1) continue;
@@ -106,7 +106,7 @@ public class WXYZWingStrategy : AbstractStrategy
             {
                 for (int otherCol = col + 1; otherCol < 9; otherCol++)
                 {
-                    if(otherCol / 3 == hinge.Col / 3) continue;
+                    if(otherCol / 3 == hinge.Column / 3) continue;
                     
                     var fourth = strategyManager.PossibilitiesAt(hinge.Row, otherCol);
                     if(fourth.Count is > 4 or < 1) continue;
@@ -133,7 +133,7 @@ public class WXYZWingStrategy : AbstractStrategy
         {
             if(row / 3 == hinge.Row / 3) continue;
 
-            var third = strategyManager.PossibilitiesAt(row, hinge.Col);
+            var third = strategyManager.PossibilitiesAt(row, hinge.Column);
             if(third.Count is > 4 or < 1) continue;
 
             third = possibilities.Or(third);
@@ -144,7 +144,7 @@ public class WXYZWingStrategy : AbstractStrategy
 
             if (miniPositions.Count + rowPositions.Count == 4)
             {
-                if(Process(strategyManager, miniPositions, rowPositions, Unit.Column, hinge.Col, third)) return true;
+                if(Process(strategyManager, miniPositions, rowPositions, Unit.Column, hinge.Column, third)) return true;
             }
             else
             {
@@ -152,7 +152,7 @@ public class WXYZWingStrategy : AbstractStrategy
                 {
                     if(otherRow / 3 == hinge.Row / 3) continue;
                     
-                    var fourth = strategyManager.PossibilitiesAt(otherRow, hinge.Col);
+                    var fourth = strategyManager.PossibilitiesAt(otherRow, hinge.Column);
                     if(fourth.Count is > 4 or < 1) continue;
 
                     fourth = fourth.Or(third);
@@ -161,7 +161,7 @@ public class WXYZWingStrategy : AbstractStrategy
                     var rowPositions2 = rowPositions.Copy();
                     rowPositions2.Add(otherRow);
 
-                    if (Process(strategyManager, miniPositions, rowPositions2, Unit.Column, hinge.Col, fourth))
+                    if (Process(strategyManager, miniPositions, rowPositions2, Unit.Column, hinge.Column, fourth))
                         return true;
                 }
             }
@@ -184,7 +184,7 @@ public class WXYZWingStrategy : AbstractStrategy
             
             foreach (var current in miniPositions)
             {
-                if (!strategyManager.PossibilitiesAt(current.Row, current.Col).Peek(possibility)) continue;
+                if (!strategyManager.PossibilitiesAt(current.Row, current.Column).Peek(possibility)) continue;
 
                 if (sharedUnits is null) sharedUnits = new SharedUnits(current);
                 else
@@ -211,7 +211,7 @@ public class WXYZWingStrategy : AbstractStrategy
                     _ => throw new Exception()
                 };
                 
-                if (!strategyManager.PossibilitiesAt(current.Row, current.Col).Peek(possibility)) continue;
+                if (!strategyManager.PossibilitiesAt(current.Row, current.Column).Peek(possibility)) continue;
 
                 if (sharedUnits is null) sharedUnits = new SharedUnits(current);
                 else
@@ -233,7 +233,7 @@ public class WXYZWingStrategy : AbstractStrategy
         List<Cell> cells = new();
         foreach (var cell in miniPositions)
         {
-            if (strategyManager.PossibilitiesAt(cell.Row, cell.Col).Peek(buffer)) cells.Add(cell);
+            if (strategyManager.PossibilitiesAt(cell.Row, cell.Column).Peek(buffer)) cells.Add(cell);
         }
             
         foreach (var other in linePositions)
@@ -245,14 +245,14 @@ public class WXYZWingStrategy : AbstractStrategy
                 _ => throw new Exception()
             };
                 
-            if (strategyManager.PossibilitiesAt(cell.Row, cell.Col).Peek(buffer)) cells.Add(cell);
+            if (strategyManager.PossibilitiesAt(cell.Row, cell.Column).Peek(buffer)) cells.Add(cell);
         }
 
         if (cells.Count == 1) return false;
 
         foreach (var coord in Cells.SharedSeenCells(cells))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Column);
         }
 
         return strategyManager.ChangeBuffer.Commit(this,

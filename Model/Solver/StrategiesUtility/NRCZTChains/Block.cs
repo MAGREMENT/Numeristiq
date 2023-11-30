@@ -37,13 +37,13 @@ public readonly struct Block
     {
         if (Start.Possibility == End.Possibility)
         {
-            return $"n{Start.Possibility}" + " {" + $"r{Start.Row + 1}c{Start.Col + 1} " +
-                   $"r{End.Row + 1}c{End.Col + 1}" + "}";
+            return $"n{Start.Possibility}" + " {" + $"r{Start.Row + 1}c{Start.Column + 1} " +
+                   $"r{End.Row + 1}c{End.Column + 1}" + "}";
         }
 
-        if (Start.Row == End.Row && Start.Col == End.Col)
+        if (Start.Row == End.Row && Start.Column == End.Column)
         {
-            return $"n{Start.Possibility} n{End.Possibility}" + " {" + $"r{Start.Row + 1}c{Start.Col + 1}" + "}";
+            return $"n{Start.Possibility} n{End.Possibility}" + " {" + $"r{Start.Row + 1}c{Start.Column + 1}" + "}";
         }
 
         return "?";

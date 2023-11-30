@@ -43,8 +43,8 @@ public class HighlighterTranslator : IHighlightable
 
     public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
     {
-        _view.EncircleRectangle(from.Row, from.Col, from.Possibility, to.Row,
-            to.Col, to.Possibility, coloration);
+        _view.EncircleRectangle(from.Row, from.Column, from.Possibility, to.Row,
+            to.Column, to.Possibility, coloration);
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
@@ -52,15 +52,15 @@ public class HighlighterTranslator : IHighlightable
         switch (element)
         {
             case CellPossibility cp :
-                HighlightPossibility(cp.Possibility, cp.Row, cp.Col, coloration);
+                HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
                 break;
             case PointingRow pr :
                 var minCol = 9;
                 var maxCol = -1;
                 foreach (var cell in pr.EveryCell())
                 {
-                    if (cell.Col < minCol) minCol = cell.Col;
-                    if (cell.Col > maxCol) maxCol = cell.Col;
+                    if (cell.Column < minCol) minCol = cell.Column;
+                    if (cell.Column > maxCol) maxCol = cell.Column;
                 }
                 
                 _view.EncircleRectangle(pr.Row, minCol, pr.Possibility, pr.Row,
@@ -86,7 +86,7 @@ public class HighlighterTranslator : IHighlightable
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
-        _view.CreateLink(from.Row, from.Col, from.Possibility, to.Row, to.Col,
+        _view.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
             to.Possibility, linkStrength);
     }
 

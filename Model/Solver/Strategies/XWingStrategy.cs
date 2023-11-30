@@ -146,7 +146,7 @@ public class XWingReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(_number, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

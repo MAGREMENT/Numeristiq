@@ -164,19 +164,19 @@ public class FireworksStrategy : AbstractStrategy
         foreach (var possibility in manager.PossibilitiesAt(fireworks.Cross))
         {
             if (!fireworks.Possibilities.Peek(possibility)) manager.ChangeBuffer.ProposePossibilityRemoval(possibility,
-                    fireworks.Cross.Row, fireworks.Cross.Col);
+                    fireworks.Cross.Row, fireworks.Cross.Column);
         }
         
         foreach (var possibility in manager.PossibilitiesAt(fireworks.RowWing))
         {
             if (!fireworks.Possibilities.Peek(possibility)) manager.ChangeBuffer.ProposePossibilityRemoval(possibility,
-                fireworks.RowWing.Row, fireworks.RowWing.Col);
+                fireworks.RowWing.Row, fireworks.RowWing.Column);
         }
         
         foreach (var possibility in manager.PossibilitiesAt(fireworks.ColumnWing))
         {
             if (!fireworks.Possibilities.Peek(possibility)) manager.ChangeBuffer.ProposePossibilityRemoval(possibility,
-                fireworks.ColumnWing.Row, fireworks.ColumnWing.Col);
+                fireworks.ColumnWing.Row, fireworks.ColumnWing.Column);
         }
 
         return manager.ChangeBuffer.Commit(this, new FireworksReportBuilder(fireworks));
@@ -198,25 +198,25 @@ public class FireworksStrategy : AbstractStrategy
                 foreach (var possibility in manager.PossibilitiesAt(one.Cross))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Col);
+                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
                 }
                 
                 foreach (var possibility in manager.PossibilitiesAt(one.RowWing))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.RowWing.Row, one.RowWing.Col);
+                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.RowWing.Row, one.RowWing.Column);
                 }
                 
                 foreach (var possibility in manager.PossibilitiesAt(two.Cross))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Col);
+                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
                 }
                 
                 foreach (var possibility in manager.PossibilitiesAt(two.RowWing))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Col);
+                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Column);
                 }
 
                 if (manager.ChangeBuffer.Commit(this, new FireworksReportBuilder(one, two)) &&
@@ -279,7 +279,7 @@ public class FireworksStrategy : AbstractStrategy
 
                         foreach (var possibility in df.Possibilities)
                         {
-                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, sharedSeenCell.Row, sharedSeenCell.Col);
+                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, sharedSeenCell.Row, sharedSeenCell.Column);
                         }
                     }
 
@@ -307,7 +307,7 @@ public class FireworksStrategy : AbstractStrategy
                 {
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Col);
+                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
                     if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
@@ -324,7 +324,7 @@ public class FireworksStrategy : AbstractStrategy
                 {
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Col);
+                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
                     if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
@@ -342,37 +342,37 @@ public class FireworksStrategy : AbstractStrategy
                 var two = fireworksList[j];
                 
                 if(!one.Possibilities.Equals(two.Possibilities) || one.ColumnWing.Row != two.ColumnWing.Row
-                   || one.RowWing.Col != two.RowWing.Col) continue;
+                   || one.RowWing.Column != two.RowWing.Column) continue;
 
-                var center = new Cell(one.ColumnWing.Row, two.RowWing.Col);
+                var center = new Cell(one.ColumnWing.Row, two.RowWing.Column);
                 if (!manager.PossibilitiesAt(center).Equals(one.Possibilities)) continue;
 
                 foreach (var possibility in manager.PossibilitiesAt(one.Cross))
                 {
                     if (one.Possibilities.Peek(possibility)) continue;
                     
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Col);
+                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
                 }
                 
                 foreach (var possibility in manager.PossibilitiesAt(two.Cross))
                 {
                     if (one.Possibilities.Peek(possibility)) continue;
                     
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Col);
+                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
                 }
 
                 foreach (var possibility in one.Possibilities)
                 {
                     for (int unit = 0; unit < 9; unit++)
                     {
-                        if (unit != center.Col && unit != one.ColumnWing.Col && unit != two.ColumnWing.Col)
+                        if (unit != center.Column && unit != one.ColumnWing.Column && unit != two.ColumnWing.Column)
                         {
                             manager.ChangeBuffer.ProposePossibilityRemoval(possibility, center.Row, unit);
                         }
 
                         if (unit != center.Row && unit != one.RowWing.Row && unit != two.RowWing.Row)
                         {
-                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, unit, center.Col);
+                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, unit, center.Column);
                         }
                     }  
                 }
@@ -405,7 +405,7 @@ public class Fireworks
         for (int i = 1; i < 3; i++)
         {
             if (asArray[i].Row == first.Row) row = i;
-            if (asArray[i].Col == first.Col) col = i;
+            if (asArray[i].Column == first.Column) col = i;
         }
 
         switch (row, col)
@@ -445,14 +445,14 @@ public static class FireworksHighlightUtils
         foreach (var possibility in firework.Possibilities)
         {
             if(snapshot.PossibilitiesAt(firework.ColumnWing).Peek(possibility))
-                lighter.HighlightPossibility(possibility, firework.ColumnWing.Row, firework.ColumnWing.Col,
+                lighter.HighlightPossibility(possibility, firework.ColumnWing.Row, firework.ColumnWing.Column,
                     (ChangeColoration) startColor);
                 
             if(snapshot.PossibilitiesAt(firework.RowWing).Peek(possibility))
-                lighter.HighlightPossibility(possibility, firework.RowWing.Row, firework.RowWing.Col,
+                lighter.HighlightPossibility(possibility, firework.RowWing.Row, firework.RowWing.Column,
                     (ChangeColoration) startColor);
                 
-            lighter.HighlightPossibility(possibility, firework.Cross.Row, firework.Cross.Col,
+            lighter.HighlightPossibility(possibility, firework.Cross.Row, firework.Cross.Column,
                 (ChangeColoration) startColor);
 
             startColor++;
@@ -508,7 +508,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
             {
                 foreach (var cell in als.EachCell())
                 {
-                    lighter.HighlightCell(cell.Row, cell.Col, (ChangeColoration) color);
+                    lighter.HighlightCell(cell.Row, cell.Column, (ChangeColoration) color);
                 }
                 
                 color++;

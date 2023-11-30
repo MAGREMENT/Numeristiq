@@ -89,7 +89,7 @@ public class SimpleColoringStrategy : AbstractStrategy
                     var current = new CellPossibility(coord, on.Possibility);
                     if (inGraph.Contains(current)) continue;
                     
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Column);
                 }
             }
         }

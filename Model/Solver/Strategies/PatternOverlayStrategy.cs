@@ -106,12 +106,12 @@ public class PatternOverlayStrategy : AbstractStrategy
         
         foreach (var cell in patterns[0].And(patterns))
         {
-            strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cell.Row, cell.Col);
+            strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cell.Row, cell.Column);
         }
 
         foreach (var cell in strategyManager.PositionsFor(number).Difference(patterns[0].Or(patterns)))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
         return strategyManager.ChangeBuffer.Commit(this, new PatternOverlayReportBuilder(patterns, number))

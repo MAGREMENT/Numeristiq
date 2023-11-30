@@ -12,7 +12,7 @@ public interface IPossibilitiesHolder
 
     IReadOnlyPossibilities PossibilitiesAt(Cell cell)
     {
-        return PossibilitiesAt(cell.Row, cell.Col);
+        return PossibilitiesAt(cell.Row, cell.Column);
     }
 
     public bool ContainsAny(int row, int col, Possibilities possibilities)
@@ -23,7 +23,7 @@ public interface IPossibilitiesHolder
 
     public bool ContainsAny(Cell cell, Possibilities possibilities)
     {
-        return ContainsAny(cell.Row, cell.Col, possibilities);
+        return ContainsAny(cell.Row, cell.Column, possibilities);
     }
 
     public bool Contains(int row, int col, int possibility)

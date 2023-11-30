@@ -53,8 +53,8 @@ public class UnitWeakLinkConstructRule : IConstructRule
                     {
                         for (int j = i + 1; j < asArray.Length; j++)
                         {
-                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Col, number),
-                                new CellPossibility(asArray[j].Row, asArray[j].Col, number), LinkStrength.Weak);
+                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
+                                new CellPossibility(asArray[j].Row, asArray[j].Column, number), LinkStrength.Weak);
                         }
                     }
                 }
@@ -110,8 +110,8 @@ public class UnitWeakLinkConstructRule : IConstructRule
                     {
                         for (int j = i + 1; j < asArray.Length; j++)
                         {
-                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Col, number),
-                                new CellPossibility(asArray[j].Row, asArray[j].Col, number), LinkStrength.Weak);
+                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
+                                new CellPossibility(asArray[j].Row, asArray[j].Column, number), LinkStrength.Weak);
                         }
                     }
                 }

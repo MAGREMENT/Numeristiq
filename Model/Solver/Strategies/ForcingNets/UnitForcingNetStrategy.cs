@@ -72,7 +72,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     var cursor = 0;
                     foreach (var pos in ppimn)
                     {
-                        colorings[cursor] = strategyManager.PreComputer.OnColoring(pos.Row, pos.Col, number);
+                        colorings[cursor] = strategyManager.PreComputer.OnColoring(pos.Row, pos.Column, number);
                         cursor++;
                     }
 
@@ -104,14 +104,14 @@ public class UnitForcingNetStrategy : AbstractStrategy
             {
                 if (col == Coloring.On)
                 {
-                    view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Col);
+                    view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.On)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
-                    view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Col);
+                    view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.Off)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;

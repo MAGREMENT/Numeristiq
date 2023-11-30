@@ -41,7 +41,7 @@ public class PointingRow : ILinkGraphElement
         for (int i = 1; i < coords.Count; i++)
         {
             if (coords[i].Row != Row) throw new ArgumentException("Not on same row");
-            _pos.Add(coords[i].Col);
+            _pos.Add(coords[i].Column);
         }
     }
 
@@ -70,13 +70,13 @@ public class PointingRow : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = $"PR : {Possibility}";
+        var result = $"PR : {Possibility}r{Row + 1}c";
         foreach (var col in _pos)
         {
-            result += $"[{Row + 1}, {col + 1}], ";
+            result += $"{col + 1}";
         }
         
-        return result[..^2];
+        return result;
     }
 
     public int Rank => 2;

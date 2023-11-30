@@ -134,7 +134,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
                 {
                     foreach (var cell in ahs.EachCell(possibility))
                     {
-                        lighter.HighlightPossibility(possibility, cell.Row, cell.Col, (ChangeColoration)color);
+                        lighter.HighlightPossibility(possibility, cell.Row, cell.Column, (ChangeColoration)color);
                     }
                 }
 

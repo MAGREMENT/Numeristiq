@@ -82,14 +82,14 @@ public class EmptyRectangleStrategy : AbstractStrategy
         var positions = strategyManager.PositionsFor(possibility).Copy();
         
         int miniRow = one.Row == hinge.Row ? two.Row / 3 : one.Row / 3;
-        int miniCol = one.Col == hinge.Col ? two.Col / 3 : one.Col / 3;
+        int miniCol = one.Column == hinge.Column ? two.Column / 3 : one.Column / 3;
 
         if (positions.MiniGridCount(miniRow, miniCol) == 0) return false;
 
         positions.VoidRow(one.Row);
-        positions.VoidColumn(one.Col);
+        positions.VoidColumn(one.Column);
         positions.VoidRow(two.Row);
-        positions.VoidColumn(two.Col);
+        positions.VoidColumn(two.Column);
 
         if (positions.MiniGridCount(miniRow, miniCol) != 0) return false;
 

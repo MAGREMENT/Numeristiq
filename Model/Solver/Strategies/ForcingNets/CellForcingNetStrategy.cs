@@ -68,16 +68,16 @@ public class CellForcingNetStrategy : AbstractStrategy
             {
                 if (currentColoring == Coloring.On)
                 {
-                    view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Col);
+                    view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new CellForcingNetBuilder(colorings, current.Row, current.Col, cell, Coloring.On))
+                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On))
                                 && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
-                    view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Col);
+                    view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new CellForcingNetBuilder(colorings, current.Row, current.Col, cell, Coloring.Off))
+                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off))
                                 && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }

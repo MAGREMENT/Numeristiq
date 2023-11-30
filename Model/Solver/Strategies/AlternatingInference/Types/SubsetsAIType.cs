@@ -44,7 +44,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
             {
                 if (pos1.Peek(possibility) || pos2.Peek(possibility)) continue;
                 
-                view.ChangeBuffer.ProposePossibilityRemoval(possibility, cp1[0].Cell.Row, cp1[0].Cell.Col);
+                view.ChangeBuffer.ProposePossibilityRemoval(possibility, cp1[0].Cell.Row, cp1[0].Cell.Column);
             }
 
             return;
@@ -68,7 +68,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
 
             foreach (var cell in Cells.SharedSeenCells(cells))
             {
-                view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
 
@@ -87,7 +87,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
                 
                 foreach (var cell in Cells.SharedSeenCells(cells))
                 {
-                    view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                    view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                 }
             }
         }
@@ -96,7 +96,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
     public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
-        strategyManager.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Col);
+        strategyManager.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Column);
 
         return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
     }
@@ -104,7 +104,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
     public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
-        strategyManager.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Col);
+        strategyManager.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Column);
 
         return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
     }

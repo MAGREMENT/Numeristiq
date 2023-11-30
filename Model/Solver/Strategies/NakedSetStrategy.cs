@@ -201,14 +201,14 @@ public class NakedSetStrategy : AbstractStrategy
         Cell pos;
         while((pos = possiblePos.Next(ref cursor)).Row != -1)
         {
-            var possibilities = strategyManager.PossibilitiesAt(pos.Row, pos.Col);
+            var possibilities = strategyManager.PossibilitiesAt(pos.Row, pos.Column);
             if(possibilities.Count > _type) continue;
             
             var newCurrent = current.Or(possibilities);
             if (newCurrent.Count > _type) continue;
             
             var newVisited = visited.Copy();
-            newVisited.Add(pos.Row % 3, pos.Col % 3);
+            newVisited.Add(pos.Row % 3, pos.Column % 3);
 
             if (newVisited.Count == _type && newCurrent.Count == _type)
             {
@@ -315,8 +315,8 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
             {
                 foreach (var possibility in _possibilities)
                 {
-                    if(snapshot.PossibilitiesAt(pos.Row, pos.Col).Peek(possibility))
-                        lighter.HighlightPossibility(possibility, pos.Row, pos.Col, ChangeColoration.CauseOffOne);
+                    if(snapshot.PossibilitiesAt(pos.Row, pos.Column).Peek(possibility))
+                        lighter.HighlightPossibility(possibility, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
                 }
             }
 

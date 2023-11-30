@@ -62,7 +62,7 @@ public class XYChainsStrategy : AbstractStrategy
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
         }
         
         return strategyManager.ChangeBuffer.Commit(this, new XYChainReportBuilder(visited))
@@ -85,7 +85,7 @@ public class XYChainReportBuilder : IChangeReportBuilder
         {
             for (int i = 0; i < _visited.Length; i++)
             {
-                lighter.HighlightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Col, i % 2 == 0 ?
+                lighter.HighlightPossibility(_visited[i].Possibility, _visited[i].Row, _visited[i].Column, i % 2 == 0 ?
                     ChangeColoration.CauseOnOne: ChangeColoration.CauseOffTwo);
                 if (i > _visited.Length - 2) continue;
                 lighter.CreateLink(_visited[i], _visited[i + 1], i % 2 == 0 ? LinkStrength.Weak : LinkStrength.Strong);

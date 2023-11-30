@@ -117,12 +117,12 @@ public class FishReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in _inCommon)
             {
-                lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
             foreach (var cell in _fins)
             {
-                lighter.HighlightPossibility(_possibility, cell.Row, cell.Col, ChangeColoration.CauseOffTwo);
+                lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

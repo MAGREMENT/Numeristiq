@@ -19,11 +19,11 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 found = false;
                 foreach (var coord in als.EachCell())
                 {
-                    if (!strategyManager.PossibilitiesAt(coord.Row, coord.Col).Peek(possibility)) continue;
+                    if (!strategyManager.PossibilitiesAt(coord.Row, coord.Column).Peek(possibility)) continue;
 
                     if (!found)
                     {
-                        buffer = new CellPossibility(coord.Row, coord.Col, possibility); 
+                        buffer = new CellPossibility(coord.Row, coord.Column, possibility); 
                         found = true;
                     }
                     else
@@ -46,7 +46,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
             var cursor = 0;
             foreach (var cell in als.EachCell())
             {
-                var poss = strategyManager.PossibilitiesAt(cell.Row, cell.Col).Copy();
+                var poss = strategyManager.PossibilitiesAt(cell.Row, cell.Column).Copy();
                 poss.Remove(buffer.Possibility);
                 buildUp[cursor] = new CellPossibilities(cell, poss);
                 cursor++;
@@ -58,17 +58,17 @@ public class AlmostNakedSetConstructRule : IConstructRule
             bool sameRow = true;
             int sharedRow = anp.NakedSet[0].Cell.Row;
             bool sameCol = true;
-            int sharedCol = anp.NakedSet[0].Cell.Col;
+            int sharedCol = anp.NakedSet[0].Cell.Column;
             bool sameMini = true;
             int sharedMiniRow = anp.NakedSet[0].Cell.Row / 3;
-            int sharedMiniCol = anp.NakedSet[0].Cell.Col / 3;
+            int sharedMiniCol = anp.NakedSet[0].Cell.Column / 3;
 
             for (int i = 1; i < anp.NakedSet.Length; i++)
             {
                 if (anp.NakedSet[i].Cell.Row != sharedRow) sameRow = false;
-                if (anp.NakedSet[i].Cell.Col != sharedCol) sameCol = false;
+                if (anp.NakedSet[i].Cell.Column != sharedCol) sameCol = false;
                 if (anp.NakedSet[i].Cell.Row / 3 != sharedMiniRow ||
-                    anp.NakedSet[i].Cell.Col / 3 != sharedMiniCol) sameMini = false;
+                    anp.NakedSet[i].Cell.Column / 3 != sharedMiniCol) sameMini = false;
             }
 
             foreach (var possibility in als.Possibilities)
@@ -83,7 +83,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                         Cell current = new Cell(sharedRow, col);
                         if (als.Positions.Peek(current)) continue;
                         
-                        linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
+                        linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Column, possibility),
                             LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -97,7 +97,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                         Cell current = new Cell(row, sharedCol);
                         if (als.Positions.Peek(current)) continue;
                         
-                        linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
+                        linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Column, possibility),
                             LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -116,7 +116,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                             Cell current = new Cell(row, col);
                             if (als.Positions.Peek(current)) continue;
                         
-                            linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Col, possibility),
+                            linkGraph.AddLink(anp, new CellPossibility(current.Row, current.Column, possibility),
                                 LinkStrength.Weak, LinkType.MonoDirectional);
                         }
                     }

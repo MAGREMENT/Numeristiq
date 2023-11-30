@@ -32,9 +32,9 @@ public class XYZWingStrategy : AbstractStrategy
                 var miniCol = col / 3;
                 foreach (var mini in map.Minis[row / 3, col / 3])
                 {
-                    if (mini.Row == row && mini.Col == col) continue;
+                    if (mini.Row == row && mini.Column == col) continue;
 
-                    var firstCorner = strategyManager.PossibilitiesAt(mini.Row, mini.Col);
+                    var firstCorner = strategyManager.PossibilitiesAt(mini.Row, mini.Column);
                     Possibilities and;
                     if ((and = firstCorner.And(hinge)).Count != 2) continue;
 
@@ -45,7 +45,7 @@ public class XYZWingStrategy : AbstractStrategy
                         var secondCorner = strategyManager.PossibilitiesAt(row, otherCol);
                         if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
 
-                        if (Process(strategyManager, row, col, mini.Row, mini.Col, row,
+                        if (Process(strategyManager, row, col, mini.Row, mini.Column, row,
                                 otherCol, and.And(secondCorner).First())) return;
                     }
 
@@ -56,7 +56,7 @@ public class XYZWingStrategy : AbstractStrategy
                         var secondCorner = strategyManager.PossibilitiesAt(otherRow, col);
                         if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
 
-                        if (Process(strategyManager, row, col, mini.Row, mini.Col,
+                        if (Process(strategyManager, row, col, mini.Row, mini.Column,
                                 otherRow, col, and.And(secondCorner).First())) return;
                     }
                 }
@@ -70,7 +70,7 @@ public class XYZWingStrategy : AbstractStrategy
         foreach (var cell in Cells.SharedSeenCells(new Cell(hingeRow, hingeCol),
                      new Cell(row1, col1), new Cell(row2, col2)))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Col);
+            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
         return strategyManager.ChangeBuffer.Commit(this,

@@ -24,14 +24,14 @@ public class BUGStrategy : AbstractStrategy
         var triple = OnlyDoublesAndOneTriple(strategyManager);
         if (triple.Row == -1) return;
         
-        foreach (var possibility in strategyManager.PossibilitiesAt(triple.Row, triple.Col))
+        foreach (var possibility in strategyManager.PossibilitiesAt(triple.Row, triple.Column))
         {
-            if (strategyManager.ColumnPositionsAt(triple.Col, possibility).Count != 3 ||
+            if (strategyManager.ColumnPositionsAt(triple.Column, possibility).Count != 3 ||
                 strategyManager.RowPositionsAt(triple.Row, possibility).Count != 3 ||
-                strategyManager.MiniGridPositionsAt(triple.Row / 3, triple.Col / 3, possibility).Count != 3) 
+                strategyManager.MiniGridPositionsAt(triple.Row / 3, triple.Column / 3, possibility).Count != 3) 
                 continue;
             
-            strategyManager.ChangeBuffer.ProposeSolutionAddition(possibility, triple.Row, triple.Col);
+            strategyManager.ChangeBuffer.ProposeSolutionAddition(possibility, triple.Row, triple.Column);
             break;
         }
 
@@ -72,7 +72,7 @@ public class BUGReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            lighter.HighlightCell(_triple.Row, _triple.Col, ChangeColoration.CauseOnOne);
+            lighter.HighlightCell(_triple.Row, _triple.Column, ChangeColoration.CauseOnOne);
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }

@@ -88,10 +88,10 @@ public class ContradictionSearcher
     /// <returns></returns>
     public bool AddOff(CellPossibility cell)
     {
-        var cellInt = cell.Row * 9 + cell.Col;
+        var cellInt = cell.Row * 9 + cell.Column;
         if (!_offCells.TryGetValue(cellInt, out var poss))
         {
-            var copy = _view.PossibilitiesAt(cell.Row, cell.Col).Copy();
+            var copy = _view.PossibilitiesAt(cell.Row, cell.Column).Copy();
             copy.Remove(cell.Possibility);
             _offCells[cellInt] = copy;
         }
@@ -113,7 +113,7 @@ public class ContradictionSearcher
             rowPos = copy;
         }
         
-        rowPos.Remove(cell.Col);
+        rowPos.Remove(cell.Column);
         if (rowPos.Count == 0)
         {
             Cause = ContradictionCause.Row;
@@ -121,10 +121,10 @@ public class ContradictionSearcher
         }
         
 
-        var colInt = cell.Col * 9 + cell.Possibility;
+        var colInt = cell.Column * 9 + cell.Possibility;
         if (!_offCols.TryGetValue(colInt, out var colPos))
         {
-            var copy = _view.ColumnPositionsAt(cell.Col, cell.Possibility).Copy();
+            var copy = _view.ColumnPositionsAt(cell.Column, cell.Possibility).Copy();
             _offCols[colInt] = copy;
             colPos = copy;
         }
@@ -137,16 +137,16 @@ public class ContradictionSearcher
         }
         
 
-        var miniInt = cell.Row / 3 + cell.Col / 3 * 3 + cell.Possibility * 9;
+        var miniInt = cell.Row / 3 + cell.Column / 3 * 3 + cell.Possibility * 9;
         if (!_offMinis.TryGetValue(miniInt, out var miniPos))
         {
             var copy = _view.MiniGridPositionsAt(cell.Row / 3,
-                cell.Col / 3, cell.Possibility).Copy();
+                cell.Column / 3, cell.Possibility).Copy();
             _offMinis[miniInt] = copy;
             miniPos = copy;
         }
         
-        miniPos.Remove(cell.Row % 3, cell.Col % 3);
+        miniPos.Remove(cell.Row % 3, cell.Column % 3);
         if (miniPos.Count == 0)
         {
             Cause = ContradictionCause.MiniGrid;
@@ -161,7 +161,7 @@ public class ContradictionSearcher
     {
         _onPositions.TryAdd(cell.Possibility, new GridPositions());
         var possibilityPositions = _onPositions[cell.Possibility];
-        possibilityPositions.Add(cell.Row, cell.Col);
+        possibilityPositions.Add(cell.Row, cell.Column);
 
         if (possibilityPositions.RowCount(cell.Row) > 1)
         {
@@ -169,13 +169,13 @@ public class ContradictionSearcher
             return true;
         }
 
-        if (possibilityPositions.ColumnCount(cell.Col) > 1)
+        if (possibilityPositions.ColumnCount(cell.Column) > 1)
         {
             Cause = ContradictionCause.Column;
             return true;
         }
 
-        if (possibilityPositions.MiniGridCount(cell.Row / 3, cell.Col / 3) > 1)
+        if (possibilityPositions.MiniGridCount(cell.Row / 3, cell.Column / 3) > 1)
         {
             Cause = ContradictionCause.MiniGrid;
             return true;
@@ -183,7 +183,7 @@ public class ContradictionSearcher
         
         foreach (var entry in _onPositions)
         {
-            if (entry.Key != cell.Possibility && entry.Value.Peek(cell.Row, cell.Col))
+            if (entry.Key != cell.Possibility && entry.Value.Peek(cell.Row, cell.Column))
             {
                 Cause = ContradictionCause.Cell;
                 return true;
@@ -268,7 +268,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
         switch (_cause)
         {
             case ContradictionCause.Cell :
-                var possibilities = snapshot.PossibilitiesAt(_lastChecked.Row, _lastChecked.Col);
+                var possibilities = snapshot.PossibilitiesAt(_lastChecked.Row, _lastChecked.Column);
                 highlighters = new Highlight[possibilities.Count];
 
                 cursor = 0;
@@ -276,7 +276,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 {
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, _lastChecked.Col, possibility), Coloring.Off)
+                        _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, _lastChecked.Column, possibility), Coloring.Off)
                             .Highlight(lighter);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
@@ -303,7 +303,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 
                 break;
             case ContradictionCause.Column :
-                var rows = snapshot.ColumnPositionsAt(_lastChecked.Col, _possibility);
+                var rows = snapshot.ColumnPositionsAt(_lastChecked.Column, _possibility);
                 highlighters = new Highlight[rows.Count];
 
                 cursor = 0;
@@ -311,7 +311,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 {
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(row, _lastChecked.Col, _possibility), Coloring.Off)
+                        _coloring.History!.GetPathToRoot(new CellPossibility(row, _lastChecked.Column, _possibility), Coloring.Off)
                             .Highlight(lighter);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
@@ -322,7 +322,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 break;
             case ContradictionCause.MiniGrid :
                 var cells = snapshot.MiniGridPositionsAt(_lastChecked.Row / 3,
-                    _lastChecked.Col / 3, _possibility);
+                    _lastChecked.Column / 3, _possibility);
                 highlighters = new Highlight[cells.Count];
                 
                 cursor = 0;
@@ -330,7 +330,7 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 {
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(cell.Row, cell.Col, _possibility), Coloring.Off)
+                        _coloring.History!.GetPathToRoot(new CellPossibility(cell.Row, cell.Column, _possibility), Coloring.Off)
                             .Highlight(lighter);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);

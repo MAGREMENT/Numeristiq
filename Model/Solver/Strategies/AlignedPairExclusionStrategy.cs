@@ -178,7 +178,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
                 if (!removed.PeekAny(als.Possibilities)) continue;
                 foreach (var coord in als.EachCell())
                 {
-                    lighter.HighlightCell(coord.Row, coord.Col, (ChangeColoration) color);
+                    lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);
                 }
 
                 color++;

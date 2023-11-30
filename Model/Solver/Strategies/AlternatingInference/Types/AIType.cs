@@ -33,15 +33,15 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
 
     private void ProcessWeakLink(IStrategyManager view, CellPossibility one, CellPossibility two)
     {
-        if (one.Row == two.Row && one.Col == two.Col)
+        if (one.Row == two.Row && one.Column == two.Column)
         {
-            RemoveAllExcept(view, one.Row, one.Col, one.Possibility, two.Possibility);
+            RemoveAllExcept(view, one.Row, one.Column, one.Possibility, two.Possibility);
         }
         else
         {
             foreach (var coord in one.SharedSeenCells(two))
             {
-                view.ChangeBuffer.ProposePossibilityRemoval(one.Possibility, coord.Row, coord.Col);
+                view.ChangeBuffer.ProposePossibilityRemoval(one.Possibility, coord.Row, coord.Column);
             }   
         }
     }
@@ -59,14 +59,14 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
 
     public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
-        strategyManager.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Col);
+        strategyManager.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Column);
         return strategyManager.ChangeBuffer.Commit(Strategy!,
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
-        strategyManager.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Col);
+        strategyManager.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Column);
         return strategyManager.ChangeBuffer.Commit(Strategy!,
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
     }

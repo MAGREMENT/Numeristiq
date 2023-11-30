@@ -39,7 +39,7 @@ public class HiddenSingleStrategy : AbstractStrategy
                     if (ppimn.Count != 1) continue;
                     
                     var pos = ppimn.First();
-                    strategyManager.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Col);
+                    strategyManager.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
                 }
             }
         }

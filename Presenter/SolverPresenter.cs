@@ -159,15 +159,15 @@ public class SolverPresenter
         if (_currentlySelectedCell is null) return;
 
         if (Settings.ActionOnCellChange == ChangeType.Possibility) _solver.RemovePossibilityByHand(number,
-                _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Col);
-        else _solver.SetSolutionByHand(number, _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Col);
+                _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Column);
+        else _solver.SetSolutionByHand(number, _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Column);
         ChangeShownState(_solver.CurrentState);
     }
 
     public void RemoveCurrentCell()
     {
         if (_currentlySelectedCell is not null) _solver.RemoveSolutionByHand(_currentlySelectedCell.Value.Row,
-                _currentlySelectedCell.Value.Col);
+                _currentlySelectedCell.Value.Column);
         ChangeShownState(_solver.CurrentState);
     }
 

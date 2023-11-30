@@ -113,11 +113,11 @@ public class HiddenDoublesStrategy : AbstractStrategy
     {
         foreach (var cell in positions)
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell.Row, cell.Col))
+            foreach (var possibility in strategyManager.PossibilitiesAt(cell.Row, cell.Column))
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
 
@@ -151,8 +151,8 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(_n1, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
-                lighter.HighlightPossibility(_n2, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n1, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n2, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
@@ -187,8 +187,8 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in cells)
             {
-                lighter.HighlightPossibility(_n1, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
-                lighter.HighlightPossibility(_n2, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n1, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_n2, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

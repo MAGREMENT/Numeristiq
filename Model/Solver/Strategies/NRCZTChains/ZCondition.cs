@@ -15,14 +15,14 @@ public class ZCondition : INRCZTCondition
     {
         var all = chain.AllCellPossibilities();
         
-        var possibilities = strategyManager.PossibilitiesAt(bStart.Row, bStart.Col);
+        var possibilities = strategyManager.PossibilitiesAt(bStart.Row, bStart.Column);
         if (possibilities.Count == 3)
         {
             bool ok = true;
             
             foreach (var p in possibilities)
             {
-                if (all.Contains(new CellPossibility(bStart.Row, bStart.Col, p)))
+                if (all.Contains(new CellPossibility(bStart.Row, bStart.Column, p)))
                 {
                     ok = false;
                     break;
@@ -39,8 +39,8 @@ public class ZCondition : INRCZTCondition
                     if (possibility == bStart.Possibility) continue;
 
                     var other = copy.First(possibility);
-                    yield return (new CellPossibility(bStart.Row, bStart.Col, possibility),
-                        new TargetMustSeeChainManipulation(new CellPossibility(bStart.Row, bStart.Col, other)));
+                    yield return (new CellPossibility(bStart.Row, bStart.Column, possibility),
+                        new TargetMustSeeChainManipulation(new CellPossibility(bStart.Row, bStart.Column, other)));
                 }
             }
         }
@@ -62,7 +62,7 @@ public class ZCondition : INRCZTCondition
             if (ok)
             {
                 var copy = rowPositions.Copy();
-                copy.Remove(bStart.Col);
+                copy.Remove(bStart.Column);
 
                 foreach (var col in copy)
                 {
@@ -81,14 +81,14 @@ public class ZCondition : INRCZTCondition
             }
         }
         
-        var colPositions = strategyManager.ColumnPositionsAt(bStart.Col, bStart.Possibility);
+        var colPositions = strategyManager.ColumnPositionsAt(bStart.Column, bStart.Possibility);
         if (colPositions.Count > 2)
         {
             bool ok = true;
             
             foreach (var row in colPositions)
             {
-                if (all.Contains(new CellPossibility(row, bStart.Col, bStart.Possibility)))
+                if (all.Contains(new CellPossibility(row, bStart.Column, bStart.Possibility)))
                 {
                     ok = false;
                     break;
@@ -108,16 +108,16 @@ public class ZCondition : INRCZTCondition
                     List<CellPossibility> others = new List<CellPossibility>();
                     foreach (var r in other)
                     {
-                        others.Add(new CellPossibility(r, bStart.Col, bStart.Possibility));
+                        others.Add(new CellPossibility(r, bStart.Column, bStart.Possibility));
                     }
 
-                    yield return (new CellPossibility(row, bStart.Col, bStart.Possibility),
+                    yield return (new CellPossibility(row, bStart.Column, bStart.Possibility),
                         new TargetMustSeeChainManipulation(others));
                 }
             }
         }
         
-        var boxPositions = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Col / 3,
+        var boxPositions = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Column / 3,
             bStart.Possibility);
         if (boxPositions.Count > 2)
         {
@@ -135,12 +135,12 @@ public class ZCondition : INRCZTCondition
             if (ok)
             {
                 var copy = boxPositions.Copy();
-                copy.Remove(bStart.Row % 3, bStart.Col % 3);
+                copy.Remove(bStart.Row % 3, bStart.Column % 3);
 
                 foreach (var pos in copy)
                 {
                     var other = copy.Copy();
-                    other.Remove(pos.Row % 3, pos.Col % 3);
+                    other.Remove(pos.Row % 3, pos.Column % 3);
 
                     List<CellPossibility> others = new List<CellPossibility>();
                     foreach (var p in other)

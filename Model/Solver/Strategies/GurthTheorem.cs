@@ -99,7 +99,7 @@ public abstract class Symmetry
             {
                 if (!selfMap.Peek(possibility))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Col);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                 }
             }
         }
@@ -115,7 +115,7 @@ public abstract class Symmetry
                 var solved = strategyManager.Sudoku[row, col];
 
                 if (solved != 0) strategyManager.ChangeBuffer.ProposeSolutionAddition(_mapping[solved - 1],
-                    symmetry.Row, symmetry.Col);
+                    symmetry.Row, symmetry.Column);
                 else
                 {
                     var symmetricPossibilities = strategyManager.PossibilitiesAt(symmetry);
@@ -124,7 +124,7 @@ public abstract class Symmetry
                     foreach (var possibility in symmetricPossibilities)
                     {
                         if(!mappedPossibilities.Peek(possibility)) strategyManager.ChangeBuffer
-                            .ProposePossibilityRemoval(possibility, symmetry.Row, symmetry.Col);
+                            .ProposePossibilityRemoval(possibility, symmetry.Row, symmetry.Column);
                     }
                 }
             }
@@ -147,7 +147,7 @@ public abstract class Symmetry
 
                 var symmetricCell = GetSymmetricalCell(row, col);
 
-                var symmetry = strategyManager.Sudoku[symmetricCell.Row, symmetricCell.Col];
+                var symmetry = strategyManager.Sudoku[symmetricCell.Row, symmetricCell.Column];
                 if (symmetry == 0) return false;
 
                 var definedSymmetry = _mapping[solved - 1];

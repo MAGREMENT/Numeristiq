@@ -41,7 +41,7 @@ public class GridPositions : IReadOnlyGridPositions
 
     public void Add(Cell coord)
     {
-        Add(coord.Row, coord.Col);
+        Add(coord.Row, coord.Column);
     }
 
     public bool Peek(int row, int col)
@@ -52,7 +52,7 @@ public class GridPositions : IReadOnlyGridPositions
 
     public bool Peek(Cell coord)
     {
-        return Peek(coord.Row, coord.Col);
+        return Peek(coord.Row, coord.Column);
     }
 
     public bool PeakAny(GridPositions gp)
@@ -69,7 +69,7 @@ public class GridPositions : IReadOnlyGridPositions
 
     public void Remove(Cell cell)
     {
-        Remove(cell.Row, cell.Col);
+        Remove(cell.Row, cell.Column);
     }
     
     public Cell First()
@@ -498,7 +498,7 @@ public class ColumnMethods : IUnitMethods
 {
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
-        return gp.ColumnCount(c.Col);
+        return gp.ColumnCount(c.Column);
     }
 
     public int Count(IReadOnlyGridPositions gp, int unit)
@@ -508,7 +508,7 @@ public class ColumnMethods : IUnitMethods
 
     public void Fill(GridPositions gp, Cell c)
     {
-        gp.FillColumn(c.Col);
+        gp.FillColumn(c.Column);
     }
 
     public void Fill(GridPositions gp, int unit)
@@ -518,7 +518,7 @@ public class ColumnMethods : IUnitMethods
 
     public void Void(GridPositions gp, Cell c)
     { 
-        gp.VoidColumn(c.Col);
+        gp.VoidColumn(c.Column);
     }
 
     public void Void(GridPositions gp, int unit)
@@ -528,7 +528,7 @@ public class ColumnMethods : IUnitMethods
     
     public CoverHouse ToCoverHouse(Cell cell)
     {
-        return new CoverHouse(Unit.Column, cell.Col);
+        return new CoverHouse(Unit.Column, cell.Column);
     }
 }
 
@@ -536,7 +536,7 @@ public class MiniGridMethods : IUnitMethods
 {
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
-        return gp.MiniGridCount(c.Row / 3, c.Col / 3);
+        return gp.MiniGridCount(c.Row / 3, c.Column / 3);
     }
 
     public int Count(IReadOnlyGridPositions gp, int unit)
@@ -546,7 +546,7 @@ public class MiniGridMethods : IUnitMethods
 
     public void Fill(GridPositions gp, Cell c)
     {
-        gp.FillMiniGrid(c.Row / 3, c.Col / 3);
+        gp.FillMiniGrid(c.Row / 3, c.Column / 3);
     }
 
     public void Fill(GridPositions gp, int unit)
@@ -556,7 +556,7 @@ public class MiniGridMethods : IUnitMethods
 
     public void Void(GridPositions gp, Cell c)
     { 
-        gp.VoidMiniGrid(c.Row / 3, c.Col / 3);
+        gp.VoidMiniGrid(c.Row / 3, c.Column / 3);
     }
 
     public void Void(GridPositions gp, int unit)
@@ -566,7 +566,7 @@ public class MiniGridMethods : IUnitMethods
 
     public CoverHouse ToCoverHouse(Cell cell)
     {
-        return new CoverHouse(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Col / 3);
+        return new CoverHouse(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Column / 3);
     }
 }
 

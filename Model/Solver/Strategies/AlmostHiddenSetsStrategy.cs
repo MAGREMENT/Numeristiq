@@ -124,7 +124,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
             {
                 foreach (var possibility in _one.PossibilitiesInCell(cell))
                 {
-                    lighter.HighlightPossibility(possibility, cell.Row, cell.Col, ChangeColoration.CauseOffOne);
+                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
                 }
             }
             
@@ -132,7 +132,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
             {
                 foreach (var possibility in _two.PossibilitiesInCell(cell))
                 {
-                    lighter.HighlightPossibility(possibility, cell.Row, cell.Col, ChangeColoration.CauseOffTwo);
+                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
                 }
                 
             }

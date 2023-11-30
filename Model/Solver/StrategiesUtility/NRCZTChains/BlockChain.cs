@@ -80,7 +80,7 @@ public class BlockChain : List<Block>
             }
             else
             {
-                if (cp.Row == block.End.Row && cp.Col == block.End.Col) return true;
+                if (cp.Row == block.End.Row && cp.Column == block.End.Column) return true;
             }
         }
 

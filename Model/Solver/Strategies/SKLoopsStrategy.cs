@@ -156,8 +156,8 @@ public class SKLoopsStrategy : AbstractStrategy
 
     private bool ProcessPattern(IStrategyManager strategyManager, Cell[] cells, Possibilities[] links)
     {
-        var miniCol1 = cells[0].Col / 3;
-        var miniCol2 = cells[1].Col / 3;
+        var miniCol1 = cells[0].Column / 3;
+        var miniCol2 = cells[1].Column / 3;
         
         for (int col = 0; col < 9; col++)
         {
@@ -180,9 +180,9 @@ public class SKLoopsStrategy : AbstractStrategy
             for (int gridCol = 0; gridCol < 3; gridCol++)
             {
                 int row = cells[0].Row / 3 * 3 + gridRow;
-                int col = cells[0].Col / 3 * 3 + gridCol;
+                int col = cells[0].Column / 3 * 3 + gridCol;
 
-                if (row != cells[0].Row && col != cells[0].Col)
+                if (row != cells[0].Row && col != cells[0].Column)
                 {
                     foreach (var possibility in links[0])
                     {
@@ -191,9 +191,9 @@ public class SKLoopsStrategy : AbstractStrategy
                 }
                 
                 row = cells[1].Row / 3 * 3 + gridRow;
-                col = cells[1].Col / 3 * 3 + gridCol;
+                col = cells[1].Column / 3 * 3 + gridCol;
 
-                if (row != cells[1].Row && col != cells[1].Col)
+                if (row != cells[1].Row && col != cells[1].Column)
                 {
                     foreach (var possibility in links[2])
                     {
@@ -202,9 +202,9 @@ public class SKLoopsStrategy : AbstractStrategy
                 }
                 
                 row = cells[2].Row / 3 * 3 + gridRow;
-                col = cells[2].Col / 3 * 3 + gridCol;
+                col = cells[2].Column / 3 * 3 + gridCol;
 
-                if (row != cells[2].Row && col != cells[2].Col)
+                if (row != cells[2].Row && col != cells[2].Column)
                 {
                     foreach (var possibility in links[4])
                     {
@@ -213,9 +213,9 @@ public class SKLoopsStrategy : AbstractStrategy
                 }
                 
                 row = cells[3].Row / 3 * 3 + gridRow;
-                col = cells[3].Col / 3 * 3 + gridCol;
+                col = cells[3].Column / 3 * 3 + gridCol;
 
-                if (row != cells[3].Row && col != cells[3].Col)
+                if (row != cells[3].Row && col != cells[3].Column)
                 {
                     foreach (var possibility in links[6])
                     {
@@ -235,12 +235,12 @@ public class SKLoopsStrategy : AbstractStrategy
             
             foreach (var possibility in links[3])
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Column);
             }
             
             foreach (var possibility in links[7])
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Col);
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Column);
             }
         }
         
@@ -250,14 +250,14 @@ public class SKLoopsStrategy : AbstractStrategy
 
     private PossibilitiesAndNumber CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)
     {
-        int startCol = cell.Col / 3 * 3;
+        int startCol = cell.Column / 3 * 3;
         Possibilities result = Possibilities.NewEmpty();
         int count = 0;
 
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
             int crossCol = startCol + gridCol;
-            if (crossCol == cell.Col) continue;
+            if (crossCol == cell.Column) continue;
 
             var poss = strategyManager.PossibilitiesAt(cell.Row, crossCol);
             if (poss.Count > 0)
@@ -281,7 +281,7 @@ public class SKLoopsStrategy : AbstractStrategy
             int crossRow = startRow + gridRow;
             if (crossRow == cell.Row) continue;
 
-            var poss = strategyManager.PossibilitiesAt(crossRow, cell.Col);
+            var poss = strategyManager.PossibilitiesAt(crossRow, cell.Column);
             if (poss.Count > 0)
             {
                 result.Add(poss);
@@ -368,12 +368,12 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
     
     private IEnumerable<Cell> CrossRow(IPossibilitiesHolder snapshot, Cell cell)
     {
-        int startCol = cell.Col / 3 * 3;
+        int startCol = cell.Column / 3 * 3;
 
         for (int gridCol = 0; gridCol < 3; gridCol++)
         {
             int crossCol = startCol + gridCol;
-            if (crossCol == cell.Col) continue;
+            if (crossCol == cell.Column) continue;
 
             var current = new Cell(cell.Row, crossCol);
             if (snapshot.PossibilitiesAt(current).Count > 0) yield return current;
@@ -389,7 +389,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             int crossRow = startRow + gridRow;
             if (crossRow == cell.Row) continue;
 
-            var current = new Cell(crossRow, cell.Col);
+            var current = new Cell(crossRow, cell.Column);
             if (snapshot.PossibilitiesAt(current).Count > 0) yield return current;
         }
     }

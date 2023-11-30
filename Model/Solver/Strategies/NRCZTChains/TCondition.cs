@@ -18,7 +18,7 @@ public class TCondition : INRCZTCondition
     {
         var all = chain.AllCellPossibilities();
         
-        var poss = strategyManager.PossibilitiesAt(bStart.Row, bStart.Col);
+        var poss = strategyManager.PossibilitiesAt(bStart.Row, bStart.Column);
         if (poss.Count > 2)
         {
             var ignorable = Possibilities.NewEmpty();
@@ -27,7 +27,7 @@ public class TCondition : INRCZTCondition
             {
                 if (p == bStart.Possibility) continue;
 
-                var current = new CellPossibility(bStart.Row, bStart.Col, p);
+                var current = new CellPossibility(bStart.Row, bStart.Column, p);
 
                 if (!all.Contains(current) && chain.IsWeaklyLinkedToAtLeastOneEnd(current))
                     ignorable.Add(p);
@@ -39,13 +39,13 @@ public class TCondition : INRCZTCondition
             {
                 case 2 :
                     var both = poss.Difference(ignorable);
-                    yield return (new CellPossibility(bStart.Row, bStart.Col, both.First(bStart.Possibility)),
+                    yield return (new CellPossibility(bStart.Row, bStart.Column, both.First(bStart.Possibility)),
                         _manipulation);
                     break;
                 case 1 :
                     foreach (var possibility in ignorable)
                     {
-                        yield return (new CellPossibility(bStart.Row, bStart.Col, possibility), _manipulation);
+                        yield return (new CellPossibility(bStart.Row, bStart.Column, possibility), _manipulation);
                     }
                     break;
             }
@@ -58,7 +58,7 @@ public class TCondition : INRCZTCondition
 
             foreach (var col in rowPos)
             {
-                if (col == bStart.Col) continue;
+                if (col == bStart.Column) continue;
 
                 var current = new CellPossibility(bStart.Row, col, bStart.Possibility);
 
@@ -71,7 +71,7 @@ public class TCondition : INRCZTCondition
             {
                 case 2 :
                     var both = rowPos.Difference(ignorable);
-                    yield return (new CellPossibility(bStart.Row, both.First(bStart.Col), bStart.Possibility),
+                    yield return (new CellPossibility(bStart.Row, both.First(bStart.Column), bStart.Possibility),
                         _manipulation);
                     break;
                 case 1 :
@@ -85,7 +85,7 @@ public class TCondition : INRCZTCondition
             }
         }
         
-        var colPos = strategyManager.ColumnPositionsAt(bStart.Col, bStart.Possibility);
+        var colPos = strategyManager.ColumnPositionsAt(bStart.Column, bStart.Possibility);
         if (colPos.Count > 2)
         {
             var ignorable = new LinePositions();
@@ -94,7 +94,7 @@ public class TCondition : INRCZTCondition
             {
                 if (row == bStart.Row) continue;
 
-                var current = new CellPossibility(row, bStart.Col, bStart.Possibility);
+                var current = new CellPossibility(row, bStart.Column, bStart.Possibility);
 
                 if (!all.Contains(current) && chain.IsWeaklyLinkedToAtLeastOneEnd(current)) ignorable.Add(row);
             }
@@ -105,13 +105,13 @@ public class TCondition : INRCZTCondition
             {
                 case 2 :
                     var both = colPos.Difference(ignorable);
-                    yield return (new CellPossibility(both.First(bStart.Row), bStart.Col, bStart.Possibility),
+                    yield return (new CellPossibility(both.First(bStart.Row), bStart.Column, bStart.Possibility),
                         _manipulation);
                     break;
                 case 1 :
                     foreach (var row in ignorable)
                     {
-                        yield return (new CellPossibility(row, bStart.Col, bStart.Possibility),
+                        yield return (new CellPossibility(row, bStart.Column, bStart.Possibility),
                             _manipulation);
                     }
 
@@ -119,10 +119,10 @@ public class TCondition : INRCZTCondition
             }
         }
 
-        var miniPos = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Col / 3, bStart.Possibility);
+        var miniPos = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Column / 3, bStart.Possibility);
         if (miniPos.Count > 2)
         {
-            var ignorable = new MiniGridPositions(bStart.Row / 3, bStart.Col / 3);
+            var ignorable = new MiniGridPositions(bStart.Row / 3, bStart.Column / 3);
 
             foreach (var pos in miniPos)
             {
@@ -131,7 +131,7 @@ public class TCondition : INRCZTCondition
                 var current = new CellPossibility(pos, bStart.Possibility);
 
                 if (!all.Contains(current) && chain.IsWeaklyLinkedToAtLeastOneEnd(current))
-                    ignorable.Add(pos.Row % 3, pos.Col % 3);
+                    ignorable.Add(pos.Row % 3, pos.Column % 3);
             }
 
             var diff = miniPos.Count - ignorable.Count;

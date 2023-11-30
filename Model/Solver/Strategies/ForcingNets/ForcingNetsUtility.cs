@@ -52,7 +52,7 @@ public static class ForcingNetsUtility
 
                     foreach (var col in cols)
                     {
-                        if (col == from.Col || col == to.Col) continue;
+                        if (col == from.Column || col == to.Column) continue;
                         var current = new CellPossibility(from.Row, col, from.Possibility);
 
                         if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
@@ -66,7 +66,7 @@ public static class ForcingNetsUtility
                     {
                         foreach (var col in cols)
                         {
-                            if (col == from.Col || col == to.Col) continue;
+                            if (col == from.Column || col == to.Column) continue;
 
                             lighter.HighlightPossibility(from.Possibility, from.Row, col, ChangeColoration.CauseOffOne);
                         }
@@ -75,15 +75,15 @@ public static class ForcingNetsUtility
                     }
                 }
                 
-                if (from.Col == to.Col)
+                if (from.Column == to.Column)
                 {
-                    var rows = snapshot.ColumnPositionsAt(from.Col, from.Possibility);
+                    var rows = snapshot.ColumnPositionsAt(from.Column, from.Possibility);
                     bool ok = true;
 
                     foreach (var row in rows)
                     {
                         if (row == from.Row || row == to.Row) continue;
-                        var current = new CellPossibility(row, from.Col, from.Possibility);
+                        var current = new CellPossibility(row, from.Column, from.Possibility);
 
                         if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
                             continue;
@@ -98,16 +98,16 @@ public static class ForcingNetsUtility
                         {
                             if (row == from.Row || row == to.Row) continue;
                             
-                            lighter.HighlightPossibility(from.Possibility, row, from.Col, ChangeColoration.CauseOffOne);
+                            lighter.HighlightPossibility(from.Possibility, row, from.Column, ChangeColoration.CauseOffOne);
                         }
 
                         continue;
                     }
                 }
                 
-                if (from.Row / 3 == to.Row / 3 && from.Col / 3 == to.Col / 3)
+                if (from.Row / 3 == to.Row / 3 && from.Column / 3 == to.Column / 3)
                 {
-                    var positions = snapshot.MiniGridPositionsAt(from.Row / 3, from.Col / 3, from.Possibility);
+                    var positions = snapshot.MiniGridPositionsAt(from.Row / 3, from.Column / 3, from.Possibility);
                     bool ok = true;
 
                     foreach (var pos in positions)
@@ -134,16 +134,16 @@ public static class ForcingNetsUtility
                     }
                 }
             }
-            else if (from.Row == to.Row && from.Col == to.Col)
+            else if (from.Row == to.Row && from.Column == to.Column)
             {
-                var possibilities = snapshot.PossibilitiesAt(from.Row, from.Col);
+                var possibilities = snapshot.PossibilitiesAt(from.Row, from.Column);
                 bool ok = true;
 
                 foreach (var pos in possibilities)
                 {
                     if (pos == from.Possibility || pos == to.Possibility) continue;
 
-                    var current = new CellPossibility(from.Row, from.Col, pos);
+                    var current = new CellPossibility(from.Row, from.Column, pos);
                     if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
                         continue;
 
@@ -157,7 +157,7 @@ public static class ForcingNetsUtility
                     {
                         if (pos == from.Possibility || pos == to.Possibility) continue;
 
-                        lighter.HighlightPossibility(pos, from.Row, from.Col, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(pos, from.Row, from.Column, ChangeColoration.CauseOffOne);
                     }
                 }
             }

@@ -122,7 +122,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         {
             foreach (var coord in coords)
             {
-                lighter.HighlightPossibility(_number, coord.Row, coord.Col, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(_number, coord.Row, coord.Column, ChangeColoration.CauseOffOne);
             }
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });

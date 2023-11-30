@@ -83,7 +83,7 @@ public class ReverseBugReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in _gp)
             {
-                lighter.HighlightCell(cell.Row, cell.Col, snapshot.Sudoku[cell.Row, cell.Col] == _n1
+                lighter.HighlightCell(cell.Row, cell.Column, snapshot.Sudoku[cell.Row, cell.Column] == _n1
                         ? ChangeColoration.CauseOffOne
                         : ChangeColoration.CauseOffTwo);
             }

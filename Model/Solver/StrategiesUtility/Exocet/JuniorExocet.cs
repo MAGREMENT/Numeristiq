@@ -45,9 +45,9 @@ public class JuniorExocet
         LinePositions result = new LinePositions();
         if (GetUnit() == Unit.Row)
         {
-            result.Add(EscapeCell.Col);
-            result.Add(Target1.Col);
-            result.Add(Target2.Col);
+            result.Add(EscapeCell.Column);
+            result.Add(Target1.Column);
+            result.Add(Target2.Column);
         }
         else
         {
@@ -67,16 +67,16 @@ public class JuniorExocet
             {
                 if (row / 3 == Base1.Row / 3) continue;
                 
-                sCells.Add(new Cell(row, Target1.Col));
-                sCells.Add(new Cell(row, Target2.Col));
-                sCells.Add(new Cell(row, EscapeCell.Col));
+                sCells.Add(new Cell(row, Target1.Column));
+                sCells.Add(new Cell(row, Target2.Column));
+                sCells.Add(new Cell(row, EscapeCell.Column));
             }
         }
         else
         {
             for (int col = 0; col < 9; col++)
             {
-                if (col / 3 == Base1.Col / 3) continue;
+                if (col / 3 == Base1.Column / 3) continue;
                 
                 sCells.Add(new Cell(Target1.Row, col));
                 sCells.Add(new Cell(Target2.Row, col));
@@ -114,12 +114,12 @@ public class JuniorExocet
             {
                 int row = miniRow * 3 + r;
                 
-                if (strategyManager.Contains(row, EscapeCell.Col, poss1) || strategyManager.Contains(row, EscapeCell.Col, poss2) ||
-                    strategyManager.Contains(row, Target1.Col, poss1) || strategyManager.Contains(row, Target1.Col, poss2) ||
-                    strategyManager.Contains(row, Target2.Col, poss1) || strategyManager.Contains(row, Target2.Col, poss2)) continue;
+                if (strategyManager.Contains(row, EscapeCell.Column, poss1) || strategyManager.Contains(row, EscapeCell.Column, poss2) ||
+                    strategyManager.Contains(row, Target1.Column, poss1) || strategyManager.Contains(row, Target1.Column, poss2) ||
+                    strategyManager.Contains(row, Target2.Column, poss1) || strategyManager.Contains(row, Target2.Column, poss2)) continue;
 
-                if (!strategyManager.PossibilitiesAt(row, Base1.Col).PeekAll(possibilities) ||
-                    !strategyManager.PossibilitiesAt(row, Base2.Col).PeekAll(possibilities)) continue;
+                if (!strategyManager.PossibilitiesAt(row, Base1.Column).PeekAll(possibilities) ||
+                    !strategyManager.PossibilitiesAt(row, Base2.Column).PeekAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;
@@ -131,7 +131,7 @@ public class JuniorExocet
         var oneS = SCells[poss1];
         var twoS = SCells[poss2];
 
-        foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Col / 3))
+        foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
         {
             if (oneS.MiniGridCount(diag.Key[0], diag.Key[1]) > 0 &&
                 twoS.MiniGridCount(diag.Value[0], diag.Value[1]) > 0) return true;
@@ -149,7 +149,7 @@ public class JuniorExocet
 
         for (int miniCol = 0; miniCol < 3; miniCol++)
         {
-            if (miniCol == Base1.Col / 3) continue;
+            if (miniCol == Base1.Column / 3) continue;
 
             for (int c = 0; c < 3; c++)
             {
@@ -172,7 +172,7 @@ public class JuniorExocet
         var oneS = SCells[poss1];
         var twoS = SCells[poss2];
 
-        foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Col / 3))
+        foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
         {
             if (oneS.MiniGridCount(diag.Key[0], diag.Key[1]) > 0 &&
                 twoS.MiniGridCount(diag.Value[0], diag.Value[1]) > 0) return true;

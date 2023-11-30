@@ -53,10 +53,10 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
 
     private bool Try(IStrategyManager strategyManager, BiValue values, Cell[] floor, Cell[] roof)
     {
-        if (strategyManager.StartState[roof[0].Row, roof[0].Col] != 0 || strategyManager.StartState[roof[1].Row, roof[1].Col] != 0) return false;
+        if (strategyManager.StartState[roof[0].Row, roof[0].Column] != 0 || strategyManager.StartState[roof[1].Row, roof[1].Column] != 0) return false;
         
-        var solved1 = strategyManager.Sudoku[roof[0].Row, roof[0].Col];
-        var solved2 = strategyManager.Sudoku[roof[1].Row, roof[1].Col];
+        var solved1 = strategyManager.Sudoku[roof[0].Row, roof[0].Column];
+        var solved2 = strategyManager.Sudoku[roof[1].Row, roof[1].Column];
         
         switch (solved1, solved2)
         {
@@ -167,7 +167,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, snapshot.Sudoku[roof.Row, roof.Col] == 0 ? ChangeColoration.CauseOffOne
+                lighter.HighlightCell(roof, snapshot.Sudoku[roof.Row, roof.Column] == 0 ? ChangeColoration.CauseOffOne
                     : ChangeColoration.CauseOffTwo);
             }
 

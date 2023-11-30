@@ -136,7 +136,7 @@ public partial class SolverUserControl
 
     public void PutCursorOn(Cell cell)
     {
-        _backgroundManager.PutCursorOn(cell.Row, cell.Col);
+        _backgroundManager.PutCursorOn(cell.Row, cell.Column);
         Main.Focus();
     }
 
