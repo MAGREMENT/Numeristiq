@@ -1,10 +1,8 @@
-﻿using Global;
-using Global.Enums;
-using Model.Solver;
+﻿using Global.Enums;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Logs;
 
-namespace Presenter.Translator;
+namespace Presenter.Translators;
 
 public static class ModelToViewTranslator
 {

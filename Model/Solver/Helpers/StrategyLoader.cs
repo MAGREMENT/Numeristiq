@@ -98,12 +98,12 @@ public class StrategyLoader : IStrategyLoader
     private readonly BitSet _lockedStrategies = new();
     
     public IReadOnlyList<IStrategy> Strategies => _strategies;
-    private readonly IStrategyRepository _repository;
+    private readonly IRepository<List<StrategyDAO>> _repository;
 
     public event OnListUpdate? ListUpdated;
     private bool _callEvent = true;
 
-    public StrategyLoader(IStrategyRepository repository)
+    public StrategyLoader(IRepository<List<StrategyDAO>> repository)
     {
         _repository = repository;
         ListUpdated += UpdateRepository;
@@ -117,16 +117,19 @@ public class StrategyLoader : IStrategyLoader
         _excludedStrategies.Clear();
         _lockedStrategies.Clear();
 
-        var download = _repository.DownloadStrategies();
+        var download = _repository.Download();
         var count = 0;
-        foreach (var dao in download)
+        if (download is not null)
         {
-            if (!StrategyPool.TryGetValue(dao.Name, out var strategy)) continue;
+            foreach (var dao in download)
+            {
+                if (!StrategyPool.TryGetValue(dao.Name, out var strategy)) continue;
             
-            strategy.OnCommitBehavior = dao.Behavior;
-            _strategies.Add(StrategyPool[dao.Name], _ => {});
-            if (!dao.Used) ExcludeStrategy(count);
-            count++;
+                strategy.OnCommitBehavior = dao.Behavior;
+                _strategies.Add(StrategyPool[dao.Name], _ => {});
+                if (!dao.Used) ExcludeStrategy(count);
+                count++;
+            }
         }
 
         _callEvent = true;
@@ -320,7 +323,7 @@ public class StrategyLoader : IStrategyLoader
             list.Add(new StrategyDAO(s.Name, IsStrategyUsed(i), s.OnCommitBehavior, new Dictionary<string, string>()));
         }
 
-        _repository.UploadStrategies(list);
+        _repository.Upload(list);
     }
 }
 

@@ -1,8 +1,8 @@
 ﻿using Model;
 using Model.Solver;
-using Presenter.Translator;
+using Presenter.Translators;
 
-namespace Presenter;
+namespace Presenter.StrategyManager;
 
 public class StrategyManagerPresenter
 {

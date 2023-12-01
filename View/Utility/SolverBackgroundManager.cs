@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Global;
+using Global.Enums;
 
 namespace View.Utility;
 
@@ -13,8 +14,6 @@ public class SolverBackgroundManager
     private const double LinkOffset = 20;
 
     public double Size { get; }
-
-    public LinkOffsetSidePriority SidePriority { get; set; } = LinkOffsetSidePriority.Right;
     
     private readonly double _cellSize;
     private readonly double _possibilitySize;
@@ -230,7 +229,8 @@ public class SolverBackgroundManager
         }
     }
 
-    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo, bool isWeak)
+    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo, bool isWeak,
+        LinkOffsetSidePriority priority)
     {
         var from = new Point(CenterX(colFrom, possibilityFrom), CenterY(rowFrom, possibilityFrom));
         var to = new Point(CenterX(colTo, possibilityTo), CenterY(rowTo, possibilityTo));
@@ -254,11 +254,11 @@ public class SolverBackgroundManager
                 AddShortenedLine(from, validOffsets[0], to, isWeak);
                 break;
             case 2 :
-                if(SidePriority == LinkOffsetSidePriority.Any) AddShortenedLine(from, validOffsets[0], to, isWeak);
+                if(priority == LinkOffsetSidePriority.Any) AddShortenedLine(from, validOffsets[0], to, isWeak);
                 else
                 {
                     var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
-                    if(SidePriority == LinkOffsetSidePriority.Left) AddShortenedLine(from, validOffsets[left], to, isWeak);
+                    if(priority == LinkOffsetSidePriority.Left) AddShortenedLine(from, validOffsets[left], to, isWeak);
                     else AddShortenedLine(from, validOffsets[(left + 1) % 2], to, isWeak);
                 }
                 break;
@@ -420,9 +420,4 @@ public class SolverBackgroundManager
     {
         return TopLeftY(row, possibility) + _possibilitySize / 2;
     }
-}
-
-public enum LinkOffsetSidePriority
-{
-    Any, Left, Right
 }

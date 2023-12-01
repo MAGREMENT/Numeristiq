@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Presenter.Translator;
+using Presenter.Translators;
 
 namespace View.Pages.Solver.UserControls;
 
@@ -33,6 +33,8 @@ public partial class StrategyListUserControl
 
     public void UpdateStrategies(IReadOnlyList<ViewStrategy> strategies)
     {
+        if (List.Children.Count == 0) return;
+        
         for (int i = 0; i < strategies.Count; i++)
         {
             ((StrategyUserControl) List.Children[i]).Match(strategies[i]);

@@ -3,9 +3,10 @@ using Global.Enums;
 using Model;
 using Model.Solver;
 using Model.Solver.Helpers.Logs;
-using Presenter.Translator;
+using Presenter.Translators;
+using Repository;
 
-namespace Presenter;
+namespace Presenter.Solver;
 
 public class SolverPresenter
 {
@@ -30,10 +31,8 @@ public class SolverPresenter
         _view = view;
 
         _shownState = _solver.CurrentState;
-        _highlighterTranslator = new HighlighterTranslator(view);
-        _solverActionEnabler = new SolverActionEnabler(view);
 
-        Settings = new SolverSettings();
+        Settings = new SolverSettings(new JSONRepository<SettingsDAO>("settings.json"));
         Settings.ShownStateChanged += () => SelectLog(_currentlySelectedLog);
         Settings.TranslationTypeChanged += () =>
             _view.SetTranslation(SudokuTranslator.TranslateToLine(_shownState, Settings.TranslationType));
@@ -43,11 +42,16 @@ public class SolverPresenter
             _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
         };
         Settings.GivensNeedUpdate += UpdateGivens;
+        
+        _highlighterTranslator = new HighlighterTranslator(view, Settings);
+        _solverActionEnabler = new SolverActionEnabler(view);
     }
 
     public void Bind()
     {
         _bound = true;
+        
+        Settings.Bind();
 
         _solver.LogsUpdated += UpdateLogs;
         _solver.CurrentStrategyChanged += i => _view.LightUpStrategy(i);
@@ -236,7 +240,7 @@ public class SolverPresenter
             }
         }
 
-        _view.UpdateGivens(givens);
+        _view.UpdateGivens(givens, Settings.SolvingColor, Settings.GivenColor);
     }
 
     private async void UpdateLogs()

@@ -1,4 +1,4 @@
-namespace Presenter;
+namespace Presenter.Solver;
 
 public class SolverActionEnabler
 {

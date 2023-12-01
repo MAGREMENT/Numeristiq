@@ -70,15 +70,7 @@ public class ColorManager
         return _instance;
     }
 
-    public CellColor GivenColor { get; set; } = CellColor.Black;
-    public CellColor SolvingColor { get; set; } = CellColor.Black;
-
     private ColorManager()
     {
     }
-}
-
-public enum CellColor
-{
-    Black, Gray, Red, Green, Blue
 }

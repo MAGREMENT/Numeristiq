@@ -4,14 +4,15 @@ using System.Windows.Controls;
 using Global;
 using Global.Enums;
 using Presenter;
-using Presenter.Translator;
+using Presenter.Solver;
+using Presenter.Translators;
 using View.HelperWindows.Print;
 using View.HelperWindows.Settings;
 using View.Utility;
 
 namespace View.Pages.Solver;
 
-public partial class SolverPage : HandledPage, ISolverView, ISolverOptionHandler
+public partial class SolverPage : ISolverView
 {
     private bool _createNewSudoku = true;
 
@@ -71,9 +72,9 @@ public partial class SolverPage : HandledPage, ISolverView, ISolverOptionHandler
         Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, possibilities));
     }
 
-    public void UpdateGivens(HashSet<Cell> givens)
+    public void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor)
     {
-        Solver.Dispatcher.Invoke(() => Solver.UpdateGivens(givens));
+        Solver.Dispatcher.Invoke(() => Solver.UpdateGivens(givens, solvingColor, givenColor));
     }
 
     public void SetTranslation(string translation)
@@ -193,81 +194,10 @@ public partial class SolverPage : HandledPage, ISolverView, ISolverOptionHandler
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
-        LinkStrength strength)
+        LinkStrength strength, LinkOffsetSidePriority priority)
     {
         Solver.Dispatcher.Invoke(() => Solver.CreateLink(rowFrom, colFrom, possibilityFrom, rowTo, colTo,
-            possibilityTo, strength));
-    }
-
-    //ISolverOptionHandler----------------------------------------------------------------------------------------------
-
-    public int DelayBeforeTransition
-    {
-        get => _presenter.Settings.DelayBeforeTransition;
-
-        set => _presenter.Settings.DelayBeforeTransition = value;
-    }
-
-    public int DelayAfterTransition
-    {
-        get => _presenter.Settings.DelayAfterTransition;
-
-        set => _presenter.Settings.DelayAfterTransition = value;
-    }
-
-    public SudokuTranslationType TranslationType
-    {
-        get => _presenter.Settings.TranslationType;
-        set => _presenter.Settings.TranslationType = value;
-    }
-
-    public bool StepByStep
-    {
-        get => _presenter.Settings.StepByStep;
-        set => _presenter.Settings.StepByStep = value;
-    }
-
-    public bool UniquenessAllowed
-    {
-        get => _presenter.Settings.UniquenessAllowed;
-        set => _presenter.Settings.UniquenessAllowed = value;
-    }
-
-    public ChangeType ActionOnKeyboardInput
-    {
-        get => _presenter.Settings.ActionOnCellChange;
-        set => _presenter.Settings.ActionOnCellChange = value;
-    }
-
-    public CellColor GivenColor
-    {
-        get => ColorManager.GetInstance().GivenColor;
-        set
-        {
-            ColorManager.GetInstance().GivenColor = value;
-            _presenter.Settings.NotifyGivensNeedingUpdate();
-        }
-    }
-    public CellColor SolvingColor
-    {
-        get => ColorManager.GetInstance().SolvingColor;
-        set
-        {
-            ColorManager.GetInstance().SolvingColor = value;
-            _presenter.Settings.NotifyGivensNeedingUpdate();
-        } 
-    }
-
-    public LinkOffsetSidePriority SidePriority
-    {
-        get => Solver.SidePriority;
-        set => Solver.SidePriority = value;
-    }
-
-    public bool TransformSoloPossibilityIntoGiven
-    {
-        get => _presenter.Settings.TransformSoloPossibilityIntoGiven;
-        set => _presenter.Settings.TransformSoloPossibilityIntoGiven = value;
+            possibilityTo, strength, priority));
     }
 
     //EventHandling-----------------------------------------------------------------------------------------------------
@@ -294,7 +224,7 @@ public partial class SolverPage : HandledPage, ISolverView, ISolverOptionHandler
 
     private void ShowSettingsWindow(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SolverSettingsWindow(this);
+        var settingsWindow = new SolverSettingsWindow(_presenter.Settings);
         settingsWindow.Show();
     }
 

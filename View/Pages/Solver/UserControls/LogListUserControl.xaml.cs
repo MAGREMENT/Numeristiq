@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using Global.Enums;
-using Presenter.Translator;
+using Presenter.Translators;
 
 namespace View.Pages.Solver.UserControls;
 

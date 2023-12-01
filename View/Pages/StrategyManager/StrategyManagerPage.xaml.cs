@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using Presenter;
-using Presenter.Translator;
+using Presenter.StrategyManager;
+using Presenter.Translators;
 
 namespace View.Pages.StrategyManager;
 

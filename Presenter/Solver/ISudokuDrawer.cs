@@ -1,7 +1,7 @@
 ﻿using Global;
 using Global.Enums;
 
-namespace Presenter;
+namespace Presenter.Solver;
 
 public interface ISudokuDrawer
 {
@@ -14,5 +14,5 @@ public interface ISudokuDrawer
         int possibilityTo, ChangeColoration coloration);
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration);
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
-        LinkStrength strength);
+        LinkStrength strength, LinkOffsetSidePriority priority);
 }

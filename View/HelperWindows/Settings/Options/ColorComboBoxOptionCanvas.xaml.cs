@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using Global.Enums;
 using View.Utility;
 
 namespace View.HelperWindows.Settings.Options;
 
-public partial class ColorComboBoxOptionCanvas : OptionCanvas
+public partial class ColorComboBoxOptionCanvas
 {
     private readonly OnChange<int> _onChange;
     private readonly bool _callOnChange;

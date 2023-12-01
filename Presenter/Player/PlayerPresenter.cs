@@ -1,4 +1,4 @@
-﻿namespace Presenter;
+﻿namespace Presenter.Player;
 
 public class PlayerPresenter
 {

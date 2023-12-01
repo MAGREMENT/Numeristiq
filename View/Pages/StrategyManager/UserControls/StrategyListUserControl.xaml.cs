@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Presenter.Translator;
+using Presenter.Translators;
 
 namespace View.Pages.StrategyManager.UserControls;
 

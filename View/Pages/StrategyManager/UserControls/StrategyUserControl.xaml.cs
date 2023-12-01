@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Presenter.Translator;
+using Presenter.Translators;
 using View.Utility;
 
 namespace View.Pages.StrategyManager.UserControls;

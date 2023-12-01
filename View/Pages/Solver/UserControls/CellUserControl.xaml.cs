@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Global.Enums;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
@@ -88,10 +89,10 @@ public partial class CellUserControl
         }
     }
    
-    public void SetForeground(CellForegroundType type)
+    public void SetForeground(CellForegroundType type, CellColor solvingColor, CellColor givenColor)
     {
         var instance = ColorManager.GetInstance();
-        var brush = ColorManager.GetCellBrush(type == CellForegroundType.Solving ? instance.SolvingColor : instance.GivenColor);
+        var brush = ColorManager.GetCellBrush(type == CellForegroundType.Solving ? solvingColor : givenColor);
         
         _big.Foreground = brush;
         foreach (var child in _small.Children)

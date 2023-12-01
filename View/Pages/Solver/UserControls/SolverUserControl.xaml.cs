@@ -14,12 +14,6 @@ public partial class SolverUserControl
     private const int LineWidth = 3;
 
     private readonly SolverBackgroundManager _backgroundManager;
-    
-    public LinkOffsetSidePriority SidePriority
-    {
-        get => _backgroundManager.SidePriority;
-        set => _backgroundManager.SidePriority = value;
-    }
 
     public delegate void OnCellSelection(Cell cell);
     public event OnCellSelection? CellSelected;
@@ -121,7 +115,7 @@ public partial class SolverUserControl
         GetTo(row, col).SetPossibilities(possibilities);
     }
 
-    public void UpdateGivens(HashSet<Cell> givens)
+    public void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -129,7 +123,7 @@ public partial class SolverUserControl
             {
                 GetTo(row, col).SetForeground(givens.Contains(new Cell(row, col))
                     ? CellForegroundType.Given
-                    : CellForegroundType.Solving);
+                    : CellForegroundType.Solving, solvingColor, givenColor);
             }
         }
     }
@@ -190,9 +184,9 @@ public partial class SolverUserControl
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
-        LinkStrength strength)
+        LinkStrength strength, LinkOffsetSidePriority priority)
     {
-        _backgroundManager.CreateLink(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo, strength == LinkStrength.Weak);
+        _backgroundManager.CreateLink(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo, strength == LinkStrength.Weak, priority);
     }
 
     private void KeyPressed(object? sender, KeyEventArgs args)

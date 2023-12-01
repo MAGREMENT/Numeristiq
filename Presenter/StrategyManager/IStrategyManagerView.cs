@@ -1,6 +1,6 @@
-﻿using Presenter.Translator;
+﻿using Presenter.Translators;
 
-namespace Presenter;
+namespace Presenter.StrategyManager;
 
 public interface IStrategyManagerView
 {

@@ -52,9 +52,9 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     private readonly StrategyLoader _strategyLoader;
 
-    public SudokuSolver(IStrategyRepository repository) : this(new Sudoku(), repository) { }
+    public SudokuSolver(IRepository<List<StrategyDAO>> repository) : this(new Sudoku(), repository) { }
 
-    private SudokuSolver(Sudoku s, IStrategyRepository repository)
+    private SudokuSolver(Sudoku s, IRepository<List<StrategyDAO>> repository)
     {
         _strategyLoader = new StrategyLoader(repository);
         _strategyLoader.Load();

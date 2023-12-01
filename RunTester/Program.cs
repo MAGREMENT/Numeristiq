@@ -7,12 +7,12 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        var repo = new JSONStrategyRepository();
+        var repo = new JSONRepository<List<StrategyDAO>>("strategies.json");
         try
         {
             repo.Initialize();
         }
-        catch (StrategyRepositoryInitializationException e)
+        catch (RepositoryInitializationException e)
         {
             Console.WriteLine("Exception while initializing repository : " + e.Message);
             return;

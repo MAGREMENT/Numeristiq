@@ -22,10 +22,10 @@ public class RunTester
     public delegate void OnRunStatusChanged(bool running);
     public event OnRunStatusChanged? RunStatusChanged;
 
-    private readonly IStrategyRepository _repository;
+    private readonly IRepository<List<StrategyDAO>> _repository;
     private readonly bool _toWaitForAll;
 
-    public RunTester(IStrategyRepository repository, bool toWaitForAll)
+    public RunTester(IRepository<List<StrategyDAO>> repository, bool toWaitForAll)
     {
         _repository = repository;
         _repository.UploadAllowed = false;

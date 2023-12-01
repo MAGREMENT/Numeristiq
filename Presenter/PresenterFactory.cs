@@ -1,5 +1,7 @@
 ﻿using Model;
 using Model.Solver;
+using Presenter.Solver;
+using Presenter.StrategyManager;
 using Repository;
 
 namespace Presenter;
@@ -10,8 +12,16 @@ public class PresenterFactory
 
     public PresenterFactory()
     {
-        var repository = new JSONStrategyRepository();
-        repository.Initialize();
+        var repository = new JSONRepository<List<StrategyDAO>>("strategies.json");
+        try
+        {
+            repository.Initialize();
+        }
+        catch (RepositoryInitializationException)
+        {
+            repository.New(new List<StrategyDAO>());
+        }
+        
         
         _solver = new SudokuSolver(repository)
         {

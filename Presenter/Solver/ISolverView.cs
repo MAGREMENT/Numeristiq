@@ -1,7 +1,8 @@
 ﻿using Global;
-using Presenter.Translator;
+using Global.Enums;
+using Presenter.Translators;
 
-namespace Presenter;
+namespace Presenter.Solver;
 
 public interface ISolverView : ISudokuDrawer
 {
@@ -9,7 +10,7 @@ public interface ISolverView : ISudokuDrawer
     void EnableActions();
     void SetCellTo(int row, int col, int number);
     void SetCellTo(int row, int col, int[] possibilities);
-    void UpdateGivens(HashSet<Cell> givens);
+    void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor);
     void SetTranslation(string translation);
     void FocusLog(int number);
     void UnFocusLog();

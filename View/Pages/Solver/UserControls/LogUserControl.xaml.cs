@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 using Global.Enums;
-using Presenter.Translator;
+using Presenter.Translators;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;

@@ -1,19 +1,21 @@
-﻿using Global;
-using Global.Enums;
+﻿using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Solver.StrategiesUtility.Graphs;
+using Presenter.Solver;
 
-namespace Presenter.Translator;
+namespace Presenter.Translators;
 
 public class HighlighterTranslator : IHighlightable
 {
     private readonly ISolverView _view;
+    private readonly SolverSettings _settings;
 
-    public HighlighterTranslator(ISolverView view)
+    public HighlighterTranslator(ISolverView view, SolverSettings settings)
     {
         _view = view;
+        _settings = settings;
     }
 
     public void Translate(HighlightManager manager)
@@ -87,7 +89,7 @@ public class HighlighterTranslator : IHighlightable
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
         _view.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
-            to.Possibility, linkStrength);
+            to.Possibility, linkStrength, _settings.SidePriority);
     }
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)

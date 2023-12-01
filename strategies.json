@@ -3,294 +3,294 @@
     "Name": "Naked Single",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Hidden Single",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Naked Doubles",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Hidden Doubles",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Pointing Set",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Box-Line Reduction",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Hidden Triple",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Naked Triple",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Naked Quad",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Hidden Quad",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Gurth\u0027s Theorem",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "X-Wing",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "XY-Wing",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "XYZ-Wing",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Swordfish",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Jellyfish",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Simple Coloring",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "BUG",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Reverse BUG",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Empty Rectangle",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Junior Exocet",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Skyscraper",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Two-String Kite",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Finned X-Wing",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Finned Swordfish",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Finned Jellyfish",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Fireworks",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "SK-Loops",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Unique Rectangles",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Unavoidable Rectangles",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "XY-Chains",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "3D Medusa",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "WXYZ-Wing",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Aligned Pair Exclusion",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Aligned Triple Exclusion",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Subsets X-Cycles",
     "Used": true,
     "Behavior": 2,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Almost Hidden Sets",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Almost Locked Sets",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Almost Hidden Sets Chain",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Almost Locked Sets Chain",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Death Blossom",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Subsets Alternating Inference Loops",
     "Used": true,
     "Behavior": 2,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Set Equivalence",
     "Used": false,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Digit Forcing Net",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Cell Forcing Net",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Unit Forcing Net",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Nishio Forcing Net",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Pattern Overlay",
     "Used": true,
     "Behavior": 0,
-    "args": {}
+    "Args": {}
   },
   {
     "Name": "Brute Force",
     "Used": true,
     "Behavior": 1,
-    "args": {}
+    "Args": {}
   }
 ]

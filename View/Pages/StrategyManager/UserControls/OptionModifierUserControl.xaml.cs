@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Model.Solver;
-using Presenter.Translator;
+using Presenter.Translators;
 
 namespace View.Pages.StrategyManager.UserControls;
 
