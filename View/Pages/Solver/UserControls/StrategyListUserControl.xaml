@@ -6,7 +6,12 @@
              xmlns:utils="clr-namespace:View.Utility"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <ScrollViewer Height="650" Background="{x:Static utils:ColorManager.Background1}">
-        <StackPanel MinHeight="650" Width="180" x:Name="List" Orientation="Vertical"/>
-    </ScrollViewer>
+    <StackPanel>
+        <Border BorderThickness="0,0,0,1" BorderBrush="DarkGray">
+            <TextBlock FontSize="20" Margin="3">Strategies</TextBlock>
+        </Border>
+        <ScrollViewer Height="620" Background="{x:Static utils:ColorManager.Background1}">
+            <StackPanel MinHeight="620" Width="180" x:Name="List" Orientation="Vertical"/>
+        </ScrollViewer>
+    </StackPanel>
 </UserControl>

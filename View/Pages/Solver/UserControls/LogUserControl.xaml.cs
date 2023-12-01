@@ -22,11 +22,11 @@ public partial class LogUserControl
 
         Main.MouseEnter += (_, _) =>
         {
-            Main.Background = new SolidColorBrush(Colors.White);
+            Main.Background = new SolidColorBrush(Colors.LightGray);
         };
         Main.MouseLeave += (_, _) =>
         {
-            Main.Background = new SolidColorBrush(Colors.WhiteSmoke);
+            Main.Background = new SolidColorBrush(Colors.White);
         };
     }
 

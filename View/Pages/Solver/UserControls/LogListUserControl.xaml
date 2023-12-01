@@ -5,13 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Width="320" Height="450" Orientation="Vertical">
+    <StackPanel Orientation="Vertical">
         <StackPanel Width="320" Height="30" Orientation="Horizontal"  Margin="0, 0, 0, 10">
             <Button Width="140" Height="30" Margin="10, 0" Click="ShowStart">Show Start</Button>
             <Button Width="140" Height="30" Margin="10, 0" Click="ShowCurrent">Show Current</Button>
         </StackPanel>
-        <ScrollViewer Height="400" x:Name="Scroll" Background="White">
-            <StackPanel Width="300" MinHeight="400" x:Name="List"/>
+        <ScrollViewer Height="430" x:Name="Scroll" Background="White">
+            <StackPanel Width="300" MinHeight="430" x:Name="List"/>
         </ScrollViewer>
     </StackPanel>
 </UserControl>
