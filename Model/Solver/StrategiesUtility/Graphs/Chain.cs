@@ -8,7 +8,7 @@ using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.StrategiesUtility.Graphs;
 
-public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : notnull where TLink : notnull //TODO merge with Path & LinkGraphChain classes
+public class Chain<TElement, TLink> : IEnumerable<TElement> where TElement : notnull where TLink : notnull
 {
     public TElement[] Elements { get; }
     public TLink[] Links { get; protected init; }
@@ -177,7 +177,7 @@ public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink 
 
     public TElement? BeforeLastElement()
     {
-        if (_elements.Count < 2) return default!;
+        if (_elements.Count < 2) return default;
 
         return _elements[^2];
     }

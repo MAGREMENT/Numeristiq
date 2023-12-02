@@ -192,6 +192,12 @@
     "Args": {}
   },
   {
+    "Name": "Sue-De-Coq",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
     "Name": "WXYZ-Wing",
     "Used": true,
     "Behavior": 0,

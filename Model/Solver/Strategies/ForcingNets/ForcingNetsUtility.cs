@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Global.Enums;
+﻿using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.CellColoring;
@@ -9,30 +8,8 @@ namespace Model.Solver.Strategies.ForcingNets;
 
 public static class ForcingNetsUtility
 {
-    public static Dictionary<CellPossibility, Coloring> FilterPossibilityCoordinates( //TODO delete this shit
-        Dictionary<ILinkGraphElement, Coloring> coloring)
-    {
-        Dictionary<CellPossibility, Coloring> result = new();
-        foreach (var element in coloring)
-        {
-            if (element.Key is not CellPossibility coord) continue;
-            result.Add(coord, element.Value);
-        }
-
-        return result;
-    }
-
-    public static void HighlightColoring(IHighlightable lighter, Dictionary<CellPossibility, Coloring> coloring)
-    {
-        foreach (var element in coloring)
-        {
-            lighter.HighlightPossibility(element.Key, element.Value == Coloring.On ? ChangeColoration.CauseOnOne :
-                ChangeColoration.CauseOffOne);
-        }
-    }
-
     public static void HighlightJumpLinks(IHighlightable lighter, LinkGraphChain<ILinkGraphElement> path, IColoringResult<ILinkGraphElement> result,
-        LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot) //TODO => use everywhere
+        LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot) //TODO : improve => Don't backtrack, instead include jump links in result history
     {
         for (int i = 0; i < path.Links.Length; i++)
         {

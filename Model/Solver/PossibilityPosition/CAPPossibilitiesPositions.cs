@@ -38,7 +38,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
 
     public IEnumerable<Cell> EachCell(int possibility)
     {
-        foreach (var cell in _cells)
+        foreach(var cell in _cells)
         {
             if (_snapshot.PossibilitiesAt(cell.Row, cell.Column).Peek(possibility)) yield return cell;
         }

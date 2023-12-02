@@ -70,15 +70,15 @@ public class CellForcingNetStrategy : AbstractStrategy
                 {
                     view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On))
-                                && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
+                                view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off))
-                                && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
+                                view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
@@ -229,14 +229,17 @@ public class CellForcingNetBuilder : IChangeReportBuilder
     private readonly int _col;
     private readonly CellPossibility _target;
     private readonly Coloring _targetColoring;
+    private readonly LinkGraph<ILinkGraphElement> _graph;
 
-    public CellForcingNetBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, int row, int col, CellPossibility target, Coloring targetColoring)
+    public CellForcingNetBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, int row, int col,
+        CellPossibility target, Coloring targetColoring, LinkGraph<ILinkGraphElement> graph)
     {
         _colorings = colorings;
         _row = row;
         _col = col;
         _target = target;
         _targetColoring = targetColoring;
+        _graph = graph;
     }
 
 
@@ -249,7 +252,10 @@ public class CellForcingNetBuilder : IChangeReportBuilder
             var a = i;
             highlights[i] = lighter =>
             {
-                _colorings[a].History!.GetPathToRoot(_target, _targetColoring).Highlight(lighter);
+                var path = _colorings[a].History!.GetPathToRoot(_target, _targetColoring);
+                
+                path.Highlight(lighter);
+                ForcingNetsUtility.HighlightJumpLinks(lighter, path, _colorings[a], _graph, snapshot);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
                 lighter.EncircleCell(_row, _col);
             };

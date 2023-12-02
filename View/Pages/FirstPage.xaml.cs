@@ -1,9 +1,8 @@
 using System.Windows;
-using System.Windows.Controls;
 
 namespace View.Pages;
 
-public partial class FirstPage : HandledPage
+public partial class FirstPage
 {
     private readonly IPageHandler _pageHandler;
     
@@ -11,8 +10,6 @@ public partial class FirstPage : HandledPage
     {
         InitializeComponent();
         _pageHandler = pageHandler;
-        
-        
     }
 
     private void GoToSolver(object sender, RoutedEventArgs e)

@@ -17,7 +17,7 @@ public partial class MainWindow : IPageHandler
     {
         InitializeComponent();
 
-        var factory = new PresenterFactory(); //TODO => in case of error
+        var factory = new PresenterFactory();
         
         _pages = new HandledPage[]
         {

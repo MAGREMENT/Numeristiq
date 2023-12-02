@@ -41,17 +41,20 @@ public class NishioForcingNetStrategy : AbstractStrategy
                         {
                             case Coloring.Off when cs.AddOff(cell):
                                 strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                                
                                 if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
-                                        .Commit(this, new FromOffNishioForcingNetReportBuilder(coloring, row, col,
-                                            possibility, cs.Cause, cell)) && OnCommitBehavior == OnCommitBehavior.Return)
-                                    return;
+                                        .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col, 
+                                            possibility, cs.Cause, cell, Coloring.Off, strategyManager.GraphManager.ComplexLinkGraph)) && 
+                                                OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
                                 strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
-                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-                                        new NishioForcingNetReportBuilder(coloring, row, col, possibility)) && 
-                                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                                
+                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
+                                        .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col,
+                                            possibility, cs.Cause, cell, Coloring.Off, strategyManager.GraphManager.ComplexLinkGraph)) && 
+                                                OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                         }
                     }
@@ -213,45 +216,17 @@ public enum ContradictionCause
 
 public class NishioForcingNetReportBuilder : IChangeReportBuilder
 {
-
-    private readonly Dictionary<ILinkGraphElement, Coloring> _coloring;
-    private readonly int _row;
-    private readonly int _col;
-    private readonly int _possibility;
-
-    public NishioForcingNetReportBuilder(Dictionary<ILinkGraphElement, Coloring> coloring, int row, int col, int possibility)
-    {
-        _coloring = coloring;
-        _row = row;
-        _col = col;
-        _possibility = possibility;
-    }
-
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
-    {
-        var c = ForcingNetsUtility.FilterPossibilityCoordinates(_coloring);
-        
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
-            lighter =>
-            {
-                ForcingNetsUtility.HighlightColoring(lighter, c);
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
-                lighter.EncirclePossibility(_possibility, _row, _col);
-            });
-    }
-}
-
-public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO FromOn
-{
     private readonly ColoringDictionary<ILinkGraphElement> _coloring;
     private readonly int _row;
     private readonly int _col;
     private readonly int _possibility;
     private readonly ContradictionCause _cause;
     private readonly CellPossibility _lastChecked;
+    private readonly Coloring _causeColoring;
+    private readonly LinkGraph<ILinkGraphElement> _graph;
 
-    public FromOffNishioForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> coloring, int row, int col,
-        int possibility, ContradictionCause cause, CellPossibility lastChecked)
+    public NishioForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> coloring, int row, int col,
+        int possibility, ContradictionCause cause, CellPossibility lastChecked, Coloring causeColoring, LinkGraph<ILinkGraphElement> graph)
     {
         _coloring = coloring;
         _row = row;
@@ -259,6 +234,8 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
         _possibility = possibility;
         _cause = cause;
         _lastChecked = lastChecked;
+        _causeColoring = causeColoring;
+        _graph = graph;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -274,10 +251,15 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 cursor = 0;
                 foreach (var possibility in possibilities)
                 {
+                    var current = new CellPossibility(_lastChecked.Row, _lastChecked.Column, possibility);
+                    if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
+                        
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, _lastChecked.Column, possibility), Coloring.Off)
-                            .Highlight(lighter);
+                        var path = _coloring.History!.GetPathToRoot(current, c);
+                        
+                        path.Highlight(lighter);
+                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
@@ -291,10 +273,15 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 cursor = 0;
                 foreach (var col in cols)
                 {
+                    var current = new CellPossibility(_lastChecked.Row, col, _possibility);
+                    if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
+                    
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(_lastChecked.Row, col, _possibility), Coloring.Off)
-                            .Highlight(lighter);
+                        var path = _coloring.History!.GetPathToRoot(current, c);
+                        
+                        path.Highlight(lighter);
+                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
@@ -309,10 +296,15 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 cursor = 0;
                 foreach (var row in rows)
                 {
+                    var current = new CellPossibility(row, _lastChecked.Column, _possibility);
+                    if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
+                    
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(row, _lastChecked.Column, _possibility), Coloring.Off)
-                            .Highlight(lighter);
+                        var path = _coloring.History!.GetPathToRoot(current, c);
+
+                        path.Highlight(lighter);
+                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };
@@ -328,10 +320,15 @@ public class FromOffNishioForcingNetReportBuilder : IChangeReportBuilder //TODO 
                 cursor = 0;
                 foreach (var cell in cells)
                 {
+                    var current = new CellPossibility(cell.Row, cell.Column, _possibility);
+                    if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
+                    
                     highlighters[cursor] = lighter =>
                     {
-                        _coloring.History!.GetPathToRoot(new CellPossibility(cell.Row, cell.Column, _possibility), Coloring.Off)
-                            .Highlight(lighter);
+                        var path = _coloring.History!.GetPathToRoot(current, c);
+
+                        path.Highlight(lighter);
+                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
                     };

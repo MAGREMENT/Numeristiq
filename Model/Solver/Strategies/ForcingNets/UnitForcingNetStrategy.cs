@@ -106,14 +106,14 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 {
                     view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new UnitForcingNetReportBuilder(colorings, current, Coloring.On)) &&
+                            new UnitForcingNetReportBuilder(colorings, current, Coloring.On, view.GraphManager.ComplexLinkGraph)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new UnitForcingNetReportBuilder(colorings, current, Coloring.Off)) &&
+                            new UnitForcingNetReportBuilder(colorings, current, Coloring.Off, view.GraphManager.ComplexLinkGraph)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
@@ -128,12 +128,14 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
     private readonly ColoringDictionary<ILinkGraphElement>[] _colorings;
     private readonly CellPossibility _target;
     private readonly Coloring _targetColoring;
+    private readonly LinkGraph<ILinkGraphElement> _graph;
 
-    public UnitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, CellPossibility target, Coloring targetColoring)
+    public UnitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, CellPossibility target, Coloring targetColoring, LinkGraph<ILinkGraphElement> graph)
     {
         _colorings = colorings;
         _target = target;
         _targetColoring = targetColoring;
+        _graph = graph;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -146,7 +148,9 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
             highlights[i] = lighter =>
             {
                 var path = _colorings[a].History!.GetPathToRoot(_target, _targetColoring);
+                
                 path.Highlight(lighter);
+                ForcingNetsUtility.HighlightJumpLinks(lighter, path, _colorings[a], _graph, snapshot);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
                 if (path.Elements[0] is CellPossibility start) lighter.EncirclePossibility(start);
             };

@@ -11,7 +11,7 @@ namespace Model.Solver.Strategies.FishGeneralization;
 public class FishGeneralization : AbstractStrategy
 {
     public const string OfficialNameForBasic = "Fish";
-    public const string OfficialNameForFinned = "Finned Fish"; //TODO
+    public const string OfficialNameForFinned = "Finned Fish";
     public const string OfficialNameForCannibalisticFinned = "Cannibalistic Finned Fish"; //TODO
     
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
