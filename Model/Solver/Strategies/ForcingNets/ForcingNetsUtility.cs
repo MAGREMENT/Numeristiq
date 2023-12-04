@@ -1,4 +1,5 @@
-﻿using Global.Enums;
+﻿using System.Collections.Generic;
+using Global.Enums;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.CellColoring;
@@ -8,14 +9,15 @@ namespace Model.Solver.Strategies.ForcingNets;
 
 public static class ForcingNetsUtility
 {
-    public static void HighlightJumpLinks(IHighlightable lighter, LinkGraphChain<ILinkGraphElement> path, IColoringResult<ILinkGraphElement> result,
-        LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot) //TODO : improve => Don't backtrack, instead include jump links in result history
+    public static void HighlightJumpLinks(IHighlightable lighter, LinkGraphChain<ILinkGraphElement> path,
+        IColoringResult<ILinkGraphElement> result,
+        LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot)
     {
         for (int i = 0; i < path.Links.Length; i++)
         {
             if (path.Elements[i] is not CellPossibility from) continue;
             if (path.Elements[i + 1] is not CellPossibility to) continue;
-            
+
             var currentLink = path.Links[i];
             if (currentLink != LinkStrength.Strong ||
                 graph.HasLinkTo(path.Elements[i], path.Elements[i + 1], LinkStrength.Strong)) continue;
@@ -51,7 +53,7 @@ public static class ForcingNetsUtility
                         continue;
                     }
                 }
-                
+
                 if (from.Column == to.Column)
                 {
                     var rows = snapshot.ColumnPositionsAt(from.Column, from.Possibility);
@@ -74,14 +76,15 @@ public static class ForcingNetsUtility
                         foreach (var row in rows)
                         {
                             if (row == from.Row || row == to.Row) continue;
-                            
-                            lighter.HighlightPossibility(from.Possibility, row, from.Column, ChangeColoration.CauseOffOne);
+
+                            lighter.HighlightPossibility(from.Possibility, row, from.Column,
+                                ChangeColoration.CauseOffOne);
                         }
 
                         continue;
                     }
                 }
-                
+
                 if (from.Row / 3 == to.Row / 3 && from.Column / 3 == to.Column / 3)
                 {
                     var positions = snapshot.MiniGridPositionsAt(from.Row / 3, from.Column / 3, from.Possibility);
@@ -91,7 +94,7 @@ public static class ForcingNetsUtility
                     {
                         var current = new CellPossibility(pos, from.Possibility);
                         if (current == from || current == to) continue;
-                        
+
                         if (result.TryGetColoredElement(current, out var coloring) && coloring == Coloring.Off)
                             continue;
 
@@ -105,7 +108,7 @@ public static class ForcingNetsUtility
                         {
                             var current = new CellPossibility(pos, from.Possibility);
                             if (current == from || current == to) continue;
-                        
+
                             lighter.HighlightPossibility(current, ChangeColoration.CauseOffOne);
                         }
                     }
@@ -140,4 +143,13 @@ public static class ForcingNetsUtility
             }
         }
     }
+
+    public static void HighlightNet(IHighlightable lighter, LinkGraphChain<ILinkGraphElement> defaultPath,
+        IColoringResult<ILinkGraphElement> coloring, LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot)
+    {
+        HashSet<ILinkGraphElement> alreadyHighlighter = new();
+        
+        //TODO
+    }
+
 }

@@ -191,7 +191,31 @@ public class GridPositions : IReadOnlyGridPositions
         return IReadOnlyGridPositions.DefaultAnd(this, p);
     }
 
+    public GridPositions Or(IReadOnlyGridPositions pos)
+    {
+        if (pos is GridPositions other)
+        {
+            return new GridPositions(_first | other._first, _second | other._second);
+        }
+
+        return this; //TODO
+    }
+
     public GridPositions And(List<GridPositions> gps)
+    {
+        var first = _first;
+        var second = _second;
+
+        foreach (var gp in gps)
+        {
+            first &= gp._first;
+            second &= gp._second;
+        }
+
+        return new GridPositions(first, second);
+    }
+    
+    public GridPositions And(params GridPositions[] gps)
     {
         var first = _first;
         var second = _second;
@@ -431,16 +455,18 @@ public class GridPositions : IReadOnlyGridPositions
 
 public static class UnitMethods
 {
-    public static readonly IUnitMethods[] AllUnitMethods = { new RowMethods(), new ColumnMethods(), new MiniGridMethods() };
+    public static readonly IUnitMethods[] All = { new RowMethods(), new ColumnMethods(), new MiniGridMethods() };
 
     public static IUnitMethods GetMethods(Unit u)
     {
-        return AllUnitMethods[(int)u];
+        return All[(int)u];
     }
 }
 
 public interface IUnitMethods
 {
+    IEnumerable<Cell> EveryCell(int unit);
+    
     int Count(IReadOnlyGridPositions gp, Cell c);
 
     int Count(IReadOnlyGridPositions gp, int unit);
@@ -458,6 +484,14 @@ public interface IUnitMethods
 
 public class RowMethods : IUnitMethods
 {
+    public IEnumerable<Cell> EveryCell(int unit)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            yield return new Cell(unit, col);
+        }
+    }
+
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.RowCount(c.Row);
@@ -496,6 +530,14 @@ public class RowMethods : IUnitMethods
 
 public class ColumnMethods : IUnitMethods
 {
+    public IEnumerable<Cell> EveryCell(int unit)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            yield return new Cell(row, unit);
+        }
+    }
+
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.ColumnCount(c.Column);
@@ -534,6 +576,20 @@ public class ColumnMethods : IUnitMethods
 
 public class MiniGridMethods : IUnitMethods
 {
+    public IEnumerable<Cell> EveryCell(int unit)
+    {
+        var startRow = unit / 3 * 3;
+        var startCol = unit % 3 * 3;
+
+        for (int r = 0; r < 3; r++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                yield return new Cell(startRow + r, startCol + c);
+            }
+        }
+    }
+
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.MiniGridCount(c.Row / 3, c.Column / 3);

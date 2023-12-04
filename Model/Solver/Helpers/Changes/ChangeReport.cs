@@ -30,6 +30,22 @@ public class ChangeReport
         
         HighlightManager = new HighlightManager(compiled);
     }
+    
+    public ChangeReport(string changes, string explanation, Highlight first, params Highlight[] highlighters)
+    {
+        Explanation = explanation;
+        Changes = changes;
+
+        IHighlighter[] compiled = new IHighlighter[highlighters.Length + 1];
+        compiled[0] = HighlightCompiler.GetInstance().Compile(first);
+
+        for (int i = 0; i < highlighters.Length; i++)
+        {
+            compiled[i + 1] = HighlightCompiler.GetInstance().Compile(highlighters[i]);
+        }
+        
+        HighlightManager = new HighlightManager(compiled);
+    }
 
     public static ChangeReport Default(List<SolverChange> changes)
     {

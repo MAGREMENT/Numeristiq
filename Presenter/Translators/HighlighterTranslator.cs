@@ -1,5 +1,8 @@
-﻿using Global.Enums;
+﻿using Global;
+using Global.Enums;
+using Model;
 using Model.Solver.Helpers.Highlighting;
+using Model.Solver.Position;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Solver.StrategiesUtility.Graphs;
@@ -47,6 +50,31 @@ public class HighlighterTranslator : IHighlightable
     {
         _view.EncircleRectangle(from.Row, from.Column, from.Possibility, to.Row,
             to.Column, to.Possibility, coloration);
+    }
+
+    public void EncircleRectangle(CoverHouse house, ChangeColoration coloration)
+    {
+        Cell min = default;
+        Cell max = default;
+        switch (house.Unit)
+        {
+            case Unit.Row :
+                min = new Cell(house.Number, 0);
+                max = new Cell(house.Number, 8); 
+                break;
+            case Unit.Column :
+                min = new Cell(0, house.Number);
+                max = new Cell(8, house.Number);
+                break;
+            case Unit.MiniGrid :
+                var sRow = house.Number / 3 * 3;
+                var sCol = house.Number % 3 * 3;
+                min = new Cell(sRow, sCol);
+                max = new Cell(sRow + 2, sCol + 2);
+                break;
+        }
+
+        _view.EncircleRectangle(min.Row, min.Column, max.Row, max.Column, coloration);
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)

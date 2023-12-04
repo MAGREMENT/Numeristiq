@@ -1,5 +1,6 @@
 using Global;
 using Global.Enums;
+using Model.Solver.Position;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Graphs;
 
@@ -36,6 +37,8 @@ public interface IHighlightable
     }
     
     public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration);
+
+    public void EncircleRectangle(CoverHouse house, ChangeColoration coloration);
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration);
 

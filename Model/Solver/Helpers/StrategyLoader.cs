@@ -6,9 +6,9 @@ using Model.Solver.Strategies.AlternatingInference.Types;
 using Model.Solver.Strategies.FishGeneralization;
 using Model.Solver.Strategies.FishGeneralization.FishTypes;
 using Model.Solver.Strategies.ForcingNets;
+using Model.Solver.Strategies.MultiSector;
+using Model.Solver.Strategies.MultiSector.Searchers;
 using Model.Solver.Strategies.NRCZTChains;
-using Model.Solver.Strategies.SetEquivalence;
-using Model.Solver.Strategies.SetEquivalence.Searchers;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -59,7 +59,7 @@ public class StrategyLoader : IStrategyLoader
         {SKLoopsStrategy.OfficialName, new SKLoopsStrategy()},
         {GurthTheorem.OfficialName, new GurthTheorem()},
         {SetEquivalenceStrategy.OfficialName, new SetEquivalenceStrategy(new RowsAndColumnsSearcher(2,
-            5, 5), new PhistomefelRingLikeSearcher())},
+            5, 2), new PhistomefelRingLikeSearcher())},
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
@@ -91,6 +91,7 @@ public class StrategyLoader : IStrategyLoader
             new AIChainAlgorithmV2<ILinkGraphElement>())},
         {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
             new AIChainAlgorithmV2<ILinkGraphElement>())},
+        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(3, 5, 1))}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

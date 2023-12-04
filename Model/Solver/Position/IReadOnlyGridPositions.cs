@@ -11,6 +11,7 @@ public interface IReadOnlyGridPositions : IEnumerable<Cell>
     int MiniGridCount(int miniRow, int miniCol);
     GridPositions Copy();
     GridPositions And(IReadOnlyGridPositions pos);
+    GridPositions Or(IReadOnlyGridPositions pos);
     GridPositions Difference(IReadOnlyGridPositions with);
 
     static GridPositions DefaultAnd(IReadOnlyGridPositions one, IReadOnlyGridPositions two)

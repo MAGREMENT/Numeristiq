@@ -8,7 +8,6 @@ using Presenter.Solver;
 using Presenter.Translators;
 using View.HelperWindows.Print;
 using View.HelperWindows.Settings;
-using View.Utility;
 
 namespace View.Pages.Solver;
 
@@ -186,6 +185,11 @@ public partial class SolverPage : ISolverView
     {
         Solver.Dispatcher.Invoke(() => Solver.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo,
             possibilityTo, coloration));
+    }
+
+    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration coloration)
+    {
+        Solver.Dispatcher.Invoke(() => Solver.EncircleRectangle(rowFrom, colFrom, rowTo, colTo, coloration));
     }
 
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)

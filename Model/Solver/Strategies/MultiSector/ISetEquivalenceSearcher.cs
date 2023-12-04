@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Model.Solver.Strategies.SetEquivalence;
+namespace Model.Solver.Strategies.MultiSector;
 
 public interface ISetEquivalenceSearcher 
 {

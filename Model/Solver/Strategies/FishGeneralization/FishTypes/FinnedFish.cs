@@ -25,7 +25,7 @@ public class FinnedFish : IFishType
         gp = gp.And(strategyManager.PositionsFor(number));
 
         foreach (var coveredGrid in gp.PossibleCoveredGrids(combination.Length, 3, baseSet,
-                     UnitMethods.AllUnitMethods))
+                     UnitMethods.All))
         {
             var gpOfCoverSet = new GridPositions();
             foreach (var set in coveredGrid.CoverHouses)

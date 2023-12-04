@@ -1,7 +1,7 @@
 ﻿using Global;
 using Global.Enums;
 
-namespace Presenter.Solver;
+namespace Presenter.Translators;
 
 public interface ISudokuDrawer
 {
@@ -12,6 +12,7 @@ public interface ISudokuDrawer
     public void EncircleCell(int row, int col);
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, ChangeColoration coloration);
+    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration coloration);
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration);
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength, LinkOffsetSidePriority priority);

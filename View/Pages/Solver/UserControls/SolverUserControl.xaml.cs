@@ -177,6 +177,11 @@ public partial class SolverUserControl
         _backgroundManager.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo, 
             possibilityTo, ColorManager.ToColor(color));
     }
+    
+    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration color)
+    {
+        _backgroundManager.EncircleRectangle(rowFrom, colFrom, rowTo, colTo, ColorManager.ToColor(color));
+    }
 
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
     {

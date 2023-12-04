@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Model.Solver.Position;
 
-namespace Model.Solver.Strategies.SetEquivalence.Searchers;
+namespace Model.Solver.Strategies.MultiSector.Searchers;
 
 public class PhistomefelRingLikeSearcher : ISetEquivalenceSearcher
 {

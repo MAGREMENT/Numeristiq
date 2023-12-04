@@ -121,7 +121,7 @@
   },
   {
     "Name": "Junior Exocet",
-    "Used": true,
+    "Used": false,
     "Behavior": 1,
     "Args": {}
   },
@@ -258,8 +258,8 @@
     "Args": {}
   },
   {
-    "Name": "Set Equivalence",
-    "Used": false,
+    "Name": "Multi-Sector Locked Sets",
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },

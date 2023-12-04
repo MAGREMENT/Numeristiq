@@ -4,7 +4,7 @@ using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 
-namespace Model.Solver.Strategies.SetEquivalence;
+namespace Model.Solver.Strategies.MultiSector;
 
 public class SetEquivalenceStrategy : AbstractStrategy
 {

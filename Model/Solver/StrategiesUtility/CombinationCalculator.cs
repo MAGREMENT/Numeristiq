@@ -4,17 +4,17 @@ namespace Model.Solver.StrategiesUtility;
 
 public static class CombinationCalculator
 {
-    public static List<int[]> EveryCombination(int count, List<int> sample)
+    public static List<T[]> EveryCombination<T>(int count, IReadOnlyList<T> sample)
     {
-        var result = new List<int[]>();
+        var result = new List<T[]>();
 
-        EveryCombination(count, 0, sample, result, new List<int>());
+        EveryCombination(count, 0, sample, result, new List<T>());
 
         return result;
     }
 
-    private static void EveryCombination(int count, int start, List<int> sample, List<int[]> result,
-        List<int> current)
+    private static void EveryCombination<T>(int count, int start, IReadOnlyList<T> sample, List<T[]> result,
+        List<T> current)
     {
         for (int i = start; i < sample.Count; i++)
         {

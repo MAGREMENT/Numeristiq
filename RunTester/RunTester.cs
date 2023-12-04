@@ -60,11 +60,14 @@ public class RunTester
 
         while (_running && reader.ReadLine() is { } line)
         {
-            _currentSolver.SetSudoku(SudokuTranslator.TranslateToSudoku(line));
+            if (line.Length < 81) continue;
+            var s = line[..81];
+            
+            _currentSolver.SetSudoku(SudokuTranslator.TranslateToSudoku(s));
             _currentSolver.Solve();
 
             _currentRunResult.SolveDone(_currentSolver);
-            SolveDone?.Invoke(_currentRunResult.Count, line, _currentSolver.Sudoku.IsCorrect(), _currentSolver.IsWrong());
+            SolveDone?.Invoke(_currentRunResult.Count, s, _currentSolver.Sudoku.IsCorrect(), _currentSolver.IsWrong());
         }
 
         _currentRunResult.RunFinished(_currentSolver);

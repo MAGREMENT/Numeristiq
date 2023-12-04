@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Global.Enums;
+using Model.Solver.Position;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Graphs;
 
@@ -81,6 +82,11 @@ public readonly struct HighlightInstruction
         _bits = (int)coloration << 28 | (int)type << 24 | possibility1 << 20 | row1 << 16
                 | col1 << 12 | possibility2 << 8 | row2 << 4 | col2;
     }
+
+    public HighlightInstruction(InstructionType type, Unit unit, int number, ChangeColoration coloration)
+    {
+        _bits = (int)coloration << 28 | (int)type << 24 | number << 4 | (int)unit;
+    }
     
     public void Apply(IHighlightable highlightable, ILinkGraphElement[] registers)
     {
@@ -120,6 +126,10 @@ public readonly struct HighlightInstruction
                     (_bits >> 12) & 0xF, (_bits >> 20) & 0xF), new CellPossibility((_bits >> 4) & 0xF,
                     _bits & 0xF, (_bits >> 8) & 0xF), (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
+            case InstructionType.CircleRectangleFromCoverHouse:
+                highlightable.EncircleRectangle(new CoverHouse((Unit)(_bits & 0xF), (_bits >> 4) & 0xF),
+                    (ChangeColoration)((_bits >> 28) & 0xF));
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
@@ -129,7 +139,8 @@ public readonly struct HighlightInstruction
 public enum InstructionType
 {
     HighlightPossibility = 0, HighlightCell = 1, CirclePossibility = 2, CircleCell = 3, 
-    HighlightLinkGraphElement = 4, CreateSimpleLink = 5, CreateGroupLink = 6, CircleRectangle = 7
+    HighlightLinkGraphElement = 4, CreateSimpleLink = 5, CreateGroupLink = 6, CircleRectangle = 7,
+    CircleRectangleFromCoverHouse = 8
 }
 
 public class HighlightCompiler : IHighlightable
@@ -180,6 +191,12 @@ public class HighlightCompiler : IHighlightable
     {
         _instructions.Add(new HighlightInstruction(InstructionType.CircleRectangle, from.Possibility, from.Row,
             from.Column, to.Possibility, to.Row, to.Column, coloration));
+    }
+
+    public void EncircleRectangle(CoverHouse house, ChangeColoration coloration)
+    {
+        _instructions.Add(new HighlightInstruction(InstructionType.CircleRectangleFromCoverHouse,
+            house.Unit, house.Number, coloration));
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)

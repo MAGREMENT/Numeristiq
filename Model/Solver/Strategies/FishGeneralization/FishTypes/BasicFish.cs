@@ -25,7 +25,7 @@ public class BasicFish : IFishType
         gp = gp.And(strategyManager.PositionsFor(number));
 
         foreach (var coverSet in gp.PossibleCoverHouses(combination.Length, baseSet,
-                     UnitMethods.AllUnitMethods))
+                     UnitMethods.All))
         {
             var gpOfCoverSet = new GridPositions();
             foreach (var set in coverSet)

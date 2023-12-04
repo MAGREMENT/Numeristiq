@@ -160,6 +160,50 @@ public class SolverBackgroundManager
             }
         });
     }
+    
+    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, Color color)
+    {
+        var xFrom = CenterX(colFrom);
+        var yFrom = CenterY(rowFrom);
+        
+        var xTo = CenterX(colTo);
+        var yTo = CenterY(rowTo);
+
+        double leftX, topY, rightX, bottomY;
+
+        if (xFrom < xTo)
+        {
+            leftX = TopLeftX(colFrom) - _margin / 2;
+            rightX = BottomRightX(colTo) + _margin / 2;
+        }
+        else
+        {
+            leftX = TopLeftX(colTo) - _margin / 2;
+            rightX = BottomRightX(colFrom) + _margin / 2;
+        }
+
+        if (yFrom < yTo)
+        {
+            topY = TopLeftY(rowFrom) - _margin / 2;
+            bottomY = BottomRightY(rowTo) + _margin / 2;
+        }
+        else
+        {
+            topY = TopLeftY(rowTo) - _margin / 2;
+            bottomY = BottomRightY(rowFrom) + _margin / 2;
+        }
+        
+        _groups.Children.Add(new GeometryDrawing
+        {
+            Geometry = new RectangleGeometry(new Rect(new Point(leftX, topY),
+                new Point(rightX, bottomY))),
+            Pen = new Pen{
+                Thickness = 3.0,
+                Brush = new SolidColorBrush(color),
+                DashStyle = DashStyles.DashDot
+            }
+        });
+    }
 
     public void EncircleCellPatch(Cell[] cells, Color color)
     {
@@ -385,6 +429,11 @@ public class SolverBackgroundManager
     {
         return col * _cellSize + (col + 1) * _margin + (possibility - 1) % 3 * _possibilitySize + _possibilitySize;
     }
+    
+    private double BottomRightX(int col)
+    {
+        return col * _cellSize + (col + 1) * _margin + _cellSize;
+    }
 
     private double CenterX(int col)
     {
@@ -409,6 +458,11 @@ public class SolverBackgroundManager
     private double BottomRightY(int row, int possibility)
     {
         return row * _cellSize + (row + 1) * _margin + (possibility - 1) / 3 * _possibilitySize + _possibilitySize;
+    }
+    
+    private double BottomRightY(int row)
+    {
+        return row * _cellSize + (row + 1) * _margin + _cellSize;
     }
 
     private double CenterY(int row)

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Global.Enums;
+﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
@@ -53,7 +51,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
                                 
                                 if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
                                         .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col,
-                                            possibility, cs.Cause, cell, Coloring.Off, strategyManager.GraphManager.ComplexLinkGraph)) && 
+                                            possibility, cs.Cause, cell, Coloring.On, strategyManager.GraphManager.ComplexLinkGraph)) && 
                                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                         }
@@ -240,106 +238,91 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        Highlight[] highlighters;
-        int cursor;
+        List<Highlight> highlighters = new();
         switch (_cause)
         {
             case ContradictionCause.Cell :
                 var possibilities = snapshot.PossibilitiesAt(_lastChecked.Row, _lastChecked.Column);
-                highlighters = new Highlight[possibilities.Count];
 
-                cursor = 0;
                 foreach (var possibility in possibilities)
                 {
                     var current = new CellPossibility(_lastChecked.Row, _lastChecked.Column, possibility);
                     if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
                         
-                    highlighters[cursor] = lighter =>
+                    highlighters.Add( lighter =>
                     {
                         var path = _coloring.History!.GetPathToRoot(current, c);
                         
                         path.Highlight(lighter);
                         ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
-                    };
-                    cursor++;
+                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                    });
                 }
                 break;
             case ContradictionCause.Row :
-                var cols = snapshot.RowPositionsAt(_lastChecked.Row, _possibility);
-                highlighters = new Highlight[cols.Count];
-
-                cursor = 0;
+                var cols = snapshot.RowPositionsAt(_lastChecked.Row, _lastChecked.Possibility);
+                
                 foreach (var col in cols)
                 {
-                    var current = new CellPossibility(_lastChecked.Row, col, _possibility);
+                    var current = new CellPossibility(_lastChecked.Row, col, _lastChecked.Possibility);
                     if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
                     
-                    highlighters[cursor] = lighter =>
+                    highlighters.Add(lighter =>
                     {
                         var path = _coloring.History!.GetPathToRoot(current, c);
                         
                         path.Highlight(lighter);
                         ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
-                    };
-                    cursor++;
+                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                    });
                 }
                 
                 break;
             case ContradictionCause.Column :
-                var rows = snapshot.ColumnPositionsAt(_lastChecked.Column, _possibility);
-                highlighters = new Highlight[rows.Count];
-
-                cursor = 0;
+                var rows = snapshot.ColumnPositionsAt(_lastChecked.Column, _lastChecked.Possibility);
+                
                 foreach (var row in rows)
                 {
-                    var current = new CellPossibility(row, _lastChecked.Column, _possibility);
+                    var current = new CellPossibility(row, _lastChecked.Column, _lastChecked.Possibility);
                     if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
                     
-                    highlighters[cursor] = lighter =>
+                    highlighters.Add(lighter =>
                     {
                         var path = _coloring.History!.GetPathToRoot(current, c);
 
                         path.Highlight(lighter);
                         ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
-                    };
-                    cursor++;
+                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                    });
                 }
                 
                 break;
             case ContradictionCause.MiniGrid :
                 var cells = snapshot.MiniGridPositionsAt(_lastChecked.Row / 3,
-                    _lastChecked.Column / 3, _possibility);
-                highlighters = new Highlight[cells.Count];
-                
-                cursor = 0;
+                    _lastChecked.Column / 3, _lastChecked.Possibility);
+              
                 foreach (var cell in cells)
                 {
-                    var current = new CellPossibility(cell.Row, cell.Column, _possibility);
+                    var current = new CellPossibility(cell.Row, cell.Column, _lastChecked.Possibility);
                     if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;
                     
-                    highlighters[cursor] = lighter =>
+                    highlighters.Add(lighter =>
                     {
                         var path = _coloring.History!.GetPathToRoot(current, c);
 
                         path.Highlight(lighter);
                         ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        lighter.HighlightPossibility(_possibility, _row, _col, ChangeColoration.ChangeTwo);
-                    };
-                    cursor++;
+                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                    });
                 }
                 
                 break;
-            default: highlighters = Array.Empty<Highlight>();
-                break;
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlighters);
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlighters.ToArray());
     }
 }

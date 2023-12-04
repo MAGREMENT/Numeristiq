@@ -13,9 +13,10 @@
         <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
         <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0, 0, 0, 5">
             <StackPanel Orientation="Horizontal" Margin="0, 0, 10, 0">
-                <TextBlock FontSize="14" TextAlignment="Center" Margin="0, 0, 5, 0">State : </TextBlock>
-                <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeBefore" Checked="ShowStateBefore">Before</RadioButton>
-                <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeAfter" Checked="ShowStateAfter">After</RadioButton>
+                <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeBefore" Checked="ShowStateBefore"
+                             VerticalContentAlignment="Center">Before</RadioButton>
+                <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeAfter" Checked="ShowStateAfter"
+                             VerticalContentAlignment="Center">After</RadioButton>
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Button x:Name="LeftArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" Click="ShiftLeft" FontSize="20" Margin="0, 0, 5, 0"></Button>
