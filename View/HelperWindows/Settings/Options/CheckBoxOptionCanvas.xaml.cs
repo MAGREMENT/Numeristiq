@@ -43,5 +43,9 @@ public partial class CheckBoxOptionCanvas
     }
 
     public override string Explanation { get; }
+    public override void SetFontSize(int size)
+    {
+        Box.FontSize = size;
+    }
 }
 

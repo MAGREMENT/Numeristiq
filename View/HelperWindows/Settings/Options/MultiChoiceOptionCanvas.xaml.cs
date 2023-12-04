@@ -31,4 +31,8 @@ public partial class MultiChoiceOptionCanvas : OptionCanvas
     }
 
     public override string Explanation { get; }
+    public override void SetFontSize(int size)
+    {
+        TextBlock.FontSize = size;
+    }
 }

@@ -121,7 +121,7 @@
   },
   {
     "Name": "Junior Exocet",
-    "Used": false,
+    "Used": true,
     "Behavior": 1,
     "Args": {}
   },
@@ -213,7 +213,9 @@
     "Name": "Aligned Triple Exclusion",
     "Used": true,
     "Behavior": 0,
-    "Args": {}
+    "Args": {
+      "Minimum shared seen cells": "5"
+    }
   },
   {
     "Name": "Subsets X-Cycles",
@@ -223,37 +225,37 @@
   },
   {
     "Name": "Almost Hidden Sets",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Almost Locked Sets",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Almost Hidden Sets Chain",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Almost Locked Sets Chain",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Death Blossom",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Subsets Alternating Inference Loops",
-    "Used": true,
+    "Used": false,
     "Behavior": 2,
     "Args": {}
   },

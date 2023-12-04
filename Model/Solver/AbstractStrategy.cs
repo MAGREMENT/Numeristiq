@@ -1,4 +1,6 @@
-﻿using Model.Solver.Helpers;
+﻿using System;
+using System.Collections.Generic;
+using Model.Solver.Helpers;
 
 namespace Model.Solver;
 
@@ -10,6 +12,8 @@ public abstract class AbstractStrategy : IStrategy
     public OnCommitBehavior OnCommitBehavior { get; set; }
     public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
     public StatisticsTracker Tracker { get; } = new();
+    public IReadOnlyList<IStrategyArgument> Arguments => NonReadOnlyArguments;
+    protected virtual IStrategyArgument[] NonReadOnlyArguments => Array.Empty<IStrategyArgument>();
 
     protected AbstractStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
     {
@@ -21,5 +25,13 @@ public abstract class AbstractStrategy : IStrategy
     
     public abstract void Apply(IStrategyManager strategyManager);
     public virtual void OnNewSudoku(Sudoku s) { }
-    
+    public void TrySetArgument(string name, string value)
+    {
+        foreach (var arg in Arguments)
+        {
+            if (!arg.Name.Equals(name)) continue;
+
+            arg.Set(value);
+        }
+    }
 }

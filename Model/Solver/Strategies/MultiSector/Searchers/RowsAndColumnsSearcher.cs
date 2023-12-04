@@ -123,13 +123,12 @@ public class RowsAndColumnsSearcher : ISetEquivalenceSearcher, IMultiSectorCells
                         foreach (var row in rows) gpRow.FillRow(row.Number);
                         foreach (var col in cols) gpCol.FillColumn(col.Number);
 
-                        var result = gpRow.And(gpCol, possibilityGrid);
-                        if (result.Count == 16)
-                        {
-                            int a = 0;
-                        }
+                        var set = gpRow.And(gpCol);
+                        var supposedResult = set.And(possibilityGrid);
 
-                        yield return result;
+                        if (set.Count - supposedResult.Count > 2) continue;
+
+                        yield return supposedResult;
                     }
                 }
             }

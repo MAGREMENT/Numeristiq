@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using Global.Enums;
 using Presenter.Solver;
 using View.HelperWindows.Settings.Options;
-using View.Utility;
 
 namespace View.HelperWindows.Settings;
 
@@ -60,9 +59,9 @@ public partial class SolverSettingsWindow
                 new CheckBoxOptionCanvas("Solo to given", "Decides if a cell with only one possibility should be transformed into a given when pasting",
                     settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
             new("Graphics",
-                new SliderOptionCanvas("Delay before", "Sets the delay between showing the start state and the highlight of a log", 2000, 0, 
+                new SliderOptionCanvas("Delay before", "Sets the delay between showing the start state and the highlight of a log", 2000, 0, 10,
                     settings.DelayBeforeTransition, i => settings.DelayBeforeTransition = i),
-                new SliderOptionCanvas("Delay after", "Sets the delay between showing the highlight and the after state of a log", 2000, 0,
+                new SliderOptionCanvas("Delay after", "Sets the delay between showing the highlight and the after state of a log", 2000, 0, 10,
                     settings.DelayAfterTransition, i => settings.DelayAfterTransition = i),
                 new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", (int)settings.GivenColor, 
                     i => settings.GivenColor = (CellColor)i),

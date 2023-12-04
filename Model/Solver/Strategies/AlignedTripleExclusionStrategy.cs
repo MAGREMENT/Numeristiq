@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtility;
@@ -16,14 +15,19 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    protected override IStrategyArgument[] NonReadOnlyArguments { get; }
 
-    private readonly int _minSharedSeenCells;
-
+    private int _minSharedSeenCells;
+    
     public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         _minSharedSeenCells = minSharedSeenCells;
+        NonReadOnlyArguments = new IStrategyArgument[]
+        {
+            new IntStrategyArgument("Minimum shared seen cells", () => _minSharedSeenCells,
+                i => _minSharedSeenCells = i, new SliderViewInterface(5, 12, 1))
+        };
     }
-
 
     public override void Apply(IStrategyManager strategyManager)
     {

@@ -16,6 +16,7 @@ public interface IStrategyLoader
     public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior);
     public void ChangeStrategyBehaviorForAll(OnCommitBehavior behavior);
     public void ChangeStrategyUsage(string name, bool yes);
+    public void ChangeArgument(string strategyName, string argumentName, string value);
     
     public event OnListUpdate? ListUpdated;
 }

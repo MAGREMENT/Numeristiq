@@ -8,7 +8,7 @@ public partial class SliderOptionCanvas : OptionCanvas
     private readonly OnChange<int> _onChange;
     private readonly bool _callOnChange;
     
-    public SliderOptionCanvas(string name, string explanation, int max, int min, int defaultValue, OnChange<int> onChange)
+    public SliderOptionCanvas(string name, string explanation, int max, int min, int tickFrequency, int defaultValue, OnChange<int> onChange)
     {
         InitializeComponent();
 
@@ -18,6 +18,8 @@ public partial class SliderOptionCanvas : OptionCanvas
 
         Slider.Maximum = max;
         Slider.Minimum = min;
+        Slider.TickFrequency = tickFrequency;
+        
         _callOnChange = false;
         Slider.Value = defaultValue;
         _callOnChange = true;
@@ -26,6 +28,10 @@ public partial class SliderOptionCanvas : OptionCanvas
     }
 
     public override string Explanation { get; }
+    public override void SetFontSize(int size)
+    {
+        Block.FontSize = size;
+    }
 
     private void OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {

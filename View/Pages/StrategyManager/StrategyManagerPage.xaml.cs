@@ -26,6 +26,7 @@ public partial class StrategyManagerPage : IStrategyManagerView
         StrategyList.ShowAsked += _presenter.ShowStrategy;
         OptionModifier.BehaviorChanged += _presenter.ChangeStrategyBehavior;
         OptionModifier.UsageChanged += _presenter.ChangeStrategyUsage;
+        OptionModifier.ArgumentChanged += _presenter.ChangeArgument;
         
         _presenter.Start();
     }

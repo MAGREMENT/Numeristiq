@@ -55,6 +55,10 @@ public partial class ColorComboBoxOptionCanvas
     }
 
     public override string Explanation { get; }
+    public override void SetFontSize(int size)
+    {
+        Block.FontSize = size;
+    }
 
     private void OnSelectionChange(object sender, SelectionChangedEventArgs e)
     {

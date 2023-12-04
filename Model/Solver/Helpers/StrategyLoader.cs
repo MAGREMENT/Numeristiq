@@ -127,8 +127,14 @@ public class StrategyLoader : IStrategyLoader
                 if (!StrategyPool.TryGetValue(dao.Name, out var strategy)) continue;
             
                 strategy.OnCommitBehavior = dao.Behavior;
+                foreach (var arg in dao.Args)
+                {
+                    strategy.TrySetArgument(arg.Key, arg.Value);
+                }
+                
                 _strategies.Add(StrategyPool[dao.Name], _ => {});
                 if (!dao.Used) ExcludeStrategy(count);
+                
                 count++;
             }
         }
@@ -255,11 +261,10 @@ public class StrategyLoader : IStrategyLoader
     public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior)
     {
         var i = _strategies.Find(s => s.Name.Equals(name));
-        if (i != 0)
-        {
-            _strategies[i].OnCommitBehavior = behavior;
-            TryCallEvent();
-        }
+        if (i == -1) return;
+        
+        _strategies[i].OnCommitBehavior = behavior;
+        TryCallEvent();
     }
 
     public void ChangeStrategyBehaviorForAll(OnCommitBehavior behavior)
@@ -275,13 +280,21 @@ public class StrategyLoader : IStrategyLoader
     public void ChangeStrategyUsage(string name, bool yes)
     {
         var i = _strategies.Find(s => s.Name.Equals(name));
-        if (i != -1)
-        {
-            if (yes) _excludedStrategies.Unset(i);
-            else _excludedStrategies.Set(i);
+        if (i == -1) return;
+        
+        if (yes) _excludedStrategies.Unset(i);
+        else _excludedStrategies.Set(i);
             
-            TryCallEvent();
-        }
+        TryCallEvent();
+    }
+    
+    public void ChangeArgument(string strategyName, string argumentName, string value)
+    {
+        var i = _strategies.Find(s => s.Name.Equals(strategyName));
+        if (i == -1) return;
+
+        _strategies[i].TrySetArgument(argumentName, value);
+        TryCallEvent();
     }
 
     //Private-----------------------------------------------------------------------------------------------------------
@@ -321,7 +334,7 @@ public class StrategyLoader : IStrategyLoader
         for (int i = 0; i < _strategies.Count; i++)
         {
             var s = _strategies[i];
-            list.Add(new StrategyDAO(s.Name, IsStrategyUsed(i), s.OnCommitBehavior, new Dictionary<string, string>()));
+            list.Add(new StrategyDAO(s.Name, IsStrategyUsed(i), s.OnCommitBehavior, s.ArgumentsAsDictionary()));
         }
 
         _repository.Upload(list);
@@ -336,6 +349,7 @@ public class StrategyInformation
     public bool Locked { get; }
     public OnCommitBehavior Behavior { get; }
     public IReadOnlyTracker Tracker { get; }
+    public IReadOnlyList<IStrategyArgument> Arguments { get; }
 
     public StrategyInformation(IStrategy strategy, bool used, bool locked)
     {
@@ -343,6 +357,7 @@ public class StrategyInformation
         Difficulty = strategy.Difficulty;
         Used = used;
         Locked = locked;
+        Arguments = strategy.Arguments;
         Behavior = strategy.OnCommitBehavior;
         Tracker = strategy.Tracker;
     }

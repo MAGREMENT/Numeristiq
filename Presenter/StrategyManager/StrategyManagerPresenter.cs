@@ -63,4 +63,9 @@ public class StrategyManagerPresenter
     {
         _loader.ChangeStrategyUsage(name, yes);
     }
+
+    public void ChangeArgument(string strategyName, string argumentName, string value)
+    {
+        _loader.ChangeArgument(strategyName, argumentName, value);
+    }
 }
