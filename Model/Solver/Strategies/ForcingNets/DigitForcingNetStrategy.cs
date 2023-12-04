@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.CellColoring;
@@ -127,29 +126,32 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var onPath = _on.History!.GetPathToRoot(_onPos, _onColoring);
-        var offPath = _off.History!.GetPathToRoot(_offPos, _offColoring);
+        var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRoot(_onPos, _onColoring),
+            _on, _graph, snapshot);
+        var offPaths = ForcingNetsUtility.FindEveryNeededPaths(_off.History!.GetPathToRoot(_offPos, _offColoring),
+            _off, _graph, snapshot);
+
+        var first = (CellPossibility)onPaths[0].Elements[0];
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(onPath, offPath), lighter =>
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(onPaths, offPaths, first), lighter =>
         {
-            onPath.Highlight(lighter);
-            ForcingNetsUtility.HighlightJumpLinks(lighter, onPath, _on, _graph, snapshot);
-            if(onPath.Elements[0] is CellPossibility cp) lighter.EncirclePossibility(cp);
-            if (onPath.Count == 1) lighter.HighlightPossibility(_onPos, ChangeColoration.CauseOnOne);
+            ForcingNetsUtility.HighlightAllPaths(lighter, onPaths, Coloring.On);
+            lighter.EncirclePossibility(first);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         }, lighter =>
         {
-            offPath.Highlight(lighter);
-            ForcingNetsUtility.HighlightJumpLinks(lighter, offPath, _off, _graph, snapshot);
-            if(offPath.Elements[0] is CellPossibility cp) lighter.EncirclePossibility(cp);
+            ForcingNetsUtility.HighlightAllPaths(lighter, offPaths, Coloring.Off);
+            lighter.EncirclePossibility(first);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
 
-    private string Explanation(LinkGraphChain<ILinkGraphElement> onPath, LinkGraphChain<ILinkGraphElement> offPath)
+    private string Explanation(List<LinkGraphChain<ILinkGraphElement>> onPaths,
+        List<LinkGraphChain<ILinkGraphElement>> offPaths, CellPossibility first)
     {
-        return $"Path if on : \n{onPath}\n\nPath if off : \n{offPath}";
+        return $"If {first} is on : \n{ForcingNetsUtility.AllPathsToString(onPaths)}\n" +
+               $"If {first} is off : \n{ForcingNetsUtility.AllPathsToString(offPaths)}";
     }
 }

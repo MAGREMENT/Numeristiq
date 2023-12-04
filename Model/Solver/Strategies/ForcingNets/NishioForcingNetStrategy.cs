@@ -251,10 +251,10 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                         
                     highlighters.Add( lighter =>
                     {
-                        var path = _coloring.History!.GetPathToRoot(current, c);
+                        var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
+                                .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
-                        path.Highlight(lighter);
-                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         IChangeReportBuilder.HighlightChanges(lighter, changes);
                     });
@@ -270,10 +270,10 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     
                     highlighters.Add(lighter =>
                     {
-                        var path = _coloring.History!.GetPathToRoot(current, c);
+                        var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
+                            .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
-                        path.Highlight(lighter);
-                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         IChangeReportBuilder.HighlightChanges(lighter, changes);
                     });
@@ -290,10 +290,10 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     
                     highlighters.Add(lighter =>
                     {
-                        var path = _coloring.History!.GetPathToRoot(current, c);
-
-                        path.Highlight(lighter);
-                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
+                        var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
+                            .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
+                        
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         IChangeReportBuilder.HighlightChanges(lighter, changes);
                     });
@@ -311,10 +311,10 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     
                     highlighters.Add(lighter =>
                     {
-                        var path = _coloring.History!.GetPathToRoot(current, c);
-
-                        path.Highlight(lighter);
-                        ForcingNetsUtility.HighlightJumpLinks(lighter, path, _coloring, _graph, snapshot);
+                        var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
+                            .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                        ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
+                        
                         lighter.EncirclePossibility(_possibility, _row, _col);
                         IChangeReportBuilder.HighlightChanges(lighter, changes);
                     });

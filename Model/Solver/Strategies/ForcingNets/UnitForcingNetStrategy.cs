@@ -141,18 +141,20 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         Highlight[] highlights = new Highlight[_colorings.Length];
+        var paths = new List<LinkGraphChain<ILinkGraphElement>>[_colorings.Length];
 
         for (int i = 0; i < _colorings.Length; i++)
         {
-            var a = i;
+            paths[i] = ForcingNetsUtility.FindEveryNeededPaths(_colorings[i].History!.GetPathToRoot(_target,
+                _targetColoring), _colorings[i], _graph, snapshot);
+            
+            var iForDelegate = i;
             highlights[i] = lighter =>
             {
-                var path = _colorings[a].History!.GetPathToRoot(_target, _targetColoring);
+                ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], Coloring.On);
                 
-                path.Highlight(lighter);
-                ForcingNetsUtility.HighlightJumpLinks(lighter, path, _colorings[a], _graph, snapshot);
+                if (paths[iForDelegate][0].Elements[0] is CellPossibility start) lighter.EncirclePossibility(start);
                 IChangeReportBuilder.HighlightChanges(lighter, changes);
-                if (path.Elements[0] is CellPossibility start) lighter.EncirclePossibility(start);
             };
         }
         

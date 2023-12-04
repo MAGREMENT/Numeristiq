@@ -149,7 +149,7 @@ public class SolverSettings
             _repository.New(ToDAO());
         }
         
-        AnySettingChanged += () =>_repository.Upload(ToDAO());
+        AnySettingChanged += () => _repository.Upload(ToDAO());
     }
     
     private void Load(SettingsDAO DAO)
