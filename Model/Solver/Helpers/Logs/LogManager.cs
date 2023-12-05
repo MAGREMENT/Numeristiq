@@ -52,12 +52,11 @@ public class LogManager
         TryCallLogsUpdatedEvent();
     }
 
-    public void AddByHand(int possibility, int row, int col, ChangeType changeType)
+    public void AddByHand(int possibility, int row, int col, ChangeType changeType, SolverState stateBefore)
     {
         if (!IsEnabled) return;
         
-        //TODO correct this
-        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, _holder.CurrentState, _holder.CurrentState));
+        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, stateBefore, _holder.CurrentState));
         TryCallLogsUpdatedEvent();
     }
 

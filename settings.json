@@ -4,7 +4,7 @@
   "DelayBeforeTransition": 350,
   "DelayAfterTransition": 350,
   "UniquenessAllowed": true,
-  "ActionOnCellChange": 1,
+  "ActionOnCellChange": 0,
   "TransformSoloPossibilityIntoGiven": true,
   "GivenColor": 0,
   "SolvingColor": 0,

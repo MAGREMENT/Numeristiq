@@ -11,7 +11,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 namespace Model.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
-//BIG TODO => For each strategy using old als, revamp
+//TODO => For each strategy using old als, revamp
 public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolder
 {
     private Sudoku _sudoku;
@@ -127,11 +127,17 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     
     public void SetSolutionByHand(int number, int row, int col)
     {
-        if (!_startedSolving && _sudoku[row, col] != 0) RemoveSolution(row, col);
-        if (!AddSolution(number, row, col, false)) return;
+        if (_sudoku[row, col] != 0) RemoveSolution(row, col);
 
-        if (_startedSolving) LogManager.AddByHand(number, row, col, ChangeType.Solution);
-        else StartState = new SolverState(this);
+        if (_startedSolving && LogsManaged)
+        {
+            var stateBefore = CurrentState;
+            if (!AddSolution(number, row, col, false)) return;
+            LogManager.AddByHand(number, row, col, ChangeType.Solution, stateBefore);
+        }
+        else if (!AddSolution(number, row, col, false)) return;
+        
+        if(!_startedSolving) StartState = new SolverState(this);
     }
 
     public void RemoveSolutionByHand(int row, int col)
@@ -144,11 +150,15 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
-        if (!_startedSolving) return;
+        if (_startedSolving && LogsManaged)
+        {
+            var stateBefore = CurrentState;
+            if (!RemovePossibility(possibility, row, col, false)) return;
+            LogManager.AddByHand(possibility, row, col, ChangeType.Possibility, stateBefore);
+        }
+        else if (!RemovePossibility(possibility, row, col, false)) return;
 
-        if (!RemovePossibility(possibility, row, col, false)) return;
-
-        LogManager.AddByHand(possibility, row, col, ChangeType.Possibility);
+        if (!_startedSolving) StartState = new SolverState(this);
     }
     
     public void Solve(bool stopAtProgress = false)

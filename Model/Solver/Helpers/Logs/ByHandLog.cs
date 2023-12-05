@@ -29,12 +29,12 @@ public class ByHandLog : ISolverLog
         {
             case ChangeType.Possibility :
                 Title = "Removed by hand";
-                Changes = $"[{row + 1}, {col + 1}] {possibility} removed by hand";
+                Changes = $"r{row + 1}c{col + 1} <> {possibility}";
                 Explanation = "This possibility was removed by hand";
                 break;
             case ChangeType.Solution :
                 Title = "Added by hand";
-                Changes = $"[{row + 1}, {col + 1}] {possibility} added by hand";
+                Changes = $"r{row + 1}c{col + 1} == {possibility}";
                 Explanation = "This solution was added by hand";
                 break;
             default: throw new ArgumentException("Invalid change type");
