@@ -8,10 +8,28 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel>
         <Border BorderThickness="0,0,0,1" BorderBrush="DarkGray">
-            <TextBlock FontSize="20" Margin="3">Strategies</TextBlock>
+            <Grid Width="180">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="130"></ColumnDefinition>
+                    <ColumnDefinition Width="25"></ColumnDefinition>
+                    <ColumnDefinition Width="25"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" FontSize="20" Margin="3" VerticalAlignment="Center">Strategies</TextBlock>
+                <Image Grid.Column="1" Width="20" Height="20" MouseDown="UseAllStrategies" Margin="5, 0, 0, 0">
+                    <Image.Source>
+                        <BitmapImage UriSource="../../../Images/checkmark.png"/>
+                    </Image.Source>
+                </Image>
+                <Image Grid.Column="2" Width="20" Height="20" MouseDown="ExcludeAllStrategies" Margin="5, 0, 0, 0">
+                    <Image.Source>
+                        <BitmapImage UriSource="../../../Images/cross.png"/>
+                    </Image.Source>
+                </Image>
+            </Grid>
         </Border>
-        <ScrollViewer Height="620" Background="{x:Static utils:ColorManager.Background1}">
-            <StackPanel MinHeight="620" Width="180" x:Name="List" Orientation="Vertical"/>
+        <ScrollViewer Height="660" Background="{x:Static utils:ColorManager.Background1}">
+            <StackPanel MinHeight="660" Width="180" x:Name="List" Orientation="Vertical"/>
         </ScrollViewer>
     </StackPanel>
 </UserControl>

@@ -159,6 +159,18 @@ public class StrategyLoader : IStrategyLoader
         TryCallEvent();
     }
 
+    public void UseAllStrategies(bool yes)
+    {
+        for (int i = 0; i < Strategies.Count; i++)
+        {
+            if (IsStrategyLocked(i)) continue;
+
+            if (yes) _excludedStrategies.Unset(i);
+            else _excludedStrategies.Set(i);
+        }
+        TryCallEvent();
+    }
+
     public bool IsStrategyUsed(int number)
     {
         return !_excludedStrategies.IsSet(number);

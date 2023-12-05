@@ -60,8 +60,8 @@ public class RunTester
 
         while (_running && reader.ReadLine() is { } line)
         {
-            if (line.Length < 81) continue;
-            var s = line[..81];
+            int commentStart = line.IndexOf('#');
+            var s = commentStart == -1 ? line : line[..commentStart];
             
             _currentSolver.SetSudoku(SudokuTranslator.TranslateToSudoku(s));
             _currentSolver.Solve();

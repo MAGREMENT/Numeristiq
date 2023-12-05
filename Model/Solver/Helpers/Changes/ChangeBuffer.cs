@@ -88,6 +88,19 @@ public class ChangeBuffer
 
         return true;
     }
+
+    public void PushCommit(BuiltChangeCommit commit)
+    {
+        _m.LogManager.StartPush();
+
+        foreach (var change in commit.Changes)
+        {
+            _m.ExecuteChange(change);
+        }
+        _m.LogManager.AddFromReport(commit.Report, commit.Changes, commit.Responsible);
+        
+        _m.LogManager.StopPush();
+    }
     
     private List<SolverChange> BuffersToChangeList()
     {
@@ -111,31 +124,19 @@ public class ChangeBuffer
         return changes;
     }
 
-    public string CommitDump()
+    public BuiltChangeCommit[] DumpBuiltCommits()
     {
-        var builder = new StringBuilder();
-        IStrategy? lastStrategy= null;
-        var changeSet = new HashSet<SolverChange>();
-
-        foreach (var commit in _commits)
+        var snapshot = _m.TakeSnapshot();
+        List<BuiltChangeCommit> result = new(_commits.Count);
+        
+        foreach (var c in _commits)
         {
-            if (lastStrategy is null || !lastStrategy.Name.Equals(commit.Responsible.Name))
-            {
-                if (changeSet.Count > 0)
-                {
-                    builder.Append(StringUtility.FillWith(lastStrategy!.Name, '-', 50) + "\n\n");
-                    builder.Append($"{IChangeReportBuilder.ChangesToString(changeSet)}\n");
-                    changeSet.Clear();
-                }
-                
-                lastStrategy = commit.Responsible;
-            }
-
-            changeSet.UnionWith(commit.Changes);
+            if (c.Builder is null) continue;
+            result.Add(new BuiltChangeCommit(c.Responsible, c.Changes, c.Builder.Build(c.Changes, snapshot)));
         }
-
+        
         _commits.Clear();
-        return builder.ToString();
+        return result.ToArray();
     }
 }
 
@@ -158,6 +159,20 @@ public class ChangeCommit
         Changes = changes;
         Builder = null;
     }
+}
+
+public class BuiltChangeCommit
+{
+    public BuiltChangeCommit(IStrategy responsible, List<SolverChange> changes, ChangeReport report)
+    {
+        Responsible = responsible;
+        Changes = changes;
+        Report = report;
+    }
+
+    public IStrategy Responsible { get; }
+    public List<SolverChange> Changes { get; }
+    public ChangeReport Report { get; }
 }
 
 public interface IPushHandler

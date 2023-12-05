@@ -30,6 +30,15 @@ public partial class StrategyUserControl
         _invoke = true;
     }
 
+    public void Check(bool yes)
+    {
+        if (!StrategyUsage.IsEnabled) return;
+        
+        _invoke = false;
+        StrategyUsage.IsChecked = yes;
+        _invoke = true;
+    }
+
     private void OnChecked(object sender, RoutedEventArgs e)
     {
         if (!_invoke) return;

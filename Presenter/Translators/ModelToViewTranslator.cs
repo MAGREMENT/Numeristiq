@@ -2,6 +2,7 @@
 using Global.Enums;
 using Model.Solver;
 using Model.Solver.Helpers;
+using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
 
 namespace Presenter.Translators;
@@ -51,5 +52,24 @@ public static class ModelToViewTranslator
         }
         
         return result;
+    }
+
+    public static ViewCommit[] Translate(BuiltChangeCommit[] commits)
+    {
+        var result = new ViewCommit[commits.Length];
+
+        for (int i = 0; i < commits.Length; i++)
+        {
+            result[i] = new ViewCommit(commits[i].Responsible.Name, (Intensity)commits[i].Responsible.Difficulty);
+        }
+
+        return result;
+    }
+
+    public static ViewCommitInformation Translate(BuiltChangeCommit commit)
+    {
+        return new ViewCommitInformation(commit.Responsible.Name, (Intensity)commit.Responsible.Difficulty,
+            commit.Report.Changes, commit.Report.HighlightManager.CursorPosition(),
+            commit.Report.HighlightManager.Count);
     }
 }

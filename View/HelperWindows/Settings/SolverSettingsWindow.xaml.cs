@@ -71,8 +71,6 @@ public partial class SolverSettingsWindow
                     (int)settings.SidePriority, i => settings.SidePriority = (LinkOffsetSidePriority)i, 
                     "Any", "Left", "Right")),
             new("Solver",
-                new CheckBoxOptionCanvas("Step by step", "Defines whether the solver stops when progress is made or not", settings.StepByStep,
-                    b => settings.StepByStep = b),
                 new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", settings.UniquenessAllowed,
                     b => settings.UniquenessAllowed = b))
         };

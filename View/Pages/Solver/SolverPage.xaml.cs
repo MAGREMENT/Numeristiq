@@ -6,8 +6,8 @@ using Global.Enums;
 using Presenter;
 using Presenter.Solver;
 using Presenter.Translators;
-using View.HelperWindows.Print;
 using View.HelperWindows.Settings;
+using View.HelperWindows.StepChooser;
 
 namespace View.Pages.Solver;
 
@@ -17,6 +17,8 @@ public partial class SolverPage : ISolverView
 
     private readonly SolverPresenter _presenter;
     private readonly IPageHandler _pageHandler;
+
+    private StepChooserWindow? _stepChooserWindow;
 
     public SolverPage(IPageHandler pageHandler, PresenterFactory factory)
     {
@@ -38,6 +40,7 @@ public partial class SolverPage : ISolverView
         LogList.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
         LogList.LogHighlightShifted += _presenter.ShiftLogHighlight;
         StrategyList.StrategyUsed += _presenter.UseStrategy;
+        StrategyList.AllStrategiesUsed += _presenter.UseAllStrategies;
     }
     
     //ISolverView-------------------------------------------------------------------------------------------------------
@@ -47,7 +50,9 @@ public partial class SolverPage : ISolverView
         Dispatcher.Invoke(() =>
         {
             SolveButton.IsEnabled = false;
-            ClearButton.IsEnabled = false; 
+            ClearButton.IsEnabled = false;
+            ChooseButton.IsEnabled = false;
+            AdvanceButton.IsEnabled = false;
         });
     }
 
@@ -57,6 +62,8 @@ public partial class SolverPage : ISolverView
         {
             SolveButton.IsEnabled = true;
             ClearButton.IsEnabled = true;
+            ChooseButton.IsEnabled = true;
+            AdvanceButton.IsEnabled = true;
         });
     }
 
@@ -143,16 +150,10 @@ public partial class SolverPage : ISolverView
         Clipboard.SetText(s);
     }
 
-    public void ShowFullScan(string s)
+    public void ShowPossibleSteps(StepChooserPresenterBuilder builder)
     {
-        var printWindow = new PrintWindow("Full Scan", s);
-        printWindow.Show();
-    }
-
-    public void ShowAllStrategies(string s)
-    {
-        var printWindow = new PrintWindow("All Strategies", s);
-        printWindow.Show();
+        _stepChooserWindow = new StepChooserWindow(builder);
+        _stepChooserWindow.Show();
     }
 
     public void ClearDrawings()
@@ -213,12 +214,22 @@ public partial class SolverPage : ISolverView
 
     private void SolveSudoku(object sender, RoutedEventArgs e)
     {
-        _presenter.Solve();
+        _presenter.Solve(false);
     }
 
     private void ClearSudoku(object sender, RoutedEventArgs e)
     {
         _presenter.ClearSudoku();
+    }
+    
+    private void Advance(object sender, RoutedEventArgs e)
+    {
+        _presenter.Solve(true);
+    }
+
+    private void ChooseStep(object sender, RoutedEventArgs e)
+    {
+        _presenter.ChooseNextStep();
     }
 
     private void GoBack(object sender, RoutedEventArgs e)
@@ -235,11 +246,6 @@ public partial class SolverPage : ISolverView
     private void Copy(object sender, RoutedEventArgs e)
     {
         _presenter.CopyGrid();
-    }
-
-    private void FullScan(object sender, RoutedEventArgs e)
-    {
-        _presenter.GetFullScan();
     }
 
     private void Paste(object sender, RoutedEventArgs e)

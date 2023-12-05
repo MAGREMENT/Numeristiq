@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Windows.Input;
 using Presenter.Translators;
 
 namespace View.Pages.Solver.UserControls;
@@ -7,6 +8,9 @@ public partial class StrategyListUserControl
 { 
     public delegate void OnStrategyUse(int number, bool used);
     public event OnStrategyUse? StrategyUsed;
+
+    public delegate void OnAllStrategiesUse(bool used);
+    public event OnAllStrategiesUse? AllStrategiesUsed;
 
     private int _currentlyHighlighted = -1;
     
@@ -57,5 +61,23 @@ public partial class StrategyListUserControl
         }
 
         _currentlyHighlighted = number;
+    }
+
+    private void UseAllStrategies(object sender, MouseButtonEventArgs e)
+    {
+        AllStrategiesUsed?.Invoke(true);
+        foreach (var s in List.Children)
+        {
+            ((StrategyUserControl)s).Check(true);
+        }
+    }
+
+    private void ExcludeAllStrategies(object sender, MouseButtonEventArgs e)
+    {
+        AllStrategiesUsed?.Invoke(false);
+        foreach (var s in List.Children)
+        {
+            ((StrategyUserControl)s).Check(false);
+        }
     }
 }

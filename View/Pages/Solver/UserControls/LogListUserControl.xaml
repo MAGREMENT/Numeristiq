@@ -10,8 +10,8 @@
             <Button Width="140" Height="30" Margin="10, 0" Click="ShowStart">Show Start</Button>
             <Button Width="140" Height="30" Margin="10, 0" Click="ShowCurrent">Show Current</Button>
         </StackPanel>
-        <ScrollViewer Height="430" x:Name="Scroll" Background="White">
-            <StackPanel Width="300" MinHeight="430" x:Name="List"/>
+        <ScrollViewer Height="470" x:Name="Scroll" Background="White">
+            <StackPanel Width="300" MinHeight="470" x:Name="List"/>
         </ScrollViewer>
     </StackPanel>
 </UserControl>

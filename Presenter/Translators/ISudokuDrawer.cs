@@ -5,6 +5,7 @@ namespace Presenter.Translators;
 
 public interface ISudokuDrawer
 {
+    public void UpdateBackground();
     public void ClearDrawings();
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration);
     public void FillCell(int row, int col, ChangeColoration coloration);

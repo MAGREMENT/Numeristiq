@@ -29,12 +29,12 @@ public partial class MainWindow : IPageHandler
 
     public void ShowPage(PagesName pageName)
     {
-        if(_currentlyShown is not null) _currentlyShown.OnQuit();
+        _currentlyShown?.OnQuit();
 
         var page = _pages[(int)pageName];
         Main.Content = page;
         _currentlyShown = page;
         
-        page.OnShow();
+        _currentlyShown.OnShow();
     }
 }

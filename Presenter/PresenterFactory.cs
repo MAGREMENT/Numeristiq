@@ -1,6 +1,8 @@
 ﻿using Model;
 using Model.Solver;
+using Model.Solver.Helpers.Changes;
 using Presenter.Solver;
+using Presenter.StepChooser;
 using Presenter.StrategyManager;
 using Repository;
 
@@ -38,5 +40,24 @@ public class PresenterFactory
     public StrategyManagerPresenter Create(IStrategyManagerView view)
     {
         return new StrategyManagerPresenter(_solver.StrategyLoader, view);
+    }
+}
+
+public class StepChooserPresenterBuilder
+{
+    private readonly SolverState _state;
+    private readonly BuiltChangeCommit[] _commits;
+    private readonly IStepChooserCallback _callback;
+
+    public StepChooserPresenterBuilder(SolverState state, BuiltChangeCommit[] commits, IStepChooserCallback callback)
+    {
+        _commits = commits;
+        _callback = callback;
+        _state = state;
+    }
+
+    public StepChooserPresenter Build(IStepChooserView view)
+    {
+        return new StepChooserPresenter(_state, _commits, view, _callback);
     }
 }

@@ -65,7 +65,7 @@ public class AlmostNakedSetSearcher
         
         for (int col = 0; col < 9; col++)
         {
-            InColumn(col, 0, possibilities, cells, result);
+            InColumn(col, 0, possibilities, cells, result, true);
             possibilities.RemoveAll();
             cells.Clear();
         }
@@ -96,7 +96,7 @@ public class AlmostNakedSetSearcher
     {
         var result = new List<IPossibilitiesPositions>();
 
-        InColumn(col, 0, Possibilities.NewEmpty(), new List<Cell>(), result);
+        InColumn(col, 0, Possibilities.NewEmpty(), new List<Cell>(), result, false);
 
         return result;
     }
@@ -133,7 +133,7 @@ public class AlmostNakedSetSearcher
     }
     
     private void InColumn(int col, int start, IReadOnlyPossibilities current,
-        List<Cell> visited, List<IPossibilitiesPositions> result)
+        List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSingles)
     {
         for (int row = start; row < 9; row++)
         {
@@ -143,12 +143,12 @@ public class AlmostNakedSetSearcher
             Possibilities mashed = current.Or(inspected);
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + Difference)
+            if (mashed.Count == visited.Count + Difference && (!excludeSingles || visited.Count > 1))
             {
                 result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
             }
 
-            if(Max > visited.Count) InColumn(col, row + 1, mashed, visited, result);
+            if(Max > visited.Count) InColumn(col, row + 1, mashed, visited, result, excludeSingles);
             
             visited.RemoveAt(visited.Count - 1);
         }
@@ -181,6 +181,8 @@ public class AlmostNakedSetSearcher
 
     private bool NotInSameRowOrColumn(List<Cell> cells)
     {
+        if (cells.Count <= 1) return false;
+        
         int row = cells[0].Row;
         int col = cells[0].Column;
 

@@ -280,12 +280,12 @@ public class SolverBackgroundManager
         var to = new Point(CenterX(colTo, possibilityTo), CenterY(rowTo, possibilityTo));
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
-        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from.X, from.Y, middle.X, middle.Y, LinkOffset);
+        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, LinkOffset);
 
         var validOffsets = new List<Point>();
         for (int i = 0; i < 2; i++)
         {
-            var p = new Point(offsets[i, 0], offsets[i, 1]);
+            var p = offsets[i];
             if(p.X > 0 && p.X < Size && p.Y > 0 && p.Y < Size) validOffsets.Add(p);
         }
 

@@ -5,7 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
-        ResizeMode="NoResize"
+        ResizeMode="CanMinimize"
+        WindowStartupLocation="Manual"
+        Top="10"
+        Left="10"
         Title="SudokuSolver">
     <Frame x:Name="Main" NavigationUIVisibility="Hidden" />
 </Window>

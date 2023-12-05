@@ -2,13 +2,15 @@
 using Global.Enums;
 using Model;
 using Model.Solver;
+using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
+using Presenter.StepChooser;
 using Presenter.Translators;
 using Repository;
 
 namespace Presenter.Solver;
 
-public class SolverPresenter
+public class SolverPresenter : IStepChooserCallback
 {
     private readonly ISolver _solver;
     private readonly ISolverView _view;
@@ -19,6 +21,7 @@ public class SolverPresenter
     private Cell? _currentlySelectedCell;
     private int _currentlySelectedLog;
     private bool _shouldUpdateSudokuTranslation = true;
+    private bool _shouldUpdateLogs = true;
 
     public SolverSettings Settings { get; }
 
@@ -46,6 +49,8 @@ public class SolverPresenter
         _highlighterTranslator = new HighlighterTranslator(view, Settings);
         _solverActionEnabler = new SolverActionEnabler(view);
     }
+    
+    //Presenter---------------------------------------------------------------------------------------------------------
 
     public void Bind()
     {
@@ -77,11 +82,24 @@ public class SolverPresenter
         NewSudoku(new Sudoku());
     }
 
-    public async void Solve()
+    public async void Solve(bool stepByStep)
     {
         _solverActionEnabler.DisableActions(1);
-        await Task.Run(() => _solver.Solve(Settings.StepByStep));
+        
+        if (!stepByStep) _shouldUpdateLogs = false;
+        await Task.Run(() => _solver.Solve(stepByStep));
+        _shouldUpdateLogs = true;
+        
         _solverActionEnabler.EnableActions(1);
+    }
+
+    public async void ChooseNextStep()
+    {
+        _solverActionEnabler.DisableActions(3);
+        
+        var buffer = Array.Empty<BuiltChangeCommit>();
+        await Task.Run(() => buffer = _solver.EveryPossibleNextStep());
+        _view.ShowPossibleSteps(new StepChooserPresenterBuilder(_solver.CurrentState, buffer, this));
     }
     
     public void SelectLog(int number)
@@ -133,6 +151,11 @@ public class SolverPresenter
     {
         if (yes) _solver.UseStrategy(number);
         else _solver.ExcludeStrategy(number);
+    }
+
+    public void UseAllStrategies(bool yes)
+    {
+        _solver.UseAllStrategies(yes);
     }
 
     public void SelectCell(Cell cell)
@@ -190,12 +213,19 @@ public class SolverPresenter
         _view.ClearDrawings();
         _view.UpdateBackground();
     }
-
-    public void GetFullScan()
-    {
-        _view.ShowFullScan(_solver.FullScan());
-    }
     
+    //IStepChooserCallback----------------------------------------------------------------------------------------------
+    
+    public void EnableActionsBack()
+    {
+        _solverActionEnabler.EnableActions(3);
+    }
+
+    public void ApplyCommit(BuiltChangeCommit commit)
+    {
+        _solver.ApplyCommit(commit);
+    }
+
     //Private-----------------------------------------------------------------------------------------------------------
 
     private void ChangeShownState(SolverState state)
@@ -250,7 +280,7 @@ public class SolverPresenter
         var logs = _solver.Logs;
         _view.SetLogs(ModelToViewTranslator.Translate(logs));
 
-        if (!Settings.StepByStep) _lastLogIndex = logs.Count - 1;
+        if (!_shouldUpdateLogs) _lastLogIndex = logs.Count - 1;
         else
         {
             for (int i = _lastLogIndex + 1; i < logs.Count; i++)
@@ -275,6 +305,7 @@ public class SolverPresenter
                 _view.UpdateBackground();
             }   
         }
+        
         
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);

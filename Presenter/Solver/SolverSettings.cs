@@ -22,16 +22,7 @@ public class SolverSettings
     public event OnSettingChange? TranslationTypeChanged;
     public event OnSettingChange? UniquenessAllowedChanged;
     public event OnSettingChange? GivensNeedUpdate;
-    
-    public bool StepByStep
-    {
-        get => _stepByStep;
-        set
-        {
-            _stepByStep = value;
-            AnySettingChanged?.Invoke();
-        } 
-    }
+
     public StateShown StateShown
     {
         get => _showState;
@@ -154,7 +145,6 @@ public class SolverSettings
     
     private void Load(SettingsDAO DAO)
     {
-        StepByStep = DAO.StepByStep;
         StateShown = DAO.StateShown;
         TranslationType = DAO.TranslationType;
         DelayBeforeTransition = DAO.DelayBeforeTransition;
@@ -169,7 +159,7 @@ public class SolverSettings
 
     private SettingsDAO ToDAO()
     {
-        return new SettingsDAO(StepByStep, StateShown, TranslationType,
+        return new SettingsDAO(StateShown, TranslationType,
             DelayBeforeTransition, DelayAfterTransition, UniquenessAllowed,
             ActionOnCellChange, TransformSoloPossibilityIntoGiven,
             GivenColor, SolvingColor, SidePriority);

@@ -22,8 +22,6 @@ public interface ISolverView : ISudokuDrawer
     void LightUpStrategy(int number);
     void PutCursorOn(Cell cell);
     void ClearCursor();
-    void UpdateBackground();
     void ToClipboard(string s);
-    void ShowFullScan(string s);
-    void ShowAllStrategies(string s);
+    void ShowPossibleSteps(StepChooserPresenterBuilder builder);
 }

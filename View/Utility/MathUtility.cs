@@ -3,32 +3,32 @@ using System.Windows;
 
 namespace View.Utility;
 
-public class MathUtility
+public static class MathUtility
 {
-    public static double[,] ShiftSecondPointPerpendicularly(double xA, double yA, double xB, double yB, double d)
+    public static Point[] ShiftSecondPointPerpendicularly(Point a, Point b, double d)
     {
-        if (xA == xB && yA == yB)
+        if (a == b)
         {
-            return new[,] {{xB, yB}, {xB, yB} };
+            return new[] { b, b };
         }
         
         //Translate AB to 0, 0
-        var x = xB - xA;
-        var y = yB - yA;
+        var x = b.X - a.X;
+        var y = b.Y - a.Y;
 
         if (x == 0)
         {
             //Vertical line
-            return new[,] { {xB + d, yB}, {xB - d, yB} };
+            return new[] { new Point(b.X + d, b.Y), new Point(b.X - d, b.Y) };
         }
 
         if (y == 0)
         {
             //Horizontal line
-            return new[,] { {xB, yB + d}, {xB, yB - d } };
+            return new[] { new Point(b.X, b.Y + d), new Point(b.X, b.Y - d) };
         }
 
-        var result = new double[2, 2];
+        var result = new Point[2];
 
         var slope = y / x;
         var sign = x < 0 ? Math.PI : 0;
@@ -45,8 +45,7 @@ public class MathUtility
             var newX = Math.Sqrt(hypotenuseSquared / (newSlope * newSlope + 1)) * sign;
             var newY = newSlope * newX;
 
-            result[i, 0] = newX + xA;
-            result[i, 1] = newY + yA;
+            result[i] = new Point(newX + a.X, newY + a.Y);
         }
 
         return result;

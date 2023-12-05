@@ -38,7 +38,7 @@ public partial class LogUserControl
         Text.Text = log.Changes;
 
         HighlightsNumber.Text = log.HighlightCursor;
-        if (log.HighlightCount == 1)
+        if (log.HighlightCount <= 1)
         {
             LeftArrow.IsEnabled = false;
             RightArrow.IsEnabled = false;

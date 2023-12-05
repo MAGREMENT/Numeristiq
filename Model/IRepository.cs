@@ -24,7 +24,7 @@ public class RepositoryInitializationException : Exception
 }
 
 public record StrategyDAO(string Name, bool Used, OnCommitBehavior Behavior, Dictionary<string, string> Args);
-public record SettingsDAO(bool StepByStep, StateShown StateShown, SudokuTranslationType TranslationType,
+public record SettingsDAO(StateShown StateShown, SudokuTranslationType TranslationType,
     int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ChangeType ActionOnCellChange,
     bool TransformSoloPossibilityIntoGiven, CellColor GivenColor, CellColor SolvingColor,
     LinkOffsetSidePriority SidePriority);

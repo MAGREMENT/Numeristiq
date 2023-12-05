@@ -185,6 +185,38 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         CurrentStrategyChanged?.Invoke(_currentStrategy);
     }
 
+    public BuiltChangeCommit[] EveryPossibleNextStep()
+    {
+        var realBehaviors = new Dictionary<int, OnCommitBehavior>();
+        for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
+        {
+            if (!_strategyLoader.IsStrategyUsed(_currentStrategy)) continue;
+            
+            CurrentStrategyChanged?.Invoke(_currentStrategy);
+            var current = Strategies[_currentStrategy];
+
+            realBehaviors[_currentStrategy] = current.OnCommitBehavior;
+            current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
+            
+            current.Apply(this);
+        }
+        
+        _currentStrategy = -1;
+        CurrentStrategyChanged?.Invoke(_currentStrategy);
+
+        foreach (var entry in realBehaviors)
+        {
+            _strategyLoader.Strategies[entry.Key].OnCommitBehavior = entry.Value;
+        }
+
+        return ChangeBuffer.DumpBuiltCommits();
+    }
+    
+    public void ApplyCommit(BuiltChangeCommit commit)
+    {
+        ChangeBuffer.PushCommit(commit);
+    }
+
     public bool IsWrong()
     {
         for (int row = 0; row < 9; row++)
@@ -196,6 +228,11 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         }
 
         return false;
+    }
+
+    public void UseAllStrategies(bool yes)
+    {
+        _strategyLoader.UseAllStrategies(yes);
     }
 
     public void ExcludeStrategy(int number)
@@ -212,30 +249,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     {
         UniquenessDependantStrategiesAllowed = yes;
         _strategyLoader.AllowUniqueness(yes);
-    }
-
-    public string FullScan()
-    {
-        var oldBehavior = new List<OnCommitBehavior>();
-        
-        for (int i = 0; i < Strategies.Count; i++)
-        {
-            var current = Strategies[i];
-            oldBehavior.Add(current.OnCommitBehavior);
-            if (!_strategyLoader.IsStrategyUsed(i)) continue;
-
-            current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
-            current.Apply(this);
-
-            if (_sudoku.IsComplete()) break;
-        }
-
-        for (int i = 0; i < oldBehavior.Count; i++)
-        {
-            Strategies[i].OnCommitBehavior = oldBehavior[i];
-        }
-        
-        return "FULL SCAN :\n\n" + SudokuTranslator.TranslateToGrid(CurrentState) + "\n" + ChangeBuffer.CommitDump();
     }
     
     public StrategyInformation[] GetStrategyInfo()

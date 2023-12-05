@@ -12,12 +12,12 @@ namespace Presenter.Translators;
 
 public class HighlighterTranslator : IHighlightable
 {
-    private readonly ISolverView _view;
+    private readonly ISudokuDrawer _drawer;
     private readonly SolverSettings _settings;
 
-    public HighlighterTranslator(ISolverView view, SolverSettings settings)
+    public HighlighterTranslator(ISudokuDrawer drawer, SolverSettings settings)
     {
-        _view = view;
+        _drawer = drawer;
         _settings = settings;
     }
 
@@ -28,27 +28,27 @@ public class HighlighterTranslator : IHighlightable
 
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)
     {
-        _view.FillPossibility(row, col, possibility, coloration);
+        _drawer.FillPossibility(row, col, possibility, coloration);
     }
 
     public void EncirclePossibility(int possibility, int row, int col)
     {
-        _view.EncirclePossibility(row, col, possibility);
+        _drawer.EncirclePossibility(row, col, possibility);
     }
 
     public void HighlightCell(int row, int col, ChangeColoration coloration)
     {
-        _view.FillCell(row, col, coloration);
+        _drawer.FillCell(row, col, coloration);
     }
 
     public void EncircleCell(int row, int col)
     {
-        _view.EncircleCell(row, col);
+        _drawer.EncircleCell(row, col);
     }
 
     public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
     {
-        _view.EncircleRectangle(from.Row, from.Column, from.Possibility, to.Row,
+        _drawer.EncircleRectangle(from.Row, from.Column, from.Possibility, to.Row,
             to.Column, to.Possibility, coloration);
     }
 
@@ -74,7 +74,7 @@ public class HighlighterTranslator : IHighlightable
                 break;
         }
 
-        _view.EncircleRectangle(min.Row, min.Column, max.Row, max.Column, coloration);
+        _drawer.EncircleRectangle(min.Row, min.Column, max.Row, max.Column, coloration);
     }
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
@@ -93,7 +93,7 @@ public class HighlighterTranslator : IHighlightable
                     if (cell.Column > maxCol) maxCol = cell.Column;
                 }
                 
-                _view.EncircleRectangle(pr.Row, minCol, pr.Possibility, pr.Row,
+                _drawer.EncircleRectangle(pr.Row, minCol, pr.Possibility, pr.Row,
                     maxCol, pr.Possibility, coloration);
                 break;
             case PointingColumn pc :
@@ -105,18 +105,18 @@ public class HighlighterTranslator : IHighlightable
                     if (cell.Row > maxRow) maxRow = cell.Row;
                 }
 
-                _view.EncircleRectangle(minRow, pc.Column, pc.Possibility, maxRow,
+                _drawer.EncircleRectangle(minRow, pc.Column, pc.Possibility, maxRow,
                     pc.Column, pc.Possibility, coloration);
                 break;
             case AlmostNakedSet ans :
-                _view.EncircleCellPatch(ans.EveryCell(), coloration);
+                _drawer.EncircleCellPatch(ans.EveryCell(), coloration);
                 break;
         }
     }
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
-        _view.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
+        _drawer.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
             to.Possibility, linkStrength, _settings.SidePriority);
     }
 

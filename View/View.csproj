@@ -51,6 +51,10 @@
       <None Remove="Images\bin2.png" />
       <None Remove="Images\bin.png" />
       <Resource Include="Images\bin.png" />
+      <None Remove="Images\cross.png" />
+      <Resource Include="Images\cross.png" />
+      <None Remove="Images\checkmark.png" />
+      <Resource Include="Images\checkmark.png" />
     </ItemGroup>
 
 </Project>

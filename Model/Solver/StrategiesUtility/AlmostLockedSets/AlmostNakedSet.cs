@@ -17,16 +17,6 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
         OddOne = oddOne;
     }
 
-    public bool Contains(int row, int col)
-    {
-        foreach (var coord in NakedSet)
-        {
-            if (coord.Cell.Row == row && coord.Cell.Column == col) return true;
-        }
-
-        return false;
-    }
-
     public int Rank => 3;
 
     public CellPossibilities[] EveryCellPossibilities()

@@ -225,43 +225,43 @@
   },
   {
     "Name": "Almost Hidden Sets",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Almost Locked Sets",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Almost Hidden Sets Chain",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Almost Locked Sets Chain",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Death Blossom",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Subsets Alternating Inference Loops",
-    "Used": false,
+    "Used": true,
     "Behavior": 2,
     "Args": {}
   },
   {
     "Name": "Multi-Sector Locked Sets",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
@@ -297,7 +297,7 @@
   },
   {
     "Name": "Brute Force",
-    "Used": true,
+    "Used": false,
     "Behavior": 1,
     "Args": {}
   }

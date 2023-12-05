@@ -5,7 +5,7 @@ using Clipboard = System.Windows.Forms.Clipboard;
 
 namespace View.HelperWindows.Print;
 
-public partial class PrintWindow : Window
+public partial class PrintWindow
 {
     private readonly string _toPrint;
     

@@ -18,9 +18,6 @@
                 <MenuItem FontSize="12" Header="Copy Grid" Click="Copy"></MenuItem>
                 <MenuItem FontSize="12" Header="Paste Grid" Click="Paste"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Tools" FontSize="15">
-                <MenuItem FontSize="12" Header="Full Scan" Click="FullScan"></MenuItem>
-            </MenuItem>
         </Menu>
         
         <StackPanel Orientation="Horizontal" Background="{x:Static utils:ColorManager.Background1}" Margin="10">
@@ -28,12 +25,24 @@
                 <userControls:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
                 <TextBox Width="500" FontSize="20" VerticalContentAlignment="Center" Height="30" Margin="10" TextChanged="NewSudoku"
                      HorizontalAlignment="Center" x:Name="SudokuStringBox"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Button Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"
-                        Margin="0, 0, 10, 0" x:Name="SolveButton">Solve</Button>
-                    <Button Width="200" Height="30" Click="ClearSudoku" HorizontalAlignment="Center"
-                        Margin="10, 0, 0, 0" x:Name="ClearButton">Clear</Button>
-                </StackPanel>
+                <Grid HorizontalAlignment="Center">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="40"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="210"/>
+                        <ColumnDefinition Width="210"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Row="0" Grid.Column="0" Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"
+                            Margin="0, 0, 10, 10" x:Name="SolveButton">Solve</Button>
+                    <Button Grid.Row="0" Grid.Column="1" Width="200" Height="30" Click="Advance" HorizontalAlignment="Center"
+                            Margin="10, 0, 0, 10" x:Name="AdvanceButton">Advance</Button>
+                    <Button Grid.Row="1" Grid.Column="0" Width="200" Height="30" Click="ClearSudoku" HorizontalAlignment="Center"
+                            Margin="0, 0, 10, 10" x:Name="ClearButton">Clear</Button>
+                    <Button Grid.Row="1" Grid.Column="1" Width="200" Height="30" Click="ChooseStep" HorizontalAlignment="Center"
+                            Margin="10, 0, 0, 10" x:Name="ChooseButton">Choose Step</Button>
+                </Grid>
             </StackPanel>
         
             <StackPanel Margin="10" Orientation="Vertical">
