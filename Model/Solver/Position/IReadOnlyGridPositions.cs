@@ -19,7 +19,23 @@ public interface IReadOnlyGridPositions : IEnumerable<Cell>
         var result = new GridPositions();
         foreach (var pos in one)
         {
-            if(two.Peek(pos)) result.Remove(pos);
+            if(two.Peek(pos)) result.Add(pos);
+        }
+
+        return result;
+    }
+    
+    static GridPositions DefaultOr(IReadOnlyGridPositions one, IReadOnlyGridPositions two)
+    {
+        var result = new GridPositions();
+        foreach (var pos in one)
+        {
+            result.Add(pos);
+        }
+
+        foreach (var pos in two)
+        {
+            result.Add(pos);
         }
 
         return result;

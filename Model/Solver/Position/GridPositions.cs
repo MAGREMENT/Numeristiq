@@ -198,7 +198,7 @@ public class GridPositions : IReadOnlyGridPositions
             return new GridPositions(_first | other._first, _second | other._second);
         }
 
-        return this; //TODO
+        return IReadOnlyGridPositions.DefaultOr(this, pos);
     }
 
     public GridPositions And(List<GridPositions> gps)

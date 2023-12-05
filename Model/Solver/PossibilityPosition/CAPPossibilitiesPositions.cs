@@ -68,7 +68,13 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
 
     public CellPossibilities[] ToCellPossibilitiesArray()
     {
-        throw new NotImplementedException();
+        CellPossibilities[] result = new CellPossibilities[PositionsCount];
+        for (int i = 0; i < _cells.Length; i++)
+        {
+            result[i] = new CellPossibilities(_cells[i], _snapshot.PossibilitiesAt(_cells[i]).And(Possibilities));
+        }
+
+        return result;
     }
 
     public override bool Equals(object? obj)

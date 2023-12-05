@@ -73,6 +73,8 @@ public class StepChooserPresenter
         _view.ClearDrawings();
         _highlighterTranslator.Translate(_commits[_currentlySelectedIndex].Report.HighlightManager);
         _view.UpdateBackground();
+        
+        _view.ShowCommitInformation(ModelToViewTranslator.Translate(_commits[_currentlySelectedIndex]));
     }
 
     public void SelectCurrentCommit()
