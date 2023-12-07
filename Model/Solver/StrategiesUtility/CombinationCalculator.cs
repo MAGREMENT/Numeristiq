@@ -4,16 +4,16 @@ namespace Model.Solver.StrategiesUtility;
 
 public static class CombinationCalculator
 {
-    public static List<T[]> EveryCombination<T>(int count, IReadOnlyList<T> sample)
+    public static List<T[]> EveryCombinationWithSpecificCount<T>(int count, IReadOnlyList<T> sample)
     {
         var result = new List<T[]>();
 
-        EveryCombination(count, 0, sample, result, new List<T>());
+        EveryCombinationWithSpecificCount(count, 0, sample, result, new List<T>());
 
         return result;
     }
 
-    private static void EveryCombination<T>(int count, int start, IReadOnlyList<T> sample, List<T[]> result,
+    private static void EveryCombinationWithSpecificCount<T>(int count, int start, IReadOnlyList<T> sample, List<T[]> result,
         List<T> current)
     {
         for (int i = start; i < sample.Count; i++)
@@ -22,7 +22,31 @@ public static class CombinationCalculator
             current.Add(n);
             
             if(current.Count == count) result.Add(current.ToArray());
-            else if (current.Count < count) EveryCombination(count, i + 1, sample, result, current);
+            else if (current.Count < count) EveryCombinationWithSpecificCount(count, i + 1, sample, result, current);
+
+            current.RemoveAt(current.Count - 1);
+        }
+    }
+    
+    public static List<T[]> EveryCombinationWithMaxCount<T>(int max, IReadOnlyList<T> sample)
+    {
+        var result = new List<T[]>();
+
+        EveryCombinationWithMaxCount(max, 0, sample, result, new List<T>());
+
+        return result;
+    }
+
+    private static void EveryCombinationWithMaxCount<T>(int max, int start, IReadOnlyList<T> sample, List<T[]> result,
+        List<T> current)
+    {
+        for (int i = start; i < sample.Count; i++)
+        {
+            var n = sample[i];
+            current.Add(n);
+            
+            result.Add(current.ToArray()); 
+            if (current.Count < max) EveryCombinationWithMaxCount(max, i + 1, sample, result, current);
 
             current.RemoveAt(current.Count - 1);
         }

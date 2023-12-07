@@ -1,277 +1,283 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
 public class SueDeCoqStrategy : AbstractStrategy
 {
     public const string OfficialName = "Sue-De-Coq";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
+    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
+
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+
+    private readonly int _maxNotDrawnCandidates;
     
-    public SueDeCoqStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
+    public SueDeCoqStrategy(int maxNotDrawnCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    {
+        _maxNotDrawnCandidates = maxNotDrawnCandidates;
+    }
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        for (int row = 0; row < 9; row++)
+        for (int startRow = 0; startRow < 9; startRow += 3)
         {
-            for (int miniCol = 0; miniCol < 3; miniCol++)
+            for (int startCol = 0; startCol < 9; startCol += 3)
             {
-                LinePositions cols = new();
-
-                for (int gridCol = 0; gridCol < 3; gridCol++)
+                for (int u = 0; u < 3; u++)
                 {
-                    int col = miniCol * 3 + gridCol;
+                    var unitRow = startRow + u;
+                    var unitColumn = startCol + u;
+                    
+                    for (int i = 0; i < 2; i++)
+                    {
+                        var otherColumn1 = startCol + i;
+                        var otherRow1 = startRow + i;
 
-                    if (strategyManager.Sudoku[row, col] == 0) cols.Add(col);
-                }
+                        for (int j = i + 1; j < 3; j++)
+                        {
+                            var otherColumn2 = startCol + j;
+                            var otherRow2 = startRow + j;
 
-                if (cols.Count < 2) continue;
-                if (TrySearchRow(strategyManager, cols, row)) return;
-                
-                if(cols.Count != 3) continue;
-                foreach (var col in cols)
-                {
-                    var copy = cols.Copy();
-                    copy.Remove(col);
+                            if (strategyManager.Sudoku[unitRow, otherColumn1] == 0 &&
+                                strategyManager.Sudoku[unitRow, otherColumn2] == 0)
+                            {
+                                var c1 = new Cell(unitRow, otherColumn1);
+                                var c2 = new Cell(unitRow, otherColumn2);
+                                
+                                if (Try(strategyManager, Unit.Row, c1, c2)) return;
 
-                    if (TrySearchRow(strategyManager, copy, row)) return;
+                                if (j == 1 && strategyManager.Sudoku[unitRow, startCol + 2] == 0 &&
+                                    Try(strategyManager, Unit.Row, c1, c2, new Cell(unitRow, startCol + 2))) return;
+                            }
+                            
+                            if (strategyManager.Sudoku[otherRow1, unitColumn] == 0 &&
+                                strategyManager.Sudoku[otherRow2, unitColumn] == 0)
+                            {
+                                var c1 = new Cell(otherRow1, unitColumn);
+                                var c2 = new Cell(otherRow2, unitColumn);
+                                
+                                if (Try(strategyManager, Unit.Column, c1, c2)) return;
+
+                                if (j == 1 && strategyManager.Sudoku[startRow + 2, unitColumn] == 0 &&
+                                    Try(strategyManager, Unit.Column, c1, c2, new Cell(startRow + 2, unitColumn))) return;
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
 
-        for (int col = 0; col < 9; col++)
+    private bool Try(IStrategyManager strategyManager, Unit unit, params Cell[] cells)
+    {
+        var possibilities = Possibilities.NewEmpty();
+        foreach (var cell in cells)
         {
-            for (int miniRow = 0; miniRow < 3; miniRow++)
-            {
-                LinePositions rows = new();
-
-                for (int gridRow = 0; gridRow < 3; gridRow++)
-                {
-                    int row = miniRow * 3 + gridRow;
-
-                    if (strategyManager.Sudoku[row, col] == 0) rows.Add(row);
-                }
-
-                if (rows.Count < 2) continue;
-                if (TrySearchColumn(strategyManager, rows, col)) return;
-
-                if (rows.Count != 3) continue;
-                foreach (var row in rows)
-                {
-                    var copy = rows.Copy();
-                    copy.Remove(row);
-
-                    if (TrySearchColumn(strategyManager, copy, col)) return;
-                }
-            }
+            possibilities.Add(strategyManager.PossibilitiesAt(cell));
         }
+
+        if (possibilities.Count < cells.Length + 2) return false;
+
+        var cellsInBox = CellsInBox(strategyManager, cells);
+        if (cellsInBox.Count == 0) return false;
+
+        var cellsInUnit = CellsInUnit(strategyManager, cells, unit);
+        if (cellsInUnit.Count == 0) return false;
         
-    }
+        var minimumPossibilitiesDrawn = possibilities.Count - cells.Length;
+        var maxCellsPerUnit = minimumPossibilitiesDrawn + _maxNotDrawnCandidates - 1;
 
-    private bool TrySearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row)
-    {
-        Possibilities possibilities = Possibilities.NewEmpty();
-        foreach (var col in cols)
+        foreach (var boxCombination in CombinationCalculator.EveryCombinationWithMaxCount(maxCellsPerUnit, cellsInBox))
         {
-            possibilities.Add(strategyManager.PossibilitiesAt(row, col));
-        }
-
-        if (possibilities.Count - 2 < cols.Count) return false;
-
-        return SearchRow(strategyManager, cols, possibilities, row);
-    }
-
-    private bool SearchRow(IStrategyManager strategyManager, IReadOnlyLinePositions cols,
-        IReadOnlyPossibilities possibilities, int row)
-    {
-        List<Cell> rowCoords = new();
-        List<Cell> miniCoords = new();
-        for (int col = 0; col < 9; col++)
-        {
-            if (strategyManager.Sudoku[row, col] != 0 || cols.Peek(col)) continue;
-
-            rowCoords.Add(new Cell(row, col));
-        }
-
-        int miniRow = row / 3;
-        int miniCol = cols.First() / 3;
-
-        for (int gridRow = 0; gridRow < 3; gridRow++)
-        {
-            for (int gridCol = 0; gridCol < 3; gridCol++)
+            var forbiddenPositions = new GridPositions();
+            var boxPossibilities = Possibilities.NewEmpty();
+            foreach (var cell in boxCombination)
             {
-                int searchedRow = miniRow * 3 + gridRow;
-                int searchedCol = miniCol * 3 + gridCol;
-                if (strategyManager.Sudoku[searchedRow, searchedCol] != 0
-                    || (searchedRow == row && cols.Peek(searchedCol))) continue;
-
-                miniCoords.Add(new Cell(searchedRow, searchedCol));
+                forbiddenPositions.Add(cell);
+                boxPossibilities.Add(strategyManager.PossibilitiesAt(cell));
             }
-        }
 
-        var rowAls = strategyManager.AlmostNakedSetSearcher.InCells(rowCoords);
-        var miniAls = strategyManager.AlmostNakedSetSearcher.InCells(miniCoords);
+            var forbiddenPossibilities = boxPossibilities.And(possibilities);
 
-        foreach (var rAls in rowAls)
-        {
-            foreach (var mAls in miniAls)
+            foreach (var unitPP in Combinations(strategyManager, forbiddenPositions,
+                         forbiddenPossibilities, maxCellsPerUnit, cellsInUnit))
             {
-                if (rAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities) && ProcessSueDeCoq(strategyManager,
-                        row, cols, rAls, mAls, Unit.Row)) return true;
+                var outOfCenterPossibilities = boxPossibilities.Or(unitPP.Possibilities);
+                if (outOfCenterPossibilities.And(possibilities).Count < minimumPossibilitiesDrawn) continue;
+
+                var notDrawnPossibilities = possibilities.Difference(outOfCenterPossibilities);
+                if(unitPP.Possibilities.Count + boxPossibilities.Count + notDrawnPossibilities.Count 
+                   != cells.Length + boxCombination.Length + unitPP.PositionsCount) continue;
+
+                var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, strategyManager);
+                Process(strategyManager, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
+
+                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
         }
 
         return false;
+    }
+
+    private void Process(IStrategyManager strategyManager, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
+        Cell[] center, Possibilities centerPossibilities, List<Cell> cellsInBox, List<Cell> cellsInUnit)
+    {
+        var centerGP = new GridPositions();
+        foreach (var cell in center)
+        {
+            centerGP.Add(cell);
+        }
+
+        var forbiddenBox = centerGP.Or(boxPP.Positions);
+        var forbiddenUnit = centerGP.Or(unitPP.Positions);
+
+        var boxElimination = boxPP.Possibilities.Or(centerPossibilities.Difference(unitPP.Possibilities));
+        var unitElimination = unitPP.Possibilities.Or(centerPossibilities.Difference(boxPP.Possibilities));
+
+        foreach (var cell in cellsInBox)
+        {
+            if (forbiddenBox.Peek(cell)) continue;
+            
+            foreach (var p in boxElimination)
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+            }
+        }
+
+        foreach (var cell in cellsInUnit)
+        {
+            if (forbiddenUnit.Peek(cell)) continue;
+
+            foreach (var p in unitElimination)
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+            }
+        }
+    }
+
+    private static List<Cell> CellsInBox(IStrategyManager strategyManager, Cell[] cells)
+    {
+        var result = new List<Cell>();
+
+        var startRow = cells[0].Row / 3 * 3;
+        var startCol = cells[0].Column / 3 * 3;
+
+        for (int r = 0; r < 3; r++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                var cell = new Cell(startRow + r, startCol + c);
+
+                if (cells.Contains(cell) || strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
+
+                result.Add(cell);
+            }
+        }
+
+        return result;
+    }
+
+    private static List<Cell> CellsInUnit(IStrategyManager strategyManager, Cell[] cells, Unit unit)
+    {
+        var result = new List<Cell>();
+
+        for (int u = 0; u < 9; u++)
+        {
+            var cell = unit == Unit.Row ? new Cell(cells[0].Row, u) : new Cell(u, cells[0].Column);
+            if (cells.Contains(cell) || strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
+
+            result.Add(cell);
+        }
+
+        return result;
     }
     
-    private bool TrySearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col)
+    private static List<IPossibilitiesPositions> Combinations(IStrategyManager strategyManager, GridPositions forbiddenPositions, 
+        Possibilities forbiddenPossibilities, int max, IReadOnlyList<Cell> sample)
     {
-        Possibilities possibilities = Possibilities.NewEmpty();
-        foreach (var row in rows)
-        {
-            possibilities.Add(strategyManager.PossibilitiesAt(row, col));
-        }
+        var result = new List<IPossibilitiesPositions>();
 
-        if (possibilities.Count - 2 < rows.Count) return false;
+        Combinations(strategyManager, forbiddenPositions, forbiddenPossibilities, max, 0, sample, result, new List<Cell>(),
+            Possibilities.NewEmpty());
 
-        return SearchColumn(strategyManager, rows, possibilities, col);
+        return result;
     }
 
-    private bool SearchColumn(IStrategyManager strategyManager, IReadOnlyLinePositions rows,
-        IReadOnlyPossibilities possibilities, int col)
+    private static void Combinations(IStrategyManager strategyManager, GridPositions forbiddenPositions, 
+        Possibilities forbiddenPossibilities, int max, int start, IReadOnlyList<Cell> sample,
+        List<IPossibilitiesPositions> result, List<Cell> currentCells, Possibilities currentPossibilities)
     {
-        List<Cell> colCoords = new();
-        List<Cell> miniCoords = new();
-        for (int row = 0; row < 9; row++)
+        for (int i = start; i < sample.Count; i++)
         {
-            if (strategyManager.Sudoku[row, col] != 0 || rows.Peek(row)) continue;
+            var c = sample[i];
+            if (forbiddenPositions.Peek(c)) continue;
+            
+            var poss = strategyManager.PossibilitiesAt(c);
+            if (forbiddenPossibilities.PeekAny(poss)) continue;
+            
+            currentCells.Add(c);
+            var newPossibilities = poss.Or(currentPossibilities);
+            
+            result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, strategyManager)); 
+            if (currentCells.Count < max) Combinations(strategyManager, forbiddenPositions, forbiddenPossibilities, max,
+                i + 1, sample, result, currentCells, newPossibilities);
 
-            colCoords.Add(new Cell(row, col));
+            currentCells.RemoveAt(currentCells.Count - 1);
         }
-
-        int miniCol = col / 3;
-        int miniRow = rows.First() / 3;
-        for (int gridCol = 0; gridCol < 3; gridCol++)
-        { 
-            for (int gridRow = 0; gridRow < 3; gridRow++)
-            {
-                int searchedCol = miniCol * 3 + gridCol;
-                int searchedRow = miniRow * 3 + gridRow;
-                if (strategyManager.Sudoku[searchedRow, searchedCol] != 0 
-                    || (searchedCol == col && rows.Peek(searchedRow))) continue;
-
-                miniCoords.Add(new Cell(searchedRow, searchedCol));
-            }
-        }
-
-        var colAls = strategyManager.AlmostNakedSetSearcher.InCells(colCoords);
-        var miniAls = strategyManager.AlmostNakedSetSearcher.InCells(miniCoords);
-
-        foreach (var cAls in colAls)
-        {
-            foreach (var mAls in miniAls)
-            {
-                if (cAls.Possibilities.Or(mAls.Possibilities).Equals(possibilities) && ProcessSueDeCoq(strategyManager,
-                        col, rows, cAls, mAls, Unit.Column)) return true;
-            }
-        }
-
-        return false;
-    }
-
-    private bool ProcessSueDeCoq(IStrategyManager strategyManager, int unitNumber, IReadOnlyLinePositions center,
-        IPossibilitiesPositions unitAls, IPossibilitiesPositions miniAls, Unit unit)
-    {
-        for (int other = 0; other < 9; other++)
-        {
-            Cell current = unit == Unit.Row
-                ? new Cell(unitNumber, other)
-                : new Cell(other, unitNumber);
-            if(unitAls.Positions.Peek(current) || center.Peek(other)) continue;
-
-            foreach (var possibility in unitAls.Possibilities)
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Column);
-            }
-        }
-
-        var unitStart = unitNumber / 3 * 3;
-        var otherStart = center.First() / 3 * 3;
-        for (int gridUnit = 0; gridUnit < 3; gridUnit++)
-        {
-            if (gridUnit + unitStart == unitNumber) continue;
-            for (int gridOther = 0; gridOther < 3; gridOther++)
-            {
-                Cell current = unit == Unit.Row 
-                    ? new Cell(unitStart + gridUnit, otherStart + gridOther) 
-                    : new Cell(otherStart + gridOther, unitStart + gridUnit);
-                if (miniAls.Positions.Peek(current)) continue;
-                
-                foreach (var possibility in miniAls.Possibilities)
-                {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, current.Row, current.Column);
-                }
-            }
-        }
-
-        return strategyManager.ChangeBuffer.Commit(this, new SueDeCoqReportBuilder(unitNumber, center, miniAls,
-            unitAls, unit)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 
 public class SueDeCoqReportBuilder : IChangeReportBuilder
 {
-    private readonly int _unitNumber;
-    private readonly IReadOnlyLinePositions _positions;
-    private readonly IPossibilitiesPositions _miniAls;
-    private readonly IPossibilitiesPositions _unitAls;
-    private readonly Unit _unit;
+    private readonly IPossibilitiesPositions _boxPP;
+    private readonly IPossibilitiesPositions _unitPP;
+    private readonly Cell[] _centerCells;
 
-    public SueDeCoqReportBuilder(int unitNumber, IReadOnlyLinePositions positions, IPossibilitiesPositions miniAls,
-        IPossibilitiesPositions unitAls, Unit unit)
+
+    public SueDeCoqReportBuilder(IPossibilitiesPositions boxPp, IPossibilitiesPositions unitPp, Cell[] centerCells)
     {
-        _unitNumber = unitNumber;
-        _positions = positions;
-        _miniAls = miniAls;
-        _unitAls = unitAls;
-        _unit = unit;
+        _boxPP = boxPp;
+        _unitPP = unitPp;
+        _centerCells = centerCells;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        List<Cell> center = new(_positions.Count);
-        foreach (var other in _positions)
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            center.Add(_unit == Unit.Row ?
-                new Cell(_unitNumber, other) :
-                new Cell(other, _unitNumber));
-        }
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
-            lighter =>
+            foreach (var cell in _centerCells)
             {
-                foreach (var coord in center)
-                {
-                    lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.Neutral);
-                }
+                lighter.HighlightCell(cell, ChangeColoration.Neutral);
 
-                foreach (var coord in _unitAls.EachCell())
+                foreach (var possibility in snapshot.PossibilitiesAt(cell))
                 {
-                    lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffOne);
+                    if(_boxPP.Possibilities.Peek(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
+                        cell.Column, ChangeColoration.CauseOffOne);
+                    else if(_unitPP.Possibilities.Peek(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
+                        cell.Column, ChangeColoration.CauseOffTwo);
+                    else lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOnOne);
                 }
+            }
 
-                foreach (var coord in _miniAls.EachCell())
-                {
-                    lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
-                }
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
-            });
+            foreach (var cell in _boxPP.EachCell())
+            {
+                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
+            }
+
+            foreach (var cell in _unitPP.EachCell())
+            {
+                lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
+            }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
     }
 }

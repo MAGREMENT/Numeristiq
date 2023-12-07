@@ -110,8 +110,8 @@ public class RowsAndColumnsSearcher : ISetEquivalenceSearcher, IMultiSectorCells
             {
                 if(Math.Abs(rowCount - colCount) > _maximumUnitDifference) continue;
 
-                var rowCombinations = CombinationCalculator.EveryCombination(rowCount, Rows);
-                var colCombinations = CombinationCalculator.EveryCombination(colCount, Columns);
+                var rowCombinations = CombinationCalculator.EveryCombinationWithSpecificCount(rowCount, Rows);
+                var colCombinations = CombinationCalculator.EveryCombinationWithSpecificCount(colCount, Columns);
         
                 foreach (var rows in rowCombinations)
                 {

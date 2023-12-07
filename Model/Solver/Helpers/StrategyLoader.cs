@@ -48,7 +48,7 @@ public class StrategyLoader : IStrategyLoader
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},
         {WXYZWingStrategy.OfficialName, new WXYZWingStrategy()},
         {AlignedPairExclusionStrategy.OfficialName, new AlignedPairExclusionStrategy()},
-        {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy()},
+        {SueDeCoqStrategy.OfficialName, new SueDeCoqStrategy(2)},
         {AlmostLockedSetsStrategy.OfficialName, new AlmostLockedSetsStrategy()},
         {DigitForcingNetStrategy.OfficialName, new DigitForcingNetStrategy()},
         {CellForcingNetStrategy.OfficialName, new CellForcingNetStrategy(4)},

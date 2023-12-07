@@ -76,7 +76,7 @@ public class FishGeneralization : AbstractStrategy
             
             for (int unitCount = _minUnitCount; unitCount <= _maxUnitCount; unitCount++)
             {
-                foreach (var combination in CombinationCalculator.EveryCombination(unitCount, possibleCoverHouses))
+                foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(unitCount, possibleCoverHouses))
                 {
                     if (_type.TryFind(strategyManager, number, combination, this)) return;
                 }
