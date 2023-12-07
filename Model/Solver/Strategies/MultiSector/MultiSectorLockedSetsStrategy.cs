@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
@@ -51,21 +53,46 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
 
     private bool Process(IStrategyManager strategyManager, GridPositions grid, List<PossibilityCovers> covers)
     {
+        List<PossibilityCovers> alternativesTotal = new();
+        HashSet<CoverHouse> emptyForbidden = new();
+        
         foreach (var cover in covers)
         {
-            foreach (var house in cover.CoverHouses)
+            var positions = strategyManager.PositionsFor(cover.Possibility);
+            var and = grid.And(positions);
+
+            var alternatives = and.PossibleCoverHouses(cover.CoverHouses.Length, emptyForbidden, UnitMethods.All);
+            foreach (var alternative in alternatives)
             {
-                var method = UnitMethods.GetMethods(house.Unit);
-                foreach (var cell in method.EveryCell(house.Number))
+                if (alternatives.Count > 1 && !IsSameCoverHouses(alternative, cover.CoverHouses))
+                    alternativesTotal.Add(cover with { CoverHouses = alternative });
+                
+                foreach (var house in alternative)
                 {
-                    if (grid.Peek(cell)) continue;
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
+                    var method = UnitMethods.GetMethods(house.Unit);
+                    foreach (var cell in method.EveryCell(house.Number))
+                    {
+                        if (grid.Peek(cell)) continue;
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
+                    }
                 }
-            }
+            } 
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-            new MultiSectorLockedSetsReportBuilder(grid, covers)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new MultiSectorLockedSetsReportBuilder(grid, covers, alternativesTotal)) && OnCommitBehavior == OnCommitBehavior.Return;
+    }
+
+    private bool IsSameCoverHouses(CoverHouse[] one, CoverHouse[] two)
+    {
+        if (one.Length != two.Length) return false;
+        
+        foreach (var house in one)
+        {
+            if (!two.Contains(house)) return false;
+        }
+
+        return true;
     }
 }
 
@@ -80,11 +107,13 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly GridPositions _grid;
     private readonly List<PossibilityCovers> _covers;
+    private readonly List<PossibilityCovers> _alternatives;
 
-    public MultiSectorLockedSetsReportBuilder(GridPositions grid, List<PossibilityCovers> covers)
+    public MultiSectorLockedSetsReportBuilder(GridPositions grid, List<PossibilityCovers> covers, List<PossibilityCovers> alternatives)
     {
         _grid = grid;
         _covers = covers;
+        _alternatives = alternatives;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -113,6 +142,17 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
         }
 
         builder.Append("\nLinks : " + cu);
+
+        builder.Append("\nAlternatives : ");
+        foreach (var alt in _alternatives)
+        {
+            builder.Append($"\n{alt.Possibility} : {alt.CoverHouses[0]}");
+            for (int i = 1; i < alt.CoverHouses.Length; i++)
+            {
+                builder.Append($", {alt.CoverHouses[i]}");
+            }
+        }
+        
         return builder.ToString();
     }
 }
