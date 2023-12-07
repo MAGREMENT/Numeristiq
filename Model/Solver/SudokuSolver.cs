@@ -94,6 +94,8 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         StartState = new SolverState(this);
 
         LogManager.Clear();
+        PreComputer.Reset();
+        GraphManager.Clear();
 
         _startedSolving = false;
     }
@@ -119,8 +121,10 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
             }
         }
         StartState = new SolverState(this);
-
+        
         LogManager.Clear();
+        PreComputer.Reset();
+        GraphManager.Clear();
 
         _startedSolving = false;
     }
