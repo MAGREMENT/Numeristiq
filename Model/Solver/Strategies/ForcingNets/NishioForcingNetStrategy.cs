@@ -323,6 +323,24 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                 break;
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlighters.ToArray());
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), highlighters.ToArray());
+    }
+
+    private string Explanation()
+    {
+        var result = $"{_possibility}r{_row + 1}c{_col + 1} being ON will lead to ";
+
+        result += _causeColoring == Coloring.On ? "multiple candidates being ON in " : "all candidates being OFF in ";
+
+        result += _cause switch
+        {
+            ContradictionCause.Cell => $"r{_lastChecked.Row + 1}c{_lastChecked.Column + 1}",
+            ContradictionCause.Row => $"n{_lastChecked.Possibility}r{_lastChecked.Row + 1}",
+            ContradictionCause.Column => $"n{_lastChecked.Possibility}c{_lastChecked.Column + 1}",
+            ContradictionCause.MiniGrid => $"n{_lastChecked.Possibility}b{_lastChecked.Row * 3 + _lastChecked.Column + 1}",
+            _ => ""
+        };
+
+        return result;
     }
 }

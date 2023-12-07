@@ -156,91 +156,66 @@ public class SKLoopsStrategy : AbstractStrategy
 
     private bool ProcessPattern(IStrategyManager strategyManager, Cell[] cells, Possibilities[] links)
     {
-        var miniCol1 = cells[0].Column / 3;
-        var miniCol2 = cells[1].Column / 3;
-        
-        for (int col = 0; col < 9; col++)
+        foreach (var cell in cells)
         {
-            var miniCol = col / 3;
-            if(miniCol == miniCol1 || miniCol == miniCol2) continue;
+            var possibilities = CrossRowPossibilities(strategyManager, cell).Possibilities.And(
+                CrossColPossibilities(strategyManager, cell).Possibilities);
 
-            foreach (var possibility in links[1])
+            var startRow = cell.Row / 3 * 3;
+            var startCol = cell.Column / 3 * 3;
+
+            for (int r = 0; r < 3; r++)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[0].Row, col);
-            }
-            
-            foreach (var possibility in links[5])
-            {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[2].Row, col);
-            }
-        }
+                var row = startRow + r;
+                if (row == cell.Row) continue;
 
-        for (int gridRow = 0; gridRow < 3; gridRow++)
-        {
-            for (int gridCol = 0; gridCol < 3; gridCol++)
-            {
-                int row = cells[0].Row / 3 * 3 + gridRow;
-                int col = cells[0].Column / 3 * 3 + gridCol;
-
-                if (row != cells[0].Row && col != cells[0].Column)
+                for (int c = 0; c < 3; c++)
                 {
-                    foreach (var possibility in links[0])
-                    {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
-                    }
-                }
-                
-                row = cells[1].Row / 3 * 3 + gridRow;
-                col = cells[1].Column / 3 * 3 + gridCol;
+                    var col = startCol + c;
+                    if (col == cell.Column) continue;
 
-                if (row != cells[1].Row && col != cells[1].Column)
-                {
-                    foreach (var possibility in links[2])
+                    foreach (var p in possibilities)
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
-                    }
-                }
-                
-                row = cells[2].Row / 3 * 3 + gridRow;
-                col = cells[2].Column / 3 * 3 + gridCol;
-
-                if (row != cells[2].Row && col != cells[2].Column)
-                {
-                    foreach (var possibility in links[4])
-                    {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
-                    }
-                }
-                
-                row = cells[3].Row / 3 * 3 + gridRow;
-                col = cells[3].Column / 3 * 3 + gridCol;
-
-                if (row != cells[3].Row && col != cells[3].Column)
-                {
-                    foreach (var possibility in links[6])
-                    {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                     }
                 }
             }
         }
 
-        var miniRow1 = cells[1].Row / 3;
-        var miniRow2 = cells[2].Row / 3;
-
-        for (int row = 0; row < 9; row++)
+        for (int i = 0; i < 4; i++)
         {
-            var miniRow = row / 3;
-            if (miniRow == miniRow1 || miniRow == miniRow2) continue;
-            
-            foreach (var possibility in links[3])
+            var one = cells[i];
+            var two = cells[(i + 1) % 4];
+
+            if (one.Row == two.Row)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Column);
+                var possibilities = CrossRowPossibilities(strategyManager, one).Possibilities.And(
+                    CrossRowPossibilities(strategyManager, two).Possibilities);
+
+                for (int column = 0; column < 9; column++)
+                {
+                    if (column / 3 == one.Column / 3 || column / 3 == two.Column / 3) continue;
+
+                    foreach (var p in possibilities)
+                    {
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, one.Row, column);
+                    }
+                }
             }
-            
-            foreach (var possibility in links[7])
+            else if (one.Column == two.Column)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Column);
+                var possibilities = CrossColPossibilities(strategyManager, one).Possibilities.And(
+                    CrossColPossibilities(strategyManager, two).Possibilities);
+
+                for (int row = 0; row < 9; row++)
+                {
+                    if (row / 3 == one.Row / 3 || row / 3 == two.Row / 3) continue;
+
+                    foreach (var p in possibilities)
+                    {
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row, one.Column);
+                    }
+                }
             }
         }
         
