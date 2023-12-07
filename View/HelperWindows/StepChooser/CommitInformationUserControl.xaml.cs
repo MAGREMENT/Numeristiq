@@ -29,6 +29,11 @@ public partial class CommitInformationUserControl : UserControl
         Main.Visibility = Visibility.Visible;
     }
 
+    public void StopShow()
+    {
+        Main.Visibility = Visibility.Hidden;
+    }
+
     private void ShiftLeft(object sender, RoutedEventArgs e)
     {
         HighlightShifted?.Invoke(-1);

@@ -18,11 +18,8 @@ public partial class StepChooserWindow : IStepChooserView
         _presenter = builder.Build(this);
         Closing += (_, _) => _presenter.Closed();
 
-        CommitList.CommitSelected += i =>
-        {
-            _presenter.SelectCommit(i);
-            ChooseButton.IsEnabled = true;
-        };
+        CommitList.CommitSelected += i => _presenter.SelectCommit(i);
+        
         CommitInfo.HighlightShifted += _presenter.ShiftHighlighting;
         
         _presenter.Bind();
@@ -46,6 +43,16 @@ public partial class StepChooserWindow : IStepChooserView
     public void ShowCommitInformation(ViewCommitInformation commit)
     {
         CommitInfo.Show(commit);
+    }
+
+    public void StopShowingCommitInformation()
+    {
+        CommitInfo.StopShow();
+    }
+
+    public void AllowChoosing(bool yes)
+    {
+        ChooseButton.IsEnabled = yes;
     }
 
     public void UpdateBackground()
@@ -103,6 +110,11 @@ public partial class StepChooserWindow : IStepChooserView
     private void Choose(object sender, RoutedEventArgs e)
     {
         _presenter.SelectCurrentCommit();
+        Close();
+    }
+
+    private void Cancel(object sender, RoutedEventArgs e)
+    {
         Close();
     }
 }

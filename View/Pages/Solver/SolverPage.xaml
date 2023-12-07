@@ -7,7 +7,8 @@
       xmlns:utils="clr-namespace:View.Utility"
       xmlns:pages="clr-namespace:View.Pages"
       mc:Ignorable="d"
-      Title="SolverPage">
+      Title="SolverPage"
+      KeyDown="AnalyseKeyDown">
     <StackPanel Orientation="Vertical">
         <Menu Height="25">
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
@@ -15,8 +16,8 @@
                 <MenuItem FontSize="12"  Header="Settings" Click="ShowSettingsWindow"></MenuItem>
             </MenuItem>
             <MenuItem Header="Edit" FontSize="15">
-                <MenuItem FontSize="12" Header="Copy Grid" Click="Copy"></MenuItem>
-                <MenuItem FontSize="12" Header="Paste Grid" Click="Paste"></MenuItem>
+                <MenuItem FontSize="12" Header="Copy" Click="Copy" InputGestureText="CTRL+C"></MenuItem>
+                <MenuItem FontSize="12" Header="Paste" Click="Paste" InputGestureText="CTRL+V"></MenuItem>
             </MenuItem>
         </Menu>
         

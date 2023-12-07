@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Global;
 using Global.Enums;
 using Presenter;
@@ -23,6 +24,8 @@ public partial class SolverPage : ISolverView
     public SolverPage(IPageHandler pageHandler, PresenterFactory factory)
     {
         InitializeComponent();
+
+        Focusable = true;
 
         _presenter = factory.Create(this);
         _presenter.Bind();
@@ -256,10 +259,27 @@ public partial class SolverPage : ISolverView
     public override void OnShow()
     {
         _presenter.RefreshStrategies();
+        Focus();
     }
 
     public override void OnQuit()
     {
         
+    }
+
+    private void AnalyseKeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.KeyboardDevice.Modifiers != ModifierKeys.Control) return;
+
+        switch (e.Key)
+        {
+            case Key.X :
+            case Key.C :
+                _presenter.CopyGrid();
+                break;
+            case Key.V :
+                _presenter.PasteGrid(Clipboard.GetText());
+                break;
+        }
     }
 }

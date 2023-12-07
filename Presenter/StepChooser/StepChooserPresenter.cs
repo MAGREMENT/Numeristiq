@@ -48,13 +48,23 @@ public class StepChooserPresenter
     {
         if (index < 0 || index >= _commits.Length) return;
 
-        _currentlySelectedIndex = index;
-        
         _view.ClearDrawings();
-        _highlighterTranslator.Translate(_commits[index].Report.HighlightManager);
-        _view.UpdateBackground();
+        
+        if (_currentlySelectedIndex == -1 || _currentlySelectedIndex != index)
+        {
+            _currentlySelectedIndex = index;
+            _highlighterTranslator.Translate(_commits[index].Report.HighlightManager); 
+            _view.ShowCommitInformation(ModelToViewTranslator.Translate(_commits[index]));
+            _view.AllowChoosing(true);
+        }
+        else
+        {
+            _currentlySelectedIndex = -1;
+            _view.StopShowingCommitInformation();
+            _view.AllowChoosing(false);
+        }
 
-        _view.ShowCommitInformation(ModelToViewTranslator.Translate(_commits[index]));
+        _view.UpdateBackground();
     }
 
     public void ShiftHighlighting(int shift)
