@@ -57,6 +57,32 @@ public static class Cells
         return result;
     }
     
+    public static List<Cell> SeenEmptyCells(IPossibilitiesHolder holder, Cell cell)
+    {
+        List<Cell> result = new();
+        
+        for (int i = 0; i < 9; i++)
+        {
+            if (i != cell.Row && holder.Sudoku[i, cell.Column] == 0) result.Add(new Cell(i, cell.Column));
+            if (i != cell.Column && holder.Sudoku[cell.Row, i] == 0) result.Add(new Cell(cell.Row, i));
+        }
+
+        var startRow = cell.Row / 3 * 3;
+        var startCol = cell.Column / 3 * 3;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                var row = startRow + i;
+                var col = startCol + i;
+
+                if (row != cell.Row && col != cell.Column && holder.Sudoku[row, col] == 0) result.Add(new Cell(row, col));
+            }
+        }
+
+        return result;
+    }
+    
     public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO "AsList"
     {
         return Searcher.SharedSeenCells(row1, col1, row2, col2);
@@ -117,7 +143,7 @@ public static class Cells
     public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, IReadOnlyList<Cell> list)
     {
         if (list.Count == 0) return new List<Cell>();
-        if (list.Count == 1) return SeenCells(list[^1]); //TODO change to SeenEmptyCells
+        if (list.Count == 1) return SeenEmptyCells(strategyManager, list[^1]);
 
         var result = new List<Cell>();
         foreach (var coord in Searcher.SharedSeenEmptyCells(strategyManager, list[0].Row, list[0].Column,

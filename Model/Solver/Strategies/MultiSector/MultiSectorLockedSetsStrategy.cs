@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Global.Enums;
@@ -7,6 +6,7 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies.MultiSector;
 
@@ -69,7 +69,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
                 
                 foreach (var house in alternative)
                 {
-                    var method = UnitMethods.GetMethods(house.Unit);
+                    var method = UnitMethods.Get(house.Unit);
                     foreach (var cell in method.EveryCell(house.Number))
                     {
                         if (grid.Peek(cell)) continue;
@@ -100,8 +100,6 @@ public interface IMultiSectorCellsSearcher
 {
     public IEnumerable<GridPositions> SearchGrids(IStrategyManager strategyManager);
 }
-
-public record PossibilityCovers(int Possibility, CoverHouse[] CoverHouses);
 
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 {
@@ -196,7 +194,7 @@ public class CoveringUnits
                 }
                 
                 lighter.EncircleRectangle(entry.Key, color);
-                foreach (var cell in UnitMethods.GetMethods(entry.Key.Unit).EveryCell(entry.Key.Number))
+                foreach (var cell in UnitMethods.Get(entry.Key.Unit).EveryCell(entry.Key.Number))
                 {
                     if (!gp.Peek(cell)) continue;
                     

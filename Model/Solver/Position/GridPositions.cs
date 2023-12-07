@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Global;
+using Model.Solver.StrategiesUtility;
 using Model.Utility;
 
 namespace Model.Solver.Position;
@@ -286,10 +287,10 @@ public class GridPositions : IReadOnlyGridPositions
 
             for (int j = 0; j < units.Length; j++)
             {
-                counts[j] = UnitMethods.GetMethods(units[j]).Count(copy, first);
+                counts[j] = UnitMethods.Get(units[j]).Count(copy, first);
             }
 
-            UnitMethods.GetMethods(units[MathUtility.MaxIndex(counts)]).Void(copy, first);
+            UnitMethods.Get(units[MathUtility.MaxIndex(counts)]).Void(copy, first);
 
             if (copy.Count == 0) return true;
         }
@@ -371,6 +372,22 @@ public class GridPositions : IReadOnlyGridPositions
         }
     }
 
+    public List<CoverHouse> PossibleCoverHouse(IUnitMethods[] methods)
+    {
+        List<CoverHouse> result = new();
+        var first = First();
+
+        foreach (var method in methods)
+        {
+            var copy = Copy();
+            method.Void(copy, first);
+            
+            if(copy.Count == 0) result.Add(method.ToCoverHouse(first));
+        }
+
+        return result;
+    }
+
     public List<CoveredGrid> PossibleCoveredGrids(int count, int maxRemaining, HashSet<CoverHouse> forbidden,
         params IUnitMethods[] methods)
     {
@@ -410,6 +427,25 @@ public class GridPositions : IReadOnlyGridPositions
                 current.RemoveAt(current.Count - 1);
             }
         }
+    }
+
+    public Cell[] AllSeenCells()
+    {
+        var result = new GridPositions();
+
+        foreach (var cell in this)
+        {
+            result.FillRow(cell.Row);
+            result.FillColumn(cell.Column);
+            result.FillMiniGrid(cell.Row / 3, cell.Column / 3);
+        }
+
+        foreach (var cell in this)
+        {
+            result.Remove(cell);
+        }
+
+        return result.ToArray();
     }
 
     public override int GetHashCode()
@@ -457,7 +493,7 @@ public static class UnitMethods
 {
     public static readonly IUnitMethods[] All = { new RowMethods(), new ColumnMethods(), new MiniGridMethods() };
 
-    public static IUnitMethods GetMethods(Unit u)
+    public static IUnitMethods Get(Unit u)
     {
         return All[(int)u];
     }
@@ -466,6 +502,8 @@ public static class UnitMethods
 public interface IUnitMethods
 {
     IEnumerable<Cell> EveryCell(int unit);
+
+    IEnumerable<Cell> EveryCell(Cell cell);
     
     int Count(IReadOnlyGridPositions gp, Cell c);
 
@@ -489,6 +527,14 @@ public class RowMethods : IUnitMethods
         for (int col = 0; col < 9; col++)
         {
             yield return new Cell(unit, col);
+        }
+    }
+
+    public IEnumerable<Cell> EveryCell(Cell cell)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            yield return new Cell(cell.Row, col);
         }
     }
 
@@ -535,6 +581,14 @@ public class ColumnMethods : IUnitMethods
         for (int row = 0; row < 9; row++)
         {
             yield return new Cell(row, unit);
+        }
+    }
+
+    public IEnumerable<Cell> EveryCell(Cell cell)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            yield return new Cell(row, cell.Column);
         }
     }
 
@@ -590,6 +644,20 @@ public class MiniGridMethods : IUnitMethods
         }
     }
 
+    public IEnumerable<Cell> EveryCell(Cell cell)
+    {
+        var startRow = cell.Row / 3 * 3;
+        var startCol = cell.Column / 3 * 3;
+
+        for (int r = 0; r < 3; r++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                yield return new Cell(startRow + r, startCol + c);
+            }
+        }
+    }
+
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.MiniGridCount(c.Row / 3, c.Column / 3);
@@ -623,73 +691,6 @@ public class MiniGridMethods : IUnitMethods
     public CoverHouse ToCoverHouse(Cell cell)
     {
         return new CoverHouse(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Column / 3);
-    }
-}
-
-public readonly struct CoverHouse
-{
-    public CoverHouse(Unit unit, int number)
-    {
-        Unit = unit;
-        Number = number;
-    }
-
-    public Unit Unit { get; }
-    public int Number { get; }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is CoverHouse ch && ch == this;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Unit, Number);
-    }
-
-    public override string ToString()
-    {
-        var s = Unit switch
-        {
-            Unit.Row => "r",
-            Unit.Column => "c",
-            Unit.MiniGrid => "b"
-        };
-
-        return $"{s}{Number + 1}";
-    }
-
-    public static bool operator ==(CoverHouse left, CoverHouse right)
-    {
-        return left.Unit == right.Unit && left.Number == right.Number;
-    }
-
-    public static bool operator !=(CoverHouse left, CoverHouse right)
-    {
-        return !(left == right);
-    }
-
-    public bool Overlaps(CoverHouse house)
-    {
-        switch (Unit, house.Unit)
-        {
-            case (Unit.Row, Unit.Column) :
-            case (Unit.Column, Unit.Row) :
-                return true;
-            case (Unit.Row, Unit.MiniGrid) :
-            case (Unit.MiniGrid, Unit.Row) :
-                return Number / 3 == house.Number / 3;
-            case (Unit.Column, Unit.MiniGrid) :
-                return Number / 3 == house.Number % 3;
-            case (Unit.MiniGrid, Unit.Column) :
-                return Number % 3 == Number / 3;
-            case (Unit.Row, Unit.Row) :
-            case (Unit.Column, Unit.Column) :
-            case (Unit.MiniGrid, Unit.MiniGrid) :
-                return Number == house.Number;
-        }
-
-        return false;
     }
 }
 

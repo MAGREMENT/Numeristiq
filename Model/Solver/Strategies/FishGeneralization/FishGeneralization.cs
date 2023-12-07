@@ -71,7 +71,7 @@ public class FishGeneralization : AbstractStrategy
             for (int i = 0; i < CoverHouses.Length; i++)
             {
                 var current = CoverHouses[i];
-                if (UnitMethods.GetMethods(current.Unit).Count(positions, current.Number) > 0) possibleCoverHouses.Add(i);
+                if (UnitMethods.Get(current.Unit).Count(positions, current.Number) > 0) possibleCoverHouses.Add(i);
             }
             
             for (int unitCount = _minUnitCount; unitCount <= _maxUnitCount; unitCount++)

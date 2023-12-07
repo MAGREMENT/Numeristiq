@@ -15,7 +15,7 @@ public class FinnedFish : IFishType
         foreach (var n in combination)
         {
             var house = FishGeneralization.CoverHouses[n];
-            var methods = UnitMethods.GetMethods(house.Unit);
+            var methods = UnitMethods.Get(house.Unit);
 
             if (methods.Count(gp, house.Number) > 0) return false;
             methods.Fill(gp, house.Number);
@@ -30,7 +30,7 @@ public class FinnedFish : IFishType
             var gpOfCoverSet = new GridPositions();
             foreach (var set in coveredGrid.CoverHouses)
             {
-                UnitMethods.GetMethods(set.Unit).Fill(gpOfCoverSet, set.Number);
+                UnitMethods.Get(set.Unit).Fill(gpOfCoverSet, set.Number);
             }
             var diff = gpOfCoverSet.Difference(gp);
 

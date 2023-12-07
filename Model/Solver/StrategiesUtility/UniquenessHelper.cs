@@ -8,7 +8,7 @@ public static class UniquenessHelper
     public static int SearchExceptionInUnit(Unit unit, int expected, GridPositions gp)
     {
         var result = -1;
-        var methods = UnitMethods.GetMethods(unit);
+        var methods = UnitMethods.Get(unit);
 
         for (int u = 0; u < 9; u++)
         {
@@ -30,7 +30,7 @@ public static class UniquenessHelper
     public static int ComputeExpectedCount(Unit unit, params GridPositions[] gps)
     {
         var result = 0;
-        var methods = UnitMethods.GetMethods(unit);
+        var methods = UnitMethods.Get(unit);
 
         for (int u = 0; u < 9; u++)
         {

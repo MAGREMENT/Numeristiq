@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Solver.Position;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies.FishGeneralization.FishTypes;
 
@@ -15,7 +16,7 @@ public class BasicFish : IFishType
         foreach (var n in combination)
         {
             var house = FishGeneralization.CoverHouses[n];
-            var methods = UnitMethods.GetMethods(house.Unit);
+            var methods = UnitMethods.Get(house.Unit);
 
             if (methods.Count(gp, house.Number) > 0) return false;
             methods.Fill(gp, house.Number);
@@ -30,7 +31,7 @@ public class BasicFish : IFishType
             var gpOfCoverSet = new GridPositions();
             foreach (var set in coverSet)
             {
-                UnitMethods.GetMethods(set.Unit).Fill(gpOfCoverSet, set.Number);
+                UnitMethods.Get(set.Unit).Fill(gpOfCoverSet, set.Number);
             }
             var diff = gpOfCoverSet.Difference(gp);
             

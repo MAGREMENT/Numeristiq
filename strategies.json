@@ -163,7 +163,7 @@
   },
   {
     "Name": "SK-Loops",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },
@@ -193,6 +193,12 @@
   },
   {
     "Name": "Sue-De-Coq",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
+    "Name": "Distributed Disjoint Subset",
     "Used": true,
     "Behavior": 0,
     "Args": {}
@@ -261,7 +267,7 @@
   },
   {
     "Name": "Multi-Sector Locked Sets",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },

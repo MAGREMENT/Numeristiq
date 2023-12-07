@@ -91,7 +91,9 @@ public class StrategyLoader : IStrategyLoader
             new AIChainAlgorithmV2<ILinkGraphElement>())},
         {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
             new AIChainAlgorithmV2<ILinkGraphElement>())},
-        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(3, 5, 1))}
+        {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
+            3, 5, 1))},
+        {DistributedDisjointSubsetStrategy.OfficialName, new DistributedDisjointSubsetStrategy()}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

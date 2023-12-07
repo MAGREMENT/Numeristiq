@@ -85,7 +85,7 @@ public class SolverPresenter : IStepChooserCallback
     public async void Solve(bool stepByStep)
     {
         _solverActionEnabler.DisableActions(1);
-        
+
         if (!stepByStep) _shouldUpdateLogs = false;
         await Task.Run(() => _solver.Solve(stepByStep));
         _shouldUpdateLogs = true;
@@ -309,6 +309,8 @@ public class SolverPresenter : IStepChooserCallback
         
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
+        _view.ClearDrawings();
+        _view.UpdateBackground();
         _solverActionEnabler.EnableActions(2);
     }
 
