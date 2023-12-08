@@ -31,14 +31,14 @@ namespace Model.Solver.Strategies;
 /// If a possibility is present in only the x-marked cells in the first row, then it can be removed from all
 /// y-marked cells
 /// </summary>
-public class BoxLineReductionStrategy : AbstractStrategy
+public class ClaimingSetStrategy : AbstractStrategy
 {
-    public const string OfficialName = "Box-Line Reduction";
+    public const string OfficialName = "Claiming Set";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
-    public BoxLineReductionStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
+    public ClaimingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
     public override void Apply(IStrategyManager strategyManager)
     {

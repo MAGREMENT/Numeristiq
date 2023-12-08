@@ -23,7 +23,7 @@ public class StrategyLoader : IStrategyLoader
         {HiddenSingleStrategy.OfficialName, new HiddenSingleStrategy()},
         {NakedDoublesStrategy.OfficialName, new NakedDoublesStrategy()},
         {HiddenDoublesStrategy.OfficialName, new HiddenDoublesStrategy()},
-        {BoxLineReductionStrategy.OfficialName, new BoxLineReductionStrategy()},
+        {ClaimingSetStrategy.OfficialName, new ClaimingSetStrategy()},
         {PointingSetStrategy.OfficialName, new PointingSetStrategy()},
         {NakedSetStrategy.OfficialNameForType3, new NakedSetStrategy(3)},
         {HiddenSetStrategy.OfficialNameForType3, new HiddenSetStrategy(3)},
@@ -93,7 +93,9 @@ public class StrategyLoader : IStrategyLoader
             new AIChainAlgorithmV2<ILinkGraphElement>())},
         {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
             3, 5, 1))},
-        {DistributedDisjointSubsetStrategy.OfficialName, new DistributedDisjointSubsetStrategy()}
+        {DistributedDisjointSubsetStrategy.OfficialName, new DistributedDisjointSubsetStrategy()},
+        {AlmostLockedCandidatesStrategy.OfficialNameForType2, new AlmostLockedCandidatesStrategy(2)},
+        {AlmostLockedCandidatesStrategy.OfficialNameForType3, new AlmostLockedCandidatesStrategy(3)}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

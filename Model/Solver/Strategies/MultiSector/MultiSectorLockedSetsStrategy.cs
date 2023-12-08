@@ -80,7 +80,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-            new MultiSectorLockedSetsReportBuilder(grid, covers, alternativesTotal)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private bool IsSameCoverHouses(CoverHouse[] one, CoverHouse[] two)
@@ -104,10 +104,10 @@ public interface IMultiSectorCellsSearcher
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly GridPositions _grid;
-    private readonly List<PossibilityCovers> _covers;
-    private readonly List<PossibilityCovers> _alternatives;
+    private readonly IReadOnlyList<PossibilityCovers> _covers;
+    private readonly IReadOnlyList<PossibilityCovers> _alternatives;
 
-    public MultiSectorLockedSetsReportBuilder(GridPositions grid, List<PossibilityCovers> covers, List<PossibilityCovers> alternatives)
+    public MultiSectorLockedSetsReportBuilder(GridPositions grid, IReadOnlyList<PossibilityCovers> covers, List<PossibilityCovers> alternatives)
     {
         _grid = grid;
         _covers = covers;
@@ -159,7 +159,7 @@ public class CoveringUnits
 {
     private readonly Dictionary<CoverHouse, Possibilities> _dictionary = new();
 
-    public CoveringUnits(List<PossibilityCovers> list)
+    public CoveringUnits(IReadOnlyList<PossibilityCovers> list)
     {
         foreach (var cover in list)
         {

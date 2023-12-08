@@ -13,7 +13,7 @@ public interface IPossibilitiesPositions
     
     IReadOnlyPossibilities PossibilitiesInCell(Cell cell);
     
-    Possibilities Possibilities { get; }
+    IReadOnlyPossibilities Possibilities { get; }
     GridPositions Positions { get; }
 
     CellPossibilities[] ToCellPossibilitiesArray();
@@ -23,7 +23,7 @@ public interface IPossibilitiesPositions
     
     public Possibilities RestrictedCommons(IPossibilitiesPositions other)
     {
-        Possibilities result = Possibilities.NewEmpty();
+        Possibilities result = Possibility.Possibilities.NewEmpty();
 
         foreach (var possibility in Possibilities)
         {

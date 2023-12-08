@@ -39,7 +39,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
     }
 
     private bool Search(IStrategyManager strategyManager, PositionsGraph<IPossibilitiesPositions> graph,
-        Possibilities occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
+        IReadOnlyPossibilities occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
         LinkGraph<CellPossibility> linkGraph)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))

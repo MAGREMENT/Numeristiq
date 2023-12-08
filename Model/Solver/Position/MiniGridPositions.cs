@@ -46,6 +46,13 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         _pos &= ~(1 << delta);
         if (old) Count--;
     }
+    
+    public void Remove(int gridNumber)
+    {
+        bool old = ((_pos >> gridNumber) & 1) > 0;
+        _pos &= ~(1 << gridNumber);
+        if (old) Count--;
+    }
 
     public void Void()
     {
@@ -53,8 +60,21 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         Count = 0;
     }
 
+    public void VoidGridRow(int gridRow)
+    {
+        _pos &= ~(0b111 << (gridRow * 3));
+        Count = System.Numerics.BitOperations.PopCount((uint)_pos);
+    }
+    
+    public void VoidGridColumn(int gridCol)
+    {
+        _pos &= ~(0b1001001 << gridCol);
+        Count = System.Numerics.BitOperations.PopCount((uint)_pos);
+    }
+
     public void Add(int gridNumber)
     {
+        if (!Peek(gridNumber)) Count++;
         _pos |= 1 << gridNumber;
     }
 

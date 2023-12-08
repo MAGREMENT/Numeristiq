@@ -14,17 +14,23 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     private readonly IPossibilitiesHolder _snapshot;
     private GridPositions? _gp;
     
-    public Possibilities Possibilities { get; }
+    public IReadOnlyPossibilities Possibilities { get; }
     public int PossibilityCount => Possibilities.Count;
     public int PositionsCount => _cells.Length;
 
-    public CAPPossibilitiesPositions(Cell[] cells, Possibilities possibilities, IPossibilitiesHolder snapshot)
+    public CAPPossibilitiesPositions(Cell[] cells, IReadOnlyPossibilities possibilities, IPossibilitiesHolder snapshot)
     {
         _cells = cells;
         Possibilities = possibilities;
         _snapshot = snapshot;
     }
     
+    public CAPPossibilitiesPositions(Cell cell, IReadOnlyPossibilities possibilities, IPossibilitiesHolder snapshot)
+    {
+        _cells = new[] { cell };
+        Possibilities = possibilities;
+        _snapshot = snapshot;
+    }
     
     public IEnumerable<int> EachPossibility()
     {

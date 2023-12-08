@@ -30,7 +30,7 @@
     "Args": {}
   },
   {
-    "Name": "Box-Line Reduction",
+    "Name": "Claiming Set",
     "Used": true,
     "Behavior": 1,
     "Args": {}
@@ -120,6 +120,18 @@
     "Args": {}
   },
   {
+    "Name": "Almost Locked Pair",
+    "Used": true,
+    "Behavior": 1,
+    "Args": {}
+  },
+  {
+    "Name": "Almost Locked Triple",
+    "Used": true,
+    "Behavior": 1,
+    "Args": {}
+  },
+  {
     "Name": "Junior Exocet",
     "Used": true,
     "Behavior": 1,
@@ -198,12 +210,6 @@
     "Args": {}
   },
   {
-    "Name": "Distributed Disjoint Subset",
-    "Used": true,
-    "Behavior": 0,
-    "Args": {}
-  },
-  {
     "Name": "WXYZ-Wing",
     "Used": true,
     "Behavior": 0,
@@ -227,6 +233,12 @@
     "Name": "Subsets X-Cycles",
     "Used": true,
     "Behavior": 2,
+    "Args": {}
+  },
+  {
+    "Name": "Distributed Disjoint Subset",
+    "Used": true,
+    "Behavior": 0,
     "Args": {}
   },
   {

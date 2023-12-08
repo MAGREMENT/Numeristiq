@@ -44,14 +44,14 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
             if (cp.Cell == cell) return cp.Possibilities;
         }
 
-        return Possibilities.NewEmpty();
+        return Possibility.Possibilities.NewEmpty();
     }
 
-    public Possibilities Possibilities
+    public IReadOnlyPossibilities Possibilities
     {
         get
         {
-            Possibilities result = Possibilities.NewEmpty();
+            Possibilities result = Possibility.Possibilities.NewEmpty();
             foreach (var cp in _cps)
             {
                 result.Add(cp.Possibilities);
