@@ -333,6 +333,22 @@ public class FireworksStrategy : AbstractStrategy
             }
         }
         
+        //S-Ring
+        foreach (var df in fireworksList)
+        {
+            var opposite = new Cell(df.ColumnWing.Row, df.RowWing.Column);
+            if (manager.PossibilitiesAt(opposite).Equals(df.Possibilities))
+            {
+                foreach (var p in manager.PossibilitiesAt(df.Cross))
+                {
+                    if (!df.Possibilities.Peek(p)) manager.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
+                }
+
+                if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                        new FireworksReportBuilder(df)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+            }
+        }
+        
         //Dual ALP
         for (int i = 0; i < fireworksList.Count; i++)
         {
