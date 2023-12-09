@@ -21,6 +21,11 @@ public partial class FirstPage
     {
         _pageHandler.ShowPage(PagesName.StrategyManager);
     }
+    
+    private void GoToPlayer(object sender, RoutedEventArgs e)
+    {
+        _pageHandler.ShowPage(PagesName.Player);
+    }
 
     public override void OnShow()
     {

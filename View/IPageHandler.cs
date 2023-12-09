@@ -7,5 +7,5 @@ public interface IPageHandler
 
 public enum PagesName
 {
-    First, Solver, StrategyManager
+    First, Solver, Player, StrategyManager
 }

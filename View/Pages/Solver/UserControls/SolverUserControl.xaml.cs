@@ -1,20 +1,16 @@
 ﻿using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using Global;
 using Global.Enums;
+using View.Pages.Player;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
 
 public partial class SolverUserControl
 {
-    public const int CellSize = 60;
-    private const int LineWidth = 3;
-
-    private readonly SolverBackgroundManager _backgroundManager;
-
+    private readonly SudokuGrid _grid;
+    
     public delegate void OnCellSelection(Cell cell);
     public event OnCellSelection? CellSelected;
 
@@ -31,15 +27,10 @@ public partial class SolverUserControl
     {
         InitializeComponent();
 
-        Main.Focusable = true;
-
-        //Init background
-        _backgroundManager = new SolverBackgroundManager(CellSize, LineWidth);
-        Main.Width = _backgroundManager.Size;
-        Main.Height = _backgroundManager.Size;
-        UpdateBackground();
+        _grid = new SudokuGrid(20, 1, 3);
+        ToAddGrid.Children.Add(_grid);
         
-        //Init numbers
+        /*//Init numbers
         for (int i = 0; i < 9; i++)
         {
             HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition()
@@ -79,119 +70,98 @@ public partial class SolverUserControl
             };
             Grid.SetRow(vertical, 1 + i * 2);
             VerticalNumbers.Children.Add(vertical);
-        }
+        }*/
         
         //Init cells
-        for (int i = 0; i < 9; i++)
-        {
-            StackPanel row = (StackPanel)Main.Children[i];
-            for (int j = 0; j < 9; j++)
-            {
-                var toAdd = new CellUserControl();
-                toAdd.SetMargin(LineWidth, LineWidth, 0, 0);
+        
 
-                int rowForEvent = i;
-                int colForEvent = j;
-                toAdd.MouseLeftButtonDown += (_, _) =>
-                {
-                    CellSelected?.Invoke(new Cell(rowForEvent, colForEvent));
-                };
-
-                row.Children.Add(toAdd);
-            }
-        }
-
-        Main.KeyDown += KeyPressed;
-        Main.LostFocus += (_, _) => CellUnselected?.Invoke();
+        _grid.KeyDown += KeyPressed;
+        _grid.LostFocus += (_, _) => CellUnselected?.Invoke();
     }
-
-    public void SetCellTo(int row, int col, int number)
-    {
-        GetTo(row, col).SetNumber(number);
-    }
-
-    public void SetCellTo(int row, int col, int[] possibilities)
-    {
-        GetTo(row, col).SetPossibilities(possibilities);
-    }
-
-    public void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor)
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                GetTo(row, col).SetForeground(givens.Contains(new Cell(row, col))
-                    ? CellForegroundType.Given
-                    : CellForegroundType.Solving, solvingColor, givenColor);
-            }
-        }
-    }
-
-    public void PutCursorOn(Cell cell)
-    {
-        _backgroundManager.PutCursorOn(cell.Row, cell.Column);
-        Main.Focus();
-    }
-
-    public void ClearCursor()
-    {
-        _backgroundManager.ClearCursor();
-        FocusManager.SetFocusedElement(FocusManager.GetFocusScope(Main), null);
-        Keyboard.ClearFocus();
-    }
-
+    
     public void UpdateBackground()
     {
-        Main.Background = _backgroundManager.Background;
+        _grid.Refresh();
     }
 
     public void ClearBackground()
     {
-        _backgroundManager.Clear();
+        _grid.ClearHighlighting();
+    }
+
+    public void ClearNumber()
+    {
+        _grid.ClearNumbers();
+    }
+
+    public void SetCellTo(int row, int col, int number)
+    {
+        _grid.SetSolution(row, col, number);
+    }
+
+    public void SetCellTo(int row, int col, int[] possibilities)
+    {
+        foreach (var p in possibilities)
+        {
+            _grid.SetPossibility(row, col, p);
+        }
+    }
+
+    public void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor)
+    {
+        //TODO
+    }
+
+    public void PutCursorOn(Cell cell)
+    {
+        _grid.PutCursorOn(cell.Row, cell.Column);
+    }
+
+    public void ClearCursor()
+    {
+        _grid.ClearCursor();
     }
     
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
     {
-        _backgroundManager.FillPossibility(row, col, possibility, ColorManager.ToColor(coloration));
+        _grid.FillPossibility(row, col, possibility, ColorManager.ToColor(coloration));
     }
 
     public void FillCell(int row, int col, ChangeColoration coloration)
     {
-        _backgroundManager.FillCell(row, col, ColorManager.ToColor(coloration));
+        _grid.FillCell(row, col, ColorManager.ToColor(coloration));
     }
 
     public void EncirclePossibility(int row, int col, int possibility)
     {
-        _backgroundManager.EncirclePossibility(row, col, possibility);
+        _grid.EncirclePossibility(row, col, possibility);
     }
 
     public void EncircleCell(int row, int col)
     {
-        _backgroundManager.EncircleCell(row, col);
+        _grid.EncircleCell(row, col);
     }
 
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, ChangeColoration color)
     {
-        _backgroundManager.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo, 
-            possibilityTo, ColorManager.ToColor(color));
+        //TODO
     }
     
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration color)
     {
-        _backgroundManager.EncircleRectangle(rowFrom, colFrom, rowTo, colTo, ColorManager.ToColor(color));
+        //TODO
     }
 
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
     {
-        _backgroundManager.EncircleCellPatch(cells, ColorManager.ToColor(coloration));
+        //TODO
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength, LinkOffsetSidePriority priority)
     {
-        _backgroundManager.CreateLink(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo, strength == LinkStrength.Weak, priority);
+        //TODO
     }
 
     private void KeyPressed(object? sender, KeyEventArgs args)
@@ -232,11 +202,6 @@ public partial class SolverUserControl
                 RemoveSolutionFromCurrentCellAsked?.Invoke();
                 break;
         }
-    }
-
-    private CellUserControl GetTo(int row, int col)
-    {
-        return (CellUserControl) ((StackPanel)Main.Children[row]).Children[col];
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using Presenter;
 using View.Pages;
+using View.Pages.Player;
 using View.Pages.Solver;
 using View.Pages.StrategyManager;
 
@@ -21,7 +22,7 @@ public partial class MainWindow : IPageHandler
         
         _pages = new HandledPage[]
         {
-            new FirstPage(this), new SolverPage(this, factory), new StrategyManagerPage(this, factory)
+            new FirstPage(this), new SolverPage(this, factory), new PlayerPage(), new StrategyManagerPage(this, factory)
         };
 
         ShowPage(PagesName.First);

@@ -233,6 +233,7 @@ public class SolverPresenter : IStepChooserCallback
         _shownState = state;
         if (!_bound) return;
         
+        _view.ClearNumbers();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -242,6 +243,7 @@ public class SolverPresenter : IStepChooserCallback
                 else _view.SetCellTo(row, col, current.AsNumber);
             }
         }
+        _view.UpdateBackground();
         
         if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.TranslateToLine(state, Settings.TranslationType));
     }

@@ -70,6 +70,11 @@ public partial class SolverPage : ISolverView
         });
     }
 
+    public void ClearNumbers()
+    {
+        Dispatcher.Invoke(() => Solver.ClearNumber());
+    }
+
     public void SetCellTo(int row, int col, int number)
     { 
         

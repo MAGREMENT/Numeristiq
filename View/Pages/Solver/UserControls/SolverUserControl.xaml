@@ -11,23 +11,12 @@
                 <RowDefinition Height="20"></RowDefinition>
             </Grid.RowDefinitions>
         </Grid>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Orientation="Horizontal" x:Name="ToAddGrid">
             <Grid Width="20" x:Name="VerticalNumbers">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="20"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
             </Grid>
-            <StackPanel Orientation="Vertical" x:Name="Main">
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-                <StackPanel Orientation="Horizontal"></StackPanel>
-            </StackPanel>
         </StackPanel>
     </StackPanel>
 </UserControl>
