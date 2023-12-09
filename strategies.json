@@ -236,7 +236,7 @@
     "Args": {}
   },
   {
-    "Name": "Distributed Disjoint Subset",
+    "Name": "Oddagon",
     "Used": true,
     "Behavior": 0,
     "Args": {}
@@ -275,6 +275,12 @@
     "Name": "Subsets Alternating Inference Loops",
     "Used": true,
     "Behavior": 2,
+    "Args": {}
+  },
+  {
+    "Name": "Distributed Disjoint Subset",
+    "Used": true,
+    "Behavior": 0,
     "Args": {}
   },
   {

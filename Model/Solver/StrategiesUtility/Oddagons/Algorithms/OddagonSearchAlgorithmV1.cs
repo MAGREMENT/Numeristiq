@@ -1,17 +1,96 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Global.Enums;
 using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.Oddagons.Algorithms;
 
 public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
 {
-    public List<LinkGraphLoop<CellPossibility>> Search(IStrategyManager strategyManager)
+    public List<AlmostOddagon> Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
-            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
-        var result = new List<LinkGraphLoop<CellPossibility>>();
+        
+        var result = new List<AlmostOddagon>();
 
+        Queue<CellPossibility> queue = new();
+        Dictionary<CellPossibility, CellPossibility> parents = new();
+        foreach (var start in graph)
+        {
+            queue.Enqueue(start);
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                bool hasParent = parents.TryGetValue(current, out var currentParent);
+                
+                foreach (var friend in graph.GetLinks(current))
+                {
+                    if (friend == start ||(hasParent && friend == currentParent)) continue;
+                    
+                    if (parents.ContainsKey(friend))
+                    {
+                        var path1 = PathToRoot(parents, current);
+                        var path2 = PathToRoot(parents, friend);
+
+                        var supposedTotal = path1.Length + path2.Length - 1;
+                        if (supposedTotal < 5 || supposedTotal % 2 != 1) continue;
+
+                        var set = new HashSet<CellPossibility>(path1);
+                        set.UnionWith(path2);
+                        if (set.Count != supposedTotal) continue;
+
+                        var elements = new CellPossibility[supposedTotal];
+                        Array.Reverse(path2);
+                        Array.Copy(path1, 0, elements, 0, path1.Length);
+                        Array.Copy(path2, 1, elements, path1.Length, path2.Length - 1);
+                        
+                        result.Add(AlmostOddagon.FromBoard(strategyManager, new LinkGraphLoop<CellPossibility>(elements,
+                            SearchLinks(elements, graph))));
+                    }
+                    else
+                    {
+                        parents.Add(friend, current);
+                        queue.Enqueue(friend);
+                    }
+                }
+            }
+            
+            queue.Clear();
+            parents.Clear();
+        }
+
+        return result;
+    }
+
+    private CellPossibility[] PathToRoot(Dictionary<CellPossibility, CellPossibility> parents, CellPossibility from)
+    {
+        List<CellPossibility> result = new();
+        result.Add(from);
+
+        var current = from;
+        while (parents.TryGetValue(current, out var parent))
+        {
+            result.Add(parent);
+            current = parent;
+        }
+
+        return result.ToArray();
+    }
+
+    private LinkStrength[] SearchLinks(CellPossibility[] elements, LinkGraph<CellPossibility> graph)
+    {
+        var result = new LinkStrength[elements.Length];
+
+        for (int i = 0; i < elements.Length - 1; i++)
+        {
+            result[i] = graph.HasLinkTo(elements[i], elements[i + 1], LinkStrength.Strong)
+                ? LinkStrength.Strong
+                : LinkStrength.Weak;
+        }
+        
+        result[^1] = graph.HasLinkTo(elements[^1], elements[0], LinkStrength.Strong)
+            ? LinkStrength.Strong
+            : LinkStrength.Weak;
+        
         return result;
     }
 }

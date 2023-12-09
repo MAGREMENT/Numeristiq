@@ -95,7 +95,8 @@ public class StrategyLoader : IStrategyLoader
             3, 5, 1))},
         {DistributedDisjointSubsetStrategy.OfficialName, new DistributedDisjointSubsetStrategy()},
         {AlmostLockedCandidatesStrategy.OfficialNameForType2, new AlmostLockedCandidatesStrategy(2)},
-        {AlmostLockedCandidatesStrategy.OfficialNameForType3, new AlmostLockedCandidatesStrategy(3)}
+        {AlmostLockedCandidatesStrategy.OfficialNameForType3, new AlmostLockedCandidatesStrategy(3)},
+        {OddagonStrategy.OfficialName, new OddagonStrategy()}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

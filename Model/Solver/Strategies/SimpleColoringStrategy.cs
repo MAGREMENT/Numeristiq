@@ -24,7 +24,7 @@ public class SimpleColoringStrategy : AbstractStrategy
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
-                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColoringWithoutRules, graph,
+                     ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
                      Coloring.On, strategyManager.LogsManaged))
         {
             if(coloredVertices.Count <= 1) continue;

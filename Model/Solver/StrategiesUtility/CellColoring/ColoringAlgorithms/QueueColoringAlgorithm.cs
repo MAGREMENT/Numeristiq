@@ -6,7 +6,7 @@ namespace Model.Solver.StrategiesUtility.CellColoring.ColoringAlgorithms;
 
 public class QueueColoringAlgorithm : IColoringAlgorithm
 {
-    public void ColoringWithoutRules<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
+    public void ColorWithoutRules<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
         where T : ILinkGraphElement
     {
         result.AddColoredElement(start, firstColor);

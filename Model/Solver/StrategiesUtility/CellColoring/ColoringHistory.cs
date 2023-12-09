@@ -88,6 +88,7 @@ public delegate void HandleChildToParentLink<in T>(T child, T parent);
 public interface IReadOnlyColoringHistory<T> where T : ILinkGraphElement
 {
     public LinkGraphChain<T> GetPathToRootWithGuessedLinks(T to, Coloring coloring, bool reverse = true);
+    public LinkGraphChain<T> GetPathToRootWithRealLinks(T from, LinkGraph<T> graph, bool reverse = true);
 
     public void ForeachLink(HandleChildToParentLink<T> handler);
 }

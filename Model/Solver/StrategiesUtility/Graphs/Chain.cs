@@ -108,6 +108,16 @@ public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : not
 
         if (_lastLink.Equals(link)) handler(Elements[0], Elements[^1]);
     }
+    
+    public void ForEachLink(LinkHandler handler)
+    {
+        for (int i = 0; i < Links.Length; i++)
+        {
+            handler(Elements[i], Elements[i + 1]);
+        }
+
+        handler(Elements[0], Elements[^1]);
+    }
 
     public override bool Equals(object? obj)
     {

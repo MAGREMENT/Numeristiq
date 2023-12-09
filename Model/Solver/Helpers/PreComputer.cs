@@ -7,6 +7,7 @@ using Model.Solver.StrategiesUtility.CellColoring;
 using Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
 using Model.Solver.StrategiesUtility.Exocet;
 using Model.Solver.StrategiesUtility.Graphs;
+using Model.Solver.StrategiesUtility.Oddagons;
 
 namespace Model.Solver.Helpers;
 
@@ -18,9 +19,11 @@ public class PreComputer
 
     private readonly ColoringDictionary<ILinkGraphElement>?[,,] _onColoring
         = new ColoringDictionary<ILinkGraphElement>[9, 9, 9];
+
     private bool _wasPreColorUsed;
 
     private List<JuniorExocet>? _jes;
+    private List<AlmostOddagon>? _oddagons;
 
     private PossibilitiesGraph<IPossibilitiesPositions>? _alsGraph;
     private PositionsGraph<IPossibilitiesPositions>? _ahsGraph;
@@ -33,7 +36,7 @@ public class PreComputer
     public void Reset()
     {
         _als = null;
-        
+
         if (_wasPreColorUsed)
         {
             for (int i = 0; i < 9; i++)
@@ -46,10 +49,12 @@ public class PreComputer
                     }
                 }
             }
+
             _wasPreColorUsed = false;
         }
 
         _jes = null;
+        _oddagons = null;
         _alsGraph = null;
         _alsGraph = null;
     }
@@ -68,7 +73,7 @@ public class PreComputer
             DoColor(new CellPossibility(row, col, possibility), Coloring.On);
         return _onColoring[row, col, possibility - 1]!;
     }
-    
+
     public ColoringDictionary<ILinkGraphElement> OffColoring(int row, int col, int possibility)
     {
         return DoColor(new CellPossibility(row, col, possibility), Coloring.Off);
@@ -78,6 +83,12 @@ public class PreComputer
     {
         _jes ??= DoJuniorExocet();
         return _jes;
+    }
+
+    public List<AlmostOddagon> AlmostOddagons()
+    {
+        _oddagons ??= DoAlmostOddagons();
+        return _oddagons;
     }
 
     public PossibilitiesGraph<IPossibilitiesPositions> AlmostLockedSetGraph()
@@ -125,6 +136,11 @@ public class PreComputer
     private List<JuniorExocet> DoJuniorExocet()
     {
         return JuniorExocetSearcher.FullGrid(_strategyManager);
+    }
+
+    private List<AlmostOddagon> DoAlmostOddagons()
+    {
+        return OddagonSearcher.Search(_strategyManager);
     }
 
     private PossibilitiesGraph<IPossibilitiesPositions> DoAlmostLockedSetGraph()
