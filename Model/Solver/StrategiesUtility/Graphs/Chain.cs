@@ -243,29 +243,36 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
 
     public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path) //TODO Take into account mono-directionality
     {
-        if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
-        HashSet<T> present = new HashSet<T>(Elements);
-
+        bool reverseSecondChain = true;
+        if (path.Elements[0].Equals(Elements[^1]) && path.Elements[^1].Equals(Elements[0])) reverseSecondChain = false;
+        else if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
+        
         var total = Count + path.Count - 2;
         
+        HashSet<T> all = new HashSet<T>(Elements);
+        all.UnionWith(path.Elements);
+        if (all.Count != total) return null;
+
         var elements = new T[total];
         var links = new LinkStrength[total];
-        
-        Array.Copy(Elements, 0, elements, 0, Elements.Length);
-        var cursor = Elements.Length;
-        for (int i = path.Elements.Length - 2; i > 0; i--)
-        {
-            var current = path.Elements[i];
-            if (present.Contains(current)) return null;
 
-            elements[cursor++] = current;
+        if (reverseSecondChain)
+        {
+            Array.Copy(Elements, 0, elements, 0, Elements.Length - 1);
+            Array.Copy(path.Elements, 1, elements, Elements.Length - 1, path.Elements.Length - 1);
+            Array.Reverse(elements, Elements.Length - 1, path.Elements.Length - 1);
+            
+            Array.Copy(Links, 0, links, 0, Links.Length);
+            Array.Copy(path.Links, 0, links, Links.Length, path.Links.Length);
+            Array.Reverse(links, Links.Length, path.Links.Length);
         }
-
-        Array.Copy(Links, 0, links, 0, Links.Length);
-        cursor = Links.Length;
-        for (int i = path.Links.Length - 1; i >= 0; i--)
+        else
         {
-            links[cursor++] = path.Links[i];
+            Array.Copy(Elements, 0, elements, 0, Elements.Length - 1);
+            Array.Copy(path.Elements, 0, elements, Elements.Length - 1, path.Elements.Length - 1);
+            
+            Array.Copy(Links, 0, links, 0, Links.Length);
+            Array.Copy(path.Links, 0, links, Links.Length, path.Links.Length);
         }
 
         return new LinkGraphLoop<T>(elements, links);
