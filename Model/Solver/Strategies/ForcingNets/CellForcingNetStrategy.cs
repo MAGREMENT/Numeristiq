@@ -250,7 +250,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder
 
         for (int i = 0; i < _colorings.Length; i++)
         {
-            paths[i] = ForcingNetsUtility.FindEveryNeededPaths(_colorings[i].History!.GetPathToRoot(_target,
+            paths[i] = ForcingNetsUtility.FindEveryNeededPaths(_colorings[i].History!.GetPathToRootWithGuessedLinks(_target,
                 _targetColoring), _colorings[i], _graph, snapshot);
             
             var iForDelegate = i;

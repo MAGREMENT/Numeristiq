@@ -23,8 +23,8 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
             {
                 if (onColoring.TryGetColoredElement(entry.Key, out var coloring))
                 {
-                    var path1 = onColoring.History!.GetPathToRoot(entry.Key, coloring);
-                    var path2 = offColoring.History!.GetPathToRoot(entry.Key, entry.Value);
+                    var path1 = onColoring.History!.GetPathToRootWithGuessedLinks(entry.Key, coloring);
+                    var path2 = offColoring.History!.GetPathToRootWithGuessedLinks(entry.Key, entry.Value);
                     if(path2.Count < 2 || path1.Count < 2 || path1.Count + path2.Count < 6) continue;
                     
                     var loop = path1.TryMakeLoop(path2);

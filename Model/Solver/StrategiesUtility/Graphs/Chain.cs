@@ -241,7 +241,7 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
             ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
     }
 
-    public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path) //Take into account mono-directionality
+    public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path) //TODO Take into account mono-directionality
     {
         if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
         HashSet<T> present = new HashSet<T>(Elements);
@@ -250,7 +250,7 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
         
         var elements = new T[total];
         var links = new LinkStrength[total];
-
+        
         Array.Copy(Elements, 0, elements, 0, Elements.Length);
         var cursor = Elements.Length;
         for (int i = path.Elements.Length - 2; i > 0; i--)

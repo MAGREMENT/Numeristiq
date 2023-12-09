@@ -252,7 +252,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     highlighters.Add( lighter =>
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
-                                .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                                .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
@@ -271,7 +271,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     highlighters.Add(lighter =>
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
-                            .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                            .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
@@ -291,7 +291,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     highlighters.Add(lighter =>
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
-                            .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                            .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
@@ -312,7 +312,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                     highlighters.Add(lighter =>
                     {
                         var paths = ForcingNetsUtility.FindEveryNeededPaths(_coloring.History!
-                            .GetPathToRoot(current, c), _coloring, _graph, snapshot);
+                            .GetPathToRootWithGuessedLinks(current, c), _coloring, _graph, snapshot);
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);

@@ -14,7 +14,7 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
         _parents.TryAdd(element, parent);
     }
 
-    public LinkGraphChain<T> GetPathToRoot(T from, Coloring coloring, bool reverse = true) //TODO look into using the reverse bit (in AIC notably)
+    public LinkGraphChain<T> GetPathToRootWithGuessedLinks(T from, Coloring coloring, bool reverse = true) //TODO look into using the reverse bit (in AIC notably)
     {
         List<T> elements = new();
         List<LinkStrength> links = new();
@@ -43,6 +43,36 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
 
         return new LinkGraphChain<T>(eArray, lArray);
     }
+    
+    public LinkGraphChain<T> GetPathToRootWithRealLinks(T from, LinkGraph<T> graph, bool reverse = true)
+    {
+        List<T> elements = new();
+        List<LinkStrength> links = new();
+        
+        if (!_parents.TryGetValue(from, out var parent)) return new LinkGraphChain<T>(from);
+
+        elements.Add(from);
+        elements.Add(parent);
+        links.Add(graph.HasLinkTo(from, parent, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
+
+        while (_parents.TryGetValue(parent, out var next))
+        {
+            elements.Add(next);
+            links.Add(graph.HasLinkTo(parent, next, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
+            parent = next;
+        }
+
+        var eArray = elements.ToArray();
+        var lArray = links.ToArray();
+
+        if (reverse)
+        {
+            Array.Reverse(eArray);
+            Array.Reverse(lArray);
+        }
+
+        return new LinkGraphChain<T>(eArray, lArray);
+    }
 
     public void ForeachLink(HandleChildToParentLink<T> handler)
     {
@@ -57,7 +87,7 @@ public delegate void HandleChildToParentLink<in T>(T child, T parent);
 
 public interface IReadOnlyColoringHistory<T> where T : ILinkGraphElement
 {
-    public LinkGraphChain<T> GetPathToRoot(T to, Coloring coloring, bool reverse = true);
+    public LinkGraphChain<T> GetPathToRootWithGuessedLinks(T to, Coloring coloring, bool reverse = true);
 
     public void ForeachLink(HandleChildToParentLink<T> handler);
 }

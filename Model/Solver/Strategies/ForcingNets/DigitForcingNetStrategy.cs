@@ -126,9 +126,9 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRoot(_onPos, _onColoring),
+        var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRootWithGuessedLinks(_onPos, _onColoring),
             _on, _graph, snapshot);
-        var offPaths = ForcingNetsUtility.FindEveryNeededPaths(_off.History!.GetPathToRoot(_offPos, _offColoring),
+        var offPaths = ForcingNetsUtility.FindEveryNeededPaths(_off.History!.GetPathToRootWithGuessedLinks(_offPos, _offColoring),
             _off, _graph, snapshot);
 
         var first = (CellPossibility)onPaths[0].Elements[0];

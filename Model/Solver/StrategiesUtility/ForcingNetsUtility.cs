@@ -77,7 +77,7 @@ public static class ForcingNetsUtility
                 {
                     if (allElements.Contains(offCell)) continue;
 
-                    var path = result.History!.GetPathToRoot(offCell, Coloring.Off);
+                    var path = result.History!.GetPathToRootWithGuessedLinks(offCell, Coloring.Off);
                     list.Add(path);
                     allElements.UnionWith(path.Elements);
                     queue.Enqueue(path);
