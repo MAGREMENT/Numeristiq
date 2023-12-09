@@ -237,7 +237,7 @@
   },
   {
     "Name": "Oddagon",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
@@ -306,6 +306,14 @@
     "Used": true,
     "Behavior": 0,
     "Args": {}
+  },
+  {
+    "Name": "Oddagon Forcing Net",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {
+      "Maximum number of guardians": "3"
+    }
   },
   {
     "Name": "Nishio Forcing Net",
