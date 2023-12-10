@@ -237,7 +237,7 @@
   },
   {
     "Name": "Oddagon",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },

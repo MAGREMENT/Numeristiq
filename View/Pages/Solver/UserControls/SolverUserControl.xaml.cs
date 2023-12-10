@@ -145,23 +145,24 @@ public partial class SolverUserControl
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, ChangeColoration color)
     {
-        //TODO
+        _grid.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo, ColorManager.ToColor(color));
     }
     
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration color)
     {
-        //TODO
+        _grid.EncircleRectangle(rowFrom, colFrom, rowTo, colTo, ColorManager.ToColor(color));
     }
 
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
     {
-        //TODO
+        _grid.EncircleCellPatch(cells, ColorManager.ToColor(coloration));
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength, LinkOffsetSidePriority priority)
     {
-        //TODO
+        _grid.CreateLink(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo,
+            strength == LinkStrength.Weak, priority);
     }
 
     private void KeyPressed(object? sender, KeyEventArgs args)

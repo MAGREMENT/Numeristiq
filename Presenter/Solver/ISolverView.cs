@@ -8,9 +8,6 @@ public interface ISolverView : ISudokuDrawer
 {
     void DisableActions();
     void EnableActions();
-    void ClearNumbers();
-    void SetCellTo(int row, int col, int number);
-    void SetCellTo(int row, int col, int[] possibilities);
     void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor);
     void SetTranslation(string translation);
     void FocusLog(int number);

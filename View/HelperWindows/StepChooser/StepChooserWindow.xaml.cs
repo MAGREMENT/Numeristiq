@@ -25,6 +25,11 @@ public partial class StepChooserWindow : IStepChooserView
         _presenter.Bind();
     }
 
+    public void ClearNumbers()
+    {
+        Grid.ClearNumber();
+    }
+
     public void SetCellTo(int row, int col, int number)
     {
         Grid.SetCellTo(row, col, number);

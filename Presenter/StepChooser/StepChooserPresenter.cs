@@ -32,6 +32,7 @@ public class StepChooserPresenter
 
     public void Bind()
     {
+        _view.ClearNumbers();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -41,6 +42,7 @@ public class StepChooserPresenter
                 else _view.SetCellTo(row, col, c.AsNumber);
             }
         }
+        _view.UpdateBackground();
         _view.ShowCommits(ModelToViewTranslator.Translate(_commits));
     }
 

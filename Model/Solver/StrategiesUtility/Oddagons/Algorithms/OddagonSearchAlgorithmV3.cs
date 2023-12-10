@@ -38,6 +38,8 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
 
         foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
         {
+            if (currentGuardians.Contains(friend)) continue;
+            
             if (friend == first)
             {
                 if (builder.Count < 5 || builder.Count % 2 != 1) continue;
@@ -54,14 +56,18 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
         
         foreach (var friend in graph.GetLinks(last, LinkStrength.Weak))
         {
+            if (currentGuardians.Contains(friend)) continue;
+
+            bool ok = true;
             var count = 0;
             foreach (var guardian in OddagonSearcher.FindGuardians(strategyManager, last, friend))
             {
                 count++;
                 currentGuardians.Add(guardian);
+                if (builder.ContainsElement(guardian)) ok = false;
             }
 
-            if (currentGuardians.Count <= _maxGuardians)
+            if (ok && currentGuardians.Count <= _maxGuardians)
             {
                 if (friend == first)
                 {
