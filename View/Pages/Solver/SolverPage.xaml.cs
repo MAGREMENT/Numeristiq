@@ -75,20 +75,15 @@ public partial class SolverPage : ISolverView
         Dispatcher.Invoke(() => Solver.ClearNumber());
     }
 
-    public void SetCellTo(int row, int col, int number)
+    public void ShowSolution(int row, int col, int number, CellColor color)
     { 
         
-        Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, number));
+        Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, number, color));
     }
 
-    public void SetCellTo(int row, int col, int[] possibilities)
+    public void ShowPossibilities(int row, int col, int[] possibilities, CellColor color)
     {
-        Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, possibilities));
-    }
-
-    public void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor)
-    {
-        Solver.Dispatcher.Invoke(() => Solver.UpdateGivens(givens, solvingColor, givenColor));
+        Solver.Dispatcher.Invoke(() => Solver.SetCellTo(row, col, possibilities, color));
     }
 
     public void SetTranslation(string translation)
@@ -148,7 +143,7 @@ public partial class SolverPage : ISolverView
         Solver.Dispatcher.Invoke(Solver.ClearCursor);
     }
 
-    public void UpdateBackground()
+    public void Refresh()
     {
         Solver.Dispatcher.Invoke(Solver.UpdateBackground);
     }

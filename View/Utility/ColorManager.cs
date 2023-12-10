@@ -62,6 +62,11 @@ public class ColorManager
         };
     }
 
+    public static Brush ToBrush(CellColor cc)
+    {
+        return CellBrushes[(int)cc];
+    }
+
     private static ColorManager? _instance;
 
     public static ColorManager GetInstance()

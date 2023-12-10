@@ -44,7 +44,7 @@ public class SolverPresenter : IStepChooserCallback
             _solver.AllowUniqueness(Settings.UniquenessAllowed);
             _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
         };
-        Settings.GivensNeedUpdate += UpdateGivens;
+        Settings.GivensNeedUpdate += () => ChangeShownState(_shownState);
         
         _highlighterTranslator = new HighlighterTranslator(view, Settings);
         _solverActionEnabler = new SolverActionEnabler(view);
@@ -136,7 +136,7 @@ public class SolverPresenter : IStepChooserCallback
         ClearLogFocus();
         ChangeShownState(_solver.StartState);
         _view.ClearDrawings();
-        _view.UpdateBackground();
+        _view.Refresh();
     }
 
     public void ShowCurrentState()
@@ -144,7 +144,7 @@ public class SolverPresenter : IStepChooserCallback
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
         _view.ClearDrawings();
-        _view.UpdateBackground();
+        _view.Refresh();
     }
 
     public void UseStrategy(int number, bool yes)
@@ -164,13 +164,13 @@ public class SolverPresenter : IStepChooserCallback
         {
             _currentlySelectedCell = cell;
             _view.PutCursorOn(cell);
-            _view.UpdateBackground();
+            _view.Refresh();
         }
         else
         {
             _currentlySelectedCell = null;
             _view.ClearCursor();
-            _view.UpdateBackground();
+            _view.Refresh();
         }
     }
 
@@ -178,7 +178,7 @@ public class SolverPresenter : IStepChooserCallback
     {
         _currentlySelectedCell = null;
         _view.ClearCursor();
-        _view.UpdateBackground();
+        _view.Refresh();
     }
 
     public void ChangeCurrentCell(int number)
@@ -209,9 +209,8 @@ public class SolverPresenter : IStepChooserCallback
         ClearLogs();
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
-        UpdateGivens();
         _view.ClearDrawings();
-        _view.UpdateBackground();
+        _view.Refresh();
     }
     
     //IStepChooserCallback----------------------------------------------------------------------------------------------
@@ -224,6 +223,11 @@ public class SolverPresenter : IStepChooserCallback
     public void ApplyCommit(BuiltChangeCommit commit)
     {
         _solver.ApplyCommit(commit);
+    }
+
+    public CellColor GetCellColor(int row, int col)
+    {
+        return _solver.StartState[row, col] == 0 ? Settings.SolvingColor : Settings.GivenColor;
     }
 
     //Private-----------------------------------------------------------------------------------------------------------
@@ -239,11 +243,11 @@ public class SolverPresenter : IStepChooserCallback
             for (int col = 0; col < 9; col++)
             {
                 var current = state.At(row, col);
-                if (current.IsPossibilities) _view.SetCellTo(row, col, current.AsPossibilities.ToArray());
-                else _view.SetCellTo(row, col, current.AsNumber);
+                if (current.IsPossibilities) _view.ShowPossibilities(row, col, current.AsPossibilities.ToArray(), GetCellColor(row, col));
+                else _view.ShowSolution(row, col, current.AsNumber, GetCellColor(row, col));
             }
         }
-        _view.UpdateBackground();
+        _view.Refresh();
         
         if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.TranslateToLine(state, Settings.TranslationType));
     }
@@ -256,23 +260,8 @@ public class SolverPresenter : IStepChooserCallback
         ClearLogs();
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
-        UpdateGivens();
         _view.ClearDrawings();
-        _view.UpdateBackground();
-    }
-
-    private void UpdateGivens()
-    {
-        HashSet<Cell> givens = new();
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (_solver.StartState[row, col] != 0) givens.Add(new Cell(row, col));
-            }
-        }
-
-        _view.UpdateGivens(givens, Settings.SolvingColor, Settings.GivenColor);
+        _view.Refresh();
     }
 
     private async void UpdateLogs()
@@ -304,7 +293,7 @@ public class SolverPresenter : IStepChooserCallback
                 await Task.Delay(TimeSpan.FromMilliseconds(Settings.DelayAfterTransition));
 
                 _view.ClearDrawings();
-                _view.UpdateBackground();
+                _view.Refresh();
             }   
         }
         
@@ -312,7 +301,7 @@ public class SolverPresenter : IStepChooserCallback
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);
         _view.ClearDrawings();
-        _view.UpdateBackground();
+        _view.Refresh();
         _solverActionEnabler.EnableActions(2);
     }
 
@@ -331,6 +320,6 @@ public class SolverPresenter : IStepChooserCallback
     {
         _view.ClearDrawings();
         _highlighterTranslator.Translate(log.HighlightManager);
-        _view.UpdateBackground();
+        _view.Refresh();
     }
 }

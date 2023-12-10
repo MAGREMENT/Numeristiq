@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Global;
 using Global.Enums;
@@ -9,6 +11,10 @@ namespace View.Pages.Solver.UserControls;
 
 public partial class SolverUserControl
 {
+    private const int BigLineWidth = 3;
+    private const int SmallLineWidth = 1;
+    private const int PossibilitySize = 20;
+    
     private readonly SudokuGrid _grid;
     
     public delegate void OnCellSelection(Cell cell);
@@ -27,19 +33,20 @@ public partial class SolverUserControl
     {
         InitializeComponent();
 
-        _grid = new SudokuGrid(20, 1, 3);
+        _grid = new SudokuGrid(PossibilitySize, SmallLineWidth, BigLineWidth);
         ToAddGrid.Children.Add(_grid);
         
-        /*//Init numbers
+        //Init numbers
         for (int i = 0; i < 9; i++)
         {
-            HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition()
+            var delta = i % 3 == 0 ? BigLineWidth : SmallLineWidth;
+            HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition
             {
-                Width = new GridLength(LineWidth)
+                Width = new GridLength(delta)
             });
-            HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition()
+            HorizontalNumbers.ColumnDefinitions.Add(new ColumnDefinition
             {
-                Width = new GridLength(CellSize)
+                Width = new GridLength(PossibilitySize * 3)
             });
             var horizontal = new TextBlock
             {
@@ -52,13 +59,13 @@ public partial class SolverUserControl
             Grid.SetColumn(horizontal, 1 + i * 2);
             HorizontalNumbers.Children.Add(horizontal);
             
-            VerticalNumbers.RowDefinitions.Add(new RowDefinition()
+            VerticalNumbers.RowDefinitions.Add(new RowDefinition
             {
-                Height = new GridLength(LineWidth)
+                Height = new GridLength(delta)
             });
-            VerticalNumbers.RowDefinitions.Add(new RowDefinition()
+            VerticalNumbers.RowDefinitions.Add(new RowDefinition
             {
-                Height = new GridLength(CellSize)
+                Height = new GridLength(PossibilitySize * 3)
             });
             var vertical = new TextBlock
             {
@@ -70,12 +77,10 @@ public partial class SolverUserControl
             };
             Grid.SetRow(vertical, 1 + i * 2);
             VerticalNumbers.Children.Add(vertical);
-        }*/
+        }
         
-        //Init cells
-        
-
         _grid.KeyDown += KeyPressed;
+        _grid.CellSelected += (row, col) => CellSelected?.Invoke(new Cell(row, col));
         _grid.LostFocus += (_, _) => CellUnselected?.Invoke();
     }
     
@@ -94,22 +99,17 @@ public partial class SolverUserControl
         _grid.ClearNumbers();
     }
 
-    public void SetCellTo(int row, int col, int number)
+    public void SetCellTo(int row, int col, int number, CellColor color)
     {
-        _grid.SetSolution(row, col, number);
+        _grid.SetSolution(row, col, number, ColorManager.ToBrush(color));
     }
 
-    public void SetCellTo(int row, int col, int[] possibilities)
+    public void SetCellTo(int row, int col, int[] possibilities, CellColor color)
     {
         foreach (var p in possibilities)
         {
-            _grid.SetPossibility(row, col, p);
+            _grid.SetPossibility(row, col, p, ColorManager.ToBrush(color));
         }
-    }
-
-    public void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor)
-    {
-        //TODO
     }
 
     public void PutCursorOn(Cell cell)

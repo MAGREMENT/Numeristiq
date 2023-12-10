@@ -38,11 +38,12 @@ public class StepChooserPresenter
             for (int col = 0; col < 9; col++)
             {
                 var c = _state.At(row, col);
-                if (c.IsPossibilities) _view.SetCellTo(row, col, c.AsPossibilities.ToArray());
-                else _view.SetCellTo(row, col, c.AsNumber);
+                if (c.IsPossibilities)
+                    _view.ShowPossibilities(row, col, c.AsPossibilities.ToArray(), _callback.GetCellColor(row, col));
+                else _view.ShowSolution(row, col, c.AsNumber, _callback.GetCellColor(row, col));
             }
         }
-        _view.UpdateBackground();
+        _view.Refresh();
         _view.ShowCommits(ModelToViewTranslator.Translate(_commits));
     }
 
@@ -66,7 +67,7 @@ public class StepChooserPresenter
             _view.AllowChoosing(false);
         }
 
-        _view.UpdateBackground();
+        _view.Refresh();
     }
 
     public void ShiftHighlighting(int shift)
@@ -84,7 +85,7 @@ public class StepChooserPresenter
         
         _view.ClearDrawings();
         _highlighterTranslator.Translate(_commits[_currentlySelectedIndex].Report.HighlightManager);
-        _view.UpdateBackground();
+        _view.Refresh();
         
         _view.ShowCommitInformation(ModelToViewTranslator.Translate(_commits[_currentlySelectedIndex]));
     }

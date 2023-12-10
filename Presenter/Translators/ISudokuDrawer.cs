@@ -5,11 +5,12 @@ namespace Presenter.Translators;
 
 public interface ISudokuDrawer
 {
+    void PutCursorOn(Cell cell);
+    void ClearCursor();
     void ClearNumbers();
-    void SetCellTo(int row, int col, int number);
-    void SetCellTo(int row, int col, int[] possibilities);
-    public void UpdateBackground();
     public void ClearDrawings();
+    void ShowSolution(int row, int col, int number, CellColor color);
+    void ShowPossibilities(int row, int col, int[] possibilities, CellColor color);
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration);
     public void FillCell(int row, int col, ChangeColoration coloration);
     public void EncirclePossibility(int row, int col, int possibility);
@@ -20,4 +21,5 @@ public interface ISudokuDrawer
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration);
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength, LinkOffsetSidePriority priority);
+    public void Refresh();
 }

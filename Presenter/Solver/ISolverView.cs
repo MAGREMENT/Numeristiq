@@ -1,6 +1,4 @@
-﻿using Global;
-using Global.Enums;
-using Presenter.Translators;
+﻿using Presenter.Translators;
 
 namespace Presenter.Solver;
 
@@ -8,7 +6,6 @@ public interface ISolverView : ISudokuDrawer
 {
     void DisableActions();
     void EnableActions();
-    void UpdateGivens(HashSet<Cell> givens, CellColor solvingColor, CellColor givenColor);
     void SetTranslation(string translation);
     void FocusLog(int number);
     void UnFocusLog();
@@ -18,8 +15,6 @@ public interface ISolverView : ISudokuDrawer
     void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies);
     void UpdateStrategies(IReadOnlyList<ViewStrategy> strategies);
     void LightUpStrategy(int number);
-    void PutCursorOn(Cell cell);
-    void ClearCursor();
     void ToClipboard(string s);
     void ShowPossibleSteps(StepChooserPresenterBuilder builder);
 }

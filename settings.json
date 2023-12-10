@@ -6,7 +6,7 @@
   "UniquenessAllowed": true,
   "ActionOnCellChange": 0,
   "TransformSoloPossibilityIntoGiven": true,
-  "GivenColor": 0,
+  "GivenColor": 3,
   "SolvingColor": 0,
   "SidePriority": 2
 }

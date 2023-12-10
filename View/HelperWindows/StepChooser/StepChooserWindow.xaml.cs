@@ -25,19 +25,29 @@ public partial class StepChooserWindow : IStepChooserView
         _presenter.Bind();
     }
 
+    public void PutCursorOn(Cell cell)
+    {
+        Grid.PutCursorOn(cell);
+    }
+
+    public void ClearCursor()
+    {
+        Grid.ClearCursor();
+    }
+
     public void ClearNumbers()
     {
         Grid.ClearNumber();
     }
 
-    public void SetCellTo(int row, int col, int number)
+    public void ShowSolution(int row, int col, int number, CellColor color)
     {
-        Grid.SetCellTo(row, col, number);
+        Grid.SetCellTo(row, col, number, color);
     }
 
-    public void SetCellTo(int row, int col, int[] possibilities)
+    public void ShowPossibilities(int row, int col, int[] possibilities, CellColor color)
     {
-        Grid.SetCellTo(row, col, possibilities);
+        Grid.SetCellTo(row, col, possibilities, color);
     }
 
     public void ShowCommits(ViewCommit[] commits)
@@ -60,7 +70,7 @@ public partial class StepChooserWindow : IStepChooserView
         ChooseButton.IsEnabled = yes;
     }
 
-    public void UpdateBackground()
+    public void Refresh()
     {
         Grid.UpdateBackground();
     }

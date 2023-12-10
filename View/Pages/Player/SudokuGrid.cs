@@ -24,6 +24,9 @@ public class SudokuGrid : FrameworkElement
     private readonly double _size;
     
     private readonly VisualCollection _visual;
+
+    //This is a hack for the MouseLeftDown event to work properly. Do NOT remove.
+    private readonly RectAndBrush _backGround;
     
     private readonly List<RectAndBrush> _numbersHighlight = new();
     private RectAndPen? _cursor;
@@ -33,8 +36,12 @@ public class SudokuGrid : FrameworkElement
     private readonly List<RectAndPen> _encircles = new();
     private readonly List<LineAndPen> _highlightLines = new();
 
+    public event OnCellSelection? CellSelected;
+
     public SudokuGrid(int possibilitySize, int smallLineWidth, int bigLineWidth)
     {
+        Focusable = true;
+        
         _visual = new VisualCollection(this);
         
         _possibilitySize = possibilitySize;
@@ -45,10 +52,17 @@ public class SudokuGrid : FrameworkElement
         _size = ComputeSize();
         Width = _size;
         Height = _size;
+        _backGround = new RectAndBrush(new Rect(0, 0, _size, _size), Brushes.White);
         
         UpdateMargins();
-        InitNumbers();
         Refresh();
+
+        MouseLeftButtonDown += (_, args) =>
+        {
+            Focus();
+            var cell = ComputeSelectedCell(args.GetPosition(this));
+            if (cell is not null) CellSelected?.Invoke(cell[0], cell[1]);
+        };
     }
     
     // Provide a required override for the VisualChildrenCount property.
@@ -82,17 +96,17 @@ public class SudokuGrid : FrameworkElement
         _cursor = null;
     }
     
-    public void SetPossibility(int row, int col, int possibility)
+    public void SetPossibility(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Verdaba"),  (double)_possibilitySize / 4 * 3, Brushes.Black, 1);
+            new Typeface("Verdaba"),  (double)_possibilitySize / 4 * 3, color, 1);
         _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize, _possibilitySize)));
     }
 
-    public void SetSolution(int row, int col, int possibility)
+    public void SetSolution(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Verdaba"), (double)_cellSize / 4 * 3, Brushes.Black, 1);
+            new Typeface("Verdaba"), (double)_cellSize / 4 * 3, color, 1);
         _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize)));
     }
     
@@ -100,6 +114,8 @@ public class SudokuGrid : FrameworkElement
     {
         var visual = new DrawingVisual();
         var context = visual.RenderOpen();
+
+        context.DrawRectangle(_backGround.Brush, null, _backGround.Rect);
 
         foreach (var rect in _numbersHighlight)
         {
@@ -171,7 +187,7 @@ public class SudokuGrid : FrameworkElement
     {
         var delta = CursorWidth / 2;
         _cursor = new RectAndPen(new Rect(GetLeft(col) + delta, GetTop(row) + delta,
-            _cellSize - CursorWidth, _cellSize - CursorWidth), new Pen(Brushes.Black, CursorWidth));
+            _cellSize - CursorWidth, _cellSize - CursorWidth), new Pen(ColorManager.Purple, CursorWidth));
     }
     
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
@@ -352,20 +368,6 @@ public class SudokuGrid : FrameworkElement
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
         }
     }
-
-    private void InitNumbers()
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                for (int number = 1; number <= 9; number++)
-                {
-                    SetPossibility(row, col, number);
-                }
-            }
-        }
-    }
     
     private void AddShortenedLine(Point from, Point to, bool isWeak)
     {
@@ -439,9 +441,44 @@ public class SudokuGrid : FrameworkElement
         var delta = (double)_possibilitySize / 2;
         return new Point(GetLeft(col, possibility) + delta, GetTop(row, possibility) + delta);
     }
-}
+
+    private int[]? ComputeSelectedCell(Point point)
+    {
+        var row = -1;
+        var col = -1;
+
+        var y = point.Y;
+        var x = point.X;
+
+        for (int i = 0; i < 9; i++)
+        {
+            var delta = i % 3 == 0 ? _bigLineWidth : _smallLineWidth;
+
+            if (row == -1)
+            {
+                if (y < delta) return null;
+                y -= delta;
+                if (y < _cellSize) row = i;
+                y -= _cellSize;
+            }
+
+            if (col == -1)
+            {
+                if (x < delta) return null;
+                x -= delta;
+                if (x < _cellSize) col = i;
+                x -= _cellSize;
+            }
+
+            if (row != -1 && col != -1) break;
+        }
+
+        return row == -1 || col == -1 ? null : new[] { row, col };
+    }
+}   
 
 public record RectAndBrush(Rect Rect, Brush Brush);
 public record RectAndPen(Rect Rect, Pen Pen);
 public record LineAndPen(Point From, Point To, Pen Pen);
 public record TextAndRect(FormattedText Text, Rect Rect);
+public delegate void OnCellSelection(int row, int col);
