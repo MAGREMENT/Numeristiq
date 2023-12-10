@@ -238,19 +238,18 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
     public LinkGraphChain(T element) : base(element)
     {
     }
-    
-    public void Highlight(IHighlightable highlighter)
+
+    public LinkGraphChain<T> AddInFront(LinkStrength link, T element)
     {
-        for (int i = 0; i < Links.Length; i++)
-        {
-            var current = Links[i];
-            highlighter.HighlightLinkGraphElement(Elements[i + 1], current == LinkStrength.Strong
-                ? ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
-            highlighter.CreateLink(Elements[i], Elements[i + 1], current);
-        }
-        
-        if(Elements.Length > 0 && Links.Length > 0) highlighter.HighlightLinkGraphElement(Elements[0], Links[0] == LinkStrength.Strong
-            ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
+        var eBuffer = new T[Elements.Length + 1];
+        var lBuffer = new LinkStrength[Links.Length + 1];
+
+        Array.Copy(Elements, 0, eBuffer, 1, Elements.Length);
+        Array.Copy(Links, 0, lBuffer, 1, Links.Length);
+        eBuffer[0] = element;
+        lBuffer[0] = link;
+
+        return new LinkGraphChain<T>(eBuffer, lBuffer);
     }
 
     public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path)

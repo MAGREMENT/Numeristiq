@@ -62,9 +62,15 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
             var count = 0;
             foreach (var guardian in OddagonSearcher.FindGuardians(strategyManager, last, friend))
             {
-                count++;
+                if (currentGuardians.Contains(guardian)) continue;
+                if (builder.ContainsElement(guardian))
+                {
+                    ok = false;
+                    break;
+                }
+                
                 currentGuardians.Add(guardian);
-                if (builder.ContainsElement(guardian)) ok = false;
+                count++;
             }
 
             if (ok && currentGuardians.Count <= _maxGuardians)

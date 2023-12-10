@@ -66,14 +66,18 @@ public class OddagonReportBuilder : IChangeReportBuilder
         {
             foreach (var element in _oddagon.Loop.Elements)
             {
-                lighter.HighlightPossibility(element, ChangeColoration.CauseOnOne);
+                lighter.HighlightPossibility(element, ChangeColoration.CauseOffTwo);
             }
             
-            _oddagon.Loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong));
+            _oddagon.Loop.ForEachLink((one, two)
+                => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
+            _oddagon.Loop.ForEachLink((one, two)
+                => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
 
             foreach (var cp in _oddagon.Guardians)
             {
                 lighter.EncirclePossibility(cp);
+                lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
             }
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);

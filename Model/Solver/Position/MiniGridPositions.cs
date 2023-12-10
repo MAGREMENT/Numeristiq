@@ -103,6 +103,43 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         //011 011 011
         return Count is < 4 and > 0 && ((_pos & 0x1B6) == 0 || (_pos & 0x16D) == 0 || (_pos & 0xDB) == 0);
     }
+
+    public bool AtLeastOneInEachRows()
+    {
+        return System.Numerics.BitOperations.PopCount((uint)(_pos & 0b111)) > 0
+                         && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b111000)) > 0
+                         && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b111000000)) > 0;
+    }
+    
+    public bool AtLeastOnInEachColumns()
+    {
+        return System.Numerics.BitOperations.PopCount((uint)(_pos & 0b1001001)) > 0
+                         && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b10010010)) > 0
+                         && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b100100100)) > 0;
+    }
+
+    public IEnumerable<MiniGridPositions> EveryDiagonalPattern()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (!Peek(i, 0)) continue;
+            for (int j = 0; j < 3; j++)
+            {
+                if (j == i || !Peek(j, 1)) continue;
+                for (int k = 0; k < 3; k++)
+                {
+                    if (k == i || k == j || !Peek(k, 2)) continue;
+
+                    var mgp = new MiniGridPositions(_startRow / 3, _startCol / 3);
+                    mgp.Add(i, 0);
+                    mgp.Add(j, 1);
+                    mgp.Add(k, 2);
+
+                    yield return mgp;
+                }
+            }
+        }
+    }
     
     public override bool Equals(object? obj)
     {

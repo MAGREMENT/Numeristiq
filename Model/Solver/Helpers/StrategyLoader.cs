@@ -3,6 +3,10 @@ using Model.Solver.Strategies;
 using Model.Solver.Strategies.AlternatingInference;
 using Model.Solver.Strategies.AlternatingInference.Algorithms;
 using Model.Solver.Strategies.AlternatingInference.Types;
+using Model.Solver.Strategies.BlossomLoops;
+using Model.Solver.Strategies.BlossomLoops.BranchFinder;
+using Model.Solver.Strategies.BlossomLoops.LoopFinders;
+using Model.Solver.Strategies.BlossomLoops.Types;
 using Model.Solver.Strategies.FishGeneralization;
 using Model.Solver.Strategies.FishGeneralization.FishTypes;
 using Model.Solver.Strategies.ForcingNets;
@@ -97,7 +101,10 @@ public class StrategyLoader : IStrategyLoader
         {AlmostLockedCandidatesStrategy.OfficialNameForType2, new AlmostLockedCandidatesStrategy(2)},
         {AlmostLockedCandidatesStrategy.OfficialNameForType3, new AlmostLockedCandidatesStrategy(3)},
         {OddagonStrategy.OfficialName, new OddagonStrategy()},
-        {OddagonForcingNetStrategy.OfficialName, new OddagonForcingNetStrategy(3)}
+        {OddagonForcingNetStrategy.OfficialName, new OddagonForcingNetStrategy(3)},
+        {BlossomLoopStrategy.OfficialNameForCell, new BlossomLoopStrategy(new BLLoopFinderV1(), new BLBranchFinderV1(), new CellType())},
+        {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV1(), new BLBranchFinderV1(), new UnitType())},
+        {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy()}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();
