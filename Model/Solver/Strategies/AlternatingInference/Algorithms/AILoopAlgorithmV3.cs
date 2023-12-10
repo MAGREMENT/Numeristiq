@@ -19,12 +19,12 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
             var offColoring = ColorHelper.ColorFromStart<T, ColoringDictionary<T>>(
                 ColorHelper.Algorithm.ColorWithRules, graph, start, Coloring.Off, true);
 
-            foreach (var entry in offColoring)
+            foreach (var entry in onColoring)
             {
-                if (onColoring.TryGetColoredElement(entry.Key, out var coloring))
+                if (offColoring.TryGetColoredElement(entry.Key, out var coloring))
                 {
-                    var path1 = onColoring.History!.GetPathToRootWithGuessedLinks(entry.Key, coloring);
-                    var path2 = offColoring.History!.GetPathToRootWithGuessedLinks(entry.Key, entry.Value, false);
+                    var path1 = onColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, entry.Value, graph);
+                    var path2 = offColoring.History!.GetPathToRootWithGuessedLinksAndMonoCheck(entry.Key, coloring, graph);
                     if(path2.Count < 2 || path1.Count < 2 || path1.Count + path2.Count < 6) continue;
                     
                     var loop = path1.TryMakeLoop(path2);

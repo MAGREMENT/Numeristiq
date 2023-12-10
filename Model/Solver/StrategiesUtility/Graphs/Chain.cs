@@ -229,6 +229,8 @@ public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink 
 
 public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElement
 {
+    public bool IsMonoDirectional { get; init; } = false;
+    
     public LinkGraphChain(T[] elements, LinkStrength[] links) : base(elements, links)
     {
     }
@@ -251,11 +253,11 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
             ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
     }
 
-    public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path) //TODO Take into account mono-directionality
+    public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path)
     {
-        bool reverseSecondChain = true;
-        if (path.Elements[0].Equals(Elements[^1]) && path.Elements[^1].Equals(Elements[0])) reverseSecondChain = false;
-        else if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
+        if (IsMonoDirectional && path.IsMonoDirectional) return null;
+        
+        if (!path.Elements[0].Equals(Elements[0]) || !path.Elements[^1].Equals(Elements[^1])) return null;
         
         var total = Count + path.Count - 2;
         
@@ -266,24 +268,28 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
         var elements = new T[total];
         var links = new LinkStrength[total];
 
-        if (reverseSecondChain)
+        LinkGraphChain<T> first, second;
+        switch (IsMonoDirectional, path.IsMonoDirectional)
         {
-            Array.Copy(Elements, 0, elements, 0, Elements.Length - 1);
-            Array.Copy(path.Elements, 1, elements, Elements.Length - 1, path.Elements.Length - 1);
-            Array.Reverse(elements, Elements.Length - 1, path.Elements.Length - 1);
-            
-            Array.Copy(Links, 0, links, 0, Links.Length);
-            Array.Copy(path.Links, 0, links, Links.Length, path.Links.Length);
-            Array.Reverse(links, Links.Length, path.Links.Length);
+            case(false, false) :
+            case(true, false) :
+                first = this;
+                second = path;
+                break;
+            case (false, true) :
+                first = path;
+                second = this;
+                break;
+            default : return null;
         }
-        else
-        {
-            Array.Copy(Elements, 0, elements, 0, Elements.Length - 1);
-            Array.Copy(path.Elements, 0, elements, Elements.Length - 1, path.Elements.Length - 1);
+
+        Array.Copy(first.Elements, 0, elements, 0, first.Elements.Length - 1);
+        Array.Copy(second.Elements, 1, elements, first.Elements.Length - 1, second.Elements.Length - 1);
+        Array.Reverse(elements, first.Elements.Length - 1, second.Elements.Length - 1);
             
-            Array.Copy(Links, 0, links, 0, Links.Length);
-            Array.Copy(path.Links, 0, links, Links.Length, path.Links.Length);
-        }
+        Array.Copy(first.Links, 0, links, 0, first.Links.Length);
+        Array.Copy(second.Links, 0, links, first.Links.Length, second.Links.Length);
+        Array.Reverse(links, first.Links.Length, second.Links.Length);
 
         return new LinkGraphLoop<T>(elements, links);
     }
