@@ -14,7 +14,7 @@
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
             <MenuItem Header="File" FontSize="15">
                 <MenuItem FontSize="12"  Header="Settings" Click="ShowSettingsWindow"></MenuItem>
-                <MenuItem FontSize="12"  Header="Screenshot" Click="TakeScreenShot"></MenuItem>
+                <MenuItem FontSize="12"  Header="Screenshot" Click="TakeScreenShot" InputGestureText="CTRL+S"></MenuItem>
             </MenuItem>
             <MenuItem Header="Edit" FontSize="15">
                 <MenuItem FontSize="12" Header="Copy" Click="Copy" InputGestureText="CTRL+C"></MenuItem>

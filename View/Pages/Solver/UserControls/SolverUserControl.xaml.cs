@@ -208,15 +208,13 @@ public partial class SolverUserControl
         }
     }
 
-    public void TakeScreenShot(string path)
+    public void TakeScreenShot(Stream stream)
     {
         try
         {
             PngBitmapEncoder png = new PngBitmapEncoder();
             png.Frames.Add(_grid.AsImage());
-            
-            using Stream stm = File.Create(path + @"\screenshot.png");
-            png.Save(stm);
+            png.Save(stream);
         }
         catch (Exception)
         {

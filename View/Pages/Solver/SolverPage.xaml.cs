@@ -283,17 +283,28 @@ public partial class SolverPage : ISolverView
             case Key.V :
                 _presenter.PasteGrid(Clipboard.GetText());
                 break;
+            case Key.S :
+                TakeScreenShot(null, new RoutedEventArgs());
+                break;
         }
     }
 
     private void TakeScreenShot(object sender, RoutedEventArgs e)
     {
-        FolderBrowserDialog dialog = new FolderBrowserDialog();
+        SaveFileDialog dialog = new SaveFileDialog()
+        {
+            AddExtension = true,
+            DefaultExt = "png",
+            RestoreDirectory = true,
+            Filter = "PNG Image (*.png)|*.png"
+        };
         var result = dialog.ShowDialog();
 
-        if (result is DialogResult.Yes or DialogResult.OK)
+        if (result is DialogResult.OK)
         {
-            Solver.TakeScreenShot(dialog.SelectedPath);
+            var stream = dialog.OpenFile();
+            Solver.TakeScreenShot(stream);
+            stream.Close();
         }
     }
 }
