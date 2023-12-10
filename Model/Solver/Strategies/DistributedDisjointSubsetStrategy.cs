@@ -102,8 +102,20 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-                   new DistributedDisjointSubsetReportBuilder(possibilitiesCells)) &&
+                   new DistributedDisjointSubsetReportBuilder(PossibilitiesCellsDeepCopy(possibilitiesCells))) &&
                OnCommitBehavior == OnCommitBehavior.Return;
+    }
+
+    private Dictionary<int, List<Cell>> PossibilitiesCellsDeepCopy(Dictionary<int, List<Cell>> original)
+    {
+        var result = new Dictionary<int, List<Cell>>();
+
+        foreach (var entry in original)
+        {
+            result.Add(entry.Key, new List<Cell>(entry.Value));
+        }
+        
+        return result;
     }
 
     private bool ShareAUnitWithAll(IStrategyManager strategyManager, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
