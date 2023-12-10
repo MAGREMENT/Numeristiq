@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using Global;
 using Global.Enums;
@@ -9,6 +10,8 @@ using Presenter.Solver;
 using Presenter.Translators;
 using View.HelperWindows.Settings;
 using View.HelperWindows.StepChooser;
+using Clipboard = System.Windows.Clipboard;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace View.Pages.Solver;
 
@@ -280,6 +283,17 @@ public partial class SolverPage : ISolverView
             case Key.V :
                 _presenter.PasteGrid(Clipboard.GetText());
                 break;
+        }
+    }
+
+    private void TakeScreenShot(object sender, RoutedEventArgs e)
+    {
+        FolderBrowserDialog dialog = new FolderBrowserDialog();
+        var result = dialog.ShowDialog();
+
+        if (result is DialogResult.Yes or DialogResult.OK)
+        {
+            Solver.TakeScreenShot(dialog.SelectedPath);
         }
     }
 }

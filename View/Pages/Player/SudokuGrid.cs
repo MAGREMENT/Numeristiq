@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Global;
 using Global.Enums;
 using View.Utility;
@@ -339,6 +340,13 @@ public class SudokuGrid : FrameworkElement
                 }
                 break;
         }
+    }
+
+    public BitmapFrame AsImage()
+    {
+        RenderTargetBitmap rtb = new RenderTargetBitmap((int)_size, (int)_size, 96, 96, PixelFormats.Pbgra32);
+        rtb.Render(_visual[0]);
+        return BitmapFrame.Create(rtb);
     }
     
     //Private-----------------------------------------------------------------------------------------------------------

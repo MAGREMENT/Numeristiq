@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using Global;
 using Global.Enums;
 using View.Pages.Player;
@@ -202,6 +205,22 @@ public partial class SolverUserControl
             case Key.Back :
                 RemoveSolutionFromCurrentCellAsked?.Invoke();
                 break;
+        }
+    }
+
+    public void TakeScreenShot(string path)
+    {
+        try
+        {
+            PngBitmapEncoder png = new PngBitmapEncoder();
+            png.Frames.Add(_grid.AsImage());
+            
+            using Stream stm = File.Create(path + @"\screenshot.png");
+            png.Save(stm);
+        }
+        catch (Exception)
+        {
+            // ignored
         }
     }
 }
