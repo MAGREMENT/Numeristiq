@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Global;
 using Model.Solver.Possibility;
@@ -45,6 +46,20 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
         }
 
         return result;
+    }
+
+    public CellPossibility[] EveryCellPossibility()
+    {
+        List<CellPossibility> result = new();
+        foreach (var cp in NakedSet)
+        {
+            foreach (var p in cp.Possibilities)
+            {
+                result.Add(new CellPossibility(cp.Cell, p));
+            }
+        }
+
+        return result.ToArray();
     }
 
     public override bool Equals(object? obj)

@@ -115,4 +115,18 @@ public class PointingColumn : ILinkGraphElement
         result.Add(Possibility);
         return result;
     }
+
+    public CellPossibility[] EveryCellPossibility()
+    {
+        CellPossibility[] result = new CellPossibility[_pos.Count];
+        
+        int cursor = 0;
+        foreach (var row in _pos)
+        {
+            result[cursor] = new CellPossibility(row, Column, Possibility);
+            cursor++;
+        }
+
+        return result;
+    }
 }

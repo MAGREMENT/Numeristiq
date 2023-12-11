@@ -7,8 +7,9 @@ namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
-    public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
     {
+        var graph = type.GetGraph(strategyManager);
         HashSet<T> processed = new();
 
         foreach (var start in graph)

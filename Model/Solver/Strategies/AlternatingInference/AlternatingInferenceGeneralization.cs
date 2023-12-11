@@ -27,7 +27,7 @@ public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCo
 
     public override void Apply(IStrategyManager strategyManager)
     {
-        _algorithm.Run(strategyManager, _type.GetGraph(strategyManager), _type);
+        _algorithm.Run(strategyManager, _type);
     }
 
     public int Compare(ChangeCommit first, ChangeCommit second)
@@ -95,7 +95,7 @@ public interface IAlternatingInferenceType<T> where T : ILinkGraphElement
 public interface IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
 {
     AlgorithmType Type { get; }
-    void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type);
+    void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type);
 }
 
 public enum AlgorithmType

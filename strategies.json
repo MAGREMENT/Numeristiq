@@ -242,12 +242,6 @@
     "Args": {}
   },
   {
-    "Name": "Cell Blossom Loop",
-    "Used": false,
-    "Behavior": 0,
-    "Args": {}
-  },
-  {
     "Name": "Oddagon",
     "Used": false,
     "Behavior": 0,
@@ -298,6 +292,18 @@
   {
     "Name": "Multi-Sector Locked Sets",
     "Used": false,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
+    "Name": "Cell Blossom Loop",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
+    "Name": "Unit Blossom Loop",
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },

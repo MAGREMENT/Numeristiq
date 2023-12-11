@@ -2,5 +2,5 @@
 
 public enum LinkStrength
 {
-    None = 0, Strong = 1, Weak = 2
+    None = 0, Strong = 1, Weak = 2, Any = 3
 }

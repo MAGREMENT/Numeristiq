@@ -14,6 +14,16 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
         _parents.TryAdd(element, parent);
     }
 
+    public bool ContainsChild(T child)
+    {
+        return _parents.ContainsKey(child);
+    }
+
+    public void RemoveChild(T child)
+    {
+        _parents.Remove(child);
+    }
+
     public LinkGraphChain<T> GetPathToRootWithGuessedLinks(T from, Coloring coloring, bool reverse = true)
     {
         List<T> elements = new();
@@ -87,12 +97,12 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
 
         elements.Add(from);
         elements.Add(parent);
-        links.Add(graph.HasLinkTo(from, parent, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
+        links.Add(graph.HasLinkTo(parent, from, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
 
         while (_parents.TryGetValue(parent, out var next))
         {
             elements.Add(next);
-            links.Add(graph.HasLinkTo(parent, next, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
+            links.Add(graph.HasLinkTo(next, parent, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
             parent = next;
         }
 
@@ -106,6 +116,39 @@ public class ColoringHistory<T> : IReadOnlyColoringHistory<T> where T : ILinkGra
         }
 
         return new LinkGraphChain<T>(eArray, lArray);
+    }
+    
+    public LinkGraphChain<T> GetPathToRootWithRealLinksAndMonoCheck(T from, LinkGraph<T> graph)
+    {
+        List<T> elements = new();
+        List<LinkStrength> links = new();
+        bool isMono = false;
+        
+        if (!_parents.TryGetValue(from, out var parent)) return new LinkGraphChain<T>(from);
+
+        elements.Add(from);
+        elements.Add(parent);
+        links.Add(graph.HasLinkTo(parent, from, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
+        if (!graph.HasLinkTo(from, parent)) isMono = true;
+
+        while (_parents.TryGetValue(parent, out var next))
+        {
+            elements.Add(next);
+            links.Add(graph.HasLinkTo(next, parent, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak);
+            parent = next;
+            if (!graph.HasLinkTo(parent, next)) isMono = true;
+        }
+
+        var eArray = elements.ToArray();
+        var lArray = links.ToArray();
+
+        Array.Reverse(eArray);
+        Array.Reverse(lArray);
+
+        return new LinkGraphChain<T>(eArray, lArray)
+        {
+            IsMonoDirectional = isMono
+        };
     }
 
     public void ForeachLink(HandleChildToParentLink<T> handler)

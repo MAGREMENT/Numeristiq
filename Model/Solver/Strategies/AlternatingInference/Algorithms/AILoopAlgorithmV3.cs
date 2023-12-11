@@ -9,8 +9,10 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
 {
     public AlgorithmType Type => AlgorithmType.Loop;
     
-    public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
     {
+        var graph = type.GetGraph(strategyManager);
+        
         foreach (var start in graph)
         {
             if (start is not CellPossibility) continue;

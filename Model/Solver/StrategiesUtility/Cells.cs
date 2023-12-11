@@ -392,6 +392,11 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
         return result;
     }
 
+    public CellPossibility[] EveryCellPossibility()
+    {
+        return new[] { this };
+    }
+
     public Cell ToCell()
     {
         return new Cell(Row, Column);

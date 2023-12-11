@@ -16,8 +16,9 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
     {
+        var graph = type.GetGraph(strategyManager);
         _loopsProcessed.Clear();
         foreach (var start in graph)
         {

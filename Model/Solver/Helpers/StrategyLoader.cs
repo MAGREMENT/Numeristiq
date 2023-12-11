@@ -102,8 +102,8 @@ public class StrategyLoader : IStrategyLoader
         {AlmostLockedCandidatesStrategy.OfficialNameForType3, new AlmostLockedCandidatesStrategy(3)},
         {OddagonStrategy.OfficialName, new OddagonStrategy()},
         {OddagonForcingNetStrategy.OfficialName, new OddagonForcingNetStrategy(3)},
-        {BlossomLoopStrategy.OfficialNameForCell, new BlossomLoopStrategy(new BLLoopFinderV1(), new BLBranchFinderV1(), new CellType())},
-        {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV1(), new BLBranchFinderV1(), new UnitType())},
+        {BlossomLoopStrategy.OfficialNameForCell, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new CellType())},
+        {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new UnitType())},
         {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy()}
     };
 

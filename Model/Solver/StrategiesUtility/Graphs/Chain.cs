@@ -119,6 +119,20 @@ public class Loop<TElement, TLink> : Chain<TElement, TLink> where TElement : not
         handler(Elements[0], Elements[^1]);
     }
 
+    public bool Contains(TElement element)
+    {
+        var half = Elements.Length / 2;
+        for (int i = 0; i < half; i++)
+        {
+            if (Elements[i].Equals(element)) return true;
+            if (Elements[^(i + 1)].Equals(element)) return true;
+        }
+
+        if (Elements.Length % 2 == 1 && Elements[half + 1].Equals(element)) return true;
+        
+        return false;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not Loop<TElement, TLink> loop) return false;
@@ -239,15 +253,17 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
     {
     }
 
-    public LinkGraphChain<T> AddInFront(LinkStrength link, T element)
+    public LinkGraphChain<T> AddInFrontAndAtEnd(LinkStrength frontLink, T frontElement, LinkStrength endLink, T endElement)
     {
-        var eBuffer = new T[Elements.Length + 1];
-        var lBuffer = new LinkStrength[Links.Length + 1];
+        var eBuffer = new T[Elements.Length + 2];
+        var lBuffer = new LinkStrength[Links.Length + 2];
 
         Array.Copy(Elements, 0, eBuffer, 1, Elements.Length);
         Array.Copy(Links, 0, lBuffer, 1, Links.Length);
-        eBuffer[0] = element;
-        lBuffer[0] = link;
+        eBuffer[0] = frontElement;
+        lBuffer[0] = frontLink;
+        eBuffer[^1] = endElement;
+        lBuffer[^1] = endLink;
 
         return new LinkGraphChain<T>(eBuffer, lBuffer);
     }
@@ -325,6 +341,16 @@ public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ILinkGraphElemen
     
     public LinkGraphLoop(T[] elements, LinkStrength[] links, LinkStrength lastLink) : base(elements, links, lastLink)
     {
+    }
+
+    public int IndexOf(T element)
+    {
+        for (int i = 0; i < Elements.Length; i++)
+        {
+            if (Elements[i].Equals(element)) return i;
+        }
+
+        return -1;
     }
     
     public int MaxRank()
@@ -407,5 +433,12 @@ public class LinkGraphChainBuilder<T> : ChainBuilder<T, LinkStrength> where T : 
     public override LinkGraphLoop<T> ToLoop(LinkStrength lastLink)
     {
         return new LinkGraphLoop<T>(_elements.ToArray(), _links.ToArray(), lastLink);
+    }
+
+    public new LinkStrength LastLink()
+    {
+        if (_links.Count == 0) return LinkStrength.None;
+
+        return _links[^1];
     }
 }

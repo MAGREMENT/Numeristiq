@@ -30,6 +30,7 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
 
     public IEnumerable<T> GetLinks(T from, LinkStrength strength)
     {
+        if (strength == LinkStrength.Any) return GetLinks(from);
         return _links.TryGetValue(from, out var resume) ? resume[(int)strength - 1] : Enumerable.Empty<T>();
     }
 

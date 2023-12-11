@@ -24,7 +24,8 @@ public partial class FirstPage
     
     private void GoToPlayer(object sender, RoutedEventArgs e)
     {
-        _pageHandler.ShowPage(PagesName.Player);
+        return;
+        //_pageHandler.ShowPage(PagesName.Player);
     }
 
     public override void OnShow()

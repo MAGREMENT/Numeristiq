@@ -16,8 +16,10 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(IStrategyManager strategyManager, LinkGraph<T> graph, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
     {
+        var graph = type.GetGraph(strategyManager);
+        
         Dictionary<T, HashSet<T>> globallySearched = new();
         Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
