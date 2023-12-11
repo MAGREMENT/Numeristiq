@@ -100,14 +100,14 @@ public class SudokuGrid : FrameworkElement
     public void SetPossibility(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Verdaba"),  (double)_possibilitySize / 4 * 3, color, 1);
+            new Typeface("Arial"),  (double)_possibilitySize / 4 * 3, color, 1);
         _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize, _possibilitySize)));
     }
 
     public void SetSolution(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Verdaba"), (double)_cellSize / 4 * 3, color, 1);
+            new Typeface("Arial"), (double)_cellSize / 4 * 3, color, 1);
         _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize)));
     }
     

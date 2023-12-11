@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Global;
@@ -17,9 +18,12 @@ public class ThorsHammerStrategy : AbstractStrategy
     private static readonly int[] Numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+
+    private readonly IBoxLoopFinder _finder;
     
-    public ThorsHammerStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public ThorsHammerStrategy(IBoxLoopFinder finder) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
+        _finder = finder;
     }
 
     
@@ -67,7 +71,7 @@ public class ThorsHammerStrategy : AbstractStrategy
             }
         }
 
-        foreach (var loop in graph.FindLoops())
+        foreach (var loop in _finder.FindLoops(graph))
         {
             if (TryEveryPattern(strategyManager, possibilities, loop, boxCandidates,
                     new Dictionary<int, MiniGridPositions>(), 0)) return true;
@@ -203,7 +207,7 @@ public class ThorsHammerStrategy : AbstractStrategy
     }
 }
 
-public class BoxGraph
+public class BoxGraph : IEnumerable<int>
 {
     private readonly Dictionary<int, HashSet<int>> _links = new();
 
@@ -220,13 +224,113 @@ public class BoxGraph
         return _links.TryGetValue(n, out var r) ? r : Enumerable.Empty<int>();
     }
 
-    public HashSet<BoxLoop> FindLoops()
+    public bool Contains(int n)
+    {
+        return _links.ContainsKey(n);
+    }
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        return _links.Keys.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+
+public interface IBoxLoopFinder
+{
+    public IEnumerable<BoxLoop> FindLoops(BoxGraph graph);
+}
+
+public class TwoByTwoLoopFinder : IBoxLoopFinder
+{
+    public IEnumerable<BoxLoop> FindLoops(BoxGraph graph)
+    {
+        var a = SmallSquare(graph, 0);
+        if (a is not null) yield return a;
+        
+        a = SmallSquare(graph, 1);
+        if (a is not null) yield return a;
+        
+        a = SmallSquare(graph, 3);
+        if (a is not null) yield return a;
+        
+        a = SmallSquare(graph, 4);
+        if (a is not null) yield return a;
+        
+        a = BigSquare(graph);
+        if (a is not null) yield return a;
+        
+        a = RowRectangle(graph, 0);
+        if (a is not null) yield return a;
+        
+        a = RowRectangle(graph, 3);
+        if (a is not null) yield return a;
+        
+        a = ColumnRectangle(graph, 0);
+        if (a is not null) yield return a;
+        
+        a = ColumnRectangle(graph, 1);
+        if (a is not null) yield return a;
+    }
+
+    private BoxLoop? SmallSquare(BoxGraph graph, int start)
+    {
+        var array = new[]{ start, start + 1, start + 4, start + 3 };
+        foreach (var i in array)
+        {
+            if (!graph.Contains(i)) return null;
+        }
+
+        return new BoxLoop(array);
+    }
+
+    private BoxLoop? BigSquare(BoxGraph graph)
+    {
+        var array = new[]{ 0, 2, 8, 6 };
+        foreach (var i in array)
+        {
+            if (!graph.Contains(i)) return null;
+        }
+
+        return new BoxLoop(array);
+    }
+    
+    private BoxLoop? RowRectangle(BoxGraph graph, int start)
+    {
+        var array = new[]{ start, start + 2, start + 5, start + 3 };
+        foreach (var i in array)
+        {
+            if (!graph.Contains(i)) return null;
+        }
+
+        return new BoxLoop(array);
+    }
+    
+    private BoxLoop? ColumnRectangle(BoxGraph graph, int start)
+    {
+        var array = new[]{ start, start + 1, start + 7, start + 6 };
+        foreach (var i in array)
+        {
+            if (!graph.Contains(i)) return null;
+        }
+
+        return new BoxLoop(array);
+    }
+}
+
+public class FullBoxLoopFinder : IBoxLoopFinder
+{
+    public IEnumerable<BoxLoop> FindLoops(BoxGraph graph)
     {
         HashSet<BoxLoop> result = new();
 
         var occupiedRow = new int[3];
         var occupiedColumn = new int[3];
-        foreach (var start in _links.Keys)
+        foreach (var start in graph)
         {
             var r = start / 3;
             var c = start % 3;
@@ -234,7 +338,7 @@ public class BoxGraph
             occupiedRow[r] += 1;
             occupiedColumn[c] += 1;
             
-            FindLoops(result, new List<int> { start }, occupiedRow, occupiedColumn);
+            FindLoops(graph, result, new List<int> { start }, occupiedRow, occupiedColumn);
             
             occupiedRow[r] -= 1;
             occupiedColumn[c] -= 1;
@@ -242,12 +346,12 @@ public class BoxGraph
 
         return result;
     }
-
-    private void FindLoops(HashSet<BoxLoop> result, List<int> current, int[] occupiedRow, int[] occupiedCol)
+    
+    private void FindLoops(BoxGraph graph, HashSet<BoxLoop> result, List<int> current, int[] occupiedRow, int[] occupiedCol)
     {
         var last = current[^1];
 
-        foreach (var friend in GetLinks(last))
+        foreach (var friend in graph.GetLinks(last))
         {
             if (friend == current[0] && current.Count >= 4)
             {
@@ -265,7 +369,7 @@ public class BoxGraph
                 occupiedCol[c] += 1;
                 current.Add(friend);
                 
-                FindLoops(result, current, occupiedRow, occupiedCol);
+                FindLoops(graph, result, current, occupiedRow, occupiedCol);
 
                 occupiedRow[r] -= 1;
                 occupiedCol[c] -= 1;

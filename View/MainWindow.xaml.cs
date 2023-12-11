@@ -22,7 +22,7 @@ public partial class MainWindow : IPageHandler
         
         _pages = new HandledPage[]
         {
-            new FirstPage(this), new SolverPage(this, factory), new PlayerPage(), new StrategyManagerPage(this, factory)
+            new FirstPage(this), new SolverPage(this, factory), new PlayerPage(this, factory), new StrategyManagerPage(this, factory)
         };
 
         ShowPage(PagesName.First);
