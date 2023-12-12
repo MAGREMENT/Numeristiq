@@ -12,6 +12,6 @@
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
         </Menu>
         
-        <StackPanel Orientation="Horizontal" x:Name="Panel"/>
+        <StackPanel Orientation="Horizontal" x:Name="Panel" Margin="10"/>
     </StackPanel>
 </pages:HandledPage>

@@ -15,11 +15,10 @@ public class SolverPresenter : IStepChooserCallback
     private readonly ISolver _solver;
     private readonly ISolverView _view;
 
-    private bool _bound;
     private SolverState _shownState;
     private int _lastLogIndex = -1;
     private Cell? _currentlySelectedCell;
-    private int _currentlySelectedLog;
+    private int _currentlySelectedLog = -1;
     private bool _shouldUpdateSudokuTranslation = true;
     private bool _shouldUpdateLogs = true;
 
@@ -44,7 +43,7 @@ public class SolverPresenter : IStepChooserCallback
             _solver.AllowUniqueness(Settings.UniquenessAllowed);
             _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
         };
-        Settings.GivensNeedUpdate += () => ChangeShownState(_shownState);
+        Settings.RedrawNeeded += Redraw;
         
         _highlighterTranslator = new HighlighterTranslator(view, Settings);
         _solverActionEnabler = new SolverActionEnabler(view);
@@ -54,8 +53,6 @@ public class SolverPresenter : IStepChooserCallback
 
     public void Bind()
     {
-        _bound = true;
-        
         Settings.Bind();
 
         _solver.LogsUpdated += UpdateLogs;
@@ -235,8 +232,7 @@ public class SolverPresenter : IStepChooserCallback
     private void ChangeShownState(SolverState state)
     {
         _shownState = state;
-        if (!_bound) return;
-        
+       
         _view.ClearNumbers();
         for (int row = 0; row < 9; row++)
         {
@@ -252,10 +248,26 @@ public class SolverPresenter : IStepChooserCallback
         if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.TranslateToLine(state, Settings.TranslationType));
     }
 
+    private void Redraw()
+    {
+        _view.ClearNumbers();
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var current = _shownState.At(row, col);
+                if (current.IsPossibilities) _view.ShowPossibilities(row, col, current.AsPossibilities.ToArray(), GetCellColor(row, col));
+                else _view.ShowSolution(row, col, current.AsNumber, GetCellColor(row, col));
+            }
+        }
+        
+        if (_currentlySelectedLog != -1) HighlightLog(_solver.Logs[_currentlySelectedLog]);
+        else _view.Refresh();
+    }
+
     private void NewSudoku(Sudoku sudoku)
     {
         _solver.SetSudoku(sudoku);
-        if (!_bound) return;
         
         ClearLogs();
         ClearLogFocus();
@@ -312,6 +324,7 @@ public class SolverPresenter : IStepChooserCallback
 
     private void ClearLogFocus()
     {
+        _currentlySelectedLog = -1;
         _view.UnFocusLog();
         _view.ShowExplanation("");
     }

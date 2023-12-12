@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Global;
 using Global.Enums;
 using View.Utility;
 using Brushes = System.Windows.Media.Brushes;
+using FlowDirection = System.Windows.FlowDirection;
 
 namespace View.Pages.Player;
 
@@ -16,7 +18,7 @@ public class SudokuGrid : FrameworkElement
 {
     private static readonly Brush StrongLinkBrush = Brushes.Indigo;
     private const double LinkOffset = 20;
-    private const double CursorWidth = 2;
+    private const double CursorWidth = 3;
     
     private readonly int _possibilitySize;
     private readonly int _cellSize;
@@ -30,14 +32,18 @@ public class SudokuGrid : FrameworkElement
     private readonly RectAndBrush _backGround;
     
     private readonly List<RectAndBrush> _numbersHighlight = new();
-    private RectAndPen? _cursor;
+    private readonly List<LineAndPen> _cursor = new();
     private readonly List<RectAndBrush> _smallMargins = new();
     private readonly List<RectAndBrush> _bigMargins = new();
     private readonly List<TextAndRect> _numbers = new();
     private readonly List<RectAndPen> _encircles = new();
     private readonly List<LineAndPen> _highlightLines = new();
 
+    private bool _isSelecting = false;
+    private bool _overrideSelection = true;
+
     public event OnCellSelection? CellSelected;
+    public event OnCellSelection? CellAddedToSelection;
 
     public SudokuGrid(int possibilitySize, int smallLineWidth, int bigLineWidth)
     {
@@ -62,10 +68,29 @@ public class SudokuGrid : FrameworkElement
         {
             Focus();
             var cell = ComputeSelectedCell(args.GetPosition(this));
-            if (cell is not null) CellSelected?.Invoke(cell[0], cell[1]);
+            if (cell is not null)
+            {
+                if(_overrideSelection) CellSelected?.Invoke(cell[0], cell[1]);
+                else CellAddedToSelection?.Invoke(cell[0], cell[1]);
+            }
+
+            _isSelecting = true;
         };
+
+        MouseLeftButtonUp += (_, _) => _isSelecting = false;
+
+        MouseMove += (_, args) =>
+        {
+            if (!_isSelecting) return;
+            
+            var cell = ComputeSelectedCell(args.GetPosition(this));
+            if(cell is not null) CellAddedToSelection?.Invoke(cell[0], cell[1]);
+        };
+
+        KeyDown += AnalyseKeyDown;
+        KeyUp += AnalyseKeyUp;
     }
-    
+
     // Provide a required override for the VisualChildrenCount property.
     protected override int VisualChildrenCount => _visual.Count;
 
@@ -94,7 +119,7 @@ public class SudokuGrid : FrameworkElement
 
     public void ClearCursor()
     {
-        _cursor = null;
+        _cursor.Clear();
     }
     
     public void SetPossibility(int row, int col, int possibility, Brush color)
@@ -123,7 +148,10 @@ public class SudokuGrid : FrameworkElement
             context.DrawRectangle(rect.Brush, null, rect.Rect);
         }
 
-        if (_cursor is not null) context.DrawRectangle(null, _cursor.Pen, _cursor.Rect);
+        foreach (var line in _cursor)
+        {
+            context.DrawLine(line.Pen, line.From, line.To);
+        }
         
         foreach (var rect in _smallMargins)
         {
@@ -186,9 +214,44 @@ public class SudokuGrid : FrameworkElement
 
     public void PutCursorOn(int row, int col)
     {
+        ClearCursor();
+        
         var delta = CursorWidth / 2;
-        _cursor = new RectAndPen(new Rect(GetLeft(col) + delta, GetTop(row) + delta,
-            _cellSize - CursorWidth, _cellSize - CursorWidth), new Pen(ColorManager.Purple, CursorWidth));
+        var left = GetLeft(col);
+        var top = GetTop(row);
+        var pen = new Pen(ColorManager.Purple, CursorWidth);
+
+        _cursor.Add(new LineAndPen(new Point(left + delta, top), new Point(left + delta,
+            top + _cellSize), pen));
+        _cursor.Add(new LineAndPen(new Point(left, top + delta), new Point(left + _cellSize,
+            top + delta), pen));
+        _cursor.Add(new LineAndPen(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
+            top + _cellSize), pen));
+        _cursor.Add(new LineAndPen(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
+            top + _cellSize - delta), pen));
+    }
+
+    public void PutCursorOn(HashSet<Cell> cells)
+    {
+        ClearCursor();
+        
+        var delta = CursorWidth / 2;
+        var pen = new Pen(ColorManager.Purple, CursorWidth);
+
+        foreach (var cell in cells)
+        {
+            var left = GetLeft(cell.Column);
+            var top = GetTop(cell.Row);
+
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) _cursor.Add(new LineAndPen(
+                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) _cursor.Add(new LineAndPen(
+                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) _cursor.Add(new LineAndPen(
+                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) _cursor.Add(new LineAndPen(
+                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen)); 
+        }
     }
     
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
@@ -483,10 +546,21 @@ public class SudokuGrid : FrameworkElement
 
         return row == -1 || col == -1 ? null : new[] { row, col };
     }
+
+    private void AnalyseKeyDown(object sender, KeyEventArgs args)
+    {
+        if (args.Key == Key.LeftCtrl) _overrideSelection = false;
+    }
+    
+    private void AnalyseKeyUp(object sender, KeyEventArgs args)
+    {
+        if (args.Key == Key.LeftCtrl) _overrideSelection = true;
+    }
 }   
 
 public record RectAndBrush(Rect Rect, Brush Brush);
 public record RectAndPen(Rect Rect, Pen Pen);
 public record LineAndPen(Point From, Point To, Pen Pen);
 public record TextAndRect(FormattedText Text, Rect Rect);
+
 public delegate void OnCellSelection(int row, int col);

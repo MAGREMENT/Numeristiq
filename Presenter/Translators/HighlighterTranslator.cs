@@ -116,12 +116,17 @@ public class HighlighterTranslator : IHighlightable
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
+        if (!_settings.ShowSameCellLinks && from.ToCell() == to.ToCell()) return;
+        
         _drawer.CreateLink(from.Row, from.Column, from.Possibility, to.Row, to.Column,
             to.Possibility, linkStrength, _settings.SidePriority);
     }
 
     public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
     {
+        if (!_settings.ShowSameCellLinks && from is CellPossibility cp1 && to is CellPossibility cp2
+            && cp1.ToCell() == cp2.ToCell()) return;
+        
         if ((from is AlmostNakedSet ansFrom && to is CellPossibility cpTo && ansFrom.OddOne == cpTo) ||
             (from is CellPossibility cpFrom && to is AlmostNakedSet ansTo && ansTo.OddOne == cpFrom)) return;
         

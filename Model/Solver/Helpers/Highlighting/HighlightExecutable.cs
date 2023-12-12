@@ -148,6 +148,8 @@ public class HighlightCompiler : IHighlightable
     private readonly List<HighlightInstruction> _instructions = new();
     private readonly List<ILinkGraphElement> _registers = new();
 
+    public bool Enabled { get; set; } = true;
+
     private static HighlightCompiler? _instance;
 
     public static HighlightCompiler GetInstance()
@@ -160,6 +162,8 @@ public class HighlightCompiler : IHighlightable
     
     public IHighlighter Compile(Highlight d)
     {
+        if (!Enabled) return new DelegateHighlighter(d);
+        
         d(this);
         var result = new HighlightExecutable(_instructions.ToArray(), _registers.ToArray());
         

@@ -69,7 +69,9 @@ public partial class SolverSettingsWindow
                     i => settings.SolvingColor = (CellColor)i),
                 new ComboBoxOptionCanvas("Link offset side priority", "Defines which side of a link is prioritized when offsetting its center",
                     (int)settings.SidePriority, i => settings.SidePriority = (LinkOffsetSidePriority)i, 
-                    "Any", "Left", "Right")),
+                    "Any", "Left", "Right"),
+                new CheckBoxOptionCanvas("Show same cell links", "Definies if the link between 2 possibilities in the same cell should be shown",
+                    settings.ShowSameCellLinks, b => settings.ShowSameCellLinks = b)),
             new("Solver",
                 new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", settings.UniquenessAllowed,
                     b => settings.UniquenessAllowed = b))

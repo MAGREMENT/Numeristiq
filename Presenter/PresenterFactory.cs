@@ -1,6 +1,7 @@
 ﻿using Model;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
+using Presenter.Player;
 using Presenter.Solver;
 using Presenter.StepChooser;
 using Presenter.StrategyManager;
@@ -40,6 +41,11 @@ public class PresenterFactory
     public StrategyManagerPresenter Create(IStrategyManagerView view)
     {
         return new StrategyManagerPresenter(_solver.StrategyLoader, view);
+    }
+
+    public PlayerPresenter Create(IPlayerView view)
+    {
+        return new PlayerPresenter(view);
     }
 }
 

@@ -5,7 +5,6 @@ namespace Presenter.Solver;
 
 public class SolverSettings
 {
-    private bool _stepByStep = true;
     private StateShown _showState = StateShown.Before;
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
     private int _delayBeforeTransition = 350;
@@ -16,12 +15,13 @@ public class SolverSettings
     private CellColor _givenColor = CellColor.Black;
     private CellColor _solvingColor = CellColor.Black;
     private LinkOffsetSidePriority _sidePriority = LinkOffsetSidePriority.Right;
+    private bool _showSameCellLinks = false;
 
     public event OnSettingChange? AnySettingChanged;
     public event OnSettingChange? ShownStateChanged;
     public event OnSettingChange? TranslationTypeChanged;
     public event OnSettingChange? UniquenessAllowedChanged;
-    public event OnSettingChange? GivensNeedUpdate;
+    public event OnSettingChange? RedrawNeeded;
 
     public StateShown StateShown
     {
@@ -95,7 +95,7 @@ public class SolverSettings
         set
         {
             _givenColor = value;
-            GivensNeedUpdate?.Invoke();
+            RedrawNeeded?.Invoke();
             AnySettingChanged?.Invoke();
         }
     }
@@ -105,7 +105,7 @@ public class SolverSettings
         set
         {
             _solvingColor = value;
-            GivensNeedUpdate?.Invoke();
+            RedrawNeeded?.Invoke();
             AnySettingChanged?.Invoke();
         }
     }
@@ -115,8 +115,19 @@ public class SolverSettings
         set
         {
             _sidePriority = value;
+            RedrawNeeded?.Invoke();
             AnySettingChanged?.Invoke();
         } 
+    }
+    public bool ShowSameCellLinks
+    {
+        get => _showSameCellLinks;
+        set
+        {
+            _showSameCellLinks = value;
+            RedrawNeeded?.Invoke();
+            AnySettingChanged?.Invoke();
+        }
     }
 
     
@@ -155,6 +166,7 @@ public class SolverSettings
         GivenColor = DAO.GivenColor;
         SolvingColor = DAO.SolvingColor;
         SidePriority = DAO.SidePriority;
+        ShowSameCellLinks = DAO.ShowSameCellLinks;
     }
 
     private SettingsDAO ToDAO()
@@ -162,7 +174,7 @@ public class SolverSettings
         return new SettingsDAO(StateShown, TranslationType,
             DelayBeforeTransition, DelayAfterTransition, UniquenessAllowed,
             ActionOnCellChange, TransformSoloPossibilityIntoGiven,
-            GivenColor, SolvingColor, SidePriority);
+            GivenColor, SolvingColor, SidePriority, ShowSameCellLinks);
     }
 }
 

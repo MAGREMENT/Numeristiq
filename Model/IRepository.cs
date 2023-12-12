@@ -27,4 +27,4 @@ public record StrategyDAO(string Name, bool Used, OnCommitBehavior Behavior, Dic
 public record SettingsDAO(StateShown StateShown, SudokuTranslationType TranslationType,
     int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ChangeType ActionOnCellChange,
     bool TransformSoloPossibilityIntoGiven, CellColor GivenColor, CellColor SolvingColor,
-    LinkOffsetSidePriority SidePriority);
+    LinkOffsetSidePriority SidePriority, bool ShowSameCellLinks);

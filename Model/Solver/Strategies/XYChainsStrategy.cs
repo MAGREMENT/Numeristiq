@@ -2,7 +2,6 @@
 using System.Linq;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Graphs;
 

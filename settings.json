@@ -8,5 +8,6 @@
   "TransformSoloPossibilityIntoGiven": true,
   "GivenColor": 3,
   "SolvingColor": 0,
-  "SidePriority": 2
+  "SidePriority": 1,
+  "ShowSameCellLinks": false
 }
