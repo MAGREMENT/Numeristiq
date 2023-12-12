@@ -10,5 +10,5 @@
         Top="10"
         Left="10"
         Title="SudokuSolver">
-    <Frame x:Name="Main" NavigationUIVisibility="Hidden" />
+    <Frame x:Name="Main" NavigationUIVisibility="Hidden"/>
 </Window>

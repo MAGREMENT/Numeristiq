@@ -62,7 +62,12 @@ public struct PlayerCell
         UnSet(delta);
     }
 
-
+    public bool PeekPossibility(int possibility, PossibilitiesLocation location)
+    {
+        var delta = possibility - 1 + (int)location;
+        return Peek(_bits, delta);
+    }
+    
     private static bool Peek(int bits, int n)
     {
         return ((bits >> n) & 1) > 0;

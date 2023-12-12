@@ -146,6 +146,12 @@ public partial class PlayerPage : IPlayerView
         _currentLocationMode = muc;
     }
 
+    public void SetMoveAvailability(bool canMoveBack, bool canMoveForward)
+    {
+        LeftArrow.IsEnabled = canMoveBack;
+        RightArrow.IsEnabled = canMoveForward;
+    }
+
     private void AnalyzeKeyDown(object? sender, KeyEventArgs args)
     {
         switch (args.Key)
@@ -191,5 +197,15 @@ public partial class PlayerPage : IPlayerView
         if (i == -1) return null;
         i = (i + 1) % collection.Count;
         return (ModeUserControl)collection[i];
+    }
+
+    private void MoveBack(object sender, RoutedEventArgs e)
+    {
+        _presenter.MoveBack();
+    }
+
+    private void MoveForward(object sender, RoutedEventArgs e)
+    {
+        _presenter.MoveForward();
     }
 }

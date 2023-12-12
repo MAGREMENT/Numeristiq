@@ -33,7 +33,8 @@ public class SudokuGrid : FrameworkElement
     private readonly RectAndBrush _backGround;
     
     private readonly List<RectAndBrush> _numbersHighlight = new();
-    private readonly List<LineAndPen> _cursor = new();
+    private readonly List<LineAndPen> _cursorLines = new();
+    private readonly List<RectAndBrush> _cursorRects = new();
     private readonly List<RectAndBrush> _smallMargins = new();
     private readonly List<RectAndBrush> _bigMargins = new();
     private readonly List<TextAndRect> _numbers = new();
@@ -120,7 +121,8 @@ public class SudokuGrid : FrameworkElement
 
     public void ClearCursor()
     {
-        _cursor.Clear();
+        _cursorLines.Clear();
+        _cursorRects.Clear();
     }
     
     public void ShowGridPossibility(int row, int col, int possibility, Brush color)
@@ -177,9 +179,14 @@ public class SudokuGrid : FrameworkElement
             context.DrawRectangle(rect.Brush, null, rect.Rect);
         }
 
-        foreach (var line in _cursor)
+        foreach (var line in _cursorLines)
         {
             context.DrawLine(line.Pen, line.From, line.To);
+        }
+        
+        foreach (var rect in _cursorRects)
+        {
+            context.DrawRectangle(rect.Brush, null, rect.Rect);
         }
         
         foreach (var rect in _smallMargins)
@@ -247,13 +254,13 @@ public class SudokuGrid : FrameworkElement
         var top = GetTop(row);
         var pen = new Pen(ColorManager.Purple, CursorWidth);
 
-        _cursor.Add(new LineAndPen(new Point(left + delta, top), new Point(left + delta,
+        _cursorLines.Add(new LineAndPen(new Point(left + delta, top), new Point(left + delta,
             top + _cellSize), pen));
-        _cursor.Add(new LineAndPen(new Point(left, top + delta), new Point(left + _cellSize,
+        _cursorLines.Add(new LineAndPen(new Point(left, top + delta), new Point(left + _cellSize,
             top + delta), pen));
-        _cursor.Add(new LineAndPen(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
+        _cursorLines.Add(new LineAndPen(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
             top + _cellSize), pen));
-        _cursor.Add(new LineAndPen(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
+        _cursorLines.Add(new LineAndPen(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
             top + _cellSize - delta), pen));
     }
 
@@ -269,14 +276,37 @@ public class SudokuGrid : FrameworkElement
             var left = GetLeft(cell.Column);
             var top = GetTop(cell.Row);
 
-            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) _cursor.Add(new LineAndPen(
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) _cursorLines.Add(new LineAndPen(
                 new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
-            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) _cursor.Add(new LineAndPen(
+            
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) _cursorLines.Add(new LineAndPen(
                 new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
-            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) _cursor.Add(new LineAndPen(
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column - 1))) _cursorRects.Add(new RectAndBrush(
+                    new Rect(left, top, CursorWidth, CursorWidth), ColorManager.Purple));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column + 1))) _cursorRects.Add(new RectAndBrush(
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), ColorManager.Purple));
+            }
+            
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) _cursorLines.Add(new LineAndPen(
                 new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
-            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) _cursor.Add(new LineAndPen(
-                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen)); 
+            
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) _cursorLines.Add(new LineAndPen(
+                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column - 1))) _cursorRects.Add(new RectAndBrush(
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), ColorManager.Purple));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column + 1))) _cursorRects.Add(new RectAndBrush(
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), ColorManager.Purple));
+            }
         }
     }
     

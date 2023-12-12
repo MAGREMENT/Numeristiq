@@ -26,6 +26,7 @@ public class PlayerPresenter
         _view.SetLocationMode(_locationMode);
 
         _player.Changed += UpdateNumbers;
+        _player.MoveAvailabilityChanged += _view.SetMoveAvailability;
     }
 
     public void RestartSelection(int rowFrom, int colFrom)
@@ -82,6 +83,16 @@ public class PlayerPresenter
                 else _player.RemovePossibility(n, Translate(_locationMode), _selected);
                 break;
         }
+    }
+
+    public void MoveBack()
+    {
+        _player.MoveBack();
+    }
+
+    public void MoveForward()
+    {
+        _player.MoveForward();
     }
     
     //Private-----------------------------------------------------------------------------------------------------------
