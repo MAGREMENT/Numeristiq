@@ -3,15 +3,23 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:View.Pages.Player"
       xmlns:pages="clr-namespace:View.Pages"
       mc:Ignorable="d"
       Title="PlayerPage">
-    <StackPanel Orientation="Vertical">
+    <WrapPanel Orientation="Vertical">
         <Menu Height="25">
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
         </Menu>
         
-        <StackPanel Orientation="Horizontal" x:Name="Panel" Margin="10"/>
-    </StackPanel>
+        <WrapPanel Orientation="Horizontal" x:Name="Panel">
+            <WrapPanel Orientation="Vertical">
+                <WrapPanel Orientation="Horizontal" Margin="10">
+                    <StackPanel x:Name="LocationModes"  Margin="0, 0, 10, 0"/>
+                    <StackPanel x:Name="ChangeModes"/>
+                </WrapPanel>
+                
+                
+            </WrapPanel>
+        </WrapPanel>
+    </WrapPanel>
 </pages:HandledPage>

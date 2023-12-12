@@ -145,15 +145,21 @@ public class SudokuGrid : FrameworkElement
         var builder = new StringBuilder();
         foreach (var p in possibilities) builder.Append(p);
         var text = new FormattedText(builder.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"), (double)_possibilitySize / 4 * 3, color, 1);
+            new Typeface("Arial"), (double)_possibilitySize / 4 * 2, color, 1);
         var ha = location switch
         {
-            PossibilitiesLocation.Bottom => TextHorizontalAlignment.Left,
+            PossibilitiesLocation.Bottom => TextHorizontalAlignment.Right,
             PossibilitiesLocation.Middle => TextHorizontalAlignment.Center,
-            PossibilitiesLocation.Top => TextHorizontalAlignment.Right,
+            PossibilitiesLocation.Top => TextHorizontalAlignment.Left,
             _ => TextHorizontalAlignment.Center
         };
-        var n = (int)location * 3;
+        var n = location switch
+        {
+            PossibilitiesLocation.Bottom => 7,
+            PossibilitiesLocation.Middle => 4,
+            PossibilitiesLocation.Top => 1,
+            _ => 3
+        };
 
         _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row, n), _cellSize,
             _possibilitySize), TextVerticalAlignment.Center, ha));
@@ -188,10 +194,7 @@ public class SudokuGrid : FrameworkElement
 
         foreach (var text in _numbers)
         {
-            var deltaX = (text.Rect.Width - text.Text.Width) / 2;
-            var deltaY = (text.Rect.Height - text.Text.Height) / 2;
-            
-            context.DrawText(text.Text, new Point(text.Rect.X + deltaX, text.Rect.Y + deltaY));
+            DrawTextAndRect(context, text);
         }
 
         foreach (var rect in _encircles)

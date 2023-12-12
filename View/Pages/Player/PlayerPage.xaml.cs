@@ -1,18 +1,31 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Global;
 using Global.Enums;
 using Presenter;
 using Presenter.Player;
+using View.Pages.Player.UserControls;
 
 namespace View.Pages.Player;
 
 public partial class PlayerPage : IPlayerView
 {
+    private const double ModeWidth = 100;
+    
     private readonly IPageHandler _pageHandler;
     private readonly PlayerPresenter _presenter;
     private readonly SudokuGrid _grid;
+
+    private ModeUserControl? _currentChangeMode;
+    private ModeUserControl? _currentLocationMode;
+    private Key _changeModeUp = Key.Z;
+    private Key _changeModeDown = Key.S;
+    private Key _locationModeUp = Key.A;
+    private Key _locationModeDown = Key.Q;
     
     public PlayerPage(IPageHandler handler, PresenterFactory factory)
     {
@@ -21,16 +34,23 @@ public partial class PlayerPage : IPlayerView
         _presenter = factory.Create(this);
         _pageHandler = handler;
 
-        _grid = new SudokuGrid(24, 1, 3);
-        Panel.Children.Add(_grid);
+        _grid = new SudokuGrid(24, 1, 3)
+        {
+            Margin = new Thickness(10)
+        };
+        Panel.Children.Insert(0, _grid);
 
         _grid.CellSelected += (row, col) => _presenter.RestartSelection(row, col);
         _grid.CellAddedToSelection += _presenter.AddToSelection;
+        _grid.KeyDown += AnalyzeKeyDown;
+        
+        InitModes();
+        _presenter.Bind();
     }
 
     public override void OnShow()
     {
-        
+        _grid.Focus();
     }
 
     public override void OnQuit()
@@ -71,5 +91,105 @@ public partial class PlayerPage : IPlayerView
     public void Refresh()
     {
         _grid.Refresh();
+    }
+
+    private void InitModes()
+    {
+        foreach (var m in Enum.GetValues<LocationMode>())
+        {
+            var muc = new ModeUserControl(m.ToString(), ModeWidth)
+            {
+                Margin = new Thickness(0, 0, 0, 5)
+            };
+            muc.Selected += selection =>
+            {
+                if(_currentLocationMode is not null) _currentLocationMode.ShowUnSelection();
+                selection.ShowSelection();
+                _currentLocationMode = selection;
+                _presenter.SetLocationMode(m);
+            };
+
+            LocationModes.Children.Add(muc);
+        }
+        
+        foreach (var m in Enum.GetValues<ChangeMode>())
+        {
+            var muc = new ModeUserControl(m.ToString(), ModeWidth)
+            {
+                Margin = new Thickness(0, 0, 0, 5)
+            };
+            muc.Selected += selection =>
+            {
+                if(_currentChangeMode is not null) _currentChangeMode.ShowUnSelection();
+                selection.ShowSelection();
+                _currentChangeMode = selection;
+                _presenter.SetChangeMode(m);
+            };
+            
+            ChangeModes.Children.Add(muc);
+        }
+    }
+
+    public void SetChangeMode(ChangeMode mode)
+    {
+        var muc = (ModeUserControl)ChangeModes.Children[(int)mode];
+        if(_currentChangeMode is not null) _currentChangeMode.ShowUnSelection();
+        muc.ShowSelection();
+        _currentChangeMode = muc;
+    }
+
+    public void SetLocationMode(LocationMode mode)
+    {
+        var muc = (ModeUserControl)LocationModes.Children[(int)mode];
+        if(_currentLocationMode is not null) _currentLocationMode.ShowUnSelection();
+        muc.ShowSelection();
+        _currentLocationMode = muc;
+    }
+
+    private void AnalyzeKeyDown(object? sender, KeyEventArgs args)
+    {
+        switch (args.Key)
+        {
+            case Key.NumPad1 : _presenter.ApplyChange(1);
+                break;
+            case Key.NumPad2 : _presenter.ApplyChange(2);
+                break;
+            case Key.NumPad3 : _presenter.ApplyChange(3);
+                break;
+            case Key.NumPad4 : _presenter.ApplyChange(4);
+                break;
+            case Key.NumPad5 : _presenter.ApplyChange(5);
+                break;
+            case Key.NumPad6 : _presenter.ApplyChange(6);
+                break;
+            case Key.NumPad7 : _presenter.ApplyChange(7);
+                break;
+            case Key.NumPad8 : _presenter.ApplyChange(8);
+                break;
+            case Key.NumPad9 : _presenter.ApplyChange(9);
+                break;
+            default:
+                if (args.Key == _locationModeUp) MoveUp(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
+                else if (args.Key == _locationModeDown) MoveDown(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
+                else if (args.Key == _changeModeUp) MoveUp(ChangeModes.Children, _currentChangeMode)?.InvokeSelection();
+                else if (args.Key == _changeModeDown) MoveDown(ChangeModes.Children, _currentChangeMode)?.InvokeSelection();
+                break;
+        }
+    }
+    
+    private ModeUserControl? MoveUp(UIElementCollection collection, ModeUserControl? muc)
+    {
+        var i = collection.IndexOf(muc);
+        if (i == -1) return null;
+        i = i - 1 < 0 ? collection.Count - 1 : i - 1;
+        return (ModeUserControl)collection[i];
+    }
+    
+    private ModeUserControl? MoveDown(UIElementCollection collection, ModeUserControl? muc)
+    {
+        var i = collection.IndexOf(muc);
+        if (i == -1) return null;
+        i = (i + 1) % collection.Count;
+        return (ModeUserControl)collection[i];
     }
 }
