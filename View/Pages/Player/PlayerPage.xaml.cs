@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 using Global;
+using Global.Enums;
 using Presenter;
 using Presenter.Player;
 
@@ -39,6 +41,21 @@ public partial class PlayerPage : IPlayerView
     private void GoBack(object sender, RoutedEventArgs e)
     {
         _pageHandler.ShowPage(PagesName.First);
+    }
+
+    public void ShowPossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location)
+    {
+        _grid.ShowLinePossibilities(row, col, possibilities, location, Brushes.Black);
+    }
+
+    public void ShowNumber(int row, int col, int number)
+    {
+        _grid.ShowSolution(row, col, number, Brushes.Black);
+    }
+
+    public void ClearNumbers()
+    {
+        _grid.ClearNumbers();
     }
 
     public void PutCursorOn(HashSet<Cell> cells)

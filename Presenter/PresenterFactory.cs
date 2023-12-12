@@ -1,4 +1,5 @@
 ﻿using Model;
+using Model.Player;
 using Model.Solver;
 using Model.Solver.Helpers.Changes;
 using Presenter.Player;
@@ -12,6 +13,7 @@ namespace Presenter;
 public class PresenterFactory
 {
     private readonly ISolver _solver;
+    private readonly IPlayer _player;
 
     public PresenterFactory()
     {
@@ -24,13 +26,14 @@ public class PresenterFactory
         {
             repository.New(new List<StrategyDAO>());
         }
-        
-        
+
         _solver = new SudokuSolver(repository)
         {
             StatisticsTracked = false,
             LogsManaged = true
         };
+
+        _player = new SudokuPlayer();
     }
 
     public SolverPresenter Create(ISolverView view)
@@ -45,7 +48,7 @@ public class PresenterFactory
 
     public PlayerPresenter Create(IPlayerView view)
     {
-        return new PlayerPresenter(view);
+        return new PlayerPresenter(_player, view);
     }
 }
 

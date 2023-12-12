@@ -2,9 +2,7 @@
 
 namespace Presenter.Player;
 
-public interface IPlayerView
+public interface IPlayerView : IPlayerDrawer
 {
-    void PutCursorOn(HashSet<Cell> cells);
-    void ClearCursor();
-    void Refresh();
+    
 }

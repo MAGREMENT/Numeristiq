@@ -1,9 +1,9 @@
 ﻿using Global;
 using Global.Enums;
 
-namespace Presenter.Translators;
+namespace Presenter.Solver;
 
-public interface ISudokuDrawer
+public interface ISolverDrawer
 {
     void PutCursorOn(Cell cell);
     void ClearCursor();

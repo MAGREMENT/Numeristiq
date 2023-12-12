@@ -1,15 +1,19 @@
 ﻿using Global;
+using Model;
 
 namespace Presenter.Player;
 
 public class PlayerPresenter
 {
     private readonly IPlayerView _view;
-    private HashSet<Cell> _selected = new();
+    private readonly IPlayer _player;
+    
+    private readonly HashSet<Cell> _selected = new();
 
-    public PlayerPresenter(IPlayerView view)
+    public PlayerPresenter(IPlayer player, IPlayerView view)
     {
         _view = view;
+        _player = player;
     }
 
     public void RestartSelection(int rowFrom, int colFrom)

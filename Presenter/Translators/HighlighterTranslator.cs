@@ -2,7 +2,6 @@
 using Global.Enums;
 using Model;
 using Model.Solver.Helpers.Highlighting;
-using Model.Solver.Position;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Solver.StrategiesUtility.Graphs;
@@ -12,18 +11,18 @@ namespace Presenter.Translators;
 
 public class HighlighterTranslator : IHighlightable
 {
-    private readonly ISudokuDrawer _drawer;
+    private readonly ISolverDrawer _drawer;
     private readonly SolverSettings _settings;
 
-    public HighlighterTranslator(ISudokuDrawer drawer, SolverSettings settings)
+    public HighlighterTranslator(ISolverDrawer drawer, SolverSettings settings)
     {
         _drawer = drawer;
         _settings = settings;
     }
 
-    public void Translate(HighlightManager manager)
+    public void Translate(IHighlighter lighter)
     {
-        manager.Highlight(this);
+        lighter.Highlight(this);
     }
 
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration)

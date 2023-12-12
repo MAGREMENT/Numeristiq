@@ -104,14 +104,14 @@ public partial class SolverUserControl
 
     public void SetCellTo(int row, int col, int number, CellColor color)
     {
-        _grid.SetSolution(row, col, number, ColorManager.ToBrush(color));
+        _grid.ShowSolution(row, col, number, ColorManager.ToBrush(color));
     }
 
     public void SetCellTo(int row, int col, int[] possibilities, CellColor color)
     {
         foreach (var p in possibilities)
         {
-            _grid.SetPossibility(row, col, p, ColorManager.ToBrush(color));
+            _grid.ShowGridPossibility(row, col, p, ColorManager.ToBrush(color));
         }
     }
 

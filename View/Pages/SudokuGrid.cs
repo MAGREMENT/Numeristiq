@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -12,7 +13,7 @@ using View.Utility;
 using Brushes = System.Windows.Media.Brushes;
 using FlowDirection = System.Windows.FlowDirection;
 
-namespace View.Pages.Player;
+namespace View.Pages;
 
 public class SudokuGrid : FrameworkElement
 {
@@ -39,7 +40,7 @@ public class SudokuGrid : FrameworkElement
     private readonly List<RectAndPen> _encircles = new();
     private readonly List<LineAndPen> _highlightLines = new();
 
-    private bool _isSelecting = false;
+    private bool _isSelecting;
     private bool _overrideSelection = true;
 
     public event OnCellSelection? CellSelected;
@@ -122,18 +123,40 @@ public class SudokuGrid : FrameworkElement
         _cursor.Clear();
     }
     
-    public void SetPossibility(int row, int col, int possibility, Brush color)
+    public void ShowGridPossibility(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface("Arial"),  (double)_possibilitySize / 4 * 3, color, 1);
-        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize, _possibilitySize)));
+        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility),
+            _possibilitySize, _possibilitySize), TextVerticalAlignment.Center, TextHorizontalAlignment.Center));
     }
 
-    public void SetSolution(int row, int col, int possibility, Brush color)
+    public void ShowSolution(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface("Arial"), (double)_cellSize / 4 * 3, color, 1);
-        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize)));
+        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
+            TextVerticalAlignment.Center, TextHorizontalAlignment.Center));
+    }
+
+    public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location,
+        Brush color)
+    {
+        var builder = new StringBuilder();
+        foreach (var p in possibilities) builder.Append(p);
+        var text = new FormattedText(builder.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
+            new Typeface("Arial"), (double)_possibilitySize / 4 * 3, color, 1);
+        var ha = location switch
+        {
+            PossibilitiesLocation.Bottom => TextHorizontalAlignment.Left,
+            PossibilitiesLocation.Middle => TextHorizontalAlignment.Center,
+            PossibilitiesLocation.Top => TextHorizontalAlignment.Right,
+            _ => TextHorizontalAlignment.Center
+        };
+        var n = (int)location * 3;
+
+        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row, n), _cellSize,
+            _possibilitySize), TextVerticalAlignment.Center, ha));
     }
     
     public void Refresh()
@@ -556,11 +579,31 @@ public class SudokuGrid : FrameworkElement
     {
         if (args.Key == Key.LeftCtrl) _overrideSelection = true;
     }
+
+    private void DrawTextAndRect(DrawingContext context, TextAndRect text)
+    {
+        var deltaX = (text.Rect.Width - text.Text.Width) / 2;
+        var deltaY = (text.Rect.Height - text.Text.Height) / 2;
+            
+        context.DrawText(text.Text, new Point(text.Rect.X + deltaX * (int)text.HorizontalAlignment, 
+            text.Rect.Y + deltaY * (int)text.VerticalAlignment));
+    }
 }   
 
 public record RectAndBrush(Rect Rect, Brush Brush);
 public record RectAndPen(Rect Rect, Pen Pen);
 public record LineAndPen(Point From, Point To, Pen Pen);
-public record TextAndRect(FormattedText Text, Rect Rect);
+public record TextAndRect(FormattedText Text, Rect Rect, TextVerticalAlignment VerticalAlignment,
+    TextHorizontalAlignment HorizontalAlignment);
 
 public delegate void OnCellSelection(int row, int col);
+
+public enum TextVerticalAlignment
+{
+    Top = 0, Center = 1, Bottom = 2
+}
+
+public enum TextHorizontalAlignment
+{
+    Left = 0, Center = 1, Right = 2
+}

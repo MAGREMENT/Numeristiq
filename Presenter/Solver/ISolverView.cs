@@ -2,7 +2,7 @@
 
 namespace Presenter.Solver;
 
-public interface ISolverView : ISudokuDrawer
+public interface ISolverView : ISolverDrawer
 {
     void DisableActions();
     void EnableActions();
