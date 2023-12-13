@@ -26,6 +26,17 @@ public class Possibilities : IReadOnlyPossibilities
     {
         return new Possibilities(bits, System.Numerics.BitOperations.PopCount((uint)bits));
     }
+    
+    public static Possibilities FromEnumerable(IEnumerable<int> enumerable)
+    {
+        var result = NewEmpty();
+        foreach (var n in enumerable)
+        {
+            result.Add(n);
+        }
+
+        return result;
+    }
 
     public static Possibilities NewEmpty()
     {

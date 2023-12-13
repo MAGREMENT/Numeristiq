@@ -104,7 +104,7 @@ public class StrategyLoader : IStrategyLoader
         {OddagonForcingNetStrategy.OfficialName, new OddagonForcingNetStrategy(3)},
         {BlossomLoopStrategy.OfficialNameForCell, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new CellType())},
         {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new UnitType())},
-        {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy(new TwoByTwoLoopFinder())}
+        {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

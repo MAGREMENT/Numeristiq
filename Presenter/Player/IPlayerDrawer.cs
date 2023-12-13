@@ -11,4 +11,6 @@ public interface IPlayerDrawer
     void PutCursorOn(HashSet<Cell> cells);
     void ClearCursor();
     void Refresh();
+    void ClearDrawings();
+    void HighlightCell(int row, int col, HighlightColor color);
 }

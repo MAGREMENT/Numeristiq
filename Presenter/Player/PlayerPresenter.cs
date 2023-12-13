@@ -1,6 +1,7 @@
 ﻿using Global;
 using Global.Enums;
 using Model;
+using Model.Player;
 
 namespace Presenter.Player;
 
@@ -85,6 +86,21 @@ public class PlayerPresenter
         }
     }
 
+    public void Remove()
+    {
+        if (_selected.Count == 0) return;
+        
+        if (_locationMode == LocationMode.Solution) _player.RemoveNumber(_selected);
+        else _player.RemovePossibility(Translate(_locationMode), _selected);
+    }
+
+    public void Highlight(HighlightColor color)
+    {
+        if (_selected.Count == 0) return;
+
+        _player.Highlight(color, _selected);
+    }
+
     public void MoveBack()
     {
         _player.MoveBack();
@@ -114,6 +130,12 @@ public class PlayerPresenter
                     _view.ShowPossibilities(row, col, current.Possibilities(PossibilitiesLocation.Bottom), PossibilitiesLocation.Bottom);
                 }
             }
+        }
+        
+        _view.ClearDrawings();
+        foreach (var ch in _player.Highlighting)
+        {
+            _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.GetOne());
         }
         
         _view.Refresh();

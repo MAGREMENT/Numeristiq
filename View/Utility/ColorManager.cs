@@ -61,11 +61,28 @@ public class ColorManager
             _ => Colors.Gray
         };
     }
+    
+    public static Color ToColor(HighlightColor color)
+    {
+        return color switch
+        {
+            HighlightColor.Red => Colors.Red,
+            HighlightColor.Blue => Colors.RoyalBlue,
+            HighlightColor.Green => Colors.Green,
+            HighlightColor.Orange => Colors.Orange,
+            HighlightColor.Purple => Colors.Purple,
+            HighlightColor.Cyan => Colors.Cyan,
+            HighlightColor.Yellow => Colors.Yellow,
+            _ => Colors.Transparent
+        };
+    }
 
     public static Brush ToBrush(CellColor cc)
     {
         return CellBrushes[(int)cc];
     }
+
+    
 
     private static ColorManager? _instance;
 

@@ -37,6 +37,11 @@ public struct PlayerCell
         if (Number() == n) _bits = 0;
     }
 
+    public void RemoveNumber()
+    {
+        _bits = 0;
+    }
+
     public int[] Possibilities(PossibilitiesLocation location)
     {
         var buffer = (_bits >> (int)location) & 0x1FF;
@@ -66,6 +71,23 @@ public struct PlayerCell
     {
         var delta = possibility - 1 + (int)location;
         return Peek(_bits, delta);
+    }
+
+    public int PossibilitiesCount(PossibilitiesLocation location)
+    {
+        var buffer = (_bits >> (int)location) & 0x1FF;
+        return System.Numerics.BitOperations.PopCount((uint)buffer);
+    }
+
+    public void RemovePossibility(PossibilitiesLocation location)
+    {
+        for (int i = 8; i >= 0; i--)
+        {
+            if (!Peek(_bits, (int)location + i)) continue;
+            
+            UnSet((int)location + i);
+            break;
+        }
     }
     
     private static bool Peek(int bits, int n)

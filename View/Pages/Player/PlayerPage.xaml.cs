@@ -9,6 +9,7 @@ using Global.Enums;
 using Presenter;
 using Presenter.Player;
 using View.Pages.Player.UserControls;
+using View.Utility;
 
 namespace View.Pages.Player;
 
@@ -43,6 +44,7 @@ public partial class PlayerPage : IPlayerView
         _grid.CellSelected += (row, col) => _presenter.RestartSelection(row, col);
         _grid.CellAddedToSelection += _presenter.AddToSelection;
         _grid.KeyDown += AnalyzeKeyDown;
+        Colors.HighlightChosen += _presenter.Highlight;
         
         InitModes();
         _presenter.Bind();
@@ -91,6 +93,16 @@ public partial class PlayerPage : IPlayerView
     public void Refresh()
     {
         _grid.Refresh();
+    }
+
+    public void ClearDrawings()
+    {
+        _grid.ClearHighlighting();
+    }
+
+    public void HighlightCell(int row, int col, HighlightColor color)
+    {
+        _grid.FillCell(row, col, ColorManager.ToColor(color));
     }
 
     private void InitModes()
@@ -156,23 +168,34 @@ public partial class PlayerPage : IPlayerView
     {
         switch (args.Key)
         {
+            case Key.D1 :
             case Key.NumPad1 : _presenter.ApplyChange(1);
                 break;
+            case Key.D2 :
             case Key.NumPad2 : _presenter.ApplyChange(2);
                 break;
+            case Key.D3 :
             case Key.NumPad3 : _presenter.ApplyChange(3);
                 break;
+            case Key.D4 :
             case Key.NumPad4 : _presenter.ApplyChange(4);
                 break;
+            case Key.D5 :
             case Key.NumPad5 : _presenter.ApplyChange(5);
                 break;
+            case Key.D6 :
             case Key.NumPad6 : _presenter.ApplyChange(6);
                 break;
+            case Key.D7 :
             case Key.NumPad7 : _presenter.ApplyChange(7);
                 break;
+            case Key.D8 :
             case Key.NumPad8 : _presenter.ApplyChange(8);
                 break;
+            case Key.D9 :
             case Key.NumPad9 : _presenter.ApplyChange(9);
+                break;
+            case Key.Return : _presenter.Remove();
                 break;
             default:
                 if (args.Key == _locationModeUp) MoveUp(LocationModes.Children, _currentLocationMode)?.InvokeSelection();

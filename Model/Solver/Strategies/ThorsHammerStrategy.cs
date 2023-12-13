@@ -15,7 +15,6 @@ public class ThorsHammerStrategy : AbstractStrategy
 {
     public const string OfficialName = "Thor's Hammer";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    private static readonly int[] Numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
@@ -30,7 +29,7 @@ public class ThorsHammerStrategy : AbstractStrategy
     public override void Apply(IStrategyManager strategyManager)
     {
         Dictionary<int, MiniGridPositions> boxCandidates = new();
-        foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, Numbers))
+        foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, CombinationCalculator.NumbersSample))
         {
             for (int r = 0; r < 3; r++)
             {
@@ -207,7 +206,7 @@ public class ThorsHammerStrategy : AbstractStrategy
     }
 }
 
-public class BoxGraph : IEnumerable<int>
+public class BoxGraph : IEnumerable<int> //TODO simplify this
 {
     private readonly Dictionary<int, HashSet<int>> _links = new();
 

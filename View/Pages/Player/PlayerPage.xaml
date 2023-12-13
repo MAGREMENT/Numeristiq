@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:pages="clr-namespace:View.Pages"
+      xmlns:local="clr-namespace:View.Pages.Player.UserControls"
       mc:Ignorable="d"
       Title="PlayerPage">
     <WrapPanel Orientation="Vertical">
@@ -24,6 +25,9 @@
                     <Button x:Name="RightArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="MoveForward"
                             FontSize="20" Margin="5, 0, 0, 0" IsEnabled="false"></Button>
                 </StackPanel>
+                
+                <local:HighlightColorsUserControl Width="100" Margin="0, 10, 0, 0" HorizontalAlignment="Left"
+                                                  x:Name="Colors"/>
             </WrapPanel>
         </WrapPanel>
     </WrapPanel>

@@ -26,8 +26,8 @@ public class SudokuGrid : FrameworkElement
     private readonly int _smallLineWidth;
     private readonly int _bigLineWidth;
     private readonly double _size;
-    
-    private readonly VisualCollection _visual;
+
+    private readonly DrawingVisual _visual = new DrawingVisual();
 
     //This is a hack for the MouseLeftDown event to work properly. Do NOT remove.
     private readonly RectAndBrush _backGround;
@@ -50,8 +50,9 @@ public class SudokuGrid : FrameworkElement
     public SudokuGrid(int possibilitySize, int smallLineWidth, int bigLineWidth)
     {
         Focusable = true;
-        
-        _visual = new VisualCollection(this);
+
+        Loaded += AddVisualToTree;
+        Unloaded += RemoveVisualFromTree;
         
         _possibilitySize = possibilitySize;
         _smallLineWidth = smallLineWidth;
@@ -93,19 +94,30 @@ public class SudokuGrid : FrameworkElement
         KeyUp += AnalyseKeyUp;
     }
 
+    //DrawingNecessities------------------------------------------------------------------------------------------------
+    
     // Provide a required override for the VisualChildrenCount property.
-    protected override int VisualChildrenCount => _visual.Count;
+    protected override int VisualChildrenCount => 1;
 
     // Provide a required override for the GetVisualChild method.
     protected override Visual GetVisualChild(int index)
     {
-        if (index < 0 || index >= _visual.Count)
-        {
-            throw new ArgumentOutOfRangeException();
-        }
-
-        return _visual[index];
+        return _visual;
     }
+    
+    private void AddVisualToTree(object sender, RoutedEventArgs e)
+    {
+        AddVisualChild(_visual);
+        AddLogicalChild(_visual);
+    }
+
+    private void RemoveVisualFromTree(object sender, RoutedEventArgs e)
+    {
+        RemoveLogicalChild(_visual);
+        RemoveVisualChild(_visual);
+    }
+    
+    //------------------------------------------------------------------------------------------------------------------
     
     public void ClearNumbers()
     {
@@ -169,8 +181,7 @@ public class SudokuGrid : FrameworkElement
     
     public void Refresh()
     {
-        var visual = new DrawingVisual();
-        var context = visual.RenderOpen();
+        var context = _visual.RenderOpen();
 
         context.DrawRectangle(_backGround.Brush, null, _backGround.Rect);
 
@@ -215,8 +226,7 @@ public class SudokuGrid : FrameworkElement
         }
         
         context.Close();
-        _visual.Clear();
-        _visual.Add(visual);
+        InvalidateVisual();
     }
     
     public void FillCell(int row, int col, Color color)
@@ -454,8 +464,9 @@ public class SudokuGrid : FrameworkElement
                 else
                 {
                     var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
-                    if(priority == LinkOffsetSidePriority.Left) AddShortenedLine(from, validOffsets[left], to, isWeak);
-                    else AddShortenedLine(from, validOffsets[(left + 1) % 2], to, isWeak);
+                    AddShortenedLine(from, priority == LinkOffsetSidePriority.Left 
+                            ? validOffsets[left] 
+                            : validOffsets[(left + 1) % 2], to, isWeak);
                 }
                 break;
         }
@@ -463,8 +474,8 @@ public class SudokuGrid : FrameworkElement
 
     public BitmapFrame AsImage()
     {
-        RenderTargetBitmap rtb = new RenderTargetBitmap((int)_size, (int)_size, 96, 96, PixelFormats.Pbgra32);
-        rtb.Render(_visual[0]);
+        var rtb = new RenderTargetBitmap((int)_size, (int)_size, 96, 96, PixelFormats.Pbgra32);
+        rtb.Render(_visual);
         return BitmapFrame.Create(rtb);
     }
     

@@ -1,7 +1,6 @@
 namespace Model.Player;
 
-public interface IHistoryCreator
+public interface IHistoryCreator : IPlayerState
 {
     void ShowHistoricPoint(HistoricPoint point);
-    public PlayerCell this[int row, int column] { get; }
 }

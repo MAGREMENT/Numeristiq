@@ -69,9 +69,10 @@ public class Historic
     }
 }
 
-public class HistoricPoint
+public class HistoricPoint : IPlayerState
 {
     private readonly PlayerCell[,] _cells = new PlayerCell[9, 9];
+    private readonly List<CellHighlighting> _highlighting = new();
 
     public static HistoricPoint From(IHistoryCreator creator)
     {
@@ -84,10 +85,13 @@ public class HistoricPoint
             }
         }
 
+        hp._highlighting.AddRange(creator.Highlighting);
+
         return hp;
     }
 
     public PlayerCell this[int row, int column] => _cells[row, column];
+    public IEnumerable<CellHighlighting> Highlighting => _highlighting;
 }
 
 public delegate void OnMoveAvailabilityChange(bool canMoveBack, bool canMoveForward);

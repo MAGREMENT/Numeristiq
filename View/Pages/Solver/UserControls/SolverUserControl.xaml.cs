@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,7 +6,6 @@ using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using Global;
 using Global.Enums;
-using View.Pages.Player;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
@@ -172,36 +170,44 @@ public partial class SolverUserControl
     {
         switch (args.Key)
         {
+            case Key.D1 :
             case Key.NumPad1 : 
                 CurrentCellChangeAsked?.Invoke(1);
                 break;
+            case Key.D2 :
             case Key.NumPad2 : 
                 CurrentCellChangeAsked?.Invoke(2);
                 break;
+            case Key.D3 :
             case Key.NumPad3 : 
                 CurrentCellChangeAsked?.Invoke(3);
                 break;
+            case Key.D4 :
             case Key.NumPad4 : 
                 CurrentCellChangeAsked?.Invoke(4);
                 break;
+            case Key.D5 :
             case Key.NumPad5 : 
                 CurrentCellChangeAsked?.Invoke(5);
                 break;
+            case Key.D6 :
             case Key.NumPad6 : 
                 CurrentCellChangeAsked?.Invoke(6);
                 break;
+            case Key.D7 :
             case Key.NumPad7 : 
                 CurrentCellChangeAsked?.Invoke(7);
                 break;
+            case Key.D8 :
             case Key.NumPad8 : 
                 CurrentCellChangeAsked?.Invoke(8);
                 break;
+            case Key.D9:
             case Key.NumPad9 : 
                 CurrentCellChangeAsked?.Invoke(9);
                 break;
+            case Key.D0 :
             case Key.NumPad0 :
-                RemoveSolutionFromCurrentCellAsked?.Invoke();
-                break;
             case Key.Back :
                 RemoveSolutionFromCurrentCellAsked?.Invoke();
                 break;

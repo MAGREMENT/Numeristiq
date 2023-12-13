@@ -4,6 +4,8 @@ namespace Model.Solver.StrategiesUtility;
 
 public static class CombinationCalculator
 {
+    public static readonly int[] NumbersSample = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    
     public static List<T[]> EveryCombinationWithSpecificCount<T>(int count, IReadOnlyList<T> sample)
     {
         var result = new List<T[]>();
