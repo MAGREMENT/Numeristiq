@@ -1,58 +1,45 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
 using Global;
 using Global.Enums;
 
 namespace Model.Player;
 
-public abstract class CellHighlighting
+public record CellHighlighting(Cell Cell, HighlightingCollection Highlighting);
+
+public abstract class HighlightingCollection
 {
-    public Cell Cell { get; }
-
-    protected CellHighlighting(Cell cell)
-    {
-        Cell = cell;
-    }
-
     public abstract int Count { get; }
-    public abstract HighlightColor GetOne();
+    public abstract HighlightColor GetFirst();
     public abstract HighlightColor[] GetAll();
-
-    public bool IsSameHighlight(CellHighlighting ch)
-    {
-        if (ch.Count != Count) return false;
-
-        var allOther = ch.GetAll();
-        foreach (var c in GetAll())
-        {
-            if (!allOther.Contains(c)) return false;
-        }
-
-        return true;
-    }
+    protected abstract bool ProtectedEquals(HighlightingCollection collection);
+    protected abstract int ProtectedHashCode();
+    public abstract HighlightingCollection Add(HighlightColor color);
+    public abstract HighlightingCollection? Remove(HighlightColor color);
+    public abstract bool Contains(HighlightColor color);
 
     public override bool Equals(object? obj)
     {
-        return obj is CellHighlighting ch && ch.Cell == Cell;
+        return obj is HighlightingCollection ch && ProtectedEquals(ch);
     }
 
     public override int GetHashCode()
     {
-        return Cell.GetHashCode();
+        return ProtectedHashCode();
     }
 }
 
-public class MonoCellHighlighting : CellHighlighting
+public class MonoHighlighting : HighlightingCollection
 {
     private readonly HighlightColor _color;
 
-    public MonoCellHighlighting(Cell cell, HighlightColor color) : base(cell)
+    public MonoHighlighting(HighlightColor color)
     {
         _color = color;
     }
 
     public override int Count => 1;
     
-    public override HighlightColor GetOne()
+    public override HighlightColor GetFirst()
     {
         return _color;
     }
@@ -60,5 +47,91 @@ public class MonoCellHighlighting : CellHighlighting
     public override HighlightColor[] GetAll()
     {
         return new[] { _color };
+    }
+
+    protected override bool ProtectedEquals(HighlightingCollection collection)
+    {
+        return collection.Count == 1 && collection.GetFirst() == _color;
+    }
+
+    protected override int ProtectedHashCode()
+    {
+        return (int)_color;
+    }
+
+    public override HighlightingCollection Add(HighlightColor color)
+    {
+        return new MultiHighlighting(_color, color);
+    }
+
+    public override HighlightingCollection? Remove(HighlightColor color)
+    {
+        return _color == color ? null : this;
+    }
+
+    public override bool Contains(HighlightColor color)
+    {
+        return _color == color;
+    }
+}
+
+public class MultiHighlighting : HighlightingCollection
+{
+    private readonly List<HighlightColor> _colors = new();
+
+    public MultiHighlighting(params HighlightColor[] colors)
+    {
+        _colors.AddRange(colors);
+    }
+
+    public override int Count => _colors.Count;
+    
+    public override HighlightColor GetFirst()
+    {
+        return _colors[0];
+    }
+
+    public override HighlightColor[] GetAll()
+    {
+        return _colors.ToArray();
+    }
+
+    protected override bool ProtectedEquals(HighlightingCollection collection)
+    {
+        if (collection.Count != Count) return false;
+
+        foreach (var c in collection.GetAll())
+        {
+            if (!_colors.Contains(c)) return false;
+        }
+
+        return true;
+    }
+
+    protected override int ProtectedHashCode()
+    {
+        var hash = 0;
+        foreach (var c in _colors)
+        {
+            hash ^= (int)c;
+        }
+        return hash;
+    }
+
+    public override HighlightingCollection Add(HighlightColor color)
+    {
+        _colors.Add(color);
+        return this;
+    }
+
+    public override HighlightingCollection Remove(HighlightColor color)
+    {
+        _colors.Remove(color);
+        return _colors.Count == 1 ? new MonoHighlighting(_colors[0]) : this;
+    }
+
+    public override bool Contains(HighlightColor color)
+    {
+        return _colors.Contains(color);
     }
 }

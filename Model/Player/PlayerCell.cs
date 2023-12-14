@@ -11,9 +11,11 @@ public struct PlayerCell
      * 27-31 number
      */
     private int _bits;
+    public bool Editable { get; }
 
-    public PlayerCell()
+    public PlayerCell(bool editable)
     {
+        Editable = editable;
         _bits = 0;
     }
 
@@ -29,16 +31,22 @@ public struct PlayerCell
 
     public void SetNumber(int n)
     {
+        if (!Editable) return;
+        
         _bits = n << 27;
     }
 
     public void RemoveNumber(int n)
     {
+        if (!Editable) return;
+
         if (Number() == n) _bits = 0;
     }
 
     public void RemoveNumber()
     {
+        if (!Editable) return;
+
         _bits = 0;
     }
 
@@ -57,12 +65,16 @@ public struct PlayerCell
 
     public void AddPossibility(int possibility, PossibilitiesLocation location)
     {
+        if (!Editable) return;
+
         var delta = possibility - 1 + (int)location;
         Set(delta);
     }
     
     public void RemovePossibility(int possibility, PossibilitiesLocation location)
     {
+        if (!Editable) return;
+
         var delta = possibility - 1 + (int)location;
         UnSet(delta);
     }
@@ -81,6 +93,8 @@ public struct PlayerCell
 
     public void RemovePossibility(PossibilitiesLocation location)
     {
+        if (!Editable) return;
+
         for (int i = 8; i >= 0; i--)
         {
             if (!Peek(_bits, (int)location + i)) continue;
@@ -89,6 +103,8 @@ public struct PlayerCell
             break;
         }
     }
+    
+    //Private-----------------------------------------------------------------------------------------------------------
     
     private static bool Peek(int bits, int n)
     {

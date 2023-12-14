@@ -77,12 +77,21 @@ public class ColorManager
         };
     }
 
+    public static Color[] ToColors(HighlightColor[] colors)
+    {
+        Color[] result = new Color[colors.Length];
+        for (int i = 0; i < result.Length; i++)
+        {
+            result[i] = ToColor(colors[i]);
+        }
+
+        return result;
+    }
+
     public static Brush ToBrush(CellColor cc)
     {
         return CellBrushes[(int)cc];
     }
-
-    
 
     private static ColorManager? _instance;
 

@@ -7,14 +7,23 @@ namespace Model.Player;
 public class SudokuPlayer : IPlayer, IHistoryCreator
 {
     private readonly PlayerCell[,] _cells = new PlayerCell[9, 9];
-    private readonly HashSet<CellHighlighting> _highlighting = new();
+    private readonly Dictionary<Cell, HighlightingCollection> _highlighting = new();
     private readonly Historic _historic;
-    
+
+    public bool MultiHighlighting { get; set; } = true;
     public event OnChange? Changed;
     public event OnMoveAvailabilityChange? MoveAvailabilityChanged;
 
     public SudokuPlayer()
     {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                _cells[row, col] = new PlayerCell(true);
+            }
+        }
+        
         _historic = new Historic(this);
 
         _historic.MoveAvailabilityChanged += (a, b) => MoveAvailabilityChanged?.Invoke(a, b);
@@ -26,7 +35,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         
         foreach (var c in cells)
         {
-            if (!yes && _cells[c.Row, c.Column].Number() != number)
+            if (!yes && _cells[c.Row, c.Column].Editable && _cells[c.Row, c.Column].Number() != number)
             {
                 _historic.NewHistoricPoint();
                 yes = true;
@@ -44,7 +53,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
 
         foreach (var c in cells)
         {
-            if (!yes && _cells[c.Row, c.Column].Number() == number)
+            if (!yes && _cells[c.Row, c.Column].Editable && _cells[c.Row, c.Column].Number() == number)
             {
                 _historic.NewHistoricPoint();
                 yes = true;
@@ -62,7 +71,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
 
         foreach (var c in cells)
         {
-            if (!yes && _cells[c.Row, c.Column].IsNumber())
+            if (!yes && _cells[c.Row, c.Column].Editable && _cells[c.Row, c.Column].IsNumber())
             {
                 _historic.NewHistoricPoint();
                 yes = true;
@@ -80,7 +89,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         
         foreach (var c in cells)
         {
-            if (!yes && !_cells[c.Row, c.Column].PeekPossibility(possibility, location))
+            if (!yes && _cells[c.Row, c.Column].Editable && !_cells[c.Row, c.Column].PeekPossibility(possibility, location))
             {
                 _historic.NewHistoricPoint();
                 yes = true;
@@ -98,7 +107,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         
         foreach (var c in cells)
         {
-            if (!yes && _cells[c.Row, c.Column].PeekPossibility(possibility, location))
+            if (!yes && _cells[c.Row, c.Column].Editable && _cells[c.Row, c.Column].PeekPossibility(possibility, location))
             {
                 _historic.NewHistoricPoint();
                 yes = true;
@@ -116,7 +125,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         
         foreach (var c in cells)
         {
-            if (!yes && _cells[c.Row, c.Column].PossibilitiesCount(location) > 0)
+            if (!yes && _cells[c.Row, c.Column].Editable && _cells[c.Row, c.Column].PossibilitiesCount(location) > 0)
             {
                 _historic.NewHistoricPoint();
                 yes = true;
@@ -130,17 +139,60 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
 
     public void Highlight(HighlightColor color, IEnumerable<Cell> cells)
     {
-        _historic.NewHistoricPoint();
-        
-        foreach (var c in cells)
+        bool yes = false;
+
+        if (color == HighlightColor.None)
         {
-            var ch = new MonoCellHighlighting(c, color);
+            foreach (var c in cells)
+            {
+                if (!yes && _highlighting.ContainsKey(c))
+                {
+                    _historic.NewHistoricPoint();
+                    yes = true;
+                }
+
+                _highlighting.Remove(c);
+            }
+        }
+        else if(MultiHighlighting)
+        {
+            _historic.NewHistoricPoint();
+            yes = true;
             
-            _highlighting.Remove(ch);
-            if (color != HighlightColor.None) _highlighting.Add(ch);
+            foreach (var c in cells)
+            {
+                if (_highlighting.TryGetValue(c, out var h))
+                {
+                    if (h.Contains(color))
+                    {
+                        var removed = h.Remove(color);
+                        if (removed is null) _highlighting.Remove(c);
+                        else _highlighting[c] = h;
+                    }
+                    else
+                    {
+                        _highlighting[c] = h.Add(color);
+                    }
+                }
+                else _highlighting[c] = new MonoHighlighting(color);
+            }
+        }
+        else
+        {
+            var highlight = new MonoHighlighting(color);
+            foreach (var c in cells)
+            {
+                if (!yes && (!_highlighting.TryGetValue(c, out var h) || !highlight.Equals(h)))
+                {
+                    _historic.NewHistoricPoint();
+                    yes = true;
+                }
+
+                _highlighting[c] = highlight;
+            }
         }
         
-        Changed?.Invoke();
+        if (yes) Changed?.Invoke();
     }
 
     public void MoveBack()
@@ -164,13 +216,26 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         }
         
         _highlighting.Clear();
-        _highlighting.UnionWith(point.Highlighting);
+        foreach (var ch in point.Highlighting)
+        {
+            _highlighting[ch.Cell] = ch.Highlighting;
+        }
         
         Changed?.Invoke();
     }
 
     public PlayerCell this[int row, int column] => _cells[row, column];
-    public IEnumerable<CellHighlighting> Highlighting => _highlighting;
+
+    public IEnumerable<CellHighlighting> Highlighting
+    {
+        get
+        {
+            foreach (var entry in _highlighting)
+            {
+                yield return new CellHighlighting(entry.Key, entry.Value);
+            }
+        }
+    }
 }
 
 public interface IPlayerState

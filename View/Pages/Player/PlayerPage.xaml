@@ -28,6 +28,9 @@
                 
                 <local:HighlightColorsUserControl Width="100" Margin="0, 10, 0, 0" HorizontalAlignment="Left"
                                                   x:Name="Colors"/>
+                
+                <CheckBox VerticalContentAlignment="Center" Margin="0, 10, 0, 0" FontSize="15" IsChecked="True"
+                          Checked="MultiHighlightingOn" Unchecked="MultiHighlightingOff">Multi-Highlighting</CheckBox>
             </WrapPanel>
         </WrapPanel>
     </WrapPanel>

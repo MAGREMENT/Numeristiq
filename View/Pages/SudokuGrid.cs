@@ -27,19 +27,21 @@ public class SudokuGrid : FrameworkElement
     private readonly int _bigLineWidth;
     private readonly double _size;
 
-    private readonly DrawingVisual _visual = new DrawingVisual();
+    private readonly DrawingVisual _visual = new();
 
-    //This is a hack for the MouseLeftDown event to work properly. Do NOT remove.
-    private readonly RectAndBrush _backGround;
-    
-    private readonly List<RectAndBrush> _numbersHighlight = new();
-    private readonly List<LineAndPen> _cursorLines = new();
-    private readonly List<RectAndBrush> _cursorRects = new();
-    private readonly List<RectAndBrush> _smallMargins = new();
-    private readonly List<RectAndBrush> _bigMargins = new();
-    private readonly List<TextAndRect> _numbers = new();
-    private readonly List<RectAndPen> _encircles = new();
-    private readonly List<LineAndPen> _highlightLines = new();
+    private readonly List<IDrawableComponent>[] _components =
+    {
+        new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
+    };
+    private const int BackgroundIndex = 0;
+    private  const int CellsHighlightIndex = 1;
+    private  const int PossibilitiesHighlightIndex = 2;
+    private  const int CursorIndex = 3;
+    private  const int SmallMarginsIndex = 4;
+    private  const int BigMarginsIndex = 5;
+    private  const int NumbersIndex = 6;
+    private  const int EncirclesIndex = 7;
+    private  const int LinksIndex = 8;
 
     private bool _isSelecting;
     private bool _overrideSelection = true;
@@ -62,7 +64,7 @@ public class SudokuGrid : FrameworkElement
         _size = ComputeSize();
         Width = _size;
         Height = _size;
-        _backGround = new RectAndBrush(new Rect(0, 0, _size, _size), Brushes.White);
+        _components[BackgroundIndex].Add(new FilledRectangleComponent(new Rect(0, 0, _size, _size), Brushes.White));
         
         UpdateMargins();
         Refresh();
@@ -121,36 +123,36 @@ public class SudokuGrid : FrameworkElement
     
     public void ClearNumbers()
     {
-        _numbers.Clear();
+        _components[NumbersIndex].Clear();
     }
 
     public void ClearHighlighting()
     {
-        _numbersHighlight.Clear();
-        _encircles.Clear();
-        _highlightLines.Clear();
+        _components[CellsHighlightIndex].Clear();
+        _components[PossibilitiesHighlightIndex].Clear();
+        _components[EncirclesIndex].Clear();
+        _components[LinksIndex].Clear();
     }
 
     public void ClearCursor()
     {
-        _cursorLines.Clear();
-        _cursorRects.Clear();
+       _components[CursorIndex].Clear();
     }
     
     public void ShowGridPossibility(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface("Arial"),  (double)_possibilitySize / 4 * 3, color, 1);
-        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-            _possibilitySize, _possibilitySize), TextVerticalAlignment.Center, TextHorizontalAlignment.Center));
+        _components[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility),
+            _possibilitySize, _possibilitySize), TextHorizontalAlignment.Center, TextVerticalAlignment.Center));
     }
 
     public void ShowSolution(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
             new Typeface("Arial"), (double)_cellSize / 4 * 3, color, 1);
-        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
-            TextVerticalAlignment.Center, TextHorizontalAlignment.Center));
+        _components[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col), GetTop(row),
+            _cellSize, _cellSize), TextHorizontalAlignment.Center, TextVerticalAlignment.Center));
     }
 
     public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location,
@@ -175,54 +177,20 @@ public class SudokuGrid : FrameworkElement
             _ => 3
         };
 
-        _numbers.Add(new TextAndRect(text, new Rect(GetLeft(col), GetTop(row, n), _cellSize,
-            _possibilitySize), TextVerticalAlignment.Center, ha));
+        _components[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col), GetTop(row, n), _cellSize,
+            _possibilitySize), ha, TextVerticalAlignment.Center));
     }
     
     public void Refresh()
     {
         var context = _visual.RenderOpen();
 
-        context.DrawRectangle(_backGround.Brush, null, _backGround.Rect);
-
-        foreach (var rect in _numbersHighlight)
+        foreach (var list in _components)
         {
-            context.DrawRectangle(rect.Brush, null, rect.Rect);
-        }
-
-        foreach (var line in _cursorLines)
-        {
-            context.DrawLine(line.Pen, line.From, line.To);
-        }
-        
-        foreach (var rect in _cursorRects)
-        {
-            context.DrawRectangle(rect.Brush, null, rect.Rect);
-        }
-        
-        foreach (var rect in _smallMargins)
-        {
-            context.DrawRectangle(rect.Brush, null, rect.Rect);
-        }
-        
-        foreach (var rect in _bigMargins)
-        {
-            context.DrawRectangle(rect.Brush, null, rect.Rect);
-        }
-
-        foreach (var text in _numbers)
-        {
-            DrawTextAndRect(context, text);
-        }
-
-        foreach (var rect in _encircles)
-        {
-            context.DrawRectangle(null, rect.Pen, rect.Rect);
-        }
-
-        foreach (var line in _highlightLines)
-        {
-            context.DrawLine(line.Pen, line.From, line.To);
+            foreach (var component in list)
+            {
+                component.Draw(context);
+            }
         }
         
         context.Close();
@@ -231,27 +199,127 @@ public class SudokuGrid : FrameworkElement
     
     public void FillCell(int row, int col, Color color)
     {
-        _numbersHighlight.Add(new RectAndBrush(new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
-            new SolidColorBrush(color)));
+        _components[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
+                _cellSize, _cellSize), new SolidColorBrush(color)));
     }
+
+    public void FillCell(int row, int col, Color one, Color two)
+    {
+        var half = (double)_cellSize / 2;
+        var center = Center(row, col);
+        
+        _components[CellsHighlightIndex].Add(new FilledPolygonComponent(new SolidColorBrush(one),
+            center, new Point(center.X + half, center.Y - half), new Point(center.X + half, center.Y + half),
+            new Point(center.X - half, center.Y + half)));
+        
+        _components[CellsHighlightIndex].Add(new FilledPolygonComponent(new SolidColorBrush(two),
+            center, new Point(center.X - half, center.Y + half), new Point(center.X - half, center.Y - half),
+            new Point(center.X + half, center.Y - half)));
+    }
+
+    private const double StartAngle = Math.PI / 4;
+    public void FillCell(int row, int col, params Color[] colors)
+    {
+        switch (colors.Length)
+        {
+            case 0:
+                return;
+            case 1:
+                FillCell(row, col, colors[0]);
+                return;
+            case 2:
+                FillCell(row, col, colors[0], colors[1]);
+                return;
+        }
+
+        var half = (double)_cellSize / 2;
+        var center = Center(row, col);
+        var startPoint = new Point(center.X + half, center.Y - half);
+        var angle = 0.0;
+        var angleDelta = 2 * Math.PI / colors.Length;
+        var currentOrientation = Right;
+
+        var list = _components[CellsHighlightIndex];
+        foreach (var color in colors)
+        {
+            angle += angleDelta;
+            var info = AngleInformation(StartAngle - angle);
+            
+            double delta = info[2] * half * Math.Tan(info[1]);
+            Point next = info[0] switch
+            {
+                Right => new Point(center.X + half, center.Y + delta),
+                Top => new Point(center.X + delta, center.Y - half),
+                Left => new Point(center.X - half, center.Y + delta),
+                Bottom => new Point(center.X + delta, center.Y + half),
+                _ => default
+            };
+
+            List<Point> points = new() { center, startPoint };
+            points.AddRange(ComputeAdditionalPoints(currentOrientation, (int)info[0], center, half));
+            points.Add(next);
+            
+            list.Add(new FilledPolygonComponent(new SolidColorBrush(color), points));
+
+            startPoint = next;
+            currentOrientation = (int)info[0];
+        }
+    }
+
+    private static double[] AngleInformation(double angle)
+    {
+        var a = angle < 0 ? 2 * Math.PI + angle : angle;
+
+        if (a < Math.PI / 4) return new[] { Right, angle, -1 };
+        if (a < Math.PI / 2) return new[] { Top, Math.PI / 2 - angle, 1 };
+        if (a < Math.PI / 4 * 3) return new[] { Top, angle - Math.PI / 2, -1 };
+        if (a < Math.PI) return new[] { Left, Math.PI - angle, -1 };
+        if (a < Math.PI + Math.PI / 4) return new[] { Left, angle - Math.PI, 1 };
+        if (a < Math.PI * 3 / 2) return new[] { Bottom, Math.PI * 3 / 2 - angle, -1 };
+        if (a < Math.PI + Math.PI / 4 * 3) return new[] { Bottom, angle - Math.PI * 3 / 2, 1 };
+        return new[] { Right, 2 * Math.PI - angle, 1 };
+    }
+
+    private static IEnumerable<Point> ComputeAdditionalPoints(int from, int to, Point Center, double delta)
+    {
+        if (from == to) yield break;
+
+        switch (from, to)
+        {
+            case (Right, Bottom) : yield return new Point(Center.X + delta, Center.Y + delta);
+                break;
+            case (Bottom, Left) : yield return new Point(Center.X - delta, Center.Y + delta);
+                break;
+            case (Left, Top) : yield return new Point(Center.X - delta, Center.Y - delta);
+                break;
+            case (Top, Right) : yield return new Point(Center.X + delta, Center.Y - delta);
+                break;
+            default : yield break;
+        }
+    }
+    
+    private const int Right = 0;
+    private const int Bottom = 1;
+    private const int Left = 2;
+    private const int Top = 3;
 
     public void FillPossibility(int row, int col, int possibility, Color color)
     {
-        _numbersHighlight.Add(new RectAndBrush(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-                _possibilitySize, _possibilitySize), new SolidColorBrush(color)));
+        _components[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
+            _possibilitySize, _possibilitySize), new SolidColorBrush(color)));
     }
 
     public void EncircleCell(int row, int col)
     {
         var delta = (double)_bigLineWidth / 2;
-        _encircles.Add(new RectAndPen(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
+        _components[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
             _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(StrongLinkBrush, _bigLineWidth)));
     }
     
     public void EncirclePossibility(int row, int col, int possibility)
     {
         var delta = (double)_smallLineWidth / 2;
-        _encircles.Add(new RectAndPen(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
+        _components[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
             _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(StrongLinkBrush, _bigLineWidth)));
     }
 
@@ -264,13 +332,14 @@ public class SudokuGrid : FrameworkElement
         var top = GetTop(row);
         var pen = new Pen(ColorManager.Purple, CursorWidth);
 
-        _cursorLines.Add(new LineAndPen(new Point(left + delta, top), new Point(left + delta,
+        var list = _components[CursorIndex];
+        list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
             top + _cellSize), pen));
-        _cursorLines.Add(new LineAndPen(new Point(left, top + delta), new Point(left + _cellSize,
+        list.Add(new LineComponent(new Point(left, top + delta), new Point(left + _cellSize,
             top + delta), pen));
-        _cursorLines.Add(new LineAndPen(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
+        list.Add(new LineComponent(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
             top + _cellSize), pen));
-        _cursorLines.Add(new LineAndPen(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
+        list.Add(new LineComponent(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
             top + _cellSize - delta), pen));
     }
 
@@ -281,40 +350,41 @@ public class SudokuGrid : FrameworkElement
         var delta = CursorWidth / 2;
         var pen = new Pen(ColorManager.Purple, CursorWidth);
 
+        var list = _components[CursorIndex];
         foreach (var cell in cells)
         {
             var left = GetLeft(cell.Column);
             var top = GetTop(cell.Row);
 
-            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) _cursorLines.Add(new LineAndPen(
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
                 new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
             
-            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) _cursorLines.Add(new LineAndPen(
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
                 new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
             else
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column - 1))) _cursorRects.Add(new RectAndBrush(
+                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
                     new Rect(left, top, CursorWidth, CursorWidth), ColorManager.Purple));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column + 1))) _cursorRects.Add(new RectAndBrush(
+                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
                     new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), ColorManager.Purple));
             }
             
-            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) _cursorLines.Add(new LineAndPen(
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
                 new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
             
-            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) _cursorLines.Add(new LineAndPen(
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
                 new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
             else
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column - 1))) _cursorRects.Add(new RectAndBrush(
+                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
                     new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), ColorManager.Purple));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column + 1))) _cursorRects.Add(new RectAndBrush(
+                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
                     new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), ColorManager.Purple));
             }
         }
@@ -355,7 +425,7 @@ public class SudokuGrid : FrameworkElement
             bottomY = yFrom + _possibilitySize + _smallLineWidth;
         }
         
-        _encircles.Add(new RectAndPen(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
+        _components[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
             new Pen(new SolidColorBrush(color), _bigLineWidth)));
     }
     
@@ -393,14 +463,15 @@ public class SudokuGrid : FrameworkElement
             bottomY = yFrom + _cellSize +  _bigLineWidth;
         }
         
-        _encircles.Add(new RectAndPen(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
+        _components[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
             new Pen(new SolidColorBrush(color), _bigLineWidth)));
     }
 
     public void EncircleCellPatch(Cell[] cells, Color color)
     {
         var delta = (double)_bigLineWidth / 2;
-        
+
+        var list = _components[EncirclesIndex];
         foreach (var cell in cells)
         {
             var topLeftX = GetLeft(cell.Column) - delta;
@@ -411,25 +482,25 @@ public class SudokuGrid : FrameworkElement
 
             if (!cells.Contains(new Cell(cell.Row, cell.Column + 1)))
             {
-                _highlightLines.Add(new LineAndPen(new Point(bottomRightX, topLeftY),
+                list.Add(new LineComponent(new Point(bottomRightX, topLeftY),
                     new Point(bottomRightX, bottomRightY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
             }
 
             if (!cells.Contains(new Cell(cell.Row, cell.Column - 1)))
             {
-                _highlightLines.Add(new LineAndPen(new Point(topLeftX, topLeftY),
+                list.Add(new LineComponent(new Point(topLeftX, topLeftY),
                     new Point(topLeftX, bottomRightY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
             }
             
             if (!cells.Contains(new Cell(cell.Row + 1, cell.Column)))
             {
-                _highlightLines.Add(new LineAndPen(new Point(topLeftX, bottomRightY),
+                list.Add(new LineComponent(new Point(topLeftX, bottomRightY),
                     new Point(bottomRightX, bottomRightY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
             }
 
             if (!cells.Contains(new Cell(cell.Row - 1, cell.Column)))
             {
-                _highlightLines.Add(new LineAndPen(new Point(topLeftX, topLeftY),
+                list.Add(new LineComponent(new Point(topLeftX, topLeftY),
                     new Point(bottomRightX, topLeftY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
             }
         }
@@ -491,8 +562,8 @@ public class SudokuGrid : FrameworkElement
         var delta = _bigLineWidth + _cellSize;
         for (int i = 0; i < 6; i++)
         {
-            _smallMargins.Add(new RectAndBrush(new Rect(0, delta, _size, _smallLineWidth), Brushes.Black));
-            _smallMargins.Add(new RectAndBrush(new Rect(delta, 0, _smallLineWidth, _size), Brushes.Black));
+            _components[SmallMarginsIndex].Add(new FilledRectangleComponent(new Rect(0, delta, _size, _smallLineWidth), Brushes.Black));
+            _components[SmallMarginsIndex].Add(new FilledRectangleComponent(new Rect(delta, 0, _smallLineWidth, _size), Brushes.Black));
 
             delta += i % 2 == 0 ? _smallLineWidth + _cellSize : _smallLineWidth + _cellSize + _bigLineWidth + _cellSize;
         }
@@ -500,8 +571,8 @@ public class SudokuGrid : FrameworkElement
         delta = 0;
         for (int i = 0; i < 4; i++)
         {
-            _bigMargins.Add(new RectAndBrush(new Rect(0, delta, _size, _bigLineWidth), Brushes.Black));
-            _bigMargins.Add(new RectAndBrush(new Rect(delta, 0, _bigLineWidth, _size), Brushes.Black));
+            _components[BigMarginsIndex].Add(new FilledRectangleComponent(new Rect(0, delta, _size, _bigLineWidth), Brushes.Black));
+            _components[BigMarginsIndex].Add(new FilledRectangleComponent(new Rect(delta, 0, _bigLineWidth, _size), Brushes.Black));
 
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
         }
@@ -540,7 +611,7 @@ public class SudokuGrid : FrameworkElement
 
     private void AddLine(Point from, Point to, bool isWeak)
     {
-        _highlightLines.Add(new LineAndPen(from, to, new Pen(StrongLinkBrush, 2)
+        _components[LinksIndex].Add(new LineComponent(from, to, new Pen(StrongLinkBrush, 2)
         {
             DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
         }));
@@ -578,6 +649,12 @@ public class SudokuGrid : FrameworkElement
     {
         var delta = (double)_possibilitySize / 2;
         return new Point(GetLeft(col, possibility) + delta, GetTop(row, possibility) + delta);
+    }
+
+    private Point Center(int row, int col)
+    {
+        var delta = (double)_cellSize / 2;
+        return new Point(GetLeft(col) + delta, GetTop(row) + delta);
     }
 
     private int[]? ComputeSelectedCell(Point point)
@@ -623,22 +700,133 @@ public class SudokuGrid : FrameworkElement
     {
         if (args.Key == Key.LeftCtrl) _overrideSelection = true;
     }
+}
 
-    private void DrawTextAndRect(DrawingContext context, TextAndRect text)
+public interface IDrawableComponent
+{
+    void Draw(DrawingContext context);
+}
+
+public class FilledRectangleComponent : IDrawableComponent
+{
+    private readonly Rect _rect;
+    private readonly Brush _brush;
+
+    public FilledRectangleComponent(Rect rect, Brush brush)
     {
-        var deltaX = (text.Rect.Width - text.Text.Width) / 2;
-        var deltaY = (text.Rect.Height - text.Text.Height) / 2;
-            
-        context.DrawText(text.Text, new Point(text.Rect.X + deltaX * (int)text.HorizontalAlignment, 
-            text.Rect.Y + deltaY * (int)text.VerticalAlignment));
+        _rect = rect;
+        _brush = brush;
     }
-}   
 
-public record RectAndBrush(Rect Rect, Brush Brush);
-public record RectAndPen(Rect Rect, Pen Pen);
-public record LineAndPen(Point From, Point To, Pen Pen);
-public record TextAndRect(FormattedText Text, Rect Rect, TextVerticalAlignment VerticalAlignment,
-    TextHorizontalAlignment HorizontalAlignment);
+    public void Draw(DrawingContext context)
+    {
+        context.DrawRectangle(_brush, null, _rect);
+    }
+}
+
+public class OutlinedRectangleComponent : IDrawableComponent
+{
+    private readonly Rect _rect;
+    private readonly Pen _pen;
+
+    public OutlinedRectangleComponent(Rect rect, Pen pen)
+    {
+        _rect = rect;
+        _pen = pen;
+    }
+
+    public void Draw(DrawingContext context)
+    {
+        context.DrawRectangle(null, _pen, _rect);
+    }
+}
+
+public class FilledPolygonComponent : IDrawableComponent
+{
+    private readonly Point[] _points;
+    private readonly Brush _brush;
+
+    public FilledPolygonComponent(Brush brush, params Point[] points)
+    {
+        _brush = brush;
+        _points = points;
+    }
+
+    public FilledPolygonComponent(Brush brush, IReadOnlyList<Point> points)
+    {
+        _points = points.ToArray();
+        _brush = brush;
+    }
+
+    public void Draw(DrawingContext context)
+    {
+        var segmentCollection = new PathSegmentCollection();
+        for (int i = 1; i < _points.Length; i++)
+        {
+            segmentCollection.Add(new LineSegment(_points[i], true));
+        }
+        
+        var geometry = new PathGeometry
+        {
+            Figures = new PathFigureCollection
+            {
+                new()
+                {
+                    IsClosed = true,
+                    StartPoint = _points[0],
+                    Segments = segmentCollection
+                }
+            }
+        };
+
+        context.DrawGeometry(_brush, null, geometry);
+    }
+}
+
+public class LineComponent : IDrawableComponent
+{
+    private readonly Point _from;
+    private readonly Point _to;
+    private readonly Pen _pen;
+
+    public LineComponent(Point from, Point to, Pen pen)
+    {
+        _from = from;
+        _to = to;
+        _pen = pen;
+    }
+
+    public void Draw(DrawingContext context)
+    {
+        context.DrawLine(_pen, _from, _to);
+    }
+}
+
+public class TextInRectangleComponent : IDrawableComponent
+{
+    private readonly FormattedText _text;
+    private readonly Rect _rect;
+    private readonly TextHorizontalAlignment _horizontalAlignment;
+    private readonly TextVerticalAlignment _verticalAlignment;
+
+    public TextInRectangleComponent(FormattedText text, Rect rect, TextHorizontalAlignment horizontalAlignment,
+        TextVerticalAlignment verticalAlignment)
+    {
+        _text = text;
+        _rect = rect;
+        _horizontalAlignment = horizontalAlignment;
+        _verticalAlignment = verticalAlignment;
+    }
+
+    public void Draw(DrawingContext context)
+    {
+        var deltaX = (_rect.Width - _text.Width) / 2;
+        var deltaY = (_rect.Height - _text.Height) / 2;
+            
+        context.DrawText(_text, new Point(_rect.X + deltaX * (int)_horizontalAlignment, 
+            _rect.Y + deltaY * (int)_verticalAlignment));
+    }
+}
 
 public delegate void OnCellSelection(int row, int col);
 

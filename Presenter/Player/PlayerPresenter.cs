@@ -1,11 +1,10 @@
 ﻿using Global;
 using Global.Enums;
 using Model;
-using Model.Player;
 
 namespace Presenter.Player;
 
-public class PlayerPresenter
+public class PlayerPresenter //TODO : Add clear
 {
     private readonly IPlayerView _view;
     private readonly IPlayer _player;
@@ -110,6 +109,11 @@ public class PlayerPresenter
     {
         _player.MoveForward();
     }
+
+    public void SetMultiHighlighting(bool yes)
+    {
+        _player.MultiHighlighting = yes;
+    }
     
     //Private-----------------------------------------------------------------------------------------------------------
 
@@ -135,7 +139,8 @@ public class PlayerPresenter
         _view.ClearDrawings();
         foreach (var ch in _player.Highlighting)
         {
-            _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.GetOne());
+            if(ch.Highlighting.Count == 1) _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.Highlighting.GetFirst());
+            else _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.Highlighting.GetAll());
         }
         
         _view.Refresh();

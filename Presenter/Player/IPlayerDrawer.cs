@@ -13,4 +13,5 @@ public interface IPlayerDrawer
     void Refresh();
     void ClearDrawings();
     void HighlightCell(int row, int col, HighlightColor color);
+    void HighlightCell(int row, int col, HighlightColor[] colors);
 }

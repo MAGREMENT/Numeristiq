@@ -27,12 +27,15 @@ public partial class PlayerPage : IPlayerView
     private Key _changeModeDown = Key.S;
     private Key _locationModeUp = Key.A;
     private Key _locationModeDown = Key.Q;
+
+    private bool _presenterAvailable = false;
     
     public PlayerPage(IPageHandler handler, PresenterFactory factory)
     {
         InitializeComponent();
 
         _presenter = factory.Create(this);
+        _presenterAvailable = true;
         _pageHandler = handler;
 
         _grid = new SudokuGrid(24, 1, 3)
@@ -103,6 +106,11 @@ public partial class PlayerPage : IPlayerView
     public void HighlightCell(int row, int col, HighlightColor color)
     {
         _grid.FillCell(row, col, ColorManager.ToColor(color));
+    }
+
+    public void HighlightCell(int row, int col, HighlightColor[] colors)
+    {
+        _grid.FillCell(row, col, ColorManager.ToColors(colors));
     }
 
     private void InitModes()
@@ -230,5 +238,15 @@ public partial class PlayerPage : IPlayerView
     private void MoveForward(object sender, RoutedEventArgs e)
     {
         _presenter.MoveForward();
+    }
+
+    private void MultiHighlightingOn(object sender, RoutedEventArgs e)
+    {
+        if(_presenterAvailable) _presenter.SetMultiHighlighting(true);
+    }
+
+    private void MultiHighlightingOff(object sender, RoutedEventArgs e)
+    {
+        if(_presenterAvailable) _presenter.SetMultiHighlighting(false);
     }
 }
