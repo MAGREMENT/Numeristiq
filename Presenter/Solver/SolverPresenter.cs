@@ -6,7 +6,6 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Logs;
 using Presenter.StepChooser;
 using Presenter.Translators;
-using Repository;
 
 namespace Presenter.Solver;
 
@@ -22,19 +21,19 @@ public class SolverPresenter : IStepChooserCallback
     private bool _shouldUpdateSudokuTranslation = true;
     private bool _shouldUpdateLogs = true;
 
-    public SolverSettings Settings { get; }
+    public ISolverSettings Settings { get; }
 
     private readonly HighlighterTranslator _highlighterTranslator;
     private readonly SolverActionEnabler _solverActionEnabler;
 
-    public SolverPresenter(ISolver solver, ISolverView view)
+    public SolverPresenter(ISolver solver, ISolverView view, ISolverSettings settings)
     {
         _solver = solver;
         _view = view;
 
         _shownState = _solver.CurrentState;
 
-        Settings = new SolverSettings(new JSONRepository<SettingsDAO>("settings.json"));
+        Settings = settings;
         Settings.ShownStateChanged += () => SelectLog(_currentlySelectedLog);
         Settings.TranslationTypeChanged += () =>
             _view.SetTranslation(SudokuTranslator.TranslateToLine(_shownState, Settings.TranslationType));
@@ -53,8 +52,6 @@ public class SolverPresenter : IStepChooserCallback
 
     public void Bind()
     {
-        Settings.Bind();
-
         _solver.LogsUpdated += UpdateLogs;
         _solver.CurrentStrategyChanged += i => _view.LightUpStrategy(i);
 

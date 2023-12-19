@@ -103,6 +103,18 @@ public struct PlayerCell
             break;
         }
     }
+
+    public bool IsEmpty()
+    {
+        return _bits == 0;
+    }
+
+    public void Empty()
+    {
+        if (!Editable) return;
+        
+        _bits = 0;
+    }
     
     //Private-----------------------------------------------------------------------------------------------------------
     

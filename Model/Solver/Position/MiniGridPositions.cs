@@ -27,6 +27,11 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         _startRow = startRow;
         _startCol = startCol;
     }
+    
+    public static MiniGridPositions Filled(int miniRow, int miniCol)
+    {
+        return new MiniGridPositions(0x1FF, 9, miniRow * 3, miniCol * 3);
+    }
 
     public static MiniGridPositions FromBits(int miniRow, int miniCol, int bits)
     {
@@ -184,6 +189,12 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         }
 
         return pos;
+    }
+
+    public void Fill()
+    {
+        _pos = 0x1FF;
+        Count = 9;
     }
     
     public Cell First()

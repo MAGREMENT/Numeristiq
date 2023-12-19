@@ -67,7 +67,7 @@ public class StrategyLoader : IStrategyLoader
         {DeathBlossomStrategy.OfficialName, new DeathBlossomStrategy()},
         {AlmostHiddenSetsStrategy.OfficialName, new AlmostHiddenSetsStrategy()},
         {AlignedTripleExclusionStrategy.OfficialName, new AlignedTripleExclusionStrategy(5)},
-        {BUGLiteStrategy.OfficialName, new BUGLiteStrategy()},
+        //{BUGLiteStrategy.OfficialName, new BUGLiteStrategy()},
         {EmptyRectangleStrategy.OfficialName, new EmptyRectangleStrategy()},
         {NRCZTChainStrategy.OfficialNameForDefault, new NRCZTChainStrategy()},
         {NRCZTChainStrategy.OfficialNameForTCondition, new NRCZTChainStrategy(new TCondition())},

@@ -8,15 +8,17 @@ public class PlayerPresenter //TODO : Add clear
 {
     private readonly IPlayerView _view;
     private readonly IPlayer _player;
+    private readonly IPlayerSettings _settings;
     
     private readonly HashSet<Cell> _selected = new();
 
     private ChangeMode _changeMode = ChangeMode.Add;
     private LocationMode _locationMode = LocationMode.Middle;
 
-    public PlayerPresenter(IPlayer player, IPlayerView view)
+    public PlayerPresenter(IPlayer player, IPlayerView view, IPlayerSettings settings)
     {
         _view = view;
+        _settings = settings;
         _player = player;
     }
 
@@ -25,7 +27,7 @@ public class PlayerPresenter //TODO : Add clear
         _view.SetChangeMode(_changeMode);
         _view.SetLocationMode(_locationMode);
 
-        _player.Changed += UpdateNumbers;
+        _player.Changed += Update;
         _player.MoveAvailabilityChanged += _view.SetMoveAvailability;
     }
 
@@ -114,10 +116,28 @@ public class PlayerPresenter //TODO : Add clear
     {
         _player.MultiHighlighting = yes;
     }
+
+    public void ClearNumbers()
+    {
+        if (_selected.Count > 0) _player.ClearNumbers(_selected);
+        else _player.ClearNumbers();
+    }
+
+    public void ClearHighlightings()
+    {
+        if (_selected.Count > 0) _player.ClearHighlights(_selected);
+        else _player.ClearHighlights();
+    }
+
+    public void ComputeDefaultPossibilities()
+    {
+        if (_selected.Count > 0) _player.ComputeDefaultPossibilities(_selected);
+        else _player.ComputeDefaultPossibilities();
+    }
     
     //Private-----------------------------------------------------------------------------------------------------------
 
-    private void UpdateNumbers()
+    private void Update()
     {
         _view.ClearNumbers();
 
@@ -126,7 +146,9 @@ public class PlayerPresenter //TODO : Add clear
             for (int col = 0; col < 9; col++)
             {
                 var current = _player[row, col];
-                if(current.IsNumber()) _view.ShowNumber(row, col, current.Number());
+                if(current.IsNumber()) _view.ShowNumber(row, col, current.Number(), current.Editable 
+                    ? _settings.SolvingColor 
+                    : _settings.GivenColor);
                 else
                 {
                     _view.ShowPossibilities(row, col, current.Possibilities(PossibilitiesLocation.Top), PossibilitiesLocation.Top);

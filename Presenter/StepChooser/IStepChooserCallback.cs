@@ -6,7 +6,7 @@ namespace Presenter.StepChooser;
 
 public interface IStepChooserCallback
 {
-    SolverSettings Settings { get; }
+    ISolverSettings Settings { get; }
     void EnableActionsBack();
     void ApplyCommit(BuiltChangeCommit commit);
     public CellColor GetCellColor(int row, int col);

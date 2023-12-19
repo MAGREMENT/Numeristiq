@@ -10,35 +10,49 @@ using Repository;
 
 namespace Presenter;
 
-public class PresenterFactory
+public class ApplicationPresenter
 {
+    private readonly Settings _settings;
     private readonly ISolver _solver;
     private readonly IPlayer _player;
 
-    public PresenterFactory()
+    public ApplicationPresenter()
     {
-        var repository = new JSONRepository<List<StrategyDAO>>("strategies.json");
+        var strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json");
         try
         {
-            repository.Initialize();
+            strategyRepository.Initialize();
         }
         catch (RepositoryInitializationException)
         {
-            repository.New(new List<StrategyDAO>());
+            strategyRepository.New(new List<StrategyDAO>());
         }
-
-        _solver = new SudokuSolver(repository)
+        
+        _solver = new SudokuSolver(strategyRepository) //TODO : To Bind() like settings repository
         {
             StatisticsTracked = false,
             LogsManaged = true
         };
 
         _player = new SudokuPlayer();
+
+        _settings = new Settings();
+        var settingsRepository = new JSONRepository<SettingsDAO>("settings.json");
+        try
+        {
+            settingsRepository.Initialize();
+        }
+        catch (RepositoryInitializationException)
+        {
+            settingsRepository.New(_settings.ToDAO());
+        }
+
+        _settings.Bind(settingsRepository);
     }
 
     public SolverPresenter Create(ISolverView view)
     {
-        return new SolverPresenter(_solver, view);
+        return new SolverPresenter(_solver, view, _settings);
     }
 
     public StrategyManagerPresenter Create(IStrategyManagerView view)
@@ -48,7 +62,7 @@ public class PresenterFactory
 
     public PlayerPresenter Create(IPlayerView view)
     {
-        return new PlayerPresenter(_player, view);
+        return new PlayerPresenter(_player, view, _settings);
     }
 }
 

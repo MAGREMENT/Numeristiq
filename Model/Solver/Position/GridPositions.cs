@@ -33,6 +33,11 @@ public class GridPositions : IReadOnlyGridPositions
         _second = second;
     }
 
+    public static GridPositions Filled()
+    {
+        return new GridPositions(0x3FFFFFFFFFFFFF, 0x7FFFFFF);
+    }
+
     public void Add(int row, int col)
     {
         int n = row * 9 + col;

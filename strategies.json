@@ -243,7 +243,7 @@
   },
   {
     "Name": "Oddagon",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
@@ -285,7 +285,7 @@
   },
   {
     "Name": "Distributed Disjoint Subset",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
@@ -297,13 +297,13 @@
   },
   {
     "Name": "Cell Blossom Loop",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Unit Blossom Loop",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
@@ -327,7 +327,7 @@
   },
   {
     "Name": "Oddagon Forcing Net",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {
       "Maximum number of guardians": "5"

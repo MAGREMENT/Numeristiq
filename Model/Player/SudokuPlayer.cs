@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Global;
 using Global.Enums;
+using Model.Solver.Possibility;
 
 namespace Model.Player;
 
@@ -137,6 +138,128 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         if (yes) Changed?.Invoke();
     }
 
+    public void ClearNumbers(IEnumerable<Cell> cells)
+    {
+        bool yes = false;
+
+        foreach (var c in cells)
+        {
+            if (!yes && _cells[c.Row, c.Column].Editable && !_cells[c.Row, c.Column].IsEmpty())
+            {
+                _historic.NewHistoricPoint();
+                yes = true;
+            }
+            
+            _cells[c.Row, c.Column].Empty();
+        }
+        
+        if(yes) Changed?.Invoke();
+    }
+
+    public void ClearNumbers()
+    {
+        bool yes = false;
+        
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (!yes && _cells[row, col].Editable && !_cells[row, col].IsEmpty())
+                {
+                    _historic.NewHistoricPoint();
+                    yes = true;
+                }
+            
+                _cells[row, col].Empty(); 
+            }
+        }
+
+        if(yes) Changed?.Invoke();
+    }
+    
+    public void ComputeDefaultPossibilities()
+    {
+        var possibilities = new Possibilities();
+        bool yes = false;
+        
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if(_cells[row, col].IsNumber()) continue;
+                
+                PossibilitiesFor(possibilities, row, col);
+                for (int n = 1; n <= 9; n++)
+                {
+                    if (possibilities.Peek(n))
+                    {
+                        if (!yes && !_cells[row, col].PeekPossibility(n, PossibilitiesLocation.Middle))
+                        {
+                            _historic.NewHistoricPoint();
+                            yes = true;
+                        }
+
+                        _cells[row, col].AddPossibility(n, PossibilitiesLocation.Middle);
+                    }
+                    else
+                    {
+                        if (!yes && _cells[row, col].PeekPossibility(n, PossibilitiesLocation.Middle))
+                        {
+                            _historic.NewHistoricPoint();
+                            yes = true;
+                        }
+
+                        _cells[row, col].RemovePossibility(n, PossibilitiesLocation.Middle);
+                    }
+                }
+                
+                possibilities.Reset();
+            }
+        }
+        
+        if(yes) Changed?.Invoke();
+    }
+
+    public void ComputeDefaultPossibilities(IEnumerable<Cell> cells)
+    {
+        var possibilities = new Possibilities();
+        bool yes = false;
+
+        foreach (var c in cells)
+        {
+            if(_cells[c.Row, c.Column].IsNumber()) continue;
+                
+            PossibilitiesFor(possibilities, c.Row, c.Column);
+            for (int n = 1; n <= 9; n++)
+            {
+                if (possibilities.Peek(n))
+                {
+                    if (!yes && !_cells[c.Row, c.Column].PeekPossibility(n, PossibilitiesLocation.Middle))
+                    {
+                        _historic.NewHistoricPoint();
+                        yes = true;
+                    }
+
+                    _cells[c.Row, c.Column].AddPossibility(n, PossibilitiesLocation.Middle);
+                }
+                else
+                {
+                    if (!yes && _cells[c.Row, c.Column].PeekPossibility(n, PossibilitiesLocation.Middle))
+                    {
+                        _historic.NewHistoricPoint();
+                        yes = true;
+                    }
+
+                    _cells[c.Row, c.Column].RemovePossibility(n, PossibilitiesLocation.Middle);
+                }
+            }
+                
+            possibilities.Reset();
+        }
+        
+        if(yes) Changed?.Invoke();
+    }
+
     public void Highlight(HighlightColor color, IEnumerable<Cell> cells)
     {
         bool yes = false;
@@ -195,6 +318,33 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         if (yes) Changed?.Invoke();
     }
 
+    public void ClearHighlights(IEnumerable<Cell> cells)
+    {
+        bool yes = false;
+        
+        foreach (var c in cells)
+        {
+            if (!yes && _highlighting.ContainsKey(c))
+            {
+                _historic.NewHistoricPoint();
+                yes = true;
+            }
+
+            _highlighting.Remove(c);
+        }
+        
+        if (yes) Changed?.Invoke();
+    }
+
+    public void ClearHighlights()
+    {
+        bool yes = _highlighting.Count > 0;
+        
+        if (yes) _historic.NewHistoricPoint();
+        _highlighting.Clear();
+        if(yes) Changed?.Invoke();
+    }
+
     public void MoveBack()
     {
         _historic.MoveBack();
@@ -233,6 +383,31 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             foreach (var entry in _highlighting)
             {
                 yield return new CellHighlighting(entry.Key, entry.Value);
+            }
+        }
+    }
+    
+    //Private-----------------------------------------------------------------------------------------------------------
+
+    private void PossibilitiesFor(Possibilities possibilities, int row, int col)
+    {
+        for (int u = 0; u < 9; u++)
+        {
+            if (u != row && _cells[u, col].IsNumber()) possibilities.Remove(_cells[u, col].Number());
+            if (u != col && _cells[row, u].IsNumber()) possibilities.Remove(_cells[row, u].Number());
+        }
+
+        var startR = row / 3 * 3;
+        var startC = col / 3 * 3;
+        for (int r = 0; r < 3; r++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                var inspectedRow = startR + r;
+                var inspectedCol = startC + c;
+
+                if ((row != inspectedRow || col != inspectedCol) && _cells[inspectedRow, inspectedCol].IsNumber())
+                    possibilities.Remove(_cells[inspectedRow, inspectedCol].Number());
             }
         }
     }

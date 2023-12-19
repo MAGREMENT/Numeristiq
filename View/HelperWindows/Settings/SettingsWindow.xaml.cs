@@ -6,14 +6,12 @@ using View.HelperWindows.Settings.Options;
 
 namespace View.HelperWindows.Settings;
 
-public partial class SolverSettingsWindow
+public partial class SettingsWindow
 {
-    public SolverSettingsWindow(SolverSettings settings)
+    public SettingsWindow(SettingsPage[] settingsPage)
     {
         InitializeComponent();
         
-        var settingsPage = GetSettingsPages(settings);
-
         foreach (var page in settingsPage)
         {
             var tb = new TextBlock
@@ -32,22 +30,12 @@ public partial class SolverSettingsWindow
             Titles.Children.Add(tb);
         }
 
-        ShowSettingsPage(settingsPage[0]);
+        if(settingsPage.Length > 0) ShowSettingsPage(settingsPage[0]);
     }
 
-    private void ShowSettingsPage(Page page)
+    public static SettingsWindow From(ISolverSettings settings)
     {
-        Page.Content = page;
-    }
-
-    private void Finished(object sender, RoutedEventArgs e)
-    {
-        Hide();
-    }
-
-    private static SettingsPage[] GetSettingsPages(SolverSettings settings)
-    {
-        return new SettingsPage[]
+        var pages = new SettingsPage[]
         {
             new("General", 
                 new MultiChoiceOptionCanvas("Action on keyboard :", "Defines the action to be executed when pushing a numpad key", 
@@ -76,5 +64,17 @@ public partial class SolverSettingsWindow
                 new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", settings.UniquenessAllowed,
                     b => settings.UniquenessAllowed = b))
         };
+
+        return new SettingsWindow(pages);
+    }
+
+    private void ShowSettingsPage(Page page)
+    {
+        Page.Content = page;
+    }
+
+    private void Finished(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }

@@ -33,7 +33,7 @@
       <Page Update="HelperWindows\Settings\SettingsPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
-      <Page Update="HelperWindows\Settings\SolverSettingsWindow.xaml">
+      <Page Update="HelperWindows\Settings\SettingsWindow.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
     </ItemGroup>

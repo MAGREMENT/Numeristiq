@@ -19,6 +19,11 @@ public class LinePositions : IReadOnlyLinePositions
         Count = count;
     }
 
+    public static LinePositions Filled()
+    {
+        return new LinePositions(0x1FF, 9);
+    }
+
     public static LinePositions FromBits(int bits)
     {
         return new LinePositions(bits, System.Numerics.BitOperations.PopCount((uint)bits));
@@ -52,6 +57,12 @@ public class LinePositions : IReadOnlyLinePositions
     {
         _pos &= ~(0b111 << (miniUnit * 3));
         Count = System.Numerics.BitOperations.PopCount((uint)_pos);
+    }
+
+    public void Fill()
+    {
+        _pos = 0x1FF;
+        Count = 9;
     }
 
     public void FillMiniGrid(int miniUnit)

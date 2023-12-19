@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using Global;
-using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
-using Model.Solver.StrategiesUtility;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.Strategies;
 
@@ -21,7 +20,6 @@ public class BUGLiteStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -29,97 +27,64 @@ public class BUGLiteStrategy : AbstractStrategy
                 var poss = strategyManager.PossibilitiesAt(row, col);
                 if (poss.Count != 2) continue;
 
-                var i = 0;
-                poss.Next(ref i);
-                var first = i;
-                poss.Next(ref i);
-                var second = i;
-                var bi = new BiValue(first, second);
+                var first = new Cell(row, col);
+                var startR = row / 3;
+                var startC = col / 3;
 
-                if (!biValueMap.TryGetValue(bi, out var list))
+                for (int r = row % 3 + 1; r < 3; r++)
                 {
-                    list = new List<Cell>();
-                    biValueMap[bi] = list;
+                    var row2 = startR + r;
+                    if (row2 == row) continue;
+                    
+                    for (int c = col % 3 + 1; c < 3; c++)
+                    {
+                        var col2 = startC + c;
+                        if (col2 == col) continue;
+
+                        if (!strategyManager.PossibilitiesAt(row2, col2).Equals(poss)) continue;
+
+                        var second = new Cell(row2, col2);
+                        if (Search(strategyManager, first, second, poss,
+                            new GridPositions {first, second})) return;
+                    }
                 }
-
-                list.Add(new Cell(row, col));
             }
-        }
-
-        foreach (var entry in biValueMap)
-        {
-            if (entry.Value.Count < 3) continue;
-
-            if (Search(strategyManager, entry.Value, 0, new GridPositions(), entry.Key)) return;
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, List<Cell> cells, int start, GridPositions positions, BiValue bi)
+    private bool Search(IStrategyManager strategyManager, Cell one, Cell two, IReadOnlyPossibilities possibilities,
+        GridPositions done)
     {
-        for (int i = start; i < cells.Count; i++)
-        {
-            positions.Add(cells[i]);
-
-            if (positions.Count >= 3 && positions.Count % 2 == 1 && Try(strategyManager, positions, bi)) return true;
-
-            Search(strategyManager, cells, i + 1, positions, bi);
-            
-            positions.Remove(cells[i]);
-        }
-
         return false;
     }
 
-    private bool Try(IStrategyManager strategyManager, GridPositions positions, BiValue bi)
+    private IEnumerable<BiCellPossibilities> SearchForColumnMatch(IStrategyManager strategyManager, BiCellPossibilities bcp)
     {
-        var soloRow = UniquenessHelper.SearchExceptionInUnit(Unit.Row, 2, positions);
-        if (soloRow == -1) return false;
-
-        var soloCol = UniquenessHelper.SearchExceptionInUnit(Unit.Column, 2, positions);
-        if (soloCol == -1) return false;
-
-        var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.MiniGrid, 2, positions);
-        if (soloMini == -1) return false;
-
-        var miniRow = soloMini / 3;
-        var miniCol = soloCol / 3;
-        
-        if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
+        for (int miniR = 0; miniR < 3; miniR++)
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(bi.One, soloRow, soloCol);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(bi.Two, soloRow, soloCol);
-        }
+            if (miniR == bcp.One.Row / 3) continue;
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-            new BUGLiteReportBuilder(positions, soloRow, soloCol)) && OnCommitBehavior == OnCommitBehavior.Return;
+            for (int r = 0; r < 3; r++)
+            {
+                var row = miniR * 3 + r;
+
+                var first = new Cell(row, bcp.One.Column);
+                var second = new Cell(row, bcp.Two.Column);
+
+                if (strategyManager.PossibilitiesAt(first).PeekAll(bcp.Possibilities)
+                    && strategyManager.PossibilitiesAt(second).PeekAll(bcp.Possibilities))
+                    yield return new BiCellPossibilities(first, second, bcp.Possibilities);
+            }
+        }
     }
 }
 
+public record BiCellPossibilities(Cell One, Cell Two, IReadOnlyPossibilities Possibilities);
+
 public class BUGLiteReportBuilder : IChangeReportBuilder
 {
-    private readonly IEnumerable<Cell> _gp;
-    private readonly int _row;
-    private readonly int _col;
-
-    public BUGLiteReportBuilder(IEnumerable<Cell> gp, int row, int col)
-    {
-        _gp = gp;
-        _row = row;
-        _col = col;
-    }
-
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
-        {
-            foreach (var cell in _gp)
-            {
-                lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
-            }
-            
-            lighter.HighlightCell(_row, _col, ChangeColoration.CauseOffTwo);
-
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
-        });
+        return ChangeReport.Default(changes);
     }
 }

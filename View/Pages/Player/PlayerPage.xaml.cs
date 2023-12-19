@@ -28,14 +28,15 @@ public partial class PlayerPage : IPlayerView
     private Key _locationModeUp = Key.A;
     private Key _locationModeDown = Key.Q;
 
-    private bool _presenterAvailable = false;
+    private readonly bool _presenterAvailable;
     
-    public PlayerPage(IPageHandler handler, PresenterFactory factory)
+    public PlayerPage(IPageHandler handler, ApplicationPresenter factory)
     {
         InitializeComponent();
 
         _presenter = factory.Create(this);
         _presenterAvailable = true;
+        
         _pageHandler = handler;
 
         _grid = new SudokuGrid(24, 1, 3)
@@ -73,9 +74,9 @@ public partial class PlayerPage : IPlayerView
         _grid.ShowLinePossibilities(row, col, possibilities, location, Brushes.Black);
     }
 
-    public void ShowNumber(int row, int col, int number)
+    public void ShowNumber(int row, int col, int number, CellColor color)
     {
-        _grid.ShowSolution(row, col, number, Brushes.Black);
+        _grid.ShowSolution(row, col, number, ColorManager.ToBrush(color));
     }
 
     public void ClearNumbers()
@@ -248,5 +249,20 @@ public partial class PlayerPage : IPlayerView
     private void MultiHighlightingOff(object sender, RoutedEventArgs e)
     {
         if(_presenterAvailable) _presenter.SetMultiHighlighting(false);
+    }
+
+    private void ClearNumbers(object sender, RoutedEventArgs e)
+    {
+        _presenter.ClearNumbers();
+    }
+
+    private void ClearHighlights(object sender, RoutedEventArgs e)
+    {
+        _presenter.ClearHighlightings();
+    }
+
+    private void ComputeDefault(object sender, RoutedEventArgs e)
+    {
+        _presenter.ComputeDefaultPossibilities();
     }
 }

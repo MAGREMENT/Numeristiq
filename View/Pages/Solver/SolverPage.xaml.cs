@@ -24,7 +24,7 @@ public partial class SolverPage : ISolverView
 
     private StepChooserWindow? _stepChooserWindow;
 
-    public SolverPage(IPageHandler pageHandler, PresenterFactory factory)
+    public SolverPage(IPageHandler pageHandler, ApplicationPresenter factory)
     {
         InitializeComponent();
 
@@ -245,7 +245,7 @@ public partial class SolverPage : ISolverView
 
     private void ShowSettingsWindow(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = new SolverSettingsWindow(_presenter.Settings);
+        var settingsWindow = SettingsWindow.From(_presenter.Settings);
         settingsWindow.Show();
     }
 

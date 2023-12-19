@@ -12,9 +12,9 @@ namespace Presenter.Translators;
 public class HighlighterTranslator : IHighlightable
 {
     private readonly ISolverDrawer _drawer;
-    private readonly SolverSettings _settings;
+    private readonly ISolverSettings _settings;
 
-    public HighlighterTranslator(ISolverDrawer drawer, SolverSettings settings)
+    public HighlighterTranslator(ISolverDrawer drawer, ISolverSettings settings)
     {
         _drawer = drawer;
         _settings = settings;

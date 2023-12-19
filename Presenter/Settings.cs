@@ -1,9 +1,11 @@
 ﻿using Global.Enums;
 using Model;
+using Presenter.Player;
+using Presenter.Solver;
 
-namespace Presenter.Solver;
+namespace Presenter;
 
-public class SolverSettings
+public class Settings : ISolverSettings, IPlayerSettings
 {
     private StateShown _showState = StateShown.Before;
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
@@ -15,7 +17,7 @@ public class SolverSettings
     private CellColor _givenColor = CellColor.Black;
     private CellColor _solvingColor = CellColor.Black;
     private LinkOffsetSidePriority _sidePriority = LinkOffsetSidePriority.Right;
-    private bool _showSameCellLinks = false;
+    private bool _showSameCellLinks;
 
     public event OnSettingChange? AnySettingChanged;
     public event OnSettingChange? ShownStateChanged;
@@ -130,28 +132,12 @@ public class SolverSettings
         }
     }
 
-    
-    private readonly IRepository<SettingsDAO> _repository;
-
-    public SolverSettings(IRepository<SettingsDAO> repository)
+    public void Bind(IRepository<SettingsDAO> repository)
     {
-        _repository = repository;
-    }
-    
-    public void Bind()
-    {
-        try
-        {
-            _repository.Initialize();
-            var download = _repository.Download();
-            if(download is not null) Load(download);
-        }
-        catch (RepositoryInitializationException)
-        {
-            _repository.New(ToDAO());
-        }
+        var download = repository.Download();
+        if(download is not null) Load(download);
         
-        AnySettingChanged += () => _repository.Upload(ToDAO());
+        AnySettingChanged += () => repository.Upload(ToDAO());
     }
     
     private void Load(SettingsDAO DAO)
@@ -169,7 +155,7 @@ public class SolverSettings
         ShowSameCellLinks = DAO.ShowSameCellLinks;
     }
 
-    private SettingsDAO ToDAO()
+    public SettingsDAO ToDAO()
     {
         return new SettingsDAO(StateShown, TranslationType,
             DelayBeforeTransition, DelayAfterTransition, UniquenessAllowed,

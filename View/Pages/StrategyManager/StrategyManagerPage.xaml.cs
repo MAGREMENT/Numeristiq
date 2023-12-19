@@ -11,7 +11,7 @@ public partial class StrategyManagerPage : IStrategyManagerView
     private readonly StrategyManagerPresenter _presenter;
     private readonly IPageHandler _handler;
     
-    public StrategyManagerPage(IPageHandler handler, PresenterFactory factory)
+    public StrategyManagerPage(IPageHandler handler, ApplicationPresenter factory)
     {
         InitializeComponent();
 

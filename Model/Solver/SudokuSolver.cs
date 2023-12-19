@@ -17,6 +17,9 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     private Sudoku _sudoku;
     private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
     private readonly GridPositions[] _positions = new GridPositions[9];
+    private readonly LinePositions[,] _rowsPositions = new LinePositions[9, 9];
+    private readonly LinePositions[,] _colsPositions = new LinePositions[9, 9];
+    private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
     
     public IReadOnlySudoku Sudoku => _sudoku;
     public IReadOnlyList<ISolverLog> Logs => LogManager.Logs;
@@ -65,7 +68,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         SolutionAdded += (_, _, _) => _solutionAddedBuffer++;
         PossibilityRemoved += (_, _, _) => _possibilityRemovedBuffer++;
 
-        Init();
+        InitPossibilities();
         StartState = new SolverState(this);
 
         PreComputer = new PreComputer(this);
@@ -90,7 +93,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
 
-        Reset();
+        ResetPossibilities();
         StartState = new SolverState(this);
 
         LogManager.Clear();
@@ -105,7 +108,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         _sudoku = SudokuTranslator.TranslateToSudoku(state);
         CallOnNewSudokuForEachStrategy();
         
-        Reset();
+        ResetPossibilities();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -279,17 +282,17 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     
     public IReadOnlyLinePositions RowPositionsAt(int row, int number)
     {
-        return _positions[number - 1].RowPositions(row);
+        return _rowsPositions[row, number - 1];
     }
     
     public IReadOnlyLinePositions ColumnPositionsAt(int col, int number)
     {
-        return _positions[number - 1].ColumnPositions(col);
+        return _colsPositions[col, number - 1];
     }
     
     public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
     {
-        return _positions[number - 1].MiniGridPositions(miniRow, miniCol);
+        return _minisPositions[miniRow, miniCol, number - 1];
     }
 
     public IReadOnlyGridPositions PositionsFor(int number)
@@ -336,9 +339,9 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         if (!_possibilities[row, col].Peek(number)) return false;
         
         _sudoku[row, col] = number;
-        UpdateAfterSolutionAdded(number, row, col);
-        if(callEvents) SolutionAdded?.Invoke(number, row, col);
+        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
         
+        if(callEvents) SolutionAdded?.Invoke(number, row, col);
         return true;
     }
 
@@ -347,7 +350,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         if (_sudoku[row, col] == 0) return;
 
         _sudoku[row, col] = 0;
-        Reset();
+        ResetPossibilities();
     }
 
     private bool RemovePossibility(int possibility, int row, int col, bool callEvents = true)
@@ -355,27 +358,12 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         if (!_possibilities[row, col].Remove(possibility)) return false;
         
         _positions[possibility - 1].Remove(row, col);
-        if(callEvents) PossibilityRemoved?.Invoke(possibility, row, col);
+        _rowsPositions[row, possibility - 1].Remove(col);
+        _colsPositions[col, possibility - 1].Remove(row);
+        _minisPositions[row / 3, col / 3, possibility - 1].Remove(row % 3, col % 3);
         
+        if(callEvents) PossibilityRemoved?.Invoke(possibility, row, col);
         return true;
-    }
-
-    private void Init()
-    {
-        InitPossibilities();
-        InitPositions();
-    }
-
-    private void Reset()
-    {
-        ResetPossibilities();
-        ResetPositions();
-    }
-
-    private void UpdateAfterSolutionAdded(int number, int row, int col)
-    {
-        UpdatePossibilitiesAfterSolutionAdded(number, row, col);
-        UpdatePositionsAfterSolutionAdded(number, row, col);
     }
 
     private void InitPossibilities()
@@ -385,7 +373,12 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
             for (int j = 0; j < 9; j++)
             {
                 _possibilities[i, j] = new Possibilities();
+                _rowsPositions[i, j] = LinePositions.Filled();
+                _colsPositions[i, j] = LinePositions.Filled();
+                _minisPositions[i / 3, i % 3, j] = MiniGridPositions.Filled(i / 3, i % 3);
             }
+            
+            _positions[i] = GridPositions.Filled();
         }
         
         for (int i = 0; i < 9; i++)
@@ -399,7 +392,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
             }
         }
     }
-    
+
     private void ResetPossibilities()
     {
         for (int i = 0; i < 9; i++)
@@ -407,7 +400,12 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
             for (int j = 0; j < 9; j++)
             {
                 _possibilities[i, j].Reset();
+                _rowsPositions[i, j].Fill();
+                _colsPositions[i, j].Fill();
+                _minisPositions[i / 3, i % 3, j].Fill();
             }
+            
+            _positions[i].Fill();
         }
         
         for (int i = 0; i < 9; i++)
@@ -424,75 +422,37 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     private void UpdatePossibilitiesAfterSolutionAdded(int number, int row, int col)
     {
+        int miniRow = row / 3,
+            miniCol = col / 3,
+            gridRow = row % 3,
+            gridCol = col % 3,
+            startRow = miniRow * 3,
+            startCol = miniCol * 3;
+        
         _possibilities[row, col].RemoveAll();
-        
-        for (int i = 0; i < 9; i++)
-        {
-            _possibilities[row, i].Remove(number);
-            _possibilities[i, col].Remove(number);
-        }
-        
-        int startRow = row / 3 * 3;
-        int startColumn = col / 3 * 3;
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                _possibilities[startRow + i, startColumn + j].Remove(number);
-            }
-        }
-    }
-    
-    private void InitPositions()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            _positions[i] = new GridPositions();
-            _positions[i].Fill();
-        }
-        
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                if (_sudoku[i, j] != 0)
-                {
-                    UpdatePositionsAfterSolutionAdded(_sudoku[i, j], i, j);
-                }
-            }
-        }
-    }
-
-    private void ResetPositions()
-    {
-        for (int i = 0; i < 9; i++)
-        {
-            _positions[i].Fill();
-        }
-        
-        for (int i = 0; i < 9; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
-                if (_sudoku[i, j] != 0)
-                {
-                    UpdatePositionsAfterSolutionAdded(_sudoku[i, j], i, j);
-                }
-            }
-        }
-    }
-
-    private void UpdatePositionsAfterSolutionAdded(int number, int row, int col)
-    {
         for (int i = 0; i < 9; i++)
         {
             _positions[i].Remove(row, col);
+            _rowsPositions[row, i].Remove(col);
+            _colsPositions[col, i].Remove(row);
+            _minisPositions[miniRow, miniCol, i].Remove(gridRow, gridCol);
         }
         
-        var pos = _positions[number - 1];
-        pos.VoidRow(row);
-        pos.VoidColumn(col);
-        pos.VoidMiniGrid(row / 3, col / 3);
+        for (int i = 0; i < 9; i++)
+        {
+            RemovePossibilityCheckLess(number, row, i);
+            RemovePossibilityCheckLess(number, i, col);
+            RemovePossibilityCheckLess(number,  startRow + i / 3, startCol + i % 3);
+        }
+    }
+    
+    private void RemovePossibilityCheckLess(int possibility, int row, int col)
+    {
+        _possibilities[row, col].Remove(possibility);
+        _positions[possibility - 1].Remove(row, col);
+        _rowsPositions[row, possibility - 1].Remove(col);
+        _colsPositions[col, possibility - 1].Remove(row);
+        _minisPositions[row / 3, col / 3, possibility - 1].Remove(row % 3, col % 3);
     }
 }
 

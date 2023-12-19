@@ -19,26 +19,21 @@ public class HiddenSingleStrategy : AbstractStrategy
     {
         for (int number = 1; number <= 9; number++)
         {
-            for (int row = 0; row < 9; row++)
+            for (int i = 0; i < 3; i++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
-                if (ppir.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(number, row, ppir.First());
-            }
-
-            for (int col = 0; col < 9; col++)
-            {
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
-                if (ppic.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(number, ppic.First(), col);
-            }
-
-            for (int miniRow = 0; miniRow < 3; miniRow++)
-            {
-                for (int miniCol = 0; miniCol < 3; miniCol++)
+                for (int j = 0; j < 3; j++)
                 {
-                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
-                    if (ppimn.Count != 1) continue;
+                    var u = i * 3 + j;
                     
-                    var pos = ppimn.First();
+                    var rp = strategyManager.RowPositionsAt(u, number);
+                    if (rp.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
+                    
+                    var cp = strategyManager.ColumnPositionsAt(u, number);
+                    if (cp.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
+                    
+                    var mp = strategyManager.MiniGridPositionsAt(i, j, number);
+                    if (mp.Count != 1) continue;
+                    var pos = mp.First();
                     strategyManager.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
                 }
             }

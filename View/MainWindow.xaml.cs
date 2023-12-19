@@ -21,7 +21,7 @@ public partial class MainWindow : IPageHandler
     {
         InitializeComponent();
 
-        var factory = new PresenterFactory();
+        var factory = new ApplicationPresenter();
         
         _pages = new HandledPage[]
         {

@@ -7,7 +7,7 @@ namespace Model.Solver.StrategiesUtility.Oddagons;
 
 public static class OddagonSearcher
 {
-    private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 3);
+    private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 5);
 
     public static List<AlmostOddagon> Search(IStrategyManager strategyManager)
     {

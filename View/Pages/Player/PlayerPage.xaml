@@ -31,6 +31,15 @@
                 
                 <CheckBox VerticalContentAlignment="Center" Margin="0, 10, 0, 0" FontSize="15" IsChecked="True"
                           Checked="MultiHighlightingOn" Unchecked="MultiHighlightingOff">Multi-Highlighting</CheckBox>
+                
+                <Button FontSize="15" HorizontalAlignment="Center" Click="ClearNumbers" Width="150" Height="25"
+                        Margin="0, 10, 0, 0" VerticalContentAlignment="Center">Clear Numbers</Button>
+                
+                <Button FontSize="15" HorizontalAlignment="Center" Click="ClearHighlights" Width="150" Height="25"
+                        Margin="0, 10, 0, 0" VerticalContentAlignment="Center">Clear Highlights</Button>
+                
+                <Button FontSize="15" HorizontalAlignment="Center" Click="ComputeDefault" Width="150" Height="25"
+                        Margin="0, 10, 0, 0" VerticalContentAlignment="Center">Compute Default</Button>
             </WrapPanel>
         </WrapPanel>
     </WrapPanel>
