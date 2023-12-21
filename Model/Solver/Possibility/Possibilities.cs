@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Model.Solver.Strategies;
 
 namespace Model.Solver.Possibility;
 
@@ -224,6 +223,19 @@ public class Possibilities : IReadOnlyPossibilities
         }
         
         return builder.ToString();
+    }
+
+    public int[] ToArray()
+    {
+        var result = new int[Count];
+        
+        var cursor = 0;
+        foreach (var n in this)
+        {
+            result[cursor++] = n;
+        }
+
+        return result;
     }
     
     public IEnumerator<int> GetEnumerator()

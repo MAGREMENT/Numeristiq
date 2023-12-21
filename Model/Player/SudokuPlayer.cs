@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Global;
 using Global.Enums;
+using Model.Solver;
 using Model.Solver.Possibility;
 
 namespace Model.Player;
@@ -353,6 +354,49 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
     public void MoveForward()
     {
         _historic.MoveForward();
+    }
+
+    public void Paste(Sudoku s)
+    {
+        _historic.CreateBuffer();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                _cells[row, col].Empty();
+                if (s[row, col] != 0) _cells[row, col].SetNumber(s[row, col]);
+            }
+        }
+        
+        _historic.PushBufferIfDifferent();
+    }
+
+    public void Paste(SolverState ss)
+    {
+        _historic.CreateBuffer();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                _cells[row, col].Empty();
+                var current = ss.At(row, col);
+                if (current.IsPossibilities)
+                {
+                    foreach (var p in current.AsPossibilities)
+                    {
+                        _cells[row, col].AddPossibility(p, PossibilitiesLocation.Middle);
+                    }
+                }
+                else
+                {
+                    _cells[row, col].SetNumber(current.AsNumber);
+                }
+            }
+        }
+        
+        _historic.PushBufferIfDifferent();
     }
 
     public void ShowHistoricPoint(HistoricPoint point)

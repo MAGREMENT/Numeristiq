@@ -251,12 +251,12 @@ public partial class SolverPage : ISolverView
 
     private void Copy(object sender, RoutedEventArgs e)
     {
-        _presenter.CopyGrid();
+        _presenter.Copy();
     }
 
     private void Paste(object sender, RoutedEventArgs e)
     {
-        _presenter.PasteGrid(Clipboard.GetText());
+        _presenter.Paste(Clipboard.GetText());
     }
 
     public override void OnShow()
@@ -278,10 +278,10 @@ public partial class SolverPage : ISolverView
         {
             case Key.X :
             case Key.C :
-                _presenter.CopyGrid();
+                _presenter.Copy();
                 break;
             case Key.V :
-                _presenter.PasteGrid(Clipboard.GetText());
+                _presenter.Paste(Clipboard.GetText());
                 break;
             case Key.S :
                 TakeScreenShot(null, new RoutedEventArgs());

@@ -187,12 +187,18 @@
   },
   {
     "Name": "Unique Rectangles",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
   {
     "Name": "Unavoidable Rectangles",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
+    "Name": "BUG-Lite",
     "Used": true,
     "Behavior": 0,
     "Args": {}

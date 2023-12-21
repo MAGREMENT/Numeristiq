@@ -134,6 +134,19 @@ public class PlayerPresenter //TODO : Add clear
         if (_selected.Count > 0) _player.ComputeDefaultPossibilities(_selected);
         else _player.ComputeDefaultPossibilities();
     }
+
+    public void Paste(string s)
+    {
+        switch (SudokuTranslator.TryGetFormat(s))
+        {
+            case SudokuStringFormat.Line :
+                _player.Paste(SudokuTranslator.TranslateToSudoku(s));
+                break;
+            case SudokuStringFormat.Grid :
+                _player.Paste(SudokuTranslator.TranslateToState(s, _settings.TransformSoloPossibilityIntoGiven));
+                break;
+        }
+    }
     
     //Private-----------------------------------------------------------------------------------------------------------
 

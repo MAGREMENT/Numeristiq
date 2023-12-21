@@ -192,14 +192,23 @@ public class SolverPresenter : IStepChooserCallback
         ChangeShownState(_solver.CurrentState);
     }
 
-    public void CopyGrid()
+    public void Copy()
     {
         _view.ToClipboard(SudokuTranslator.TranslateToGrid(_shownState));
     }
 
-    public void PasteGrid(string grid)
+    public void Paste(string s)
     {
-        _solver.SetState(SudokuTranslator.TranslateToState(grid, Settings.TransformSoloPossibilityIntoGiven));
+        switch (SudokuTranslator.TryGetFormat(s))
+        {
+            case SudokuStringFormat.Line :
+                _solver.SetSudoku(SudokuTranslator.TranslateToSudoku(s));
+                break;
+            case SudokuStringFormat.Grid :
+                _solver.SetState(SudokuTranslator.TranslateToState(s, Settings.TransformSoloPossibilityIntoGiven));
+                break;
+        }
+        
         ClearLogs();
         ClearLogFocus();
         ChangeShownState(_solver.CurrentState);

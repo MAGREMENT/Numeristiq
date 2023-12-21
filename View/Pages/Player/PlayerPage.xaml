@@ -10,6 +10,10 @@
     <WrapPanel Orientation="Vertical">
         <Menu Height="25">
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
+            
+            <MenuItem Header="Edit" FontSize="15">
+                <MenuItem FontSize="12" Header="Paste" Click="Paste" InputGestureText="CTRL+V"></MenuItem>
+            </MenuItem>
         </Menu>
         
         <WrapPanel Orientation="Horizontal" x:Name="Panel">

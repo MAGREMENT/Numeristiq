@@ -175,43 +175,55 @@ public partial class PlayerPage : IPlayerView
 
     private void AnalyzeKeyDown(object? sender, KeyEventArgs args)
     {
-        switch (args.Key)
+        if (args.KeyboardDevice.Modifiers != ModifierKeys.Control)
         {
-            case Key.D1 :
-            case Key.NumPad1 : _presenter.ApplyChange(1);
-                break;
-            case Key.D2 :
-            case Key.NumPad2 : _presenter.ApplyChange(2);
-                break;
-            case Key.D3 :
-            case Key.NumPad3 : _presenter.ApplyChange(3);
-                break;
-            case Key.D4 :
-            case Key.NumPad4 : _presenter.ApplyChange(4);
-                break;
-            case Key.D5 :
-            case Key.NumPad5 : _presenter.ApplyChange(5);
-                break;
-            case Key.D6 :
-            case Key.NumPad6 : _presenter.ApplyChange(6);
-                break;
-            case Key.D7 :
-            case Key.NumPad7 : _presenter.ApplyChange(7);
-                break;
-            case Key.D8 :
-            case Key.NumPad8 : _presenter.ApplyChange(8);
-                break;
-            case Key.D9 :
-            case Key.NumPad9 : _presenter.ApplyChange(9);
-                break;
-            case Key.Return : _presenter.Remove();
-                break;
-            default:
-                if (args.Key == _locationModeUp) MoveUp(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
-                else if (args.Key == _locationModeDown) MoveDown(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
-                else if (args.Key == _changeModeUp) MoveUp(ChangeModes.Children, _currentChangeMode)?.InvokeSelection();
-                else if (args.Key == _changeModeDown) MoveDown(ChangeModes.Children, _currentChangeMode)?.InvokeSelection();
-                break;
+            switch (args.Key)
+            {
+                case Key.V :
+                    _presenter.Paste(Clipboard.GetText());
+                    break;
+            }
+        }
+        else
+        {
+            switch (args.Key)
+            {
+                case Key.D1 :
+                case Key.NumPad1 : _presenter.ApplyChange(1);
+                    break;
+                case Key.D2 :
+                case Key.NumPad2 : _presenter.ApplyChange(2);
+                    break;
+                case Key.D3 :
+                case Key.NumPad3 : _presenter.ApplyChange(3);
+                    break;
+                case Key.D4 :
+                case Key.NumPad4 : _presenter.ApplyChange(4);
+                    break;
+                case Key.D5 :
+                case Key.NumPad5 : _presenter.ApplyChange(5);
+                    break;
+                case Key.D6 :
+                case Key.NumPad6 : _presenter.ApplyChange(6);
+                    break;
+                case Key.D7 :
+                case Key.NumPad7 : _presenter.ApplyChange(7);
+                    break;
+                case Key.D8 :
+                case Key.NumPad8 : _presenter.ApplyChange(8);
+                    break;
+                case Key.D9 :
+                case Key.NumPad9 : _presenter.ApplyChange(9);
+                    break;
+                case Key.Return : _presenter.Remove();
+                    break;
+                default:
+                    if (args.Key == _locationModeUp) MoveUp(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
+                    else if (args.Key == _locationModeDown) MoveDown(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
+                    else if (args.Key == _changeModeUp) MoveUp(ChangeModes.Children, _currentChangeMode)?.InvokeSelection();
+                    else if (args.Key == _changeModeDown) MoveDown(ChangeModes.Children, _currentChangeMode)?.InvokeSelection();
+                    break;
+            } 
         }
     }
     
@@ -264,5 +276,10 @@ public partial class PlayerPage : IPlayerView
     private void ComputeDefault(object sender, RoutedEventArgs e)
     {
         _presenter.ComputeDefaultPossibilities();
+    }
+
+    private void Paste(object sender, RoutedEventArgs e)
+    {
+        _presenter.Paste(Clipboard.GetText());
     }
 }

@@ -2,6 +2,7 @@
 using Global;
 using Global.Enums;
 using Model.Player;
+using Model.Solver;
 
 namespace Model;
 
@@ -27,6 +28,8 @@ public interface IPlayer : IPlayerState
     public void ClearHighlights();
     public void MoveBack();
     public void MoveForward();
+    public void Paste(Sudoku s);
+    public void Paste(SolverState ss);
 }
 
 public delegate void OnChange();

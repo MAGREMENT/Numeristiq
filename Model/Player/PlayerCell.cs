@@ -115,7 +115,27 @@ public struct PlayerCell
         
         _bits = 0;
     }
-    
+
+    public override bool Equals(object? obj)
+    {
+        return obj is PlayerCell pc && pc == this;
+    }
+
+    public override int GetHashCode()
+    {
+        return _bits;
+    }
+
+    public static bool operator ==(PlayerCell left, PlayerCell right)
+    {
+        return left._bits == right._bits;
+    }
+
+    public static bool operator !=(PlayerCell left, PlayerCell right)
+    {
+        return !(left == right);
+    }
+
     //Private-----------------------------------------------------------------------------------------------------------
     
     private static bool Peek(int bits, int n)
