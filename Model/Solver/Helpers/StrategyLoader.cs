@@ -105,6 +105,7 @@ public class StrategyLoader : IStrategyLoader
         {BlossomLoopStrategy.OfficialNameForCell, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new CellType())},
         {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new UnitType())},
         {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
+        {ReverseBUGLiteStrategy.OfficialName, new ReverseBUGLiteStrategy()}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

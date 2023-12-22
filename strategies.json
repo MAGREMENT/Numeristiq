@@ -114,6 +114,12 @@
     "Args": {}
   },
   {
+    "Name": "Reverse BUG-Lite",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
     "Name": "Empty Rectangle",
     "Used": true,
     "Behavior": 1,
@@ -199,7 +205,7 @@
   },
   {
     "Name": "BUG-Lite",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },
@@ -353,7 +359,7 @@
   },
   {
     "Name": "Brute Force",
-    "Used": false,
+    "Used": true,
     "Behavior": 1,
     "Args": {}
   }
