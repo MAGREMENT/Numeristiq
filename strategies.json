@@ -187,7 +187,7 @@
   },
   {
     "Name": "Unique Rectangles",
-    "Used": false,
+    "Used": true,
     "Behavior": 0,
     "Args": {}
   },

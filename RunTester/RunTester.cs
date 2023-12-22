@@ -49,11 +49,12 @@ public class RunTester
         
         _currentRunResult = new RunResult();
         
-        _currentSolver = new SudokuSolver(_repository)
+        _currentSolver = new SudokuSolver
         {
             LogsManaged = false,
             StatisticsTracked = true
         };
+        _currentSolver.Bind(_repository);
         if(_toWaitForAll) _currentSolver.StrategyLoader.ChangeStrategyBehaviorForAll(OnCommitBehavior.WaitForAll);
 
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);

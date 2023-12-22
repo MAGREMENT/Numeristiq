@@ -11,6 +11,9 @@
         <Menu Height="25">
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
             
+            <MenuItem Header="File" FontSize="15">
+                <MenuItem FontSize="12" Header="Settings" Click="Settings"></MenuItem>
+            </MenuItem>
             <MenuItem Header="Edit" FontSize="15">
                 <MenuItem FontSize="12" Header="Paste" Click="Paste" InputGestureText="CTRL+V"></MenuItem>
             </MenuItem>
@@ -32,9 +35,6 @@
                 
                 <local:HighlightColorsUserControl Width="100" Margin="0, 10, 0, 0" HorizontalAlignment="Left"
                                                   x:Name="Colors"/>
-                
-                <CheckBox VerticalContentAlignment="Center" Margin="0, 10, 0, 0" FontSize="15" IsChecked="True"
-                          Checked="MultiHighlightingOn" Unchecked="MultiHighlightingOff">Multi-Highlighting</CheckBox>
                 
                 <Button FontSize="15" HorizontalAlignment="Center" Click="ClearNumbers" Width="150" Height="25"
                         Margin="0, 10, 0, 0" VerticalContentAlignment="Center">Clear Numbers</Button>

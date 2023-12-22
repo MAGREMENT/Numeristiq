@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Global.Enums;
+using Presenter.Player;
 using Presenter.Solver;
 using View.HelperWindows.Settings.Options;
 
@@ -63,6 +64,30 @@ public partial class SettingsWindow
             new("Solver",
                 new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", settings.UniquenessAllowed,
                     b => settings.UniquenessAllowed = b))
+        };
+
+        return new SettingsWindow(pages);
+    }
+
+    public static SettingsWindow From(IPlayerSettings settings)
+    {
+        var pages = new SettingsPage[]
+        {
+            new("General", 
+                new CheckBoxOptionCanvas("Solo to given", "Decides if a cell with only one possibility should be transformed into a given when pasting",
+                    settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
+            new("Graphics",
+                new CheckBoxOptionCanvas("Multi-color highlighting", "Enables multiple colors in a single cell", settings.MultiColorHighlighting,
+                    b => settings.MultiColorHighlighting = b),
+                new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", (int)settings.GivenColor, 
+                    i => settings.GivenColor = (CellColor)i),
+                new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", (int)settings.SolvingColor,
+                    i => settings.SolvingColor = (CellColor)i),
+                new SliderOptionCanvas("Highlighting start angle", "Defines the starting angle when highlighting a cell", 360, 
+                    0, 5, settings.StartAngle, i => settings.StartAngle = i),
+                new MultiChoiceOptionCanvas("Highlighting rotation", "Defines the direction of the rotation when highlighting a cell",
+                    (int)settings.RotationDirection, i => settings.RotationDirection = (RotationDirection)i, "Clock wise",
+                    "Counter clock wise"))
         };
 
         return new SettingsWindow(pages);

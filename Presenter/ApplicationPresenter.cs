@@ -18,6 +18,11 @@ public class ApplicationPresenter
 
     public ApplicationPresenter()
     {
+        var solver = new SudokuSolver
+        {
+            StatisticsTracked = false,
+            LogsManaged = true
+        };
         var strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json");
         try
         {
@@ -27,12 +32,9 @@ public class ApplicationPresenter
         {
             strategyRepository.New(new List<StrategyDAO>());
         }
-        
-        _solver = new SudokuSolver(strategyRepository) //TODO : To Bind() like settings repository
-        {
-            StatisticsTracked = false,
-            LogsManaged = true
-        };
+
+        solver.Bind(strategyRepository);
+        _solver = solver;
 
         _player = new SudokuPlayer();
 

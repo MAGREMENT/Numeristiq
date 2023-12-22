@@ -55,12 +55,11 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     private readonly StrategyLoader _strategyLoader;
 
-    public SudokuSolver(IRepository<List<StrategyDAO>> repository) : this(new Sudoku(), repository) { }
+    public SudokuSolver() : this(new Sudoku()) { }
 
-    private SudokuSolver(Sudoku s, IRepository<List<StrategyDAO>> repository)
+    private SudokuSolver(Sudoku s)
     {
-        _strategyLoader = new StrategyLoader(repository);
-        _strategyLoader.Load();
+        _strategyLoader = new StrategyLoader();
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
@@ -82,6 +81,11 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
+    }
+
+    public void Bind(IRepository<List<StrategyDAO>> repository)
+    {
+        _strategyLoader.Bind(repository);
     }
 
     //Solver------------------------------------------------------------------------------------------------------------

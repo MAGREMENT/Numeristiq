@@ -8,10 +8,6 @@ public class Sudoku : IReadOnlySudoku
     private const int GridSize = 9;
 
     private readonly int[,] _grid = new int[GridSize, GridSize];
-
-    public Sudoku()
-    {
-    }
     
     public bool IsComplete()
     {

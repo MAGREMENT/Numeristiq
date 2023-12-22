@@ -202,67 +202,28 @@ public class SudokuGrid : FrameworkElement
         _components[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
                 _cellSize, _cellSize), new SolidColorBrush(color)));
     }
-
-    public void FillCell(int row, int col, Color one, Color two)
+    
+    public void FillCell(int row, int col, double startAngle, int rotationFactor, params Color[] colors)
     {
-        var half = (double)_cellSize / 2;
-        var center = Center(row, col);
-        
-        _components[CellsHighlightIndex].Add(new FilledPolygonComponent(new SolidColorBrush(one),
-            center, new Point(center.X + half, center.Y - half), new Point(center.X + half, center.Y + half),
-            new Point(center.X - half, center.Y + half)));
-        
-        _components[CellsHighlightIndex].Add(new FilledPolygonComponent(new SolidColorBrush(two),
-            center, new Point(center.X - half, center.Y + half), new Point(center.X - half, center.Y - half),
-            new Point(center.X + half, center.Y - half)));
-    }
-
-    private const double StartAngle = Math.PI / 4;
-    public void FillCell(int row, int col, params Color[] colors)
-    {
-        switch (colors.Length)
+        if (colors.Length == 0) return;
+        if (colors.Length == 1)
         {
-            case 0:
-                return;
-            case 1:
-                FillCell(row, col, colors[0]);
-                return;
-            case 2:
-                FillCell(row, col, colors[0], colors[1]);
-                return;
+            FillCell(row, col, colors[0]);
+            return;
         }
-
-        var half = (double)_cellSize / 2;
+        
         var center = Center(row, col);
-        var startPoint = new Point(center.X + half, center.Y - half);
-        var angle = 0.0;
+        var angle = startAngle;
         var angleDelta = 2 * Math.PI / colors.Length;
-        var currentOrientation = Right;
 
         var list = _components[CellsHighlightIndex];
         foreach (var color in colors)
         {
-            angle += angleDelta;
-            var info = AngleInformation(StartAngle - angle);
-            
-            double delta = info[2] * half * Math.Tan(info[1]);
-            Point next = info[0] switch
-            {
-                Right => new Point(center.X + half, center.Y + delta),
-                Top => new Point(center.X + delta, center.Y - half),
-                Left => new Point(center.X - half, center.Y + delta),
-                Bottom => new Point(center.X + delta, center.Y + half),
-                _ => default
-            };
-
-            List<Point> points = new() { center, startPoint };
-            points.AddRange(ComputeAdditionalPoints(currentOrientation, (int)info[0], center, half));
-            points.Add(next);
-            
-            list.Add(new FilledPolygonComponent(new SolidColorBrush(color), points));
-
-            startPoint = next;
-            currentOrientation = (int)info[0];
+            var next = angle + rotationFactor * angleDelta;
+            list.Add(new FilledPolygonComponent(new SolidColorBrush(color),
+                MathUtility.GetMultiColorHighlightingPolygon(center, _cellSize, 
+                    _cellSize, angle, next, rotationFactor)));
+            angle = next;
         }
     }
 

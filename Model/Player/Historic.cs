@@ -27,13 +27,13 @@ public class Historic
         _buffer = HistoricPoint.From(_creator);
     }
 
-    public void PushBufferIfDifferent()
+    public bool PushBufferIfDifferent()
     {
-        if (_buffer is null) return;
+        if (_buffer is null) return false;
         if (_buffer.IsSame(_creator))
         {
             _buffer = null;
-            return;
+            return false;
         }
         
         if (_cursor < _back.Count) _back.RemoveRange(_cursor, _back.Count - _cursor);
@@ -46,6 +46,7 @@ public class Historic
         _cursor = _back.Count;
         
         MoveAvailabilityChanged?.Invoke(CanMoveBack(),  CanMoveForward());
+        return true;
     }
     
     public void NewHistoricPoint()

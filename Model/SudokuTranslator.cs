@@ -167,7 +167,9 @@ public static class SudokuTranslator
 
     public static SolverState TranslateToState(string grid, bool soloPossibilityToGiven)
     {
+        grid += ' ';
         var cellStates = new CellState[9, 9];
+        
         try
         {
             int i = 0;
@@ -175,7 +177,7 @@ public static class SudokuTranslator
             var numberBuffer = -1;
             var isNumber = false;
             Possibilities? possibilitiesBuffer = null;
-            while (pos < 81)
+            while (pos < 81 && i < grid.Length)
             {
                 var c = grid[i];
                     

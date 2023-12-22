@@ -1,9 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
+using Model.Solver.StrategiesUtility;
+using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 
@@ -22,8 +25,11 @@ public class BUGLiteStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyManager strategyManager) //TODO correct by adding single possibility condition
+    public override void Apply(IStrategyManager strategyManager)
     {
+        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
+        var structuresDone = new HashSet<GridPositions>();
+        
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -46,62 +52,167 @@ public class BUGLiteStrategy : AbstractStrategy
 
                         var second = new Cell(row2, col2);
                         var bcp = new BiCellPossibilities(first, second, poss);
-                        var conditions = new List<IBUGLiteCondition>();
-                        if (row != row2) conditions.Add(new RowBUGLiteCondition(bcp));
-                        if (col != col2) conditions.Add(new ColumnBUGLiteCondition(bcp));
+                        var conditionsToMeet = new List<IBUGLiteCondition>();
+                        if (row != row2)
+                        {
+                            foreach (var p in poss)
+                            {
+                                conditionsToMeet.Add(new RowBUGLiteCondition(first, second, p));
+                            }
+                        }
+
+                        if (col != col2)
+                        {
+                            foreach (var p in poss)
+                            {
+                                conditionsToMeet.Add(new ColumnBUGLiteCondition(first, second, p));
+                            }
+                        }
                         
-                        if (Search(strategyManager, new List<BiCellPossibilities> {bcp},
-                            new GridPositions {first, second}, conditions)) return;
+                        if (Search(strategyManager, new HashSet<BiCellPossibilities> {bcp},
+                            new GridPositions {first, second}, conditionsToMeet,
+                            new HashSet<IBUGLiteCondition>(), structuresDone)) return;
                     }
                 }
             }
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, List<BiCellPossibilities> bcp, GridPositions done, List<IBUGLiteCondition> conditions)
+    private bool Search(IStrategyManager strategyManager, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
+        List<IBUGLiteCondition> conditionsToMeet, HashSet<IBUGLiteCondition> conditionsMet, HashSet<GridPositions> structuresDone)
     {
-        var current = conditions[0];
-        conditions.RemoveAt(0);
+        var current = conditionsToMeet[0];
+        conditionsToMeet.RemoveAt(0);
+        conditionsMet.Add(current);
 
-        foreach (var match in current.ConditionMatches(strategyManager, done))
+        foreach (var match in current.ConditionMatches(strategyManager, structure))
         {
-            done.Add(match.BiCellPossibilities.One);
-            done.Add(match.BiCellPossibilities.Two);
-            conditions.AddRange(match.OtherConditions);
+            bool ok = true;
+            foreach (var otherCondition in match.OtherConditions)
+            {
+                if (conditionsMet.Contains(otherCondition))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (!ok) continue;
+            
+            structure.Add(match.BiCellPossibilities.One);
+            structure.Add(match.BiCellPossibilities.Two);
+            if (structuresDone.Contains(structure))
+            {
+                structure.Remove(match.BiCellPossibilities.One);
+                structure.Remove(match.BiCellPossibilities.Two);
+                continue;
+            }
+
+            structuresDone.Add(structure.Copy());
+
+            List<IBUGLiteCondition> met = new();
+            foreach (var otherCondition in match.OtherConditions)
+            {
+                var i = conditionsToMeet.IndexOf(otherCondition);
+                if (i == -1) conditionsToMeet.Add(otherCondition);
+                else
+                {
+                    conditionsToMeet.RemoveAt(i);
+                    conditionsMet.Add(otherCondition);
+                    met.Add(otherCondition);
+                }
+            }
+
             bcp.Add(match.BiCellPossibilities);
 
-            if (conditions.Count == 0)
+            if (conditionsToMeet.Count == 0)
             {
-                if(Process(strategyManager, bcp)) return true;
+                if (Process(strategyManager, bcp)) return true;
             }
-            else if (done.Count < _maxStructSize && Search(strategyManager, bcp, done, conditions)) return true;
-
-            done.Remove(match.BiCellPossibilities.One);
-            done.Remove(match.BiCellPossibilities.Two);
-            conditions.RemoveRange(conditions.Count - match.OtherConditions.Length, match.OtherConditions.Length);
-            bcp.RemoveAt(bcp.Count - 1);
+            else if (structure.Count < _maxStructSize &&
+                      Search(strategyManager, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
+            
+            structure.Remove(match.BiCellPossibilities.One);
+            structure.Remove(match.BiCellPossibilities.Two);
+            bcp.Remove(match.BiCellPossibilities);
+            var count = match.OtherConditions.Length - met.Count;
+            conditionsToMeet.RemoveRange(conditionsToMeet.Count - count, count);
+            foreach (var c in met)
+            {
+                conditionsMet.Remove(c);
+                conditionsToMeet.Add(c);
+            }
         }
+
+        conditionsToMeet.Insert(0, current);
+        conditionsMet.Remove(current);
         
         return false;
     }
 
-    private bool Process(IStrategyManager strategyManager, List<BiCellPossibilities> bcp)
+    private bool Process(IStrategyManager strategyManager, HashSet<BiCellPossibilities> bcp)
     {
-        var notInStructure = new List<Cell>();
+        var cellsNotInStructure = new List<Cell>();
+        var possibilitiesNotInStructure = Possibilities.NewEmpty();
 
         foreach (var b in bcp)
         {
-            if(strategyManager.PossibilitiesAt(b.One).Difference(b.Possibilities).Count > 0) notInStructure.Add(b.One);
+            var no1 = strategyManager.PossibilitiesAt(b.One).Difference(b.Possibilities);
+            if (no1.Count > 0)
+            {
+                cellsNotInStructure.Add(b.One);
+                foreach (var p in no1)
+                {
+                    possibilitiesNotInStructure.Add(p);
+                }
+            }
 
-            if(strategyManager.PossibilitiesAt(b.Two).Difference(b.Possibilities).Count > 0) notInStructure.Add(b.Two);
+            var no2 = strategyManager.PossibilitiesAt(b.Two).Difference(b.Possibilities);
+            if (no2.Count > 0)
+            {
+                cellsNotInStructure.Add(b.Two);
+                foreach (var p in no2)
+                {
+                    possibilitiesNotInStructure.Add(p);
+                }
+            }
         }
 
-        if (notInStructure.Count == 1)
+        if (cellsNotInStructure.Count == 1)
         {
-            var c = notInStructure[0];
+            var c = cellsNotInStructure[0];
             foreach (var p in FindStructurePossibilitiesFor(c, bcp))
             {
                 strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, c);
+            }
+        }
+        else if (cellsNotInStructure.Count == 2)
+        {
+            var p1 = FindStructurePossibilitiesFor(cellsNotInStructure[0], bcp);
+            var p2 = FindStructurePossibilitiesFor(cellsNotInStructure[1], bcp);
+            if(p1.Equals(p2))
+            {
+                var asArray = p1.ToArray();
+                for (int i = 0; i < 2; i++)
+                {
+                    var cp1 = new CellPossibility(cellsNotInStructure[0], asArray[i]);
+                    var cp2 = new CellPossibility(cellsNotInStructure[1], asArray[i]);
+                    if (strategyManager.GraphManager.SimpleLinkGraph.HasLinkTo(cp1, cp2, LinkStrength.Strong))
+                    {
+                        var other = asArray[(i + 1) % 2];
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[1]);
+                    }
+                }
+            }
+        }
+
+        if (possibilitiesNotInStructure.Count == 1)
+        {
+            var p = possibilitiesNotInStructure.First();
+            foreach (var ssc in Cells.SharedSeenCells(cellsNotInStructure))
+            {
+                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
             }
         }
 
@@ -109,7 +220,7 @@ public class BUGLiteStrategy : AbstractStrategy
             new BUGLiteReportBuilder(bcp)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private static IReadOnlyPossibilities FindStructurePossibilitiesFor(Cell cell, List<BiCellPossibilities> bcp)
+    private static IReadOnlyPossibilities FindStructurePossibilitiesFor(Cell cell, IEnumerable<BiCellPossibilities> bcp)
     {
         foreach (var b in bcp)
         {
@@ -131,155 +242,20 @@ public interface IBUGLiteCondition
 
 public class RowBUGLiteCondition : IBUGLiteCondition
 {
-    private readonly BiCellPossibilities _bcp;
+    private readonly Cell _one;
+    private readonly Cell _two;
+    private readonly int _possibility;
 
-    public RowBUGLiteCondition(BiCellPossibilities bcp)
+    public RowBUGLiteCondition(Cell one, Cell two, int possibility)
     {
-        _bcp = bcp;
+        _one = one;
+        _two = two;
+        _possibility = possibility;
     }
 
     public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyManager strategyManager, GridPositions done)
     {
-        var miniRow = _bcp.One.Row / 3;
-
-        for (int r = 0; r < 3; r++)
-        {
-            if (r == miniRow) yield break;
-
-            for (int i = 0; i < 3; i++)
-            {
-                var first = new Cell(r * 3 + i, _bcp.One.Column);
-                if (done.Peek(first) || strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
-
-                for (int j = 0; j < 3; j++)
-                {
-                    var second = new Cell(r * 3 + j, _bcp.Two.Column);
-                    if (done.Peek(second) || strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
-
-                    var and = strategyManager.PossibilitiesAt(first).And(strategyManager.PossibilitiesAt(second));
-                    if (and.Equals(_bcp.Possibilities))
-                    {
-                        var otherBcp = new BiCellPossibilities(first, second, and);
-                        if (i == j) yield return new BUGLiteConditionMatch(otherBcp);
-                        else yield return new BUGLiteConditionMatch(otherBcp, new ColumnBUGLiteCondition(otherBcp));
-                    }
-                    else
-                    {
-                        foreach (var current in _bcp.Possibilities)
-                        {
-                            if (!and.Peek(current)) continue;
-
-                            foreach (var otherPoss in and)
-                            {
-                                if (otherPoss == current) continue;
-
-                                var newPoss = Possibilities.NewEmpty();
-                                newPoss.Add(current);
-                                newPoss.Add(otherPoss);
-                                var otherBcp = new BiCellPossibilities(first, second, newPoss);
-
-                                if (i == j) yield return new BUGLiteConditionMatch(otherBcp, new RowBUGLiteCondition(otherBcp));
-                                else yield return new BUGLiteConditionMatch(otherBcp, new RowBUGLiteCondition(otherBcp),
-                                    new ColumnBUGLiteCondition(otherBcp));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-public class ColumnBUGLiteCondition : IBUGLiteCondition
-{
-    private readonly BiCellPossibilities _bcp;
-
-    public ColumnBUGLiteCondition(BiCellPossibilities bcp)
-    {
-        _bcp = bcp;
-    }
-
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyManager strategyManager, GridPositions done)
-    {
-        var miniCol = _bcp.One.Column / 3;
-
-        for (int c = 0; c < 3; c++)
-        {
-            if (c == miniCol) yield break;
-
-            for (int i = 0; i < 3; i++)
-            {
-                var first = new Cell(_bcp.One.Row, c * 3 + i);
-                if (done.Peek(first) || strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
-
-                for (int j = 0; j < 3; j++)
-                {
-                    var second = new Cell(_bcp.Two.Row, c * 3 + j);
-                    if (done.Peek(second) || strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
-
-                    var and = strategyManager.PossibilitiesAt(first).And(strategyManager.PossibilitiesAt(second));
-                    if (and.Equals(_bcp.Possibilities))
-                    {
-                        var otherBcp = new BiCellPossibilities(first, second, and);
-                        if (i == j) yield return new BUGLiteConditionMatch(otherBcp);
-                        else yield return new BUGLiteConditionMatch(otherBcp, new RowBUGLiteCondition(otherBcp));
-                    }
-                    else
-                    {
-                        foreach (var current in _bcp.Possibilities)
-                        {
-                            if (!and.Peek(current)) continue;
-
-                            foreach (var otherPoss in and)
-                            {
-                                if (otherPoss == current) continue;
-
-                                var newPoss = Possibilities.NewEmpty();
-                                newPoss.Add(current);
-                                newPoss.Add(otherPoss);
-                                var otherBcp = new BiCellPossibilities(first, second, newPoss);
-
-                                if (i == j) yield return new BUGLiteConditionMatch(otherBcp, new ColumnBUGLiteCondition(otherBcp));
-                                else yield return new BUGLiteConditionMatch(otherBcp, new ColumnBUGLiteCondition(otherBcp),
-                                    new RowBUGLiteCondition(otherBcp));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-public static class BUGLiteHelper {
-    
-    public static IEnumerable<BiCell> PossibleRowMatches(IStrategyManager strategyManager, Cell one, Cell two)
-    {
-        var miniRow = one.Row / 3;
-
-        for (int r = 0; r < 3; r++)
-        {
-            if (r == miniRow) continue;
-
-            for (int i = 0; i < 3; i++)
-            {
-                var first = new Cell(r * 3 + i, one.Column);
-                if (strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
-
-                for (int j = 0; j < 3; j++)
-                {
-                    var second = new Cell(r * 3 + j, two.Column);
-                    if (strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
-
-                    yield return new BiCell(first, second);
-                }
-            }
-        }
-    }
-    
-    public static IEnumerable<BiCell> PossibleColumnMatches(IStrategyManager strategyManager, Cell one, Cell two)
-    {
-        var miniCol = one.Column / 3;
+        var miniCol = _one.Column / 3;
 
         for (int c = 0; c < 3; c++)
         {
@@ -287,38 +263,132 @@ public static class BUGLiteHelper {
 
             for (int i = 0; i < 3; i++)
             {
-                var first = new Cell(one.Row, c * 3 + i);
-                if (strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
+                var first = new Cell(_one.Row, c * 3 + i);
+                if (done.Peek(first) || strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
-                    var second = new Cell(two.Row, c * 3 + j);
-                    if (strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
+                    var second = new Cell(_two.Row, c * 3 + j);
+                    if (done.Peek(first) || strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    yield return new BiCell(first, second);
+                    var and = strategyManager.PossibilitiesAt(first).And(strategyManager.PossibilitiesAt(second));
+                    if (and.Count < 2 || !and.Peek(_possibility)) continue;
+
+                    foreach (var p in and)
+                    {
+                        if (p == _possibility) continue;
+
+                        var poss = Possibilities.NewEmpty();
+                        poss.Add(_possibility);
+                        poss.Add(p);
+                        var bcp = new BiCellPossibilities(first, second, poss);
+
+                        if (first.Column == second.Column) yield return new BUGLiteConditionMatch(
+                            bcp, new RowBUGLiteCondition(first, second, p));
+                        else yield return new BUGLiteConditionMatch(bcp, new RowBUGLiteCondition(
+                                first, second, p), new ColumnBUGLiteCondition(first, second, p),
+                            new ColumnBUGLiteCondition(first, second, _possibility));
+                    }
                 }
             }
         }
     }
-}
 
-public readonly struct BiCell
-{
-    public BiCell(Cell one, Cell two)
+    public override bool Equals(object? obj)
     {
-        One = one;
-        Two = two;
+        return obj is RowBUGLiteCondition rblc && rblc._possibility == _possibility &&
+               rblc._one.Row == _one.Row && rblc._two.Row == _two.Row;
     }
 
-    public Cell One { get; }
-    public Cell Two { get; }
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_possibility, _one.Row, _two.Row);
+    }
+
+    public override string ToString()
+    {
+        return $"{_possibility}r{_one.Row}r{_two.Row}";
+    }
+}
+
+public class ColumnBUGLiteCondition : IBUGLiteCondition
+{
+    private readonly Cell _one;
+    private readonly Cell _two;
+    private readonly int _possibility;
+
+    public ColumnBUGLiteCondition(Cell one, Cell two, int possibility)
+    {
+        _one = one;
+        _two = two;
+        _possibility = possibility;
+    }
+
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyManager strategyManager, GridPositions done)
+    {
+        var miniRow = _one.Row / 3;
+
+        for (int r = 0; r < 3; r++)
+        {
+            if (r == miniRow) continue;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var first = new Cell(r * 3 + i, _one.Column);
+                if (done.Peek(first) || strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
+
+                for (int j = 0; j < 3; j++)
+                {
+                    var second = new Cell(r * 3 + j, _two.Column);
+                    if (done.Peek(first) || strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
+
+                    var and = strategyManager.PossibilitiesAt(first).And(strategyManager.PossibilitiesAt(second));
+                    if (and.Count < 2 || !and.Peek(_possibility)) continue;
+
+                    foreach (var p in and)
+                    {
+                        if (p == _possibility) continue;
+
+                        var poss = Possibilities.NewEmpty();
+                        poss.Add(_possibility);
+                        poss.Add(p);
+                        var bcp = new BiCellPossibilities(first, second, poss);
+
+                        if (first.Row == second.Row)
+                            yield return new BUGLiteConditionMatch(
+                                bcp, new ColumnBUGLiteCondition(first, second, p));
+                        else
+                            yield return new BUGLiteConditionMatch(bcp, new ColumnBUGLiteCondition(
+                                    first, second, p), new RowBUGLiteCondition(first, second, p),
+                                new RowBUGLiteCondition(first, second, _possibility));
+                    }
+                }
+            }
+        }
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is ColumnBUGLiteCondition cblc && cblc._possibility == _possibility &&
+               cblc._one.Column == _one.Column && cblc._two.Column == _two.Column;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_possibility, _one.Column, _two.Column);
+    }
+
+    public override string ToString()
+    {
+        return $"{_possibility}c{_one.Column}c{_two.Column}";
+    }
 }
 
 public class BUGLiteReportBuilder : IChangeReportBuilder
 {
-    private readonly List<BiCellPossibilities> _bcp;
+    private readonly IEnumerable<BiCellPossibilities> _bcp;
 
-    public BUGLiteReportBuilder(List<BiCellPossibilities> bcp)
+    public BUGLiteReportBuilder(IEnumerable<BiCellPossibilities> bcp)
     {
         _bcp = bcp;
     }
@@ -335,6 +405,8 @@ public class BUGLiteReportBuilder : IChangeReportBuilder
                     lighter.HighlightPossibility(p, b.Two.Row, b.Two.Column, ChangeColoration.CauseOffTwo);
                 }
             }
+
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }
 }

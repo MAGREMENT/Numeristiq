@@ -8,6 +8,7 @@ using Global;
 using Global.Enums;
 using Presenter;
 using Presenter.Player;
+using View.HelperWindows.Settings;
 using View.Pages.Player.UserControls;
 using View.Utility;
 
@@ -109,9 +110,9 @@ public partial class PlayerPage : IPlayerView
         _grid.FillCell(row, col, ColorManager.ToColor(color));
     }
 
-    public void HighlightCell(int row, int col, HighlightColor[] colors)
+    public void HighlightCell(int row, int col, HighlightColor[] colors, double startAngle, RotationDirection direction)
     {
-        _grid.FillCell(row, col, ColorManager.ToColors(colors));
+        _grid.FillCell(row, col, startAngle, direction == RotationDirection.ClockWise ? -1 : 1, ColorManager.ToColors(colors));
     }
 
     private void InitModes()
@@ -175,7 +176,7 @@ public partial class PlayerPage : IPlayerView
 
     private void AnalyzeKeyDown(object? sender, KeyEventArgs args)
     {
-        if (args.KeyboardDevice.Modifiers != ModifierKeys.Control)
+        if (args.KeyboardDevice.Modifiers == ModifierKeys.Control)
         {
             switch (args.Key)
             {
@@ -215,7 +216,7 @@ public partial class PlayerPage : IPlayerView
                 case Key.D9 :
                 case Key.NumPad9 : _presenter.ApplyChange(9);
                     break;
-                case Key.Return : _presenter.Remove();
+                case Key.Back : _presenter.Remove();
                     break;
                 default:
                     if (args.Key == _locationModeUp) MoveUp(LocationModes.Children, _currentLocationMode)?.InvokeSelection();
@@ -253,16 +254,6 @@ public partial class PlayerPage : IPlayerView
         _presenter.MoveForward();
     }
 
-    private void MultiHighlightingOn(object sender, RoutedEventArgs e)
-    {
-        if(_presenterAvailable) _presenter.SetMultiHighlighting(true);
-    }
-
-    private void MultiHighlightingOff(object sender, RoutedEventArgs e)
-    {
-        if(_presenterAvailable) _presenter.SetMultiHighlighting(false);
-    }
-
     private void ClearNumbers(object sender, RoutedEventArgs e)
     {
         _presenter.ClearNumbers();
@@ -281,5 +272,11 @@ public partial class PlayerPage : IPlayerView
     private void Paste(object sender, RoutedEventArgs e)
     {
         _presenter.Paste(Clipboard.GetText());
+    }
+
+    private void Settings(object sender, RoutedEventArgs e)
+    {
+        var settings = SettingsWindow.From(_presenter.Settings);
+        settings.Show();
     }
 }

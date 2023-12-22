@@ -18,12 +18,16 @@ public class Settings : ISolverSettings, IPlayerSettings
     private CellColor _solvingColor = CellColor.Black;
     private LinkOffsetSidePriority _sidePriority = LinkOffsetSidePriority.Right;
     private bool _showSameCellLinks;
+    private bool _multiColorHighlighting = true;
+    private int _startAngle = 45;
+    private RotationDirection _rotationDirection = RotationDirection.ClockWise;
 
     public event OnSettingChange? AnySettingChanged;
     public event OnSettingChange? ShownStateChanged;
     public event OnSettingChange? TranslationTypeChanged;
     public event OnSettingChange? UniquenessAllowedChanged;
     public event OnSettingChange? RedrawNeeded;
+    public event OnSettingChange? MultiColorHighlightingChanged;
 
     public StateShown StateShown
     {
@@ -131,6 +135,36 @@ public class Settings : ISolverSettings, IPlayerSettings
             AnySettingChanged?.Invoke();
         }
     }
+    public bool MultiColorHighlighting
+    {
+        get => _multiColorHighlighting;
+        set
+        {
+            _multiColorHighlighting = value;
+            MultiColorHighlightingChanged?.Invoke();
+            AnySettingChanged?.Invoke();
+        }
+    }
+    public int StartAngle
+    {
+        get => _startAngle;
+        set
+        {
+            _startAngle = value;
+            RedrawNeeded?.Invoke();
+            AnySettingChanged?.Invoke();
+        } 
+    }
+    public RotationDirection RotationDirection
+    {
+        get => _rotationDirection;
+        set
+        {
+            _rotationDirection = value;
+            RedrawNeeded?.Invoke();
+            AnySettingChanged?.Invoke();
+        } 
+    }
 
     public void Bind(IRepository<SettingsDAO> repository)
     {
@@ -153,6 +187,9 @@ public class Settings : ISolverSettings, IPlayerSettings
         SolvingColor = DAO.SolvingColor;
         SidePriority = DAO.SidePriority;
         ShowSameCellLinks = DAO.ShowSameCellLinks;
+        MultiColorHighlighting = DAO.MultiColorHighlighting;
+        StartAngle = DAO.StartAngle;
+        RotationDirection = DAO.RotationDirection;
     }
 
     public SettingsDAO ToDAO()
@@ -160,7 +197,8 @@ public class Settings : ISolverSettings, IPlayerSettings
         return new SettingsDAO(StateShown, TranslationType,
             DelayBeforeTransition, DelayAfterTransition, UniquenessAllowed,
             ActionOnCellChange, TransformSoloPossibilityIntoGiven,
-            GivenColor, SolvingColor, SidePriority, ShowSameCellLinks);
+            GivenColor, SolvingColor, SidePriority, ShowSameCellLinks,
+            MultiColorHighlighting, StartAngle, RotationDirection);
     }
 }
 

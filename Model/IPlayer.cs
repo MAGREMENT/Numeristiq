@@ -8,7 +8,7 @@ namespace Model;
 
 public interface IPlayer : IPlayerState
 {
-    public bool MultiHighlighting { set; }
+    public bool MultiColorHighlighting { set; }
     
     public event OnChange? Changed;
     public event OnMoveAvailabilityChange? MoveAvailabilityChanged;

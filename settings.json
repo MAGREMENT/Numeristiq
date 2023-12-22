@@ -9,5 +9,8 @@
   "GivenColor": 3,
   "SolvingColor": 0,
   "SidePriority": 1,
-  "ShowSameCellLinks": false
+  "ShowSameCellLinks": false,
+  "MultiColorHighlighting": true,
+  "StartAngle": 45,
+  "RotationDirection": 0
 }

@@ -12,7 +12,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
     private readonly Dictionary<Cell, HighlightingCollection> _highlighting = new();
     private readonly Historic _historic;
 
-    public bool MultiHighlighting { get; set; } = true;
+    public bool MultiColorHighlighting { get; set; } = true;
     public event OnChange? Changed;
     public event OnMoveAvailabilityChange? MoveAvailabilityChanged;
 
@@ -278,7 +278,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 _highlighting.Remove(c);
             }
         }
-        else if(MultiHighlighting)
+        else if(MultiColorHighlighting)
         {
             _historic.NewHistoricPoint();
             yes = true;
@@ -369,7 +369,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             }
         }
         
-        _historic.PushBufferIfDifferent();
+        if(_historic.PushBufferIfDifferent()) Changed?.Invoke();
     }
 
     public void Paste(SolverState ss)
@@ -396,7 +396,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             }
         }
         
-        _historic.PushBufferIfDifferent();
+        if(_historic.PushBufferIfDifferent()) Changed?.Invoke();
     }
 
     public void ShowHistoricPoint(HistoricPoint point)

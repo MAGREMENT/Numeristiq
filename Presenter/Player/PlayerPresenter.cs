@@ -4,11 +4,11 @@ using Model;
 
 namespace Presenter.Player;
 
-public class PlayerPresenter //TODO : Add clear
+public class PlayerPresenter
 {
     private readonly IPlayerView _view;
     private readonly IPlayer _player;
-    private readonly IPlayerSettings _settings;
+    public IPlayerSettings Settings { get; }
     
     private readonly HashSet<Cell> _selected = new();
 
@@ -18,8 +18,12 @@ public class PlayerPresenter //TODO : Add clear
     public PlayerPresenter(IPlayer player, IPlayerView view, IPlayerSettings settings)
     {
         _view = view;
-        _settings = settings;
         _player = player;
+
+        Settings = settings;
+        _player.MultiColorHighlighting = Settings.MultiColorHighlighting;
+        Settings.MultiColorHighlightingChanged += () => _player.MultiColorHighlighting = Settings.MultiColorHighlighting;
+        Settings.RedrawNeeded += Update;
     }
 
     public void Bind()
@@ -112,11 +116,6 @@ public class PlayerPresenter //TODO : Add clear
         _player.MoveForward();
     }
 
-    public void SetMultiHighlighting(bool yes)
-    {
-        _player.MultiHighlighting = yes;
-    }
-
     public void ClearNumbers()
     {
         if (_selected.Count > 0) _player.ClearNumbers(_selected);
@@ -143,7 +142,7 @@ public class PlayerPresenter //TODO : Add clear
                 _player.Paste(SudokuTranslator.TranslateToSudoku(s));
                 break;
             case SudokuStringFormat.Grid :
-                _player.Paste(SudokuTranslator.TranslateToState(s, _settings.TransformSoloPossibilityIntoGiven));
+                _player.Paste(SudokuTranslator.TranslateToState(s, Settings.TransformSoloPossibilityIntoGiven));
                 break;
         }
     }
@@ -160,8 +159,8 @@ public class PlayerPresenter //TODO : Add clear
             {
                 var current = _player[row, col];
                 if(current.IsNumber()) _view.ShowNumber(row, col, current.Number(), current.Editable 
-                    ? _settings.SolvingColor 
-                    : _settings.GivenColor);
+                    ? Settings.SolvingColor 
+                    : Settings.GivenColor);
                 else
                 {
                     _view.ShowPossibilities(row, col, current.Possibilities(PossibilitiesLocation.Top), PossibilitiesLocation.Top);
@@ -175,7 +174,8 @@ public class PlayerPresenter //TODO : Add clear
         foreach (var ch in _player.Highlighting)
         {
             if(ch.Highlighting.Count == 1) _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.Highlighting.GetFirst());
-            else _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.Highlighting.GetAll());
+            else _view.HighlightCell(ch.Cell.Row, ch.Cell.Column, ch.Highlighting.GetAll(),
+            (double)Settings.StartAngle / 360 * 2 * Math.PI, Settings.RotationDirection);
         }
         
         _view.Refresh();
