@@ -68,7 +68,7 @@ public static class MathUtility
     }
 
     public static List<Point> GetMultiColorHighlightingPolygon(Point center, double width, double height,
-        double firstAngle, double secondAngle, int rotationalFactor) //TODO fix
+        double firstAngle, double secondAngle, int rotationalFactor)
     {
         List<Point> result = new();
 

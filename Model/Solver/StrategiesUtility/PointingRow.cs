@@ -43,6 +43,22 @@ public class PointingRow : ILinkGraphElement
             if (coords[i].Row != Row) throw new ArgumentException("Not on same row");
             _pos.Add(coords[i].Column);
         }
+        
+        _pos.Add(coords[0].Column);
+    }
+    
+    public PointingRow(int possibility, List<Cell> coords)
+    {
+        Possibility = possibility;
+        Row = coords[0].Row;
+        _pos = new LinePositions();
+        for (int i = 1; i < coords.Count; i++)
+        {
+            if (coords[i].Row != Row) throw new ArgumentException("Not on same row");
+            _pos.Add(coords[i].Column);
+        }
+        
+        _pos.Add(coords[0].Column);
     }
 
     public override int GetHashCode()
@@ -70,7 +86,7 @@ public class PointingRow : ILinkGraphElement
 
     public override string ToString()
     {
-        var result = $"PR : {Possibility}r{Row + 1}c";
+        var result = $"{Possibility}r{Row + 1}c";
         foreach (var col in _pos)
         {
             result += $"{col + 1}";

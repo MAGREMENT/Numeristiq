@@ -72,15 +72,15 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
             }
         }
 
-        if (one is AlmostNakedSet ans && two is CellPossibility cellPossibility)
+        if (one is NakedSet ans && two is CellPossibility cellPossibility)
         {
             foreach (var possibility in ans.EveryPossibilities())
             {
-                if (possibility == cellPossibility.Possibility || possibility == ans.OddOne.Possibility) continue;
+                if (possibility == cellPossibility.Possibility) continue;
                 
                 List<Cell> cells = new();
 
-                foreach (var cp in ans.NakedSet)
+                foreach (var cp in ans.EveryCellPossibilities())
                 {
                     if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
                 }

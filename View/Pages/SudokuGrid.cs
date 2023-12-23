@@ -227,43 +227,6 @@ public class SudokuGrid : FrameworkElement
         }
     }
 
-    private static double[] AngleInformation(double angle)
-    {
-        var a = angle < 0 ? 2 * Math.PI + angle : angle;
-
-        if (a < Math.PI / 4) return new[] { Right, angle, -1 };
-        if (a < Math.PI / 2) return new[] { Top, Math.PI / 2 - angle, 1 };
-        if (a < Math.PI / 4 * 3) return new[] { Top, angle - Math.PI / 2, -1 };
-        if (a < Math.PI) return new[] { Left, Math.PI - angle, -1 };
-        if (a < Math.PI + Math.PI / 4) return new[] { Left, angle - Math.PI, 1 };
-        if (a < Math.PI * 3 / 2) return new[] { Bottom, Math.PI * 3 / 2 - angle, -1 };
-        if (a < Math.PI + Math.PI / 4 * 3) return new[] { Bottom, angle - Math.PI * 3 / 2, 1 };
-        return new[] { Right, 2 * Math.PI - angle, 1 };
-    }
-
-    private static IEnumerable<Point> ComputeAdditionalPoints(int from, int to, Point Center, double delta)
-    {
-        if (from == to) yield break;
-
-        switch (from, to)
-        {
-            case (Right, Bottom) : yield return new Point(Center.X + delta, Center.Y + delta);
-                break;
-            case (Bottom, Left) : yield return new Point(Center.X - delta, Center.Y + delta);
-                break;
-            case (Left, Top) : yield return new Point(Center.X - delta, Center.Y - delta);
-                break;
-            case (Top, Right) : yield return new Point(Center.X + delta, Center.Y - delta);
-                break;
-            default : yield break;
-        }
-    }
-    
-    private const int Right = 0;
-    private const int Bottom = 1;
-    private const int Left = 2;
-    private const int Top = 3;
-
     public void FillPossibility(int row, int col, int possibility, Color color)
     {
         _components[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
@@ -431,38 +394,45 @@ public class SudokuGrid : FrameworkElement
     public void EncircleCellPatch(Cell[] cells, Color color)
     {
         var delta = (double)_bigLineWidth / 2;
+        var brush = new SolidColorBrush(color);
+        var pen = new Pen(brush, _bigLineWidth);
 
         var list = _components[EncirclesIndex];
         foreach (var cell in cells)
         {
-            var topLeftX = GetLeft(cell.Column) - delta;
-            var topLeftY = GetTop(cell.Row) - delta;
+            var left = GetLeft(cell.Column);
+            var top = GetTop(cell.Row);
 
-            var bottomRightX = topLeftX + _cellSize + _bigLineWidth;
-            var bottomRightY = topLeftY + _cellSize + _bigLineWidth;
-
-            if (!cells.Contains(new Cell(cell.Row, cell.Column + 1)))
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
+                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            else
             {
-                list.Add(new LineComponent(new Point(bottomRightX, topLeftY),
-                    new Point(bottomRightX, bottomRightY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
-            }
-
-            if (!cells.Contains(new Cell(cell.Row, cell.Column - 1)))
-            {
-                list.Add(new LineComponent(new Point(topLeftX, topLeftY),
-                    new Point(topLeftX, bottomRightY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top, CursorWidth, CursorWidth), ColorManager.Purple));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), ColorManager.Purple));
             }
             
-            if (!cells.Contains(new Cell(cell.Row + 1, cell.Column)))
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
+                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            else
             {
-                list.Add(new LineComponent(new Point(topLeftX, bottomRightY),
-                    new Point(bottomRightX, bottomRightY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
-            }
-
-            if (!cells.Contains(new Cell(cell.Row - 1, cell.Column)))
-            {
-                list.Add(new LineComponent(new Point(topLeftX, topLeftY),
-                    new Point(bottomRightX, topLeftY), new Pen(new SolidColorBrush(color), _bigLineWidth)));
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
             }
         }
     }

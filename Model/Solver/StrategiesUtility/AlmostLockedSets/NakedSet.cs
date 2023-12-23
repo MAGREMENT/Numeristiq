@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Global;
 using Model.Solver.Possibility;
@@ -7,30 +6,29 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.AlmostLockedSets;
 
-public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden set
+public class NakedSet : ILinkGraphElement
 {
-    public CellPossibilities[] NakedSet { get; }
-    public CellPossibility OddOne { get; }
-
-    public AlmostNakedSet(CellPossibilities[] cells, CellPossibility oddOne)
-    {
-        NakedSet = cells;
-        OddOne = oddOne;
-    }
-
+    private readonly CellPossibilities[] _cellPossibilities;
+    
     public int Rank => 3;
 
+    public NakedSet(CellPossibilities[] cellPossibilities)
+    {
+        _cellPossibilities = cellPossibilities;
+    }
+
+    
     public CellPossibilities[] EveryCellPossibilities()
     {
-        return NakedSet;
+        return _cellPossibilities;
     }
 
     public Cell[] EveryCell()
     {
-        Cell[] result = new Cell[NakedSet.Length];
-        for (int i = 0; i < NakedSet.Length; i++)
+        Cell[] result = new Cell[_cellPossibilities.Length];
+        for (int i = 0; i < _cellPossibilities.Length; i++)
         {
-            result[i] = NakedSet[i].Cell;
+            result[i] = _cellPossibilities[i].Cell;
         }
 
         return result;
@@ -40,7 +38,7 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
     {
         Possibilities result = Possibilities.NewEmpty();
 
-        foreach (var cp in NakedSet)
+        foreach (var cp in _cellPossibilities)
         {
             result = result.Or(cp.Possibilities);
         }
@@ -51,7 +49,7 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
     public CellPossibility[] EveryCellPossibility()
     {
         List<CellPossibility> result = new();
-        foreach (var cp in NakedSet)
+        foreach (var cp in _cellPossibilities)
         {
             foreach (var p in cp.Possibilities)
             {
@@ -61,14 +59,13 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
 
         return result.ToArray();
     }
-
+    
     public override bool Equals(object? obj)
     {
-        if (obj is not AlmostNakedSet anp) return false;
-        if (anp.OddOne != OddOne) return false;
-        foreach (CellPossibilities cp in NakedSet)
+        if (obj is not NakedSet np) return false;
+        foreach (CellPossibilities cp in _cellPossibilities)
         {
-            if (!anp.NakedSet.Contains(cp)) return false;
+            if (!np._cellPossibilities.Contains(cp)) return false;
         }
 
         return true;
@@ -77,18 +74,18 @@ public class AlmostNakedSet : ILinkGraphElement //TODO look into almost hidden s
     public override int GetHashCode()
     {
         var hashCode = 0;
-        foreach (var coord in NakedSet)
+        foreach (var coord in _cellPossibilities)
         {
             hashCode ^= coord.GetHashCode();
         }
 
-        return HashCode.Combine(OddOne.GetHashCode(), hashCode);
+        return hashCode;
     }
 
     public override string ToString()
     {
-        var result = $"ALS : {EveryPossibilities()}";
-        foreach (var coord in NakedSet)
+        var result = $"{EveryPossibilities().ToSlimString()}";
+        foreach (var coord in _cellPossibilities)
         {
             result += $"{coord.Cell}, ";
         }

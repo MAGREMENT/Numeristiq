@@ -78,6 +78,16 @@ public class HighlighterTranslator : IHighlightable
 
     public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
     {
+        if (ChangeColorationUtility.IsOff(coloration) && element is PointingRow or PointingColumn or CellsPossibility)
+        {
+            foreach (var cp in element.EveryCellPossibility())
+            {
+                HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
+            }
+
+            return;
+        }
+        
         switch (element)
         {
             case CellPossibility cp :
@@ -107,7 +117,7 @@ public class HighlighterTranslator : IHighlightable
                 _drawer.EncircleRectangle(minRow, pc.Column, pc.Possibility, maxRow,
                     pc.Column, pc.Possibility, coloration);
                 break;
-            case AlmostNakedSet ans :
+            case NakedSet ans :
                 _drawer.EncircleCellPatch(ans.EveryCell(), coloration);
                 break;
         }
@@ -126,8 +136,7 @@ public class HighlighterTranslator : IHighlightable
         if (!_settings.ShowSameCellLinks && from is CellPossibility cp1 && to is CellPossibility cp2
             && cp1.ToCell() == cp2.ToCell()) return;
         
-        if ((from is AlmostNakedSet ansFrom && to is CellPossibility cpTo && ansFrom.OddOne == cpTo) ||
-            (from is CellPossibility cpFrom && to is AlmostNakedSet ansTo && ansTo.OddOne == cpFrom)) return;
+        if (linkStrength == LinkStrength.Strong && (from is NakedSet || to is NakedSet)) return;
         
         var possibilitiesFrom = from.EveryPossibilities();
         var possibilitiesTo = to.EveryPossibilities();
