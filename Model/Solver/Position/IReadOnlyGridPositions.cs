@@ -5,6 +5,8 @@ namespace Model.Solver.Position;
 
 public interface IReadOnlyGridPositions : IEnumerable<Cell>
 {
+    int Count { get; }
+    
     bool Peek(Cell cell);
     int RowCount(int row);
     int ColumnCount(int col);

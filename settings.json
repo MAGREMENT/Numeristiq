@@ -1,6 +1,6 @@
 {
   "StateShown": 0,
-  "TranslationType": 0,
+  "TranslationType": 2,
   "DelayBeforeTransition": 350,
   "DelayAfterTransition": 350,
   "UniquenessAllowed": true,

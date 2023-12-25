@@ -15,7 +15,7 @@ public partial class MinMaxSliderOptionCanvas
     {
         InitializeComponent();
 
-        Block.Text = name + " - ";
+        Block.Text = name;
         Explanation = explanation;
         _onChange = onChange;
         
@@ -40,13 +40,31 @@ public partial class MinMaxSliderOptionCanvas
         MaxText.FontSize = size;
     }
 
-    private void OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    private void OnMinValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        _callOnChange = false;
-        if (MinSlider.Value > MaxSlider.Value) MaxSlider.Value = MinSlider.Value;
-        if (MaxSlider.Value < MinSlider.Value) MinSlider.Value = MaxSlider.Value;
-        _callOnChange = true;
-        
-        if(_callOnChange) _onChange(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
+        if (!_callOnChange) return;
+
+        if (MinSlider.Value > MaxSlider.Value)
+        {
+            _callOnChange = false;
+            MaxSlider.Value = MinSlider.Value;
+            _callOnChange = true;
+        }
+            
+        _onChange(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
+    }
+    
+    private void OnMaxValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!_callOnChange) return;
+
+        if (MaxSlider.Value < MinSlider.Value)
+        {
+            _callOnChange = false;
+            MinSlider.Value = MaxSlider.Value;
+            _callOnChange = true;
+        }
+            
+        _onChange(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
     }
 }

@@ -4,7 +4,6 @@ using Global;
 using Model.Solver;
 using Presenter.Translators;
 using View.Canvas;
-using View.HelperWindows.Settings;
 
 namespace View.Pages.StrategyManager.UserControls;
 
@@ -77,7 +76,7 @@ public partial class OptionModifierUserControl
         
         Panel.Children.Add(new Separator
         {
-            Margin = new Thickness(0, 5, 0, 0)
+            Margin = new Thickness(0, 10, 0, 10)
         });
         Panel.Children.Add(sp);
     }
