@@ -15,21 +15,6 @@
 
 
     <ItemGroup>
-      <Page Update="HelperWindows\Settings\Options\CheckBoxOptionCanvas.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="HelperWindows\Settings\Options\ColorComboBoxOptionCanvas.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="HelperWindows\Settings\Options\ComboBoxOptionCanvas.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="HelperWindows\Settings\Options\MultiChoiceOptionCanvas.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="HelperWindows\Settings\Options\SliderOptionCanvas.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
       <Page Update="HelperWindows\Settings\SettingsPage.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>

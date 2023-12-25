@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace View.HelperWindows.Settings;
+namespace View.Canvas;
 
 public abstract class OptionCanvas : UserControl
 {

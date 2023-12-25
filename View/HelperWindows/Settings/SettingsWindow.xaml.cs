@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using Global.Enums;
 using Presenter.Player;
 using Presenter.Solver;
-using View.HelperWindows.Settings.Options;
+using View.Canvas;
 
 namespace View.HelperWindows.Settings;
 
@@ -48,9 +48,9 @@ public partial class SettingsWindow
                 new CheckBoxOptionCanvas("Solo to given", "Decides if a cell with only one possibility should be transformed into a given when pasting",
                     settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
             new("Graphics",
-                new SliderOptionCanvas("Delay before", "Sets the delay between showing the start state and the highlight of a log", 2000, 0, 10,
+                new SliderOptionCanvas("Delay before", "Sets the delay between showing the start state and the highlight of a log", 0, 2000, 10,
                     settings.DelayBeforeTransition, i => settings.DelayBeforeTransition = i),
-                new SliderOptionCanvas("Delay after", "Sets the delay between showing the highlight and the after state of a log", 2000, 0, 10,
+                new SliderOptionCanvas("Delay after", "Sets the delay between showing the highlight and the after state of a log", 0, 2000, 10,
                     settings.DelayAfterTransition, i => settings.DelayAfterTransition = i),
                 new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", (int)settings.GivenColor, 
                     i => settings.GivenColor = (CellColor)i),
@@ -83,8 +83,8 @@ public partial class SettingsWindow
                     i => settings.GivenColor = (CellColor)i),
                 new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", (int)settings.SolvingColor,
                     i => settings.SolvingColor = (CellColor)i),
-                new SliderOptionCanvas("Highlighting start angle", "Defines the starting angle when highlighting a cell", 360, 
-                    0, 5, settings.StartAngle, i => settings.StartAngle = i),
+                new SliderOptionCanvas("Highlighting start angle", "Defines the starting angle when highlighting a cell", 0, 
+                    360, 5, settings.StartAngle, i => settings.StartAngle = i),
                 new MultiChoiceOptionCanvas("Highlighting rotation", "Defines the direction of the rotation when highlighting a cell",
                     (int)settings.RotationDirection, i => settings.RotationDirection = (RotationDirection)i, "Clock wise",
                     "Counter clock wise"))

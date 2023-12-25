@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using Global.Enums;
 using View.Utility;
 
-namespace View.HelperWindows.Settings.Options;
+namespace View.Canvas;
 
 public partial class ColorComboBoxOptionCanvas
 {

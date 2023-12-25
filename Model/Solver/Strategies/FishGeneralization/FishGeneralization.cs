@@ -18,8 +18,8 @@ public class FishGeneralization : AbstractStrategy
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private readonly int _minUnitCount;
-    private readonly int _maxUnitCount;
+    private int _minUnitCount;
+    private int _maxUnitCount;
     private readonly IFishType _type;
 
     public static readonly CoverHouse[] CoverHouses =
@@ -59,6 +59,9 @@ public class FishGeneralization : AbstractStrategy
         _maxUnitCount = maxUnitCount;
         _type = type;
         Name = _type.Name;
+        ArgumentsList.Add(new MinMaxIntStrategyArgument("Unit count", 2, 4, 2, 5, 1,
+            () => _minUnitCount, i => _minUnitCount = i, () => _maxUnitCount,
+            i => _maxUnitCount = i));
     }
     
     public override void Apply(IStrategyManager strategyManager)

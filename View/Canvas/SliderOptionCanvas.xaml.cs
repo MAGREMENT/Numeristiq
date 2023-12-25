@@ -1,14 +1,13 @@
 ﻿using System.Windows;
 
-namespace View.HelperWindows.Settings.Options;
+namespace View.Canvas;
 
-public partial class SliderOptionCanvas : OptionCanvas
+public partial class SliderOptionCanvas
 {
-    
     private readonly OnChange<int> _onChange;
     private readonly bool _callOnChange;
     
-    public SliderOptionCanvas(string name, string explanation, int max, int min, int tickFrequency, int defaultValue, OnChange<int> onChange)
+    public SliderOptionCanvas(string name, string explanation, int min, int max, int tickFrequency, int defaultValue, OnChange<int> onChange)
     {
         InitializeComponent();
 

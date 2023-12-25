@@ -3,8 +3,8 @@ using System.Windows.Controls;
 using Global;
 using Model.Solver;
 using Presenter.Translators;
+using View.Canvas;
 using View.HelperWindows.Settings;
-using View.HelperWindows.Settings.Options;
 
 namespace View.Pages.StrategyManager.UserControls;
 
@@ -47,13 +47,19 @@ public partial class OptionModifierUserControl
         {
             OptionCanvas? optionCanvas = i.Interface switch
             {
-                SliderViewInterface svi => new SliderOptionCanvas(i.Name, "", svi.Max,
-                    svi.Min, svi.TickFrequency, int.Parse(i.CurrentValue), n =>
+                SliderViewInterface svi => new SliderOptionCanvas(i.Name, "", svi.Min,
+                    svi.Max, svi.TickFrequency, int.Parse(i.CurrentValue), n =>
                     {
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
                     }),
                 BooleanViewInterface => new CheckBoxOptionCanvas(i.Name, "", 
                     i.CurrentValue.Equals("true"), n =>
+                    {
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
+                    }),
+                MinMaxSliderViewInterface mm => new MinMaxSliderOptionCanvas(i.Name, "",
+                    mm.MinMin, mm.MinMax, mm.MaxMin, mm.MaxMax, mm.TickFrequency, MinMax.From(i.CurrentValue),
+                    n =>
                     {
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
                     }),
