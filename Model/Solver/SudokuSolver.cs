@@ -277,6 +277,27 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         return _strategyLoader.GetStrategiesInformation();
     }
     
+    public Possibilities NotCachedPossibilitiesAt(int row, int col)
+    {
+        if (Sudoku[row, col] != 0) return Possibilities.NewEmpty();
+        
+        Possibilities result = new();
+
+        var startR = row / 3 * 3;
+        var startC = col / 3 * 3;
+        for (int u = 0; u < 9; u++)
+        {
+            if (u != row) result.Remove(Sudoku[u, col]);
+            if (u != col) result.Remove(Sudoku[row, u]);
+
+            var r = startR + u / 3;
+            var c = startC + u % 3;
+            if (r != row || c != col) result.Remove(Sudoku[r, c]);
+        }
+
+        return result;
+    }
+    
     //PossibilityHolder-------------------------------------------------------------------------------------------------
     
     public IReadOnlyPossibilities PossibilitiesAt(int row, int col)

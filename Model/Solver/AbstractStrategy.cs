@@ -12,8 +12,9 @@ public abstract class AbstractStrategy : IStrategy
     public OnCommitBehavior OnCommitBehavior { get; set; }
     public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
     public StatisticsTracker Tracker { get; } = new();
-    public IReadOnlyList<IStrategyArgument> Arguments => NonReadOnlyArguments;
-    protected virtual IStrategyArgument[] NonReadOnlyArguments => Array.Empty<IStrategyArgument>();
+    public IReadOnlyList<IStrategyArgument> Arguments => ArgumentsList.ToArray();
+
+    protected List<IStrategyArgument> ArgumentsList { get; } = new();
 
     protected AbstractStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
     {

@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Global;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Solver.StrategiesUtility.Graphs;
 
@@ -23,6 +25,12 @@ public interface IStrategyManager : IPossibilitiesHolder
     AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
     bool UniquenessDependantStrategiesAllowed { get; }
+
+    public Possibilities NotCachedPossibilitiesAt(int row, int col);
+    public Possibilities NotCachedPossibilitiesAt(Cell cell)
+    {
+        return NotCachedPossibilitiesAt(cell.Row, cell.Column);
+    }
 }
 
 

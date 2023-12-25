@@ -15,18 +15,14 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    protected override IStrategyArgument[] NonReadOnlyArguments { get; }
 
     private int _minSharedSeenCells;
     
     public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         _minSharedSeenCells = minSharedSeenCells;
-        NonReadOnlyArguments = new IStrategyArgument[]
-        {
-            new IntStrategyArgument("Minimum shared seen cells", () => _minSharedSeenCells,
-                i => _minSharedSeenCells = i, new SliderViewInterface(5, 12, 1))
-        };
+        ArgumentsList.Add(new IntStrategyArgument("Minimum shared seen cells", () => _minSharedSeenCells,
+            i => _minSharedSeenCells = i, new SliderViewInterface(5, 12, 1)));
     }
 
     public override void Apply(IStrategyManager strategyManager)

@@ -46,7 +46,7 @@ public class StrategyLoader : IStrategyLoader
         {FinnedGridFormationStrategy.OfficialNameForType3, new FinnedGridFormationStrategy(3)},
         {FinnedGridFormationStrategy.OfficialNameForType4, new FinnedGridFormationStrategy(4)},
         {FireworksStrategy.OfficialName, new FireworksStrategy()},
-        {UniqueRectanglesStrategy.OfficialName, new UniqueRectanglesStrategy()},
+        {UniqueRectanglesStrategy.OfficialName, new UniqueRectanglesStrategy(true)},
         {UnavoidableRectanglesStrategy.OfficialName, new UnavoidableRectanglesStrategy()},
         {XYChainsStrategy.OfficialName, new XYChainsStrategy()},
         {ThreeDimensionMedusaStrategy.OfficialName, new ThreeDimensionMedusaStrategy()},

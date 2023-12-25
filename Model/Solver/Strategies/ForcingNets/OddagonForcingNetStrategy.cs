@@ -17,18 +17,14 @@ public class OddagonForcingNetStrategy : AbstractStrategy
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    protected override IStrategyArgument[] NonReadOnlyArguments { get; }
 
     private int _maxNumberOfGuardians;
     
     public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _maxNumberOfGuardians = maxNumberOfGuardians;
-        NonReadOnlyArguments = new IStrategyArgument[]
-        {
-            new IntStrategyArgument("Maximum number of guardians", () => _maxNumberOfGuardians,
-                i => _maxNumberOfGuardians = i, new SliderViewInterface(1, 20, 1))
-        };
+        ArgumentsList.Add(new IntStrategyArgument("Maximum number of guardians", () => _maxNumberOfGuardians,
+            i => _maxNumberOfGuardians = i, new SliderViewInterface(1, 20, 1)));
     }
     
     public override void Apply(IStrategyManager strategyManager)

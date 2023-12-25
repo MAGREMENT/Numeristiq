@@ -195,7 +195,9 @@
     "Name": "Unique Rectangles",
     "Used": true,
     "Behavior": 0,
-    "Args": {}
+    "Args": {
+      "Missing candidates allowed": "True"
+    }
   },
   {
     "Name": "Unavoidable Rectangles",

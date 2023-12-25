@@ -18,3 +18,8 @@ public class SliderViewInterface : IArgumentViewInterface
     public int Max { get; }
     public int TickFrequency { get; }
 }
+
+public class BooleanViewInterface : IArgumentViewInterface
+{
+    
+}
