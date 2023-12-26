@@ -102,6 +102,12 @@
     "Args": {}
   },
   {
+    "Name": "Mini-Uniqueness",
+    "Used": true,
+    "Behavior": 1,
+    "Args": {}
+  },
+  {
     "Name": "BUG",
     "Used": true,
     "Behavior": 0,
