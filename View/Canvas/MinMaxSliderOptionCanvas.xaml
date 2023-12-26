@@ -8,7 +8,7 @@
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
         <TextBlock x:Name="Block" Margin="0, 0, 5, 0" VerticalAlignment="Center"></TextBlock>
-        <Border BorderBrush="DimGray" BorderThickness="3, 0, 0, 0" CornerRadius="5">
+        <Border BorderBrush="DimGray" BorderThickness="2, 0, 0, 0" CornerRadius="5">
             <StackPanel Orientation="Vertical" Margin="5, 0, 0, 0">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Margin="0, 0, 5, 0" x:Name="MinText" VerticalAlignment="Center">Min :</TextBlock>

@@ -65,6 +65,16 @@ public partial class StepChooserWindow : IStepChooserView
         CommitInfo.StopShow();
     }
 
+    public void ShowSelection(int n)
+    {
+        CommitList.ShowSelection(n);
+    }
+
+    public void UnShowSelection(int n)
+    {
+        CommitList.UnShowSelection(n);
+    }
+
     public void AllowChoosing(bool yes)
     {
         ChooseButton.IsEnabled = yes;

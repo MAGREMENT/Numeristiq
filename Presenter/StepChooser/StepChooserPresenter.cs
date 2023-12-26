@@ -52,12 +52,14 @@ public class StepChooserPresenter
         if (index < 0 || index >= _commits.Length) return;
 
         _view.ClearDrawings();
+        if (_currentlySelectedIndex != -1) _view.UnShowSelection(_currentlySelectedIndex);
         
         if (_currentlySelectedIndex == -1 || _currentlySelectedIndex != index)
         {
             _currentlySelectedIndex = index;
             _highlighterTranslator.Translate(_commits[index].Report.HighlightManager); 
             _view.ShowCommitInformation(ModelToViewTranslator.Translate(_commits[index]));
+            _view.ShowSelection(index);
             _view.AllowChoosing(true);
         }
         else

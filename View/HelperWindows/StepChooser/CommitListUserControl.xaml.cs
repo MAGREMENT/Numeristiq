@@ -40,6 +40,16 @@ public partial class CommitListUserControl
             Panel.Children.Add(tb);
         }
     }
+
+    public void ShowSelection(int n)
+    {
+        ((TextBlock)Panel.Children[n]).FontWeight = FontWeights.Bold;
+    }
+    
+    public void UnShowSelection(int n)
+    {
+        ((TextBlock)Panel.Children[n]).FontWeight = FontWeights.Normal;
+    }
 }
 
 public delegate void OnCommitSelection(int index);

@@ -330,6 +330,12 @@
     "Args": {}
   },
   {
+    "Name": "Pattern Overlay",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
     "Name": "Digit Forcing Net",
     "Used": true,
     "Behavior": 0,
@@ -357,12 +363,6 @@
   },
   {
     "Name": "Nishio Forcing Net",
-    "Used": true,
-    "Behavior": 0,
-    "Args": {}
-  },
-  {
-    "Name": "Pattern Overlay",
     "Used": true,
     "Behavior": 0,
     "Args": {}
