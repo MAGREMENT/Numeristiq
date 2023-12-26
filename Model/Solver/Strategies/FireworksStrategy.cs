@@ -151,7 +151,7 @@ public class FireworksStrategy : AbstractStrategy
 
                 foreach (var gp in limitations)
                 {
-                    gp.Reset();
+                    gp.Void();
                 }
             }
         }

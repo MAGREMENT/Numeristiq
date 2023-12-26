@@ -7,8 +7,6 @@ using Model.Solver.Strategies.BlossomLoops;
 using Model.Solver.Strategies.BlossomLoops.BranchFinder;
 using Model.Solver.Strategies.BlossomLoops.LoopFinders;
 using Model.Solver.Strategies.BlossomLoops.Types;
-using Model.Solver.Strategies.FishGeneralization;
-using Model.Solver.Strategies.FishGeneralization.FishTypes;
 using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.MultiSector;
 using Model.Solver.Strategies.MultiSector.Searchers;
@@ -74,8 +72,7 @@ public class StrategyLoader : IStrategyLoader
         {NRCZTChainStrategy.OfficialNameForZCondition, new NRCZTChainStrategy(new ZCondition())},
         {NRCZTChainStrategy.OfficialNameForZAndTCondition, new NRCZTChainStrategy(new TCondition(), new ZCondition())},
         {SkyscraperStrategy.OfficialName, new SkyscraperStrategy()},
-        {FishGeneralization.OfficialNameForBasic, new FishGeneralization(3, 4, new BasicFish())},
-        {FishGeneralization.OfficialNameForFinned, new FishGeneralization(3, 4, new FinnedFish())},
+        {FishStrategy.OfficialName, new FishStrategy(3, 4, 3, 2, true)},
         {TwoStringKiteStrategy.OfficialName, new TwoStringKiteStrategy()},
         {AlmostLockedSetsChainStrategy.OfficialName, new AlmostLockedSetsChainStrategy(false)},
         {AlmostHiddenSetsChainStrategy.OfficialName, new AlmostHiddenSetsChainStrategy(false)},

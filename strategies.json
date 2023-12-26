@@ -369,7 +369,7 @@
   },
   {
     "Name": "Brute Force",
-    "Used": true,
+    "Used": false,
     "Behavior": 1,
     "Args": {}
   }

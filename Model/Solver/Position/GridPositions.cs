@@ -140,7 +140,7 @@ public class GridPositions : IReadOnlyGridPositions
         _second = 0x7FFFFFF;
     }
 
-    public void Reset()
+    public void Void()
     {
         _first = 0ul;
         _second = 0ul;
@@ -197,6 +197,17 @@ public class GridPositions : IReadOnlyGridPositions
         return IReadOnlyGridPositions.DefaultAnd(this, p);
     }
 
+    public void ApplyAnd(GridPositions gp)
+    {
+        _first &= gp._first;
+        _second &= gp._second;
+    }
+
+    public void ApplyAnd(IReadOnlyGridPositions gp)
+    {
+        if (gp is GridPositions o) ApplyAnd(o);
+    }
+
     public GridPositions Or(IReadOnlyGridPositions pos)
     {
         if (pos is GridPositions other)
@@ -205,6 +216,12 @@ public class GridPositions : IReadOnlyGridPositions
         }
 
         return IReadOnlyGridPositions.DefaultOr(this, pos);
+    }
+
+    public void ApplyOr(GridPositions gp)
+    {
+        _first |= gp._first;
+        _second |= gp._second;
     }
 
     public GridPositions And(List<GridPositions> gps)
@@ -352,13 +369,14 @@ public class GridPositions : IReadOnlyGridPositions
         var result = new List<CoverHouse[]>();
 
         PossibleCoverHouses(count, methods, this, result,
-            new List<CoverHouse>(), forbidden);
+            new List<CoverHouse>(), forbidden, new HashSet<int>());
         
         return result;
     }
     
     private void PossibleCoverHouses(int max, IUnitMethods[] methods, GridPositions gp,
-        List<CoverHouse[]> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
+        List<CoverHouse[]> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden,
+        HashSet<int> done)
     {
         var first = gp.First();
         foreach (var method in methods)
@@ -366,31 +384,23 @@ public class GridPositions : IReadOnlyGridPositions
             var ch = method.ToCoverHouse(first);
             if (forbidden.Contains(ch)) continue;
             
+            current.Add(ch);
+            var hash = CoverHouseHelper.ToHash(current);
+            if (done.Contains(hash))
+            {
+                current.RemoveAt(current.Count - 1);
+                continue;
+            }
+            done.Add(hash);
+            
             var copy = gp.Copy();
             method.Void(copy, first);
-            current.Add(ch);
 
             if (copy.Count == 0) result.Add(current.ToArray());
-            else if (current.Count < max) PossibleCoverHouses(max, methods, copy, result, current, forbidden);
+            else if (current.Count < max) PossibleCoverHouses(max, methods, copy, result, current, forbidden, done);
             
             current.RemoveAt(current.Count - 1);
         }
-    }
-
-    public List<CoverHouse> PossibleCoverHouse(IUnitMethods[] methods)
-    {
-        List<CoverHouse> result = new();
-        var first = First();
-
-        foreach (var method in methods)
-        {
-            var copy = Copy();
-            method.Void(copy, first);
-            
-            if(copy.Count == 0) result.Add(method.ToCoverHouse(first));
-        }
-
-        return result;
     }
 
     public List<CoveredGrid> PossibleCoveredGrids(int count, int maxRemaining, HashSet<CoverHouse> forbidden,
@@ -399,13 +409,14 @@ public class GridPositions : IReadOnlyGridPositions
         var result = new List<CoveredGrid>();
 
         PossibleCoveredGrids(count, maxRemaining, ToArray(), 0, methods, this, result,
-            new List<CoverHouse>(), forbidden);
+            new List<CoverHouse>(), forbidden, new HashSet<int>());
 
         return result;
     }
 
     private void PossibleCoveredGrids(int max, int maxRemaining, Cell[] cells, int start, IUnitMethods[] methods,
-        GridPositions gp, List<CoveredGrid> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden)
+        GridPositions gp, List<CoveredGrid> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden,
+        HashSet<int> done)
     {
         for (int i = start; i < cells.Length; i++)
         {
@@ -416,10 +427,18 @@ public class GridPositions : IReadOnlyGridPositions
             {
                 var ch = method.ToCoverHouse(c);
                 if (forbidden.Contains(ch)) continue;
+                
+                current.Add(ch);
+                var hash = CoverHouseHelper.ToHash(current);
+                if (done.Contains(hash))
+                {
+                    current.RemoveAt(current.Count - 1);
+                    continue;
+                }
+                done.Add(hash);
 
                 var copy = gp.Copy();
                 method.Void(copy, c);
-                current.Add(ch);
                 
                 if(copy.Count == 0) result.Add(new CoveredGrid(copy, current.ToArray()));
                 else if (current.Count == max)
@@ -427,7 +446,7 @@ public class GridPositions : IReadOnlyGridPositions
                     if(copy.Count <= maxRemaining) result.Add(new CoveredGrid(copy, current.ToArray()));
                 }
                 else if (current.Count < max) PossibleCoveredGrids(max, maxRemaining, cells, i + 1,
-                        methods, copy, result, current, forbidden);
+                        methods, copy, result, current, forbidden, done);
 
                 current.RemoveAt(current.Count - 1);
             }
@@ -509,6 +528,8 @@ public interface IUnitMethods
     IEnumerable<Cell> EveryCell(int unit);
 
     IEnumerable<Cell> EveryCell(Cell cell);
+
+    IEnumerable<Cell> EveryCell(IReadOnlyGridPositions gp, int unit);
     
     int Count(IReadOnlyGridPositions gp, Cell c);
 
@@ -521,6 +542,8 @@ public interface IUnitMethods
     void Void(GridPositions gp, Cell c);
     
     void Void(GridPositions gp, int unit);
+
+    bool Contains(Cell cell, int unitNumber);
 
     CoverHouse ToCoverHouse(Cell cell);
 }
@@ -540,6 +563,15 @@ public class RowMethods : IUnitMethods
         for (int col = 0; col < 9; col++)
         {
             yield return new Cell(cell.Row, col);
+        }
+    }
+
+    public IEnumerable<Cell> EveryCell(IReadOnlyGridPositions gp, int unit)
+    {
+        for (int col = 0; col < 9; col++)
+        {
+            var c = new Cell(unit, col);
+            if (gp.Peek(c)) yield return c;
         }
     }
 
@@ -573,6 +605,11 @@ public class RowMethods : IUnitMethods
         gp.VoidRow(unit);
     }
 
+    public bool Contains(Cell cell, int unitNumber)
+    {
+        return cell.Row == unitNumber;
+    }
+
     public CoverHouse ToCoverHouse(Cell cell)
     {
         return new CoverHouse(Unit.Row, cell.Row);
@@ -594,6 +631,15 @@ public class ColumnMethods : IUnitMethods
         for (int row = 0; row < 9; row++)
         {
             yield return new Cell(row, cell.Column);
+        }
+    }
+
+    public IEnumerable<Cell> EveryCell(IReadOnlyGridPositions gp, int unit)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            var c = new Cell(row, unit);
+            if (gp.Peek(c)) yield return c;
         }
     }
 
@@ -626,7 +672,12 @@ public class ColumnMethods : IUnitMethods
     {
         gp.VoidColumn(unit);
     }
-    
+
+    public bool Contains(Cell cell, int unitNumber)
+    {
+        return cell.Column == unitNumber;
+    }
+
     public CoverHouse ToCoverHouse(Cell cell)
     {
         return new CoverHouse(Unit.Column, cell.Column);
@@ -663,6 +714,21 @@ public class MiniGridMethods : IUnitMethods
         }
     }
 
+    public IEnumerable<Cell> EveryCell(IReadOnlyGridPositions gp, int unit)
+    {
+        var startRow = unit / 3 * 3;
+        var startCol = unit % 3 * 3;
+
+        for (int r = 0; r < 3; r++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                var cell = new Cell(startRow + r, startCol + c);
+                if (gp.Peek(cell)) yield return cell;
+            }
+        }
+    }
+
     public int Count(IReadOnlyGridPositions gp, Cell c)
     {
         return gp.MiniGridCount(c.Row / 3, c.Column / 3);
@@ -693,6 +759,11 @@ public class MiniGridMethods : IUnitMethods
         gp.VoidMiniGrid(unit / 3, unit % 3);
     }
 
+    public bool Contains(Cell cell, int unitNumber)
+    {
+        return cell.Row / 3 * 3 + cell.Column / 3 == unitNumber;
+    }
+
     public CoverHouse ToCoverHouse(Cell cell)
     {
         return new CoverHouse(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Column / 3);
@@ -700,3 +771,18 @@ public class MiniGridMethods : IUnitMethods
 }
 
 public record CoveredGrid(GridPositions Remaining, CoverHouse[] CoverHouses);
+
+public static class CoverHouseHelper
+{
+    public static int ToHash(IReadOnlyList<CoverHouse> houses)
+    {
+        int hash = 0;
+        foreach (var house in houses)
+        {
+            var delta = house.Number + 9 * (int)house.Unit;
+            hash |= 1 << delta;
+        }
+
+        return hash;
+    }
+}

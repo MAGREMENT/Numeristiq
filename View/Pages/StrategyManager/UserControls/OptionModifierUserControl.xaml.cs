@@ -52,7 +52,7 @@ public partial class OptionModifierUserControl
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
                     }),
                 BooleanViewInterface => new CheckBoxOptionCanvas(i.Name, "", 
-                    i.CurrentValue.Equals("true"), n =>
+                    i.CurrentValue.ToLower().Equals("true"), n =>
                     {
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
                     }),
