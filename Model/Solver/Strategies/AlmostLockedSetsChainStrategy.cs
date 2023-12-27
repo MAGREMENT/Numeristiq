@@ -2,6 +2,7 @@
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
@@ -40,6 +41,9 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
         {
+            /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
+                CheckForLoop(strategyManager, chain, friend.Possibilities, occupied)) return true;*/
+            
             if (explored.Contains(friend.To) || occupied.PeakAny(friend.To.Positions)) continue;
 
             var lastLink = chain.LastLink();
@@ -51,7 +55,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
                 explored.Add(friend.To);
                 var occupiedCopy = occupied.Or(friend.To.Positions);
 
-                if (Check(strategyManager, chain)) return true;
+                if (CheckForChain(strategyManager, chain)) return true;
                 if (Search(strategyManager, graph, occupiedCopy, explored, chain)) return true;
                 
                 chain.RemoveLast();
@@ -61,7 +65,46 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
         return false;
     }
 
-    private bool Check(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, int> chain)
+    private bool CheckForLoop(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, int> builder,
+        IReadOnlyPossibilities possibleLastLinks, GridPositions occupied)
+    {
+        foreach (var ll in possibleLastLinks)
+        {
+            if (ll.Equals(builder.FirstLink())) continue;
+
+            var chain = builder.ToChain();
+            for (int i = 0; i < chain.Elements.Length; i++)
+            {
+                var element = chain.Elements[i];
+                foreach (var p in element.Possibilities)
+                {
+                    var indexBefore = i - 1 < 0 ? chain.Links.Length - 1 : i - 1;
+                    if (p == chain.Links[indexBefore]) continue;
+
+                    var cells = new List<Cell>();
+                    cells.AddRange(element.EachCell());
+                    
+                    var linkAfter = i == chain.Elements.Length - 1 ? ll : chain.Links[i];
+                    if (p == linkAfter) cells.AddRange(i == chain.Elements.Length - 1 
+                        ? chain.Elements[0].EachCell() : chain.Elements[i + 1].EachCell());
+
+                    foreach (var ssc in cells)
+                    {
+                        if (occupied.Peek(ssc)) continue;
+
+                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                    }
+                }
+            }
+
+            return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                new AlmostLockedSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
+        }
+        
+        return false;
+    }
+
+    private bool CheckForChain(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
 
@@ -94,10 +137,18 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
 public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
 {
     private readonly Chain<IPossibilitiesPositions, int> _chain;
+    private readonly int _possibleLastLink;
 
     public AlmostLockedSetsChainReportBuilder(Chain<IPossibilitiesPositions, int> chain)
     {
         _chain = chain;
+        _possibleLastLink = -1;
+    }
+    
+    public AlmostLockedSetsChainReportBuilder(Chain<IPossibilitiesPositions, int> chain, int lastLink)
+    {
+        _chain = chain;
+        _possibleLastLink = lastLink;
     }
 
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
@@ -117,40 +168,46 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
 
             for (int i = 0; i < _chain.Links.Length; i++)
             {
-                var poss = _chain.Links[i];
-
-                foreach (var cell in _chain.Elements[i].EachCell(poss))
-                {
-                    lighter.HighlightPossibility(poss, cell.Row, cell.Column, ChangeColoration.Neutral);
-                }
-                
-                foreach (var cell in _chain.Elements[i + 1].EachCell(poss))
-                {
-                    lighter.HighlightPossibility(poss, cell.Row, cell.Column, ChangeColoration.Neutral);
-                }
-
-                var minDistance = double.MaxValue;
-                var minCells = new CellPossibility[2];
-                
-                foreach (var cell1 in _chain.Elements[i].EachCell(poss))
-                {
-                    foreach (var cell2 in _chain.Elements[i + 1].EachCell(poss))
-                    {
-                        var dist = Cells.Distance(cell1, poss, cell2, poss);
-
-                        if (dist < minDistance)
-                        {
-                            minDistance = dist;
-                            minCells[0] = new CellPossibility(cell1, poss);
-                            minCells[1] = new CellPossibility(cell2, poss);
-                        }
-                    }
-                }
-                
-                lighter.CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
+                HighlightLink(lighter, _chain.Links[i], _chain.Elements[i], _chain.Elements[i + 1]);
             }
+            
+            if(_possibleLastLink != -1) HighlightLink(lighter, _possibleLastLink,
+                _chain.Elements[^1], _chain.Elements[0]);
 
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
+    }
+
+    private void HighlightLink(IHighlightable lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
+    {
+        foreach (var cell in elementBefore.EachCell(link))
+        {
+            lighter.HighlightPossibility(link, cell.Row, cell.Column, ChangeColoration.Neutral);
+        }
+                
+        foreach (var cell in elementAfter.EachCell(link))
+        {
+            lighter.HighlightPossibility(link, cell.Row, cell.Column, ChangeColoration.Neutral);
+        }
+
+        var minDistance = double.MaxValue;
+        var minCells = new CellPossibility[2];
+                
+        foreach (var cell1 in elementBefore.EachCell(link))
+        {
+            foreach (var cell2 in elementAfter.EachCell(link))
+            {
+                var dist = Cells.Distance(cell1, link, cell2, link);
+
+                if (dist < minDistance)
+                {
+                    minDistance = dist;
+                    minCells[0] = new CellPossibility(cell1, link);
+                    minCells[1] = new CellPossibility(cell2, link);
+                }
+            }
+        }
+                
+        lighter.CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
     }
 }
