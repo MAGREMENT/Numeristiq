@@ -47,4 +47,9 @@ public interface IPossibilitiesPositions
 
         return true;
     }
+
+    public bool Contains(CellPossibility cp)
+    {
+        return Possibilities.Peek(cp.Possibility) && Positions.Peek(cp.Row, cp.Column);
+    }
 }
