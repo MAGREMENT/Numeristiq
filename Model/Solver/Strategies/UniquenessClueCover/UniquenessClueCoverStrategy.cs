@@ -13,6 +13,7 @@ public class UniquenessClueCoverStrategy : AbstractStrategy
     public UniquenessClueCoverStrategy(params IPatternCollection[] collections)
         : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
         _collections = collections;
         foreach (var c in _collections)
         {
