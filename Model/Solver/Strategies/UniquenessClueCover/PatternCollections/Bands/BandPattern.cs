@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using Global;
+using Model.Solver.Possibility;
 
 namespace Model.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 
@@ -17,8 +19,8 @@ public abstract class BandPattern
     private readonly Dictionary<BoxPosition, EliminationFlag>[] _eliminationsBuffer =
         new Dictionary<BoxPosition, EliminationFlag>[3];
     
-    public int DifferentClueCount { get; }
-    public int ClueCount { get; }
+    public int DifferentClueCount { get; private set; }
+    public int ClueCount { get; private set; }
     
     protected BandPattern(int differentClueCount, int clueCount)
     {
@@ -26,30 +28,92 @@ public abstract class BandPattern
         ClueCount = clueCount;
     }
 
+    protected void AddPlacement(int boxNumber, int boxWidth, int boxLength, int number)
+    {
+        if (_placements[boxNumber].TryAdd(new BoxPosition(boxWidth, boxLength), number))
+        {
+            ClueCount++;
+
+            bool add = true;
+            foreach (var box in _placements)
+            {
+                if (box.ContainsValue(number))
+                {
+                    add = false;
+                    break;
+                }
+            }
+
+            if (add) DifferentClueCount++;
+        }
+    }
+
+    protected void AddEliminationFlag(int boxNumber, int boxWidth, int boxLength, EliminationFlag flag)
+    {
+        _eliminations[boxNumber].TryAdd(new BoxPosition(boxWidth, boxLength), flag);
+    }
+
     public Dictionary<BoxPosition, int>[] PlacementsWithKey(int[] key)
     {
         for (int i = 0; i < 3; i++)
         {
-            _placementsBuffer[i] = _placementsBuffer[key[i]];
+            _placementsBuffer[i] = _placements[key[i]];
         }
 
         return _placementsBuffer;
+    }
+
+    public Dictionary<BoxPosition, EliminationFlag>[] EliminationsWithKey(int[] key)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            _eliminationsBuffer[i] = _eliminations[key[i]];
+        }
+
+        return _eliminationsBuffer;
     }
 }
 
 public readonly struct EliminationFlag
 {
     private readonly ushort _n;
+    private readonly bool _reverse;
 
-    public EliminationFlag(params int[] elimination)
+    public EliminationFlag(bool reverse, params int[] eliminations)
     {
+        _reverse = reverse;
+        
         ushort n = 0;
-        foreach (var e in elimination)
+        foreach (var e in eliminations)
         {
             n |= (ushort)(1 << e);
         }
 
         _n = n;
+    }
+
+    public IEnumerable<int> EveryElimination(int[] numberEquivalence)
+    {
+        if (_reverse)
+        {
+            Possibilities result = new();
+            for (int i = 0; i < 8; i++)
+            {
+                if (((_n >> i) & 1) > 0) result.Remove(numberEquivalence[i]);
+            }
+
+            foreach (var p in result)
+            {
+                yield return p;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < 8; i++)
+            {
+                if (((_n >> i) & 1) > 0) yield return numberEquivalence[i];
+            }
+        }
     }
 }
 
@@ -89,3 +153,59 @@ public static class OrderKeyGenerator
         yield return new[] { 2, 1, 0 };
     }
 }
+
+/// <summary>
+/// +-------------+-------------+-------------+
+/// |  *1   .   . |   .   .   . |   .   .   . |
+/// |   .   .   . |  *2   .   . |   .   .   . |
+/// |  -@   .   . |  -@   .   . |   .   .   . |
+/// +-------------+-------------+-------------+
+/// </summary>
+public class TwoClueBandPattern : BandPattern
+{
+    public TwoClueBandPattern() : base(2, 2)
+    {
+        AddPlacement(0, 0, 0, 0);
+        AddPlacement(1, 1, 0, 1);
+        AddEliminationFlag(0, 2, 0, new EliminationFlag(true, 0, 1));
+        AddEliminationFlag(1, 2, 0, new EliminationFlag(true, 0, 1));
+    }
+}
+
+/*
++-------------+-------------+-------------+
+|  *1   .   . |  *4   .   . |  *5  -3  -3 |
+|  *2   .   . |  *1 -35 -35 |  *4   .   . |
+|  *3  -5  -5 |  *2   .   . |  *1   .   . |
++-------------+-------------+-------------+
+
++----------+----------+----------+
+| -2 -2 -2 |  .  . -2 |  .  .  . |
+|  .  .  . | -2 -2 -2 |  .  . *1 |
+|  .  .  . |  .  . *1 |  .  . *2 |
++----------+----------+----------+
+
++----------+----------+----------+
+| -2 -2 -2 |  .  .  . |  .  .  . |
+|  .  .  . | -2 -2 -2 |  .  . *1 |
+|  .  .  . |  .  . *1 |  . *2  . |
++----------+----------+----------+
+
++----------+----------+----------+
+| -1 -1 -1 | -1  .  . |  .  .  . |
+|  .  .  . |  .  .  . |  .  . *1 |
+|  .  .  . | -1 *2 *3 |  .  .  . |
++----------+----------+----------+
+
++----------+----------+----------+
+|  .  .  . |  .  .  . |  .  . -@ |
+|  .  .  . |  .  .  . |  .  . *1 |
+|  .  . *1 |  .  . *2 |  .  .  . |
++----------+----------+----------+
+
++----------+----------+----------+
+|  .  .  . |  .  . -@ |  .  . *1 |
+|  .  .  . |  .  .  . |  . *2  . |
+|  .  .  . |  .  . *1 |  .  .  . |
++----------+----------+----------+
+*/

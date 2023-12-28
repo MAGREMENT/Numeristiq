@@ -66,6 +66,12 @@
     "Args": {}
   },
   {
+    "Name": "Uniqueness Clue Cover",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
     "Name": "X-Wing",
     "Used": true,
     "Behavior": 1,

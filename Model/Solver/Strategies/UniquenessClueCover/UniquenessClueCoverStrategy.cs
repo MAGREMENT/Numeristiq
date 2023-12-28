@@ -13,6 +13,10 @@ public class UniquenessClueCoverStrategy : AbstractStrategy
         : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         _collections = collections;
+        foreach (var c in _collections)
+        {
+            c.Strategy = this;
+        }
     }
 
     

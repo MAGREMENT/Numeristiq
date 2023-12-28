@@ -2,7 +2,6 @@
 using Global;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
 using Model.Solver.Position;
 
 namespace Model.Solver.Strategies;
@@ -161,6 +160,8 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
 
     private string Explanation(Cell[] cells)
     {
+        if (cells.Length < 2) return "";
+
         return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
                $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
     }
@@ -197,6 +198,8 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
     
     private string Explanation(Cell[] cells)
     {
+        if (cells.Length < 2) return "";
+        
         return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
                $" mini grid {_pos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
     }

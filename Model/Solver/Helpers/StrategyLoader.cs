@@ -11,6 +11,8 @@ using Model.Solver.Strategies.ForcingNets;
 using Model.Solver.Strategies.MultiSector;
 using Model.Solver.Strategies.MultiSector.Searchers;
 using Model.Solver.Strategies.NRCZTChains;
+using Model.Solver.Strategies.UniquenessClueCover;
+using Model.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -104,7 +106,8 @@ public class StrategyLoader : IStrategyLoader
         {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
         {ReverseBUGLiteStrategy.OfficialName, new ReverseBUGLiteStrategy()},
         {HiddenBugStrategy.OfficialName, new HiddenBugStrategy(2, 4)},
-        {MiniUniquenessStrategy.OfficialName, new MiniUniquenessStrategy()}
+        {MiniUniquenessStrategy.OfficialName, new MiniUniquenessStrategy()},
+        {UniquenessClueCoverStrategy.OfficialName, new UniquenessClueCoverStrategy(BandCollection.FullCollection())}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();
