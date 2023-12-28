@@ -67,7 +67,7 @@
   },
   {
     "Name": "Uniqueness Clue Cover",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {}
   },

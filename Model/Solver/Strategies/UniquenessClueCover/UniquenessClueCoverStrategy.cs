@@ -8,6 +8,7 @@ public class UniquenessClueCoverStrategy : AbstractStrategy
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly IPatternCollection[] _collections;
+    private bool _needFilter = true;
     
     public UniquenessClueCoverStrategy(params IPatternCollection[] collections)
         : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
@@ -24,7 +25,18 @@ public class UniquenessClueCoverStrategy : AbstractStrategy
     {
         foreach (var c in _collections)
         {
-            if (c.Apply(strategyManager)) return;
+            if (_needFilter)
+            {
+                if (c.Filter(strategyManager)) return;
+            }
+            else if (c.Apply(strategyManager)) return;
         }
+
+        _needFilter = false;
+    }
+
+    public override void OnNewSudoku(Sudoku s)
+    {
+        _needFilter = true;
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using Global;
 using Model.Solver.Possibility;
 
@@ -21,31 +20,23 @@ public abstract class BandPattern
     
     public int DifferentClueCount { get; private set; }
     public int ClueCount { get; private set; }
-    
-    protected BandPattern(int differentClueCount, int clueCount)
-    {
-        DifferentClueCount = differentClueCount;
-        ClueCount = clueCount;
-    }
 
     protected void AddPlacement(int boxNumber, int boxWidth, int boxLength, int number)
     {
-        if (_placements[boxNumber].TryAdd(new BoxPosition(boxWidth, boxLength), number))
+        if (!_placements[boxNumber].TryAdd(new BoxPosition(boxWidth, boxLength), number)) return;
+        
+        ClueCount++;
+
+        var count = 0;
+        foreach (var box in _placements)
         {
-            ClueCount++;
-
-            bool add = true;
-            foreach (var box in _placements)
-            {
-                if (box.ContainsValue(number))
-                {
-                    add = false;
-                    break;
-                }
-            }
-
-            if (add) DifferentClueCount++;
+            if (!box.ContainsValue(number)) continue;
+                
+            count++;
+            if(count > 1) break;
         }
+
+        if (count == 1) DifferentClueCount++;
     }
 
     protected void AddEliminationFlag(int boxNumber, int boxWidth, int boxLength, EliminationFlag flag)
@@ -163,7 +154,7 @@ public static class OrderKeyGenerator
 /// </summary>
 public class TwoClueBandPattern : BandPattern
 {
-    public TwoClueBandPattern() : base(2, 2)
+    public TwoClueBandPattern()
     {
         AddPlacement(0, 0, 0, 0);
         AddPlacement(1, 1, 0, 1);
@@ -172,40 +163,146 @@ public class TwoClueBandPattern : BandPattern
     }
 }
 
-/*
-+-------------+-------------+-------------+
-|  *1   .   . |  *4   .   . |  *5  -3  -3 |
-|  *2   .   . |  *1 -35 -35 |  *4   .   . |
-|  *3  -5  -5 |  *2   .   . |  *1   .   . |
-+-------------+-------------+-------------+
+/// <summary>
+/// +-------------+-------------+-------------+
+/// |  *1   .   . |  *4   .   . |  *5  -3  -3 |
+/// |  *2   .   . |  *1 -35 -35 |  *4   .   . |
+/// |  *3  -5  -5 |  *2   .   . |  *1   .   . |
+/// +-------------+-------------+-------------+
+/// </summary>
+public class TripleCrossBandPattern : BandPattern
+{
+    public TripleCrossBandPattern()
+    {
+        AddPlacement(0, 0, 0, 0);
+        AddPlacement(0, 1, 0, 1);
+        AddPlacement(0, 2, 0, 2);
+        
+        AddPlacement(1, 0, 0, 3);
+        AddPlacement(1, 1, 0, 0);
+        AddPlacement(1, 2, 0, 1);
+        
+        AddPlacement(2, 0, 0, 4);
+        AddPlacement(2, 1, 0, 3);
+        AddPlacement(2, 2, 0, 0);
+        
+        AddEliminationFlag(0, 2, 1, new EliminationFlag(false, 4));
+        AddEliminationFlag(0, 2, 2, new EliminationFlag(false, 4));
+        
+        AddEliminationFlag(1, 1, 1, new EliminationFlag(false, 2, 4));
+        AddEliminationFlag(1, 1, 2, new EliminationFlag(false, 2, 4));
+        
+        AddEliminationFlag(2, 0, 1, new EliminationFlag(false, 2));
+        AddEliminationFlag(2, 0, 2, new EliminationFlag(false, 2));
+    }
+}
 
-+----------+----------+----------+
-| -2 -2 -2 |  .  . -2 |  .  .  . |
-|  .  .  . | -2 -2 -2 |  .  . *1 |
-|  .  .  . |  .  . *1 |  .  . *2 |
-+----------+----------+----------+
+/// <summary>
+/// +----------+----------+----------+
+/// | -2 -2 -2 |  .  . -2 |  .  .  . |
+/// |  .  .  . | -2 -2 -2 |  .  . *1 |
+/// |  .  .  . |  .  . *1 |  .  . *2 |
+/// +----------+----------+----------+
+/// </summary>
+public class LTripleClueBandPattern : BandPattern
+{
+    public LTripleClueBandPattern()
+    {
+        AddPlacement(1, 2, 2, 0);
+        AddPlacement(2, 1, 2, 0);
+        AddPlacement(2, 2, 2, 1);
+        
+        AddEliminationFlag(0, 0, 0, new EliminationFlag(false, 1));
+        AddEliminationFlag(0, 0, 1, new EliminationFlag(false, 1));
+        AddEliminationFlag(0, 0, 2, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 0, 2, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 1, 0, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 1, 1, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 1, 2, new EliminationFlag(false, 1));
+    }
+}
 
-+----------+----------+----------+
-| -2 -2 -2 |  .  .  . |  .  .  . |
-|  .  .  . | -2 -2 -2 |  .  . *1 |
-|  .  .  . |  .  . *1 |  . *2  . |
-+----------+----------+----------+
+/// <summary>
+/// +----------+----------+----------+
+/// | -2 -2 -2 |  .  .  . |  .  .  . |
+/// |  .  .  . | -2 -2 -2 |  .  . *1 |
+/// |  .  .  . |  .  . *1 |  . *2  . |
+/// +----------+----------+----------+
+/// </summary>
+public class BrokenLTripleClueBandPattern : BandPattern
+{
+    public BrokenLTripleClueBandPattern()
+    {
+        AddPlacement(1, 2, 2, 0);
+        AddPlacement(2, 1, 2, 0);
+        AddPlacement(2, 2, 1, 1);
+        
+        AddEliminationFlag(0, 0, 0, new EliminationFlag(false, 1));
+        AddEliminationFlag(0, 0, 1, new EliminationFlag(false, 1));
+        AddEliminationFlag(0, 0, 2, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 1, 0, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 1, 1, new EliminationFlag(false, 1));
+        AddEliminationFlag(1, 1, 2, new EliminationFlag(false, 1));
+    }
+}
 
-+----------+----------+----------+
-| -1 -1 -1 | -1  .  . |  .  .  . |
-|  .  .  . |  .  .  . |  .  . *1 |
-|  .  .  . | -1 *2 *3 |  .  .  . |
-+----------+----------+----------+
+/// <summary>
+/// +----------+----------+----------+
+/// |  .  .  . |  .  . -@ |  .  . *1 |
+/// |  .  .  . |  .  .  . |  . *2  . |
+/// |  .  .  . |  .  . *1 |  .  .  . |
+/// +----------+----------+----------+
+/// </summary>
+public class DiagonalTripleClueBandPattern : BandPattern
+{
+    public DiagonalTripleClueBandPattern()
+    {
+        AddPlacement(2, 0, 2, 0);
+        AddPlacement(2, 1, 1, 1);
+        AddPlacement(1, 2, 2, 0);
+        
+        AddEliminationFlag(1, 0, 2, new EliminationFlag(true, 0, 1));
+    }
+}
 
-+----------+----------+----------+
-|  .  .  . |  .  .  . |  .  . -@ |
-|  .  .  . |  .  .  . |  .  . *1 |
-|  .  . *1 |  .  . *2 |  .  .  . |
-+----------+----------+----------+
+/// <summary>
+/// +----------+----------+----------+
+/// | -1 -1 -1 | -1  .  . |  .  .  . |
+/// |  .  .  . |  .  .  . |  .  . *1 |
+/// |  .  .  . | -1 *2 *3 |  .  .  . |
+/// +----------+----------+----------+
+/// </summary>
+public class AlmostFlatTTripleClueBandPattern : BandPattern
+{
+    public AlmostFlatTTripleClueBandPattern()
+    {
+        AddPlacement(2, 1, 2, 0);
+        AddPlacement(1, 2, 1, 1);
+        AddPlacement(1, 2, 2, 2);
+        
+        AddEliminationFlag(0, 0, 0, new EliminationFlag(false, 0));
+        AddEliminationFlag(0, 0, 1, new EliminationFlag(false, 0));
+        AddEliminationFlag(0, 0, 2, new EliminationFlag(false, 0));
+        AddEliminationFlag(1, 0, 0, new EliminationFlag(false, 0));
+        AddEliminationFlag(1, 2, 0, new EliminationFlag(false, 0));
+    }
+}
 
-+----------+----------+----------+
-|  .  .  . |  .  . -@ |  .  . *1 |
-|  .  .  . |  .  .  . |  . *2  . |
-|  .  .  . |  .  . *1 |  .  .  . |
-+----------+----------+----------+
-*/
+/// <summary>
+/// +----------+----------+----------+
+/// |  .  .  . |  .  .  . |  .  . -@ |
+/// |  .  .  . |  .  .  . |  .  . *1 |
+/// |  .  . *1 |  .  . *2 |  .  .  . |
+/// +----------+----------+----------+
+/// </summary>
+public class ExtendedAlmostFlatTripleClueBandPattern : BandPattern
+{
+    public ExtendedAlmostFlatTripleClueBandPattern()
+    {
+        AddPlacement(2, 1, 2, 0);
+        AddPlacement(0, 2, 2, 0);
+        AddPlacement(1, 2, 2, 1);
+        
+        AddEliminationFlag(2, 0, 2, new EliminationFlag(true, 0, 1));
+    }
+}

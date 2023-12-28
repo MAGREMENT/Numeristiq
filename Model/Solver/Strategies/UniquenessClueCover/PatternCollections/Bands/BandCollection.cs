@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Global;
+using Global.Enums;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Possibility;
 
@@ -8,6 +9,10 @@ namespace Model.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 public class BandCollection : IPatternCollection
 {
     private readonly BandPattern[] _collection;
+    private readonly List<BandPatternCandidate> _candidates = new();
+    
+    private readonly HashSet<Cell> _cluesBuffer = new();
+    private readonly List<Cell> _usedBuffer = new();
 
     public IStrategy? Strategy { get; set; }
 
@@ -18,29 +23,39 @@ public class BandCollection : IPatternCollection
 
     public static BandCollection FullCollection()
     {
-        return new BandCollection(new TwoClueBandPattern());
+        return new BandCollection(new TwoClueBandPattern(), new TripleCrossBandPattern(),
+            new DiagonalTripleClueBandPattern(), new LTripleClueBandPattern(),
+            new AlmostFlatTTripleClueBandPattern(), new ExtendedAlmostFlatTripleClueBandPattern(),
+            new BrokenLTripleClueBandPattern());
     }
 
-    public bool Apply(IStrategyManager strategyManager)
+    public bool Filter(IStrategyManager strategyManager)
     {
+        _candidates.Clear();
         for (int mini = 0; mini < 3; mini++)
         {
-            if(Check(strategyManager, mini, Unit.Row)) return true;
-            if(Check(strategyManager, mini, Unit.Column)) return true;
+            if(CheckForCandidates(strategyManager, mini, Unit.Row)) return true;
+            if(CheckForCandidates(strategyManager, mini, Unit.Column)) return true;
         }
 
         return false;
     }
 
-    private readonly HashSet<Cell> _clues = new();
-    private readonly List<Cell> _used = new();
+    public bool Apply(IStrategyManager strategyManager)
+    {
+        foreach (var c in _candidates)
+        {
+            if (Try(strategyManager, c)) return true;
+        }
 
-    private bool Check(IStrategyManager strategyManager, int mini, Unit unit)
+        return false;
+    }
+
+    private bool CheckForCandidates(IStrategyManager strategyManager, int mini, Unit unit)
     {
         foreach (var pattern in _collection)
         {
-            if (!GetClues(strategyManager, mini, unit, _clues, pattern.ClueCount,
-                    pattern.DifferentClueCount)) continue;
+            if (!GetClues(strategyManager, mini, unit, pattern.ClueCount, pattern.DifferentClueCount)) continue;
 
             foreach (var boxKey in OrderKeyGenerator.GenerateAll())
             {
@@ -48,7 +63,7 @@ public class BandCollection : IPatternCollection
                 {
                     foreach (var lengthKey in OrderKeyGenerator.GenerateAll())
                     {
-                        if (Try(strategyManager, pattern, boxKey, widthKey, lengthKey, mini, unit)) return true;
+                        if (TryAndAddToCandidates(strategyManager, pattern, boxKey, widthKey, lengthKey, mini, unit)) return true;
                     }
                 }
             }
@@ -57,20 +72,49 @@ public class BandCollection : IPatternCollection
         return false;
     }
 
-    private bool Try(IStrategyManager strategyManager, BandPattern pattern, int[] boxKey, int[] widthKey,
+    private bool TryAndAddToCandidates(IStrategyManager strategyManager, BandPattern pattern, int[] boxKey, int[] widthKey,
         int[] lengthKey, int mini, Unit unit)
     {
-        _used.Clear();
+        _usedBuffer.Clear();
         
         var boxes = pattern.PlacementsWithKey(boxKey);
         int[] numberEquivalence = new int[pattern.DifferentClueCount];
+        bool ok = true;
 
         for (int i = 0; i < 3; i++)
         {
             foreach (var entry in boxes[i])
             {
                 var cell = entry.Key.Transform(widthKey, lengthKey).ToCell(mini, i, unit);
-                if (_clues.Contains(cell)) _used.Add(cell);
+                if (_cluesBuffer.Contains(cell)) _usedBuffer.Add(cell);
+
+                var solved = strategyManager.Sudoku[cell.Row, cell.Column];
+                if (solved == 0) ok = false;
+
+                if (numberEquivalence[entry.Value] == 0) numberEquivalence[entry.Value] = solved;
+                else if (numberEquivalence[entry.Value] != solved) return false;
+            }
+        }
+
+        if (_usedBuffer.Count != _cluesBuffer.Count) return false;
+
+        var candidate = new BandPatternCandidate(pattern, boxKey, widthKey, lengthKey, mini, unit);
+        _candidates.Add(candidate);
+
+        return ok && Process(strategyManager, candidate, numberEquivalence);
+    }
+    
+    private bool Try(IStrategyManager strategyManager, BandPatternCandidate candidate)
+    {
+        var boxes = candidate.Pattern.PlacementsWithKey(candidate.BoxKey);
+        int[] numberEquivalence = new int[candidate.Pattern.DifferentClueCount];
+
+        for (int i = 0; i < 3; i++)
+        {
+            foreach (var entry in boxes[i])
+            {
+                var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKey).ToCell(candidate.Mini,
+                    i, candidate.Unit);
 
                 var solved = strategyManager.Sudoku[cell.Row, cell.Column];
                 if (solved == 0) return false;
@@ -79,16 +123,20 @@ public class BandCollection : IPatternCollection
                 else if (numberEquivalence[entry.Value] != solved) return false;
             }
         }
+        
+        return Process(strategyManager, candidate, numberEquivalence);
+    }
 
-        if (_used.Count != _clues.Count) return false;
-
-        var eliminations = pattern.EliminationsWithKey(boxKey);
+    private bool Process(IStrategyManager strategyManager, BandPatternCandidate candidate, int[] numberEquivalence)
+    {
+        var eliminations = candidate.Pattern.EliminationsWithKey(candidate.BoxKey);
 
         for (int i = 0; i < 3; i++)
         {
             foreach (var entry in eliminations[i])
             {
-                var cell = entry.Key.Transform(widthKey, lengthKey).ToCell(mini, i, unit);
+                var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKey).ToCell(candidate.Mini,
+                    i, candidate.Unit);
 
                 foreach (var p in entry.Value.EveryElimination(numberEquivalence))
                 {
@@ -98,13 +146,12 @@ public class BandCollection : IPatternCollection
         }
         
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(Strategy!,
-            new BandUniquenessClueCoverReportBuilder()) && Strategy!.OnCommitBehavior == OnCommitBehavior.Return;
+            new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.OnCommitBehavior == OnCommitBehavior.Return;
     }
     
-    private bool GetClues(IStrategyManager strategyManager, int mini, Unit unit, HashSet<Cell> clues,
-        int maxClueCount, int maxDifferentClueCount)
+    private bool GetClues(IStrategyManager strategyManager, int mini, Unit unit, int maxClueCount, int maxDifferentClueCount)
     {
-        _clues.Clear();
+        _cluesBuffer.Clear();
 
         int clueCount = 0;
         Possibilities differentClues = Possibilities.NewEmpty();
@@ -120,7 +167,7 @@ public class BandCollection : IPatternCollection
                 differentClues.Add(clue);
                 if (clueCount > maxClueCount || differentClues.Count > maxDifferentClueCount) return false;
 
-                clues.Add(cell);
+                _cluesBuffer.Add(cell);
             }
         }
 
@@ -128,10 +175,36 @@ public class BandCollection : IPatternCollection
     }
 }
 
+public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[] LengthKey, int Mini,
+    Unit Unit);
+
 public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder
 {
+    private readonly BandPatternCandidate _candidate;
+
+    public BandUniquenessClueCoverReportBuilder(BandPatternCandidate candidate)
+    {
+        _candidate = candidate;
+    }
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return ChangeReport.Default(changes);
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        {
+            var boxes = _candidate.Pattern.PlacementsWithKey(_candidate.BoxKey);
+
+            for (int i = 0; i < 3; i++)
+            {
+                foreach (var key in boxes[i].Keys)
+                {
+                    var cell = key.Transform(_candidate.WidthKey, _candidate.LengthKey).ToCell(_candidate.Mini,
+                        i, _candidate.Unit);
+                    
+                    lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
+                }
+            }
+            
+            IChangeReportBuilder.HighlightChanges(lighter, changes);
+        });
     }
 }
