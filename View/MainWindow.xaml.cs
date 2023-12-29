@@ -10,7 +10,7 @@ namespace View;
 /// <summary>
 /// Interaction logic for MainWindow.xaml
 /// </summary>
-public partial class MainWindow : IPageHandler
+public partial class MainWindow : IPageHandler, IViewManager
 {
     private readonly HandledPage[] _pages;
     private HandledPage? _currentlyShown;
@@ -21,11 +21,11 @@ public partial class MainWindow : IPageHandler
     {
         InitializeComponent();
 
-        var factory = new ApplicationPresenter();
+        var presenter = ApplicationPresenter.Initialize(this);
         
         _pages = new HandledPage[]
         {
-            new FirstPage(this), new SolverPage(this, factory), new PlayerPage(this, factory), new StrategyManagerPage(this, factory)
+            new FirstPage(this), new SolverPage(this, presenter), new PlayerPage(this, presenter), new StrategyManagerPage(this, presenter)
         };
 
         Main.NavigationService.Navigating += (_, args) =>

@@ -12,12 +12,16 @@ namespace Presenter;
 
 public class ApplicationPresenter
 {
+    private readonly IViewManager _manager;
+    
     private readonly Settings _settings;
     private readonly ISolver _solver;
     private readonly IPlayer _player;
 
-    public ApplicationPresenter()
+    private ApplicationPresenter(IViewManager manager)
     {
+        _manager = manager;
+        
         var solver = new SudokuSolver
         {
             StatisticsTracked = false,
@@ -50,6 +54,11 @@ public class ApplicationPresenter
         }
 
         _settings.Bind(settingsRepository);
+    }
+
+    public static ApplicationPresenter Initialize(IViewManager manager)
+    {
+        return new ApplicationPresenter(manager);
     }
 
     public SolverPresenter Create(ISolverView view)
