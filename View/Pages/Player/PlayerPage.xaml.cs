@@ -30,14 +30,11 @@ public partial class PlayerPage : IPlayerView
     private Key _locationModeUp = Key.A;
     private Key _locationModeDown = Key.Q;
 
-    private readonly bool _presenterAvailable;
-    
     public PlayerPage(IPageHandler handler, ApplicationPresenter factory)
     {
         InitializeComponent();
 
         _presenter = factory.Create(this);
-        _presenterAvailable = true;
         
         _pageHandler = handler;
 
@@ -68,7 +65,7 @@ public partial class PlayerPage : IPlayerView
 
     public override void Apply(Theme theme)
     {
-        throw new NotImplementedException();
+        
     }
 
     private void GoBack(object sender, RoutedEventArgs e)
