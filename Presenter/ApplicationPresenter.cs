@@ -17,6 +17,8 @@ public class ApplicationPresenter
     private readonly Settings _settings;
     private readonly ISolver _solver;
     private readonly IPlayer _player;
+    
+    
 
     private ApplicationPresenter(IViewManager manager)
     {
@@ -94,4 +96,21 @@ public class StepChooserPresenterBuilder
     {
         return new StepChooserPresenter(_state, _commits, view, _callback);
     }
+}
+
+public record ThemeDAO(RGB Background1, RGB Background2, RGB Background3, RGB Primary1, RGB Primary2,
+    RGB Secondary1, RGB Secondary2, RGB Accent, RGB Text);
+
+public readonly struct RGB
+{
+    public RGB(byte red, byte green, byte blue)
+    {
+        Red = red;
+        Green = green;
+        Blue = blue;
+    }
+
+    public byte Red { get; }
+    public byte Green { get; }
+    public byte Blue { get; }
 }

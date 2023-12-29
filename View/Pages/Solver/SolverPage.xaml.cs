@@ -10,6 +10,7 @@ using Presenter.Solver;
 using Presenter.Translators;
 using View.HelperWindows.Settings;
 using View.HelperWindows.StepChooser;
+using View.Themes;
 using Clipboard = System.Windows.Clipboard;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
@@ -266,6 +267,11 @@ public partial class SolverPage : ISolverView
     }
 
     public override void OnQuit()
+    {
+        
+    }
+
+    public override void Apply(Theme theme)
     {
         
     }

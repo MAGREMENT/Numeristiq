@@ -1,5 +1,4 @@
-﻿using System.Windows.Input;
-using Presenter;
+﻿using Presenter;
 using View.Pages;
 using View.Pages.Player;
 using View.Pages.Solver;
@@ -47,5 +46,10 @@ public partial class MainWindow : IPageHandler, IViewManager
         
         _currentlyShown.OnShow();
         _navigationAllowed = false;
+    }
+
+    public void ApplyTheme(ThemeDAO theme)
+    {
+        
     }
 }

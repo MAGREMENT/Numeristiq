@@ -9,7 +9,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 
-public class UniqueRectanglesStrategy : AbstractStrategy //TODO : add other sizes
+public class UniqueRectanglesStrategy : AbstractStrategy
 {
     public const string OfficialName = "Unique Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

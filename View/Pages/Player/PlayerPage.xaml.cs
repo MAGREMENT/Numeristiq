@@ -10,6 +10,7 @@ using Presenter;
 using Presenter.Player;
 using View.HelperWindows.Settings;
 using View.Pages.Player.UserControls;
+using View.Themes;
 using View.Utility;
 
 namespace View.Pages.Player;
@@ -63,6 +64,11 @@ public partial class PlayerPage : IPlayerView
     public override void OnQuit()
     {
         
+    }
+
+    public override void Apply(Theme theme)
+    {
+        throw new NotImplementedException();
     }
 
     private void GoBack(object sender, RoutedEventArgs e)

@@ -3,6 +3,7 @@ using System.Windows;
 using Presenter;
 using Presenter.StrategyManager;
 using Presenter.Translators;
+using View.Themes;
 
 namespace View.Pages.StrategyManager;
 
@@ -60,5 +61,10 @@ public partial class StrategyManagerPage : IStrategyManagerView
     public override void OnQuit()
     {
         
+    }
+
+    public override void Apply(Theme theme)
+    {
+        throw new System.NotImplementedException();
     }
 }

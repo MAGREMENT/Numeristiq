@@ -1,5 +1,6 @@
 ﻿using System.Windows.Media;
 using Global.Enums;
+using Presenter;
 
 namespace View.Utility;
 
@@ -75,6 +76,11 @@ public class ColorManager
             HighlightColor.Yellow => Colors.Yellow,
             _ => Colors.Transparent
         };
+    }
+
+    public static Color ToColor(RGB rgb)
+    {
+        return Color.FromRgb(rgb.Red, rgb.Green, rgb.Blue);
     }
 
     public static Color[] ToColors(HighlightColor[] colors)

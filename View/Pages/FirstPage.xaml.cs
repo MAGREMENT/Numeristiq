@@ -1,4 +1,7 @@
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using View.Themes;
 
 namespace View.Pages;
 
@@ -35,5 +38,10 @@ public partial class FirstPage
     public override void OnQuit()
     {
         
+    }
+
+    public override void Apply(Theme theme)
+    {
+        Background = new SolidColorBrush(theme.Background1);
     }
 }
