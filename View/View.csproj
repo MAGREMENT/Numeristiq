@@ -34,7 +34,6 @@
 
 
     <ItemGroup>
-      <None Remove="Images\bin2.png" />
       <None Remove="Images\bin.png" />
       <Resource Include="Images\bin.png" />
       <None Remove="Images\cross.png" />
@@ -49,6 +48,8 @@
       <Resource Include="Images\sudoku.png" />
       <None Remove="Images\appicon.png" />
       <Resource Include="Images\appicon.png" />
+      <None Remove="Images\setting.png" />
+      <Resource Include="Images\setting.png" />
     </ItemGroup>
 
 

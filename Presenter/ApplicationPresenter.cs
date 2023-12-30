@@ -50,6 +50,7 @@ public class ApplicationPresenter
         themeRepository.InitializeOrDefault(Array.Empty<ThemeDAO>());
         var download = themeRepository.Download();
         _themes = download is null ? Array.Empty<ViewTheme>() : ViewTheme.From(download);
+        _settings.ThemeChanged += () => _manager.ApplyTheme(_themes[_settings.Theme]);
     }
 
     public static ApplicationPresenter Initialize(IViewManager manager)
@@ -76,6 +77,8 @@ public class ApplicationPresenter
     {
         return new PlayerPresenter(_player, view, _settings);
     }
+
+    public IGlobalSettings GlobalSettings => _settings;
 }
 
 public class StepChooserPresenterBuilder

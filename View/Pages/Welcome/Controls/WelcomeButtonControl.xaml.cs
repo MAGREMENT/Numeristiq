@@ -45,7 +45,7 @@ public partial class WelcomeButtonControl : IThemeable
         Border.Background = theme.Background2;
         _defaultBorder = theme.Background2;
         _hoverBorder = theme.Primary1;
-        Image.Source = ImageUtility.SetIconColor((BitmapImage)Image.Source, theme.IconColor);
+        Image.Source = ImageUtility.SetIconColor((BitmapSource)Image.Source, theme.IconColor);
     }
 }
 

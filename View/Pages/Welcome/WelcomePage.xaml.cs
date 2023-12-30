@@ -1,5 +1,6 @@
 using System.Windows;
-using System.Windows.Media;
+using Presenter;
+using View.HelperWindows.Settings;
 using View.Themes;
 
 namespace View.Pages.Welcome;
@@ -7,11 +8,13 @@ namespace View.Pages.Welcome;
 public partial class WelcomePage
 {
     private readonly IPageHandler _pageHandler;
+    private readonly IGlobalSettings _settings;
     
-    public WelcomePage(IPageHandler pageHandler)
+    public WelcomePage(IPageHandler pageHandler, IGlobalSettings settings)
     {
         InitializeComponent();
         _pageHandler = pageHandler;
+        _settings = settings;
     }
 
     private void GoToSolver(object sender, RoutedEventArgs e)
@@ -46,5 +49,14 @@ public partial class WelcomePage
         {
             (b as IThemeable)?.ApplyTheme(theme);
         }
+
+        SettingsButton.ApplyTheme(theme);
+        Logo.ApplyTheme(theme);
+    }
+
+    private void ShowSettings(object? sender, RoutedEventArgs args)
+    {
+        var window = SettingsWindow.From(_settings);
+        window.Show();
     }
 }

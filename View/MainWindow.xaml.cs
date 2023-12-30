@@ -29,7 +29,7 @@ public partial class MainWindow : IPageHandler, IViewManager
         
         _pages = new HandledPage[]
         {
-            new WelcomePage(this), new SolverPage(this, presenter),
+            new WelcomePage(this, presenter.GlobalSettings), new SolverPage(this, presenter),
             new PlayerPage(this, presenter), new StrategyManagerPage(this, presenter)
         };
 

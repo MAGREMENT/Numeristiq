@@ -5,7 +5,7 @@ using Presenter.Solver;
 
 namespace Presenter;
 
-public class Settings : ISolverSettings, IPlayerSettings
+public class Settings : ISolverSettings, IPlayerSettings, IGlobalSettings
 {
     private StateShown _showState = StateShown.Before;
     private SudokuTranslationType _translationType = SudokuTranslationType.Shortcuts;
@@ -167,7 +167,6 @@ public class Settings : ISolverSettings, IPlayerSettings
             AnySettingChanged?.Invoke();
         } 
     }
-
     public int Theme
     {
         get => _theme;

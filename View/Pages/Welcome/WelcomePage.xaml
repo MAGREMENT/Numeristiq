@@ -7,30 +7,42 @@
       xmlns:controls="clr-namespace:View.Pages.Welcome.Controls"
       mc:Ignorable="d"
       Title="FirstPage">
-    <Grid Margin="50" x:Name="Buttons">
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
+    <StackPanel Orientation="Horizontal">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="500"/>
+                <RowDefinition Height="25"/>
+            </Grid.RowDefinitions>
+            
+            <controls:LogoControl Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Size="100" Margin="20, 0" x:Name="Logo"/>
+            <controls:SettingButtonControl Grid.Row="1" Size="20" Margin="5, 0, 0, 5" Click="ShowSettings" x:Name="SettingsButton"/>
+        </Grid>
         
-        <controls:WelcomeButtonControl Grid.Row="0" Click="GoToSolver" TitleText="Solve" 
-                                       DescriptionText="Helps you solve any Sudoku while giving you feedback for every step">
-            <controls:WelcomeButtonControl.Icon>
-                <BitmapImage UriSource="../../Images/solve.png"></BitmapImage>
-            </controls:WelcomeButtonControl.Icon>
-        </controls:WelcomeButtonControl>
-        <controls:WelcomeButtonControl Grid.Row="1" Click="GoToPlayer" Margin="0, 10, 0, 0" TitleText="Play"
-                                       DescriptionText="Play Sudoku's with the help of different tools">
-            <controls:WelcomeButtonControl.Icon>
-                <BitmapImage UriSource="../../Images/sudoku.png"></BitmapImage>
-            </controls:WelcomeButtonControl.Icon>
-        </controls:WelcomeButtonControl>
-        <controls:WelcomeButtonControl Grid.Row="2" Click="GoToStrategyManager" Margin="0, 10, 0, 0" TitleText="Manage"
-                                       DescriptionText="Manage the strategies used in the solver">
-            <controls:WelcomeButtonControl.Icon>
-                <BitmapImage UriSource="../../Images/list.png"></BitmapImage>
-            </controls:WelcomeButtonControl.Icon>
-        </controls:WelcomeButtonControl>
-    </Grid>
+        <Grid Margin="20" x:Name="Buttons" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+        
+            <controls:WelcomeButtonControl Grid.Row="0" Click="GoToSolver" TitleText="Solve" 
+                                           DescriptionText="Helps you solve any Sudoku while giving you feedback for every step">
+                <controls:WelcomeButtonControl.Icon>
+                    <BitmapImage UriSource="../../Images/solve.png"></BitmapImage>
+                </controls:WelcomeButtonControl.Icon>
+            </controls:WelcomeButtonControl>
+            <controls:WelcomeButtonControl Grid.Row="1" Click="GoToPlayer" Margin="0, 10, 0, 0" TitleText="Play"
+                                           DescriptionText="Play Sudoku's with the help of different tools">
+                <controls:WelcomeButtonControl.Icon>
+                    <BitmapImage UriSource="../../Images/sudoku.png"></BitmapImage>
+                </controls:WelcomeButtonControl.Icon>
+            </controls:WelcomeButtonControl>
+            <controls:WelcomeButtonControl Grid.Row="2" Click="GoToStrategyManager" Margin="0, 10, 0, 0" TitleText="Manage"
+                                           DescriptionText="Manage the strategies used in the solver">
+                <controls:WelcomeButtonControl.Icon>
+                    <BitmapImage UriSource="../../Images/list.png"></BitmapImage>
+                </controls:WelcomeButtonControl.Icon>
+            </controls:WelcomeButtonControl>
+        </Grid> 
+    </StackPanel>
 </pages:HandledPage>

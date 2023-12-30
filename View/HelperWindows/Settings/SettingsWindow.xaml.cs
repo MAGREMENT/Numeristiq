@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Global.Enums;
+using Presenter;
 using Presenter.Player;
 using Presenter.Solver;
 using View.Canvas;
@@ -88,6 +89,18 @@ public partial class SettingsWindow
                 new MultiChoiceOptionCanvas("Highlighting rotation", "Defines the direction of the rotation when highlighting a cell",
                     (int)settings.RotationDirection, i => settings.RotationDirection = (RotationDirection)i, "Clock wise",
                     "Counter clock wise"))
+        };
+
+        return new SettingsWindow(pages);
+    }
+
+    public static SettingsWindow From(IGlobalSettings settings)
+    {
+        var pages = new SettingsPage[]
+        {
+            new("Theme",
+                new ComboBoxOptionCanvas("Theme", "Selects the application's theme",
+                    settings.Theme, i => settings.Theme = i, "Light", "Dark"))
         };
 
         return new SettingsWindow(pages);
