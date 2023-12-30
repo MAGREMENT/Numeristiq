@@ -16,12 +16,17 @@
             </Grid.RowDefinitions>
                 
             <Image Grid.Column="0" x:Name="Image" Height="128" Width="128"/>
-            <StackPanel Grid.Column="1" Orientation="Vertical">
-                <TextBlock  x:Name="Title" FontSize="30" FontWeight="Bold"
-                            Margin="10, 0, 0, 0" TextAlignment="Center"></TextBlock>
-                <TextBlock x:Name="Description" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" 
-                           TextAlignment="Center" Margin="5, 5, 0, 0"/>  
-            </StackPanel>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50"></RowDefinition>
+                    <RowDefinition Height="78"></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <TextBlock Grid.Row="0" x:Name="Title" FontSize="30" FontWeight="Bold"
+                            VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                <TextBlock Grid.Row="1" x:Name="Description" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" 
+                           VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0" TextAlignment="Center"/>  
+            </Grid>
         </Grid>
     </Border>
 </UserControl>
