@@ -22,7 +22,7 @@
             </MenuItem>
         </Menu>
         
-        <StackPanel Orientation="Horizontal" Background="{x:Static utils:ColorManager.Background1}" Margin="10">
+        <StackPanel Orientation="Horizontal" Background="White" Margin="10">
             <StackPanel Orientation="Vertical">
                 <userControls:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
                 <TextBox Width="500" FontSize="20" VerticalContentAlignment="Center" Height="30" Margin="10" TextChanged="NewSudoku"

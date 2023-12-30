@@ -21,6 +21,7 @@ public class Settings : ISolverSettings, IPlayerSettings
     private bool _multiColorHighlighting = true;
     private int _startAngle = 45;
     private RotationDirection _rotationDirection = RotationDirection.ClockWise;
+    private int _theme;
 
     public event OnSettingChange? AnySettingChanged;
     public event OnSettingChange? ShownStateChanged;
@@ -28,6 +29,7 @@ public class Settings : ISolverSettings, IPlayerSettings
     public event OnSettingChange? UniquenessAllowedChanged;
     public event OnSettingChange? RedrawNeeded;
     public event OnSettingChange? MultiColorHighlightingChanged;
+    public event OnSettingChange? ThemeChanged;
 
     public StateShown StateShown
     {
@@ -166,6 +168,17 @@ public class Settings : ISolverSettings, IPlayerSettings
         } 
     }
 
+    public int Theme
+    {
+        get => _theme;
+        set
+        {
+            _theme = value;
+            ThemeChanged?.Invoke();
+            AnySettingChanged?.Invoke();
+        }
+    }
+
     public void Bind(IRepository<SettingsDAO> repository)
     {
         var download = repository.Download();
@@ -190,6 +203,7 @@ public class Settings : ISolverSettings, IPlayerSettings
         MultiColorHighlighting = DAO.MultiColorHighlighting;
         StartAngle = DAO.StartAngle;
         RotationDirection = DAO.RotationDirection;
+        Theme = DAO.Theme;
     }
 
     public SettingsDAO ToDAO()
@@ -198,7 +212,7 @@ public class Settings : ISolverSettings, IPlayerSettings
             DelayBeforeTransition, DelayAfterTransition, UniquenessAllowed,
             ActionOnCellChange, TransformSoloPossibilityIntoGiven,
             GivenColor, SolvingColor, SidePriority, ShowSameCellLinks,
-            MultiColorHighlighting, StartAngle, RotationDirection);
+            MultiColorHighlighting, StartAngle, RotationDirection, Theme);
     }
 }
 

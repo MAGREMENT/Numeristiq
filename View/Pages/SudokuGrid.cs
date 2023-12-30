@@ -254,7 +254,7 @@ public class SudokuGrid : FrameworkElement
         var delta = CursorWidth / 2;
         var left = GetLeft(col);
         var top = GetTop(row);
-        var pen = new Pen(ColorManager.Purple, CursorWidth);
+        var pen = new Pen(Brushes.MediumPurple, CursorWidth);
 
         var list = _components[CursorIndex];
         list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
@@ -272,7 +272,7 @@ public class SudokuGrid : FrameworkElement
         ClearCursor();
         
         var delta = CursorWidth / 2;
-        var pen = new Pen(ColorManager.Purple, CursorWidth);
+        var pen = new Pen(Brushes.MediumPurple, CursorWidth);
 
         var list = _components[CursorIndex];
         foreach (var cell in cells)
@@ -289,11 +289,11 @@ public class SudokuGrid : FrameworkElement
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), ColorManager.Purple));
+                    new Rect(left, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), ColorManager.Purple));
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
             }
             
             if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
@@ -305,11 +305,11 @@ public class SudokuGrid : FrameworkElement
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), ColorManager.Purple));
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), Brushes.MediumPurple));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), ColorManager.Purple));
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), Brushes.MediumPurple));
             }
         }
     }
@@ -412,11 +412,11 @@ public class SudokuGrid : FrameworkElement
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), ColorManager.Purple));
+                    new Rect(left, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), ColorManager.Purple));
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
             }
             
             if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(

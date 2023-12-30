@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <UseWPF>true</UseWPF>
         <UseWindowsForms>true</UseWindowsForms>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
@@ -40,6 +41,14 @@
       <Resource Include="Images\cross.png" />
       <None Remove="Images\checkmark.png" />
       <Resource Include="Images\checkmark.png" />
+      <None Remove="Images\list.png" />
+      <Resource Include="Images\list.png" />
+      <None Remove="Images\solve.png" />
+      <Resource Include="Images\solve.png" />
+      <None Remove="Images\sudoku.png" />
+      <Resource Include="Images\sudoku.png" />
+      <None Remove="Images\appicon.png" />
+      <Resource Include="Images\appicon.png" />
     </ItemGroup>
 
 

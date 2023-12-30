@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Global;
 using Global.Enums;
 using Model.Solver;
 
@@ -13,6 +14,18 @@ public interface IRepository<T>
     public T? Download();
     public void Upload(T DAO);
     public void New(T DAO);
+
+    public void InitializeOrDefault(T defaultValue)
+    {
+        try
+        {
+            Initialize();
+        }
+        catch (RepositoryInitializationException)
+        {
+            New(defaultValue);
+        }
+    }
 }
 
 public class RepositoryInitializationException : Exception
@@ -28,4 +41,7 @@ public record SettingsDAO(StateShown StateShown, SudokuTranslationType Translati
     int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ChangeType ActionOnCellChange,
     bool TransformSoloPossibilityIntoGiven, CellColor GivenColor, CellColor SolvingColor,
     LinkOffsetSidePriority SidePriority, bool ShowSameCellLinks, bool MultiColorHighlighting,
-    int StartAngle, RotationDirection RotationDirection);
+    int StartAngle, RotationDirection RotationDirection, int Theme);
+    
+public record ThemeDAO(RGB Background1, RGB Background2, RGB Background3, RGB Primary1, RGB Primary2,
+    RGB Secondary1, RGB Secondary2, RGB Accent, RGB Text, IconColor IconColor);

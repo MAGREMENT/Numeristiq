@@ -34,7 +34,7 @@ public partial class HighlightColorsUserControl
                 }
                 : new Rectangle
                 {
-                    Fill = new SolidColorBrush(ColorManager.ToColor(color)),
+                    Fill = new SolidColorBrush(ColorUtility.ToColor(color)),
                     Width = 20,
                     Height = 20,
                     Margin = new Thickness(0, 0, 5, 5)

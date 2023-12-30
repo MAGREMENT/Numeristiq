@@ -23,7 +23,7 @@ public partial class ModeUserControl
 
     public void ShowSelection()
     {
-        Border.BorderBrush = ColorManager.Purple;
+        Border.BorderBrush = Brushes.MediumPurple;
     }
 
     public void ShowUnSelection()

@@ -1,15 +1,14 @@
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using View.Themes;
 
-namespace View.Pages;
+namespace View.Pages.Welcome;
 
-public partial class FirstPage
+public partial class WelcomePage
 {
     private readonly IPageHandler _pageHandler;
     
-    public FirstPage(IPageHandler pageHandler)
+    public WelcomePage(IPageHandler pageHandler)
     {
         InitializeComponent();
         _pageHandler = pageHandler;
@@ -40,8 +39,12 @@ public partial class FirstPage
         
     }
 
-    public override void Apply(Theme theme)
+    public override void ApplyTheme(Theme theme)
     {
-        Background = new SolidColorBrush(theme.Background1);
+        Background = theme.Background1;
+        foreach (var b in Buttons.Children)
+        {
+            (b as IThemeable)?.ApplyTheme(theme);
+        }
     }
 }

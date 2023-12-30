@@ -271,7 +271,7 @@ public partial class SolverPage : ISolverView
         
     }
 
-    public override void Apply(Theme theme)
+    public override void ApplyTheme(Theme theme)
     {
         
     }

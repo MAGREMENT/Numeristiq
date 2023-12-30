@@ -21,7 +21,7 @@ public partial class ColorComboBoxOptionCanvas
 
         foreach (var availableColor in Enum.GetValues<CellColor>())
         {
-            var brush = ColorManager.GetCellBrush(availableColor);
+            var brush = ColorUtility.GetCellBrush(availableColor);
             var n = availableColor.ToString();
 
             var item = new ComboBoxItem();

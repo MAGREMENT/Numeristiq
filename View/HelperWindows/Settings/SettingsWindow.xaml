@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:utils="clr-namespace:View.Utility"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
@@ -15,7 +14,7 @@
         <StackPanel Orientation="Vertical" Height="450" Width="450">
             <Frame x:Name="Page" Height="400" Width="450" NavigationUIVisibility="Hidden"></Frame>
             <StackPanel Orientation="Horizontal" Height="50" Width="450" 
-                        Background="{x:Static utils:ColorManager.Background2}">
+                        Background="WhiteSmoke">
                 <TextBlock Height="50" Width="350" FontSize="12" x:Name="OptionExplanation" TextWrapping="Wrap"></TextBlock>
                 <Button Height="35" Width="80" HorizontalAlignment="Right" Margin="0, 7.5, 10, 7.5" 
                         Click="Finished">Finished</Button>

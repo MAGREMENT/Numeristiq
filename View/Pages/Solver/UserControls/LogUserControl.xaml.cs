@@ -33,7 +33,7 @@ public partial class LogUserControl
     public void InitLog(ViewLog log)
     {
         Number.Text = "#" + log.Id;
-        Title.Foreground = new SolidColorBrush(ColorManager.ToColor(log.Intensity));
+        Title.Foreground = new SolidColorBrush(ColorUtility.ToColor(log.Intensity));
         Title.Text = log.Title;
         Text.Text = log.Changes;
 

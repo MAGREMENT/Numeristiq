@@ -28,7 +28,7 @@
                 </Image>
             </Grid>
         </Border>
-        <ScrollViewer Height="660" Background="{x:Static utils:ColorManager.Background1}">
+        <ScrollViewer Height="660" Background="White">
             <StackPanel MinHeight="660" Width="180" x:Name="List" Orientation="Vertical"/>
         </ScrollViewer>
     </StackPanel>

@@ -63,8 +63,8 @@ public partial class StrategyManagerPage : IStrategyManagerView
         
     }
 
-    public override void Apply(Theme theme)
+    public override void ApplyTheme(Theme theme)
     {
-        throw new System.NotImplementedException();
+        
     }
 }

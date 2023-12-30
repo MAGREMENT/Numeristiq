@@ -2,6 +2,6 @@ namespace View.Themes;
 
 public interface IThemeable
 {
-    public void Apply(Theme theme);
+    public void ApplyTheme(Theme theme);
 }
 

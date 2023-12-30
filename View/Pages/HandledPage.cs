@@ -7,5 +7,5 @@ public abstract class HandledPage : Page, IThemeable
 {
     public abstract void OnShow();
     public abstract void OnQuit();
-    public abstract void Apply(Theme theme);
+    public abstract void ApplyTheme(Theme theme);
 }

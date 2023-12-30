@@ -18,7 +18,7 @@ public partial class SearchItemUserControl
         };
         MouseLeave += (_, _) =>
         {
-            Background = ColorManager.Background1;
+            Background = Brushes.White;
         };
 
         MouseDown += (_, _) =>

@@ -6,6 +6,7 @@ using Presenter.Player;
 using Presenter.Solver;
 using Presenter.StepChooser;
 using Presenter.StrategyManager;
+using Presenter.Translators;
 using Repository;
 
 namespace Presenter;
@@ -17,50 +18,48 @@ public class ApplicationPresenter
     private readonly Settings _settings;
     private readonly ISolver _solver;
     private readonly IPlayer _player;
-    
-    
+
+    private readonly ViewTheme[] _themes;
 
     private ApplicationPresenter(IViewManager manager)
     {
         _manager = manager;
         
+        //Solver
         var solver = new SudokuSolver
         {
             StatisticsTracked = false,
             LogsManaged = true
         };
-        var strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json");
-        try
-        {
-            strategyRepository.Initialize();
-        }
-        catch (RepositoryInitializationException)
-        {
-            strategyRepository.New(new List<StrategyDAO>());
-        }
-
+        IRepository<List<StrategyDAO>> strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json"); //TODO to array ?
+        strategyRepository.InitializeOrDefault(new List<StrategyDAO>());
         solver.Bind(strategyRepository);
         _solver = solver;
 
+        //Player
         _player = new SudokuPlayer();
 
+        //Settings
         _settings = new Settings();
-        var settingsRepository = new JSONRepository<SettingsDAO>("settings.json");
-        try
-        {
-            settingsRepository.Initialize();
-        }
-        catch (RepositoryInitializationException)
-        {
-            settingsRepository.New(_settings.ToDAO());
-        }
-
+        IRepository<SettingsDAO> settingsRepository = new JSONRepository<SettingsDAO>("settings.json");
+        settingsRepository.InitializeOrDefault(_settings.ToDAO());
         _settings.Bind(settingsRepository);
+
+        //Themes
+        IRepository<ThemeDAO[]> themeRepository = new HardCodedThemeRepository();
+        themeRepository.InitializeOrDefault(Array.Empty<ThemeDAO>());
+        var download = themeRepository.Download();
+        _themes = download is null ? Array.Empty<ViewTheme>() : ViewTheme.From(download);
     }
 
     public static ApplicationPresenter Initialize(IViewManager manager)
     {
         return new ApplicationPresenter(manager);
+    }
+
+    public void ViewInitializationFinished()
+    {
+        if(_themes.Length > 0) _manager.ApplyTheme(_themes[_settings.Theme]);
     }
 
     public SolverPresenter Create(ISolverView view)
@@ -96,21 +95,4 @@ public class StepChooserPresenterBuilder
     {
         return new StepChooserPresenter(_state, _commits, view, _callback);
     }
-}
-
-public record ThemeDAO(RGB Background1, RGB Background2, RGB Background3, RGB Primary1, RGB Primary2,
-    RGB Secondary1, RGB Secondary2, RGB Accent, RGB Text);
-
-public readonly struct RGB
-{
-    public RGB(byte red, byte green, byte blue)
-    {
-        Red = red;
-        Green = green;
-        Blue = blue;
-    }
-
-    public byte Red { get; }
-    public byte Green { get; }
-    public byte Blue { get; }
 }

@@ -23,7 +23,7 @@ public partial class StrategyUserControl
         _invoke = false;
         
         StrategyName.Text = strategy.Name;
-        StrategyName.Foreground = new SolidColorBrush(ColorManager.ToColor(strategy.Locked ? Intensity.Zero : strategy.Intensity));
+        StrategyName.Foreground = new SolidColorBrush(ColorUtility.ToColor(strategy.Locked ? Intensity.Zero : strategy.Intensity));
         StrategyUsage.IsChecked = strategy.Used;
         StrategyUsage.IsEnabled = !strategy.Locked;
 
@@ -53,11 +53,11 @@ public partial class StrategyUserControl
 
     public void LightUp()
     {
-        Background = ColorManager.Green;
+        Background = Brushes.Green;
     }
 
     public void UnLightUp()
     {
-        Background = ColorManager.Background1;
+        Background = Brushes.White;
     }
 }

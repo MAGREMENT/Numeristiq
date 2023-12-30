@@ -7,8 +7,7 @@
         SizeToContent="WidthAndHeight"
         ResizeMode="CanMinimize"
         WindowStartupLocation="Manual"
-        Top="10"
-        Left="10"
+        Icon="Images/appicon.png"
         Title="SudokuSolver">
     <Frame x:Name="Main" NavigationUIVisibility="Hidden"/>
 </Window>

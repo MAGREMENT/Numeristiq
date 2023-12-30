@@ -102,14 +102,14 @@ public partial class SolverUserControl
 
     public void SetCellTo(int row, int col, int number, CellColor color)
     {
-        _grid.ShowSolution(row, col, number, ColorManager.ToBrush(color));
+        _grid.ShowSolution(row, col, number, ColorUtility.ToBrush(color));
     }
 
     public void SetCellTo(int row, int col, int[] possibilities, CellColor color)
     {
         foreach (var p in possibilities)
         {
-            _grid.ShowGridPossibility(row, col, p, ColorManager.ToBrush(color));
+            _grid.ShowGridPossibility(row, col, p, ColorUtility.ToBrush(color));
         }
     }
 
@@ -125,12 +125,12 @@ public partial class SolverUserControl
     
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
     {
-        _grid.FillPossibility(row, col, possibility, ColorManager.ToColor(coloration));
+        _grid.FillPossibility(row, col, possibility, ColorUtility.ToColor(coloration));
     }
 
     public void FillCell(int row, int col, ChangeColoration coloration)
     {
-        _grid.FillCell(row, col, ColorManager.ToColor(coloration));
+        _grid.FillCell(row, col, ColorUtility.ToColor(coloration));
     }
 
     public void EncirclePossibility(int row, int col, int possibility)
@@ -146,17 +146,17 @@ public partial class SolverUserControl
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, ChangeColoration color)
     {
-        _grid.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo, ColorManager.ToColor(color));
+        _grid.EncircleRectangle(rowFrom, colFrom, possibilityFrom, rowTo, colTo, possibilityTo, ColorUtility.ToColor(color));
     }
     
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration color)
     {
-        _grid.EncircleRectangle(rowFrom, colFrom, rowTo, colTo, ColorManager.ToColor(color));
+        _grid.EncircleRectangle(rowFrom, colFrom, rowTo, colTo, ColorUtility.ToColor(color));
     }
 
     public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
     {
-        _grid.EncircleCellPatch(cells, ColorManager.ToColor(coloration));
+        _grid.EncircleCellPatch(cells, ColorUtility.ToColor(coloration));
     }
 
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,

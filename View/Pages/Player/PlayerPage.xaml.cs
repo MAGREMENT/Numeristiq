@@ -63,7 +63,7 @@ public partial class PlayerPage : IPlayerView
         
     }
 
-    public override void Apply(Theme theme)
+    public override void ApplyTheme(Theme theme)
     {
         
     }
@@ -80,7 +80,7 @@ public partial class PlayerPage : IPlayerView
 
     public void ShowNumber(int row, int col, int number, CellColor color)
     {
-        _grid.ShowSolution(row, col, number, ColorManager.ToBrush(color));
+        _grid.ShowSolution(row, col, number, ColorUtility.ToBrush(color));
     }
 
     public void ClearNumbers()
@@ -110,12 +110,12 @@ public partial class PlayerPage : IPlayerView
 
     public void HighlightCell(int row, int col, HighlightColor color)
     {
-        _grid.FillCell(row, col, ColorManager.ToColor(color));
+        _grid.FillCell(row, col, ColorUtility.ToColor(color));
     }
 
     public void HighlightCell(int row, int col, HighlightColor[] colors, double startAngle, RotationDirection direction)
     {
-        _grid.FillCell(row, col, startAngle, direction == RotationDirection.ClockWise ? -1 : 1, ColorManager.ToColors(colors));
+        _grid.FillCell(row, col, startAngle, direction == RotationDirection.ClockWise ? -1 : 1, ColorUtility.ToColors(colors));
     }
 
     private void InitModes()

@@ -1,13 +1,14 @@
 using System.Windows.Media;
-using Presenter;
+using Global.Enums;
+using Presenter.Translators;
 using View.Utility;
 
 namespace View.Themes;
 
 public class Theme
 {
-    private Theme(Color background1, Color background2, Color background3, Color primary1, Color primary2,
-        Color secondary1, Color secondary2, Color accent, Color text)
+    private Theme(Brush background1, Brush background2, Brush background3, Brush primary1, Brush primary2,
+        Brush secondary1, Brush secondary2, Brush accent, Brush text, IconColor iconColor)
     {
         Background1 = background1;
         Background2 = background2;
@@ -18,24 +19,26 @@ public class Theme
         Secondary2 = secondary2;
         Accent = accent;
         Text = text;
+        IconColor = iconColor;
     }
 
-    public static Theme From(ThemeDAO dao)
+    public static Theme From(ViewTheme dao)
     {
-        return new Theme(ColorManager.ToColor(dao.Background1), ColorManager.ToColor(dao.Background2),
-            ColorManager.ToColor(dao.Background3), ColorManager.ToColor(dao.Primary1),
-            ColorManager.ToColor(dao.Primary2), ColorManager.ToColor(dao.Secondary1),
-            ColorManager.ToColor(dao.Secondary2), ColorManager.ToColor(dao.Accent),
-            ColorManager.ToColor(dao.Text));
+        return new Theme(ColorUtility.ToBrush(dao.Background1), ColorUtility.ToBrush(dao.Background2),
+            ColorUtility.ToBrush(dao.Background3), ColorUtility.ToBrush(dao.Primary1),
+            ColorUtility.ToBrush(dao.Primary2), ColorUtility.ToBrush(dao.Secondary1),
+            ColorUtility.ToBrush(dao.Secondary2), ColorUtility.ToBrush(dao.Accent),
+            ColorUtility.ToBrush(dao.Text), dao.IconColor);
     }
 
-    public Color Background1 { get; }
-    public Color Background2 { get; }
-    public Color Background3 { get; }
-    public Color Primary1 { get; }
-    public Color Primary2 { get; }
-    public Color Secondary1 { get; }
-    public Color Secondary2 { get; }
-    public Color Accent { get; }
-    public Color Text { get; }
+    public Brush Background1 { get; }
+    public Brush Background2 { get; }
+    public Brush Background3 { get; }
+    public Brush Primary1 { get; }
+    public Brush Primary2 { get; }
+    public Brush Secondary1 { get; }
+    public Brush Secondary2 { get; }
+    public Brush Accent { get; }
+    public Brush Text { get; }
+    public IconColor IconColor { get; }
 }

@@ -18,7 +18,7 @@ public partial class CommitInformationUserControl : UserControl
     public void Show(ViewCommitInformation commit)
     {
         StrategyName.Text = commit.StrategyName;
-        StrategyName.Foreground = new SolidColorBrush(ColorManager.ToColor(commit.StrategyIntensity));
+        StrategyName.Foreground = new SolidColorBrush(ColorUtility.ToColor(commit.StrategyIntensity));
         StrategyChanges.Text = commit.Changes;
         
         HighlightsNumber.Text = commit.HighlightCursor;

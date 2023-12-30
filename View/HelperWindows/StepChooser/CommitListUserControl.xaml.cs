@@ -27,7 +27,7 @@ public partial class CommitListUserControl
             var tb = new TextBlock
             {
                 FontSize = 13,
-                Foreground = new SolidColorBrush(ColorManager.ToColor(commit.StrategyIntensity)),
+                Foreground = new SolidColorBrush(ColorUtility.ToColor(commit.StrategyIntensity)),
                 Height = 20,
                 Text = commit.StrategyName,
                 TextWrapping = TextWrapping.Wrap

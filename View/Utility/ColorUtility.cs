@@ -1,18 +1,12 @@
 ﻿using System.Windows.Media;
+using Global;
 using Global.Enums;
-using Presenter;
 
 namespace View.Utility;
 
-public class ColorManager
+public static class ColorUtility
 {
-    public static readonly Brush Background1 = new SolidColorBrush(Color.FromRgb(0xFF, 0xFF, 0xFF));
-    public static readonly Brush Background2 = new SolidColorBrush(Color.FromRgb(0xEF, 0xEF, 0xEF));
-    public static readonly Brush Background3 = new SolidColorBrush(Color.FromRgb(0xD1, 0xD1, 0xD1));
-    public static readonly Brush Green = new SolidColorBrush(Color.FromRgb(0x50, 0xC1, 0x31));
-    public static readonly Brush Purple = new SolidColorBrush(Color.FromRgb(0xBA, 0x7B, 0xC8));
-
-    public static readonly Brush[] CellBrushes =
+    private static readonly Brush[] CellBrushes =
     {
         Brushes.Black,
         Brushes.Gray,
@@ -78,9 +72,9 @@ public class ColorManager
         };
     }
 
-    public static Color ToColor(RGB rgb)
+    public static Brush ToBrush(RGB rgb)
     {
-        return Color.FromRgb(rgb.Red, rgb.Green, rgb.Blue);
+        return new SolidColorBrush(Color.FromRgb(rgb.Red, rgb.Green, rgb.Blue));
     }
 
     public static Color[] ToColors(HighlightColor[] colors)
@@ -97,17 +91,5 @@ public class ColorManager
     public static Brush ToBrush(CellColor cc)
     {
         return CellBrushes[(int)cc];
-    }
-
-    private static ColorManager? _instance;
-
-    public static ColorManager GetInstance()
-    {
-        _instance ??= new ColorManager();
-        return _instance;
-    }
-
-    private ColorManager()
-    {
     }
 }

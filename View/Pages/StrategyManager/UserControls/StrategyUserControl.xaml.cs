@@ -15,7 +15,7 @@ public partial class StrategyUserControl
     {
         InitializeComponent();
 
-        TextBlock.Foreground = new SolidColorBrush(ColorManager.ToColor(strategy.Intensity));
+        TextBlock.Foreground = new SolidColorBrush(ColorUtility.ToColor(strategy.Intensity));
         TextBlock.Text = strategy.Name;
 
         AllowDrop = true;
@@ -51,7 +51,7 @@ public partial class StrategyUserControl
         };
         MouseLeave += (_, _) =>
         {
-            Background = ColorManager.Background1;
+            Background = Brushes.White;
         };
     }
 
