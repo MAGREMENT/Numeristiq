@@ -95,6 +95,17 @@ public class Possibilities : IReadOnlyPossibilities
         return IReadOnlyPossibilities.DefaultOr(this, possibilities);
     }
 
+    public Possibilities Or(params IReadOnlyPossibilities[] possibilities)
+    {
+        var or = _possibilities;
+        foreach (var p in possibilities)
+        {
+            or |= ((Possibilities)p)._possibilities;
+        }
+        
+        return new Possibilities(or, System.Numerics.BitOperations.PopCount((uint) or));
+    }
+
     public Possibilities And(IReadOnlyPossibilities possibilities)
     {
         if (possibilities is Possibilities bp)

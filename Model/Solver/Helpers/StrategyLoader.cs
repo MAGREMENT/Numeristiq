@@ -107,7 +107,8 @@ public class StrategyLoader : IStrategyLoader
         {ReverseBUGLiteStrategy.OfficialName, new ReverseBUGLiteStrategy()},
         {HiddenBugStrategy.OfficialName, new HiddenBugStrategy(2, 4)},
         {MiniUniquenessStrategy.OfficialName, new MiniUniquenessStrategy()},
-        {UniquenessClueCoverStrategy.OfficialName, new UniquenessClueCoverStrategy(BandCollection.FullCollection())}
+        {UniquenessClueCoverStrategy.OfficialName, new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
+        {ExtendedUniqueRectanglesStrategy.OfficialName, new ExtendedUniqueRectanglesStrategy()}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

@@ -50,6 +50,14 @@ public class GridPositions : IReadOnlyGridPositions
         Add(coord.Row, coord.Column);
     }
 
+    public void Add(IEnumerable<Cell> cells)
+    {
+        foreach (var cell in cells)
+        {
+            Add(cell);
+        }
+    }
+    
     public bool Peek(int row, int col)
     {
         int n = row * 9 + col;

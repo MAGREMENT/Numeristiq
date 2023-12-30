@@ -226,6 +226,12 @@
     "Args": {}
   },
   {
+    "Name": "Extended Unique Rectangles",
+    "Used": true,
+    "Behavior": 0,
+    "Args": {}
+  },
+  {
     "Name": "BUG-Lite",
     "Used": false,
     "Behavior": 0,

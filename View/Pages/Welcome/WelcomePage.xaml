@@ -11,11 +11,11 @@
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="500"/>
-                <RowDefinition Height="25"/>
+                <RowDefinition Height="35"/>
             </Grid.RowDefinitions>
             
             <controls:LogoControl Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Size="100" Margin="20, 0" x:Name="Logo"/>
-            <controls:SettingButtonControl Grid.Row="1" Size="20" Margin="5, 0, 0, 5" Click="ShowSettings" x:Name="SettingsButton"/>
+            <controls:SettingButtonControl Grid.Row="1" Size="20" HorizontalAlignment="Left" Margin="5, 0, 0, 5" Click="ShowSettings" x:Name="SettingsButton"/>
         </Grid>
         
         <Grid Margin="20" x:Name="Buttons" VerticalAlignment="Center">
