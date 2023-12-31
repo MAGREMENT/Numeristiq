@@ -30,6 +30,8 @@ public partial class PlayerPage : IPlayerView
     private Key _locationModeUp = Key.A;
     private Key _locationModeDown = Key.Q;
 
+    private readonly SettingsWindow _settingsWindow;
+
     public PlayerPage(IPageHandler handler, ApplicationPresenter factory)
     {
         InitializeComponent();
@@ -51,6 +53,9 @@ public partial class PlayerPage : IPlayerView
         
         InitModes();
         _presenter.Bind();
+        
+        _settingsWindow = SettingsWindow.From(_presenter.Settings);
+        AddManagedHelperWindow(_settingsWindow);
     }
 
     public override void OnShow()
@@ -63,7 +68,7 @@ public partial class PlayerPage : IPlayerView
         
     }
 
-    public override void ApplyTheme(Theme theme)
+    protected override void InternalApplyTheme(Theme theme)
     {
         
     }
@@ -279,7 +284,7 @@ public partial class PlayerPage : IPlayerView
 
     private void Settings(object sender, RoutedEventArgs e)
     {
-        var settings = SettingsWindow.From(_presenter.Settings);
-        settings.Show();
+        _settingsWindow.Refresh();
+        _settingsWindow.Show();
     }
 }

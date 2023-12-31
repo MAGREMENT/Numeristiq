@@ -8,13 +8,15 @@ namespace View.Pages.Welcome;
 public partial class WelcomePage
 {
     private readonly IPageHandler _pageHandler;
-    private readonly IGlobalSettings _settings;
+
+    private readonly SettingsWindow _settingsWindow;
     
     public WelcomePage(IPageHandler pageHandler, IGlobalSettings settings)
     {
         InitializeComponent();
         _pageHandler = pageHandler;
-        _settings = settings;
+
+        _settingsWindow = SettingsWindow.From(settings);
     }
 
     private void GoToSolver(object sender, RoutedEventArgs e)
@@ -42,7 +44,7 @@ public partial class WelcomePage
         
     }
 
-    public override void ApplyTheme(Theme theme)
+    protected override void InternalApplyTheme(Theme theme)
     {
         Background = theme.Background1;
         foreach (var b in Buttons.Children)
@@ -56,7 +58,7 @@ public partial class WelcomePage
 
     private void ShowSettings(object? sender, RoutedEventArgs args)
     {
-        var window = SettingsWindow.From(_settings);
-        window.Show();
+        _settingsWindow.Refresh();
+        _settingsWindow.Show();
     }
 }

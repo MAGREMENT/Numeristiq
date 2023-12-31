@@ -23,7 +23,8 @@ public partial class SolverPage : ISolverView
     private readonly SolverPresenter _presenter;
     private readonly IPageHandler _pageHandler;
 
-    private StepChooserWindow? _stepChooserWindow;
+    private readonly StepChooserWindow _stepChooserWindow;
+    private readonly SettingsWindow _settingsWindow;
 
     public SolverPage(IPageHandler pageHandler, ApplicationPresenter factory)
     {
@@ -48,6 +49,11 @@ public partial class SolverPage : ISolverView
         LogList.LogHighlightShifted += _presenter.ShiftLogHighlight;
         StrategyList.StrategyUsed += _presenter.UseStrategy;
         StrategyList.AllStrategiesUsed += _presenter.UseAllStrategies;
+
+        _stepChooserWindow = new StepChooserWindow();
+        AddManagedHelperWindow(_stepChooserWindow);
+        _settingsWindow = SettingsWindow.From(_presenter.Settings);
+        AddManagedHelperWindow(_settingsWindow);
     }
     
     //ISolverView-------------------------------------------------------------------------------------------------------
@@ -159,7 +165,7 @@ public partial class SolverPage : ISolverView
 
     public void ShowPossibleSteps(StepChooserPresenterBuilder builder)
     {
-        _stepChooserWindow = new StepChooserWindow(builder);
+        _stepChooserWindow.SetPresenter(builder);
         _stepChooserWindow.Show();
     }
 
@@ -246,8 +252,8 @@ public partial class SolverPage : ISolverView
 
     private void ShowSettingsWindow(object sender, RoutedEventArgs e)
     {
-        var settingsWindow = SettingsWindow.From(_presenter.Settings);
-        settingsWindow.Show();
+        _settingsWindow.Refresh();
+        _settingsWindow.Show();
     }
 
     private void Copy(object sender, RoutedEventArgs e)
@@ -271,7 +277,7 @@ public partial class SolverPage : ISolverView
         
     }
 
-    public override void ApplyTheme(Theme theme)
+    protected override void InternalApplyTheme(Theme theme)
     {
         
     }

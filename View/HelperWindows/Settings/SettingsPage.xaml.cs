@@ -25,4 +25,12 @@ public partial class SettingsPage : Page
             Panel.Children.Add(option);
         }
     }
+
+    public void Refresh()
+    {
+        foreach (OptionCanvas option in Panel.Children)
+        {
+            option.Refresh();
+        }
+    }
 }

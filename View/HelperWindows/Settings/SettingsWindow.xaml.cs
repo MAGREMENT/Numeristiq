@@ -5,14 +5,19 @@ using Presenter;
 using Presenter.Player;
 using Presenter.Solver;
 using View.Canvas;
+using View.Themes;
 
 namespace View.HelperWindows.Settings;
 
 public partial class SettingsWindow
 {
+    private readonly SettingsPage[] _settingsPages;
+    
     public SettingsWindow(SettingsPage[] settingsPage)
     {
         InitializeComponent();
+
+        _settingsPages = settingsPage;
         
         foreach (var page in settingsPage)
         {
@@ -41,29 +46,29 @@ public partial class SettingsWindow
         {
             new("General", 
                 new MultiChoiceOptionCanvas("Action on keyboard :", "Defines the action to be executed when pushing a numpad key", 
-                    (int)settings.ActionOnCellChange, i => settings.ActionOnCellChange =
+                    () => (int)settings.ActionOnCellChange, i => settings.ActionOnCellChange =
                     (ChangeType) i, "Remove possibility", "Add solution"),
-                new ComboBoxOptionCanvas("Translation type", "Sets the sudoku to text translation type", (int)settings.TranslationType,
+                new ComboBoxOptionCanvas("Translation type", "Sets the sudoku to text translation type", () => (int)settings.TranslationType,
                     i => settings.TranslationType = (SudokuTranslationType)i, "With shortcuts",
                     "With 0's", "With .'s"),
                 new CheckBoxOptionCanvas("Solo to given", "Decides if a cell with only one possibility should be transformed into a given when pasting",
-                    settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
+                    () => settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
             new("Graphics",
                 new SliderOptionCanvas("Delay before", "Sets the delay between showing the start state and the highlight of a log", 0, 2000, 10,
-                    settings.DelayBeforeTransition, i => settings.DelayBeforeTransition = i),
+                    () => settings.DelayBeforeTransition, i => settings.DelayBeforeTransition = i),
                 new SliderOptionCanvas("Delay after", "Sets the delay between showing the highlight and the after state of a log", 0, 2000, 10,
-                    settings.DelayAfterTransition, i => settings.DelayAfterTransition = i),
-                new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", (int)settings.GivenColor, 
+                    () => settings.DelayAfterTransition, i => settings.DelayAfterTransition = i),
+                new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", () => (int)settings.GivenColor, 
                     i => settings.GivenColor = (CellColor)i),
-                new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", (int)settings.SolvingColor,
+                new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", () => (int)settings.SolvingColor,
                     i => settings.SolvingColor = (CellColor)i),
                 new ComboBoxOptionCanvas("Link offset side priority", "Defines which side of a link is prioritized when offsetting its center",
-                    (int)settings.SidePriority, i => settings.SidePriority = (LinkOffsetSidePriority)i, 
+                    () => (int)settings.SidePriority, i => settings.SidePriority = (LinkOffsetSidePriority)i, 
                     "Any", "Left", "Right"),
                 new CheckBoxOptionCanvas("Show same cell links", "Definies if the link between 2 possibilities in the same cell should be shown",
-                    settings.ShowSameCellLinks, b => settings.ShowSameCellLinks = b)),
+                    () => settings.ShowSameCellLinks, b => settings.ShowSameCellLinks = b)),
             new("Solver",
-                new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", settings.UniquenessAllowed,
+                new CheckBoxOptionCanvas("Unique solution", "Adapts the solver depending on the uniqueness of the solution", () => settings.UniquenessAllowed,
                     b => settings.UniquenessAllowed = b))
         };
 
@@ -76,18 +81,18 @@ public partial class SettingsWindow
         {
             new("General", 
                 new CheckBoxOptionCanvas("Solo to given", "Decides if a cell with only one possibility should be transformed into a given when pasting",
-                    settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
+                    () => settings.TransformSoloPossibilityIntoGiven, b => settings.TransformSoloPossibilityIntoGiven = b)),
             new("Graphics",
-                new CheckBoxOptionCanvas("Multi-color highlighting", "Enables multiple colors in a single cell", settings.MultiColorHighlighting,
+                new CheckBoxOptionCanvas("Multi-color highlighting", "Enables multiple colors in a single cell", () => settings.MultiColorHighlighting,
                     b => settings.MultiColorHighlighting = b),
-                new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", (int)settings.GivenColor, 
+                new ColorComboBoxOptionCanvas("Givens color", "Sets the color of the cells of given digits", () => (int)settings.GivenColor, 
                     i => settings.GivenColor = (CellColor)i),
-                new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", (int)settings.SolvingColor,
+                new ColorComboBoxOptionCanvas("Solving color", "Sets the color of the cells of digits to be solved", () => (int)settings.SolvingColor,
                     i => settings.SolvingColor = (CellColor)i),
                 new SliderOptionCanvas("Highlighting start angle", "Defines the starting angle when highlighting a cell", 0, 
-                    360, 5, settings.StartAngle, i => settings.StartAngle = i),
+                    360, 5, () => settings.StartAngle, i => settings.StartAngle = i),
                 new MultiChoiceOptionCanvas("Highlighting rotation", "Defines the direction of the rotation when highlighting a cell",
-                    (int)settings.RotationDirection, i => settings.RotationDirection = (RotationDirection)i, "Clock wise",
+                    () => (int)settings.RotationDirection, i => settings.RotationDirection = (RotationDirection)i, "Clock wise",
                     "Counter clock wise"))
         };
 
@@ -100,7 +105,7 @@ public partial class SettingsWindow
         {
             new("Theme",
                 new ComboBoxOptionCanvas("Theme", "Selects the application's theme",
-                    settings.Theme, i => settings.Theme = i, "Light", "Dark"))
+                    () => settings.Theme, i => settings.Theme = i, "Light", "Dark"))
         };
 
         return new SettingsWindow(pages);
@@ -114,5 +119,18 @@ public partial class SettingsWindow
     private void Finished(object sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    public override void ApplyTheme(Theme theme)
+    {
+        
+    }
+
+    public void Refresh()
+    {
+        foreach (var page in _settingsPages)
+        {
+            page.Refresh();
+        }
     }
 }

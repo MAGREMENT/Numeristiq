@@ -172,6 +172,3 @@ public interface IStrategyArgument
     public string Get();
     public void Set(string s);
 }
-
-public delegate T GetArgument<out T>();
-public delegate void SetArgument<in T>(T value);

@@ -63,7 +63,7 @@ public partial class StrategyManagerPage : IStrategyManagerView
         
     }
 
-    public override void ApplyTheme(Theme theme)
+    protected override void InternalApplyTheme(Theme theme)
     {
         
     }

@@ -1,14 +1,21 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using Global;
 
 namespace View.Canvas;
 
 public partial class MultiChoiceOptionCanvas : OptionCanvas
 {
-    public MultiChoiceOptionCanvas(string name, string explanation, int startIndex, 
-        OnChange<int> onChange, params string[] choices)
+    private readonly SetArgument<int> _setter;
+    private readonly GetArgument<int> _getter;
+    
+    public MultiChoiceOptionCanvas(string name, string explanation, GetArgument<int> getter, 
+        SetArgument<int> setter, params string[] choices)
     {
         InitializeComponent();
+
+        _setter = setter;
+        _getter = getter;
 
         TextBlock.Text = name;
         for (int i = 0; i < choices.Length; i++)
@@ -20,9 +27,8 @@ public partial class MultiChoiceOptionCanvas : OptionCanvas
                 Content = choices[i]
             };
 
-            if (startIndex == i) radioButton.IsChecked = true;
             var iForEvent = i;
-            radioButton.Checked += (_, _) => onChange(iForEvent);
+            radioButton.Checked += (_, _) => TryChange(iForEvent);
 
             Panel.Children.Add(radioButton);
         }
@@ -34,5 +40,15 @@ public partial class MultiChoiceOptionCanvas : OptionCanvas
     public override void SetFontSize(int size)
     {
         TextBlock.FontSize = size;
+    }
+
+    public override void InternalRefresh()
+    {
+        ((RadioButton)Panel.Children[_getter()]).IsChecked = true;
+    }
+
+    private void TryChange(int i)
+    {
+        if (ShouldCallSetter) _setter(i);
     }
 }

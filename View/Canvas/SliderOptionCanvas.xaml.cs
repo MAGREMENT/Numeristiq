@@ -1,27 +1,25 @@
 ﻿using System.Windows;
+using Global;
 
 namespace View.Canvas;
 
 public partial class SliderOptionCanvas
 {
-    private readonly OnChange<int> _onChange;
-    private readonly bool _callOnChange;
+    private readonly SetArgument<int> _setter;
+    private readonly GetArgument<int> _getter;
     
-    public SliderOptionCanvas(string name, string explanation, int min, int max, int tickFrequency, int defaultValue, OnChange<int> onChange)
+    public SliderOptionCanvas(string name, string explanation, int min, int max, int tickFrequency, GetArgument<int> getter, SetArgument<int> setter)
     {
         InitializeComponent();
 
         Block.Text = name;
         
-        _onChange = onChange;
+        _setter = setter;
+        _getter = getter;
 
         Slider.Maximum = max;
         Slider.Minimum = min;
         Slider.TickFrequency = tickFrequency;
-        
-        _callOnChange = false;
-        Slider.Value = defaultValue;
-        _callOnChange = true;
 
         Explanation = explanation;
     }
@@ -32,8 +30,13 @@ public partial class SliderOptionCanvas
         Block.FontSize = size;
     }
 
+    public override void InternalRefresh()
+    {
+        Slider.Value = _getter();
+    }
+
     private void OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (_callOnChange) _onChange((int)Slider.Value);
+        if (ShouldCallSetter) _setter((int)Slider.Value);
     }
 }

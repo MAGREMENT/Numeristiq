@@ -17,8 +17,8 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
     
     public ExtendedUniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
+        UniquenessDependency = UniquenessDependency.FullyDependent;
     }
-
     
     public override void Apply(IStrategyManager strategyManager)
     {

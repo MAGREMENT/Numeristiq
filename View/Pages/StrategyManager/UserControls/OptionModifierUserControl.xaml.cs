@@ -47,17 +47,17 @@ public partial class OptionModifierUserControl
             OptionCanvas? optionCanvas = i.Interface switch
             {
                 SliderViewInterface svi => new SliderOptionCanvas(i.Name, "", svi.Min,
-                    svi.Max, svi.TickFrequency, int.Parse(i.CurrentValue), n =>
+                    svi.Max, svi.TickFrequency, () => int.Parse(i.CurrentValue), n =>
                     {
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
                     }),
                 BooleanViewInterface => new CheckBoxOptionCanvas(i.Name, "", 
-                    i.CurrentValue.ToLower().Equals("true"), n =>
+                    () => i.CurrentValue.ToLower().Equals("true"), n =>
                     {
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
                     }),
                 MinMaxSliderViewInterface mm => new MinMaxSliderOptionCanvas(i.Name, "",
-                    mm.MinMin, mm.MinMax, mm.MaxMin, mm.MaxMax, mm.TickFrequency, MinMax.From(i.CurrentValue),
+                    mm.MinMin, mm.MinMax, mm.MaxMin, mm.MaxMax, mm.TickFrequency, () => MinMax.From(i.CurrentValue),
                     n =>
                     {
                         ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());

@@ -1,21 +1,19 @@
 ﻿using System.Windows;
+using Global;
 
 namespace View.Canvas;
 
 public partial class CheckBoxOptionCanvas
 {
-    private readonly bool _callOnChange;
-    private readonly OnChange<bool> _onChange;
+    private readonly SetArgument<bool> _setter;
+    private readonly GetArgument<bool> _getter;
 
-    public CheckBoxOptionCanvas(string text, string explanation, bool isChecked, OnChange<bool> onChange)
+    public CheckBoxOptionCanvas(string text, string explanation, GetArgument<bool> getter, SetArgument<bool> setter)
     {
         InitializeComponent();
         
-        _onChange = onChange;
-        
-        _callOnChange = false;
-        Box.IsChecked = isChecked;
-        _callOnChange = true;
+        _setter = setter;
+        _getter = getter;
         
         Box.Content = text;
 
@@ -34,18 +32,23 @@ public partial class CheckBoxOptionCanvas
 
     private void ChangeEvent()
     {
-        if (!_callOnChange) return;
+        if (!ShouldCallSetter) return;
         
         var val = Box.IsChecked;
         if (val is null) return;
 
-        _onChange(val.Value);
+        _setter(val.Value);
     }
 
     public override string Explanation { get; }
     public override void SetFontSize(int size)
     {
         Box.FontSize = size;
+    }
+
+    public override void InternalRefresh()
+    {
+        Box.IsChecked = _getter();
     }
 }
 

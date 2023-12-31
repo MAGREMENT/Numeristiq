@@ -1,27 +1,30 @@
-﻿using System.Windows;
+﻿using System.ComponentModel;
+using System.Windows;
 using Global;
 using Global.Enums;
 using Presenter;
 using Presenter.StepChooser;
 using Presenter.Translators;
+using View.Themes;
 
 namespace View.HelperWindows.StepChooser;
 
 public partial class StepChooserWindow : IStepChooserView
 {
-    private readonly StepChooserPresenter _presenter;
+    private StepChooserPresenter? _presenter;
     
-    public StepChooserWindow(StepChooserPresenterBuilder builder)
+    public StepChooserWindow()
     {
         InitializeComponent();
+        
+        Closing += OnClose;
+        CommitList.CommitSelected += OnCommitSelect;
+        CommitInfo.HighlightShifted += OnShiftHighlight;
+    }
 
+    public void SetPresenter(StepChooserPresenterBuilder builder)
+    {
         _presenter = builder.Build(this);
-        Closing += (_, _) => _presenter.Closed();
-
-        CommitList.CommitSelected += i => _presenter.SelectCommit(i);
-        
-        CommitInfo.HighlightShifted += _presenter.ShiftHighlighting;
-        
         _presenter.Bind();
     }
 
@@ -134,12 +137,32 @@ public partial class StepChooserWindow : IStepChooserView
 
     private void Choose(object sender, RoutedEventArgs e)
     {
-        _presenter.SelectCurrentCommit();
+        _presenter?.SelectCurrentCommit();
         Close();
     }
 
     private void Cancel(object sender, RoutedEventArgs e)
     {
         Close();
+    }
+    
+    private void OnClose(object? sender, CancelEventArgs args)
+    {
+        _presenter?.Closed();
+    }
+
+    private void OnCommitSelect(int n)
+    {
+        _presenter?.SelectCommit(n);
+    }
+
+    private void OnShiftHighlight(int n)
+    {
+        _presenter?.ShiftHighlighting(n);
+    }
+
+    public override void ApplyTheme(Theme theme)
+    {
+        
     }
 }

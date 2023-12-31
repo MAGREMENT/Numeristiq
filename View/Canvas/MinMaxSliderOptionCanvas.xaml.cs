@@ -5,19 +5,21 @@ namespace View.Canvas;
 
 public partial class MinMaxSliderOptionCanvas
 {
-    private readonly OnChange<MinMax> _onChange;
-    private bool _callOnChange;
+    private readonly SetArgument<MinMax> _setter;
+    private readonly GetArgument<MinMax> _getter;
     
     public override string Explanation { get; }
     
     public MinMaxSliderOptionCanvas(string name, string explanation, int minMin, int minMax,
-        int maxMin, int maxMax, int tickFrequency, MinMax defaultValue, OnChange<MinMax> onChange)
+        int maxMin, int maxMax, int tickFrequency, GetArgument<MinMax> getter, SetArgument<MinMax> setter)
     {
         InitializeComponent();
+        
+        _setter = setter;
+        _getter = getter;
 
         Block.Text = name;
         Explanation = explanation;
-        _onChange = onChange;
         
         MinSlider.Minimum = minMin;
         MinSlider.Maximum = minMax;
@@ -25,11 +27,6 @@ public partial class MinMaxSliderOptionCanvas
         MaxSlider.Minimum = maxMin;
         MaxSlider.Maximum = maxMax;
         MaxSlider.TickFrequency = tickFrequency;
-
-        _callOnChange = false;
-        MinSlider.Value = defaultValue.Min;
-        MaxSlider.Value = defaultValue.Max;
-        _callOnChange = true;
     }
 
     
@@ -40,31 +37,38 @@ public partial class MinMaxSliderOptionCanvas
         MaxText.FontSize = size;
     }
 
+    public override void InternalRefresh()
+    {
+        var val = _getter();
+        MinSlider.Value = val.Min;
+        MaxSlider.Value = val.Max;
+    }
+
     private void OnMinValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (!_callOnChange) return;
+        if (!ShouldCallSetter) return;
 
         if (MinSlider.Value > MaxSlider.Value)
         {
-            _callOnChange = false;
+            ShouldCallSetter = false;
             MaxSlider.Value = MinSlider.Value;
-            _callOnChange = true;
+            ShouldCallSetter = false;
         }
             
-        _onChange(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
+        _setter(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
     }
     
     private void OnMaxValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
-        if (!_callOnChange) return;
+        if (!ShouldCallSetter) return;
 
         if (MaxSlider.Value < MinSlider.Value)
         {
-            _callOnChange = false;
+            ShouldCallSetter = false;
             MinSlider.Value = MaxSlider.Value;
-            _callOnChange = true;
+            ShouldCallSetter = true;
         }
             
-        _onChange(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
+        _setter(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));
     }
 }

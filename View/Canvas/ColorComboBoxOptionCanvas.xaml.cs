@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using Global;
 using Global.Enums;
 using View.Utility;
 
@@ -8,16 +9,17 @@ namespace View.Canvas;
 
 public partial class ColorComboBoxOptionCanvas
 {
-    private readonly OnChange<int> _onChange;
-    private readonly bool _callOnChange;
+    private readonly SetArgument<int> _setter;
+    private readonly GetArgument<int> _getter;
     
-    public ColorComboBoxOptionCanvas(string name, string explanation, int startIndex, OnChange<int> onChange)
+    public ColorComboBoxOptionCanvas(string name, string explanation, GetArgument<int> getter, SetArgument<int> setter)
     {
         InitializeComponent();
 
         Block.Text = name;
         
-        _onChange = onChange;
+        _setter = setter;
+        _getter = getter;
 
         foreach (var availableColor in Enum.GetValues<CellColor>())
         {
@@ -46,10 +48,6 @@ public partial class ColorComboBoxOptionCanvas
             Box.Items.Add(item);
         }
 
-        _callOnChange = false;
-        Box.SelectedIndex = startIndex;
-        _callOnChange = true;
-
         Explanation = explanation;
         
     }
@@ -60,8 +58,13 @@ public partial class ColorComboBoxOptionCanvas
         Block.FontSize = size;
     }
 
+    public override void InternalRefresh()
+    {
+        Box.SelectedIndex = _getter();
+    }
+
     private void OnSelectionChange(object sender, SelectionChangedEventArgs e)
     {
-        if (_callOnChange) _onChange(Box.SelectedIndex);
+        if (ShouldCallSetter) _setter(Box.SelectedIndex);
     }
 }

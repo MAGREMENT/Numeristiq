@@ -1,20 +1,22 @@
 ﻿using System.Windows.Controls;
+using Global;
 
 namespace View.Canvas;
 
 public partial class ComboBoxOptionCanvas : OptionCanvas
 {
-    private readonly OnChange<int> _onChange;
-    private readonly bool _callOnChange;
+    private readonly SetArgument<int> _setter;
+    private readonly GetArgument<int> _getter;
 
-    public ComboBoxOptionCanvas(string name, string explanation, int startIndex, 
-        OnChange<int> onChange, params string[] choices)
+    public ComboBoxOptionCanvas(string name, string explanation, GetArgument<int> getter, 
+        SetArgument<int> setter, params string[] choices)
     {
         InitializeComponent();
 
         Block.Text = name;
         
-        _onChange = onChange;
+        _setter = setter;
+        _getter = getter;
 
         foreach (var choice in choices)
         {
@@ -25,10 +27,6 @@ public partial class ComboBoxOptionCanvas : OptionCanvas
 
             Box.Items.Add(item);
         }
-
-        _callOnChange = false;
-        Box.SelectedIndex = startIndex;
-        _callOnChange = true;
         
         Explanation = explanation;
         
@@ -40,8 +38,13 @@ public partial class ComboBoxOptionCanvas : OptionCanvas
         Block.FontSize = size;
     }
 
+    public override void InternalRefresh()
+    {
+        Box.SelectedIndex = _getter();
+    }
+
     private void OnSelectionChange(object sender, SelectionChangedEventArgs e)
     {
-        if(_callOnChange) _onChange(Box.SelectedIndex);
+        if(ShouldCallSetter) _setter(Box.SelectedIndex);
     }
 }

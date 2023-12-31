@@ -1,8 +1,9 @@
-<Window x:Class="View.HelperWindows.Print.PrintWindow"
+<helperWindows:HelperWindow x:Class="View.HelperWindows.Print.PrintWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:helperWindows="clr-namespace:View.HelperWindows"
         mc:Ignorable="d"
         Title="Print"
         ResizeMode="CanMinimize"
@@ -24,4 +25,4 @@
                     x:Name="OkButton" Margin="0, 0, 10, 0">Ok</Button>
         </StackPanel>
     </StackPanel>
-</Window>
+</helperWindows:HelperWindow>
