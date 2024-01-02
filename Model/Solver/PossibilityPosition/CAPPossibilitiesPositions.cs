@@ -83,6 +83,12 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
         return result;
     }
 
+    public bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
+    {
+        //return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
+        return RestrictedPossibilityAlgorithms.GridPositionsSearch(Positions, other.Positions, _snapshot, possibility);
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is CAPPossibilitiesPositions pp && Possibilities.Equals(pp.Possibilities)

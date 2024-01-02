@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Global;
 using Global.Enums;
+using View.Themes;
 using View.Utility;
 
 namespace View.Canvas;
@@ -58,7 +59,12 @@ public partial class ColorComboBoxOptionCanvas
         Block.FontSize = size;
     }
 
-    public override void InternalRefresh()
+    public override void ApplyTheme(Theme theme)
+    {
+        Block.Foreground = theme.Text;
+    }
+
+    protected override void InternalRefresh()
     {
         Box.SelectedIndex = _getter();
     }

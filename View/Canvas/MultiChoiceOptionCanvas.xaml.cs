@@ -1,10 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Global;
+using View.Themes;
 
 namespace View.Canvas;
 
-public partial class MultiChoiceOptionCanvas : OptionCanvas
+public partial class MultiChoiceOptionCanvas
 {
     private readonly SetArgument<int> _setter;
     private readonly GetArgument<int> _getter;
@@ -42,7 +43,17 @@ public partial class MultiChoiceOptionCanvas : OptionCanvas
         TextBlock.FontSize = size;
     }
 
-    public override void InternalRefresh()
+    public override void ApplyTheme(Theme theme)
+    {
+        TextBlock.Foreground = theme.Text;
+        foreach (var radioButton in Panel.Children)
+        {
+            if (radioButton is not RadioButton rb) continue;
+            rb.Foreground = theme.Text;
+        }
+    }
+
+    protected override void InternalRefresh()
     {
         ((RadioButton)Panel.Children[_getter()]).IsChecked = true;
     }

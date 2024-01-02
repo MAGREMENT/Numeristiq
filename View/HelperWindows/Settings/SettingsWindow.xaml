@@ -4,21 +4,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:helperWindows="clr-namespace:View.HelperWindows"
+        xmlns:c="clr-namespace:View.GlobalControls"
         mc:Ignorable="d"
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterScreen"
         Title="Settings" SizeToContent="WidthAndHeight">
     <StackPanel Orientation="Horizontal" Height="450" Width="600">
-        <ScrollViewer Width="150">
-            <StackPanel Orientation="Vertical" Height="450" Width="145" x:Name="Titles"/>
+        <ScrollViewer Width="150" Height="450">
+            <StackPanel x:Name="Titles"/>
         </ScrollViewer>
         <StackPanel Orientation="Vertical" Height="450" Width="450">
             <Frame x:Name="Page" Height="400" Width="450" NavigationUIVisibility="Hidden"></Frame>
-            <StackPanel Orientation="Horizontal" Height="50" Width="450" 
-                        Background="WhiteSmoke">
-                <TextBlock Height="50" Width="350" FontSize="12" x:Name="OptionExplanation" TextWrapping="Wrap"></TextBlock>
-                <Button Height="35" Width="80" HorizontalAlignment="Right" Margin="0, 7.5, 10, 7.5" 
-                        Click="Finished">Finished</Button>
+            <StackPanel Orientation="Horizontal" Height="50" Width="450" x:Name="Footer">
+                <TextBlock Height="40" Width="340" FontSize="12" x:Name="OptionExplanation" TextWrapping="Wrap" Margin="5"></TextBlock>
+                <c:GlowButton Height="35" Width="80" FontSize="15" HorizontalAlignment="Right" Margin="0, 7.5, 10, 7.5" 
+                        Click="Finished" x:Name="FinishedButton" Text="Finished"/>
             </StackPanel>
         </StackPanel>
     </StackPanel>

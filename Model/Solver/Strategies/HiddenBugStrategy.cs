@@ -37,37 +37,44 @@ public class HiddenBugStrategy : AbstractStrategy
         var graph = strategyManager.GraphManager.SimpleLinkGraph;
         var positions = BasicPositions(strategyManager);
         var sample = GetSample(positions);
+        CellPossibility[] notInPattern = new CellPossibility[MaxNotInPatternCount];
         
         for (int possCount = _minPossibilityCount; possCount <= _maxPossibilityCount; possCount++)
         {
             foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(possCount, sample))
             {
-                List<CellPossibility> notInPattern = new();
-                if (!FillNotInPatternList(strategyManager, positions, notInPattern, combination) || notInPattern.Count == 0) continue;
-
-                if (notInPattern.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
-                else
+                var count = FillNotInPatternList(strategyManager, positions, notInPattern, combination);
+                switch (count)
                 {
-                    foreach (var target in graph.GetLinks(notInPattern[0]))
-                    {
-                        bool ok = true;
-
-                        for (int i = 1; i < notInPattern.Count; i++)
+                    case 0 or > MaxNotInPatternCount:
+                        continue;
+                    case 1:
+                        strategyManager.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
+                        break;
+                    default:
+                        foreach (var target in graph.GetLinks(notInPattern[0]))
                         {
-                            if (!graph.HasLinkTo(notInPattern[i], target))
+                            bool ok = true;
+
+                            for (int i = 1; i < count; i++)
                             {
-                                ok = false;
-                                break;
+                                if (!graph.HasLinkTo(notInPattern[i], target))
+                                {
+                                    ok = false;
+                                    break;
+                                }
                             }
+
+                            if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
                         }
 
-                        if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
-                    }
+                        break;
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
-                        new HiddenBUGReportBuilder(combination, positions)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                if (!strategyManager.ChangeBuffer.NotEmpty() || !strategyManager.ChangeBuffer.Commit(this,
+                        new HiddenBUGReportBuilder(combination, positions))) continue;
+                if(OnCommitBehavior == OnCommitBehavior.Return) return;
+
             }
         }
     }
@@ -115,8 +122,11 @@ public class HiddenBugStrategy : AbstractStrategy
         return diff is null ? CombinationCalculator.NumbersSample : diff.ToArray();
     }
 
-    private bool FillNotInPatternList(IStrategyManager strategyManager, GridPositions[] positions, List<CellPossibility> list, int[] combination)
+    private int FillNotInPatternList(IStrategyManager strategyManager, GridPositions[] positions,
+        CellPossibility[] list, int[] combination)
     {
+        int count = 0;
+        
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -133,14 +143,14 @@ public class HiddenBugStrategy : AbstractStrategy
                 
                 foreach (var p in poss)
                 {
-                    list.Add(new CellPossibility(row, col, p));
-                    if (list.Count > MaxNotInPatternCount) return false;
+                    list[count++] = new CellPossibility(row, col, p);
+                    if (count == MaxNotInPatternCount) return count + 1;
                 }
                 
             }
         }
 
-        return true;
+        return count;
     }
 }
 

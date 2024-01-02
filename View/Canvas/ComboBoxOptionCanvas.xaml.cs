@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using Global;
+using View.Themes;
 
 namespace View.Canvas;
 
@@ -38,7 +39,12 @@ public partial class ComboBoxOptionCanvas : OptionCanvas
         Block.FontSize = size;
     }
 
-    public override void InternalRefresh()
+    public override void ApplyTheme(Theme theme)
+    {
+        Block.Foreground = theme.Text;
+    }
+
+    protected override void InternalRefresh()
     {
         Box.SelectedIndex = _getter();
     }

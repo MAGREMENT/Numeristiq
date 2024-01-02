@@ -100,7 +100,7 @@ public static class JuniorExocetSearcher
 
                 foreach (var gp in sCellsPositions.Values)
                 {
-                    if (!gp.CanBeCoveredByLines(2, Unit.Row, Unit.Column))
+                    if (!gp.CanBeCoveredByUnits(2, Unit.Row, Unit.Column))
                     {
                         notOk = true;
                         break;

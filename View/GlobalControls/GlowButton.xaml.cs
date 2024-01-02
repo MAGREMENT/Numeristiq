@@ -1,33 +1,24 @@
 ﻿using System.Windows;
 using System.Windows.Media;
+using View.Themes;
 
 namespace View.GlobalControls;
 
-public partial class GlowButton
+public partial class GlowButton : IThemeable
 {
     public event OnClick? Click;
 
-    public new double Width
-    {
-        set => Border.Width = value - 2 * Border.BorderThickness.Left;
-    }
-    
-    public new double Height
-    {
-        set => Border.Height = value - 2 * Border.BorderThickness.Top;
-    }
-
-    public new Brush Background
+    public Brush NormalBackground
     {
         set
         {
             _background = value;
-            if (!isHovered) Text.Background = value;
+            if (!isHovered) Border.Background = value;
         }
         get => _background;
     }
 
-    public new Brush BorderBrush
+    public Brush NormalBorderBrush
     {
         set
         {
@@ -42,7 +33,7 @@ public partial class GlowButton
         set
         {
             _hoverBackground = value;
-            if (isHovered) Text.Background = value;
+            if (isHovered) Border.Background = value;
         }
         get => _hoverBackground;
     }
@@ -57,6 +48,10 @@ public partial class GlowButton
         get => _hoverBorderBrush;
     }
 
+    public string Text
+    {
+        set => TextBlock.Text = value;
+    }
 
     private bool isHovered;
     private Brush _background;
@@ -68,8 +63,8 @@ public partial class GlowButton
     {
         InitializeComponent();
 
-        _background = Text.Background;
-        _hoverBackground = Text.Background;
+        _background = TextBlock.Background;
+        _hoverBackground = TextBlock.Background;
         _borderBrush = Border.BorderBrush;
         _hoverBorderBrush = Border.BorderBrush;
         
@@ -77,15 +72,24 @@ public partial class GlowButton
         MouseEnter += (_, _) =>
         {
             isHovered = true;
-            Text.Background = _hoverBackground;
+            Border.Background = _hoverBackground;
             Border.BorderBrush = _hoverBorderBrush;
         };
         MouseLeave += (_, _) =>
         {
             isHovered = false;
-            Text.Background = _background;
+            Border.Background = _background;
             Border.BorderBrush = _borderBrush;
         };
+    }
+
+    public void ApplyTheme(Theme theme)
+    {
+        TextBlock.Foreground = theme.Text;
+        NormalBackground = theme.Background2;
+        NormalBorderBrush = theme.Text;
+        HoverBackground = theme.Primary2;
+        HoverBorderBrush = theme.Primary1;
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Global;
+using View.Themes;
 
 namespace View.Canvas;
 
@@ -46,7 +47,12 @@ public partial class CheckBoxOptionCanvas
         Box.FontSize = size;
     }
 
-    public override void InternalRefresh()
+    public override void ApplyTheme(Theme theme)
+    {
+        Box.Foreground = theme.Text;
+    }
+
+    protected override void InternalRefresh()
     {
         Box.IsChecked = _getter();
     }

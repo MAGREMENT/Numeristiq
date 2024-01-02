@@ -17,6 +17,7 @@ public partial class WelcomePage
         _pageHandler = pageHandler;
 
         _settingsWindow = SettingsWindow.From(settings);
+        AddManagedHelperWindow(_settingsWindow);
     }
 
     private void GoToSolver(object sender, RoutedEventArgs e)

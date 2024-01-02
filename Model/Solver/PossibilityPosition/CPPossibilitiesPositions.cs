@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Global;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
@@ -78,6 +77,11 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
     public CellPossibilities[] ToCellPossibilitiesArray()
     {
         return _cps;
+    }
+
+    public bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
+    {
+        return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
     }
 
     public int PossibilityCount => Possibilities.Count;

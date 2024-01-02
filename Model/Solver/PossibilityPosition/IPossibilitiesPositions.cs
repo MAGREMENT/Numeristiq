@@ -8,18 +8,17 @@ namespace Model.Solver.PossibilityPosition;
 
 public interface IPossibilitiesPositions
 {
-    IEnumerable<Cell> EachCell();
-    IEnumerable<Cell> EachCell(int with);
-    
-    IReadOnlyPossibilities PossibilitiesInCell(Cell cell);
-    
     IReadOnlyPossibilities Possibilities { get; }
     GridPositions Positions { get; }
-
-    CellPossibilities[] ToCellPossibilitiesArray();
-    
     int PossibilityCount { get; }
     int PositionsCount { get; }
+    
+    IEnumerable<Cell> EachCell();
+    IEnumerable<Cell> EachCell(int with);
+    IReadOnlyPossibilities PossibilitiesInCell(Cell cell);
+
+    CellPossibilities[] ToCellPossibilitiesArray();
+    bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility);
     
     public Possibilities RestrictedCommons(IPossibilitiesPositions other)
     {
@@ -33,19 +32,6 @@ public interface IPossibilitiesPositions
         }
 
         return result;
-    }
-
-    private bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
-    {
-        foreach (var cell1 in EachCell(possibility))
-        {
-            foreach (var cell2 in other.EachCell(possibility))
-            {
-                if (!Cells.ShareAUnit(cell1, cell2)) return false;
-            }
-        }
-
-        return true;
     }
 
     public bool Contains(CellPossibility cp)

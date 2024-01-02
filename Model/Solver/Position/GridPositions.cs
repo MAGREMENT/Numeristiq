@@ -305,7 +305,16 @@ public class GridPositions : IReadOnlyGridPositions
         return result;
     }
 
-    public bool CanBeCoveredByLines(int n, params Unit[] units)
+    public bool CanBeCoverByAUnit()
+    {
+        if (Count == 0) return true;
+
+        var first = First();
+        return RowCount(first.Row) == Count || ColumnCount(first.Column) == Count ||
+               MiniGridCount(first.Row / 3, first.Column / 3) == Count;
+    }
+
+    public bool CanBeCoveredByUnits(int n, params Unit[] units)
     {
         if (Count == 0) return true;
 

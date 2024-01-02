@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Global;
+using View.Themes;
 
 namespace View.Canvas;
 
@@ -37,7 +38,14 @@ public partial class MinMaxSliderOptionCanvas
         MaxText.FontSize = size;
     }
 
-    public override void InternalRefresh()
+    public override void ApplyTheme(Theme theme)
+    {
+        MinText.Foreground = theme.Text;
+        MaxText.Foreground = theme.Text;
+        Block.Foreground = theme.Text;
+    }
+
+    protected override void InternalRefresh()
     {
         var val = _getter();
         MinSlider.Value = val.Min;
