@@ -226,4 +226,47 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         if(strategyManager.Sudoku[row1, col2] == 0) yield return new Cell(row1, col2);
         if(strategyManager.Sudoku[row2, col1] == 0) yield return new Cell(row2, col1);
     }
+
+    public IEnumerable<CellPossibility> SharedSeenPossibilities(int row1, int col1, int pos1, int row2, int col2, int pos2)
+    {
+        if (pos1 == pos2)
+        {
+            foreach (var cell in SharedSeenCells(row1, col1, row2, col2))
+            {
+                yield return new CellPossibility(cell, pos1);
+            }
+        }
+        else
+        {
+            //TODO
+        }
+    }
+
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager, int row1, int col1, int pos1, int row2,
+        int col2, int pos2)
+    {
+        if (pos1 == pos2)
+        {
+            foreach (var cell in SharedSeenCells(row1, col1, row2, col2))
+            {
+                if(strategyManager.PossibilitiesAt(cell).Peek(pos1)) yield return new CellPossibility(cell, pos1);
+            }
+        }
+        else
+        {
+            if (row1 == row2 && col1 == col2)
+            {
+                foreach (var p in strategyManager.PossibilitiesAt(row1, col1))
+                {
+                    if (p == pos1 || p == pos2) continue;
+                    yield return new CellPossibility(row1, col1, p);
+                }
+            }
+            else if(Cells.ShareAUnit(row1, col1, row2, col2))
+            {
+                yield return new CellPossibility(row1, col1, pos2);
+                yield return new CellPossibility(row2, col2, pos1);
+            }
+        }
+    }
 }

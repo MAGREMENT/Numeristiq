@@ -133,8 +133,8 @@ public class JuniorExocet
 
         foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
         {
-            if (oneS.MiniGridCount(diag.Key[0], diag.Key[1]) > 0 &&
-                twoS.MiniGridCount(diag.Value[0], diag.Value[1]) > 0) return true;
+            if (oneS.MiniGridCount(diag.Item1.MiniRow, diag.Item1.MiniColumn) > 0 &&
+                twoS.MiniGridCount(diag.Item2.MiniRow, diag.Item2.MiniColumn) > 0) return true;
         }
 
         return false;
@@ -174,8 +174,8 @@ public class JuniorExocet
 
         foreach (var diag in Cells.DiagonalMiniGridAssociation(Base1.Row / 3, Base1.Column / 3))
         {
-            if (oneS.MiniGridCount(diag.Key[0], diag.Key[1]) > 0 &&
-                twoS.MiniGridCount(diag.Value[0], diag.Value[1]) > 0) return true;
+            if (oneS.MiniGridCount(diag.Item1.MiniRow, diag.Item1.MiniColumn) > 0 &&
+                twoS.MiniGridCount(diag.Item2.MiniRow, diag.Item2.MiniColumn) > 0) return true;
         }
 
         return false;

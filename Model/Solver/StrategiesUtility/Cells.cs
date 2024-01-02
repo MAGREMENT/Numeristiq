@@ -57,32 +57,6 @@ public static class Cells
         return result;
     }
     
-    public static List<Cell> SeenEmptyCells(IPossibilitiesHolder holder, Cell cell)
-    {
-        List<Cell> result = new();
-        
-        for (int i = 0; i < 9; i++)
-        {
-            if (i != cell.Row && holder.Sudoku[i, cell.Column] == 0) result.Add(new Cell(i, cell.Column));
-            if (i != cell.Column && holder.Sudoku[cell.Row, i] == 0) result.Add(new Cell(cell.Row, i));
-        }
-
-        var startRow = cell.Row / 3 * 3;
-        var startCol = cell.Column / 3 * 3;
-        for (int i = 0; i < 3; i++)
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                var row = startRow + i;
-                var col = startCol + i;
-
-                if (row != cell.Row && col != cell.Column && holder.Sudoku[row, col] == 0) result.Add(new Cell(row, col));
-            }
-        }
-
-        return result;
-    }
-    
     public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO "AsList"
     {
         return Searcher.SharedSeenCells(row1, col1, row2, col2);
@@ -130,6 +104,32 @@ public static class Cells
             }
 
             if (ok) result.Add(coord);
+        }
+
+        return result;
+    }
+    
+    public static List<Cell> SeenEmptyCells(IPossibilitiesHolder holder, Cell cell)
+    {
+        List<Cell> result = new();
+        
+        for (int i = 0; i < 9; i++)
+        {
+            if (i != cell.Row && holder.Sudoku[i, cell.Column] == 0) result.Add(new Cell(i, cell.Column));
+            if (i != cell.Column && holder.Sudoku[cell.Row, i] == 0) result.Add(new Cell(cell.Row, i));
+        }
+
+        var startRow = cell.Row / 3 * 3;
+        var startCol = cell.Column / 3 * 3;
+        for (int i = 0; i < 3; i++)
+        {
+            for (int j = 0; j < 3; j++)
+            {
+                var row = startRow + i;
+                var col = startCol + i;
+
+                if (row != cell.Row && col != cell.Column && holder.Sudoku[row, col] == 0) result.Add(new Cell(row, col));
+            }
         }
 
         return result;
@@ -190,6 +190,71 @@ public static class Cells
     public static bool AreSpreadOverTwoBoxes(int row1, int col1, int row2, int col2)
     {
         return (row1 / 3 != row2 / 3) ^ (col1 / 3 != col2 / 3);
+    }
+    
+    public static bool AreLinked(CellPossibility first, CellPossibility second)
+    {
+        if (first == second) return false;
+        return (first.Row == second.Row && first.Column == second.Column) ||
+               (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
+    }
+
+    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager, CellPossibility first,
+        CellPossibility second)
+    {
+        return Searcher.SharedSeenExistingPossibilities(strategyManager, first.Row, first.Column, first.Possibility,
+            second.Row, second.Column, second.Possibility);
+    }
+
+    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager,
+        IReadOnlyList<CellPossibility> list) //TODO USE THIS
+    {
+        if (list.Count == 0) return new List<CellPossibility>();
+        if (list.Count == 1) return new List<CellPossibility>(); //TODO
+
+        var result = new List<CellPossibility>();
+        foreach (var cp in SharedSeenExistingPossibilities(strategyManager, list[0], list[1]))
+        {
+            bool ok = true;
+            for (int i = 2; i < list.Count; i++)
+            {
+                if (!AreLinked(cp, list[i]) || list[i] == cp)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if(ok) result.Add(cp);
+        }
+
+        return result;
+    }
+    
+    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager,
+        IReadOnlyList<CellPossibility> list, int count)
+    {
+        if (count > list.Count) return new List<CellPossibility>();
+        if (count == 0) return new List<CellPossibility>();
+        if (count == 1) return new List<CellPossibility>(); //TODO
+
+        var result = new List<CellPossibility>();
+        foreach (var cp in SharedSeenExistingPossibilities(strategyManager, list[0], list[1]))
+        {
+            bool ok = true;
+            for (int i = 2; i < count ; i++)
+            {
+                if (!AreLinked(cp, list[i]) || list[i] == cp)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if(ok) result.Add(cp);
+        }
+
+        return result;
     }
     
     public static IEnumerable<Cell[]> DeadlyPatternRoofs(Cell[] floor)
@@ -270,10 +335,9 @@ public static class Cells
         }
     }
 
-    public static Dictionary<int[], int[]> DiagonalMiniGridAssociation(int miniRowExcept, int miniColExcept)
+    public static IEnumerable<(MiniGrid, MiniGrid)> DiagonalMiniGridAssociation(int miniRowExcept, int miniColExcept)
     {
-        var result = new Dictionary<int[], int[]>(4);
-        List<int[]> buffer = new(4);
+        List<MiniGrid> buffer = new(4);
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -282,17 +346,13 @@ public static class Cells
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
                 if (miniCol == miniColExcept) continue;
-                
-                buffer.Add(new[] {miniRow, miniCol});
+
+                buffer.Add(new MiniGrid(miniRow, miniCol));
             }
         }
-        
-        result.Add(buffer[0], buffer[3]);
-        result.Add(buffer[1], buffer[2]);
-        result.Add(buffer[2], buffer[1]);
-        result.Add(buffer[3], buffer[0]);
 
-        return result;
+        yield return (buffer[0], buffer[3]);
+        yield return (buffer[1], buffer[2]);
     }
     
     public static double Distance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
@@ -350,11 +410,6 @@ public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
     public IEnumerable<Cell> SharedSeenCells(CellPossibility coord)
     {
         return Cells.SharedSeenCells(Row, Column, coord.Row, coord.Column);
-    }
-
-    public bool AreWeaklyLinked(CellPossibility cp)
-    {
-        return (cp.Row == Row && cp.Column == Column) || (cp.Possibility == Possibility && ShareAUnit(cp));
     }
 
     public override int GetHashCode()
@@ -455,4 +510,16 @@ public class CellPossibilities
     {
         return $"{Cell} => {Possibilities}";
     }
+}
+
+public readonly struct MiniGrid
+{
+    public MiniGrid(int miniRow, int miniColumn)
+    {
+        MiniRow = miniRow;
+        MiniColumn = miniColumn;
+    }
+
+    public int MiniRow { get; }
+    public int MiniColumn { get; }
 }

@@ -30,4 +30,15 @@ public class GridPositionsSearcher : ISharedSeenCellSearcher
     {
         return ISharedSeenCellSearcher.DefaultSharedSeenEmptyCells(this, strategyManager, row1, col1, row2, col2);
     }
+
+    public IEnumerable<CellPossibility> SharedSeenPossibilities(int row1, int col1, int pos1, int row2, int col2, int pos2)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager, int row1, int col1, int pos1, int row2,
+        int col2, int pos2)
+    {
+        throw new System.NotImplementedException();
+    }
 }

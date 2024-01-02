@@ -5,7 +5,6 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 
@@ -13,7 +12,7 @@ public class HiddenBugStrategy : AbstractStrategy
 {
     public const string OfficialName = "Hidden BUG";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    private const int MaxNotInPatternCount = 10;
+    private const int MaxNotInPatternCount = 7;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
@@ -32,9 +31,9 @@ public class HiddenBugStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
+        /*strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
             ConstructRule.CellWeakLink, ConstructRule.CellStrongLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
+        var graph = strategyManager.GraphManager.SimpleLinkGraph;*/
         var positions = BasicPositions(strategyManager);
         var sample = GetSample(positions);
         CellPossibility[] notInPattern = new CellPossibility[MaxNotInPatternCount];
@@ -52,13 +51,13 @@ public class HiddenBugStrategy : AbstractStrategy
                         strategyManager.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
                         break;
                     default:
-                        foreach (var target in graph.GetLinks(notInPattern[0]))
+                        /*foreach (var target in graph.GetLinks(notInPattern[0]))
                         {
                             bool ok = true;
 
                             for (int i = 1; i < count; i++)
                             {
-                                if (!graph.HasLinkTo(notInPattern[i], target))
+                                if (!Cells.AreLinked(notInPattern[i], target))
                                 {
                                     ok = false;
                                     break;
@@ -66,6 +65,11 @@ public class HiddenBugStrategy : AbstractStrategy
                             }
 
                             if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
+                        }*/
+
+                        foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyManager, notInPattern, count))
+                        {
+                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
                         }
 
                         break;
@@ -143,10 +147,9 @@ public class HiddenBugStrategy : AbstractStrategy
                 
                 foreach (var p in poss)
                 {
-                    list[count++] = new CellPossibility(row, col, p);
                     if (count == MaxNotInPatternCount) return count + 1;
+                    list[count++] = new CellPossibility(row, col, p);
                 }
-                
             }
         }
 

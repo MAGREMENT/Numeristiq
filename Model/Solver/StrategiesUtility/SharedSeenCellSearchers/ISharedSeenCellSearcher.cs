@@ -17,6 +17,11 @@ public interface ISharedSeenCellSearcher
     IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2,
         int col2);
 
+    IEnumerable<CellPossibility> SharedSeenPossibilities(int row1, int col1, int pos1, int row2, int col2, int pos2);
+
+    IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager, int row1, int col1,
+        int pos1, int row2, int col2, int pos2);
+
     static IEnumerable<Cell> DefaultSharedSeenEmptyCells(ISharedSeenCellSearcher searcher,
         IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
     {
