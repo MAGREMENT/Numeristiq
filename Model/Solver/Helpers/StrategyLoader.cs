@@ -39,7 +39,7 @@ public class StrategyLoader : IStrategyLoader
         {GridFormationStrategy.OfficialNameForType3, new GridFormationStrategy(3)},
         {GridFormationStrategy.OfficialNameForType4, new GridFormationStrategy(4)},
         {SimpleColoringStrategy.OfficialName, new SimpleColoringStrategy()},
-        {BUGStrategy.OfficialName, new BUGStrategy()},
+        {BUGStrategyRewrite.OfficialName, new BUGStrategyRewrite(5)},
         {ReverseBUGStrategy.OfficialName, new ReverseBUGStrategy()},
         {JuniorExocetStrategy.OfficialName, new JuniorExocetStrategy()},
         {FinnedXWingStrategy.OfficialName, new FinnedXWingStrategy()},

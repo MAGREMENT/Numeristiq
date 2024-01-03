@@ -256,6 +256,38 @@ public static class Cells
 
         return result;
     }
+
+    public static IEnumerable<CellPossibility> DefaultStrongLinks(IStrategyManager strategyManager, CellPossibility cp)
+    {
+        var poss = strategyManager.PossibilitiesAt(cp.Row, cp.Column);
+        if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.First(cp.Possibility));
+
+        var rPos = strategyManager.RowPositionsAt(cp.Row, cp.Possibility);
+        if (rPos.Count == 2) yield return new CellPossibility(cp.Row, rPos.First(cp.Column), cp.Possibility);
+
+        var cPos = strategyManager.ColumnPositionsAt(cp.Column, cp.Possibility);
+        if (cPos.Count == 2) yield return new CellPossibility(cPos.First(cp.Row), cp.Column, cp.Possibility);
+
+        var mPos = strategyManager.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility);
+        if (mPos.Count == 2) yield return new CellPossibility(mPos.First(cp.ToCell()), cp.Possibility);
+    }
+
+    public static bool AreStronglyLinked(IStrategyManager strategyManager, CellPossibility cp1, CellPossibility cp2)
+    {
+        if (cp1.Row == cp2.Row && cp1.Column == cp2.Column)
+            return strategyManager.PossibilitiesAt(cp1.Row, cp2.Column).Count == 2;
+
+        if (cp1.Possibility == cp2.Possibility)
+        {
+            return (cp1.Row == cp2.Row && strategyManager.RowPositionsAt(cp1.Row, cp1.Possibility).Count == 2) ||
+                   (cp1.Column == cp2.Column &&
+                    strategyManager.ColumnPositionsAt(cp1.Column, cp1.Possibility).Count == 2) ||
+                   (cp1.Row / 3 == cp2.Row / 3 && cp1.Column / 3 == cp2.Column / 3 && strategyManager
+                       .MiniGridPositionsAt(cp1.Row / 3, cp1.Column / 3, cp1.Possibility).Count == 2);
+        }
+
+        return false;
+    }
     
     public static IEnumerable<Cell[]> DeadlyPatternRoofs(Cell[] floor)
     {

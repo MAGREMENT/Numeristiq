@@ -8,7 +8,6 @@ using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.PossibilityPosition;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 
@@ -294,8 +293,6 @@ public class FireworksStrategy : AbstractStrategy
         }
 
         //L-Wing
-        manager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
-        var graph = manager.GraphManager.SimpleLinkGraph;
         foreach (var df in fireworksList)
         {
             foreach (var possibility in manager.PossibilitiesAt(df.ColumnWing))
@@ -303,7 +300,7 @@ public class FireworksStrategy : AbstractStrategy
                 if (df.Possibilities.Peek(possibility)) continue;
 
                 var current = new CellPossibility(df.ColumnWing, possibility);
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
+                foreach (var friend in Cells.DefaultStrongLinks(manager, current))
                 {
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
@@ -320,7 +317,7 @@ public class FireworksStrategy : AbstractStrategy
                 if (df.Possibilities.Peek(possibility)) continue;
 
                 var current = new CellPossibility(df.RowWing, possibility);
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
+                foreach (var friend in Cells.DefaultStrongLinks(manager, current))
                 {
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 

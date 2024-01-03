@@ -117,7 +117,9 @@
     "Name": "BUG",
     "Used": true,
     "Behavior": 0,
-    "Args": {}
+    "Args": {
+      "Max additional candidates": "5"
+    }
   },
   {
     "Name": "Hidden BUG",

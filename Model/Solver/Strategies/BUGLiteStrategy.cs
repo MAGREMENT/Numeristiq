@@ -6,11 +6,10 @@ using Model.Solver.Helpers.Changes;
 using Model.Solver.Position;
 using Model.Solver.Possibility;
 using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies;
 
-public class BUGLiteStrategy : AbstractStrategy
+public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (problem with structureDone)
 {
     public const string OfficialName = "BUG-Lite";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
@@ -27,7 +26,6 @@ public class BUGLiteStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
         var structuresDone = new HashSet<GridPositions>();
         
         for (int row = 0; row < 9; row++)
@@ -197,7 +195,7 @@ public class BUGLiteStrategy : AbstractStrategy
                 {
                     var cp1 = new CellPossibility(cellsNotInStructure[0], asArray[i]);
                     var cp2 = new CellPossibility(cellsNotInStructure[1], asArray[i]);
-                    if (strategyManager.GraphManager.SimpleLinkGraph.HasLinkTo(cp1, cp2, LinkStrength.Strong))
+                    if (Cells.AreStronglyLinked(strategyManager, cp1, cp2))
                     {
                         var other = asArray[(i + 1) % 2];
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);

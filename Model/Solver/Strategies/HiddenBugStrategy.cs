@@ -31,9 +31,6 @@ public class HiddenBugStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        /*strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
-            ConstructRule.CellWeakLink, ConstructRule.CellStrongLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;*/
         var positions = BasicPositions(strategyManager);
         var sample = GetSample(positions);
         CellPossibility[] notInPattern = new CellPossibility[MaxNotInPatternCount];
@@ -51,22 +48,6 @@ public class HiddenBugStrategy : AbstractStrategy
                         strategyManager.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
                         break;
                     default:
-                        /*foreach (var target in graph.GetLinks(notInPattern[0]))
-                        {
-                            bool ok = true;
-
-                            for (int i = 1; i < count; i++)
-                            {
-                                if (!Cells.AreLinked(notInPattern[i], target))
-                                {
-                                    ok = false;
-                                    break;
-                                }
-                            }
-
-                            if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
-                        }*/
-
                         foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyManager, notInPattern, count))
                         {
                             strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
@@ -75,10 +56,9 @@ public class HiddenBugStrategy : AbstractStrategy
                         break;
                 }
 
-                if (!strategyManager.ChangeBuffer.NotEmpty() || !strategyManager.ChangeBuffer.Commit(this,
-                        new HiddenBUGReportBuilder(combination, positions))) continue;
-                if(OnCommitBehavior == OnCommitBehavior.Return) return;
-
+                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        new HiddenBUGReportBuilder(combination, positions)) &&
+                            OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
     }

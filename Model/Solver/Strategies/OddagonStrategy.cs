@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Global.Enums;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.StrategiesUtility.Graphs;
+using Model.Solver.StrategiesUtility;
 using Model.Solver.StrategiesUtility.Oddagons;
 
 namespace Model.Solver.Strategies;
@@ -19,29 +19,14 @@ public class OddagonStrategy : AbstractStrategy
     
     public override void Apply(IStrategyManager strategyManager)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
-            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
-        
         foreach (var ao in strategyManager.PreComputer.AlmostOddagons())
         {
             if (ao.Guardians.Length == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
             else
             {
-                foreach (var link in graph.GetLinks(ao.Guardians[0]))
+                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyManager, ao.Guardians))
                 {
-                    bool ok = true;
-
-                    for (int i = 0; i < ao.Guardians.Length; i++)
-                    {
-                        if (!graph.HasLinkTo(link, ao.Guardians[i]))
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-                    
-                    if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(link);
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }
             }
 
