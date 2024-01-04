@@ -160,16 +160,19 @@
     "Args": {}
   },
   {
-    "Name": "Thor\u0027s Hammer",
+    "Name": "Junior Exocet",
     "Used": true,
     "Behavior": 1,
     "Args": {}
   },
   {
-    "Name": "Junior Exocet",
+    "Name": "Non-Colorable Pattern",
     "Used": true,
-    "Behavior": 1,
-    "Args": {}
+    "Behavior": 0,
+    "Args": {
+      "Possibility count": "3,3",
+      "Max out of pattern cells": "3"
+    }
   },
   {
     "Name": "Skyscraper",

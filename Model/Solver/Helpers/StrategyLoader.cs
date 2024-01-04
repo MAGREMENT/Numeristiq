@@ -39,7 +39,7 @@ public class StrategyLoader : IStrategyLoader
         {GridFormationStrategy.OfficialNameForType3, new GridFormationStrategy(3)},
         {GridFormationStrategy.OfficialNameForType4, new GridFormationStrategy(4)},
         {SimpleColoringStrategy.OfficialName, new SimpleColoringStrategy()},
-        {BUGStrategyRewrite.OfficialName, new BUGStrategyRewrite(5)},
+        {BUGStrategy.OfficialName, new BUGStrategy(5)},
         {ReverseBUGStrategy.OfficialName, new ReverseBUGStrategy()},
         {JuniorExocetStrategy.OfficialName, new JuniorExocetStrategy()},
         {FinnedXWingStrategy.OfficialName, new FinnedXWingStrategy()},
@@ -108,7 +108,8 @@ public class StrategyLoader : IStrategyLoader
         {HiddenBugStrategy.OfficialName, new HiddenBugStrategy(2, 4)},
         {MiniUniquenessStrategy.OfficialName, new MiniUniquenessStrategy()},
         {UniquenessClueCoverStrategy.OfficialName, new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
-        {ExtendedUniqueRectanglesStrategy.OfficialName, new ExtendedUniqueRectanglesStrategy()}
+        {ExtendedUniqueRectanglesStrategy.OfficialName, new ExtendedUniqueRectanglesStrategy()},
+        {NonColorablePatternStrategy.OfficialName, new NonColorablePatternStrategy(3, 3, 3)}
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();

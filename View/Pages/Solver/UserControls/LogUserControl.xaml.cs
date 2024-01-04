@@ -47,11 +47,13 @@ public partial class LogUserControl
 
     public void CurrentlyFocused()
     {
+        Main.BorderBrush = Brushes.Orange;
         Highlights.Visibility = Visibility.Visible;
     }
 
     public void NotFocusedAnymore()
     {
+        Main.BorderBrush = Brushes.White;
         Highlights.Visibility = Visibility.Hidden;
     }
 

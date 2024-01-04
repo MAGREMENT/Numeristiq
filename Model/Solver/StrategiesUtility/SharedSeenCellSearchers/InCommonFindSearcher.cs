@@ -264,8 +264,8 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             }
             else if(Cells.ShareAUnit(row1, col1, row2, col2))
             {
-                yield return new CellPossibility(row1, col1, pos2);
-                yield return new CellPossibility(row2, col2, pos1);
+                if(strategyManager.PossibilitiesAt(row1, col1).Peek(pos2)) yield return new CellPossibility(row1, col1, pos2);
+                if(strategyManager.PossibilitiesAt(row2, col2).Peek(pos1)) yield return new CellPossibility(row2, col2, pos1);
             }
         }
     }

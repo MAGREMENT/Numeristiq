@@ -5,13 +5,22 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Orientation="Vertical">
-        <StackPanel Width="320" Height="30" Orientation="Horizontal"  Margin="0, 0, 0, 10">
-            <Button Width="140" Height="30" Margin="10, 0" Click="ShowStart">Show Start</Button>
-            <Button Width="140" Height="30" Margin="10, 0" Click="ShowCurrent">Show Current</Button>
-        </StackPanel>
+    <StackPanel Orientation="Horizontal">
         <ScrollViewer Height="470" x:Name="Scroll" Background="White">
             <StackPanel Width="300" MinHeight="470" x:Name="List"/>
         </ScrollViewer>
+        <StackPanel Height="470" Width="30">
+            <StackPanel.LayoutTransform>
+                <RotateTransform Angle="180"></RotateTransform>
+            </StackPanel.LayoutTransform>
+            <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="20" Height="20" >
+                <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
+            </Canvas>
+            <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="20" Height="20" >
+                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2" Margin="0, 0, 0, 4"/>
+                <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
+            </Canvas>
+        </StackPanel>
     </StackPanel>
 </UserControl>

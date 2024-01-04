@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Global;
 using Global.Enums;
-using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Highlighting;
+using Model.Solver.Position;
+using Model.Solver.StrategiesUtility;
 
 namespace Model.Solver.Strategies;
 
@@ -14,65 +14,79 @@ public class BUGStrategy : AbstractStrategy
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    public BUGStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    private int _maxAdditionalCandidates;
+    
+    public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
+        _maxAdditionalCandidates = maxAdditionalCandidates;
         UniquenessDependency = UniquenessDependency.FullyDependent;
+        ArgumentsList.Add(new IntStrategyArgument("Max additional candidates", () => _maxAdditionalCandidates,
+            i => _maxAdditionalCandidates = i, new SliderViewInterface(1, 5, 1)));
     }
-
+    
     public override void Apply(IStrategyManager strategyManager)
     {
-        var triple = OnlyDoublesAndOneTriple(strategyManager);
-        if (triple.Row == -1) return;
-        
-        foreach (var possibility in strategyManager.PossibilitiesAt(triple.Row, triple.Column))
+        List<CellPossibility> additionalCandidates = new(_maxAdditionalCandidates);
+        for (int number = 1; number <= 9; number++)
         {
-            if (strategyManager.ColumnPositionsAt(triple.Column, possibility).Count != 3 ||
-                strategyManager.RowPositionsAt(triple.Row, possibility).Count != 3 ||
-                strategyManager.MiniGridPositionsAt(triple.Row / 3, triple.Column / 3, possibility).Count != 3) 
-                continue;
-            
-            strategyManager.ChangeBuffer.ProposeSolutionAddition(possibility, triple.Row, triple.Column);
-            break;
-        }
+            var pos = strategyManager.PositionsFor(number);
+            if (pos.Count == 0) continue;
 
-        strategyManager.ChangeBuffer.Commit(this, new BUGReportBuilder(triple));
-    }
-
-    private Cell OnlyDoublesAndOneTriple(IStrategyManager strategyManager)
-    {
-        var triple = new Cell(-1, -1);
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
+            var copy = pos.Copy();
+            for (int i = 0; i < 9; i++)
             {
-                if (strategyManager.Sudoku[row, col] == 0 && strategyManager.PossibilitiesAt(row, col).Count != 2)
+                foreach (var method in UnitMethods.All)
                 {
-                    if (strategyManager.PossibilitiesAt(row, col).Count != 3 || triple.Row != -1)
-                        return new Cell(-1, -1);
-
-                    triple = new Cell(row, col);
+                    if (method.Count(pos, i) == 2) method.Void(copy, i);
                 }
+            }
+
+            if (copy.Count + additionalCandidates.Count > _maxAdditionalCandidates) return;
+            foreach (var cell in copy)
+            {
+                additionalCandidates.Add(new CellPossibility(cell, number));
             }
         }
 
-        return triple;
+        switch (additionalCandidates.Count)
+        {
+            case 0 : return;
+            case 1 : 
+                strategyManager.ChangeBuffer.ProposeSolutionAddition(additionalCandidates[0]);
+                break;
+            default:
+                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyManager, additionalCandidates))
+                {
+                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                }
+
+                break;
+        }
+
+        
+        if(strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Commit(this,
+            new BUGStrategyReportBuilder(additionalCandidates));
     }
 }
 
-public class BUGReportBuilder : IChangeReportBuilder
+public class BUGStrategyReportBuilder : IChangeReportBuilder
 {
-    private readonly Cell _triple;
+    private readonly List<CellPossibility> _additionalCandidates;
 
-    public BUGReportBuilder(Cell triple)
+    public BUGStrategyReportBuilder(List<CellPossibility> additionalCandidates)
     {
-        _triple = triple;
+        _additionalCandidates = additionalCandidates;
     }
-    
+
     public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
-            lighter.HighlightCell(_triple.Row, _triple.Column, ChangeColoration.CauseOnOne);
+            foreach (var cp in _additionalCandidates)
+            {
+                lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
+            }
+
             IChangeReportBuilder.HighlightChanges(lighter, changes);
         });
     }

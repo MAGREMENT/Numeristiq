@@ -5,24 +5,26 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Width="300" Orientation="Vertical" x:Name="Main">
-        <StackPanel Width="300" Orientation="Horizontal">
-            <TextBlock x:Name="Number" FontSize="22" FontWeight="Heavy" Margin="0, 0, 5, 0"/>
-            <TextBlock x:Name="Title" FontSize="22" FontWeight="Heavy" TextWrapping="Wrap"/>
-        </StackPanel>
-        <TextBlock x:Name="Text" FontSize="14" Width="300" TextWrapping="Wrap"/>
-        <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0, 0, 0, 5">
-            <StackPanel Orientation="Horizontal" Margin="0, 0, 10, 0">
-                <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeBefore" Checked="ShowStateBefore"
-                             VerticalContentAlignment="Center">Before</RadioButton>
-                <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeAfter" Checked="ShowStateAfter"
-                             VerticalContentAlignment="Center">After</RadioButton>
+    <Border x:Name="Main" Width="300" BorderBrush="White" BorderThickness="2, 0, 0, 0" Padding="5, 0, 0, 0">
+        <StackPanel Orientation="Vertical">
+            <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
+                <TextBlock x:Name="Number" FontSize="22" FontWeight="Heavy" Margin="0, 0, 5, 0"/>
+                <TextBlock x:Name="Title" FontSize="22" FontWeight="Heavy" TextWrapping="Wrap"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal">
-                <Button x:Name="LeftArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" Click="ShiftLeft" FontSize="20" Margin="0, 0, 5, 0"></Button>
-                <TextBlock x:Name="HighlightsNumber" FontSize="20"></TextBlock>
-                <Button x:Name="RightArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="ShiftRight" FontSize="20" Margin="5, 0, 0, 0"></Button>
+            <TextBlock x:Name="Text" FontSize="14" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+            <StackPanel x:Name="Highlights" Visibility="Hidden" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0, 0, 0, 5">
+                <StackPanel Orientation="Horizontal" Margin="0, 0, 10, 0">
+                    <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeBefore" Checked="ShowStateBefore"
+                                 VerticalContentAlignment="Center">Before</RadioButton>
+                    <RadioButton Margin="0, 0, 5, 0" FontSize="14" x:Name="TypeAfter" Checked="ShowStateAfter"
+                                 VerticalContentAlignment="Center">After</RadioButton>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="LeftArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72B;" Click="ShiftLeft" FontSize="20" Margin="0, 0, 5, 0"></Button>
+                    <TextBlock x:Name="HighlightsNumber" FontSize="20"></TextBlock>
+                    <Button x:Name="RightArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="ShiftRight" FontSize="20" Margin="5, 0, 0, 0"></Button>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
-    </StackPanel>
+        </StackPanel>  
+    </Border>
 </UserControl>

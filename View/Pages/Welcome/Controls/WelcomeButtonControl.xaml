@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border BorderBrush="White" BorderThickness="1, 1, 1, 1" Padding="5" x:Name="Border" Background="White">
+    <Border BorderBrush="White" BorderThickness="1" Padding="5" x:Name="Border" Background="White">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="128"></ColumnDefinition>

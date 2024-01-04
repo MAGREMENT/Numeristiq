@@ -30,7 +30,7 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
         if(index == Count - 1) _array[index] = default!;
         else
         {
-            Array.Copy(_array, index + 1, _array, index, Count - index + 1);
+            Array.Copy(_array, index + 1, _array, index, Count - index - 1);
         }
 
         Count--;
