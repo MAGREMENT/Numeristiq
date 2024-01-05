@@ -2,11 +2,12 @@
 using System.Windows.Media;
 using Global.Enums;
 using Presenter.Translators;
+using View.Themes;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
 
-public partial class LogUserControl
+public partial class LogUserControl : IThemeable
 {
     public delegate void OnStateShownChange(StateShown ss);
     public event OnStateShownChange? StateShownChanged;
@@ -85,5 +86,10 @@ public partial class LogUserControl
     private void ShiftRight(object sender, RoutedEventArgs e)
     {
         HighlightShifted?.Invoke(1);
+    }
+
+    public void ApplyTheme(Theme theme)
+    {
+        
     }
 }

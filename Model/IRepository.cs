@@ -37,6 +37,7 @@ public class RepositoryInitializationException : Exception
 }
 
 public record StrategyDAO(string Name, bool Used, OnCommitBehavior Behavior, Dictionary<string, string> Args);
+
 public record SettingsDAO(StateShown StateShown, SudokuTranslationType TranslationType,
     int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ChangeType ActionOnCellChange,
     bool TransformSoloPossibilityIntoGiven, CellColor GivenColor, CellColor SolvingColor,
@@ -44,4 +45,4 @@ public record SettingsDAO(StateShown StateShown, SudokuTranslationType Translati
     int StartAngle, RotationDirection RotationDirection, int Theme);
     
 public record ThemeDAO(RGB Background1, RGB Background2, RGB Background3, RGB Primary1, RGB Primary2,
-    RGB Secondary1, RGB Secondary2, RGB Accent, RGB Text, IconColor IconColor);
+    RGB Secondary1, RGB Secondary2, RGB Accent, RGB Border, RGB Text, IconColor IconColor);

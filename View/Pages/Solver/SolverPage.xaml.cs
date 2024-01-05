@@ -43,6 +43,7 @@ public partial class SolverPage : ISolverView
         Solver.CurrentCellChangeAsked += _presenter.ChangeCurrentCell;
         Solver.RemoveSolutionFromCurrentCellAsked += _presenter.RemoveCurrentCell;
         LogList.LogSelected += _presenter.SelectLog;
+        LogList.LogShifted += _presenter.ShiftLog;
         LogList.ShowStartStateAsked += _presenter.ShowStartState;
         LogList.ShowCurrentStateAsked += _presenter.ShowCurrentState;
         LogList.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
@@ -279,10 +280,10 @@ public partial class SolverPage : ISolverView
 
     protected override void InternalApplyTheme(Theme theme)
     {
-        
+        LogList.ApplyTheme(theme);
     }
 
-    private void AnalyseKeyDown(object sender, KeyEventArgs e)
+    private void AnalyseKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.KeyboardDevice.Modifiers != ModifierKeys.Control) return;
 
@@ -301,9 +302,9 @@ public partial class SolverPage : ISolverView
         }
     }
 
-    private void TakeScreenShot(object sender, RoutedEventArgs e)
+    private void TakeScreenShot(object? sender, RoutedEventArgs e)
     {
-        SaveFileDialog dialog = new SaveFileDialog()
+        SaveFileDialog dialog = new SaveFileDialog
         {
             AddExtension = true,
             DefaultExt = "png",

@@ -6,20 +6,32 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <ScrollViewer Height="470" x:Name="Scroll" Background="White">
+        <ScrollViewer Height="470" x:Name="Scroll">
             <StackPanel Width="300" MinHeight="470" x:Name="List"/>
         </ScrollViewer>
-        <StackPanel Height="470" Width="30">
+        <StackPanel Height="470" Width="30" x:Name="ButtonPanel">
             <StackPanel.LayoutTransform>
-                <RotateTransform Angle="180"></RotateTransform>
+                <RotateTransform Angle="180"/>
             </StackPanel.LayoutTransform>
-            <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="20" Height="20" >
+            <Canvas HorizontalAlignment="Center" Width="20" Height="30" Margin="0, 5, 0, 0" MouseLeftButtonDown="ShowCurrent">
+                <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="26" Y2="14" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="14" Y2="26" Stroke="Black" StrokeThickness="2"/>
+            </Canvas>
+            <Canvas HorizontalAlignment="Center" Width="20" Height="20" MouseLeftButtonDown="ShiftDown">
                 <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
                 <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
             </Canvas>
-            <Canvas HorizontalAlignment="Center" VerticalAlignment="Bottom" Width="20" Height="20" >
-                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2" Margin="0, 0, 0, 4"/>
+            <Canvas HorizontalAlignment="Center" Width="20" Height="20" MouseLeftButtonDown="ShiftUp">
+                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
                 <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
+            </Canvas>
+            <Canvas HorizontalAlignment="Center" Width="20" Height="30" MouseLeftButtonDown="ShowStart">
+                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="14" Y2="26" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="26" Y2="14" Stroke="Black" StrokeThickness="2"/>
             </Canvas>
         </StackPanel>
     </StackPanel>

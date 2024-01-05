@@ -4,13 +4,12 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:userControls="clr-namespace:View.Pages.Solver.UserControls"
-      xmlns:utils="clr-namespace:View.Utility"
       xmlns:pages="clr-namespace:View.Pages"
       mc:Ignorable="d"
       Title="SolverPage"
       KeyDown="AnalyseKeyDown">
     <StackPanel Orientation="Vertical">
-        <Menu Height="25">
+        <Menu Height="25" Background="{DynamicResource Background3}">
             <MenuItem FontFamily="Segoe MDL2 Assets" Header="&#xE72B;" FontSize="20" Click="GoBack"/>
             <MenuItem Header="File" FontSize="15">
                 <MenuItem FontSize="12"  Header="Settings" Click="ShowSettingsWindow"></MenuItem>
@@ -22,47 +21,47 @@
             </MenuItem>
         </Menu>
         
-        <StackPanel Orientation="Horizontal" Background="White" Margin="10">
-            <StackPanel Orientation="Vertical">
-                <userControls:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
-                <TextBox Width="500" FontSize="20" VerticalContentAlignment="Center" Height="30" Margin="10" TextChanged="NewSudoku"
-                     HorizontalAlignment="Center" x:Name="SudokuStringBox"/>
-                <Grid HorizontalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="40"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="210"/>
-                        <ColumnDefinition Width="210"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Row="0" Grid.Column="0" Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"
-                            Margin="0, 0, 10, 10" x:Name="SolveButton">Solve</Button>
-                    <Button Grid.Row="0" Grid.Column="1" Width="200" Height="30" Click="Advance" HorizontalAlignment="Center"
-                            Margin="10, 0, 0, 10" x:Name="AdvanceButton">Advance</Button>
-                    <Button Grid.Row="1" Grid.Column="0" Width="200" Height="30" Click="ClearSudoku" HorizontalAlignment="Center"
-                            Margin="0, 0, 10, 10" x:Name="ClearButton">Clear</Button>
-                    <Button Grid.Row="1" Grid.Column="1" Width="200" Height="30" Click="ChooseStep" HorizontalAlignment="Center"
-                            Margin="10, 0, 0, 10" x:Name="ChooseButton">Choose Step</Button>
-                </Grid>
-            </StackPanel>
+        <StackPanel Orientation="Horizontal" Background="White">
+            
+            <Border BorderBrush="{DynamicResource Border}" BorderThickness="0, 0, 1, 0" Padding="5">
+                <StackPanel Orientation="Vertical">
+                    <userControls:SolverUserControl HorizontalAlignment="Center" x:Name="Solver"/>
+                    <TextBox Width="500" FontSize="20" VerticalContentAlignment="Center" Height="30" Margin="10" TextChanged="NewSudoku"
+                             HorizontalAlignment="Center" x:Name="SudokuStringBox"/>
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="40"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="210"/>
+                            <ColumnDefinition Width="210"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Row="0" Grid.Column="0" Width="200" Height="30" Click="SolveSudoku" HorizontalAlignment="Center"
+                                Margin="0, 0, 10, 10" x:Name="SolveButton">Solve</Button>
+                        <Button Grid.Row="0" Grid.Column="1" Width="200" Height="30" Click="Advance" HorizontalAlignment="Center"
+                                Margin="10, 0, 0, 10" x:Name="AdvanceButton">Advance</Button>
+                        <Button Grid.Row="1" Grid.Column="0" Width="200" Height="30" Click="ClearSudoku" HorizontalAlignment="Center"
+                                Margin="0, 0, 10, 10" x:Name="ClearButton">Clear</Button>
+                        <Button Grid.Row="1" Grid.Column="1" Width="200" Height="30" Click="ChooseStep" HorizontalAlignment="Center"
+                                Margin="10, 0, 0, 10" x:Name="ChooseButton">Choose Step</Button>
+                    </Grid>
+                </StackPanel>
+            </Border>
         
-            <StackPanel Margin="10" Orientation="Vertical">
-                <userControls:LogListUserControl x:Name="LogList"/>
-                <Border BorderBrush="DarkGray" BorderThickness="1" Margin="0">
-                    <StackPanel Orientation="Vertical">
-                        <Border BorderBrush="DarkGray" BorderThickness="0, 0, 0, 1">
-                            <TextBlock TextAlignment="Center" HorizontalAlignment="Center" FontSize="20">Text Output</TextBlock>
-                        </Border>
-                        <TextBlock Width="320" Height="160" Background="White" x:Name="ExplanationBox"
-                                   TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="12"/>
-                    </StackPanel>
-                </Border>
-            </StackPanel>
+            <Border BorderBrush="{DynamicResource Border}" BorderThickness="0, 0, 1, 0">
+                <StackPanel Orientation="Vertical">
+                    <userControls:LogListUserControl x:Name="LogList"/>
+                    <Border BorderBrush="{DynamicResource Border}" BorderThickness="0, 1, 0, 0">
+                        <TextBlock Width="320" Height="160" Background="White" x:Name="ExplanationBox" TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="12"/>
+                    </Border>
+                </StackPanel>
+            </Border>
+            
         
-            <StackPanel Margin="10">
+            <Border>
                 <userControls:StrategyListUserControl x:Name="StrategyList"/>
-            </StackPanel>
+            </Border>
         
         </StackPanel>
     </StackPanel>

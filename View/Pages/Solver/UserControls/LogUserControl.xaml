@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border x:Name="Main" Width="300" BorderBrush="White" BorderThickness="2, 0, 0, 0" Padding="5, 0, 0, 0">
+    <Border x:Name="Main" Width="300" BorderBrush="White" BorderThickness="3, 0, 0, 0" Padding="5, 0, 0, 0">
         <StackPanel Orientation="Vertical">
             <StackPanel HorizontalAlignment="Stretch" Orientation="Horizontal">
                 <TextBlock x:Name="Number" FontSize="22" FontWeight="Heavy" Margin="0, 0, 5, 0"/>

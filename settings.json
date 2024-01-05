@@ -11,7 +11,7 @@
   "SidePriority": 1,
   "ShowSameCellLinks": false,
   "MultiColorHighlighting": true,
-  "StartAngle": 45,
-  "RotationDirection": 0,
+  "StartAngle": 110,
+  "RotationDirection": 1,
   "Theme": 0
 }

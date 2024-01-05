@@ -98,15 +98,21 @@ public class SolverPresenter : IStepChooserCallback
     
     public void SelectLog(int number)
     {
-        var logs = _solver.Logs;
-        if (number < 0 || number >= logs.Count) return;
+        if (number < 0 || number >= _solver.Logs.Count) return;
 
         _currentlySelectedLog = number;
-        var log = logs[number];
+        var log = _solver.Logs[number];
         _view.FocusLog(number);
         _view.ShowExplanation(log.Explanation);
         ChangeShownState(Settings.StateShown == StateShown.Before ? log.StateBefore : log.StateAfter);
         HighlightLog(log);
+    }
+
+    public void ShiftLog(int delta)
+    {
+        if (_currentlySelectedLog == -1) return;
+
+        SelectLog(_currentlySelectedLog + delta);
     }
 
     public void ShiftLogHighlight(int number, int shift)

@@ -19,10 +19,12 @@ public class HardCodedThemeRepository : IRepository<ThemeDAO[]>
         {
             new(RGB.FromHex(0xFFFFFF), RGB.FromHex(0xF8F8F8), RGB.FromHex(0xF0F0F0), 
                 RGB.FromHex(0xFC880B), RGB.FromHex(0xEE810C), RGB.FromHex(0xF52A0A),
-                RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2), RGB.FromHex(0x000000), IconColor.Black),
+                RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2), RGB.FromHex(0x858585),
+                RGB.FromHex(0x000000), IconColor.Black),
             new (RGB.FromHex(0x282828), RGB.FromHex(0x2F2F2F), RGB.FromHex(0x373737), 
                 RGB.FromHex(0xFC880B), RGB.FromHex(0xEE810C), RGB.FromHex(0xF52A0A),
-                RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2), RGB.FromHex(0xFFFFFF), IconColor.White)
+                RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2), RGB.FromHex(0x858585),
+                RGB.FromHex(0xFFFFFF), IconColor.White)
         };
     }
 

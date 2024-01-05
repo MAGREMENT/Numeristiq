@@ -47,7 +47,6 @@ public partial class WelcomePage
 
     protected override void InternalApplyTheme(Theme theme)
     {
-        Background = theme.Background1;
         foreach (var b in Buttons.Children)
         {
             (b as IThemeable)?.ApplyTheme(theme);

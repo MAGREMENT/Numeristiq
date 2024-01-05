@@ -55,7 +55,7 @@ public partial class MultiChoiceOptionCanvas
 
     protected override void InternalRefresh()
     {
-        ((RadioButton)Panel.Children[_getter()]).IsChecked = true;
+        ((RadioButton)Panel.Children[_getter() + 1]).IsChecked = true;
     }
 
     private void TryChange(int i)

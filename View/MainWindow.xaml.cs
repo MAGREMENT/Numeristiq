@@ -8,6 +8,7 @@ using View.Pages.Solver;
 using View.Pages.StrategyManager;
 using View.Pages.Welcome;
 using View.Themes;
+using Application = System.Windows.Application;
 
 namespace View;
 
@@ -59,6 +60,7 @@ public partial class MainWindow : IPageHandler, IViewManager
     public void ApplyTheme(ViewTheme dao)
     {
         var theme = Theme.From(dao);
+        ((App)Application.Current).ChangeTheme(theme);
         foreach (var page in _pages)
         {
             page.ApplyTheme(theme);
