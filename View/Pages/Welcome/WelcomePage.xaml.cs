@@ -17,7 +17,6 @@ public partial class WelcomePage
         _pageHandler = pageHandler;
 
         _settingsWindow = SettingsWindow.From(settings);
-        AddManagedHelperWindow(_settingsWindow);
     }
 
     private void GoToSolver(object sender, RoutedEventArgs e)
@@ -44,18 +43,7 @@ public partial class WelcomePage
     {
         
     }
-
-    protected override void InternalApplyTheme(Theme theme)
-    {
-        foreach (var b in Buttons.Children)
-        {
-            (b as IThemeable)?.ApplyTheme(theme);
-        }
-
-        SettingsButton.ApplyTheme(theme);
-        Logo.ApplyTheme(theme);
-    }
-
+    
     private void ShowSettings(object? sender, RoutedEventArgs args)
     {
         _settingsWindow.Refresh();

@@ -7,5 +7,6 @@
              xmlns:canvas="clr-namespace:View.Canvas"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <CheckBox Checked="OnChecked" Unchecked="OnUnchecked" x:Name="Box" VerticalContentAlignment="Center"></CheckBox> 
+    <CheckBox Checked="OnChecked" Unchecked="OnUnchecked" x:Name="Box" VerticalContentAlignment="Center"
+              Foreground="{DynamicResource Text}"></CheckBox> 
 </canvas:OptionCanvas>

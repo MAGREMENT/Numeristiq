@@ -7,7 +7,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Margin="0, 0, 5, 0" x:Name="Block" VerticalAlignment="Center"></TextBlock>
+        <TextBlock Margin="0, 0, 5, 0" x:Name="Block" VerticalAlignment="Center" Foreground="{DynamicResource Text}"/>
         <Slider Width="100" IsSnapToTickEnabled="True" x:Name="Slider" ValueChanged="OnValueChanged"
                 VerticalAlignment="Center"/>
         <TextBox Text="{Binding ElementName=Slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"

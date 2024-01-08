@@ -7,6 +7,9 @@ namespace View
     /// </summary>
     public partial class App
     {
+
+        public event ApplyTheme? ThemeChanged;
+        
         public App()
         {
             InitializeComponent();
@@ -26,6 +29,8 @@ namespace View
             r.Add("Accent", theme.Accent);
             r.Add("Border", theme.Border);
             r.Add("Text", theme.Text);
+
+            ThemeChanged?.Invoke(theme);
         }
     }
 }

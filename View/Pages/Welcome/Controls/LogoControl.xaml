@@ -6,7 +6,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Vertical">
-        <TextBlock FontWeight="SemiBold" x:Name="First">Sudoku</TextBlock>
-        <TextBlock FontWeight="SemiBold" x:Name="Second">Solver</TextBlock>
+        <TextBlock FontWeight="SemiBold" x:Name="First" Foreground="{DynamicResource Text}">Sudoku</TextBlock>
+        <TextBlock FontWeight="SemiBold" x:Name="Second" Foreground="{DynamicResource Text}">Solver</TextBlock>
     </StackPanel>
 </UserControl>

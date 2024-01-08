@@ -4,7 +4,7 @@ using View.Themes;
 
 namespace View.HelperWindows.Settings;
 
-public partial class SettingsPage : IThemeable
+public partial class SettingsPage
 {
     public string SettingTitle { get; }
 
@@ -31,15 +31,6 @@ public partial class SettingsPage : IThemeable
         foreach (OptionCanvas option in Panel.Children)
         {
             option.Refresh();
-        }
-    }
-
-    public void ApplyTheme(Theme theme)
-    {
-        Panel.Background = theme.Background1;
-        foreach (OptionCanvas option in Panel.Children)
-        {
-            option.ApplyTheme(theme);
         }
     }
 }

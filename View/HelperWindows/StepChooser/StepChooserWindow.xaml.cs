@@ -160,9 +160,4 @@ public partial class StepChooserWindow : IStepChooserView
     {
         _presenter?.ShiftHighlighting(n);
     }
-
-    public override void ApplyTheme(Theme theme)
-    {
-        
-    }
 }

@@ -13,22 +13,29 @@ public class BitSet
     {
         if (i < 0) return;
 
-        GrowIfNecessary(i);
-        CheckedSet(i);
+        var n = i / BitSize + 1;
+        if (n > _bits.Length)
+        {
+            var buffer = new ulong[n];
+            Array.Copy(_bits, 0, buffer, 0, _bits.Length);
+            _bits = buffer;
+        }
+        
+        _bits[i / BitSize] |= 1ul << (i % BitSize);
     }
 
     public void Unset(int i)
     {
         if (i < 0 || i > _bits.Length * BitSize) return;
 
-        CheckedUnset(i);
+        _bits[i / BitSize] &= ~(1ul << (i % BitSize));
     }
 
     public bool IsSet(int i)
     {
-        if (i < 0 || i > _bits.Length * BitSize) return false;
+        if (i < 0 || i >= _bits.Length * BitSize) return false;
 
-        return CheckedIsSet(i);
+        return ((_bits[i / BitSize] >> (i % BitSize)) & 1ul) > 0;
     }
 
     public void Clear()
@@ -38,7 +45,7 @@ public class BitSet
 
     public void Insert(int i)
     {
-        if (i < 0 || i > _bits.Length * BitSize) return;
+        if (i < 0 || i >= _bits.Length * BitSize) return;
 
         var n = i / BitSize;
         var buffer = 0ul;
@@ -52,7 +59,7 @@ public class BitSet
                 var x = _bits[j];
                 var y = x;
                 var l = i % BitSize;
-                var mask = GetMask(l);
+                var mask = ~(ulong.MaxValue << l);
 
                 x &= mask;
                 y = (y & ~mask) << 1;
@@ -65,11 +72,18 @@ public class BitSet
 
             buffer = bufferBuffer;
         }
+
+        if (buffer != 1) return;
+        
+        var array = new ulong[_bits.Length + 1];
+        Array.Copy(_bits, 0, array, 0, _bits.Length);
+        array[^1] = 1;
+        _bits = array;
     }
 
     public void Delete(int i)
     {
-        if (i < 0 || i > _bits.Length * BitSize) return;
+        if (i < 0 || i >= _bits.Length * BitSize) return;
 
         var n = i / BitSize;
         for (int j = 0; j < _bits.Length; j++)
@@ -81,7 +95,7 @@ public class BitSet
                 var x = _bits[j];
                 var y = x;
                 var l = i % BitSize;
-                var mask = GetMask(l);
+                var mask = ~(ulong.MaxValue << l);
 
                 x &= mask;
                 y = (y >> 1) & ~mask;
@@ -94,11 +108,6 @@ public class BitSet
             }
             
         }
-    }
-
-    private ulong GetMask(int to)
-    {
-        return ~(ulong.MaxValue << to);
     }
 
     public override string ToString()
@@ -114,33 +123,5 @@ public class BitSet
         }
         
         return builder.ToString();
-    }
-
-    //Private-----------------------------------------------------------------------------------------------------------
-
-    private void GrowIfNecessary(int i)
-    {
-        var n = i / BitSize + 1;
-        if (n > _bits.Length)
-        {
-            var buffer = new ulong[n];
-            Array.Copy(_bits, 0, buffer, 0, _bits.Length);
-            _bits = buffer;
-        }
-    }
-
-    private void CheckedSet(int i)
-    {
-        _bits[i / BitSize] |= 1ul << (i % BitSize);
-    }
-
-    private void CheckedUnset(int i)
-    {
-        _bits[i / BitSize] &= ~(1ul << (i % BitSize));
-    }
-
-    private bool CheckedIsSet(int i)
-    {
-        return ((_bits[i / BitSize] >> (i % BitSize)) & 1ul) > 0;
     }
 }

@@ -43,16 +43,6 @@ public partial class MultiChoiceOptionCanvas
         TextBlock.FontSize = size;
     }
 
-    public override void ApplyTheme(Theme theme)
-    {
-        TextBlock.Foreground = theme.Text;
-        foreach (var radioButton in Panel.Children)
-        {
-            if (radioButton is not RadioButton rb) continue;
-            rb.Foreground = theme.Text;
-        }
-    }
-
     protected override void InternalRefresh()
     {
         ((RadioButton)Panel.Children[_getter() + 1]).IsChecked = true;

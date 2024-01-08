@@ -53,7 +53,8 @@
                 <StackPanel Orientation="Vertical">
                     <userControls:LogListUserControl x:Name="LogList"/>
                     <Border BorderBrush="{DynamicResource Border}" BorderThickness="0, 1, 0, 0">
-                        <TextBlock Width="320" Height="160" Background="White" x:Name="ExplanationBox" TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="12"/>
+                        <TextBlock Background="{DynamicResource Background2}"
+                                   x:Name="ExplanationBox" TextWrapping="Wrap" HorizontalAlignment="Center" FontSize="12"/>
                     </Border>
                 </StackPanel>
             </Border>

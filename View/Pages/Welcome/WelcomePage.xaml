@@ -20,9 +20,9 @@
         
         <Grid Margin="20" x:Name="Buttons" VerticalAlignment="Center">
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
             </Grid.RowDefinitions>
         
             <controls:WelcomeButtonControl Grid.Row="0" Click="GoToSolver" TitleText="Solve" 

@@ -7,7 +7,7 @@ using View.Utility;
 
 namespace View.Pages.Solver.UserControls;
 
-public partial class LogUserControl : IThemeable
+public partial class LogUserControl
 {
     public delegate void OnStateShownChange(StateShown ss);
     public event OnStateShownChange? StateShownChanged;
@@ -86,10 +86,5 @@ public partial class LogUserControl : IThemeable
     private void ShiftRight(object sender, RoutedEventArgs e)
     {
         HighlightShifted?.Invoke(1);
-    }
-
-    public void ApplyTheme(Theme theme)
-    {
-        
     }
 }

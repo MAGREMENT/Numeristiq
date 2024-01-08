@@ -61,10 +61,6 @@ public partial class MainWindow : IPageHandler, IViewManager
     {
         var theme = Theme.From(dao);
         ((App)Application.Current).ChangeTheme(theme);
-        foreach (var page in _pages)
-        {
-            page.ApplyTheme(theme);
-        }
     }
 
     private void Center()

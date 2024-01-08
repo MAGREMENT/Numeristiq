@@ -121,14 +121,9 @@ public partial class SettingsWindow
         Close();
     }
 
-    public override void ApplyTheme(Theme theme)
+    private void ApplyTheme(Theme theme)
     {
-        Titles.Background = theme.Background1;
         foreach (TextBlock tb in Titles.Children) tb.Foreground = theme.Text;
-        FinishedButton.ApplyTheme(theme);
-        Footer.Background = theme.Background2;
-        OptionExplanation.Foreground = theme.Text;
-        foreach (var page in _settingsPages) page.ApplyTheme(theme);
     }
 
     public void Refresh()

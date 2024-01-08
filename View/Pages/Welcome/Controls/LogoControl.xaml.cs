@@ -3,7 +3,7 @@ using View.Themes;
 
 namespace View.Pages.Welcome.Controls;
 
-public partial class LogoControl : IThemeable
+public partial class LogoControl
 {
     public double Size
     {
@@ -18,11 +18,5 @@ public partial class LogoControl : IThemeable
     public LogoControl()
     {
         InitializeComponent();
-    }
-
-    public void ApplyTheme(Theme theme)
-    {
-        First.Foreground = theme.Text;
-        Second.Foreground = theme.Text;
     }
 }

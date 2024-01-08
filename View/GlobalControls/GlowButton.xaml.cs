@@ -4,7 +4,7 @@ using View.Themes;
 
 namespace View.GlobalControls;
 
-public partial class GlowButton : IThemeable
+public partial class GlowButton
 {
     public event OnClick? Click;
 
@@ -81,9 +81,11 @@ public partial class GlowButton : IThemeable
             Border.Background = _background;
             Border.BorderBrush = _borderBrush;
         };
+
+        ((App)Application.Current).ThemeChanged += ApplyTheme;
     }
 
-    public void ApplyTheme(Theme theme)
+    private void ApplyTheme(Theme theme)
     {
         TextBlock.Foreground = theme.Text;
         NormalBackground = theme.Background2;

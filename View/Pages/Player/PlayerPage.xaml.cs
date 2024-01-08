@@ -55,7 +55,6 @@ public partial class PlayerPage : IPlayerView
         _presenter.Bind();
         
         _settingsWindow = SettingsWindow.From(_presenter.Settings);
-        AddManagedHelperWindow(_settingsWindow);
     }
 
     public override void OnShow()
@@ -64,11 +63,6 @@ public partial class PlayerPage : IPlayerView
     }
 
     public override void OnQuit()
-    {
-        
-    }
-
-    protected override void InternalApplyTheme(Theme theme)
     {
         
     }

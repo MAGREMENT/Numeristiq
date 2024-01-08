@@ -8,7 +8,7 @@ using View.Themes;
 
 namespace View.Pages.Solver.UserControls;
 
-public partial class LogListUserControl : IThemeable
+public partial class LogListUserControl
 {
     private LogUserControl? _currentlyShowed;
     private StateShown _shownType = StateShown.Before;
@@ -42,6 +42,8 @@ public partial class LogListUserControl : IThemeable
             canvas.MouseEnter += (_, _) => canvas.Background = _buttonHoverBackground;
             canvas.MouseLeave += (_, _) => canvas.Background = _buttonNormalBackground;
         }
+        
+        ((App)Application.Current).ThemeChanged += ApplyTheme;
     }
 
     public void SetLogs(IReadOnlyList<ViewLog> logs)
@@ -130,23 +132,12 @@ public partial class LogListUserControl : IThemeable
 
     public void ApplyTheme(Theme theme)
     {
-        Scroll.Background = theme.Background1;
-        ButtonPanel.Background = theme.Background2;
-
         _buttonNormalBackground = theme.Background2;
         _buttonHoverBackground = theme.Background3;
         foreach (System.Windows.Controls.Canvas canvas in ButtonPanel.Children)
         {
             canvas.Background = _buttonNormalBackground;
-            foreach (Line line in canvas.Children)
-            {
-                line.Stroke = theme.Text;
-            }
         }
-
-        foreach (var log in List.Children)
-        {
-            
-        }
+        
     }
 }

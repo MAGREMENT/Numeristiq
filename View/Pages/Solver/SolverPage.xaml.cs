@@ -52,9 +52,7 @@ public partial class SolverPage : ISolverView
         StrategyList.AllStrategiesUsed += _presenter.UseAllStrategies;
 
         _stepChooserWindow = new StepChooserWindow();
-        AddManagedHelperWindow(_stepChooserWindow);
         _settingsWindow = SettingsWindow.From(_presenter.Settings);
-        AddManagedHelperWindow(_settingsWindow);
     }
     
     //ISolverView-------------------------------------------------------------------------------------------------------
@@ -276,11 +274,6 @@ public partial class SolverPage : ISolverView
     public override void OnQuit()
     {
         
-    }
-
-    protected override void InternalApplyTheme(Theme theme)
-    {
-        LogList.ApplyTheme(theme);
     }
 
     private void AnalyseKeyDown(object? sender, KeyEventArgs e)

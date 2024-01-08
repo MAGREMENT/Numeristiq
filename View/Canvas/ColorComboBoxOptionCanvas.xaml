@@ -8,7 +8,7 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center" x:Name="Block"></TextBlock>
+        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center" x:Name="Block" Foreground="{DynamicResource Text}"/>
         <ComboBox Width="110" IsReadOnly="True" VerticalAlignment="Center" SelectionChanged="OnSelectionChange" x:Name="Box"/>
     </StackPanel>
 </canvas:OptionCanvas>

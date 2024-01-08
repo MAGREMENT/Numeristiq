@@ -166,6 +166,12 @@
     "Args": {}
   },
   {
+    "Name": "Thor\u0027s Hammer",
+    "Used": true,
+    "Behavior": 1,
+    "Args": {}
+  },
+  {
     "Name": "Non-Colorable Pattern",
     "Used": true,
     "Behavior": 0,

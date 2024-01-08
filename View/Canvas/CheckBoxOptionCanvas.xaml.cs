@@ -47,11 +47,6 @@ public partial class CheckBoxOptionCanvas
         Box.FontSize = size;
     }
 
-    public override void ApplyTheme(Theme theme)
-    {
-        Box.Foreground = theme.Text;
-    }
-
     protected override void InternalRefresh()
     {
         Box.IsChecked = _getter();

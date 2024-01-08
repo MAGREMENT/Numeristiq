@@ -4,7 +4,7 @@ using View.Themes;
 
 namespace View.HelperWindows;
 
-public abstract class HelperWindow : Window, IThemeable
+public abstract class HelperWindow : Window
 {
     private bool _shouldClose;
     
@@ -26,6 +26,4 @@ public abstract class HelperWindow : Window, IThemeable
         args.Cancel = true;
         Hide();
     }
-
-    public abstract void ApplyTheme(Theme theme);
 }

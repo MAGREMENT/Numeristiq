@@ -6,6 +6,6 @@
       mc:Ignorable="d"
       Title="SettingsPage" Height="400" Width="450">
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Vertical" Height="400" Width="450" x:Name="Panel"/>
+        <StackPanel Orientation="Vertical" Height="400" Width="450" x:Name="Panel" Background="{DynamicResource Background1}"/>
     </ScrollViewer>
 </Page>

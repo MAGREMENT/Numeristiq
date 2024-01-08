@@ -8,6 +8,6 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal" x:Name="Panel">
-        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center" x:Name="TextBlock"></TextBlock>
+        <TextBlock Margin="0, 0, 5, 0" VerticalAlignment="Center" x:Name="TextBlock" Foreground="{DynamicResource Text}"/>
     </StackPanel>
 </canvas:OptionCanvas>

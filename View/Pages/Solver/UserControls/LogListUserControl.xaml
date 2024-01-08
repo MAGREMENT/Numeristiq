@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <StackPanel Orientation="Horizontal">
+    <StackPanel Orientation="Horizontal" Background="{DynamicResource Background2}">
         <ScrollViewer Height="470" x:Name="Scroll">
             <StackPanel Width="300" MinHeight="470" x:Name="List"/>
         </ScrollViewer>
@@ -14,24 +14,24 @@
                 <RotateTransform Angle="180"/>
             </StackPanel.LayoutTransform>
             <Canvas HorizontalAlignment="Center" Width="20" Height="30" Margin="0, 5, 0, 0" MouseLeftButtonDown="ShowCurrent">
-                <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="4" X2="10" Y1="26" Y2="14" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="10" X2="16" Y1="14" Y2="26" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="26" Y2="14" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="14" Y2="26" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
             </Canvas>
             <Canvas HorizontalAlignment="Center" Width="20" Height="20" MouseLeftButtonDown="ShiftDown">
-                <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="16" Y2="4" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="4" Y2="16" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
             </Canvas>
             <Canvas HorizontalAlignment="Center" Width="20" Height="20" MouseLeftButtonDown="ShiftUp">
-                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
             </Canvas>
             <Canvas HorizontalAlignment="Center" Width="20" Height="30" MouseLeftButtonDown="ShowStart">
-                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="4" X2="10" Y1="14" Y2="26" Stroke="Black" StrokeThickness="2"/>
-                <Line X1="10" X2="16" Y1="26" Y2="14" Stroke="Black" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="4" Y2="16" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="16" Y2="4" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="4" X2="10" Y1="14" Y2="26" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
+                <Line X1="10" X2="16" Y1="26" Y2="14" Stroke="{DynamicResource Text}" StrokeThickness="2"/>
             </Canvas>
         </StackPanel>
     </StackPanel>

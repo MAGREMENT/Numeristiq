@@ -1,7 +1,6 @@
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
-using View.Themes;
 using Clipboard = System.Windows.Forms.Clipboard;
 
 namespace View.HelperWindows.Print;
@@ -64,10 +63,5 @@ public partial class PrintWindow
     private void DisableFolderChooser(object sender, RoutedEventArgs e)
     {
         FolderChooser.IsEnabled = false;
-    }
-
-    public override void ApplyTheme(Theme theme)
-    {
-        
     }
 }

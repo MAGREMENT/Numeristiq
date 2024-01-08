@@ -44,3 +44,5 @@ public class Theme
     public Brush Border { get; }
     public IconColor IconColor { get; }
 }
+
+public delegate void ApplyTheme(Theme theme);

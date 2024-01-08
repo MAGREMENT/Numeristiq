@@ -31,11 +31,6 @@ public partial class SliderOptionCanvas
         Block.FontSize = size;
     }
 
-    public override void ApplyTheme(Theme theme)
-    {
-        Block.Foreground = theme.Text;
-    }
-
     protected override void InternalRefresh()
     {
         Slider.Value = _getter();

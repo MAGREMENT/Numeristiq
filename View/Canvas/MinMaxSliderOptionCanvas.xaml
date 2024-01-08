@@ -7,18 +7,18 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal">
-        <TextBlock x:Name="Block" Margin="0, 0, 5, 0" VerticalAlignment="Center"></TextBlock>
+        <TextBlock x:Name="Block" Margin="0, 0, 5, 0" VerticalAlignment="Center" Foreground="{DynamicResource Text}"/>
         <Border BorderBrush="DimGray" BorderThickness="2, 0, 0, 0" CornerRadius="5">
             <StackPanel Orientation="Vertical" Margin="5, 0, 0, 0">
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Margin="0, 0, 5, 0" x:Name="MinText" VerticalAlignment="Center">Min :</TextBlock>
+                    <TextBlock Margin="0, 0, 5, 0" x:Name="MinText" VerticalAlignment="Center" Foreground="{DynamicResource Text}">Min :</TextBlock>
                     <Slider Width="75" IsSnapToTickEnabled="True" x:Name="MinSlider" ValueChanged="OnMinValueChanged"
                             VerticalAlignment="Center"/>
                     <TextBox Text="{Binding ElementName=MinSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                              TextAlignment="Right" Width="35" VerticalAlignment="Center" Margin="0, 0, 5, 0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Margin="0, 0, 5, 0" x:Name="MaxText" VerticalAlignment="Center">Max :</TextBlock>
+                    <TextBlock Margin="0, 0, 5, 0" x:Name="MaxText" VerticalAlignment="Center" Foreground="{DynamicResource Text}">Max :</TextBlock>
                     <Slider Width="75" IsSnapToTickEnabled="True" x:Name="MaxSlider" ValueChanged="OnMaxValueChanged"
                             VerticalAlignment="Center"/>
                     <TextBox Text="{Binding ElementName=MaxSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
