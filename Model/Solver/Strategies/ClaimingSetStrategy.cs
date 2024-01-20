@@ -115,7 +115,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)

@@ -151,7 +151,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
         _possibleLastLink = lastLink;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _chain.ToString(), lighter =>
         {

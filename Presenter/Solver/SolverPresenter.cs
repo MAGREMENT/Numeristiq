@@ -103,7 +103,7 @@ public class SolverPresenter : IStepChooserCallback
         _currentlySelectedLog = number;
         var log = _solver.Logs[number];
         _view.FocusLog(number);
-        _view.ShowExplanation(log.Explanation);
+        _view.ShowExplanation(log.Description);
         ChangeShownState(Settings.StateShown == StateShown.Before ? log.StateBefore : log.StateAfter);
         HighlightLog(log);
     }
@@ -304,7 +304,7 @@ public class SolverPresenter : IStepChooserCallback
                 var current = logs[i];
                 if (!current.FromSolving) continue;
 
-                _view.ShowExplanation(current.Explanation);
+                _view.ShowExplanation(current.Description);
                 _view.FocusLog(i);
 
                 ChangeShownState(current.StateBefore);

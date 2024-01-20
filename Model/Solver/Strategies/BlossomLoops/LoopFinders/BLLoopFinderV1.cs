@@ -10,15 +10,15 @@ namespace Model.Solver.Strategies.BlossomLoops.LoopFinders;
 
 public class BLLoopFinderV1 : IBlossomLoopLoopFinder
 {
-    public List<LinkGraphLoop<ILinkGraphElement>> Find(CellPossibility[] cps, LinkGraph<ILinkGraphElement> graph)
+    public List<LinkGraphLoop<IChainingElement>> Find(CellPossibility[] cps, ILinkGraph<IChainingElement> graph)
     {
-        List<LinkGraphLoop<ILinkGraphElement>> result = new();
+        List<LinkGraphLoop<IChainingElement>> result = new();
 
         foreach (var start in cps)
         {
-            ColoringHistory<ILinkGraphElement> parents = new();
-            Queue<ColoredElement<ILinkGraphElement>> queue = new();
-            queue.Enqueue(new ColoredElement<ILinkGraphElement>(start, Coloring.On));
+            ColoringHistory<IChainingElement> parents = new();
+            Queue<ColoredElement<IChainingElement>> queue = new();
+            queue.Enqueue(new ColoredElement<IChainingElement>(start, Coloring.On));
 
             while (queue.Count > 0)
             {
@@ -26,7 +26,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
                 var link = current.Coloring == Coloring.On ? LinkStrength.Any : LinkStrength.Strong;
                 var opposite = current.Coloring == Coloring.On ? Coloring.Off : Coloring.On;
 
-                foreach (var friend in graph.GetLinks(current.Element, link))
+                foreach (var friend in graph.Neighbors(current.Element, link))
                 {
                     if (friend is CellPossibility cp && cps.Contains(cp))
                     {
@@ -35,7 +35,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
                         var path = parents.GetPathToRootWithRealLinks(friend, graph);
                         if (path.Count >= 3 && path.Count % 2 == 1)
                         {
-                            result.Add(new LinkGraphLoop<ILinkGraphElement>(path.Elements, path.Links,
+                            result.Add(new LinkGraphLoop<IChainingElement>(path.Elements, path.Links,
                                 LinkStrength.Strong));
                         }
                     }
@@ -44,7 +44,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
                         if (parents.ContainsChild(friend)) continue;
 
                         parents.Add(friend, current.Element);
-                        queue.Enqueue(new ColoredElement<ILinkGraphElement>(friend, opposite));
+                        queue.Enqueue(new ColoredElement<IChainingElement>(friend, opposite));
                     }
                 }
             }

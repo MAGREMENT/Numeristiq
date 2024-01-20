@@ -33,7 +33,7 @@ public class OddagonForcingNetStrategy : AbstractStrategy
         {
             if (oddagon.Guardians.Length > _maxNumberOfGuardians) continue;
 
-            var colorings = new ColoringDictionary<ILinkGraphElement>[oddagon.Guardians.Length];
+            var colorings = new ColoringDictionary<IChainingElement>[oddagon.Guardians.Length];
             for (int i = 0; i < oddagon.Guardians.Length; i++)
             {
                 var current = oddagon.Guardians[i];
@@ -71,13 +71,13 @@ public class OddagonForcingNetStrategy : AbstractStrategy
 
 public class OddagonForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<ILinkGraphElement>[] _colorings;
+    private readonly ColoringDictionary<IChainingElement>[] _colorings;
     private readonly Coloring _changeColoring;
     private readonly CellPossibility _change;
     private readonly AlmostOddagon _oddagon;
-    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly ILinkGraph<IChainingElement> _graph;
 
-    public OddagonForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, LinkGraph<ILinkGraphElement> graph, CellPossibility change)
+    public OddagonForcingNetReportBuilder(ColoringDictionary<IChainingElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, ILinkGraph<IChainingElement> graph, CellPossibility change)
     {
         _colorings = colorings;
         _changeColoring = changeColoring;
@@ -86,7 +86,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
         _change = change;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var highlights = new Highlight[_colorings.Length];
         for (int i = 0; i < _colorings.Length; i++)

@@ -66,7 +66,7 @@ public class BlossomLoopStrategy : AbstractStrategy
         }
     }
 
-    private HashSet<CellPossibility> SetUpNope(LinkGraphLoop<ILinkGraphElement> loop,
+    private HashSet<CellPossibility> SetUpNope(LinkGraphLoop<IChainingElement> loop,
         BlossomLoopBranch[] branches)
     {
         HashSet<CellPossibility> nope = new();
@@ -86,10 +86,10 @@ public class BlossomLoopStrategy : AbstractStrategy
         return nope;
     }
 
-    private void HandleWeakLoopLink(IStrategyManager strategyManager, ILinkGraphElement one, ILinkGraphElement two,
+    private void HandleWeakLoopLink(IStrategyManager strategyManager, IChainingElement one, IChainingElement two,
         HashSet<CellPossibility> nope, BlossomLoopBranch[] branches)
     {
-        List<ILinkGraphElement> toTakeIntoAccount = new();
+        List<IChainingElement> toTakeIntoAccount = new();
         foreach (var b in branches)
         {
             if (one.Equals(b.Targets[0]) && two.Equals(b.Targets[1])) toTakeIntoAccount.Add(b.Branch.Elements[^1]);
@@ -150,7 +150,7 @@ public class BlossomLoopStrategy : AbstractStrategy
         
     }
 
-    private void HandleWeakBranchLink(IStrategyManager strategyManager, ILinkGraphElement one, ILinkGraphElement two,
+    private void HandleWeakBranchLink(IStrategyManager strategyManager, IChainingElement one, IChainingElement two,
         HashSet<CellPossibility> nope)
     {
         var cp1 = one.EveryCellPossibilities();
@@ -198,18 +198,18 @@ public class BlossomLoopStrategy : AbstractStrategy
 
 public class BlossomLoopReportBuilder : IChangeReportBuilder
 {
-    private readonly LinkGraphLoop<ILinkGraphElement> _loop;
+    private readonly LinkGraphLoop<IChainingElement> _loop;
     private readonly BlossomLoopBranch[] _branches;
     private readonly CellPossibility[] _cps;
 
-    public BlossomLoopReportBuilder(LinkGraphLoop<ILinkGraphElement> loop, BlossomLoopBranch[] branches, CellPossibility[] cps)
+    public BlossomLoopReportBuilder(LinkGraphLoop<IChainingElement> loop, BlossomLoopBranch[] branches, CellPossibility[] cps)
     {
         _loop = loop;
         _branches = branches;
         _cps = cps;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var branchesHighlight = new Highlight[_branches.Length];
 

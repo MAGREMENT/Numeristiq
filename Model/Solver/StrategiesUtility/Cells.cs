@@ -409,7 +409,7 @@ public interface ICellPossibility
     public int Column { get; } 
 }
 
-public readonly struct CellPossibility : ILinkGraphElement, ICellPossibility
+public readonly struct CellPossibility : IChainingElement, ICellPossibility
 {
     public int Possibility { get; }
     public int Row { get; }

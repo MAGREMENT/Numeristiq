@@ -40,9 +40,9 @@ public interface IHighlightable
 
     public void EncircleRectangle(CoverHouse house, ChangeColoration coloration);
 
-    public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration);
+    public void HighlightLinkGraphElement(IChainingElement element, ChangeColoration coloration);
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength);
 
-    public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength);
+    public void CreateLink(IChainingElement from, IChainingElement to, LinkStrength linkStrength);
 }

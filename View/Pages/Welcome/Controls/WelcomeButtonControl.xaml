@@ -9,25 +9,19 @@
             x:Name="Border" Background="{DynamicResource Background3}">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="128"></ColumnDefinition>
-                <ColumnDefinition Width="250"></ColumnDefinition>
+                <ColumnDefinition Width="52"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="128"></RowDefinition>
+                <RowDefinition Height="52"/>
+                <RowDefinition Height="100"/>
             </Grid.RowDefinitions>
                 
-            <Image Grid.Column="0" x:Name="Image" Height="128" Width="128"/>
-            <Grid Grid.Column="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="50"></RowDefinition>
-                    <RowDefinition Height="78"></RowDefinition>
-                </Grid.RowDefinitions>
-                
-                <TextBlock Grid.Row="0" x:Name="Title" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource Text}"
-                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <TextBlock Grid.Row="1" x:Name="Description" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{DynamicResource Text}"
-                           VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0" TextAlignment="Center"/>  
-            </Grid>
+            <Image Grid.Row="0" Grid.Column="0" x:Name="Image" Height="52" Width="52"/>
+            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="Title" FontSize="30" FontWeight="Bold" Foreground="{DynamicResource Text}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="Description" FontSize="18" FontWeight="SemiBold" TextWrapping="Wrap" Foreground="{DynamicResource Text}"
+                       VerticalAlignment="Center" HorizontalAlignment="Center" Margin="5, 0" TextAlignment="Center"/>  
         </Grid>
     </Border>
 </UserControl>

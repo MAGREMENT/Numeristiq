@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class UnitStrongLinkConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -15,7 +15,7 @@ public class UnitStrongLinkConstructRule : IConstructRule
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
-                linkGraph.AddLink(new CellPossibility(row, asArray[0], number),
+                linkGraph.Add(new CellPossibility(row, asArray[0], number),
                     new CellPossibility(row, asArray[1], number), LinkStrength.Strong);
             }
             
@@ -25,7 +25,7 @@ public class UnitStrongLinkConstructRule : IConstructRule
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
-                linkGraph.AddLink(new CellPossibility(asArray[0], col, number),
+                linkGraph.Add(new CellPossibility(asArray[0], col, number),
                     new CellPossibility(asArray[1], col, number), LinkStrength.Strong);
             }
 
@@ -37,14 +37,14 @@ public class UnitStrongLinkConstructRule : IConstructRule
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();
-                    linkGraph.AddLink(new CellPossibility(asArray[0].Row, asArray[0].Column, number),
+                    linkGraph.Add(new CellPossibility(asArray[0].Row, asArray[0].Column, number),
                         new CellPossibility(asArray[1].Row, asArray[1].Column, number), LinkStrength.Strong);
                 }
             }
         }
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -54,7 +54,7 @@ public class UnitStrongLinkConstructRule : IConstructRule
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
-                linkGraph.AddLink(new CellPossibility(row, asArray[0], number),
+                linkGraph.Add(new CellPossibility(row, asArray[0], number),
                     new CellPossibility(row, asArray[1], number), LinkStrength.Strong);
             }
             
@@ -64,7 +64,7 @@ public class UnitStrongLinkConstructRule : IConstructRule
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
-                linkGraph.AddLink(new CellPossibility(asArray[0], col, number),
+                linkGraph.Add(new CellPossibility(asArray[0], col, number),
                     new CellPossibility(asArray[1], col, number), LinkStrength.Strong);
             }
 
@@ -76,7 +76,7 @@ public class UnitStrongLinkConstructRule : IConstructRule
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();
-                    linkGraph.AddLink(new CellPossibility(asArray[0].Row, asArray[0].Column, number),
+                    linkGraph.Add(new CellPossibility(asArray[0].Row, asArray[0].Column, number),
                         new CellPossibility(asArray[1].Row, asArray[1].Column, number), LinkStrength.Strong);
                 }
             }

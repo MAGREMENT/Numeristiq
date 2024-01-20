@@ -5,11 +5,11 @@ using Global.Enums;
 
 namespace Model.Solver.StrategiesUtility.Graphs;
 
-public class LinkGraph<T> : IEnumerable<T> where T : notnull
+public class DictionaryLinkGraph<T> : ILinkGraph<T> where T : notnull
 {
     private readonly Dictionary<T, HashSet<T>[]> _links = new();
 
-    public void AddLink(T from, T to, LinkStrength strength, LinkType type = LinkType.BiDirectional)
+    public void Add(T from, T to, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
         if (!_links.TryGetValue(from, out var resume))
         {
@@ -28,13 +28,13 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
         resume[(int)strength - 1].Add(from);
     }
 
-    public IEnumerable<T> GetLinks(T from, LinkStrength strength)
+    public IEnumerable<T> Neighbors(T from, LinkStrength strength)
     {
-        if (strength == LinkStrength.Any) return GetLinks(from);
+        if (strength == LinkStrength.Any) return Neighbors(from);
         return _links.TryGetValue(from, out var resume) ? resume[(int)strength - 1] : Enumerable.Empty<T>();
     }
 
-    public IEnumerable<T> GetLinks(T from)
+    public IEnumerable<T> Neighbors(T from)
     {
         if (!_links.TryGetValue(from, out var resume)) yield break;
         
@@ -49,12 +49,12 @@ public class LinkGraph<T> : IEnumerable<T> where T : notnull
         }
     }
 
-    public bool HasLinkTo(T from, T to, LinkStrength strength)
+    public bool AreNeighbors(T from, T to, LinkStrength strength)
     {
         return _links.TryGetValue(from, out var resume) && resume[(int)strength - 1].Contains(to);
     }
 
-    public bool HasLinkTo(T from, T to)
+    public bool AreNeighbors(T from, T to)
     {
         return _links.TryGetValue(from, out var resume) && (resume[0].Contains(to) ||
                                                             resume[1].Contains(to));

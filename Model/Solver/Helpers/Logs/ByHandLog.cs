@@ -12,7 +12,7 @@ public class ByHandLog : ISolverLog
     public string Title { get; }
     public Intensity Intensity => Intensity.Six;
     public string Changes { get; }
-    public string Explanation { get; }
+    public string Description { get; }
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager => new(new DelegateHighlighter(HighLight));
@@ -30,12 +30,12 @@ public class ByHandLog : ISolverLog
             case ChangeType.Possibility :
                 Title = "Removed by hand";
                 Changes = $"r{row + 1}c{col + 1} <> {possibility}";
-                Explanation = "This possibility was removed by hand";
+                Description = "This possibility was removed by hand";
                 break;
             case ChangeType.Solution :
                 Title = "Added by hand";
                 Changes = $"r{row + 1}c{col + 1} == {possibility}";
-                Explanation = "This solution was added by hand";
+                Description = "This solution was added by hand";
                 break;
             default: throw new ArgumentException("Invalid change type");
         }

@@ -482,7 +482,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
         _fireworks = fireworks;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -509,7 +509,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
         _als = als;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -543,7 +543,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
         _cells = cells;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -573,7 +573,7 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder
         _cell = cell;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

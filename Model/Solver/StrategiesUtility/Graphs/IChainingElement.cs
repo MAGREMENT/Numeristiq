@@ -3,11 +3,11 @@ using Model.Solver.Possibility;
 
 namespace Model.Solver.StrategiesUtility.Graphs;
 
-public interface ILinkGraphElement
+public interface IChainingElement
 {
     int Rank { get; }
+    Possibilities EveryPossibilities();
     CellPossibilities[] EveryCellPossibilities();
     Cell[] EveryCell();
-    Possibilities EveryPossibilities();
     CellPossibility[] EveryCellPossibility();
 }

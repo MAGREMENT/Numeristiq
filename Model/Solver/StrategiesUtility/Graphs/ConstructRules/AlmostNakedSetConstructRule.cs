@@ -7,7 +7,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class AlmostNakedSetConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
     {
         foreach (var als in strategyManager.PreComputer.AlmostLockedSets())
         {
@@ -46,22 +46,22 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 var nakedSet = new NakedSet(cps.ToArray());
                 if (notIn.Count == 1)
                 {
-                    linkGraph.AddLink(new CellPossibility(notIn[0], p), nakedSet,
+                    linkGraph.Add(new CellPossibility(notIn[0], p), nakedSet,
                         LinkStrength.Strong, LinkType.MonoDirectional);
                     
                 }
                 else
                 {
-                    ILinkGraphElement element;
+                    IChainingElement element;
                     if (soloRow && rowBuffer != -1) element = new PointingRow(p, notIn);
                     else if (soloCol && colBuffer != -1) element = new PointingColumn(p, notIn);
                     else element = new CellsPossibility(p, notIn.ToArray());
 
-                    linkGraph.AddLink(element, nakedSet, LinkStrength.Strong, LinkType.MonoDirectional);
+                    linkGraph.Add(element, nakedSet, LinkStrength.Strong, LinkType.MonoDirectional);
 
                     foreach (var ssc in Cells.SharedSeenCells(notIn))
                     {
-                        if (strategyManager.PossibilitiesAt(ssc).Peek(p)) linkGraph.AddLink(new CellPossibility(ssc, p),
+                        if (strategyManager.PossibilitiesAt(ssc).Peek(p)) linkGraph.Add(new CellPossibility(ssc, p),
                                 element, LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -73,7 +73,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
 
                     foreach (var ssc in Cells.SharedSeenCells(cells))
                     {
-                        if(strategyManager.PossibilitiesAt(ssc).Peek(possibility)) linkGraph.AddLink(nakedSet,
+                        if(strategyManager.PossibilitiesAt(ssc).Peek(possibility)) linkGraph.Add(nakedSet,
                             new CellPossibility(ssc, possibility), LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -81,7 +81,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
         }
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         
     }

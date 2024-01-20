@@ -23,6 +23,16 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
         Count++;
     }
 
+    public void Add(T obj)
+    {
+        var i = GetIndex(obj);
+        if (i != -1) return;
+        
+        GrowIfNeeded();
+        _array[Count] = obj;
+        Count++;
+    }
+
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= Count) return;

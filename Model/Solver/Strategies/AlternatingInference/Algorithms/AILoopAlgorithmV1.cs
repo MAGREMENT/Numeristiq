@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : IChainingElement
 {
     private readonly int _maxLoopSize;
     private readonly HashSet<LinkGraphLoop<T>> _loopsProcessed = new();
@@ -26,14 +26,14 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         }
     }
 
-    private void Search(LinkGraph<T> graph, LinkGraphChainBuilder<T> path, IAlternatingInferenceType<T> inferenceType, IStrategyManager view)
+    private void Search(ILinkGraph<T> graph, LinkGraphChainBuilder<T> path, IAlternatingInferenceType<T> inferenceType, IStrategyManager view)
     {
         if (path.Count > _maxLoopSize) return;
         var last = path.LastElement();
 
         if (path.Count % 2 == 1)
         {
-            foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
             {
                 if (path.FirstElement().Equals(friend))
                 {
@@ -51,9 +51,9 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         {
             if (path.Count >= 4)
             {
-                foreach (var weakFromLast in graph.GetLinks(last, LinkStrength.Weak))
+                foreach (var weakFromLast in graph.Neighbors(last, LinkStrength.Weak))
                 {
-                    if (graph.HasLinkTo(path.FirstElement(), weakFromLast, LinkStrength.Weak))
+                    if (graph.AreNeighbors(path.FirstElement(), weakFromLast, LinkStrength.Weak))
                     {
                         if(path.ContainsElement(weakFromLast)) continue;
 
@@ -64,7 +64,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
                 }
             }
             
-            foreach (var friend in graph.GetLinks(last, LinkStrength.Weak))
+            foreach (var friend in graph.Neighbors(last, LinkStrength.Weak))
             {
                 if (path.FirstElement().Equals(friend))
                 {
@@ -81,7 +81,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
                 }
             }
             
-            foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
             {
                 if (path.FirstElement().Equals(friend))
                 {

@@ -17,7 +17,7 @@ namespace View
         
         public void ChangeTheme(Theme theme)
         {
-            var r = Resources;
+            var r = Resources.MergedDictionaries[0];
             r.Clear();
             r.Add("Background1", theme.Background1);
             r.Add("Background2", theme.Background2);

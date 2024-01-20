@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility;
 
-public class PointingColumn : ILinkGraphElement
+public class PointingColumn : IChainingElement
 {
     public int Possibility { get; }
     public int Column { get; }

@@ -82,18 +82,18 @@ public class StrategyLoader : IStrategyLoader
             new AILoopAlgorithmV3<CellPossibility>())},
         {AIType.OfficialLoopName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
             new AILoopAlgorithmV3<CellPossibility>())},
-        {SubsetsXType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
-            new AILoopAlgorithmV3<ILinkGraphElement>())},
-        {SubsetsAIType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
-            new AILoopAlgorithmV3<ILinkGraphElement>())},
+        {SubsetsXType.OfficialLoopName, new AlternatingInferenceGeneralization<IChainingElement>(new SubsetsXType(),
+            new AILoopAlgorithmV3<IChainingElement>())},
+        {SubsetsAIType.OfficialLoopName, new AlternatingInferenceGeneralization<IChainingElement>(new SubsetsAIType(),
+            new AILoopAlgorithmV3<IChainingElement>())},
         {XType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new XType(),
             new AIChainAlgorithmV2<CellPossibility>())},
         {AIType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
             new AIChainAlgorithmV2<CellPossibility>())},
-        {SubsetsXType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
-            new AIChainAlgorithmV2<ILinkGraphElement>())},
-        {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
-            new AIChainAlgorithmV2<ILinkGraphElement>())},
+        {SubsetsXType.OfficialChainName, new AlternatingInferenceGeneralization<IChainingElement>(new SubsetsXType(),
+            new AIChainAlgorithmV2<IChainingElement>())},
+        {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<IChainingElement>(new SubsetsAIType(),
+            new AIChainAlgorithmV2<IChainingElement>())},
         {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
             3, 5, 1))},
         {DistributedDisjointSubsetStrategy.OfficialName, new DistributedDisjointSubsetStrategy()},
@@ -105,7 +105,6 @@ public class StrategyLoader : IStrategyLoader
         {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new UnitType())},
         {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
         {ReverseBUGLiteStrategy.OfficialName, new ReverseBUGLiteStrategy()},
-        {HiddenBugStrategy.OfficialName, new HiddenBugStrategy(2, 4)},
         {MiniUniquenessStrategy.OfficialName, new MiniUniquenessStrategy()},
         {UniquenessClueCoverStrategy.OfficialName, new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
         {ExtendedUniqueRectanglesStrategy.OfficialName, new ExtendedUniqueRectanglesStrategy()},
@@ -113,8 +112,8 @@ public class StrategyLoader : IStrategyLoader
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();
-    private readonly BitSet _excludedStrategies = new();
-    private readonly BitSet _lockedStrategies = new();
+    private readonly InfiniteBitSet _excludedStrategies = new();
+    private readonly InfiniteBitSet _lockedStrategies = new();
     
     public IReadOnlyList<IStrategy> Strategies => _strategies;
 

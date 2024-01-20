@@ -6,7 +6,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Types;
 
-public class SubsetsXType : IAlternatingInferenceType<ILinkGraphElement>
+public class SubsetsXType : IAlternatingInferenceType<IChainingElement>
 {
     public const string OfficialLoopName = "Subsets X-Cycles";
     public const string OfficialChainName = "Subsets X-Chains";
@@ -16,22 +16,22 @@ public class SubsetsXType : IAlternatingInferenceType<ILinkGraphElement>
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public IStrategy? Strategy { get; set; }
     
-    public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager strategyManager)
+    public ILinkGraph<IChainingElement> GetGraph(IStrategyManager strategyManager)
     {
         strategyManager.GraphManager.ConstructComplex(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
             ConstructRule.PointingPossibilities);
         return strategyManager.GraphManager.ComplexLinkGraph;
     }
 
-    public bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<ILinkGraphElement> loop)
+    public bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<IChainingElement> loop)
     {
         loop.ForEachLink((one, two)
             => ProcessWeakLink(strategyManager, one, two), LinkStrength.Weak);
 
-        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.NiceLoop));
+        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<IChainingElement>(loop, LoopType.NiceLoop));
     }
     
-    private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two)
+    private void ProcessWeakLink(IStrategyManager view, IChainingElement one, IChainingElement two)
     {
         List<Cell> cells = new List<Cell>(one.EveryCell());
         cells.AddRange(two.EveryCell());
@@ -43,25 +43,25 @@ public class SubsetsXType : IAlternatingInferenceType<ILinkGraphElement>
         }
     }
 
-    public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
+    public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, IChainingElement inference, LinkGraphLoop<IChainingElement> loop)
     {
         if (inference is not CellPossibility single) return false;
         strategyManager.ChangeBuffer.ProposePossibilityRemoval(single.Possibility, single.Row, single.Column);
 
-        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
+        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<IChainingElement>(loop, LoopType.WeakInference));
     }
 
-    public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
+    public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, IChainingElement inference, LinkGraphLoop<IChainingElement> loop)
     {
         if (inference is not CellPossibility single) return false;
         strategyManager.ChangeBuffer.ProposeSolutionAddition(single.Possibility, single.Row, single.Column);
         
-        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
+        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<IChainingElement>(loop, LoopType.StrongInference));
     }
 
-    public bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<ILinkGraphElement> chain, LinkGraph<ILinkGraphElement> graph)
+    public bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<IChainingElement> chain, ILinkGraph<IChainingElement> graph)
     {
-        return IAlternatingInferenceType<ILinkGraphElement>.ProcessChainWithComplexGraph(strategyManager,
+        return IAlternatingInferenceType<IChainingElement>.ProcessChainWithComplexGraph(strategyManager,
             chain, graph, Strategy!);
     }
 }

@@ -6,8 +6,8 @@ namespace Model.Solver.StrategiesUtility.CellColoring.ColoringAlgorithms;
 
 public class QueueColoringAlgorithm : IColoringAlgorithm
 {
-    public void ColorWithoutRules<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
-        where T : ILinkGraphElement
+    public void ColorWithoutRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
+        where T : IChainingElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -20,7 +20,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             var current = queue.Dequeue();
             var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
 
-            foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -29,7 +29,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 queue.Enqueue(new ColoredElement<T>(friend, opposite));
             }
                 
-            foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
+            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -40,7 +40,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRules<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ILinkGraphElement
+    public void ColorWithRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : IChainingElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -53,7 +53,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             var current = queue.Dequeue();
             var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
 
-            foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -64,7 +64,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
             if (opposite == Coloring.Off)
             {
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
+                foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
                 {
                     if (visited.Contains(friend)) continue;
 
@@ -76,8 +76,8 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRulesAndLinksJump<T>(LinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
-        where T : ILinkGraphElement
+    public void ColorWithRulesAndLinksJump<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
+        where T : IChainingElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -90,7 +90,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
             var current = queue.Dequeue();
             var opposite = current.Coloring == Coloring.Off ? Coloring.On : Coloring.Off;
 
-            foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Strong))
             {
                 if (visited.Contains(friend)) continue;
 
@@ -101,7 +101,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
 
             if (opposite == Coloring.Off)
             {
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
+                foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
                 {
                     if (visited.Contains(friend)) continue;
 
@@ -122,7 +122,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
                 bool cellB = true;
                 
             
-                foreach (var friend in graph.GetLinks(current.Element, LinkStrength.Weak))
+                foreach (var friend in graph.Neighbors(current.Element, LinkStrength.Weak))
                 {
                     if (friend is not CellPossibility friendPos) continue;
                     if (friendPos.Possibility == pos.Possibility)

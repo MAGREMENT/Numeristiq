@@ -14,7 +14,7 @@ public class TCondition : INRCZTCondition
     public string Name => "T";
 
     public IEnumerable<(CellPossibility, INRCZTConditionChainManipulation)> SearchEndUnderCondition(
-        IStrategyManager strategyManager, LinkGraph<CellPossibility> graph, BlockChain chain, CellPossibility bStart)
+        IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, BlockChain chain, CellPossibility bStart)
     {
         var all = chain.AllCellPossibilities();
         
@@ -158,12 +158,12 @@ public class TCondition : INRCZTCondition
 
 public class EmptyChainManipulation : INRCZTConditionChainManipulation
 {
-    public void BeforeSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
+    public void BeforeSearch(BlockChain chain, ILinkGraph<CellPossibility> graph)
     {
         
     }
 
-    public void AfterSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
+    public void AfterSearch(BlockChain chain, ILinkGraph<CellPossibility> graph)
     {
        
     }

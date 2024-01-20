@@ -6,7 +6,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.AlmostLockedSets;
 
-public class NakedSet : ILinkGraphElement
+public class NakedSet : IChainingElement
 {
     private readonly CellPossibilities[] _cellPossibilities;
     

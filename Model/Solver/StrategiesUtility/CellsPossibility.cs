@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility;
 
-public class CellsPossibility : ILinkGraphElement
+public class CellsPossibility : IChainingElement
 {
     private readonly int _possibility;
     private readonly Cell[] _cells;

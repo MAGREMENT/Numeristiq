@@ -217,7 +217,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     var cpf2 = new CellPossibility(floor[i], values.Two);
                     var cpr2 = new CellPossibility(roof[j], values.Two);
                 
-                    if (graph.HasLinkTo(cpr1, cpf1, LinkStrength.Strong))
+                    if (graph.AreNeighbors(cpr1, cpf1, LinkStrength.Strong))
                     {
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
                         if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
@@ -225,7 +225,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
                 
-                    if (graph.HasLinkTo(cpr2, cpf2, LinkStrength.Strong))
+                    if (graph.AreNeighbors(cpr2, cpf2, LinkStrength.Strong))
                     {
                         strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
                         if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
@@ -423,7 +423,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
         _roof = roof;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -456,7 +456,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
         _link = link;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -490,7 +490,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
         _als = als;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {
@@ -527,7 +527,7 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
         _stronglyLinkedPossibility = stronglyLinkedPossibility;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

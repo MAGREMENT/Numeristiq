@@ -150,7 +150,7 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
             {
                 var cp1 = new CellPossibility(cNotInPattern[0], p);
                 var cp2 = new CellPossibility(cNotInPattern[1], p);
-                if (!graph.HasLinkTo(cp1, cp2, LinkStrength.Strong)) continue;
+                if (!graph.AreNeighbors(cp1, cp2, LinkStrength.Strong)) continue;
                 
                 foreach (var elimination in poss)
                 {
@@ -161,12 +161,12 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
             }
         }
             
-        foreach (var target in graph.GetLinks(pNotInPattern[0]))
+        foreach (var target in graph.Neighbors(pNotInPattern[0]))
         {
             bool ok = true;
             for (int i = 1; i < pNotInPattern.Count; i++)
             {
-                if (!graph.HasLinkTo(pNotInPattern[i], target))
+                if (!graph.AreNeighbors(pNotInPattern[i], target))
                 {
                     ok = false;
                     break;
@@ -194,7 +194,7 @@ public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder
         _cells = cells;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

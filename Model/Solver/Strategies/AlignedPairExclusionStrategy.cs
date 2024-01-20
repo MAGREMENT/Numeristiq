@@ -162,7 +162,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
         _col2 = col2;
     }
     
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

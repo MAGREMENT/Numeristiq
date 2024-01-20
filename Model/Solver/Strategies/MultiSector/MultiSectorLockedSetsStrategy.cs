@@ -114,7 +114,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
         _alternatives = alternatives;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var cu = new CoveringUnits(_covers);
         

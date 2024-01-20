@@ -240,7 +240,7 @@ public class FishReportBuilder : IChangeReportBuilder
         _fins = fins;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {

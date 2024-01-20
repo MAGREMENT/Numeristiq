@@ -31,10 +31,10 @@ public class XYChainsStrategy : AbstractStrategy
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph, CellPossibility current,
+    private bool Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
     {
-        CellPossibility friend = graph.GetLinks(current, LinkStrength.Strong).First();
+        CellPossibility friend = graph.Neighbors(current, LinkStrength.Strong).First();
 
         route.Add(current);
         route.Add(friend);
@@ -43,7 +43,7 @@ public class XYChainsStrategy : AbstractStrategy
         
         if(friend.Possibility == route[0].Possibility && Process(strategyManager, route)) return true;
 
-        foreach (var next in graph.GetLinks(friend, LinkStrength.Weak))
+        foreach (var next in graph.Neighbors(friend, LinkStrength.Weak))
         {
             if (!visited.Contains(next))
             {
@@ -78,7 +78,7 @@ public class XYChainReportBuilder : IChangeReportBuilder
         _visited = visited.ToArray();
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

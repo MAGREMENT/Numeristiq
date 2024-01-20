@@ -49,7 +49,7 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 
             startVisited.Add(start);
             
-            foreach (var friend in graph.GetLinks(start, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(start, LinkStrength.Strong))
             {
                 if (start == friend || endVisited.Contains(friend)) continue;
 
@@ -60,18 +60,18 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph,
+    private bool Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph,
         HashSet<CellPossibility> startVisited, HashSet<CellPossibility> endVisited, BlockChain chain)
     {
         var all = chain.AllCellPossibilities();
 
-        foreach (var bStart in graph.GetLinks(chain.Last().End))
+        foreach (var bStart in graph.Neighbors(chain.Last().End))
         {
             if (all.Contains(bStart) || startVisited.Contains(bStart)) continue;
 
             startVisited.Add(bStart);
 
-            foreach (var bEnd in graph.GetLinks(bStart, LinkStrength.Strong))
+            foreach (var bEnd in graph.Neighbors(bStart, LinkStrength.Strong))
             {
                 if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
                 
@@ -117,13 +117,13 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
         return false;
     }
 
-    private bool Check(IStrategyManager strategyManager, BlockChain chain, LinkGraph<CellPossibility> graph)
+    private bool Check(IStrategyManager strategyManager, BlockChain chain, ILinkGraph<CellPossibility> graph)
     {
         var last = chain.Last().End;
         
         foreach (var target in chain.PossibleTargets)
         {
-            if (graph.HasLinkTo(target, last)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (graph.AreNeighbors(target, last)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
@@ -148,7 +148,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder
         Chain = chain;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {

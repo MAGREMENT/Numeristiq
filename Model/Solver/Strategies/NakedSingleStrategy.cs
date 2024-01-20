@@ -19,33 +19,26 @@ public class NakedSingleStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.PossibilitiesAt(row, col).Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(
-                        strategyManager.PossibilitiesAt(row, col).First(), row, col);
+                if (strategyManager.PossibilitiesAt(row, col).Count != 1) continue;
+                
+                strategyManager.ChangeBuffer.ProposeSolutionAddition(strategyManager.PossibilitiesAt(row, col).First(), row, col);
+                strategyManager.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
+                if (OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
-
-        strategyManager.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
     }
 }
 
 public class NakedSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes),
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 
-    private static string Explanation(List<SolverChange> changes)
+    private static string Description(IReadOnlyList<SolverChange> changes)
     {
-        var builder = new StringBuilder();
-
-        foreach (var change in changes)
-        {
-            builder.Append($"{change.Number} is the solution to the cell [{change.Row + 1}, {change.Column + 1}]" +
-                           " because it's the only possibility in that cell.\n");
-        }
-
-        return builder.ToString();
+        return changes.Count != 1 ? "" : $"Naked Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }
 }

@@ -10,10 +10,10 @@ namespace Model.Solver.Strategies.BlossomLoops.BranchFinder;
 
 public class BLBranchFinderV1 : IBlossomLoopBranchFinder
 {
-    public BlossomLoopBranch[]? FindShortestBranches(LinkGraph<ILinkGraphElement> graph,
-        CellPossibility[] cps, LinkGraphLoop<ILinkGraphElement> loop)
+    public BlossomLoopBranch[]? FindShortestBranches(ILinkGraph<IChainingElement> graph,
+        CellPossibility[] cps, LinkGraphLoop<IChainingElement> loop)
     {
-        HashSet<ILinkGraphElement> nope = new(loop.Elements);
+        HashSet<IChainingElement> nope = new(loop.Elements);
 
         var result = new BlossomLoopBranch[cps.Length - 2];
         var cursor = 0;
@@ -21,9 +21,9 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
         {
             if (loop.Contains(cp)) continue;
             
-            ColoringHistory<ILinkGraphElement> parents = new();
-            Queue<ColoredElement<ILinkGraphElement>> queue = new();
-            queue.Enqueue(new ColoredElement<ILinkGraphElement>(cp, Coloring.On));
+            ColoringHistory<IChainingElement> parents = new();
+            Queue<ColoredElement<IChainingElement>> queue = new();
+            queue.Enqueue(new ColoredElement<IChainingElement>(cp, Coloring.On));
             bool ok = true;
 
             while (queue.Count > 0 && ok)
@@ -32,19 +32,19 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
                 var link = current.Coloring == Coloring.On ? LinkStrength.Any : LinkStrength.Strong;
                 var opposite = current.Coloring == Coloring.On ? Coloring.Off : Coloring.On;
 
-                foreach (var friend in graph.GetLinks(current.Element, link))
+                foreach (var friend in graph.Neighbors(current.Element, link))
                 {
                     if (ContainsAnyCellPossibility(cps, friend) || nope.Contains(friend) || parents.ContainsChild(friend)) continue;
 
                     parents.Add(friend, current.Element);
-                    queue.Enqueue(new ColoredElement<ILinkGraphElement>(friend, opposite));
+                    queue.Enqueue(new ColoredElement<IChainingElement>(friend, opposite));
 
                     bool isBranch = false;
                     int i = 0;
                     for (; i < loop.Elements.Length; i += 2)
                     {
-                        if (graph.HasLinkTo(loop.Elements[i], friend) &&
-                            graph.HasLinkTo(loop.Elements[i + 1], friend))
+                        if (graph.AreNeighbors(loop.Elements[i], friend) &&
+                            graph.AreNeighbors(loop.Elements[i + 1], friend))
                         {
                             isBranch = true;
                             break;
@@ -72,7 +72,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
         return result;
     }
 
-    private bool ContainsAnyCellPossibility(CellPossibility[] cps, ILinkGraphElement element)
+    private bool ContainsAnyCellPossibility(CellPossibility[] cps, IChainingElement element)
     {
         if (element is CellPossibility a) return cps.Contains(a);
         
@@ -85,13 +85,13 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
     }
 
     private bool CheckTargetOverlap(BlossomLoopBranch[] branches, int cursor, BlossomLoopBranch current, 
-        LinkGraph<ILinkGraphElement> graph)
+        ILinkGraph<IChainingElement> graph)
     {
         for (int i = 0; i < cursor; i++)
         {
             var b = branches[i];
             if (b.Targets[0].Equals(current.Targets[0]) && b.Targets[1].Equals(current.Targets[1]) &&
-                !graph.HasLinkTo(b.Branch.Elements[^1], current.Branch.Elements[^1])) return false;
+                !graph.AreNeighbors(b.Branch.Elements[^1], current.Branch.Elements[^1])) return false;
         }
 
         return true;

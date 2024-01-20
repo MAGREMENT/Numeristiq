@@ -7,7 +7,7 @@ public class BitSetTests
     [Test]
     public void InsertTest()
     {
-        var bs = new BitSet();
+        var bs = new InfiniteBitSet();
         bs.Set(2);
         bs.Set(0);
         bs.Insert(2);
@@ -22,7 +22,7 @@ public class BitSetTests
     [Test]
     public void DeleteTest()
     {
-        var bs = new BitSet();
+        var bs = new InfiniteBitSet();
         bs.Set(2);
         bs.Set(4);
         bs.Set(0);

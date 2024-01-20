@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : IChainingElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
     public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
@@ -20,14 +20,14 @@ public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T :
         }
     }
 
-    private bool Search(IStrategyManager manager, LinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Search(IStrategyManager manager, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChainBuilder<T> builder, HashSet<T> current, HashSet<T> onExplored, HashSet<T> offExplored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
         var explored = next == LinkStrength.Strong ? onExplored : offExplored;
         var last = builder.LastElement();
 
-        foreach (var friend in graph.GetLinks(last, next))
+        foreach (var friend in graph.Neighbors(last, next))
         {
             if (current.Contains(friend) || explored.Contains(friend)) continue;
 
@@ -45,7 +45,7 @@ public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T :
 
         if (next == LinkStrength.Weak)
         {
-            foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
             {
                 if (current.Contains(friend)) continue;
 
@@ -63,7 +63,7 @@ public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T :
         return false;
     }
 
-    private bool Check(IStrategyManager manager, LinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Check(IStrategyManager manager, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChain<T> chain)
     {
         return type.ProcessChain(manager, chain, graph);

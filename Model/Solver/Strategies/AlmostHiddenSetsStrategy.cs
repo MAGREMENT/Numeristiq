@@ -68,7 +68,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
     }
 
     private bool Process1CommonCell(IStrategyManager strategyManager, IPossibilitiesPositions one,
-        IPossibilitiesPositions two, LinkGraph<CellPossibility> graph)
+        IPossibilitiesPositions two, ILinkGraph<CellPossibility> graph)
     {
         List<Link<CellPossibility>> links = new();
 
@@ -79,9 +79,9 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                 if (one.Possibilities.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
-                foreach (var friend in graph.GetLinks(current, LinkStrength.Strong))
+                foreach (var friend in graph.Neighbors(current, LinkStrength.Strong))
                 {
-                    foreach (var friendOfFriend in graph.GetLinks(friend, LinkStrength.Strong))
+                    foreach (var friendOfFriend in graph.Neighbors(friend, LinkStrength.Strong))
                     {
                         var asCell = friendOfFriend.ToCell();
 
@@ -116,7 +116,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
         _links = links;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

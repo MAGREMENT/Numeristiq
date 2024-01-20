@@ -14,9 +14,9 @@ namespace Model.Solver.Helpers.Highlighting;
 public class HighlightExecutable : IHighlighter
 {
     private readonly HighlightInstruction[] _instructions;
-    private readonly ILinkGraphElement[] _register;
+    private readonly IChainingElement[] _register;
 
-    public HighlightExecutable(HighlightInstruction[] instructions, ILinkGraphElement[] register)
+    public HighlightExecutable(HighlightInstruction[] instructions, IChainingElement[] register)
     {
         _instructions = instructions;
         _register = register;
@@ -88,7 +88,7 @@ public readonly struct HighlightInstruction
         _bits = (int)coloration << 28 | (int)type << 24 | number << 4 | (int)unit;
     }
     
-    public void Apply(IHighlightable highlightable, ILinkGraphElement[] registers)
+    public void Apply(IHighlightable highlightable, IChainingElement[] registers)
     {
         switch ((InstructionType)((_bits >> 24) & 0xF))
         {
@@ -146,7 +146,7 @@ public enum InstructionType
 public class HighlightCompiler : IHighlightable
 {
     private readonly List<HighlightInstruction> _instructions = new();
-    private readonly List<ILinkGraphElement> _registers = new();
+    private readonly List<IChainingElement> _registers = new();
 
     public bool Enabled { get; set; } = true;
 
@@ -203,7 +203,7 @@ public class HighlightCompiler : IHighlightable
             house.Unit, house.Number, coloration));
     }
 
-    public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
+    public void HighlightLinkGraphElement(IChainingElement element, ChangeColoration coloration)
     {
         _registers.Add(element);
         _instructions.Add(new HighlightInstruction(InstructionType.HighlightLinkGraphElement,
@@ -216,7 +216,7 @@ public class HighlightCompiler : IHighlightable
             from.Possibility, from.Row, from.Column, to.Possibility, to.Row, to.Column, linkStrength));
     }
 
-    public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
+    public void CreateLink(IChainingElement from, IChainingElement to, LinkStrength linkStrength)
     {
         _registers.Add(from);
         _registers.Add(to);

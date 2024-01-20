@@ -3,7 +3,7 @@ using System.Text;
 
 namespace Model.Utility;
 
-public class BitSet
+public class InfiniteBitSet
 {
     private const int BitSize = 64;
     

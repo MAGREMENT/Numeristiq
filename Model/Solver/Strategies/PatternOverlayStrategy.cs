@@ -286,7 +286,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         Highlight[] highlights = new Highlight[_patterns.Count];
 

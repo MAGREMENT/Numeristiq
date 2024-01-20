@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class CellWeakLinkConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -18,7 +18,7 @@ public class CellWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new CellPossibility(row, col, asArray[i]),
+                        linkGraph.Add(new CellPossibility(row, col, asArray[i]),
                             new CellPossibility(row, col, asArray[j]), LinkStrength.Weak);
                     }
                 }
@@ -26,7 +26,7 @@ public class CellWeakLinkConstructRule : IConstructRule
         }
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -39,7 +39,7 @@ public class CellWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new CellPossibility(row, col, asArray[i]),
+                        linkGraph.Add(new CellPossibility(row, col, asArray[i]),
                             new CellPossibility(row, col, asArray[j]), LinkStrength.Weak);
                     }
                 }

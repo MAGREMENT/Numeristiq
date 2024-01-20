@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
 
-public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : ILinkGraphElement
+public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : IChainingElement
 {
     private bool _withHistory;
     
@@ -73,7 +73,7 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
     }
 }
 
-public class ColoringList<T> where T : ILinkGraphElement
+public class ColoringList<T> where T : IChainingElement
 {
     private readonly List<T> _on = new();
     private readonly List<T> _off = new();

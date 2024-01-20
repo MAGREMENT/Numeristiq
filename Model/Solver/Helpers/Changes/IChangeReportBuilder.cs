@@ -7,7 +7,7 @@ namespace Model.Solver.Helpers.Changes;
 
 public interface IChangeReportBuilder
 {
-    public static void HighlightChanges(IHighlightable highlightable, List<SolverChange> changes)
+    public static void HighlightChanges(IHighlightable highlightable, IReadOnlyList<SolverChange> changes)
     {
         foreach (var change in changes)
         {
@@ -22,21 +22,7 @@ public interface IChangeReportBuilder
         else highlightable.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
     }
 
-    public static string ChangesToString(List<SolverChange> changes)
-    {
-        var builder = new StringBuilder();
-        foreach (var change in changes)
-        {
-            var action = change.ChangeType == ChangeType.Possibility
-                ? "<>"
-                : "==";
-            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}\n");
-        }
-
-        return builder.ToString();
-    }
-    
-    public static string ChangesToString(IEnumerable<SolverChange> changes)
+    public static string ChangesToString(IReadOnlyList<SolverChange> changes)
     {
         var builder = new StringBuilder();
         foreach (var change in changes)
@@ -50,5 +36,5 @@ public interface IChangeReportBuilder
         return builder.ToString();
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot);
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot);
 }

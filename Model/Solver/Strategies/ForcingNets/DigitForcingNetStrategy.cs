@@ -38,8 +38,8 @@ public class DigitForcingNetStrategy : AbstractStrategy
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement> onColoring,
-        ColoringDictionary<ILinkGraphElement> offColoring)
+    private bool Process(IStrategyManager view, ColoringDictionary<IChainingElement> onColoring,
+        ColoringDictionary<IChainingElement> offColoring)
     {
         foreach (var on in onColoring)
         {
@@ -103,17 +103,17 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
 public class DigitForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<ILinkGraphElement> _on;
-    private readonly ColoringDictionary<ILinkGraphElement> _off;
+    private readonly ColoringDictionary<IChainingElement> _on;
+    private readonly ColoringDictionary<IChainingElement> _off;
     private readonly CellPossibility _onPos;
     private readonly Coloring _onColoring;
     private readonly CellPossibility _offPos;
     private readonly Coloring _offColoring;
-    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly ILinkGraph<IChainingElement> _graph;
 
-    public DigitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> on, 
-        ColoringDictionary<ILinkGraphElement> off, CellPossibility onPos, Coloring onColoring,
-        CellPossibility offPos, Coloring offColoring, LinkGraph<ILinkGraphElement> graph)
+    public DigitForcingNetReportBuilder(ColoringDictionary<IChainingElement> on, 
+        ColoringDictionary<IChainingElement> off, CellPossibility onPos, Coloring onColoring,
+        CellPossibility offPos, Coloring offColoring, ILinkGraph<IChainingElement> graph)
     {
         _on = on;
         _off = off;
@@ -124,7 +124,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRootWithGuessedLinks(_onPos, _onColoring),
             _on, _graph, snapshot);
@@ -148,8 +148,8 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         });
     }
 
-    private string Explanation(List<LinkGraphChain<ILinkGraphElement>> onPaths,
-        List<LinkGraphChain<ILinkGraphElement>> offPaths, CellPossibility first)
+    private string Explanation(List<LinkGraphChain<IChainingElement>> onPaths,
+        List<LinkGraphChain<IChainingElement>> offPaths, CellPossibility first)
     {
         return $"If {first} is on : \n{ForcingNetsUtility.AllPathsToString(onPaths)}\n" +
                $"If {first} is off : \n{ForcingNetsUtility.AllPathsToString(offPaths)}";
