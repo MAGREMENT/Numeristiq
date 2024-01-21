@@ -9,9 +9,9 @@ namespace Model.Solver.StrategiesUtility;
 
 public static class ForcingNetsUtility
 {
-    public static void HighlightAllPaths(IHighlightable lighter, List<LinkGraphChain<ILinkGraphElement>> paths, Coloring startColoring)
+    public static void HighlightAllPaths(IHighlighter lighter, List<LinkGraphChain<ISudokuElement>> paths, Coloring startColoring)
     {
-        HashSet<ILinkGraphElement> alreadyHighlighted = new();
+        HashSet<ISudokuElement> alreadyHighlighted = new();
 
         foreach (var path in paths)
         {
@@ -39,7 +39,7 @@ public static class ForcingNetsUtility
         }
     }
 
-    public static string AllPathsToString(List<LinkGraphChain<ILinkGraphElement>> paths)
+    public static string AllPathsToString(List<LinkGraphChain<ISudokuElement>> paths)
     {
         var builder = new StringBuilder();
 
@@ -52,12 +52,12 @@ public static class ForcingNetsUtility
         return builder.ToString();
     }
 
-    public static List<LinkGraphChain<ILinkGraphElement>> FindEveryNeededPaths(LinkGraphChain<ILinkGraphElement> basePath,
-        IColoringResult<ILinkGraphElement> result, LinkGraph<ILinkGraphElement> graph, IPossibilitiesHolder snapshot)
+    public static List<LinkGraphChain<ISudokuElement>> FindEveryNeededPaths(LinkGraphChain<ISudokuElement> basePath,
+        IColoringResult<ISudokuElement> result, ILinkGraph<ISudokuElement> graph, IPossibilitiesHolder snapshot)
     {
-        var list = new List<LinkGraphChain<ILinkGraphElement>> {basePath};
-        HashSet<ILinkGraphElement> allElements = new(basePath.Elements);
-        Queue<LinkGraphChain<ILinkGraphElement>> queue = new();
+        var list = new List<LinkGraphChain<ISudokuElement>> {basePath};
+        HashSet<ISudokuElement> allElements = new(basePath.Elements);
+        Queue<LinkGraphChain<ISudokuElement>> queue = new();
         queue.Enqueue(basePath);
 
         while (queue.Count > 0)
@@ -71,7 +71,7 @@ public static class ForcingNetsUtility
 
                 var currentLink = current.Links[i];
                 if (currentLink != LinkStrength.Strong ||
-                    graph.HasLinkTo(current.Elements[i], current.Elements[i + 1], LinkStrength.Strong)) continue;
+                    graph.AreNeighbors(current.Elements[i], current.Elements[i + 1], LinkStrength.Strong)) continue;
 
                 foreach (var offCell in FindOffCellsInJumpLinks(result, snapshot, from, to))
                 {
@@ -88,7 +88,7 @@ public static class ForcingNetsUtility
         return list;
     }
 
-    private static List<CellPossibility> FindOffCellsInJumpLinks(IColoringResult<ILinkGraphElement> result,
+    private static List<CellPossibility> FindOffCellsInJumpLinks(IColoringResult<ISudokuElement> result,
         IPossibilitiesHolder snapshot, CellPossibility from, CellPossibility to)
     {
         List<CellPossibility>? best = null;

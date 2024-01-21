@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     public AlgorithmType Type => AlgorithmType.Loop;
     

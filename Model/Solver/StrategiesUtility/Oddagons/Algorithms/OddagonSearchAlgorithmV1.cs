@@ -7,7 +7,7 @@ namespace Model.Solver.StrategiesUtility.Oddagons.Algorithms;
 
 public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
 {
-    public List<AlmostOddagon> Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph)
     {
         
         var result = new List<AlmostOddagon>();
@@ -22,7 +22,7 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
                 var current = queue.Dequeue();
                 bool hasParent = parents.TryGetValue(current, out var currentParent);
                 
-                foreach (var friend in graph.GetLinks(current))
+                foreach (var friend in graph.Neighbors(current))
                 {
                     if (friend == start ||(hasParent && friend == currentParent)) continue;
                     
@@ -76,18 +76,18 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
         return result.ToArray();
     }
 
-    private LinkStrength[] SearchLinks(CellPossibility[] elements, LinkGraph<CellPossibility> graph)
+    private LinkStrength[] SearchLinks(CellPossibility[] elements, ILinkGraph<CellPossibility> graph)
     {
         var result = new LinkStrength[elements.Length];
 
         for (int i = 0; i < elements.Length - 1; i++)
         {
-            result[i] = graph.HasLinkTo(elements[i], elements[i + 1], LinkStrength.Strong)
+            result[i] = graph.AreNeighbors(elements[i], elements[i + 1], LinkStrength.Strong)
                 ? LinkStrength.Strong
                 : LinkStrength.Weak;
         }
         
-        result[^1] = graph.HasLinkTo(elements[^1], elements[0], LinkStrength.Strong)
+        result[^1] = graph.AreNeighbors(elements[^1], elements[0], LinkStrength.Strong)
             ? LinkStrength.Strong
             : LinkStrength.Weak;
         

@@ -11,7 +11,7 @@ public class ChangeReportLog : ISolverLog
     public string Title { get; }
     public Intensity Intensity { get; }
     public string Changes { get; }
-    public string Explanation { get; }
+    public string Description { get; }
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager  { get; }
@@ -24,7 +24,7 @@ public class ChangeReportLog : ISolverLog
         Title = strategy.Name;
         Intensity = (Intensity)strategy.Difficulty;
         Changes = report.Changes;
-        Explanation = report.Explanation;
+        Description = report.Description;
         StateBefore = stateBefore;
         StateAfter = stateAfter;
         HighlightManager = report.HighlightManager;

@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility;
 
-public class PointingColumn : ILinkGraphElement
+public class PointingColumn : ISudokuElement
 {
     public int Possibility { get; }
     public int Column { get; }
@@ -95,7 +95,7 @@ public class PointingColumn : ILinkGraphElement
         return result + $"c{Column + 1}";
     }
 
-    public int Rank => 2;
+    public int DifficultyRank => 2;
 
     public CellPossibilities[] EveryCellPossibilities()
     {

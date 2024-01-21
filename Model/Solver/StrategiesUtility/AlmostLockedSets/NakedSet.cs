@@ -6,11 +6,11 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.AlmostLockedSets;
 
-public class NakedSet : ILinkGraphElement
+public class NakedSet : ISudokuElement
 {
     private readonly CellPossibilities[] _cellPossibilities;
     
-    public int Rank => 3;
+    public int DifficultyRank => 3;
 
     public NakedSet(CellPossibilities[] cellPossibilities)
     {

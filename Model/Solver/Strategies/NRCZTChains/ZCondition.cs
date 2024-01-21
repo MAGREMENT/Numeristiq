@@ -10,7 +10,7 @@ public class ZCondition : INRCZTCondition
     public string Name => "Z";
 
     public IEnumerable<(CellPossibility, INRCZTConditionChainManipulation)> SearchEndUnderCondition(
-        IStrategyManager strategyManager, LinkGraph<CellPossibility> graph, BlockChain chain,
+        IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, BlockChain chain,
         CellPossibility bStart)
     {
         var all = chain.AllCellPossibilities();
@@ -173,13 +173,13 @@ public class TargetMustSeeChainManipulation : INRCZTConditionChainManipulation
         _removed = new List<CellPossibility>(1);
     }
 
-    public void BeforeSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
+    public void BeforeSearch(BlockChain chain, ILinkGraph<CellPossibility> graph)
     {
         foreach (var cp in _mustSee)
         {
             foreach (var t in chain.PossibleTargets)
             {
-                if (!graph.HasLinkTo(t, cp) || cp == t)
+                if (!graph.AreNeighbors(t, cp) || cp == t)
                 {
                     _removed.Add(t);
                 }
@@ -189,7 +189,7 @@ public class TargetMustSeeChainManipulation : INRCZTConditionChainManipulation
         chain.PossibleTargets.ExceptWith(_removed);
     }
 
-    public void AfterSearch(BlockChain chain, LinkGraph<CellPossibility> graph)
+    public void AfterSearch(BlockChain chain, ILinkGraph<CellPossibility> graph)
     {
         chain.PossibleTargets.UnionWith(_removed);
     }

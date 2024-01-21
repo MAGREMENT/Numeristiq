@@ -40,7 +40,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
 
     private bool Search(IStrategyManager strategyManager, PositionsGraph<IPossibilitiesPositions> graph,
         IReadOnlyPossibilities occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
-        LinkGraph<CellPossibility> linkGraph)
+        ILinkGraph<CellPossibility> linkGraph)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
         {
@@ -105,7 +105,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
         return false;
     }
 
-    private bool CheckForChain(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, Cell> chain, LinkGraph<CellPossibility> linkGraph)
+    private bool CheckForChain(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, Cell> chain, ILinkGraph<CellPossibility> linkGraph)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
         
@@ -127,11 +127,11 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
                 if (first.Possibilities.Peek(possibility) || last.Possibilities.Peek(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
-                foreach (var friend in linkGraph.GetLinks(current, LinkStrength.Strong))
+                foreach (var friend in linkGraph.Neighbors(current, LinkStrength.Strong))
                 {
                     if (nope.Peek(friend.ToCell())) continue;
                     
-                    foreach (var friendOfFriend in linkGraph.GetLinks(friend, LinkStrength.Strong))
+                    foreach (var friendOfFriend in linkGraph.Neighbors(friend, LinkStrength.Strong))
                     {
                         var asCell = friendOfFriend.ToCell();
 
@@ -172,7 +172,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
         _additionalLink = additionalLink;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _chain.ToString(), lighter =>
         {

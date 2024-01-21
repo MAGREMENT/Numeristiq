@@ -155,12 +155,12 @@ public class ThorsHammerStrategy : AbstractStrategy
                 ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
             var linkGraph = strategyManager.GraphManager.SimpleLinkGraph;
 
-            foreach (var target in linkGraph.GetLinks(notInPattern[0]))
+            foreach (var target in linkGraph.Neighbors(notInPattern[0]))
             {
                 var ok = true;
                 for (int i = 1; i < notInPattern.Count; i++)
                 {
-                    if (!linkGraph.HasLinkTo(notInPattern[i], target))
+                    if (!linkGraph.AreNeighbors(notInPattern[i], target))
                     {
                         ok = false;
                         break;
@@ -453,7 +453,7 @@ public class ThorsHammerReportBuilder : IChangeReportBuilder
         _notInPattern = notInPattern;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
         {

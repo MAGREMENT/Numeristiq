@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCommitComparer where T : ILinkGraphElement
+public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCommitComparer where T : ISudokuElement
 {
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
     
@@ -40,14 +40,14 @@ public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCo
     }
 }
 
-public interface IAlternatingInferenceType<T> where T : ILinkGraphElement
+public interface IAlternatingInferenceType<T> where T : ISudokuElement
 {
     public string LoopName { get; }
     public string ChainName { get; }
     public StrategyDifficulty Difficulty { get; }
     IStrategy? Strategy { set; get; }
     
-    LinkGraph<T> GetGraph(IStrategyManager strategyManager);
+    ILinkGraph<T> GetGraph(IStrategyManager strategyManager);
 
     bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<T> loop);
 
@@ -55,16 +55,16 @@ public interface IAlternatingInferenceType<T> where T : ILinkGraphElement
 
     bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<T> chain, LinkGraph<T> graph);
+    bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<T> chain, ILinkGraph<T> graph);
 
     static bool ProcessChainWithSimpleGraph(IStrategyManager strategyManager, LinkGraphChain<CellPossibility> chain,
-        LinkGraph<CellPossibility> graph, IStrategy strategy)
+        ILinkGraph<CellPossibility> graph, IStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 
-        foreach (var target in graph.GetLinks(chain.Elements[0]))
+        foreach (var target in graph.Neighbors(chain.Elements[0]))
         {
-            if (graph.HasLinkTo(target, chain.Elements[^1]))
+            if (graph.AreNeighbors(target, chain.Elements[^1]))
                 strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
@@ -73,26 +73,26 @@ public interface IAlternatingInferenceType<T> where T : ILinkGraphElement
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
     
-    static bool ProcessChainWithComplexGraph(IStrategyManager strategyManager, LinkGraphChain<ILinkGraphElement> chain,
-        LinkGraph<ILinkGraphElement> graph, IStrategy strategy)
+    static bool ProcessChainWithComplexGraph(IStrategyManager strategyManager, LinkGraphChain<ISudokuElement> chain,
+        ILinkGraph<ISudokuElement> graph, IStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 
-        foreach (var target in graph.GetLinks(chain.Elements[0]))
+        foreach (var target in graph.Neighbors(chain.Elements[0]))
         {
             if (target is not CellPossibility cp) continue;
             
-            if (graph.HasLinkTo(target, chain.Elements[^1]))
+            if (graph.AreNeighbors(target, chain.Elements[^1]))
                 strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(strategy,
-                   new AlternatingInferenceChainReportBuilder<ILinkGraphElement>(chain)) &&
+                   new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 
-public interface IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public interface IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     AlgorithmType Type { get; }
     void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type);
@@ -109,7 +109,7 @@ public interface IReportBuilderWithChain
     public int Length();
 }
 
-public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : ILinkGraphElement
+public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphLoop<T> _loop;
     private readonly LoopType _type;
@@ -120,7 +120,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IR
         _type = type;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
             lighter =>
@@ -173,7 +173,7 @@ public enum LoopType
     NiceLoop, WeakInference, StrongInference
 }
 
-public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : ILinkGraphElement
+public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphChain<T> _chain;
 
@@ -182,7 +182,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, I
         _chain = chain;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
             lighter =>

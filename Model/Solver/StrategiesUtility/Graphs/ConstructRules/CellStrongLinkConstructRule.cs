@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class CellStrongLinkConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -15,13 +15,13 @@ public class CellStrongLinkConstructRule : IConstructRule
 
                 var asArray = strategyManager.PossibilitiesAt(row, col).ToArray();
 
-                linkGraph.AddLink(new CellPossibility(row, col, asArray[0]),
+                linkGraph.Add(new CellPossibility(row, col, asArray[0]),
                     new CellPossibility(row, col, asArray[1]), LinkStrength.Strong);
             }
         }
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -31,7 +31,7 @@ public class CellStrongLinkConstructRule : IConstructRule
 
                 var asArray = strategyManager.PossibilitiesAt(row, col).ToArray();
 
-                linkGraph.AddLink(new CellPossibility(row, col, asArray[0]),
+                linkGraph.Add(new CellPossibility(row, col, asArray[0]),
                     new CellPossibility(row, col, asArray[1]), LinkStrength.Strong);
             }
         }

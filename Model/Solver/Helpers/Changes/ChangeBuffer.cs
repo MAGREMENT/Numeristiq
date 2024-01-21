@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Global;
 using Global.Enums;
 using Model.Solver.StrategiesUtility;
-using Model.Utility;
 
 namespace Model.Solver.Helpers.Changes;
 
@@ -102,20 +100,21 @@ public class ChangeBuffer
         _m.LogManager.StopPush();
     }
     
-    private List<SolverChange> BuffersToChangeList()
+    private SolverChange[] BuffersToChangeList()
     {
-        List<SolverChange> changes = new();
+        var count = 0;
+        var changes = new SolverChange[_solutionAddedBuffer.Count + _possibilityRemovedBuffer.Count];
         
         foreach (var solution in _solutionAddedBuffer)
         {
-            changes.Add(new SolverChange(ChangeType.Solution, solution.Possibility, 
-                solution.Row, solution.Column));
+            changes[count++] = new SolverChange(ChangeType.Solution, solution.Possibility,
+                solution.Row, solution.Column);
         }
         
         foreach (var possibility in _possibilityRemovedBuffer)
         {
-            changes.Add(new SolverChange(ChangeType.Possibility, 
-                possibility.Possibility, possibility.Row, possibility.Column));
+            changes[count++] = new SolverChange(ChangeType.Possibility, 
+                possibility.Possibility, possibility.Row, possibility.Column);
         }
         
         _possibilityRemovedBuffer.Clear();
@@ -143,17 +142,17 @@ public class ChangeBuffer
 public class ChangeCommit
 {
     public IStrategy Responsible { get; }
-    public List<SolverChange> Changes { get; }
+    public SolverChange[] Changes { get; }
     public IChangeReportBuilder? Builder { get; }
 
-    public ChangeCommit(IStrategy responsible, List<SolverChange> changes, IChangeReportBuilder builder)
+    public ChangeCommit(IStrategy responsible, SolverChange[] changes, IChangeReportBuilder builder)
     {
         Responsible = responsible;
         Changes = changes;
         Builder = builder;
     }
 
-    public ChangeCommit(IStrategy responsible, List<SolverChange> changes)
+    public ChangeCommit(IStrategy responsible, SolverChange[] changes)
     {
         Responsible = responsible;
         Changes = changes;
@@ -163,7 +162,7 @@ public class ChangeCommit
 
 public class BuiltChangeCommit
 {
-    public BuiltChangeCommit(IStrategy responsible, List<SolverChange> changes, ChangeReport report)
+    public BuiltChangeCommit(IStrategy responsible, SolverChange[] changes, ChangeReport report)
     {
         Responsible = responsible;
         Changes = changes;
@@ -171,7 +170,7 @@ public class BuiltChangeCommit
     }
 
     public IStrategy Responsible { get; }
-    public List<SolverChange> Changes { get; }
+    public SolverChange[] Changes { get; }
     public ChangeReport Report { get; }
 }
 

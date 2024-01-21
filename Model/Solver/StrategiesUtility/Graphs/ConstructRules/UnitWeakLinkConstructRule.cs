@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class UnitWeakLinkConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -19,7 +19,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new CellPossibility(row, asArray[i], number),
+                        linkGraph.Add(new CellPossibility(row, asArray[i], number),
                             new CellPossibility(row, asArray[j], number), LinkStrength.Weak);
                     }
                 }
@@ -35,7 +35,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new CellPossibility(asArray[i], col, number),
+                        linkGraph.Add(new CellPossibility(asArray[i], col, number),
                             new CellPossibility(asArray[j], col, number), LinkStrength.Weak);
                     }
                 }
@@ -53,7 +53,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
                     {
                         for (int j = i + 1; j < asArray.Length; j++)
                         {
-                            linkGraph.AddLink(new CellPossibility(asArray[i], number),
+                            linkGraph.Add(new CellPossibility(asArray[i], number),
                                 new CellPossibility(asArray[j], number), LinkStrength.Weak);
                         }
                     }
@@ -62,7 +62,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
         }
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -76,7 +76,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new CellPossibility(row, asArray[i], number),
+                        linkGraph.Add(new CellPossibility(row, asArray[i], number),
                             new CellPossibility(row, asArray[j], number), LinkStrength.Weak);
                     }
                 }
@@ -92,7 +92,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
                 {
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        linkGraph.AddLink(new CellPossibility(asArray[i], col, number),
+                        linkGraph.Add(new CellPossibility(asArray[i], col, number),
                             new CellPossibility(asArray[j], col, number), LinkStrength.Weak);
                     }
                 }
@@ -110,7 +110,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
                     {
                         for (int j = i + 1; j < asArray.Length; j++)
                         {
-                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
+                            linkGraph.Add(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
                                 new CellPossibility(asArray[j].Row, asArray[j].Column, number), LinkStrength.Weak);
                         }
                     }

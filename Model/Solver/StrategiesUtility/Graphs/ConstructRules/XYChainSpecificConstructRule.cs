@@ -5,12 +5,12 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class XYChainSpecificConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -28,7 +28,7 @@ public class XYChainSpecificConstructRule : IConstructRule
                     {
                         if (strategyManager.PossibilitiesAt(row, asArray[j]).Count != 2) continue;
                         
-                        linkGraph.AddLink(new CellPossibility(row, asArray[i], number),
+                        linkGraph.Add(new CellPossibility(row, asArray[i], number),
                             new CellPossibility(row, asArray[j], number), LinkStrength.Weak);
                     }
                 }
@@ -48,7 +48,7 @@ public class XYChainSpecificConstructRule : IConstructRule
                     {
                         if (strategyManager.PossibilitiesAt(asArray[j], col).Count != 2) continue;
                         
-                        linkGraph.AddLink(new CellPossibility(asArray[i], col, number),
+                        linkGraph.Add(new CellPossibility(asArray[i], col, number),
                             new CellPossibility(asArray[j], col, number), LinkStrength.Weak);
                     }
                 }
@@ -70,7 +70,7 @@ public class XYChainSpecificConstructRule : IConstructRule
                         {
                             if (strategyManager.PossibilitiesAt(asArray[j]).Count != 2) continue;
                             
-                            linkGraph.AddLink(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
+                            linkGraph.Add(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
                                 new CellPossibility(asArray[j].Row, asArray[j].Column, number), LinkStrength.Weak);
                         }
                     }

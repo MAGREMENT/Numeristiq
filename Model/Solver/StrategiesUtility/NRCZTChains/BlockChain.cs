@@ -11,10 +11,10 @@ public class BlockChain : List<Block>
 
     private readonly Dictionary<Block, List<CellPossibility>> _removed = new();
     
-    public BlockChain(Block first, LinkGraph<CellPossibility> graph)
+    public BlockChain(Block first, ILinkGraph<CellPossibility> graph)
     {
         Add(first);
-        foreach (var friend in graph.GetLinks(first.Start))
+        foreach (var friend in graph.Neighbors(first.Start))
         {
             if (friend != first.End) PossibleTargets.Add(friend);
         }
@@ -31,7 +31,7 @@ public class BlockChain : List<Block>
         _removed[b] = removed;
     }
     
-    public void RemoveLast(LinkGraph<CellPossibility> graph)
+    public void RemoveLast(ILinkGraph<CellPossibility> graph)
     {
         if (Count == 0) return;
 

@@ -11,7 +11,7 @@ public interface ISolverLog
     public string Title { get; }
     public Intensity Intensity { get; }
     public string Changes { get; }
-    public string Explanation { get; }
+    public string Description { get; }
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager { get; }

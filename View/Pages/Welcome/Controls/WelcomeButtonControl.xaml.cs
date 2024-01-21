@@ -36,6 +36,8 @@ public partial class WelcomeButtonControl
         MouseLeftButtonDown += (o, a) => Click?.Invoke(o, a);
         MouseEnter += (_, _) => Border.BorderBrush = _hoverBorder;
         MouseLeave += (_, _) => Border.BorderBrush = _defaultBorder;
+
+        RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
         
         ((App)Application.Current).ThemeChanged += ApplyTheme;
     }

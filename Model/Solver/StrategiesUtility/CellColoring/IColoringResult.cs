@@ -2,7 +2,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.CellColoring;
 
-public interface IColoringResult<T> where T : ILinkGraphElement
+public interface IColoringResult<T> where T : ISudokuElement
 {
     public IReadOnlyColoringHistory<T>? History { get; }
 

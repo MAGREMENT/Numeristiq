@@ -15,20 +15,20 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder
         _maxLoopSize = maxLoopSize;
     }
 
-    public List<LinkGraphLoop<ILinkGraphElement>> Find(CellPossibility[] cps, LinkGraph<ILinkGraphElement> graph)
+    public List<LinkGraphLoop<ISudokuElement>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
     {
-        List<LinkGraphLoop<ILinkGraphElement>> result = new();
+        List<LinkGraphLoop<ISudokuElement>> result = new();
 
         foreach (var start in cps)
         {
-            Search(cps, graph, new LinkGraphChainBuilder<ILinkGraphElement>(start), result);
+            Search(cps, graph, new LinkGraphChainBuilder<ISudokuElement>(start), result);
         }
 
         return result;
     }
 
-    public void Search(CellPossibility[] cps, LinkGraph<ILinkGraphElement> graph,
-        LinkGraphChainBuilder<ILinkGraphElement> builder, List<LinkGraphLoop<ILinkGraphElement>> result)
+    public void Search(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph,
+        LinkGraphChainBuilder<ISudokuElement> builder, List<LinkGraphLoop<ISudokuElement>> result)
     {
         if (builder.Count > _maxLoopSize) return;
         
@@ -37,7 +37,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder
         var link = builder.LastLink() == LinkStrength.None ? LinkStrength.Any : (builder.LastLink() ==
                 LinkStrength.Strong ? LinkStrength.Any : LinkStrength.Strong);
 
-        foreach (var friend in graph.GetLinks(last, link))
+        foreach (var friend in graph.Neighbors(last, link))
         {
             if (friend.Equals(first)) continue;
 
@@ -58,7 +58,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder
         }
     }
     
-    private bool ComponentsCheck(CellPossibility[] cps, ILinkGraphElement friend)
+    private bool ComponentsCheck(CellPossibility[] cps, ISudokuElement friend)
     {
         if (friend is CellPossibility) return true;
 

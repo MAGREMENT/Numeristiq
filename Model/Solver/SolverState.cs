@@ -60,7 +60,7 @@ public class SolverState : ITranslatable
         return At(row, col).AsPossibilities;
     }
 
-    public SolverState Apply(List<SolverChange> changes)
+    public SolverState Apply(IReadOnlyList<SolverChange> changes)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);

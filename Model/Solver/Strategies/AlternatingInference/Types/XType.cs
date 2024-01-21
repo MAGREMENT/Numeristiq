@@ -13,7 +13,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
     public string ChainName => OfficialChainName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public IStrategy? Strategy { get; set; }
-    public LinkGraph<CellPossibility> GetGraph(IStrategyManager strategyManager)
+    public ILinkGraph<CellPossibility> GetGraph(IStrategyManager strategyManager)
     {
         strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
         return strategyManager.GraphManager.SimpleLinkGraph;
@@ -50,7 +50,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
     }
 
-    public bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<CellPossibility> chain, LinkGraph<CellPossibility> graph)
+    public bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<CellPossibility> chain, ILinkGraph<CellPossibility> graph)
     {
         return IAlternatingInferenceType<CellPossibility>.ProcessChainWithSimpleGraph(strategyManager,
             chain, graph, Strategy!);

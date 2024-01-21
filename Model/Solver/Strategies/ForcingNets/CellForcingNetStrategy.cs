@@ -34,7 +34,7 @@ public class CellForcingNetStrategy : AbstractStrategy
                     strategyManager.PossibilitiesAt(row, col).Count > _max) continue;
                 var possAsArray = strategyManager.PossibilitiesAt(row, col).ToArray();
 
-                var colorings = new ColoringDictionary<ILinkGraphElement>[possAsArray.Length];
+                var colorings = new ColoringDictionary<ISudokuElement>[possAsArray.Length];
 
                 for (int i = 0; i < possAsArray.Length; i++)
                 {
@@ -46,7 +46,7 @@ public class CellForcingNetStrategy : AbstractStrategy
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings, Cell current)
+    private bool Process(IStrategyManager view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
     {
         foreach (var element in colorings[0])
         {
@@ -224,15 +224,15 @@ public class CellForcingNetStrategy : AbstractStrategy
 
 public class CellForcingNetBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<ILinkGraphElement>[] _colorings;
+    private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly int _row;
     private readonly int _col;
     private readonly CellPossibility _target;
     private readonly Coloring _targetColoring;
-    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly ILinkGraph<ISudokuElement> _graph;
 
-    public CellForcingNetBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, int row, int col,
-        CellPossibility target, Coloring targetColoring, LinkGraph<ILinkGraphElement> graph)
+    public CellForcingNetBuilder(ColoringDictionary<ISudokuElement>[] colorings, int row, int col,
+        CellPossibility target, Coloring targetColoring, ILinkGraph<ISudokuElement> graph)
     {
         _colorings = colorings;
         _row = row;
@@ -243,10 +243,10 @@ public class CellForcingNetBuilder : IChangeReportBuilder
     }
 
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         Highlight[] highlights = new Highlight[_colorings.Length];
-        var paths = new List<LinkGraphChain<ILinkGraphElement>>[_colorings.Length];
+        var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
 
         for (int i = 0; i < _colorings.Length; i++)
         {

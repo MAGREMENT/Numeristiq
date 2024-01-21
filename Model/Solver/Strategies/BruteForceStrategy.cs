@@ -84,7 +84,7 @@ public class BruteForceStrategy : AbstractStrategy
 
 public class BruteForceReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return ChangeReport.Default(changes);
     }

@@ -4,10 +4,10 @@ namespace Model.Solver.StrategiesUtility.Graphs;
 
 public class LinkGraphManager
 {
-    public LinkGraph<ILinkGraphElement> ComplexLinkGraph { get; } = new();
+    public ILinkGraph<ISudokuElement> ComplexLinkGraph { get; } = ILinkGraph<ISudokuElement>.New();
     private long _rulesAppliedOnComplex;
 
-    public LinkGraph<CellPossibility> SimpleLinkGraph { get; } = new();
+    public ILinkGraph<CellPossibility> SimpleLinkGraph { get; } = ILinkGraph<CellPossibility>.New();
     private long _rulesAppliedOnSimple;
 
     private readonly IStrategyManager _solver;
@@ -104,7 +104,7 @@ public enum ConstructRule
 
 public interface IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager);
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager);
     
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager);
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager);
 }

@@ -5,23 +5,23 @@ namespace Model.Solver.Helpers.Changes;
 
 public class ChangeReport
 {
-    public string Explanation { get; }
+    public string Description { get; }
     public HighlightManager HighlightManager { get; }
     public string Changes { get; }
     
-    public ChangeReport(string changes,  string explanation, Highlight highlighter)
+    public ChangeReport(string changes, string description, Highlight highlighter)
     {
-        Explanation = explanation;
+        Description = description;
         Changes = changes;
         HighlightManager = new HighlightManager(HighlightCompiler.GetInstance().Compile(highlighter));
     }
     
-    public ChangeReport(string changes, string explanation, params Highlight[] highlighters)
+    public ChangeReport(string changes, string description, params Highlight[] highlighters)
     {
-        Explanation = explanation;
+        Description = description;
         Changes = changes;
 
-        IHighlighter[] compiled = new IHighlighter[highlighters.Length];
+        IHighlightable[] compiled = new IHighlightable[highlighters.Length];
 
         for (int i = 0; i < highlighters.Length; i++)
         {
@@ -31,12 +31,12 @@ public class ChangeReport
         HighlightManager = new HighlightManager(compiled);
     }
     
-    public ChangeReport(string changes, string explanation, Highlight first, params Highlight[] highlighters)
+    public ChangeReport(string changes, string description, Highlight first, params Highlight[] highlighters)
     {
-        Explanation = explanation;
+        Description = description;
         Changes = changes;
 
-        IHighlighter[] compiled = new IHighlighter[highlighters.Length + 1];
+        IHighlightable[] compiled = new IHighlightable[highlighters.Length + 1];
         compiled[0] = HighlightCompiler.GetInstance().Compile(first);
 
         for (int i = 0; i < highlighters.Length; i++)
@@ -47,7 +47,7 @@ public class ChangeReport
         HighlightManager = new HighlightManager(compiled);
     }
 
-    public static ChangeReport Default(List<SolverChange> changes)
+    public static ChangeReport Default(IReadOnlyList<SolverChange> changes)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));

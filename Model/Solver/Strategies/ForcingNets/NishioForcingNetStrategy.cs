@@ -214,17 +214,17 @@ public enum ContradictionCause
 
 public class NishioForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<ILinkGraphElement> _coloring;
+    private readonly ColoringDictionary<ISudokuElement> _coloring;
     private readonly int _row;
     private readonly int _col;
     private readonly int _possibility;
     private readonly ContradictionCause _cause;
     private readonly CellPossibility _lastChecked;
     private readonly Coloring _causeColoring;
-    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly ILinkGraph<ISudokuElement> _graph;
 
-    public NishioForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement> coloring, int row, int col,
-        int possibility, ContradictionCause cause, CellPossibility lastChecked, Coloring causeColoring, LinkGraph<ILinkGraphElement> graph)
+    public NishioForcingNetReportBuilder(ColoringDictionary<ISudokuElement> coloring, int row, int col,
+        int possibility, ContradictionCause cause, CellPossibility lastChecked, Coloring causeColoring, ILinkGraph<ISudokuElement> graph)
     {
         _coloring = coloring;
         _row = row;
@@ -236,7 +236,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Highlight> highlighters = new();
         switch (_cause)

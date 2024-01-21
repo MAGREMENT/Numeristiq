@@ -31,7 +31,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 var ppir = strategyManager.RowPositionsAt(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
-                var colorings = new ColoringDictionary<ILinkGraphElement>[ppir.Count];
+                var colorings = new ColoringDictionary<ISudokuElement>[ppir.Count];
 
                 var cursor = 0;
                 foreach (var col in ppir)
@@ -48,7 +48,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 var ppic = strategyManager.ColumnPositionsAt(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
-                var colorings = new ColoringDictionary<ILinkGraphElement>[ppic.Count];
+                var colorings = new ColoringDictionary<ISudokuElement>[ppic.Count];
 
                 var cursor = 0;
                 foreach (var row in ppic)
@@ -67,7 +67,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
-                    var colorings = new ColoringDictionary<ILinkGraphElement>[ppimn.Count];
+                    var colorings = new ColoringDictionary<ISudokuElement>[ppimn.Count];
 
                     var cursor = 0;
                     foreach (var pos in ppimn)
@@ -82,7 +82,7 @@ public class UnitForcingNetStrategy : AbstractStrategy
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<ILinkGraphElement>[] colorings)
+    private bool Process(IStrategyManager view, ColoringDictionary<ISudokuElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {
@@ -125,12 +125,12 @@ public class UnitForcingNetStrategy : AbstractStrategy
 
 public class UnitForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<ILinkGraphElement>[] _colorings;
+    private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;
     private readonly Coloring _targetColoring;
-    private readonly LinkGraph<ILinkGraphElement> _graph;
+    private readonly ILinkGraph<ISudokuElement> _graph;
 
-    public UnitForcingNetReportBuilder(ColoringDictionary<ILinkGraphElement>[] colorings, CellPossibility target, Coloring targetColoring, LinkGraph<ILinkGraphElement> graph)
+    public UnitForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, CellPossibility target, Coloring targetColoring, ILinkGraph<ISudokuElement> graph)
     {
         _colorings = colorings;
         _target = target;
@@ -138,10 +138,10 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         Highlight[] highlights = new Highlight[_colorings.Length];
-        var paths = new List<LinkGraphChain<ILinkGraphElement>>[_colorings.Length];
+        var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
 
         for (int i = 0; i < _colorings.Length; i++)
         {

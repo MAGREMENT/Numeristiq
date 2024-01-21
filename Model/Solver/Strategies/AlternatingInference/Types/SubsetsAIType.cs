@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Types;
 
-public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
+public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
 {
     public const string OfficialLoopName = "Subsets Alternating Inference Loops";
     public const string OfficialChainName = "Subsets Alternating Inference Chains";
@@ -16,7 +16,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
     public string ChainName => OfficialChainName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
     public IStrategy? Strategy { get; set; }
-    public LinkGraph<ILinkGraphElement> GetGraph(IStrategyManager strategyManager)
+    public ILinkGraph<ISudokuElement> GetGraph(IStrategyManager strategyManager)
     {
         strategyManager.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
             ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
@@ -24,14 +24,14 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
         return strategyManager.GraphManager.ComplexLinkGraph;
     }
 
-    public bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<ILinkGraphElement> loop)
+    public bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<ISudokuElement> loop)
     {
         loop.ForEachLink((one, two) => ProcessWeakLink(strategyManager, one, two), LinkStrength.Weak);
 
-        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.NiceLoop));
+        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.NiceLoop));
     }
 
-    private void ProcessWeakLink(IStrategyManager view, ILinkGraphElement one, ILinkGraphElement two)
+    private void ProcessWeakLink(IStrategyManager view, ISudokuElement one, ISudokuElement two)
     {
         var cp1 = one.EveryCellPossibilities();
         var pos1 = one.EveryPossibilities();
@@ -93,25 +93,25 @@ public class SubsetsAIType : IAlternatingInferenceType<ILinkGraphElement>
         }
     }
 
-    public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
+    public bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
         strategyManager.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Column);
 
-        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.WeakInference));
+        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.WeakInference));
     }
 
-    public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, ILinkGraphElement inference, LinkGraphLoop<ILinkGraphElement> loop)
+    public bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
     {
         if (inference is not CellPossibility pos) return false;
         strategyManager.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Column);
 
-        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ILinkGraphElement>(loop, LoopType.StrongInference));
+        return strategyManager.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.StrongInference));
     }
 
-    public bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<ILinkGraphElement> chain, LinkGraph<ILinkGraphElement> graph)
+    public bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<ISudokuElement> chain, ILinkGraph<ISudokuElement> graph)
     {
-        return IAlternatingInferenceType<ILinkGraphElement>.ProcessChainWithComplexGraph(strategyManager,
+        return IAlternatingInferenceType<ISudokuElement>.ProcessChainWithComplexGraph(strategyManager,
             chain, graph, Strategy!);
     }
 }

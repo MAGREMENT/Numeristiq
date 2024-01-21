@@ -108,7 +108,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)

@@ -38,7 +38,7 @@ public class LogManager
         _stateBuffer = _holder.CurrentState;
     }
 
-    public void AddFromReport(ChangeReport report, List<SolverChange> changes, IStrategy strategy)
+    public void AddFromReport(ChangeReport report, IReadOnlyList<SolverChange> changes, IStrategy strategy)
     {
         if (!IsEnabled || _stateBuffer == null) return;
         Logs.Add(new ChangeReportLog(_idCount++, strategy, report, _stateBuffer, _stateBuffer.Apply(changes)));

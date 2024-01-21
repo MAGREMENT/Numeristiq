@@ -11,22 +11,22 @@ namespace Model.Solver.Helpers.Highlighting;
 /// This class is made so not too many model class instances are kept in memory just for the logs.
 /// I have no idea if this is needed or useful but it has been on my mind for a long time and i wanna do it
 /// </summary>
-public class HighlightExecutable : IHighlighter
+public class HighlightExecutable : IHighlightable
 {
     private readonly HighlightInstruction[] _instructions;
-    private readonly ILinkGraphElement[] _register;
+    private readonly ISudokuElement[] _register;
 
-    public HighlightExecutable(HighlightInstruction[] instructions, ILinkGraphElement[] register)
+    public HighlightExecutable(HighlightInstruction[] instructions, ISudokuElement[] register)
     {
         _instructions = instructions;
         _register = register;
     }
 
-    public void Highlight(IHighlightable highlightable)
+    public void Highlight(IHighlighter highlighter)
     {
         foreach (var instruction in _instructions)
         {
-            instruction.Apply(highlightable, _register);
+            instruction.Apply(highlighter, _register);
         }
     }
 }
@@ -88,46 +88,46 @@ public readonly struct HighlightInstruction
         _bits = (int)coloration << 28 | (int)type << 24 | number << 4 | (int)unit;
     }
     
-    public void Apply(IHighlightable highlightable, ILinkGraphElement[] registers)
+    public void Apply(IHighlighter highlighter, ISudokuElement[] registers)
     {
         switch ((InstructionType)((_bits >> 24) & 0xF))
         {
             case InstructionType.HighlightPossibility :
-                highlightable.HighlightPossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
+                highlighter.HighlightPossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF, (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.HighlightCell :
-                highlightable.HighlightCell((_bits >> 16) & 0xF,
+                highlighter.HighlightCell((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF, (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CirclePossibility :
-                highlightable.EncirclePossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
+                highlighter.EncirclePossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF);
                 break;
             case InstructionType.CircleCell :
-                highlightable.EncircleCell((_bits >> 16) & 0xF,
+                highlighter.EncircleCell((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF);
                 break;
             case InstructionType.HighlightLinkGraphElement :
-                highlightable.HighlightLinkGraphElement(registers[(_bits >> 12) & 0xFFF],
+                highlighter.HighlightLinkGraphElement(registers[(_bits >> 12) & 0xFFF],
                     (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CreateSimpleLink :
-                highlightable.CreateLink(new CellPossibility((_bits >> 16) & 0xF,
+                highlighter.CreateLink(new CellPossibility((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF, (_bits >> 20) & 0xF), new CellPossibility((_bits >> 4) & 0xF,
                     _bits & 0xF, (_bits >> 8) & 0xF), (LinkStrength)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CreateGroupLink :
-                highlightable.CreateLink(registers[(_bits >> 12) & 0xFFF], registers[_bits & 0xFFF],
+                highlighter.CreateLink(registers[(_bits >> 12) & 0xFFF], registers[_bits & 0xFFF],
                     (LinkStrength)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CircleRectangle:
-                highlightable.EncircleRectangle(new CellPossibility((_bits >> 16) & 0xF,
+                highlighter.EncircleRectangle(new CellPossibility((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF, (_bits >> 20) & 0xF), new CellPossibility((_bits >> 4) & 0xF,
                     _bits & 0xF, (_bits >> 8) & 0xF), (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CircleRectangleFromCoverHouse:
-                highlightable.EncircleRectangle(new CoverHouse((Unit)(_bits & 0xF), (_bits >> 4) & 0xF),
+                highlighter.EncircleRectangle(new CoverHouse((Unit)(_bits & 0xF), (_bits >> 4) & 0xF),
                     (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             default:
@@ -143,10 +143,10 @@ public enum InstructionType
     CircleRectangleFromCoverHouse = 8
 }
 
-public class HighlightCompiler : IHighlightable
+public class HighlightCompiler : IHighlighter
 {
     private readonly List<HighlightInstruction> _instructions = new();
-    private readonly List<ILinkGraphElement> _registers = new();
+    private readonly List<ISudokuElement> _registers = new();
 
     public bool Enabled { get; set; } = true;
 
@@ -160,9 +160,9 @@ public class HighlightCompiler : IHighlightable
     
     private HighlightCompiler() {}
     
-    public IHighlighter Compile(Highlight d)
+    public IHighlightable Compile(Highlight d)
     {
-        if (!Enabled) return new DelegateHighlighter(d);
+        if (!Enabled) return new DelegateHighlightable(d);
         
         d(this);
         var result = new HighlightExecutable(_instructions.ToArray(), _registers.ToArray());
@@ -203,7 +203,7 @@ public class HighlightCompiler : IHighlightable
             house.Unit, house.Number, coloration));
     }
 
-    public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
+    public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration)
     {
         _registers.Add(element);
         _instructions.Add(new HighlightInstruction(InstructionType.HighlightLinkGraphElement,
@@ -216,7 +216,7 @@ public class HighlightCompiler : IHighlightable
             from.Possibility, from.Row, from.Column, to.Possibility, to.Row, to.Column, linkStrength));
     }
 
-    public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
+    public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength)
     {
         _registers.Add(from);
         _registers.Add(to);

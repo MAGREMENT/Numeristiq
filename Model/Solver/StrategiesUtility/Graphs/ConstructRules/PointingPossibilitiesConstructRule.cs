@@ -6,7 +6,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class PointingPossibilitiesConstructRule : IConstructRule
 {
-    public void Apply(LinkGraph<ILinkGraphElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -22,12 +22,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
         }
     }
 
-    public void Apply(LinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
     {
         
     }
 
-    private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, LinkGraph<ILinkGraphElement> linkGraph,
+    private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, ILinkGraph<ISudokuElement> linkGraph,
         IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -59,12 +59,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
 
                 foreach (var single in singles)
                 {
-                    linkGraph.AddLink(current, single, singleStrength);
+                    linkGraph.Add(current, single, singleStrength);
                 }
 
                 foreach (var pc in pcs)
                 {
-                    linkGraph.AddLink(current, pc, pcsStrength);
+                    linkGraph.Add(current, pc, pcsStrength);
                 }
                 
                 singles.Clear();
@@ -92,12 +92,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
 
                 foreach (var single in singles)
                 {
-                    linkGraph.AddLink(current, single, singleStrength);
+                    linkGraph.Add(current, single, singleStrength);
                 }
 
                 foreach (var pr in prs)
                 {
-                    linkGraph.AddLink(current, pr, prsStrength);
+                    linkGraph.Add(current, pr, prsStrength);
                 }
             }
         }
@@ -131,12 +131,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
 
                 foreach (var single in singles)
                 {
-                    linkGraph.AddLink(current, single, singleStrength);
+                    linkGraph.Add(current, single, singleStrength);
                 }
 
                 foreach (var pc in prs)
                 {
-                    linkGraph.AddLink(current, pc, prsStrength);
+                    linkGraph.Add(current, pc, prsStrength);
                 }
                 
                 singles.Clear();
@@ -164,12 +164,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
 
                 foreach (var single in singles)
                 {
-                    linkGraph.AddLink(current, single, singleStrength);
+                    linkGraph.Add(current, single, singleStrength);
                 }
 
                 foreach (var pc in pcs)
                 {
-                    linkGraph.AddLink(current, pc, pcsStrength);
+                    linkGraph.Add(current, pc, pcsStrength);
                 }
             }
         }

@@ -158,7 +158,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
         _als = als;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
         {

@@ -14,7 +14,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
     }
 
 
-    public List<AlmostOddagon> Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph)
     {
         List<AlmostOddagon> result = new();
         foreach (var start in graph)
@@ -26,16 +26,16 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
     }
 
     private void Search(IStrategyManager strategyManager, LinkGraphChainBuilder<CellPossibility> builder,
-        LinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
+        ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
     {
         if (builder.Count > _maxLength) return;
         
         var last = builder.LastElement();
         var first = builder.FirstElement();
 
-        foreach (var friend in graph.GetLinks(last))
+        foreach (var friend in graph.Neighbors(last))
         {
-            var link = graph.HasLinkTo(last, friend, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak;
+            var link = graph.AreNeighbors(last, friend, LinkStrength.Strong) ? LinkStrength.Strong : LinkStrength.Weak;
 
             if (friend == first)
             {

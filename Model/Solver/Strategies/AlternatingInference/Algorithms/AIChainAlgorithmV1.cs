@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
     public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
@@ -20,13 +20,13 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
         }
     }
 
-    private bool Search(IStrategyManager manager, LinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Search(IStrategyManager manager, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChainBuilder<T> builder, HashSet<T> explored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
         var last = builder.LastElement();
 
-        foreach (var friend in graph.GetLinks(last, next))
+        foreach (var friend in graph.Neighbors(last, next))
         {
             if (explored.Contains(friend)) continue;
 
@@ -42,7 +42,7 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
 
         if (next == LinkStrength.Weak)
         {
-            foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
+            foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
             {
                 if (explored.Contains(friend)) continue;
 
@@ -58,7 +58,7 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
         return false;
     }
 
-    private bool Check(IStrategyManager manager, LinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Check(IStrategyManager manager, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChain<T> chain)
     {
         return type.ProcessChain(manager, chain, graph);

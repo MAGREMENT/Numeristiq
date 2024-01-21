@@ -3,7 +3,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
 
-public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : ILinkGraphElement
+public class ColoringDictionary<T> : Dictionary<T, Coloring>, IColoringResult<T> where T : ISudokuElement
 {
     private ColoringHistory<T>? _history;
 

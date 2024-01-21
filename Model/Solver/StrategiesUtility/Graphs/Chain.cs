@@ -241,7 +241,7 @@ public class ChainBuilder<TElement, TLink> where TElement : notnull where TLink 
     }
 }
 
-public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElement
+public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ISudokuElement
 {
     public bool IsMonoDirectional { get; init; } = false;
     
@@ -314,7 +314,7 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
         var result = 0;
         foreach (var element in Elements)
         {
-            result = Math.Max(result, element.Rank);
+            result = Math.Max(result, element.DifficultyRank);
         }
 
         return result;
@@ -333,7 +333,7 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ILinkGraphElem
     }
 }
 
-public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ILinkGraphElement
+public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ISudokuElement
 {
     public LinkGraphLoop(T[] elements, LinkStrength[] links) : base(elements, links)
     {
@@ -358,7 +358,7 @@ public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ILinkGraphElemen
         var result = 0;
         foreach (var element in Elements)
         {
-            result = Math.Max(result, element.Rank);
+            result = Math.Max(result, element.DifficultyRank);
         }
 
         return result;
@@ -400,7 +400,7 @@ public class LinkGraphLoop<T> : Loop<T, LinkStrength> where T : ILinkGraphElemen
     }
 }
 
-public class LinkGraphChainBuilder<T> : ChainBuilder<T, LinkStrength> where T : ILinkGraphElement
+public class LinkGraphChainBuilder<T> : ChainBuilder<T, LinkStrength> where T : ISudokuElement
 {
     public LinkGraphChainBuilder(T start) : base(start)
     {

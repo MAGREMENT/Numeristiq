@@ -107,7 +107,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         _isInvalidColoring = isInvalidColoring;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         Highlight[] highlights = new Highlight[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)

@@ -102,10 +102,8 @@ public class SolverPresenter : IStepChooserCallback
 
         _currentlySelectedLog = number;
         var log = _solver.Logs[number];
-        
         _view.FocusLog(number);
-        _view.ShowFocusedLog(ModelToViewTranslator.Translate(log));
-        
+        _view.ShowExplanation(log.Description);
         ChangeShownState(Settings.StateShown == StateShown.Before ? log.StateBefore : log.StateAfter);
         HighlightLog(log);
     }
@@ -117,17 +115,20 @@ public class SolverPresenter : IStepChooserCallback
         SelectLog(_currentlySelectedLog + delta);
     }
 
-    public void ShiftLogHighlight(int shift)
+    public void ShiftLogHighlight(int number, int shift)
     {
         var logs = _solver.Logs;
-        if (_currentlySelectedLog < 0 || _currentlySelectedLog >= logs.Count) return;
+        if (number < 0 || number >= logs.Count) return;
 
-        var log = logs[_currentlySelectedLog];
+        var log = logs[number];
         if(shift < 0) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
 
-        HighlightLog(log);
-        _view.ShowFocusedLog(ModelToViewTranslator.Translate(log));
+        if (number == _currentlySelectedLog)
+        {
+            HighlightLog(log);
+            _view.UpdateFocusedLog(ModelToViewTranslator.Translate(log));
+        }
     }
 
     public void ShowStartState()

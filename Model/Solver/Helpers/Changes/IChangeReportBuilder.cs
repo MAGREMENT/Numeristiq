@@ -24,18 +24,16 @@ public interface IChangeReportBuilder
 
     public static string ChangesToString(List<SolverChange> changes)
     {
-        if (changes.Count == 0) return "";
-        
         var builder = new StringBuilder();
         foreach (var change in changes)
         {
             var action = change.ChangeType == ChangeType.Possibility
                 ? "<>"
                 : "==";
-            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}, ");
+            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}\n");
         }
 
-        return builder.ToString()[..^2];
+        return builder.ToString();
     }
     
     public static string ChangesToString(IEnumerable<SolverChange> changes)

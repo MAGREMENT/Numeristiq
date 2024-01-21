@@ -278,7 +278,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder
         _unitNumber = unitNumber;
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> cells = new();
 

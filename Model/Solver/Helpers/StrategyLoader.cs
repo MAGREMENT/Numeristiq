@@ -82,18 +82,18 @@ public class StrategyLoader : IStrategyLoader
             new AILoopAlgorithmV3<CellPossibility>())},
         {AIType.OfficialLoopName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
             new AILoopAlgorithmV3<CellPossibility>())},
-        {SubsetsXType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
-            new AILoopAlgorithmV3<ILinkGraphElement>())},
-        {SubsetsAIType.OfficialLoopName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
-            new AILoopAlgorithmV3<ILinkGraphElement>())},
+        {SubsetsXType.OfficialLoopName, new AlternatingInferenceGeneralization<ISudokuElement>(new SubsetsXType(),
+            new AILoopAlgorithmV3<ISudokuElement>())},
+        {SubsetsAIType.OfficialLoopName, new AlternatingInferenceGeneralization<ISudokuElement>(new SubsetsAIType(),
+            new AILoopAlgorithmV3<ISudokuElement>())},
         {XType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new XType(),
             new AIChainAlgorithmV2<CellPossibility>())},
         {AIType.OfficialChainName, new AlternatingInferenceGeneralization<CellPossibility>(new AIType(),
             new AIChainAlgorithmV2<CellPossibility>())},
-        {SubsetsXType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsXType(),
-            new AIChainAlgorithmV2<ILinkGraphElement>())},
-        {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ILinkGraphElement>(new SubsetsAIType(),
-            new AIChainAlgorithmV2<ILinkGraphElement>())},
+        {SubsetsXType.OfficialChainName, new AlternatingInferenceGeneralization<ISudokuElement>(new SubsetsXType(),
+            new AIChainAlgorithmV2<ISudokuElement>())},
+        {SubsetsAIType.OfficialChainName, new AlternatingInferenceGeneralization<ISudokuElement>(new SubsetsAIType(),
+            new AIChainAlgorithmV2<ISudokuElement>())},
         {MultiSectorLockedSetsStrategy.OfficialName, new MultiSectorLockedSetsStrategy(new RowsAndColumnsSearcher(
             3, 5, 1))},
         {DistributedDisjointSubsetStrategy.OfficialName, new DistributedDisjointSubsetStrategy()},
@@ -112,8 +112,8 @@ public class StrategyLoader : IStrategyLoader
     };
 
     private readonly UniqueList<IStrategy> _strategies = new();
-    private readonly BitSet _excludedStrategies = new();
-    private readonly BitSet _lockedStrategies = new();
+    private readonly InfiniteBitSet _excludedStrategies = new();
+    private readonly InfiniteBitSet _lockedStrategies = new();
     
     public IReadOnlyList<IStrategy> Strategies => _strategies;
 

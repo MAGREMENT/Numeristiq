@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility;
 
-public class CellsPossibility : ILinkGraphElement
+public class CellsPossibility : ISudokuElement
 {
     private readonly int _possibility;
     private readonly Cell[] _cells;
@@ -18,7 +18,7 @@ public class CellsPossibility : ILinkGraphElement
         _cells = cells;
     }
 
-    public int Rank => 2;
+    public int DifficultyRank => 2;
     
     public CellPossibilities[] EveryCellPossibilities()
     {

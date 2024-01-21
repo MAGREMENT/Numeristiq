@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ILinkGraphElement
+public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     private readonly int _maxLoopSize;
     private readonly HashSet<LinkGraphLoop<T>> _loopsProcessed = new();
@@ -29,7 +29,7 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         }
     }
 
-    private bool Search(IStrategyManager view, LinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
+    private bool Search(IStrategyManager view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
         Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return false;
@@ -40,7 +40,7 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         HashSet<T>? globalFriends = globallySearched.TryGetValue(last, out var a) ? a : null;
         HashSet<T>? localFriends = locallySearched.TryGetValue(last, out var b) ? b : null;
 
-        foreach (var friend in graph.GetLinks(last, LinkStrength.Strong))
+        foreach (var friend in graph.Neighbors(last, LinkStrength.Strong))
         {
             if (builder.Count == 1 && globalFriends is not null && globalFriends.Contains(friend)) continue;
             if (localFriends is not null && localFriends.Contains(friend)) continue;
@@ -83,7 +83,7 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         }
         
         if (builder.Count % 2 == 1 && builder.Count < 4) return false;
-        foreach (var friend in graph.GetLinks(last, LinkStrength.Weak))
+        foreach (var friend in graph.Neighbors(last, LinkStrength.Weak))
         {
             if (localFriends is not null && localFriends.Contains(friend)) continue;
             if (before is not null && friend.Equals(before)) continue;

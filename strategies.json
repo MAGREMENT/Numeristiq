@@ -122,14 +122,6 @@
     }
   },
   {
-    "Name": "Hidden BUG",
-    "Used": true,
-    "Behavior": 0,
-    "Args": {
-      "Possibility count": "2,4"
-    }
-  },
-  {
     "Name": "Reverse BUG",
     "Used": true,
     "Behavior": 0,
@@ -173,7 +165,7 @@
   },
   {
     "Name": "Non-Colorable Pattern",
-    "Used": true,
+    "Used": false,
     "Behavior": 0,
     "Args": {
       "Possibility count": "3,3",

@@ -5,5 +5,5 @@ namespace Model.Solver.StrategiesUtility.Oddagons;
 
 public interface IOddagonSearchAlgorithm
 {
-    List<AlmostOddagon> Search(IStrategyManager strategyManager, LinkGraph<CellPossibility> graph);
+    List<AlmostOddagon> Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph);
 }

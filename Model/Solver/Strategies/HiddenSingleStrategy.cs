@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Model.Solver.Helpers;
+﻿using System.Collections.Generic;
 using Model.Solver.Helpers.Changes;
 
 namespace Model.Solver.Strategies;
@@ -26,54 +23,54 @@ public class HiddenSingleStrategy : AbstractStrategy
                     var u = i * 3 + j;
                     
                     var rp = strategyManager.RowPositionsAt(u, number);
-                    if (rp.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
+                    if (rp.Count == 1)
+                    {
+                        strategyManager.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
+                        strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Row));
+                        if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                    }
                     
                     var cp = strategyManager.ColumnPositionsAt(u, number);
-                    if (cp.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
+                    if (cp.Count == 1)
+                    {
+                        strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
+                        strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Column));
+                        if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                    }
                     
                     var mp = strategyManager.MiniGridPositionsAt(i, j, number);
                     if (mp.Count != 1) continue;
+                    
                     var pos = mp.First();
                     strategyManager.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
+                    strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.MiniGrid));
+                    if (OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
         }
-
-        strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder());
     }
 }
 
 public class HiddenSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    private readonly Unit unit;
+
+    public HiddenSingleReportBuilder(Unit unit)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes, snapshot),
+        this.unit = unit;
+    }
+
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 
-    private static string Explanation(List<SolverChange> changes, IPossibilitiesHolder snapshot)
+    private string Description(IReadOnlyList<SolverChange> changes)
     {
-        var builder = new StringBuilder();
+        if (changes.Count != 1) return "";
 
-        foreach (var change in changes)
-        {
-            string where;
-            if (snapshot.RowPositionsAt(change.Row, change.Number).Count == 1)
-                where = $"row {change.Row + 1}";
-            else if (snapshot.ColumnPositionsAt(change.Column, change.Number).Count == 1)
-                where = $"column {change.Column + 1}";
-            else
-            {
-                var miniGridPositions = snapshot.MiniGridPositionsAt(change.Row / 3, change.Column / 3, change.Number);
-                if (miniGridPositions.Count == 1) where = $"mini grid {miniGridPositions.MiniGridNumber() + 1}";
-                else throw new Exception("Error while backtracking hidden singles");
-            }
-
-            builder.Append($"{change.Number} is the solution to the cell [{change.Row + 1}, {change.Column + 1}]" +
-                           $" because it's the only cell with that possibility in {where}.\n");
-        }
-
-        return builder.ToString();
+        return $"Hidden Single in r{changes[0].Row + 1}c{changes[1].Column + 1}";
     }
 
 }

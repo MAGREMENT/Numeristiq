@@ -9,7 +9,7 @@ using Presenter.Solver;
 
 namespace Presenter.Translators;
 
-public class HighlighterTranslator : IHighlightable
+public class HighlighterTranslator : IHighlighter
 {
     private readonly ISolverDrawer _drawer;
     private readonly ISolverSettings _settings;
@@ -20,7 +20,7 @@ public class HighlighterTranslator : IHighlightable
         _settings = settings;
     }
 
-    public void Translate(IHighlighter lighter)
+    public void Translate(IHighlightable lighter)
     {
         lighter.Highlight(this);
     }
@@ -76,7 +76,7 @@ public class HighlighterTranslator : IHighlightable
         _drawer.EncircleRectangle(min.Row, min.Column, max.Row, max.Column, coloration);
     }
 
-    public void HighlightLinkGraphElement(ILinkGraphElement element, ChangeColoration coloration)
+    public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration)
     {
         if (ChangeColorationUtility.IsOff(coloration) && element is PointingRow or PointingColumn or CellsPossibility)
         {
@@ -131,7 +131,7 @@ public class HighlighterTranslator : IHighlightable
             to.Possibility, linkStrength, _settings.SidePriority);
     }
 
-    public void CreateLink(ILinkGraphElement from, ILinkGraphElement to, LinkStrength linkStrength)
+    public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength)
     {
         if (!_settings.ShowSameCellLinks && from is CellPossibility cp1 && to is CellPossibility cp2
             && cp1.ToCell() == cp2.ToCell()) return;
