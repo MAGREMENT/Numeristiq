@@ -11,7 +11,6 @@ namespace View.Pages.Solver.UserControls;
 public partial class LogListUserControl
 {
     private LogUserControl? _currentlyShowed;
-    private StateShown _shownType = StateShown.Before;
 
     public delegate void OnLogSelection(int number);
     public event OnLogSelection? LogSelected;
@@ -24,11 +23,6 @@ public partial class LogListUserControl
 
     public delegate void OnShowCurrentStateAsked();
     public event OnShowCurrentStateAsked? ShowCurrentStateAsked;
-    
-    public event LogUserControl.OnStateShownChange? StateShownChanged;
-
-    public delegate void OnLogHighlightShift(int number, int shift);
-    public event OnLogHighlightShift? LogHighlightShifted;
 
     private Brush _buttonNormalBackground = Brushes.White;
     private Brush _buttonHoverBackground = Brushes.White;
@@ -57,29 +51,14 @@ public partial class LogListUserControl
             var luc = new LogUserControl();
             
             luc.InitLog(log);
-            luc.SetShownType(_shownType);
 
             var iForEvent = i;
             luc.MouseLeftButtonDown += (_, _) => LogSelected?.Invoke(iForEvent);
-            luc.StateShownChanged += ss =>
-            {
-                ChangeStateShown(ss);
-                StateShownChanged?.Invoke(ss);
-            };
-            luc.HighlightShifted += shift => LogHighlightShifted?.Invoke(iForEvent, shift);
             
             List.Children.Add(luc);
         }
 
         Scroll.ScrollToBottom();
-    }
-    
-    public void UpdateFocusedLog(ViewLog log)
-    {
-        if (_currentlyShowed == null) return;
-        
-        _currentlyShowed.InitLog(log);
-        _currentlyShowed.SetShownType(_shownType);
     }
 
     public void FocusLog(int n)
@@ -96,18 +75,6 @@ public partial class LogListUserControl
     {
         _currentlyShowed?.NotFocusedAnymore();
         _currentlyShowed = null;
-    }
-
-    public void ChangeStateShown(StateShown ss)
-    {
-        if (_shownType == ss) return;
-
-        _shownType = ss;
-        foreach (var child in List.Children)
-        {
-            if (child is not LogUserControl luc) continue;
-            luc.SetShownType(ss);
-        }
     }
 
     private void ShowStart(object sender, RoutedEventArgs e)
@@ -130,7 +97,7 @@ public partial class LogListUserControl
         LogShifted?.Invoke(-1);
     }
 
-    public void ApplyTheme(Theme theme)
+    private void ApplyTheme(Theme theme)
     {
         _buttonNormalBackground = theme.Background2;
         _buttonHoverBackground = theme.Background3;

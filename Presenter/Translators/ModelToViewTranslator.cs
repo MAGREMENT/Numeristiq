@@ -11,7 +11,7 @@ public static class ModelToViewTranslator
 {
     public static ViewLog Translate(ISolverLog log)
     {
-        return new ViewLog(log.Id, log.Title, log.Changes, log.Intensity,
+        return new ViewLog(log.Id, log.Title, log.Explanation, log.Changes, log.Intensity,
             log.HighlightManager.CursorPosition(), log.HighlightManager.Count);
     }
     

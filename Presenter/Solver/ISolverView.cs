@@ -9,9 +9,8 @@ public interface ISolverView : ISolverDrawer
     void SetTranslation(string translation);
     void FocusLog(int number);
     void UnFocusLog();
-    void ShowExplanation(string explanation);
     void SetLogs(IReadOnlyList<ViewLog> logs);
-    void UpdateFocusedLog(ViewLog log);
+    void ShowFocusedLog(ViewLog log);
     void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies);
     void UpdateStrategies(IReadOnlyList<ViewStrategy> strategies);
     void LightUpStrategy(int number);

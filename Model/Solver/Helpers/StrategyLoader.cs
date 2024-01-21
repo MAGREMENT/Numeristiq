@@ -105,7 +105,6 @@ public class StrategyLoader : IStrategyLoader
         {BlossomLoopStrategy.OfficialNameForUnit, new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new UnitType())},
         {ThorsHammerStrategy.OfficialName, new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
         {ReverseBUGLiteStrategy.OfficialName, new ReverseBUGLiteStrategy()},
-        {HiddenBugStrategy.OfficialName, new HiddenBugStrategy(2, 4)},
         {MiniUniquenessStrategy.OfficialName, new MiniUniquenessStrategy()},
         {UniquenessClueCoverStrategy.OfficialName, new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
         {ExtendedUniqueRectanglesStrategy.OfficialName, new ExtendedUniqueRectanglesStrategy()},

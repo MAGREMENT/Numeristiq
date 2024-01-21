@@ -102,8 +102,10 @@ public class SolverPresenter : IStepChooserCallback
 
         _currentlySelectedLog = number;
         var log = _solver.Logs[number];
+        
         _view.FocusLog(number);
-        _view.ShowExplanation(log.Explanation);
+        _view.ShowFocusedLog(ModelToViewTranslator.Translate(log));
+        
         ChangeShownState(Settings.StateShown == StateShown.Before ? log.StateBefore : log.StateAfter);
         HighlightLog(log);
     }
@@ -115,20 +117,17 @@ public class SolverPresenter : IStepChooserCallback
         SelectLog(_currentlySelectedLog + delta);
     }
 
-    public void ShiftLogHighlight(int number, int shift)
+    public void ShiftLogHighlight(int shift)
     {
         var logs = _solver.Logs;
-        if (number < 0 || number >= logs.Count) return;
+        if (_currentlySelectedLog < 0 || _currentlySelectedLog >= logs.Count) return;
 
-        var log = logs[number];
+        var log = logs[_currentlySelectedLog];
         if(shift < 0) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
 
-        if (number == _currentlySelectedLog)
-        {
-            HighlightLog(log);
-            _view.UpdateFocusedLog(ModelToViewTranslator.Translate(log));
-        }
+        HighlightLog(log);
+        _view.ShowFocusedLog(ModelToViewTranslator.Translate(log));
     }
 
     public void ShowStartState()
@@ -303,9 +302,9 @@ public class SolverPresenter : IStepChooserCallback
                 _lastLogIndex = i;
                 var current = logs[i];
                 if (!current.FromSolving) continue;
-
-                _view.ShowExplanation(current.Explanation);
+                
                 _view.FocusLog(i);
+                _view.ShowFocusedLog(ModelToViewTranslator.Translate(current));
 
                 ChangeShownState(current.StateBefore);
                 HighlightLog(current);
@@ -338,7 +337,6 @@ public class SolverPresenter : IStepChooserCallback
     {
         _currentlySelectedLog = -1;
         _view.UnFocusLog();
-        _view.ShowExplanation("");
     }
 
     private void HighlightLog(ISolverLog log)

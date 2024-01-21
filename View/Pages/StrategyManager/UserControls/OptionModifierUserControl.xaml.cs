@@ -69,6 +69,7 @@ public partial class OptionModifierUserControl
 
             optionCanvas.SetFontSize(OptionsFontSize);
             optionCanvas.Margin = new Thickness(0, 5, 0, 0);
+            optionCanvas.Refresh();
             sp.Children.Add(optionCanvas);
         }
 

@@ -10,7 +10,6 @@ using Presenter.Solver;
 using Presenter.Translators;
 using View.HelperWindows.Settings;
 using View.HelperWindows.StepChooser;
-using View.Themes;
 using Clipboard = System.Windows.Clipboard;
 using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
@@ -36,7 +35,7 @@ public partial class SolverPage : ISolverView
         _presenter.Bind();
         _pageHandler = pageHandler;
 
-        LogList.ChangeStateShown(_presenter.Settings.StateShown);
+        LogViewer.SetShownType(_presenter.Settings.StateShown);
 
         Solver.CellSelected += _presenter.SelectCell;
         Solver.CellUnselected += _presenter.UnSelectCell;
@@ -46,8 +45,8 @@ public partial class SolverPage : ISolverView
         LogList.LogShifted += _presenter.ShiftLog;
         LogList.ShowStartStateAsked += _presenter.ShowStartState;
         LogList.ShowCurrentStateAsked += _presenter.ShowCurrentState;
-        LogList.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
-        LogList.LogHighlightShifted += _presenter.ShiftLogHighlight;
+        LogViewer.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
+        LogViewer.LogHighlightShifted += _presenter.ShiftLogHighlight;
         StrategyList.StrategyUsed += _presenter.UseStrategy;
         StrategyList.AllStrategiesUsed += _presenter.UseAllStrategies;
 
@@ -110,11 +109,7 @@ public partial class SolverPage : ISolverView
     public void UnFocusLog()
     {
         LogList.Dispatcher.Invoke(() => LogList.UnFocusLog());
-    }
-
-    public void ShowExplanation(string explanation)
-    { 
-        ExplanationBox.Dispatcher.Invoke(() => ExplanationBox.Text = explanation);
+        LogViewer.Dispatcher.Invoke(() => LogViewer.StopShowing());
     }
 
     public void SetLogs(IReadOnlyList<ViewLog> logs)
@@ -122,9 +117,9 @@ public partial class SolverPage : ISolverView
         LogList.Dispatcher.Invoke(() => LogList.SetLogs(logs));
     }
 
-    public void UpdateFocusedLog(ViewLog log)
+    public void ShowFocusedLog(ViewLog log)
     {
-        LogList.UpdateFocusedLog(log);
+        LogViewer.Dispatcher.Invoke(() => LogViewer.Show(log));
     }
 
     public void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies)

@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Global;
-using View.Themes;
 
 namespace View.Canvas;
 
@@ -53,7 +52,7 @@ public partial class MinMaxSliderOptionCanvas
         {
             ShouldCallSetter = false;
             MaxSlider.Value = MinSlider.Value;
-            ShouldCallSetter = false;
+            ShouldCallSetter = true;
         }
             
         _setter(new MinMax((int)MinSlider.Value, (int)MaxSlider.Value));

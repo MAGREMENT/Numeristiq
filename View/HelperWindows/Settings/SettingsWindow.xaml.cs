@@ -121,11 +121,6 @@ public partial class SettingsWindow
         Close();
     }
 
-    private void ApplyTheme(Theme theme)
-    {
-        foreach (TextBlock tb in Titles.Children) tb.Foreground = theme.Text;
-    }
-
     public void Refresh()
     {
         foreach (var page in _settingsPages)

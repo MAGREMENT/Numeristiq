@@ -6,10 +6,10 @@
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
     <StackPanel Orientation="Horizontal" Background="{DynamicResource Background2}">
-        <ScrollViewer Height="470" x:Name="Scroll">
+        <ScrollViewer Height="400" x:Name="Scroll">
             <StackPanel Width="300" MinHeight="470" x:Name="List"/>
         </ScrollViewer>
-        <StackPanel Height="470" Width="30" x:Name="ButtonPanel">
+        <StackPanel Height="400" Width="30" x:Name="ButtonPanel">
             <StackPanel.LayoutTransform>
                 <RotateTransform Angle="180"/>
             </StackPanel.LayoutTransform>
