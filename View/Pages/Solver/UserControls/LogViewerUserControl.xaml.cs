@@ -16,6 +16,9 @@ public partial class LogViewerUserControl : UserControl
     
     public delegate void OnStateShownChange(StateShown ss);
     public event OnStateShownChange? StateShownChanged;
+
+    public delegate void OnExplanationAsked();
+    public event OnExplanationAsked? ExplanationAsked;
     
     public LogViewerUserControl()
     {
@@ -67,5 +70,10 @@ public partial class LogViewerUserControl : UserControl
     private void ToAfter(object sender, RoutedEventArgs e)
     {
         if (_invokeStateShowEvent) StateShownChanged?.Invoke(StateShown.After);
+    }
+
+    private void ShowExplanation(object sender, RoutedEventArgs e)
+    {
+        ExplanationAsked?.Invoke();
     }
 }

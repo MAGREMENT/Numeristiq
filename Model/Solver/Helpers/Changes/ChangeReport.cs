@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Solver.Explanation;
 using Model.Solver.Helpers.Highlighting;
 
 namespace Model.Solver.Helpers.Changes;
@@ -6,6 +7,7 @@ namespace Model.Solver.Helpers.Changes;
 public class ChangeReport
 {
     public string Description { get; }
+    public ExplanationElement? Explanation { get; }
     public HighlightManager HighlightManager { get; }
     public string Changes { get; }
     
@@ -14,6 +16,15 @@ public class ChangeReport
         Description = description;
         Changes = changes;
         HighlightManager = new HighlightManager(HighlightCompiler.GetInstance().Compile(highlighter));
+        Explanation = null;
+    }
+    
+    public ChangeReport(string changes, string description, Highlight highlighter, ExplanationElement? explanation)
+    {
+        Description = description;
+        Changes = changes;
+        HighlightManager = new HighlightManager(HighlightCompiler.GetInstance().Compile(highlighter));
+        Explanation = explanation;
     }
     
     public ChangeReport(string changes, string description, params Highlight[] highlighters)
@@ -29,6 +40,7 @@ public class ChangeReport
         }
         
         HighlightManager = new HighlightManager(compiled);
+        Explanation = null;
     }
     
     public ChangeReport(string changes, string description, Highlight first, params Highlight[] highlighters)
@@ -45,6 +57,7 @@ public class ChangeReport
         }
         
         HighlightManager = new HighlightManager(compiled);
+        Explanation = null;
     }
 
     public static ChangeReport Default(IReadOnlyList<SolverChange> changes)

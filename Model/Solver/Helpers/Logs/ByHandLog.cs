@@ -1,6 +1,7 @@
 ﻿using System;
 using Global;
 using Global.Enums;
+using Model.Solver.Explanation;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 
@@ -13,6 +14,7 @@ public class ByHandLog : ISolverLog
     public Intensity Intensity => Intensity.Six;
     public string Changes { get; }
     public string Description { get; }
+    public ExplanationElement? Explanation => null;
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager => new(new DelegateHighlightable(HighLight));

@@ -1,5 +1,4 @@
-﻿using Global;
-using Global.Enums;
+﻿using Global.Enums;
 using Model.Solver;
 using Model.Solver.Helpers;
 using Model.Solver.Helpers.Changes;
@@ -11,7 +10,7 @@ public static class ModelToViewTranslator
 {
     public static ViewLog Translate(ISolverLog log)
     {
-        return new ViewLog(log.Id, log.Title, log.Explanation, log.Changes, log.Intensity,
+        return new ViewLog(log.Id, log.Title, log.Description, log.Changes, log.Intensity,
             log.HighlightManager.CursorPosition(), log.HighlightManager.Count);
     }
     

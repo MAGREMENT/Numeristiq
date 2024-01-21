@@ -1,5 +1,8 @@
 ﻿using System.Collections.Generic;
+using Global;
+using Model.Solver.Explanation;
 using Model.Solver.Helpers.Changes;
+using Model.Solver.Position;
 
 namespace Model.Solver.Strategies;
 
@@ -53,24 +56,38 @@ public class HiddenSingleStrategy : AbstractStrategy
 
 public class HiddenSingleReportBuilder : IChangeReportBuilder
 {
-    private readonly Unit unit;
+    private readonly Unit _unit;
 
     public HiddenSingleReportBuilder(Unit unit)
     {
-        this.unit = unit;
+        _unit = unit;
     }
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Description(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), Explanation(changes));
     }
 
-    private string Description(IReadOnlyList<SolverChange> changes)
+    private static string Description(IReadOnlyList<SolverChange> changes)
     {
         if (changes.Count != 1) return "";
 
-        return $"Hidden Single in r{changes[0].Row + 1}c{changes[1].Column + 1}";
+        return $"Hidden Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }
 
+    private ExplanationElement? Explanation(IReadOnlyList<SolverChange> changes)
+    {
+        if (changes.Count != 1) return null;
+
+        var cell = new Cell(changes[0].Row, changes[0].Column);
+        var ch = UnitMethods.Get(_unit).ToCoverHouse(cell);
+        
+        var start = new StringExplanationElement(changes[0].Number + " is only present in ");
+        start.Append(new CellExplanationElement(cell)).Append(new StringExplanationElement(" in "))
+            .Append(new CoverHouseExplanationElement(ch)).Append(new StringExplanationElement(". It is therefor the" +
+                " solution for this cell."));
+
+        return start;
+    }
 }

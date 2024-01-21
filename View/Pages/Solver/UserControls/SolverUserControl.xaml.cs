@@ -85,12 +85,12 @@ public partial class SolverUserControl
         _grid.LostFocus += (_, _) => CellUnselected?.Invoke();
     }
     
-    public void UpdateBackground()
+    public void Refresh()
     {
         _grid.Refresh();
     }
 
-    public void ClearBackground()
+    public void ClearDrawings()
     {
         _grid.ClearHighlighting();
     }

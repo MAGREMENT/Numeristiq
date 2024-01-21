@@ -1,4 +1,5 @@
-﻿using Presenter.Translators;
+﻿using Model.Solver.Helpers.Logs;
+using Presenter.Translators;
 
 namespace Presenter.Solver;
 
@@ -16,4 +17,5 @@ public interface ISolverView : ISolverDrawer
     void LightUpStrategy(int number);
     void ToClipboard(string s);
     void ShowPossibleSteps(StepChooserPresenterBuilder builder);
+    void ShowExplanation(ISolverLog log);
 }

@@ -2,11 +2,9 @@
 
 namespace Model.Solver.Explanation;
 
-public class CoverHouseExplanationElement
+public class CoverHouseExplanationElement : ExplanationElement
 {
     private readonly CoverHouse _coverHouse;
-
-    public CoverHouse Value => _coverHouse;
 
     public CoverHouseExplanationElement(CoverHouse coverHouse)
     {
@@ -17,11 +15,19 @@ public class CoverHouseExplanationElement
     {
         var s = _coverHouse.Unit switch
         {
-            Unit.Row => "row",
-            Unit.Column => "column",
-            Unit.MiniGrid => "box"
+            Unit.Row => "row ",
+            Unit.Column => "column ",
+            Unit.MiniGrid => "box "
         };
 
         return s + (_coverHouse.Number + 1);
+    }
+    
+    public override bool ShouldBeBold => true;
+    public override ExplanationColor Color => ExplanationColor.Secondary;
+
+    public override void Show(IExplanationShower shower)
+    {
+        shower.ShowCoverHouse(_coverHouse);
     }
 }

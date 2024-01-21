@@ -1,5 +1,6 @@
 ﻿using Global;
 using Global.Enums;
+using Model.Solver.Explanation;
 using Model.Solver.Helpers.Changes;
 using Model.Solver.Helpers.Highlighting;
 
@@ -12,13 +13,15 @@ public class ChangeReportLog : ISolverLog
     public Intensity Intensity { get; }
     public string Changes { get; }
     public string Description { get; }
+    public ExplanationElement? Explanation { get; }
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
     public HighlightManager HighlightManager  { get; }
     public bool FromSolving => true;
 
 
-    public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, SolverState stateBefore, SolverState stateAfter)
+    public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, SolverState stateBefore,
+        SolverState stateAfter, ExplanationElement? explanation)
     {
         Id = id;
         Title = strategy.Name;
@@ -28,5 +31,6 @@ public class ChangeReportLog : ISolverLog
         StateBefore = stateBefore;
         StateAfter = stateAfter;
         HighlightManager = report.HighlightManager;
+        Explanation = explanation;
     }
 }

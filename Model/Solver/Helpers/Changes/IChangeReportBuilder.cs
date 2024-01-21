@@ -7,7 +7,7 @@ namespace Model.Solver.Helpers.Changes;
 
 public interface IChangeReportBuilder
 {
-    public static void HighlightChanges(IHighlightable highlightable, List<SolverChange> changes)
+    public static void HighlightChanges(IHighlighter highlightable, IReadOnlyList<SolverChange> changes)
     {
         foreach (var change in changes)
         {
@@ -15,40 +15,28 @@ public interface IChangeReportBuilder
         }
     }
     
-    public static void HighlightChange(IHighlightable highlightable, SolverChange change)
+    public static void HighlightChange(IHighlighter highlightable, SolverChange change)
     {
         if(change.ChangeType == ChangeType.Possibility)
             highlightable.HighlightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
         else highlightable.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
     }
 
-    public static string ChangesToString(List<SolverChange> changes)
+    public static string ChangesToString(IReadOnlyList<SolverChange> changes)
     {
+        if (changes.Count == 0) return "";
+        
         var builder = new StringBuilder();
         foreach (var change in changes)
         {
             var action = change.ChangeType == ChangeType.Possibility
                 ? "<>"
                 : "==";
-            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}\n");
+            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}, ");
         }
 
-        return builder.ToString();
-    }
-    
-    public static string ChangesToString(IEnumerable<SolverChange> changes)
-    {
-        var builder = new StringBuilder();
-        foreach (var change in changes)
-        {
-            var action = change.ChangeType == ChangeType.Possibility
-                ? "<>"
-                : "==";
-            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}\n");
-        }
-
-        return builder.ToString();
+        return builder.ToString()[..^2];
     }
 
-    public ChangeReport Build(List<SolverChange> changes, IPossibilitiesHolder snapshot);
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot);
 }

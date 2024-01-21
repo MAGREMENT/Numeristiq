@@ -85,12 +85,12 @@ public partial class StepChooserWindow : IStepChooserView
 
     public void Refresh()
     {
-        Grid.UpdateBackground();
+        Grid.Refresh();
     }
 
     public void ClearDrawings()
     {
-        Grid.ClearBackground();
+        Grid.ClearDrawings();
     }
 
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)

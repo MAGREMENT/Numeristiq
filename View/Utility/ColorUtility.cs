@@ -1,6 +1,7 @@
 ﻿using System.Windows.Media;
 using Global;
 using Global.Enums;
+using Model.Solver.Explanation;
 
 namespace View.Utility;
 
@@ -69,6 +70,17 @@ public static class ColorUtility
             HighlightColor.Cyan => Colors.Cyan,
             HighlightColor.Yellow => Colors.Yellow,
             _ => Colors.Transparent
+        };
+    }
+
+    public static Brush ToBrush(ExplanationColor color)
+    {
+        return color switch
+        {
+            ExplanationColor.TextDefault => Brushes.Black,
+            ExplanationColor.Primary => Brushes.Orange,
+            ExplanationColor.Secondary => Brushes.Purple,
+            _ => Brushes.Black
         };
     }
 

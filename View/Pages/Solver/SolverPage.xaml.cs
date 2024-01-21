@@ -5,9 +5,11 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using Global;
 using Global.Enums;
+using Model.Solver.Helpers.Logs;
 using Presenter;
 using Presenter.Solver;
 using Presenter.Translators;
+using View.HelperWindows.Explanation;
 using View.HelperWindows.Settings;
 using View.HelperWindows.StepChooser;
 using Clipboard = System.Windows.Clipboard;
@@ -24,6 +26,7 @@ public partial class SolverPage : ISolverView
 
     private readonly StepChooserWindow _stepChooserWindow;
     private readonly SettingsWindow _settingsWindow;
+    private readonly ExplanationWindow _explanationWindow;
 
     public SolverPage(IPageHandler pageHandler, ApplicationPresenter factory)
     {
@@ -47,11 +50,13 @@ public partial class SolverPage : ISolverView
         LogList.ShowCurrentStateAsked += _presenter.ShowCurrentState;
         LogViewer.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
         LogViewer.LogHighlightShifted += _presenter.ShiftLogHighlight;
+        LogViewer.ExplanationAsked += _presenter.ShowExplanation;
         StrategyList.StrategyUsed += _presenter.UseStrategy;
         StrategyList.AllStrategiesUsed += _presenter.UseAllStrategies;
 
         _stepChooserWindow = new StepChooserWindow();
         _settingsWindow = SettingsWindow.From(_presenter.Settings);
+        _explanationWindow = new ExplanationWindow();
     }
     
     //ISolverView-------------------------------------------------------------------------------------------------------
@@ -149,7 +154,7 @@ public partial class SolverPage : ISolverView
 
     public void Refresh()
     {
-        Solver.Dispatcher.Invoke(Solver.UpdateBackground);
+        Solver.Dispatcher.Invoke(Solver.Refresh);
     }
 
     public void ToClipboard(string s)
@@ -163,9 +168,15 @@ public partial class SolverPage : ISolverView
         _stepChooserWindow.Show();
     }
 
+    public void ShowExplanation(ISolverLog log)
+    {
+        _explanationWindow.ShowExplanation(log);
+        _explanationWindow.Show();
+    }
+
     public void ClearDrawings()
     {
-        Solver.Dispatcher.Invoke(Solver.ClearBackground);
+        Solver.Dispatcher.Invoke(Solver.ClearDrawings);
     }
 
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)

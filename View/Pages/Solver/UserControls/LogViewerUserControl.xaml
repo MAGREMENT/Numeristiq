@@ -16,9 +16,14 @@
             <TextBlock x:Name="HighlightsNumber" FontSize="20"></TextBlock>
             <Button x:Name="RightArrow" FontFamily="Segoe MDL2 Assets" Content="&#xE72A;" Click="ShiftRight" FontSize="20" Margin="5, 0, 0, 0"></Button>
         </StackPanel>
-        <Border Width="100" HorizontalAlignment="Left" BorderBrush="{DynamicResource Border}" BorderThickness="0, 0, 0, 1">
-            <TextBlock FontSize="14" HorizontalAlignment="Left" Foreground="{DynamicResource Text}">Text output</TextBlock>
-        </Border>
+        <StackPanel Orientation="Horizontal">
+            <Border Width="100" HorizontalAlignment="Left" BorderBrush="{DynamicResource Border}" BorderThickness="0, 0, 0, 1">
+                <TextBlock FontSize="20" HorizontalAlignment="Left" Foreground="{DynamicResource Text}">Text output</TextBlock>
+            </Border>
+            <Button Margin="10, 0, 0, 0" FontSize="16" Click="ShowExplanation">
+                Explanation
+            </Button>
+        </StackPanel>
         <TextBlock TextWrapping="Wrap" Foreground="{DynamicResource Text}" x:Name="Explanation"></TextBlock>
     </StackPanel>
 </UserControl>

@@ -13,4 +13,12 @@ public class StringExplanationElement : ExplanationElement
     {
         return _value;
     }
+    
+    public override bool ShouldBeBold => false;
+    public override ExplanationColor Color => ExplanationColor.TextDefault;
+
+    public override void Show(IExplanationShower shower)
+    {
+        
+    }
 }
