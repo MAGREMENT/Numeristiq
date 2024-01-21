@@ -453,7 +453,7 @@ public class Fireworks
 
 public static class FireworksHighlightUtils
 {
-    public static void Highlight(IHighlightable lighter, Fireworks firework, IPossibilitiesHolder snapshot, ref int startColor)
+    public static void Highlight(IHighlighter lighter, Fireworks firework, IPossibilitiesHolder snapshot, ref int startColor)
     {
         foreach (var possibility in firework.Possibilities)
         {

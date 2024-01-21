@@ -6,7 +6,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class PointingPossibilitiesConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -27,7 +27,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
         
     }
 
-    private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, ILinkGraph<IChainingElement> linkGraph,
+    private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, ILinkGraph<ISudokuElement> linkGraph,
         IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

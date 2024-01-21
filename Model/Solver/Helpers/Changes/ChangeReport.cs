@@ -9,7 +9,7 @@ public class ChangeReport
     public HighlightManager HighlightManager { get; }
     public string Changes { get; }
     
-    public ChangeReport(string changes,  string description, Highlight highlighter)
+    public ChangeReport(string changes, string description, Highlight highlighter)
     {
         Description = description;
         Changes = changes;
@@ -21,7 +21,7 @@ public class ChangeReport
         Description = description;
         Changes = changes;
 
-        IHighlighter[] compiled = new IHighlighter[highlighters.Length];
+        IHighlightable[] compiled = new IHighlightable[highlighters.Length];
 
         for (int i = 0; i < highlighters.Length; i++)
         {
@@ -36,7 +36,7 @@ public class ChangeReport
         Description = description;
         Changes = changes;
 
-        IHighlighter[] compiled = new IHighlighter[highlighters.Length + 1];
+        IHighlightable[] compiled = new IHighlightable[highlighters.Length + 1];
         compiled[0] = HighlightCompiler.GetInstance().Compile(first);
 
         for (int i = 0; i < highlighters.Length; i++)

@@ -9,9 +9,9 @@ namespace Model.Solver.StrategiesUtility;
 
 public static class ForcingNetsUtility
 {
-    public static void HighlightAllPaths(IHighlightable lighter, List<LinkGraphChain<IChainingElement>> paths, Coloring startColoring)
+    public static void HighlightAllPaths(IHighlighter lighter, List<LinkGraphChain<ISudokuElement>> paths, Coloring startColoring)
     {
-        HashSet<IChainingElement> alreadyHighlighted = new();
+        HashSet<ISudokuElement> alreadyHighlighted = new();
 
         foreach (var path in paths)
         {
@@ -39,7 +39,7 @@ public static class ForcingNetsUtility
         }
     }
 
-    public static string AllPathsToString(List<LinkGraphChain<IChainingElement>> paths)
+    public static string AllPathsToString(List<LinkGraphChain<ISudokuElement>> paths)
     {
         var builder = new StringBuilder();
 
@@ -52,12 +52,12 @@ public static class ForcingNetsUtility
         return builder.ToString();
     }
 
-    public static List<LinkGraphChain<IChainingElement>> FindEveryNeededPaths(LinkGraphChain<IChainingElement> basePath,
-        IColoringResult<IChainingElement> result, ILinkGraph<IChainingElement> graph, IPossibilitiesHolder snapshot)
+    public static List<LinkGraphChain<ISudokuElement>> FindEveryNeededPaths(LinkGraphChain<ISudokuElement> basePath,
+        IColoringResult<ISudokuElement> result, ILinkGraph<ISudokuElement> graph, IPossibilitiesHolder snapshot)
     {
-        var list = new List<LinkGraphChain<IChainingElement>> {basePath};
-        HashSet<IChainingElement> allElements = new(basePath.Elements);
-        Queue<LinkGraphChain<IChainingElement>> queue = new();
+        var list = new List<LinkGraphChain<ISudokuElement>> {basePath};
+        HashSet<ISudokuElement> allElements = new(basePath.Elements);
+        Queue<LinkGraphChain<ISudokuElement>> queue = new();
         queue.Enqueue(basePath);
 
         while (queue.Count > 0)
@@ -88,7 +88,7 @@ public static class ForcingNetsUtility
         return list;
     }
 
-    private static List<CellPossibility> FindOffCellsInJumpLinks(IColoringResult<IChainingElement> result,
+    private static List<CellPossibility> FindOffCellsInJumpLinks(IColoringResult<ISudokuElement> result,
         IPossibilitiesHolder snapshot, CellPossibility from, CellPossibility to)
     {
         List<CellPossibility>? best = null;

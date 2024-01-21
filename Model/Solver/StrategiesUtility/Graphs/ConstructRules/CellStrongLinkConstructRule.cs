@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class CellStrongLinkConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int row = 0; row < 9; row++)
         {

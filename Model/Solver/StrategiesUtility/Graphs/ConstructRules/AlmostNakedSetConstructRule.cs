@@ -7,7 +7,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class AlmostNakedSetConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         foreach (var als in strategyManager.PreComputer.AlmostLockedSets())
         {
@@ -52,7 +52,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 }
                 else
                 {
-                    IChainingElement element;
+                    ISudokuElement element;
                     if (soloRow && rowBuffer != -1) element = new PointingRow(p, notIn);
                     else if (soloCol && colBuffer != -1) element = new PointingColumn(p, notIn);
                     else element = new CellsPossibility(p, notIn.ToArray());

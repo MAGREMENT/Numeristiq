@@ -33,7 +33,7 @@ public class OddagonForcingNetStrategy : AbstractStrategy
         {
             if (oddagon.Guardians.Length > _maxNumberOfGuardians) continue;
 
-            var colorings = new ColoringDictionary<IChainingElement>[oddagon.Guardians.Length];
+            var colorings = new ColoringDictionary<ISudokuElement>[oddagon.Guardians.Length];
             for (int i = 0; i < oddagon.Guardians.Length; i++)
             {
                 var current = oddagon.Guardians[i];
@@ -71,13 +71,13 @@ public class OddagonForcingNetStrategy : AbstractStrategy
 
 public class OddagonForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<IChainingElement>[] _colorings;
+    private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly Coloring _changeColoring;
     private readonly CellPossibility _change;
     private readonly AlmostOddagon _oddagon;
-    private readonly ILinkGraph<IChainingElement> _graph;
+    private readonly ILinkGraph<ISudokuElement> _graph;
 
-    public OddagonForcingNetReportBuilder(ColoringDictionary<IChainingElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, ILinkGraph<IChainingElement> graph, CellPossibility change)
+    public OddagonForcingNetReportBuilder(ColoringDictionary<ISudokuElement>[] colorings, Coloring changeColoring, AlmostOddagon oddagon, ILinkGraph<ISudokuElement> graph, CellPossibility change)
     {
         _colorings = colorings;
         _changeColoring = changeColoring;

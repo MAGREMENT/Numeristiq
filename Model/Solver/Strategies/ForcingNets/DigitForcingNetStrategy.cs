@@ -38,8 +38,8 @@ public class DigitForcingNetStrategy : AbstractStrategy
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<IChainingElement> onColoring,
-        ColoringDictionary<IChainingElement> offColoring)
+    private bool Process(IStrategyManager view, ColoringDictionary<ISudokuElement> onColoring,
+        ColoringDictionary<ISudokuElement> offColoring)
     {
         foreach (var on in onColoring)
         {
@@ -103,17 +103,17 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
 public class DigitForcingNetReportBuilder : IChangeReportBuilder
 {
-    private readonly ColoringDictionary<IChainingElement> _on;
-    private readonly ColoringDictionary<IChainingElement> _off;
+    private readonly ColoringDictionary<ISudokuElement> _on;
+    private readonly ColoringDictionary<ISudokuElement> _off;
     private readonly CellPossibility _onPos;
     private readonly Coloring _onColoring;
     private readonly CellPossibility _offPos;
     private readonly Coloring _offColoring;
-    private readonly ILinkGraph<IChainingElement> _graph;
+    private readonly ILinkGraph<ISudokuElement> _graph;
 
-    public DigitForcingNetReportBuilder(ColoringDictionary<IChainingElement> on, 
-        ColoringDictionary<IChainingElement> off, CellPossibility onPos, Coloring onColoring,
-        CellPossibility offPos, Coloring offColoring, ILinkGraph<IChainingElement> graph)
+    public DigitForcingNetReportBuilder(ColoringDictionary<ISudokuElement> on, 
+        ColoringDictionary<ISudokuElement> off, CellPossibility onPos, Coloring onColoring,
+        CellPossibility offPos, Coloring offColoring, ILinkGraph<ISudokuElement> graph)
     {
         _on = on;
         _off = off;
@@ -148,8 +148,8 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         });
     }
 
-    private string Explanation(List<LinkGraphChain<IChainingElement>> onPaths,
-        List<LinkGraphChain<IChainingElement>> offPaths, CellPossibility first)
+    private string Explanation(List<LinkGraphChain<ISudokuElement>> onPaths,
+        List<LinkGraphChain<ISudokuElement>> offPaths, CellPossibility first)
     {
         return $"If {first} is on : \n{ForcingNetsUtility.AllPathsToString(onPaths)}\n" +
                $"If {first} is off : \n{ForcingNetsUtility.AllPathsToString(offPaths)}";

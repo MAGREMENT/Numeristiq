@@ -409,7 +409,7 @@ public interface ICellPossibility
     public int Column { get; } 
 }
 
-public readonly struct CellPossibility : IChainingElement, ICellPossibility
+public readonly struct CellPossibility : ISudokuElement, ICellPossibility
 {
     public int Possibility { get; }
     public int Row { get; }
@@ -460,7 +460,7 @@ public readonly struct CellPossibility : IChainingElement, ICellPossibility
         return $"{Possibility}r{Row + 1}c{Column + 1}";
     }
 
-    public int Rank => 1;
+    public int DifficultyRank => 1;
 
     public CellPossibilities[] EveryCellPossibilities()
     {

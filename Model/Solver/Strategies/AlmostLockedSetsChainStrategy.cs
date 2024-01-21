@@ -178,7 +178,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
         });
     }
 
-    private void HighlightLink(IHighlightable lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
+    private void HighlightLink(IHighlighter lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
     {
         foreach (var cell in elementBefore.EachCell(link))
         {

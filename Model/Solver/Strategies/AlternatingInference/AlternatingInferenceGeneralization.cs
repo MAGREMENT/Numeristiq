@@ -7,7 +7,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCommitComparer where T : IChainingElement
+public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCommitComparer where T : ISudokuElement
 {
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
     
@@ -40,7 +40,7 @@ public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCo
     }
 }
 
-public interface IAlternatingInferenceType<T> where T : IChainingElement
+public interface IAlternatingInferenceType<T> where T : ISudokuElement
 {
     public string LoopName { get; }
     public string ChainName { get; }
@@ -73,8 +73,8 @@ public interface IAlternatingInferenceType<T> where T : IChainingElement
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
     
-    static bool ProcessChainWithComplexGraph(IStrategyManager strategyManager, LinkGraphChain<IChainingElement> chain,
-        ILinkGraph<IChainingElement> graph, IStrategy strategy)
+    static bool ProcessChainWithComplexGraph(IStrategyManager strategyManager, LinkGraphChain<ISudokuElement> chain,
+        ILinkGraph<ISudokuElement> graph, IStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 
@@ -87,12 +87,12 @@ public interface IAlternatingInferenceType<T> where T : IChainingElement
         }
 
         return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(strategy,
-                   new AlternatingInferenceChainReportBuilder<IChainingElement>(chain)) &&
+                   new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
 
-public interface IAlternatingInferenceAlgorithm<T> where T : IChainingElement
+public interface IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     AlgorithmType Type { get; }
     void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type);
@@ -109,7 +109,7 @@ public interface IReportBuilderWithChain
     public int Length();
 }
 
-public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : IChainingElement
+public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphLoop<T> _loop;
     private readonly LoopType _type;
@@ -173,7 +173,7 @@ public enum LoopType
     NiceLoop, WeakInference, StrongInference
 }
 
-public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : IChainingElement
+public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphChain<T> _chain;
 

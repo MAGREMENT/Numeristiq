@@ -17,8 +17,8 @@ public class PreComputer
 
     private List<IPossibilitiesPositions>? _als;
 
-    private readonly ColoringDictionary<IChainingElement>?[,,] _onColoring
-        = new ColoringDictionary<IChainingElement>[9, 9, 9];
+    private readonly ColoringDictionary<ISudokuElement>?[,,] _onColoring
+        = new ColoringDictionary<ISudokuElement>[9, 9, 9];
 
     private bool _wasPreColorUsed;
 
@@ -65,7 +65,7 @@ public class PreComputer
         return _als;
     }
 
-    public ColoringDictionary<IChainingElement> OnColoring(int row, int col, int possibility)
+    public ColoringDictionary<ISudokuElement> OnColoring(int row, int col, int possibility)
     {
         _wasPreColorUsed = true;
 
@@ -74,7 +74,7 @@ public class PreComputer
         return _onColoring[row, col, possibility - 1]!;
     }
 
-    public ColoringDictionary<IChainingElement> OffColoring(int row, int col, int possibility)
+    public ColoringDictionary<ISudokuElement> OffColoring(int row, int col, int possibility)
     {
         return DoColor(new CellPossibility(row, col, possibility), Coloring.Off);
     }
@@ -122,14 +122,14 @@ public class PreComputer
         return _strategyManager.AlmostNakedSetSearcher.FullGrid();
     }
 
-    private ColoringDictionary<IChainingElement> DoColor(IChainingElement start, Coloring firstColor)
+    private ColoringDictionary<ISudokuElement> DoColor(ISudokuElement start, Coloring firstColor)
     {
         _strategyManager.GraphManager.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
             ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
             ConstructRule.AlmostNakedPossibilities, ConstructRule.JuniorExocet);
         var graph = _strategyManager.GraphManager.ComplexLinkGraph;
 
-        return ColorHelper.ColorFromStart<IChainingElement, ColoringDictionary<IChainingElement>>(
+        return ColorHelper.ColorFromStart<ISudokuElement, ColoringDictionary<ISudokuElement>>(
             ColorHelper.Algorithm.ColorWithRulesAndLinksJump, graph, start, firstColor, true);
     }
 

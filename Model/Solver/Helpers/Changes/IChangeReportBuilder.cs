@@ -7,19 +7,19 @@ namespace Model.Solver.Helpers.Changes;
 
 public interface IChangeReportBuilder
 {
-    public static void HighlightChanges(IHighlightable highlightable, IReadOnlyList<SolverChange> changes)
+    public static void HighlightChanges(IHighlighter highlighter, IReadOnlyList<SolverChange> changes)
     {
         foreach (var change in changes)
         {
-            HighlightChange(highlightable, change);
+            HighlightChange(highlighter, change);
         }
     }
     
-    public static void HighlightChange(IHighlightable highlightable, SolverChange change)
+    public static void HighlightChange(IHighlighter highlighter, SolverChange change)
     {
         if(change.ChangeType == ChangeType.Possibility)
-            highlightable.HighlightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
-        else highlightable.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
+            highlighter.HighlightPossibility(change.Number, change.Row, change.Column, ChangeColoration.ChangeTwo);
+        else highlighter.HighlightCell(change.Row, change.Column, ChangeColoration.ChangeOne);
     }
 
     public static string ChangesToString(IReadOnlyList<SolverChange> changes)

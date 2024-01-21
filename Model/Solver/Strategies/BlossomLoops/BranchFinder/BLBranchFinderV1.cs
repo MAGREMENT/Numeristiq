@@ -10,10 +10,10 @@ namespace Model.Solver.Strategies.BlossomLoops.BranchFinder;
 
 public class BLBranchFinderV1 : IBlossomLoopBranchFinder
 {
-    public BlossomLoopBranch[]? FindShortestBranches(ILinkGraph<IChainingElement> graph,
-        CellPossibility[] cps, LinkGraphLoop<IChainingElement> loop)
+    public BlossomLoopBranch[]? FindShortestBranches(ILinkGraph<ISudokuElement> graph,
+        CellPossibility[] cps, LinkGraphLoop<ISudokuElement> loop)
     {
-        HashSet<IChainingElement> nope = new(loop.Elements);
+        HashSet<ISudokuElement> nope = new(loop.Elements);
 
         var result = new BlossomLoopBranch[cps.Length - 2];
         var cursor = 0;
@@ -21,9 +21,9 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
         {
             if (loop.Contains(cp)) continue;
             
-            ColoringHistory<IChainingElement> parents = new();
-            Queue<ColoredElement<IChainingElement>> queue = new();
-            queue.Enqueue(new ColoredElement<IChainingElement>(cp, Coloring.On));
+            ColoringHistory<ISudokuElement> parents = new();
+            Queue<ColoredElement<ISudokuElement>> queue = new();
+            queue.Enqueue(new ColoredElement<ISudokuElement>(cp, Coloring.On));
             bool ok = true;
 
             while (queue.Count > 0 && ok)
@@ -37,7 +37,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
                     if (ContainsAnyCellPossibility(cps, friend) || nope.Contains(friend) || parents.ContainsChild(friend)) continue;
 
                     parents.Add(friend, current.Element);
-                    queue.Enqueue(new ColoredElement<IChainingElement>(friend, opposite));
+                    queue.Enqueue(new ColoredElement<ISudokuElement>(friend, opposite));
 
                     bool isBranch = false;
                     int i = 0;
@@ -72,7 +72,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
         return result;
     }
 
-    private bool ContainsAnyCellPossibility(CellPossibility[] cps, IChainingElement element)
+    private bool ContainsAnyCellPossibility(CellPossibility[] cps, ISudokuElement element)
     {
         if (element is CellPossibility a) return cps.Contains(a);
         
@@ -85,7 +85,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
     }
 
     private bool CheckTargetOverlap(BlossomLoopBranch[] branches, int cursor, BlossomLoopBranch current, 
-        ILinkGraph<IChainingElement> graph)
+        ILinkGraph<ISudokuElement> graph)
     {
         for (int i = 0; i < cursor; i++)
         {

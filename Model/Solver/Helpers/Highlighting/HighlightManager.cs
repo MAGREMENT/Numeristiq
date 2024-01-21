@@ -1,26 +1,26 @@
 namespace Model.Solver.Helpers.Highlighting;
 
-public class HighlightManager : IHighlighter
+public class HighlightManager : IHighlightable
 {
-    private readonly IHighlighter[] _highlights;
+    private readonly IHighlightable[] _highlights;
     private int _cursor;
 
     public int Count => _highlights.Length;
 
-    public HighlightManager(IHighlighter highlight)
+    public HighlightManager(IHighlightable highlight)
     {
         _highlights = new[] { highlight };
     }
 
-    public HighlightManager(params IHighlighter[] highlights)
+    public HighlightManager(params IHighlightable[] highlights)
     {
         _highlights = highlights;
     }
 
-    public void Highlight(IHighlightable highlightable)
+    public void Highlight(IHighlighter highlighter)
     {
         if (Count == 0) return;
-        _highlights[_cursor].Highlight(highlightable);
+        _highlights[_cursor].Highlight(highlighter);
     }
 
     public void ShiftLeft()

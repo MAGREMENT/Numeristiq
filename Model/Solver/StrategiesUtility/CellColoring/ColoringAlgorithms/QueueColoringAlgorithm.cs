@@ -7,7 +7,7 @@ namespace Model.Solver.StrategiesUtility.CellColoring.ColoringAlgorithms;
 public class QueueColoringAlgorithm : IColoringAlgorithm
 {
     public void ColorWithoutRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
-        where T : IChainingElement
+        where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -40,7 +40,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
         }
     }
 
-    public void ColorWithRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : IChainingElement
+    public void ColorWithRules<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On) where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);
@@ -77,7 +77,7 @@ public class QueueColoringAlgorithm : IColoringAlgorithm
     }
 
     public void ColorWithRulesAndLinksJump<T>(ILinkGraph<T> graph, IColoringResult<T> result, HashSet<T> visited, T start, Coloring firstColor = Coloring.On)
-        where T : IChainingElement
+        where T : ISudokuElement
     {
         result.AddColoredElement(start, firstColor);
         visited.Add(start);

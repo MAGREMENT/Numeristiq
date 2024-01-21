@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : IChainingElement
+public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     private readonly int _maxLoopSize;
     private readonly HashSet<LinkGraphLoop<T>> _loopsProcessed = new();

@@ -5,7 +5,7 @@ namespace Model.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class UnitWeakLinkConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<IChainingElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
     {
         for (int number = 1; number <= 9; number++)
         {

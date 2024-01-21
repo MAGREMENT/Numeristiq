@@ -4,7 +4,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.Strategies.AlternatingInference.Algorithms;
 
-public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : IChainingElement
+public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
     public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)

@@ -6,5 +6,5 @@ namespace Model.Solver.Strategies.BlossomLoops;
 
 public interface IBlossomLoopLoopFinder
 {
-    List<LinkGraphLoop<IChainingElement>> Find(CellPossibility[] cps, ILinkGraph<IChainingElement> graph);
+    List<LinkGraphLoop<ISudokuElement>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph);
 }

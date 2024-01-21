@@ -66,7 +66,7 @@ public class BlossomLoopStrategy : AbstractStrategy
         }
     }
 
-    private HashSet<CellPossibility> SetUpNope(LinkGraphLoop<IChainingElement> loop,
+    private HashSet<CellPossibility> SetUpNope(LinkGraphLoop<ISudokuElement> loop,
         BlossomLoopBranch[] branches)
     {
         HashSet<CellPossibility> nope = new();
@@ -86,10 +86,10 @@ public class BlossomLoopStrategy : AbstractStrategy
         return nope;
     }
 
-    private void HandleWeakLoopLink(IStrategyManager strategyManager, IChainingElement one, IChainingElement two,
+    private void HandleWeakLoopLink(IStrategyManager strategyManager, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope, BlossomLoopBranch[] branches)
     {
-        List<IChainingElement> toTakeIntoAccount = new();
+        List<ISudokuElement> toTakeIntoAccount = new();
         foreach (var b in branches)
         {
             if (one.Equals(b.Targets[0]) && two.Equals(b.Targets[1])) toTakeIntoAccount.Add(b.Branch.Elements[^1]);
@@ -150,7 +150,7 @@ public class BlossomLoopStrategy : AbstractStrategy
         
     }
 
-    private void HandleWeakBranchLink(IStrategyManager strategyManager, IChainingElement one, IChainingElement two,
+    private void HandleWeakBranchLink(IStrategyManager strategyManager, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope)
     {
         var cp1 = one.EveryCellPossibilities();
@@ -198,11 +198,11 @@ public class BlossomLoopStrategy : AbstractStrategy
 
 public class BlossomLoopReportBuilder : IChangeReportBuilder
 {
-    private readonly LinkGraphLoop<IChainingElement> _loop;
+    private readonly LinkGraphLoop<ISudokuElement> _loop;
     private readonly BlossomLoopBranch[] _branches;
     private readonly CellPossibility[] _cps;
 
-    public BlossomLoopReportBuilder(LinkGraphLoop<IChainingElement> loop, BlossomLoopBranch[] branches, CellPossibility[] cps)
+    public BlossomLoopReportBuilder(LinkGraphLoop<ISudokuElement> loop, BlossomLoopBranch[] branches, CellPossibility[] cps)
     {
         _loop = loop;
         _branches = branches;

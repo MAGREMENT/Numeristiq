@@ -5,7 +5,7 @@ using Model.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Solver.StrategiesUtility.CellColoring.ColoringResults;
 
-public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : IChainingElement
+public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<ColoringList<T>> where T : ISudokuElement
 {
     private bool _withHistory;
     
@@ -73,7 +73,7 @@ public class ColoringListCollection<T> : IColoringResult<T>, IEnumerable<Colorin
     }
 }
 
-public class ColoringList<T> where T : IChainingElement
+public class ColoringList<T> where T : ISudokuElement
 {
     private readonly List<T> _on = new();
     private readonly List<T> _off = new();

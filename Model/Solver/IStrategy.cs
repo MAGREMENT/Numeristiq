@@ -147,8 +147,6 @@ public class BooleanStrategyArgument : IStrategyArgument
         return _getter().ToString();
     }
     
-    
-
     public void Set(string s)
     {
         bool val;

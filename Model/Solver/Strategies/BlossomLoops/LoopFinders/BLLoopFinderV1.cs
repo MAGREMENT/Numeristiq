@@ -10,15 +10,15 @@ namespace Model.Solver.Strategies.BlossomLoops.LoopFinders;
 
 public class BLLoopFinderV1 : IBlossomLoopLoopFinder
 {
-    public List<LinkGraphLoop<IChainingElement>> Find(CellPossibility[] cps, ILinkGraph<IChainingElement> graph)
+    public List<LinkGraphLoop<ISudokuElement>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
     {
-        List<LinkGraphLoop<IChainingElement>> result = new();
+        List<LinkGraphLoop<ISudokuElement>> result = new();
 
         foreach (var start in cps)
         {
-            ColoringHistory<IChainingElement> parents = new();
-            Queue<ColoredElement<IChainingElement>> queue = new();
-            queue.Enqueue(new ColoredElement<IChainingElement>(start, Coloring.On));
+            ColoringHistory<ISudokuElement> parents = new();
+            Queue<ColoredElement<ISudokuElement>> queue = new();
+            queue.Enqueue(new ColoredElement<ISudokuElement>(start, Coloring.On));
 
             while (queue.Count > 0)
             {
@@ -35,7 +35,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
                         var path = parents.GetPathToRootWithRealLinks(friend, graph);
                         if (path.Count >= 3 && path.Count % 2 == 1)
                         {
-                            result.Add(new LinkGraphLoop<IChainingElement>(path.Elements, path.Links,
+                            result.Add(new LinkGraphLoop<ISudokuElement>(path.Elements, path.Links,
                                 LinkStrength.Strong));
                         }
                     }
@@ -44,7 +44,7 @@ public class BLLoopFinderV1 : IBlossomLoopLoopFinder
                         if (parents.ContainsChild(friend)) continue;
 
                         parents.Add(friend, current.Element);
-                        queue.Enqueue(new ColoredElement<IChainingElement>(friend, opposite));
+                        queue.Enqueue(new ColoredElement<ISudokuElement>(friend, opposite));
                     }
                 }
             }

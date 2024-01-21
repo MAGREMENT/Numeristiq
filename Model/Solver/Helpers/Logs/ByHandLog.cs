@@ -15,7 +15,7 @@ public class ByHandLog : ISolverLog
     public string Description { get; }
     public SolverState StateBefore { get; }
     public SolverState StateAfter { get; }
-    public HighlightManager HighlightManager => new(new DelegateHighlighter(HighLight));
+    public HighlightManager HighlightManager => new(new DelegateHighlightable(HighLight));
     public bool FromSolving => false;
 
     private readonly SolverChange _change;
@@ -44,8 +44,8 @@ public class ByHandLog : ISolverLog
         _change = new SolverChange(changeType, possibility, row, col);
     }
 
-    private void HighLight(IHighlightable highlightable)
+    private void HighLight(IHighlighter highlighter)
     {
-        IChangeReportBuilder.HighlightChange(highlightable, _change);
+        IChangeReportBuilder.HighlightChange(highlighter, _change);
     }
 }

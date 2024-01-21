@@ -4,10 +4,10 @@ namespace Model.Solver.StrategiesUtility;
 
 public class BlossomLoopBranch
 {
-    public IChainingElement[] Targets { get; }
-    public LinkGraphChain<IChainingElement> Branch { get; }
+    public ISudokuElement[] Targets { get; }
+    public LinkGraphChain<ISudokuElement> Branch { get; }
 
-    public BlossomLoopBranch(LinkGraphChain<IChainingElement> branch, params IChainingElement[] targets)
+    public BlossomLoopBranch(LinkGraphChain<ISudokuElement> branch, params ISudokuElement[] targets)
     {
         Targets = targets;
         Branch = branch;
