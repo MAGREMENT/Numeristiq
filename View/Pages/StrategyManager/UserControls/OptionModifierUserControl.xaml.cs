@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Global;
-using Model.Solver;
+using Model.SudokuSolving.Solver;
 using Presenter.Translators;
 using View.Canvas;
 

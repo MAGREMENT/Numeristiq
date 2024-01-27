@@ -1,6 +1,6 @@
 ﻿using Global;
 using Global.Enums;
-using Model.Solver;
+using Model.SudokuSolving.Solver;
 
 namespace Presenter.Translators;
 

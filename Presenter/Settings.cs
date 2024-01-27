@@ -1,5 +1,6 @@
 ﻿using Global.Enums;
 using Model;
+using Model.SudokuSolving;
 using Presenter.Player;
 using Presenter.Solver;
 

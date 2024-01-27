@@ -1,8 +1,8 @@
 ﻿using Global.Enums;
-using Model.Solver;
-using Model.Solver.Helpers;
-using Model.Solver.Helpers.Changes;
-using Model.Solver.Helpers.Logs;
+using Model.SudokuSolving.Solver;
+using Model.SudokuSolving.Solver.Helpers;
+using Model.SudokuSolving.Solver.Helpers.Changes;
+using Model.SudokuSolving.Solver.Helpers.Logs;
 
 namespace Presenter.Translators;
 

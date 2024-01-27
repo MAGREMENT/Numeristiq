@@ -1,5 +1,6 @@
 ﻿using Model;
-using Model.Solver;
+using Model.SudokuSolving;
+using Model.SudokuSolving.Solver;
 using Presenter.Translators;
 
 namespace Presenter.StrategyManager;

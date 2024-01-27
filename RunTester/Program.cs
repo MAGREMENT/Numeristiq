@@ -1,4 +1,5 @@
 ﻿using Model;
+using Model.SudokuSolving;
 using Repository;
 
 namespace RunTester;

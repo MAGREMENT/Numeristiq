@@ -1,5 +1,5 @@
-﻿using Model.Solver;
-using Model.Solver.Helpers.Changes;
+﻿using Model.SudokuSolving.Solver;
+using Model.SudokuSolving.Solver.Helpers.Changes;
 using Presenter.Translators;
 
 namespace Presenter.StepChooser;

@@ -1,7 +1,8 @@
 ﻿using Model;
-using Model.Player;
-using Model.Solver;
-using Model.Solver.Helpers.Changes;
+using Model.SudokuSolving;
+using Model.SudokuSolving.Player;
+using Model.SudokuSolving.Solver;
+using Model.SudokuSolving.Solver.Helpers.Changes;
 using Presenter.Player;
 using Presenter.Solver;
 using Presenter.StepChooser;

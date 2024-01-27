@@ -1,6 +1,7 @@
 ﻿using Global;
 using Global.Enums;
 using Model;
+using Model.SudokuSolving;
 
 namespace Repository;
 

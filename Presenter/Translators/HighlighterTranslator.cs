@@ -1,10 +1,11 @@
 ﻿using Global;
 using Global.Enums;
 using Model;
-using Model.Solver.Helpers.Highlighting;
-using Model.Solver.StrategiesUtility;
-using Model.Solver.StrategiesUtility.AlmostLockedSets;
-using Model.Solver.StrategiesUtility.Graphs;
+using Model.SudokuSolving;
+using Model.SudokuSolving.Solver.Helpers.Highlighting;
+using Model.SudokuSolving.Solver.StrategiesUtility;
+using Model.SudokuSolving.Solver.StrategiesUtility.AlmostLockedSets;
+using Model.SudokuSolving.Solver.StrategiesUtility.Graphs;
 using Presenter.Solver;
 
 namespace Presenter.Translators;

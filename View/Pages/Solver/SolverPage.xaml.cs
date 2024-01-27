@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using Global;
 using Global.Enums;
-using Model.Solver.Helpers.Logs;
+using Model.SudokuSolving.Solver.Helpers.Logs;
 using Presenter;
 using Presenter.Solver;
 using Presenter.Translators;

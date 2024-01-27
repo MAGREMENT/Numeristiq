@@ -4,9 +4,10 @@ using System.Windows.Documents;
 using Global;
 using Global.Enums;
 using Model;
-using Model.Solver.Explanation;
-using Model.Solver.Helpers.Logs;
-using Model.Solver.StrategiesUtility;
+using Model.SudokuSolving;
+using Model.SudokuSolving.Solver.Explanation;
+using Model.SudokuSolving.Solver.Helpers.Logs;
+using Model.SudokuSolving.Solver.StrategiesUtility;
 using View.Utility;
 
 namespace View.HelperWindows.Explanation;

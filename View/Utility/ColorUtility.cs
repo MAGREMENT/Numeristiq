@@ -1,7 +1,7 @@
 ﻿using System.Windows.Media;
 using Global;
 using Global.Enums;
-using Model.Solver.Explanation;
+using Model.SudokuSolving.Solver.Explanation;
 
 namespace View.Utility;
 

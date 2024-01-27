@@ -1,5 +1,5 @@
 ﻿using Global.Enums;
-using Model.Solver.Helpers.Changes;
+using Model.SudokuSolving.Solver.Helpers.Changes;
 using Presenter.Solver;
 
 namespace Presenter.StepChooser;
