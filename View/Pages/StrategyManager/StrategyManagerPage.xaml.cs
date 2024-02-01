@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using Presenter;
-using Presenter.StrategyManager;
-using Presenter.Translators;
+using Presenter.Sudoku;
+using Presenter.Sudoku.StrategyManager;
+using Presenter.Sudoku.Translators;
 using View.Themes;
 
 namespace View.Pages.StrategyManager;

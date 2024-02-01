@@ -4,8 +4,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Global;
-using Global.Enums;
+using Model.Sudoku;
+using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Utility;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;

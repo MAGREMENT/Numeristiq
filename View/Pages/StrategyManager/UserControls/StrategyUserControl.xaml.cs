@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Presenter.Translators;
+using Presenter.Sudoku.Translators;
 using View.Utility;
 
 namespace View.Pages.StrategyManager.UserControls;

@@ -1,7 +1,10 @@
 ﻿using System.Windows.Media;
-using Global;
-using Global.Enums;
-using Model.SudokuSolving.Solver.Explanation;
+using Model.Sudoku;
+using Model.Sudoku.Player;
+using Model.Sudoku.Solver.Explanation;
+using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Sudoku.Solver.Helpers.Logs;
+using Model.Utility;
 
 namespace View.Utility;
 

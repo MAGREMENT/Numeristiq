@@ -1,13 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using Global;
-using Global.Enums;
 using Model;
-using Model.SudokuSolving;
-using Model.SudokuSolving.Solver.Explanation;
-using Model.SudokuSolving.Solver.Helpers.Logs;
-using Model.SudokuSolving.Solver.StrategiesUtility;
+using Model.Sudoku;
+using Model.Sudoku.Solver.Explanation;
+using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Sudoku.Solver.Helpers.Logs;
+using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Utility;
 using View.Utility;
 
 namespace View.HelperWindows.Explanation;

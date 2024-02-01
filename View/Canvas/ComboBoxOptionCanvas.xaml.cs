@@ -1,5 +1,5 @@
 ﻿using System.Windows.Controls;
-using Global;
+using Model.Sudoku.Solver.Arguments;
 using View.Themes;
 
 namespace View.Canvas;

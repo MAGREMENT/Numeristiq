@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Input;
-using Presenter.Translators;
+using Presenter.Sudoku.Translators;
 
 namespace View.Pages.Solver.UserControls;
 

@@ -1,10 +1,10 @@
 ﻿using System.Globalization;
 using System.Text;
 using Model;
-using Model.SudokuSolving;
-using Model.SudokuSolving.Solver;
-using Model.SudokuSolving.Solver.Helpers;
-using Model.SudokuSolving.Utility;
+using Model.Sudoku;
+using Model.Sudoku.Solver;
+using Model.Sudoku.Solver.Helpers;
+using Model.Sudoku.Utility;
 
 namespace RunTester;
 

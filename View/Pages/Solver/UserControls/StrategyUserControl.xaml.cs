@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Global.Enums;
-using Presenter.Translators;
+using Model.Sudoku.Solver.Helpers.Logs;
+using Presenter.Sudoku.Translators;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;

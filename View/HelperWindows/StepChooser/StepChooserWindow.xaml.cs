@@ -1,10 +1,13 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using Global;
-using Global.Enums;
+using Model.Sudoku;
+using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Utility;
 using Presenter;
-using Presenter.StepChooser;
-using Presenter.Translators;
+using Presenter.Sudoku;
+using Presenter.Sudoku.StepChooser;
+using Presenter.Sudoku.Translators;
 using View.Themes;
 
 namespace View.HelperWindows.StepChooser;

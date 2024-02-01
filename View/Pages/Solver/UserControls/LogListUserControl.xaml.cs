@@ -2,8 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Global.Enums;
-using Presenter.Translators;
+using Presenter.Sudoku.Translators;
 using View.Themes;
 
 namespace View.Pages.Solver.UserControls;

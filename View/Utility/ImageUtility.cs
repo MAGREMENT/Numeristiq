@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media.Imaging;
-using Global.Enums;
+using Model.Sudoku;
 
 namespace View.Utility;
 

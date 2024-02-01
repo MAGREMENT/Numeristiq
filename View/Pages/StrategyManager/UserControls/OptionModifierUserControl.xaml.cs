@@ -1,8 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Global;
-using Model.SudokuSolving.Solver;
-using Presenter.Translators;
+using Model.Sudoku.Solver;
+using Model.Sudoku.Solver.Arguments;
+using Model.Utility;
+using Presenter.Sudoku.Translators;
 using View.Canvas;
 
 namespace View.Pages.StrategyManager.UserControls;

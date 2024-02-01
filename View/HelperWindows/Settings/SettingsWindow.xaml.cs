@@ -1,11 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
-using Global.Enums;
-using Presenter;
-using Presenter.Player;
-using Presenter.Solver;
+using Model.Sudoku;
+using Model.Sudoku.Solver.Helpers.Changes;
+using Presenter.Sudoku;
+using Presenter.Sudoku.Player;
+using Presenter.Sudoku.Solver;
 using View.Canvas;
-using View.Themes;
 
 namespace View.HelperWindows.Settings;
 

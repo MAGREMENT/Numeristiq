@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 using Model;
-using Model.SudokuSolving;
+using Model.Sudoku;
 
 namespace Repository;
 

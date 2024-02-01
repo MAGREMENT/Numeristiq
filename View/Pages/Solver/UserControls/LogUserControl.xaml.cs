@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Global.Enums;
-using Presenter.Translators;
+using Presenter.Sudoku.Translators;
 using View.Utility;
 
 namespace View.Pages.Solver.UserControls;

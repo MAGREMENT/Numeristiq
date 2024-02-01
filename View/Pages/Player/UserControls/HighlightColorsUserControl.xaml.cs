@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Global.Enums;
+using Model.Sudoku.Player;
 using View.Utility;
 
 namespace View.Pages.Player.UserControls;

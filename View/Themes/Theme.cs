@@ -1,6 +1,6 @@
 using System.Windows.Media;
-using Global.Enums;
-using Presenter.Translators;
+using Model.Sudoku;
+using Presenter.Sudoku.Translators;
 using View.Utility;
 
 namespace View.Themes;

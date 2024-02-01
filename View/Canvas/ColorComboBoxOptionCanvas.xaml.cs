@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using Global;
-using Global.Enums;
+using Model.Sudoku;
+using Model.Sudoku.Solver.Arguments;
 using View.Themes;
 using View.Utility;
 

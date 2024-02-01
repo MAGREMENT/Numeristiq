@@ -1,5 +1,6 @@
 using System.Windows;
 using Presenter;
+using Presenter.Sudoku;
 using View.HelperWindows.Settings;
 using View.Themes;
 

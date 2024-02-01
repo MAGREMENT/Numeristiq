@@ -1,4 +1,4 @@
-using Model.SudokuSolving.Utility;
+using Model.Sudoku.Utility;
 
 namespace Tests;
 

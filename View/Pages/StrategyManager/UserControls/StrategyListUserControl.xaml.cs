@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Presenter.Translators;
+using Presenter.Sudoku.Translators;
 
 namespace View.Pages.StrategyManager.UserControls;
 
