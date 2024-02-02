@@ -19,7 +19,7 @@ public class ChangeReportLog : ISolverLog
 
 
     public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, SolverState stateBefore,
-        SolverState stateAfter, ExplanationElement? explanation)
+        SolverState stateAfter)
     {
         Id = id;
         Title = strategy.Name;
@@ -29,6 +29,6 @@ public class ChangeReportLog : ISolverLog
         StateBefore = stateBefore;
         StateAfter = stateAfter;
         HighlightManager = report.HighlightManager;
-        Explanation = explanation;
+        Explanation = report.Explanation;
     }
 }

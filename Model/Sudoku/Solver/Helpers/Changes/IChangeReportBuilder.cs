@@ -55,7 +55,3 @@ public static class ChangeColorationUtility
     }
 }
 
-public enum ChangeType
-{
-    Possibility, Solution
-}
