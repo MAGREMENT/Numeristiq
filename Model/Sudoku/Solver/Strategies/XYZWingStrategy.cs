@@ -102,7 +102,7 @@ public class XYZWingReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             lighter.HighlightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);

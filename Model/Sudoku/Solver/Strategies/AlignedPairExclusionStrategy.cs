@@ -163,7 +163,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport("", lighter =>
         {
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);

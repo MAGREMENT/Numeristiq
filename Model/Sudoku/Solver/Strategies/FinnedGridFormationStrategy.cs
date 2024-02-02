@@ -238,7 +238,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+        return new ChangeReport( "",
             lighter =>
             {
                 foreach (var coord in normal)

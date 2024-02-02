@@ -484,7 +484,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
 
@@ -511,7 +511,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
 
@@ -545,7 +545,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             FireworksHighlightUtils.Highlight(lighter, _fireworks, snapshot, ref color);
@@ -575,7 +575,7 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             foreach (var f in _fireworks)

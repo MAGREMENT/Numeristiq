@@ -140,7 +140,7 @@ public class XWingReportBuilder : IChangeReportBuilder
             }
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
+        return new ChangeReport( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {

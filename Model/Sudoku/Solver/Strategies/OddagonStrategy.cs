@@ -47,7 +47,7 @@ public class OddagonReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var element in _oddagon.Loop.Elements)
             {

@@ -155,7 +155,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var cell in _perfect)
             {

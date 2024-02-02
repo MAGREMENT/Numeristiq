@@ -294,7 +294,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder
             });
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var cell in cells)
             {

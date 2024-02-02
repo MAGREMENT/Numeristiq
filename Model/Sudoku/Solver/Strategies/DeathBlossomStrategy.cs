@@ -159,7 +159,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport( Explanation(), lighter =>
         {
             foreach (var stem in _stems)
             {

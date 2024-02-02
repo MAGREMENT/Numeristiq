@@ -323,7 +323,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                 break;
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), highlighters.ToArray());
+        return new ChangeReport( Explanation(), highlighters.ToArray());
     }
 
     private string Explanation()

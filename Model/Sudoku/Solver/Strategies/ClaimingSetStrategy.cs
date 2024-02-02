@@ -132,7 +132,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
                 break;
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes), lighter =>
+        return new ChangeReport( Explanation(changes), lighter =>
         {
             foreach (var coord in causes)
             {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Model.Sudoku.Utility;
+namespace Model.Sudoku.Solver.BitSets;
 
 public class InfiniteBitSet
 {
@@ -118,8 +118,10 @@ public class InfiniteBitSet
         {
             for (int i = 63; i >= 0; i--)
             {
-                builder.Append(((l >> i) & 1) > 0 ? "1" : "0");
+                builder.Append(((l >> i) & 1) > 0 ? '1' : '0');
             }
+
+            builder.Append('\n');
         }
         
         return builder.ToString();

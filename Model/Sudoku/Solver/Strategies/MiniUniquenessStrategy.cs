@@ -133,7 +133,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             foreach (var p in _presence)

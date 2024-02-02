@@ -40,7 +40,8 @@ public class LogManager
     public void AddFromReport(ChangeReport report, IReadOnlyList<SolverChange> changes, IStrategy strategy)
     {
         if (!IsEnabled || _stateBuffer == null) return;
-        Logs.Add(new ChangeReportLog(_idCount++, strategy, report, _stateBuffer, _stateBuffer.Apply(changes)));
+        Logs.Add(new ChangeReportLog(_idCount++, strategy, changes, report, _stateBuffer,
+            _stateBuffer.Apply(changes)));
     }
 
     public void StopPush()

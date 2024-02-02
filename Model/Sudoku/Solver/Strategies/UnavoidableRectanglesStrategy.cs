@@ -157,7 +157,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -190,7 +190,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var floor in _floor)
             {

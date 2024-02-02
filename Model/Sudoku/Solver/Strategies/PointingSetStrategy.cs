@@ -90,7 +90,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
     
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(changes), lighter =>
+        return new ChangeReport( Explanation(changes), lighter =>
         {
             foreach (var pos in _miniPos)
             {

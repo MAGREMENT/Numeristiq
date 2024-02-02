@@ -425,7 +425,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -458,7 +458,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -492,7 +492,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -529,7 +529,7 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             lighter.HighlightCell(_initial, ChangeColoration.CauseOffTwo);
 

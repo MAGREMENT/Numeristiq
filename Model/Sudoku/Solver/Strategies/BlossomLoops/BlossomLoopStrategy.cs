@@ -241,7 +241,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder
             };
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport( Explanation(), lighter =>
         {
             var coloring = _loop.Links[0] == LinkStrength.Strong
                 ? ChangeColoration.CauseOffOne

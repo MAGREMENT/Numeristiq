@@ -9,28 +9,24 @@ public class ChangeReport
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
     public HighlightManager HighlightManager { get; }
-    public string Changes { get; }
     
-    public ChangeReport(string changes, string description, Highlight highlighter)
+    public ChangeReport(string description, Highlight highlighter)
     {
         Description = description;
-        Changes = changes;
         HighlightManager = new HighlightManager(HighlightCompiler.GetInstance().Compile(highlighter));
         Explanation = null;
     }
     
-    public ChangeReport(string changes, string description, Highlight highlighter, ExplanationElement? explanation)
+    public ChangeReport(string description, Highlight highlighter, ExplanationElement? explanation)
     {
         Description = description;
-        Changes = changes;
         HighlightManager = new HighlightManager(HighlightCompiler.GetInstance().Compile(highlighter));
         Explanation = explanation;
     }
     
-    public ChangeReport(string changes, string description, params Highlight[] highlighters)
+    public ChangeReport(string description, params Highlight[] highlighters)
     {
         Description = description;
-        Changes = changes;
 
         IHighlightable[] compiled = new IHighlightable[highlighters.Length];
 
@@ -43,10 +39,9 @@ public class ChangeReport
         Explanation = null;
     }
     
-    public ChangeReport(string changes, string description, Highlight first, params Highlight[] highlighters)
+    public ChangeReport(string description, Highlight first, params Highlight[] highlighters)
     {
         Description = description;
-        Changes = changes;
 
         IHighlightable[] compiled = new IHighlightable[highlighters.Length + 1];
         compiled[0] = HighlightCompiler.GetInstance().Compile(first);
@@ -62,7 +57,7 @@ public class ChangeReport
 
     public static ChangeReport Default(IReadOnlyList<SolverChange> changes)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "",
+        return new ChangeReport("",
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 }

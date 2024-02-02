@@ -117,7 +117,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
     {
         var cu = new CoveringUnits(_covers);
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cu), lighter =>
+        return new ChangeReport( Explanation(cu), lighter =>
         {
             foreach (var cell in _grid)
             {

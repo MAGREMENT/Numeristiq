@@ -173,7 +173,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), _chain.ToString(), lighter =>
+        return new ChangeReport( _chain.ToString(), lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var ahs in _chain.Elements)

@@ -520,7 +520,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
             if (_je.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Column])) sSolved.Add(cell);
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             lighter.HighlightCell(_je.Base1, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_je.Base2, ChangeColoration.CauseOffOne);
@@ -578,7 +578,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
             if (_je1.BaseCandidates.Peek(snapshot.Sudoku[cell.Row, cell.Column])) sSolved.Add(cell);
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             lighter.HighlightCell(_je1.Base1, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_je1.Base2, ChangeColoration.CauseOffOne);

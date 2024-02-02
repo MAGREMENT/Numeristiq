@@ -102,7 +102,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
             };
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var element in _oddagon.Loop.Elements)
             {

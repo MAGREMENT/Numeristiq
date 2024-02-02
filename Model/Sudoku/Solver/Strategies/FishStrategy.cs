@@ -242,7 +242,7 @@ public class FishReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport( Explanation(), lighter =>
         {
             foreach (var cell in _inCommon)
             {

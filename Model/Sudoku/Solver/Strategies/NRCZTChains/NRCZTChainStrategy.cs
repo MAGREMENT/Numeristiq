@@ -149,7 +149,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport( Explanation(), lighter =>
         {
             for (int i = 0; i < Chain.Count; i++)
             {

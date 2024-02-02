@@ -145,7 +145,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
+        return new ChangeReport( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -183,7 +183,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
     {
         var cells = _pos.ToCellArray();
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
+        return new ChangeReport( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {

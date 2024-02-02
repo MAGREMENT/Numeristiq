@@ -81,7 +81,7 @@ public class TwoStringKiteReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Column, ChangeColoration.CauseOffOne);
             lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Column, ChangeColoration.CauseOffOne);

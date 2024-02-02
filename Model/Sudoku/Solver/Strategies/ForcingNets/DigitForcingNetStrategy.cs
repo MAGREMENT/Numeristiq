@@ -133,7 +133,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
 
         var first = (CellPossibility)onPaths[0].Elements[0];
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(onPaths, offPaths, first), lighter =>
+        return new ChangeReport( Explanation(onPaths, offPaths, first), lighter =>
         {
             ForcingNetsUtility.HighlightAllPaths(lighter, onPaths, Coloring.On);
             lighter.EncirclePossibility(first);

@@ -32,7 +32,7 @@ public class NakedSingleReportBuilder : IChangeReportBuilder
 {
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Description(changes),
+        return new ChangeReport( Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 

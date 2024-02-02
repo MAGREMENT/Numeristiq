@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Highlighting;
@@ -10,7 +11,7 @@ public class ByHandLog : ISolverLog
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity => Intensity.Six;
-    public string Changes { get; }
+    public IReadOnlyList<SolverChange> Changes => new[] { _change };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
     public SolverState StateBefore { get; }
@@ -29,12 +30,10 @@ public class ByHandLog : ISolverLog
         {
             case ChangeType.Possibility :
                 Title = "Removed by hand";
-                Changes = $"r{row + 1}c{col + 1} <> {possibility}";
                 Description = "This possibility was removed by hand";
                 break;
             case ChangeType.Solution :
                 Title = "Added by hand";
-                Changes = $"r{row + 1}c{col + 1} == {possibility}";
                 Description = "This solution was added by hand";
                 break;
             default: throw new ArgumentException("Invalid change type");

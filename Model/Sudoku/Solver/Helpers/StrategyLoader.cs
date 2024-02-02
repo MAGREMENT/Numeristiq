@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Strategies;
 using Model.Sudoku.Solver.Strategies.AlternatingInference;
 using Model.Sudoku.Solver.Strategies.AlternatingInference.Algorithms;

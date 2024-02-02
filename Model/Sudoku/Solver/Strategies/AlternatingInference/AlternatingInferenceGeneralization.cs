@@ -121,7 +121,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IR
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
+        return new ChangeReport(Explanation(),
             lighter =>
             {
                 var coloring = _loop.Links[0] == LinkStrength.Strong
@@ -183,7 +183,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, I
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(),
+        return new ChangeReport(Explanation(),
             lighter =>
             {
                 var coloring = _chain.Links[0] == LinkStrength.Strong

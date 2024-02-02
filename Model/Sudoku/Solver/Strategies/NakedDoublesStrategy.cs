@@ -164,7 +164,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
 
     public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
     {
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(), lighter =>
+        return new ChangeReport( Explanation(), lighter =>
         {
             foreach (var possibility in _pos)
             {
@@ -222,7 +222,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
             cells.Add(new CellPossibility(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3, possibility));
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), Explanation(cells), lighter =>
+        return new ChangeReport( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {

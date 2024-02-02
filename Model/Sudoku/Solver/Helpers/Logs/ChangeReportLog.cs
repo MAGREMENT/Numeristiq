@@ -1,4 +1,5 @@
-﻿using Model.Sudoku.Solver.Explanation;
+﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Highlighting;
 
@@ -9,7 +10,7 @@ public class ChangeReportLog : ISolverLog
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity { get; }
-    public string Changes { get; }
+    public IReadOnlyList<SolverChange> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
     public SolverState StateBefore { get; }
@@ -18,13 +19,13 @@ public class ChangeReportLog : ISolverLog
     public bool FromSolving => true;
 
 
-    public ChangeReportLog(int id, IStrategy strategy, ChangeReport report, SolverState stateBefore,
-        SolverState stateAfter)
+    public ChangeReportLog(int id, IStrategy strategy, IReadOnlyList<SolverChange> changes, ChangeReport report,
+        SolverState stateBefore, SolverState stateAfter)
     {
         Id = id;
         Title = strategy.Name;
         Intensity = (Intensity)strategy.Difficulty;
-        Changes = report.Changes;
+        Changes = changes;
         Description = report.Description;
         StateBefore = stateBefore;
         StateAfter = stateAfter;

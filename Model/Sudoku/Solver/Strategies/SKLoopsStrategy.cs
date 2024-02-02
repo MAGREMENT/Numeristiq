@@ -344,7 +344,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             }
         }
 
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var cell in _cells)
             {

@@ -10,7 +10,7 @@ public static class ModelToViewTranslator
 {
     public static ViewLog Translate(ISolverLog log)
     {
-        return new ViewLog(log.Id, log.Title, log.Description, log.Changes, log.Intensity,
+        return new ViewLog(log.Id, log.Title, log.Description, IChangeReportBuilder.ChangesToString(log.Changes), log.Intensity,
             log.HighlightManager.CursorPosition(), log.HighlightManager.Count);
     }
     
@@ -68,7 +68,7 @@ public static class ModelToViewTranslator
     public static ViewCommitInformation Translate(BuiltChangeCommit commit)
     {
         return new ViewCommitInformation(commit.Responsible.Name, (Intensity)commit.Responsible.Difficulty,
-            commit.Report.Changes, commit.Report.HighlightManager.CursorPosition(),
+            IChangeReportBuilder.ChangesToString(commit.Changes) , commit.Report.HighlightManager.CursorPosition(),
             commit.Report.HighlightManager.Count);
     }
 }

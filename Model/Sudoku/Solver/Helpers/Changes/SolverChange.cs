@@ -6,7 +6,7 @@ public readonly struct SolverChange
     
     public SolverChange(ChangeType changeType, int number, int row, int column)
     {
-        _bits = column & 0x1F | ((row << 5) & 0x1F) | ((number << 10) & 0x1F) | ((int)changeType << 15);
+        _bits = column & 0x1F | ((row & 0x1F) << 5) | ((number & 0x1F) << 10) | ((int)changeType << 15);
     }
 
     public ChangeType ChangeType => (ChangeType) (_bits >> 15);

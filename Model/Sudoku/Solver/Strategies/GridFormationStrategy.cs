@@ -116,7 +116,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
                 if (snapshot.PossibilitiesAt(row, col).Peek(_number)) coords.Add(new Cell(row, col));
             }
         }
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", lighter =>
+        return new ChangeReport( "", lighter =>
         {
             foreach (var coord in coords)
             {

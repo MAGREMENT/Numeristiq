@@ -158,6 +158,6 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
             };
         }
         
-        return new ChangeReport(IChangeReportBuilder.ChangesToString(changes), "", highlights);
+        return new ChangeReport( "", highlights);
     }
 }
