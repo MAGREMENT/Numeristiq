@@ -25,7 +25,7 @@ public class ThorsHammerStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         Dictionary<int, MiniGridPositions> boxCandidates = new();
         foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, CombinationCalculator.NumbersSample))
@@ -34,13 +34,13 @@ public class ThorsHammerStrategy : AbstractStrategy
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    var pos1 = strategyManager.MiniGridPositionsAt(r, c, combination[0]);
+                    var pos1 = strategyUser.MiniGridPositionsAt(r, c, combination[0]);
                     if (pos1.Count == 0) continue;
                     
-                    var pos2 = strategyManager.MiniGridPositionsAt(r, c, combination[1]);
+                    var pos2 = strategyUser.MiniGridPositionsAt(r, c, combination[1]);
                     if (pos2.Count == 0) continue;
 
-                    var pos3 = strategyManager.MiniGridPositionsAt(r, c, combination[2]);
+                    var pos3 = strategyUser.MiniGridPositionsAt(r, c, combination[2]);
                     if (pos3.Count == 0) continue;
 
                     var total = pos1.Or(pos2).Or(pos3);
@@ -50,13 +50,13 @@ public class ThorsHammerStrategy : AbstractStrategy
                 }
             }
 
-            if (boxCandidates.Count >= 4 && TryEveryLoop(strategyManager, combination, boxCandidates)) return;
+            if (boxCandidates.Count >= 4 && TryEveryLoop(strategyUser, combination, boxCandidates)) return;
             
             boxCandidates.Clear();
         }
     }
 
-    private bool TryEveryLoop(IStrategyManager strategyManager, int[] possibilities,
+    private bool TryEveryLoop(IStrategyUser strategyUser, int[] possibilities,
         Dictionary<int, MiniGridPositions> boxCandidates)
     {
         var graph = new BoxGraph();
@@ -71,29 +71,29 @@ public class ThorsHammerStrategy : AbstractStrategy
 
         foreach (var loop in _finder.FindLoops(graph))
         {
-            if (TryEveryPattern(strategyManager, possibilities, loop, boxCandidates,
+            if (TryEveryPattern(strategyUser, possibilities, loop, boxCandidates,
                     new Dictionary<int, MiniGridPositions>(), 0)) return true;
         }
 
         return false;
     }
     
-    private bool TryEveryPattern(IStrategyManager strategyManager, int[] possibilities, BoxLoop loop,
+    private bool TryEveryPattern(IStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
         Dictionary<int, MiniGridPositions> boxCandidates, Dictionary<int, MiniGridPositions> current, int n)
     {
-        if (n == loop.Length) return Search(strategyManager, possibilities, loop, current);
+        if (n == loop.Length) return Search(strategyUser, possibilities, loop, current);
 
         foreach (var mgp in boxCandidates[loop[n]].EveryDiagonalPattern())
         {
             current.Add(loop[n], mgp);
-            if (TryEveryPattern(strategyManager, possibilities, loop, boxCandidates, current, n + 1)) return true;
+            if (TryEveryPattern(strategyUser, possibilities, loop, boxCandidates, current, n + 1)) return true;
             current.Remove(loop[n]);
         }
         
         return false;
     }
 
-    private bool Search(IStrategyManager strategyManager, int[] possibilities, BoxLoop loop,
+    private bool Search(IStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
         Dictionary<int, MiniGridPositions> boxCandidates)
     {
         var pp = new ParityPair[loop.Length];
@@ -139,7 +139,7 @@ public class ThorsHammerStrategy : AbstractStrategy
             foreach (var cell in mgp)
             {
                 cells.Add(cell);
-                foreach (var p in strategyManager.PossibilitiesAt(cell))
+                foreach (var p in strategyUser.PossibilitiesAt(cell))
                 {
                     if(!possibilities.Contains(p)) notInPattern.Add(new CellPossibility(cell, p));
                 }
@@ -147,12 +147,12 @@ public class ThorsHammerStrategy : AbstractStrategy
         }
 
         if (notInPattern.Count == 0) return false; //Should never happen
-        if (notInPattern.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
+        if (notInPattern.Count == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
         else
         {
-            strategyManager.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+            strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
                 ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
-            var linkGraph = strategyManager.GraphManager.SimpleLinkGraph;
+            var linkGraph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
             foreach (var target in linkGraph.Neighbors(notInPattern[0]))
             {
@@ -166,11 +166,11 @@ public class ThorsHammerStrategy : AbstractStrategy
                     }
                 }
 
-                if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
+                if (ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
             }
         }
 
-        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new ThorsHammerReportBuilder(cells, notInPattern)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
 
         return false;

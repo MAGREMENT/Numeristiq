@@ -17,35 +17,35 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
     {
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
-        foreach (var linked in strategyManager.PreComputer.ConstructAlmostHiddenSetGraph())
+        foreach (var linked in strategyUser.PreComputer.ConstructAlmostHiddenSetGraph())
         {
             if (linked.Cells.Length > 2) continue;
 
             var one = linked.One;
             var two = linked.Two;
             
-            if (Process1CommonCell(strategyManager, one, two, graph)) return;
-            if (linked.Cells.Length == 2 && Process2CommonCells(strategyManager, one, two)) return;
+            if (Process1CommonCell(strategyUser, one, two, graph)) return;
+            if (linked.Cells.Length == 2 && Process2CommonCells(strategyUser, one, two)) return;
         }
     }
 
-    private bool Process2CommonCells(IStrategyManager strategyManager, IPossibilitiesPositions one,
+    private bool Process2CommonCells(IStrategyUser strategyUser, IPossibilitiesPositions one,
         IPossibilitiesPositions two)
     {
         foreach (var cell in one.EachCell())
         {
             if (two.Positions.Peek(cell)) continue;
                     
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
             {
                 if (one.Possibilities.Peek(possibility)) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
                     
@@ -53,27 +53,27 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
         {
             if (one.Positions.Peek(cell)) continue;
                     
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
             {
                 if (two.Possibilities.Peek(possibility)) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, new List<Link<CellPossibility>>()))
                                                        && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool Process1CommonCell(IStrategyManager strategyManager, IPossibilitiesPositions one,
+    private bool Process1CommonCell(IStrategyUser strategyUser, IPossibilitiesPositions one,
         IPossibilitiesPositions two, ILinkGraph<CellPossibility> graph)
     {
         List<Link<CellPossibility>> links = new();
 
         foreach (var cell in one.EachCell())
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
             {
                 if (one.Possibilities.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
 
@@ -89,14 +89,14 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));
 
-                            strategyManager.ChangeBuffer.ProposeSolutionAddition(friend);
+                            strategyUser.ChangeBuffer.ProposeSolutionAddition(friend);
                         }
                     }
                 }
             }
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                    new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links)) &&
                         OnCommitBehavior == OnCommitBehavior.Return;
     }

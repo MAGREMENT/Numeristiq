@@ -4,6 +4,6 @@ public interface IPatternCollection
 {
     public IStrategy? Strategy { set; }
 
-    public bool Filter(IStrategyManager strategyManager);
-    public bool Apply(IStrategyManager strategyManager);
+    public bool Filter(IStrategyUser strategyUser);
+    public bool Apply(IStrategyUser strategyUser);
 }

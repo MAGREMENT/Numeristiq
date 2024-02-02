@@ -56,7 +56,7 @@ public class RunTester
             StatisticsTracked = true
         };
         _currentSolver.Bind(_repository);
-        if(_toWaitForAll) _currentSolver.StrategyLoader.ChangeStrategyBehaviorForAll(OnCommitBehavior.WaitForAll);
+        if(_toWaitForAll) _currentSolver.StrategyManager.ChangeStrategyBehaviorForAll(OnCommitBehavior.WaitForAll);
 
         using TextReader reader = new StreamReader(Path, Encoding.UTF8);
 

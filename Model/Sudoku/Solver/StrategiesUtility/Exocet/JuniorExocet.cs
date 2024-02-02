@@ -87,7 +87,7 @@ public class JuniorExocet
         return sCells;
     }
 
-    public bool CompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
+    public bool CompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
     {
         if (!BaseCandidates.Peek(poss1) || !BaseCandidates.Peek(poss2))
             throw new ArgumentException("Possibility not in base candidates");
@@ -95,11 +95,11 @@ public class JuniorExocet
         if (poss1 == poss2) return false;
 
         return GetUnit() == Unit.Row
-            ? RowCompatibilityCheck(strategyManager, poss1, poss2)
-            : ColumnCompatibilityCheck(strategyManager, poss1, poss2);
+            ? RowCompatibilityCheck(strategyUser, poss1, poss2)
+            : ColumnCompatibilityCheck(strategyUser, poss1, poss2);
     }
 
-    private bool RowCompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
+    private bool RowCompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
     {
         int urThreatCount = 0;
         var possibilities = Possibilities.NewEmpty();
@@ -114,12 +114,12 @@ public class JuniorExocet
             {
                 int row = miniRow * 3 + r;
                 
-                if (strategyManager.Contains(row, EscapeCell.Column, poss1) || strategyManager.Contains(row, EscapeCell.Column, poss2) ||
-                    strategyManager.Contains(row, Target1.Column, poss1) || strategyManager.Contains(row, Target1.Column, poss2) ||
-                    strategyManager.Contains(row, Target2.Column, poss1) || strategyManager.Contains(row, Target2.Column, poss2)) continue;
+                if (strategyUser.Contains(row, EscapeCell.Column, poss1) || strategyUser.Contains(row, EscapeCell.Column, poss2) ||
+                    strategyUser.Contains(row, Target1.Column, poss1) || strategyUser.Contains(row, Target1.Column, poss2) ||
+                    strategyUser.Contains(row, Target2.Column, poss1) || strategyUser.Contains(row, Target2.Column, poss2)) continue;
 
-                if (!strategyManager.PossibilitiesAt(row, Base1.Column).PeekAll(possibilities) ||
-                    !strategyManager.PossibilitiesAt(row, Base2.Column).PeekAll(possibilities)) continue;
+                if (!strategyUser.PossibilitiesAt(row, Base1.Column).PeekAll(possibilities) ||
+                    !strategyUser.PossibilitiesAt(row, Base2.Column).PeekAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;
@@ -140,7 +140,7 @@ public class JuniorExocet
         return false;
     }
     
-    private bool ColumnCompatibilityCheck(IStrategyManager strategyManager, int poss1, int poss2)
+    private bool ColumnCompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
     {
         int urThreatCount = 0;
         var possibilities = Possibilities.NewEmpty();
@@ -155,12 +155,12 @@ public class JuniorExocet
             {
                 int col = miniCol * 3 + c;
                 
-                if (strategyManager.Contains(EscapeCell.Row, col, poss1) || strategyManager.Contains(EscapeCell.Row, col, poss2) ||
-                    strategyManager.Contains(Target1.Row, col, poss1) || strategyManager.Contains(Target1.Row, col, poss2) ||
-                    strategyManager.Contains(Target2.Row, col, poss1) || strategyManager.Contains(Target2.Row, col, poss2)) continue;
+                if (strategyUser.Contains(EscapeCell.Row, col, poss1) || strategyUser.Contains(EscapeCell.Row, col, poss2) ||
+                    strategyUser.Contains(Target1.Row, col, poss1) || strategyUser.Contains(Target1.Row, col, poss2) ||
+                    strategyUser.Contains(Target2.Row, col, poss1) || strategyUser.Contains(Target2.Row, col, poss2)) continue;
 
-                if (!strategyManager.PossibilitiesAt(Base1.Row, col).PeekAll(possibilities) ||
-                    !strategyManager.PossibilitiesAt(Base2.Row, col).PeekAll(possibilities)) continue;
+                if (!strategyUser.PossibilitiesAt(Base1.Row, col).PeekAll(possibilities) ||
+                    !strategyUser.PossibilitiesAt(Base2.Row, col).PeekAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;

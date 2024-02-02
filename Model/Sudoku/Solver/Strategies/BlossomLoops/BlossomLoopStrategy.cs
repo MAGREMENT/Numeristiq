@@ -31,13 +31,13 @@ public class BlossomLoopStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructComplex(ConstructRule.PointingPossibilities,
+        strategyUser.PreComputer.Graphs.ConstructComplex(ConstructRule.PointingPossibilities,
             ConstructRule.CellStrongLink, ConstructRule.CellWeakLink, ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
-        var graph = strategyManager.GraphManager.ComplexLinkGraph;
+        var graph = strategyUser.PreComputer.Graphs.ComplexLinkGraph;
 
-        foreach (var cps in _type.Candidates(strategyManager))
+        foreach (var cps in _type.Candidates(strategyUser))
         {
             foreach (var loop in _loopFinder.Find(cps, graph))
             {
@@ -46,19 +46,19 @@ public class BlossomLoopStrategy : AbstractStrategy
 
                 var nope = SetUpNope(loop, branches);
                 
-                loop.ForEachLink((one, two) => HandleWeakLoopLink(strategyManager,
+                loop.ForEachLink((one, two) => HandleWeakLoopLink(strategyUser,
                     one, two, nope, branches), LinkStrength.Weak);
 
                 foreach (var b in branches)
                 {
                     for (int i = 0; i < b.Branch.Links.Length; i++)
                     {
-                        if(b.Branch.Links[i] == LinkStrength.Weak) HandleWeakBranchLink(strategyManager,
+                        if(b.Branch.Links[i] == LinkStrength.Weak) HandleWeakBranchLink(strategyUser,
                             b.Branch.Elements[i], b.Branch.Elements[i + 1], nope);
                     }
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new BlossomLoopReportBuilder(loop, branches, cps)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }
@@ -85,7 +85,7 @@ public class BlossomLoopStrategy : AbstractStrategy
         return nope;
     }
 
-    private void HandleWeakLoopLink(IStrategyManager strategyManager, ISudokuElement one, ISudokuElement two,
+    private void HandleWeakLoopLink(IStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope, BlossomLoopBranch[] branches)
     {
         List<ISudokuElement> toTakeIntoAccount = new();
@@ -94,7 +94,7 @@ public class BlossomLoopStrategy : AbstractStrategy
             if (one.Equals(b.Targets[0]) && two.Equals(b.Targets[1])) toTakeIntoAccount.Add(b.Branch.Elements[^1]);
         }
 
-        if (toTakeIntoAccount.Count == 0) HandleWeakBranchLink(strategyManager, one, two, nope);
+        if (toTakeIntoAccount.Count == 0) HandleWeakBranchLink(strategyUser, one, two, nope);
         else
         {
             var and = one.EveryPossibilities().And(two.EveryPossibilities());
@@ -112,9 +112,9 @@ public class BlossomLoopStrategy : AbstractStrategy
             if (cells.Count == 1)
             {
                 var c = cells.First();
-                foreach (var p in strategyManager.PossibilitiesAt(c))
+                foreach (var p in strategyUser.PossibilitiesAt(c))
                 {
-                    if (!or.Peek(p)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, c);
+                    if (!or.Peek(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
                 }
             }
 
@@ -142,14 +142,14 @@ public class BlossomLoopStrategy : AbstractStrategy
 
                 foreach (var ssc in Cells.SharedSeenCells(c))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                 }
             }
         }
         
     }
 
-    private void HandleWeakBranchLink(IStrategyManager strategyManager, ISudokuElement one, ISudokuElement two,
+    private void HandleWeakBranchLink(IStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope)
     {
         var cp1 = one.EveryCellPossibilities();
@@ -159,12 +159,12 @@ public class BlossomLoopStrategy : AbstractStrategy
 
         if (cp1.Length == 1 && cp2.Length == 1 && pos1.Count == 1 && pos2.Count == 1 && cp1[0].Cell == cp2[0].Cell)
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(cp1[0].Cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cp1[0].Cell))
             {
                 if (pos1.Peek(possibility) || pos2.Peek(possibility)) continue;
 
                 var cp = new CellPossibility(cp1[0].Cell.Row, cp1[0].Cell.Column, possibility);
-                if (!nope.Contains(cp)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                if (!nope.Contains(cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
             return;
@@ -189,7 +189,7 @@ public class BlossomLoopStrategy : AbstractStrategy
             foreach (var cell in Cells.SharedSeenCells(cells))
             {
                 var cp = new CellPossibility(cell.Row, cell.Column, possibility);
-                if (!nope.Contains(cp)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                if (!nope.Contains(cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
         }
     }

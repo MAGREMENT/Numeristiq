@@ -16,21 +16,13 @@ public class IntStrategyArgument : IStrategyArgument
         _setter = setter;
     }
 
-    public string Get()
+    public ArgumentValue Get()
     {
-        return _getter().ToString();
+        return new IntArgumentValue(_getter());
     }
 
-    public void Set(string value)
+    public void Set(ArgumentValue value)
     {
-        try
-        {
-            var asInt = int.Parse(value);
-            _setter(asInt);
-        }
-        catch
-        {
-            // ignored
-        }
+        _setter(value.ToInt());
     }
 }

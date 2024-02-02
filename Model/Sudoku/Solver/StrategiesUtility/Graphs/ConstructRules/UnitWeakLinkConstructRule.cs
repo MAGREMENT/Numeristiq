@@ -4,13 +4,13 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class UnitWeakLinkConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
+                var ppir = strategyUser.RowPositionsAt(row, number);
                 if(ppir.Count < 3) continue;
 
                 var asArray = ppir.ToArray();
@@ -26,7 +26,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
+                var ppic = strategyUser.ColumnPositionsAt(col, number);
                 if(ppic.Count < 3) continue;
 
                 var asArray = ppic.ToArray();
@@ -44,7 +44,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 3) continue;
 
                     var asArray = ppimn.ToArray();
@@ -61,13 +61,13 @@ public class UnitWeakLinkConstructRule : IConstructRule
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
+                var ppir = strategyUser.RowPositionsAt(row, number);
                 if(ppir.Count < 3) continue;
 
                 var asArray = ppir.ToArray();
@@ -83,7 +83,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
+                var ppic = strategyUser.ColumnPositionsAt(col, number);
                 if(ppic.Count < 3) continue;
 
                 var asArray = ppic.ToArray();
@@ -101,7 +101,7 @@ public class UnitWeakLinkConstructRule : IConstructRule
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 3) continue;
 
                     var asArray = ppimn.ToArray();

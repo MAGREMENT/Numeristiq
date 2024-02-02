@@ -14,20 +14,20 @@ public class XYWingStrategy : AbstractStrategy
     
     public XYWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior) {}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var map = new PositionsMap(strategyManager, Only2Possibilities);
+        var map = new PositionsMap(strategyUser, Only2Possibilities);
         
         for (int row = 0; row < 9; row++)
         {
             foreach (var col in map.Rows[row])
             {
-                var firstPoss = strategyManager.PossibilitiesAt(row, col);
+                var firstPoss = strategyUser.PossibilitiesAt(row, col);
                 foreach (var otherCol in map.Rows[row])
                 {
                     if (col == otherCol) continue;
                     
-                    var secondPoss = strategyManager.PossibilitiesAt(row, otherCol);
+                    var secondPoss = strategyUser.PossibilitiesAt(row, otherCol);
                     if(!firstPoss.PeekOnlyOne(secondPoss)) continue;
 
                     //Rows & Cols
@@ -35,12 +35,12 @@ public class XYWingStrategy : AbstractStrategy
                     {
                         if(row == otherRow) continue;
 
-                        var thirdPoss = strategyManager.PossibilitiesAt(otherRow, col);
+                        var thirdPoss = strategyUser.PossibilitiesAt(otherRow, col);
                         var and = thirdPoss.And(secondPoss);
                         int toRemove;
                         if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
 
-                        if(Process(strategyManager, row, col, row, otherCol, otherRow, col, toRemove))
+                        if(Process(strategyUser, row, col, row, otherCol, otherRow, col, toRemove))
                             return;
                     }
 
@@ -49,12 +49,12 @@ public class XYWingStrategy : AbstractStrategy
                     {
                         if(mini.Row == row) continue;
 
-                        var thirdPoss = strategyManager.PossibilitiesAt(mini.Row, mini.Column);
+                        var thirdPoss = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
                         var and = thirdPoss.And(secondPoss);
                         int toRemove;
                         if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
 
-                        if (Process(strategyManager, row, col, row, otherCol, mini.Row, mini.Column, toRemove))
+                        if (Process(strategyUser, row, col, row, otherCol, mini.Row, mini.Column, toRemove))
                             return;
                     }
                 }
@@ -64,19 +64,19 @@ public class XYWingStrategy : AbstractStrategy
                 {
                     if(row == otherRow) continue;
 
-                    var secondPoss = strategyManager.PossibilitiesAt(otherRow, col);
+                    var secondPoss = strategyUser.PossibilitiesAt(otherRow, col);
                     if(!firstPoss.PeekOnlyOne(secondPoss)) continue;
                     
                     foreach (var mini in map.Minis[row / 3, col / 3])
                     {
                         if(mini.Column == col) continue;
 
-                        var thirdPoss = strategyManager.PossibilitiesAt(mini.Row, mini.Column);
+                        var thirdPoss = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
                         var and = thirdPoss.And(secondPoss);
                         int toRemove;
                         if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
 
-                        if (Process(strategyManager, row, col, otherRow, col, mini.Row, mini.Column, toRemove))
+                        if (Process(strategyUser, row, col, otherRow, col, mini.Row, mini.Column, toRemove))
                             return;
                     }
                 }
@@ -89,15 +89,15 @@ public class XYWingStrategy : AbstractStrategy
         return possibilities.Count == 2;
     }
 
-    private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol,
+    private bool Process(IStrategyUser strategyUser, int hingeRow, int hingeCol,
         int row1, int col1, int row2, int col2, int number)
     {
         foreach (var cell in Cells.SharedSeenCells(row1, col1, row2, col2))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new XYWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }

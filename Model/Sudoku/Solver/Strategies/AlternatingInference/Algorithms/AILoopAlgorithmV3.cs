@@ -9,9 +9,9 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
 {
     public AlgorithmType Type => AlgorithmType.Loop;
     
-    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyManager);
+        var graph = type.GetGraph(strategyUser);
         
         foreach (var start in graph)
         {
@@ -36,15 +36,15 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
                     {
                         case (Coloring.On, Coloring.Off) :
                         case (Coloring.Off, Coloring.On) :
-                            if (type.ProcessFullLoop(strategyManager, loop) &&
+                            if (type.ProcessFullLoop(strategyUser, loop) &&
                                 type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                         case(Coloring.On, Coloring.On) :
-                            if (type.ProcessStrongInferenceLoop(strategyManager, entry.Key, loop) &&
+                            if (type.ProcessStrongInferenceLoop(strategyUser, entry.Key, loop) &&
                                 type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                         case (Coloring.Off, Coloring.Off) :
-                            if (type.ProcessWeakInferenceLoop(strategyManager, entry.Key, loop) &&
+                            if (type.ProcessWeakInferenceLoop(strategyUser, entry.Key, loop) &&
                                 type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
                             break;
                     }

@@ -18,44 +18,44 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int i = 0; i < 81; i++)
         {
             var row1 = i / 9;
             var col1 = i % 9;
 
-            if (strategyManager.Sudoku[row1, col1] == 0 || strategyManager.StartState[row1, col1] != 0) continue;
+            if (strategyUser.Sudoku[row1, col1] == 0 || strategyUser.StartState[row1, col1] != 0) continue;
             
             for (int j = i + 1; j < 81; j++)
             {
                 var row2 = j / 9;
                 var col2 = j % 9;
 
-                if (strategyManager.Sudoku[row2, col2] == 0 || strategyManager.StartState[row2, col2] != 0) continue;
+                if (strategyUser.Sudoku[row2, col2] == 0 || strategyUser.StartState[row2, col2] != 0) continue;
 
-                if (Search(strategyManager, new BiValue(strategyManager.Sudoku[row1, col1],
-                        strategyManager.Sudoku[row2, col2]), new Cell(row1, col1), new Cell(row2, col2))) return;
+                if (Search(strategyUser, new BiValue(strategyUser.Sudoku[row1, col1],
+                        strategyUser.Sudoku[row2, col2]), new Cell(row1, col1), new Cell(row2, col2))) return;
             }
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, BiValue values, params Cell[] floor)
+    private bool Search(IStrategyUser strategyUser, BiValue values, params Cell[] floor)
     {
         foreach (var roof in Cells.DeadlyPatternRoofs(floor))
         {
-            if (Try(strategyManager, values, floor, roof)) return true;
+            if (Try(strategyUser, values, floor, roof)) return true;
         }
         
         return false;
     }
 
-    private bool Try(IStrategyManager strategyManager, BiValue values, Cell[] floor, Cell[] roof)
+    private bool Try(IStrategyUser strategyUser, BiValue values, Cell[] floor, Cell[] roof)
     {
-        if (strategyManager.StartState[roof[0].Row, roof[0].Column] != 0 || strategyManager.StartState[roof[1].Row, roof[1].Column] != 0) return false;
+        if (strategyUser.StartState[roof[0].Row, roof[0].Column] != 0 || strategyUser.StartState[roof[1].Row, roof[1].Column] != 0) return false;
         
-        var solved1 = strategyManager.Sudoku[roof[0].Row, roof[0].Column];
-        var solved2 = strategyManager.Sudoku[roof[1].Row, roof[1].Column];
+        var solved1 = strategyUser.Sudoku[roof[0].Row, roof[0].Column];
+        var solved2 = strategyUser.Sudoku[roof[1].Row, roof[1].Column];
         
         switch (solved1, solved2)
         {
@@ -64,8 +64,8 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
             case (0, not 0) :
                 if (solved2 == values.One)
                 {
-                   strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
-                   return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                   strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+                   return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                               new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
@@ -73,16 +73,16 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
             case(not 0, 0) :
                 if (solved1 == values.Two)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
-                    return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+                    return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 
                 return false;
         }
 
-        var possibilitiesRoofOne = strategyManager.PossibilitiesAt(roof[0]);
-        var possibilitiesRoofTwo = strategyManager.PossibilitiesAt(roof[1]);
+        var possibilitiesRoofOne = strategyUser.PossibilitiesAt(roof[0]);
+        var possibilitiesRoofTwo = strategyUser.PossibilitiesAt(roof[1]);
 
         if (!possibilitiesRoofOne.Peek(values.Two) || !possibilitiesRoofTwo.Peek(values.One)) return false;
 
@@ -94,24 +94,24 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
                 var possibility = and.First();
                 foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
         }
 
-        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
 
         var notBiValuePossibilities = possibilitiesRoofOne.Or(possibilitiesRoofTwo);
         notBiValuePossibilities.Remove(values.One);
         notBiValuePossibilities.Remove(values.Two);
         var ssc = new List<Cell>(Cells.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(ssc))
+        foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
 
-            ProcessArWithAls(strategyManager, roof, als);
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            ProcessArWithAls(strategyUser, roof, als);
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new AvoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
@@ -119,24 +119,24 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
         return false;
     }
     
-    private void ProcessArWithAls(IStrategyManager strategyManager, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessArWithAls(IStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities)
         {
             foreach (var cell in als.EachCell())
             {
-                if(strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+                if(strategyUser.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
             }
 
             foreach (var r in roof)
             {
-                if (strategyManager.PossibilitiesAt(r).Peek(possibility)) buffer.Add(r);
+                if (strategyUser.PossibilitiesAt(r).Peek(possibility)) buffer.Add(r);
             }
 
             foreach (var cell in Cells.SharedSeenCells(buffer))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
             buffer.Clear();

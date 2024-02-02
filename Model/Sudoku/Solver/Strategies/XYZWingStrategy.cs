@@ -15,15 +15,15 @@ public class XYZWingStrategy : AbstractStrategy
     
     public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior) {}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var map = new PositionsMap(strategyManager, Only2Possibilities);
+        var map = new PositionsMap(strategyUser, Only2Possibilities);
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var hinge = strategyManager.PossibilitiesAt(row, col);
+                var hinge = strategyUser.PossibilitiesAt(row, col);
                 if(hinge.Count != 3) continue;
 
                 var miniRow = row / 3;
@@ -32,7 +32,7 @@ public class XYZWingStrategy : AbstractStrategy
                 {
                     if (mini.Row == row && mini.Column == col) continue;
 
-                    var firstCorner = strategyManager.PossibilitiesAt(mini.Row, mini.Column);
+                    var firstCorner = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
                     Possibilities and;
                     if ((and = firstCorner.And(hinge)).Count != 2) continue;
 
@@ -40,10 +40,10 @@ public class XYZWingStrategy : AbstractStrategy
                     {
                         if(otherCol / 3 == miniCol) continue;
 
-                        var secondCorner = strategyManager.PossibilitiesAt(row, otherCol);
+                        var secondCorner = strategyUser.PossibilitiesAt(row, otherCol);
                         if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
 
-                        if (Process(strategyManager, row, col, mini.Row, mini.Column, row,
+                        if (Process(strategyUser, row, col, mini.Row, mini.Column, row,
                                 otherCol, and.And(secondCorner).First())) return;
                     }
 
@@ -51,10 +51,10 @@ public class XYZWingStrategy : AbstractStrategy
                     {
                         if(otherRow / 3 == miniRow) continue;
 
-                        var secondCorner = strategyManager.PossibilitiesAt(otherRow, col);
+                        var secondCorner = strategyUser.PossibilitiesAt(otherRow, col);
                         if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
 
-                        if (Process(strategyManager, row, col, mini.Row, mini.Column,
+                        if (Process(strategyUser, row, col, mini.Row, mini.Column,
                                 otherRow, col, and.And(secondCorner).First())) return;
                     }
                 }
@@ -62,16 +62,16 @@ public class XYZWingStrategy : AbstractStrategy
         }
     }
 
-    private bool Process(IStrategyManager strategyManager, int hingeRow, int hingeCol, int row1, int col1, int row2,
+    private bool Process(IStrategyUser strategyUser, int hingeRow, int hingeCol, int row1, int col1, int row2,
         int col2, int number)
     {
         foreach (var cell in Cells.SharedSeenCells(new Cell(hingeRow, hingeCol),
                      new Cell(row1, col1), new Cell(row2, col2)))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
     

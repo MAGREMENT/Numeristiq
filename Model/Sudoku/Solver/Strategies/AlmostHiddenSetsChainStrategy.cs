@@ -24,20 +24,20 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var graph = strategyManager.PreComputer.AlmostHiddenSetGraph();
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
-        var linkGraph = strategyManager.GraphManager.SimpleLinkGraph;
+        var graph = strategyUser.PreComputer.AlmostHiddenSetGraph();
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+        var linkGraph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var start in graph)
         {
-            if (Search(strategyManager, graph, start.Possibilities, new HashSet<IPossibilitiesPositions> {start},
+            if (Search(strategyUser, graph, start.Possibilities, new HashSet<IPossibilitiesPositions> {start},
                     new ChainBuilder<IPossibilitiesPositions, Cell>(start), linkGraph)) return;
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, PositionsGraph<IPossibilitiesPositions> graph,
+    private bool Search(IStrategyUser strategyUser, PositionsGraph<IPossibilitiesPositions> graph,
         IReadOnlyPossibilities occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
         ILinkGraph<CellPossibility> linkGraph)
     {
@@ -57,8 +57,8 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
                 explored.Add(friend.To);
                 var occupiedCopy = occupied.Or(friend.To.Possibilities);
 
-                if (CheckForChain(strategyManager, chain, linkGraph)) return true;
-                if(Search(strategyManager, graph, occupiedCopy, explored, chain, linkGraph)) return true;
+                if (CheckForChain(strategyUser, chain, linkGraph)) return true;
+                if(Search(strategyUser, graph, occupiedCopy, explored, chain, linkGraph)) return true;
                 
                 chain.RemoveLast();
             }
@@ -67,7 +67,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
         return false;
     }
 
-    private bool CheckForLoop(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, Cell> builder,
+    private bool CheckForLoop(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, Cell> builder,
         Cell[] possibleLastLinks)
     {
         foreach (var ll in possibleLastLinks)
@@ -79,15 +79,15 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
             {
                 foreach (var cell in pp.EachCell())
                 {
-                    foreach (var p in strategyManager.PossibilitiesAt(cell))
+                    foreach (var p in strategyUser.PossibilitiesAt(cell))
                     {
                         var cp = new CellPossibility(cell, p);
-                        if (!Contains(chain, cp)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                        if (!Contains(chain, cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
                     }
                 }
             }
 
-            return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new AlmostHiddenSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
         }
 
@@ -104,7 +104,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
         return false;
     }
 
-    private bool CheckForChain(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, Cell> chain, ILinkGraph<CellPossibility> linkGraph)
+    private bool CheckForChain(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, Cell> chain, ILinkGraph<CellPossibility> linkGraph)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
         
@@ -121,7 +121,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
         {
             if (nope.Peek(cell)) continue;
             
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
             {
                 if (first.Possibilities.Peek(possibility) || last.Possibilities.Peek(possibility)) continue;
 
@@ -139,14 +139,14 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));
 
-                            strategyManager.ChangeBuffer.ProposeSolutionAddition(friend);
+                            strategyUser.ChangeBuffer.ProposeSolutionAddition(friend);
                         }
                     }
                 }
             }
         }
         
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new AlmostHiddenSetsChainReportBuilder(chain.ToChain(), links)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

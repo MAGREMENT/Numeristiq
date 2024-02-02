@@ -6,9 +6,9 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class AlmostNakedSetConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
     {
-        foreach (var als in strategyManager.PreComputer.AlmostLockedSets())
+        foreach (var als in strategyUser.PreComputer.AlmostLockedSets())
         {
             foreach (var p in als.Possibilities)
             {
@@ -60,7 +60,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
 
                     foreach (var ssc in Cells.SharedSeenCells(notIn))
                     {
-                        if (strategyManager.PossibilitiesAt(ssc).Peek(p)) linkGraph.Add(new CellPossibility(ssc, p),
+                        if (strategyUser.PossibilitiesAt(ssc).Peek(p)) linkGraph.Add(new CellPossibility(ssc, p),
                                 element, LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -72,7 +72,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
 
                     foreach (var ssc in Cells.SharedSeenCells(cells))
                     {
-                        if(strategyManager.PossibilitiesAt(ssc).Peek(possibility)) linkGraph.Add(nakedSet,
+                        if(strategyUser.PossibilitiesAt(ssc).Peek(possibility)) linkGraph.Add(nakedSet,
                             new CellPossibility(ssc, possibility), LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -80,7 +80,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
     {
         
     }

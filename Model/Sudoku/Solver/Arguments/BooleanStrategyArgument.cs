@@ -16,23 +16,13 @@ public class BooleanStrategyArgument : IStrategyArgument
         _setter = setter;
     }
     
-    public string Get()
+    public ArgumentValue Get()
     {
-        return _getter().ToString();
+        return new BoolArgumentValue(_getter());
     }
     
-    public void Set(string s)
+    public void Set(ArgumentValue s)
     {
-        bool val;
-        switch (s.ToLower())
-        {
-            case "true" : val = true;
-                break;
-            case "false" : val = false;
-                break;
-            default: return;
-        }
-
-        _setter(val);
+        _setter(s.ToBool());
     }
 }

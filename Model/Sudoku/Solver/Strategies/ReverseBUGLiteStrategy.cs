@@ -18,7 +18,7 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int row1 = 0; row1 < 9; row1++)
         {
@@ -37,14 +37,14 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
 
                 for (int col = 0; col < 9; col++)
                 {
-                    var current = strategyManager.Sudoku[row1, col];
+                    var current = strategyUser.Sudoku[row1, col];
                     if (current != 0)
                     {
                         poss1.Add(current);
                         cols1.Add(col);
                     }
                     
-                    current = strategyManager.Sudoku[row2, col];
+                    current = strategyUser.Sudoku[row2, col];
                     if (current != 0)
                     {
                         poss2.Add(current);
@@ -64,18 +64,18 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                 {
                     if (!cols1.Peek(col))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row1, col);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row1, col);
                         break;
                     }
 
                     if (!cols2.Peek(col))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row2, col);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row2, col);
                         break;
                     }
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new ReverseBUGLiteChangeReport(row1, row2, cols1, cols2, Unit.Row)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }
@@ -98,14 +98,14 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
 
                 for (int row = 0; row < 9; row++)
                 {
-                    var current = strategyManager.Sudoku[row, col1];
+                    var current = strategyUser.Sudoku[row, col1];
                     if (current != 0)
                     {
                         poss1.Add(current);
                         rows1.Add(row);
                     }
                     
-                    current = strategyManager.Sudoku[row, col2];
+                    current = strategyUser.Sudoku[row, col2];
                     if (current != 0)
                     {
                         poss2.Add(current);
@@ -125,18 +125,18 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                 {
                     if (!rows1.Peek(row))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row, col1);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col1);
                         break;
                     }
 
                     if (!rows2.Peek(row))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row, col2);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col2);
                         break;
                     }
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new ReverseBUGLiteChangeReport(col1, col2, rows1, rows2, Unit.Column)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

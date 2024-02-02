@@ -21,7 +21,7 @@ using Model.Sudoku.Utility;
 
 namespace Model.Sudoku.Solver.Helpers;
 
-public class StrategyLoader : IStrategyLoader
+public class StrategyManager : IStrategyManager
 {
     private static readonly Dictionary<string, IStrategy> StrategyPool = new()
     {
@@ -141,7 +141,7 @@ public class StrategyLoader : IStrategyLoader
                 strategy.OnCommitBehavior = dao.Behavior;
                 foreach (var arg in dao.Args)
                 {
-                    strategy.TrySetArgument(arg.Key, arg.Value);
+                    strategy.TrySetArgument(arg.Key, new StringArgumentValue(arg.Value));
                 }
                 
                 _strategies.Add(StrategyPool[dao.Name], _ => {});
@@ -312,7 +312,7 @@ public class StrategyLoader : IStrategyLoader
         TryCallEvent();
     }
     
-    public void ChangeArgument(string strategyName, string argumentName, string value)
+    public void ChangeArgument(string strategyName, string argumentName, ArgumentValue value)
     {
         var i = _strategies.Find(s => s.Name.Equals(strategyName));
         if (i == -1) return;

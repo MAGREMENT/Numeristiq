@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Sudoku.Solver;
+using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Utility;
 

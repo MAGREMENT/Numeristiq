@@ -23,7 +23,7 @@ public class FireworksStrategy : AbstractStrategy
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
     
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         GridPositions[] limitations = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
         List<Fireworks> dualFireworks = new List<Fireworks>();
@@ -32,13 +32,13 @@ public class FireworksStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyManager.PossibilitiesAt(row, col);
+                var possibilities = strategyUser.PossibilitiesAt(row, col);
                 if (possibilities.Count == 0) continue;
 
                 foreach (var possibility in possibilities)
                 {
-                    var rowPositions = strategyManager.RowPositionsAt(row, possibility);
-                    var colPositions = strategyManager.ColumnPositionsAt(col, possibility);
+                    var rowPositions = strategyUser.RowPositionsAt(row, possibility);
+                    var colPositions = strategyUser.ColumnPositionsAt(col, possibility);
                     var currentLimitations = limitations[possibility - 1];
 
                     var miniRow = row / 3;
@@ -140,7 +140,7 @@ public class FireworksStrategy : AbstractStrategy
                                     poss.Add(j + 1);
                                     poss.Add(k + 1);
                                     
-                                    if(ProcessTripleFireworks(strategyManager, new Fireworks(or2, poss)) &&
+                                    if(ProcessTripleFireworks(strategyUser, new Fireworks(or2, poss)) &&
                                        OnCommitBehavior == OnCommitBehavior.Return) return;
                                 }
                             }
@@ -155,33 +155,33 @@ public class FireworksStrategy : AbstractStrategy
             }
         }
 
-        ProcessDualFireworks(strategyManager, dualFireworks);
+        ProcessDualFireworks(strategyUser, dualFireworks);
     }
 
-    private bool ProcessTripleFireworks(IStrategyManager manager, Fireworks fireworks)
+    private bool ProcessTripleFireworks(IStrategyUser user, Fireworks fireworks)
     {
-        foreach (var possibility in manager.PossibilitiesAt(fireworks.Cross))
+        foreach (var possibility in user.PossibilitiesAt(fireworks.Cross))
         {
-            if (!fireworks.Possibilities.Peek(possibility)) manager.ChangeBuffer.ProposePossibilityRemoval(possibility,
+            if (!fireworks.Possibilities.Peek(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
                     fireworks.Cross.Row, fireworks.Cross.Column);
         }
         
-        foreach (var possibility in manager.PossibilitiesAt(fireworks.RowWing))
+        foreach (var possibility in user.PossibilitiesAt(fireworks.RowWing))
         {
-            if (!fireworks.Possibilities.Peek(possibility)) manager.ChangeBuffer.ProposePossibilityRemoval(possibility,
+            if (!fireworks.Possibilities.Peek(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
                 fireworks.RowWing.Row, fireworks.RowWing.Column);
         }
         
-        foreach (var possibility in manager.PossibilitiesAt(fireworks.ColumnWing))
+        foreach (var possibility in user.PossibilitiesAt(fireworks.ColumnWing))
         {
-            if (!fireworks.Possibilities.Peek(possibility)) manager.ChangeBuffer.ProposePossibilityRemoval(possibility,
+            if (!fireworks.Possibilities.Peek(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
                 fireworks.ColumnWing.Row, fireworks.ColumnWing.Column);
         }
 
-        return manager.ChangeBuffer.Commit(this, new FireworksReportBuilder(fireworks));
+        return user.ChangeBuffer.Commit(this, new FireworksReportBuilder(fireworks));
     }
 
-    private void ProcessDualFireworks(IStrategyManager manager, List<Fireworks> fireworksList)
+    private void ProcessDualFireworks(IStrategyUser user, List<Fireworks> fireworksList)
     {
         //Quad
         for (int i = 0; i < fireworksList.Count; i++)
@@ -194,37 +194,37 @@ public class FireworksStrategy : AbstractStrategy
 
                 if (one.RowWing != two.ColumnWing || one.ColumnWing != two.RowWing) continue;
                 
-                foreach (var possibility in manager.PossibilitiesAt(one.Cross))
+                foreach (var possibility in user.PossibilitiesAt(one.Cross))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
+                        user.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
                 }
                 
-                foreach (var possibility in manager.PossibilitiesAt(one.RowWing))
+                foreach (var possibility in user.PossibilitiesAt(one.RowWing))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.RowWing.Row, one.RowWing.Column);
+                        user.ChangeBuffer.ProposePossibilityRemoval(possibility, one.RowWing.Row, one.RowWing.Column);
                 }
                 
-                foreach (var possibility in manager.PossibilitiesAt(two.Cross))
+                foreach (var possibility in user.PossibilitiesAt(two.Cross))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
+                        user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
                 }
                 
-                foreach (var possibility in manager.PossibilitiesAt(two.RowWing))
+                foreach (var possibility in user.PossibilitiesAt(two.RowWing))
                 {
                     if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
-                        manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Column);
+                        user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Column);
                 }
 
-                if (manager.ChangeBuffer.Commit(this, new FireworksReportBuilder(one, two)) &&
+                if (user.ChangeBuffer.Commit(this, new FireworksReportBuilder(one, two)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
         
         //W-Wing
-        var allAls = manager.PreComputer.AlmostLockedSets();
+        var allAls = user.PreComputer.AlmostLockedSets();
         List<IPossibilitiesPositions> alsListOne = new();
         List<IPossibilitiesPositions> alsListTwo = new();
         foreach (var df in fireworksList)
@@ -245,7 +245,7 @@ public class FireworksStrategy : AbstractStrategy
                         break;
                     }
 
-                    var possibilities = manager.PossibilitiesAt(cell);
+                    var possibilities = user.PossibilitiesAt(cell);
                     foreach (var possibility in df.Possibilities)
                     {
                         if (!possibilities.Peek(possibility)) continue;
@@ -278,11 +278,11 @@ public class FireworksStrategy : AbstractStrategy
 
                         foreach (var possibility in df.Possibilities)
                         {
-                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, sharedSeenCell.Row, sharedSeenCell.Column);
+                            user.ChangeBuffer.ProposePossibilityRemoval(possibility, sharedSeenCell.Row, sharedSeenCell.Column);
                         }
                     }
 
-                    if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
                             new FireworksWithAlmostLockedSetsReportBuilder(df, one, two))
                                                         && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
@@ -295,34 +295,34 @@ public class FireworksStrategy : AbstractStrategy
         //L-Wing
         foreach (var df in fireworksList)
         {
-            foreach (var possibility in manager.PossibilitiesAt(df.ColumnWing))
+            foreach (var possibility in user.PossibilitiesAt(df.ColumnWing))
             {
                 if (df.Possibilities.Peek(possibility)) continue;
 
                 var current = new CellPossibility(df.ColumnWing, possibility);
-                foreach (var friend in Cells.DefaultStrongLinks(manager, current))
+                foreach (var friend in Cells.DefaultStrongLinks(user, current))
                 {
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
-                    if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                    user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
+                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                     break;
                 }
             }
             
-            foreach (var possibility in manager.PossibilitiesAt(df.RowWing))
+            foreach (var possibility in user.PossibilitiesAt(df.RowWing))
             {
                 if (df.Possibilities.Peek(possibility)) continue;
 
                 var current = new CellPossibility(df.RowWing, possibility);
-                foreach (var friend in Cells.DefaultStrongLinks(manager, current))
+                foreach (var friend in Cells.DefaultStrongLinks(user, current))
                 {
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
-                    if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                    user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
+                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                     break;
@@ -334,14 +334,14 @@ public class FireworksStrategy : AbstractStrategy
         foreach (var df in fireworksList)
         {
             var opposite = new Cell(df.ColumnWing.Row, df.RowWing.Column);
-            if (manager.PossibilitiesAt(opposite).Equals(df.Possibilities))
+            if (user.PossibilitiesAt(opposite).Equals(df.Possibilities))
             {
-                foreach (var p in manager.PossibilitiesAt(df.Cross))
+                foreach (var p in user.PossibilitiesAt(df.Cross))
                 {
-                    if (!df.Possibilities.Peek(p)) manager.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
+                    if (!df.Possibilities.Peek(p)) user.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
                 }
 
-                if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
                         new FireworksReportBuilder(df)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
@@ -358,20 +358,20 @@ public class FireworksStrategy : AbstractStrategy
                    || one.RowWing.Column != two.RowWing.Column) continue;
 
                 var center = new Cell(one.ColumnWing.Row, two.RowWing.Column);
-                if (!manager.PossibilitiesAt(center).Equals(one.Possibilities)) continue;
+                if (!user.PossibilitiesAt(center).Equals(one.Possibilities)) continue;
 
-                foreach (var possibility in manager.PossibilitiesAt(one.Cross))
+                foreach (var possibility in user.PossibilitiesAt(one.Cross))
                 {
                     if (one.Possibilities.Peek(possibility)) continue;
                     
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
+                    user.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
                 }
                 
-                foreach (var possibility in manager.PossibilitiesAt(two.Cross))
+                foreach (var possibility in user.PossibilitiesAt(two.Cross))
                 {
                     if (one.Possibilities.Peek(possibility)) continue;
                     
-                    manager.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
+                    user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
                 }
 
                 foreach (var possibility in one.Possibilities)
@@ -380,17 +380,17 @@ public class FireworksStrategy : AbstractStrategy
                     {
                         if (unit != center.Column && unit != one.ColumnWing.Column && unit != two.ColumnWing.Column)
                         {
-                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, center.Row, unit);
+                            user.ChangeBuffer.ProposePossibilityRemoval(possibility, center.Row, unit);
                         }
 
                         if (unit != center.Row && unit != one.RowWing.Row && unit != two.RowWing.Row)
                         {
-                            manager.ChangeBuffer.ProposePossibilityRemoval(possibility, unit, center.Column);
+                            user.ChangeBuffer.ProposePossibilityRemoval(possibility, unit, center.Column);
                         }
                     }  
                 }
 
-                if (manager.ChangeBuffer.NotEmpty() && manager.ChangeBuffer.Commit(this,
+                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
                         new FireworksWithCellReportBuilder(center, one, two)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

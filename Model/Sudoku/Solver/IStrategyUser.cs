@@ -7,15 +7,13 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver;
 
-public interface IStrategyManager : IPossibilitiesHolder
+public interface IStrategyUser : IPossibilitiesHolder
 { 
     SolverState StartState { get; }
     
     bool LogsManaged { get; }
 
     ChangeBuffer ChangeBuffer { get; }
-    
-    LinkGraphManager GraphManager { get; }
     
     PreComputer PreComputer { get; }
     

@@ -15,22 +15,22 @@ public class XYChainsStrategy : AbstractStrategy
     
     public XYChainsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.XYChainSpecific,
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.XYChainSpecific,
             ConstructRule.CellStrongLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
+        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
         var route = new List<CellPossibility>();
         var visited = new HashSet<CellPossibility>();
 
         foreach (var start in graph)
         {
-            if (Search(strategyManager, graph, start, route, visited)) return;
+            if (Search(strategyUser, graph, start, route, visited)) return;
             visited.Clear();
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, CellPossibility current,
+    private bool Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
     {
         CellPossibility friend = graph.Neighbors(current, LinkStrength.Strong).First();
@@ -40,13 +40,13 @@ public class XYChainsStrategy : AbstractStrategy
         visited.Add(current);
         visited.Add(friend);
         
-        if(friend.Possibility == route[0].Possibility && Process(strategyManager, route)) return true;
+        if(friend.Possibility == route[0].Possibility && Process(strategyUser, route)) return true;
 
         foreach (var next in graph.Neighbors(friend, LinkStrength.Weak))
         {
             if (!visited.Contains(next))
             {
-                if (Search(strategyManager, graph, next, route, visited)) return true;
+                if (Search(strategyUser, graph, next, route, visited)) return true;
             }
         }
 
@@ -56,14 +56,14 @@ public class XYChainsStrategy : AbstractStrategy
         return false;
     }
 
-    private bool Process(IStrategyManager strategyManager, List<CellPossibility> visited)
+    private bool Process(IStrategyUser strategyUser, List<CellPossibility> visited)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
         }
         
-        return strategyManager.ChangeBuffer.Commit(this, new XYChainReportBuilder(visited))
+        return strategyUser.ChangeBuffer.Commit(this, new XYChainReportBuilder(visited))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

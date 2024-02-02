@@ -2,7 +2,6 @@
 using System.Windows.Controls;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Arguments;
-using Model.Utility;
 using Presenter.Sudoku.Translators;
 using View.Canvas;
 
@@ -48,20 +47,20 @@ public partial class OptionModifierUserControl
             OptionCanvas? optionCanvas = i.Interface switch
             {
                 SliderViewInterface svi => new SliderOptionCanvas(i.Name, "", svi.Min,
-                    svi.Max, svi.TickFrequency, () => int.Parse(i.CurrentValue), n =>
+                    svi.Max, svi.TickFrequency, () => i.CurrentValue.ToInt(), n =>
                     {
-                        ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new IntArgumentValue(n));
                     }),
                 BooleanViewInterface => new CheckBoxOptionCanvas(i.Name, "", 
-                    () => i.CurrentValue.ToLower().Equals("true"), n =>
+                    () => i.CurrentValue.ToBool(), n =>
                     {
-                        ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new BoolArgumentValue(n));
                     }),
                 MinMaxSliderViewInterface mm => new MinMaxSliderOptionCanvas(i.Name, "",
-                    mm.MinMin, mm.MinMax, mm.MaxMin, mm.MaxMax, mm.TickFrequency, () => MinMax.From(i.CurrentValue),
+                    mm.MinMin, mm.MinMax, mm.MaxMin, mm.MaxMax, mm.TickFrequency, () => i.CurrentValue.ToMinMax(),
                     n =>
                     {
-                        ArgumentChanged?.Invoke(strategy.Name, i.Name, n.ToString());
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new MinMaxArgumentValue(n));
                     }),
                 _ => null
             };
@@ -106,4 +105,4 @@ public partial class OptionModifierUserControl
 
 public delegate void OnUsageChange(string name, bool yes);
 public delegate void OnBehaviorChange(string name, OnCommitBehavior behavior);
-public delegate void OnArgumentChange(string strategyName, string argumentName, string value);
+public delegate void OnArgumentChange(string strategyName, string argumentName, ArgumentValue value);

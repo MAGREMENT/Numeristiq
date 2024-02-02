@@ -135,18 +135,18 @@ public static class Cells
         return result;
     }
 
-    public static IEnumerable<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
-        return Searcher.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2);
+        return Searcher.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2);
     }
     
-    public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, IReadOnlyList<Cell> list)
+    public static List<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, IReadOnlyList<Cell> list)
     {
         if (list.Count == 0) return new List<Cell>();
-        if (list.Count == 1) return SeenEmptyCells(strategyManager, list[^1]);
+        if (list.Count == 1) return SeenEmptyCells(strategyUser, list[^1]);
 
         var result = new List<Cell>();
-        foreach (var coord in Searcher.SharedSeenEmptyCells(strategyManager, list[0].Row, list[0].Column,
+        foreach (var coord in Searcher.SharedSeenEmptyCells(strategyUser, list[0].Row, list[0].Column,
                      list[1].Row, list[1].Column))
         {
             bool ok = true;
@@ -165,11 +165,11 @@ public static class Cells
         return result;
     }
 
-    public static List<Cell> SharedSeenEmptyCells(IStrategyManager strategyManager, Cell one, Cell two,
+    public static List<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, Cell one, Cell two,
         params Cell[] others)
     {
         List<Cell> result = new List<Cell>();
-        foreach (var coord in SharedSeenEmptyCells(strategyManager, one.Row, one.Column, two.Row, two.Column))
+        foreach (var coord in SharedSeenEmptyCells(strategyUser, one.Row, one.Column, two.Row, two.Column))
         {
             bool ok = true;
             foreach (var other in others)
@@ -199,21 +199,21 @@ public static class Cells
                (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
     }
 
-    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager, CellPossibility first,
+    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, CellPossibility first,
         CellPossibility second)
     {
-        return Searcher.SharedSeenExistingPossibilities(strategyManager, first.Row, first.Column, first.Possibility,
+        return Searcher.SharedSeenExistingPossibilities(strategyUser, first.Row, first.Column, first.Possibility,
             second.Row, second.Column, second.Possibility);
     }
 
-    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager,
+    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser,
         IReadOnlyList<CellPossibility> list) //TODO USE THIS
     {
         if (list.Count == 0) return new List<CellPossibility>();
         if (list.Count == 1) return new List<CellPossibility>(); //TODO
 
         var result = new List<CellPossibility>();
-        foreach (var cp in SharedSeenExistingPossibilities(strategyManager, list[0], list[1]))
+        foreach (var cp in SharedSeenExistingPossibilities(strategyUser, list[0], list[1]))
         {
             bool ok = true;
             for (int i = 2; i < list.Count; i++)
@@ -231,7 +231,7 @@ public static class Cells
         return result;
     }
     
-    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyManager strategyManager,
+    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser,
         IReadOnlyList<CellPossibility> list, int count)
     {
         if (count > list.Count) return new List<CellPossibility>();
@@ -239,7 +239,7 @@ public static class Cells
         if (count == 1) return new List<CellPossibility>(); //TODO
 
         var result = new List<CellPossibility>();
-        foreach (var cp in SharedSeenExistingPossibilities(strategyManager, list[0], list[1]))
+        foreach (var cp in SharedSeenExistingPossibilities(strategyUser, list[0], list[1]))
         {
             bool ok = true;
             for (int i = 2; i < count ; i++)
@@ -257,32 +257,32 @@ public static class Cells
         return result;
     }
 
-    public static IEnumerable<CellPossibility> DefaultStrongLinks(IStrategyManager strategyManager, CellPossibility cp)
+    public static IEnumerable<CellPossibility> DefaultStrongLinks(IStrategyUser strategyUser, CellPossibility cp)
     {
-        var poss = strategyManager.PossibilitiesAt(cp.Row, cp.Column);
+        var poss = strategyUser.PossibilitiesAt(cp.Row, cp.Column);
         if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.First(cp.Possibility));
 
-        var rPos = strategyManager.RowPositionsAt(cp.Row, cp.Possibility);
+        var rPos = strategyUser.RowPositionsAt(cp.Row, cp.Possibility);
         if (rPos.Count == 2) yield return new CellPossibility(cp.Row, rPos.First(cp.Column), cp.Possibility);
 
-        var cPos = strategyManager.ColumnPositionsAt(cp.Column, cp.Possibility);
+        var cPos = strategyUser.ColumnPositionsAt(cp.Column, cp.Possibility);
         if (cPos.Count == 2) yield return new CellPossibility(cPos.First(cp.Row), cp.Column, cp.Possibility);
 
-        var mPos = strategyManager.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility);
+        var mPos = strategyUser.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility);
         if (mPos.Count == 2) yield return new CellPossibility(mPos.First(cp.ToCell()), cp.Possibility);
     }
 
-    public static bool AreStronglyLinked(IStrategyManager strategyManager, CellPossibility cp1, CellPossibility cp2)
+    public static bool AreStronglyLinked(IStrategyUser strategyUser, CellPossibility cp1, CellPossibility cp2)
     {
         if (cp1.Row == cp2.Row && cp1.Column == cp2.Column)
-            return strategyManager.PossibilitiesAt(cp1.Row, cp2.Column).Count == 2;
+            return strategyUser.PossibilitiesAt(cp1.Row, cp2.Column).Count == 2;
 
         if (cp1.Possibility == cp2.Possibility)
         {
-            return (cp1.Row == cp2.Row && strategyManager.RowPositionsAt(cp1.Row, cp1.Possibility).Count == 2) ||
+            return (cp1.Row == cp2.Row && strategyUser.RowPositionsAt(cp1.Row, cp1.Possibility).Count == 2) ||
                    (cp1.Column == cp2.Column &&
-                    strategyManager.ColumnPositionsAt(cp1.Column, cp1.Possibility).Count == 2) ||
-                   (cp1.Row / 3 == cp2.Row / 3 && cp1.Column / 3 == cp2.Column / 3 && strategyManager
+                    strategyUser.ColumnPositionsAt(cp1.Column, cp1.Possibility).Count == 2) ||
+                   (cp1.Row / 3 == cp2.Row / 3 && cp1.Column / 3 == cp2.Column / 3 && strategyUser
                        .MiniGridPositionsAt(cp1.Row / 3, cp1.Column / 3, cp1.Possibility).Count == 2);
         }
 

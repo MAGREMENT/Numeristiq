@@ -19,25 +19,25 @@ public class JuniorExocetStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var jes = strategyManager.PreComputer.JuniorExocet();
+        var jes = strategyUser.PreComputer.JuniorExocet();
         
         foreach (var je in jes)
         {
-            if (Process(strategyManager, je)) return;
+            if (Process(strategyUser, je)) return;
         }
 
         for (int i = 0; i < jes.Count - 1; i++)
         {
             for (int j = i + 1; j < jes.Count; j++)
             {
-                if (ProcessDouble(strategyManager, jes[i], jes[j])) return;
+                if (ProcessDouble(strategyUser, jes[i], jes[j])) return;
             }
         }
     }
 
-    private bool ProcessDouble(IStrategyManager strategyManager, JuniorExocet je1, JuniorExocet je2) //TODO : correct this
+    private bool ProcessDouble(IStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2) //TODO : correct this
     {
         var unit = je1.GetUnit();
         if (unit != je2.GetUnit()) return false;
@@ -81,9 +81,9 @@ public class JuniorExocetStrategy : AbstractStrategy
             var cell = FindFirstTargetNotIn(je1, je2, targetCells);
             var and = je1.BaseCandidates.And(je2.BaseCandidates);
 
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
             {
-                if (!and.Peek(possibility)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                if (!and.Peek(possibility)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
 
@@ -95,12 +95,12 @@ public class JuniorExocetStrategy : AbstractStrategy
         {
             foreach (var cell in Cells.SharedSeenCells(bCells))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
             foreach (var cell in Cells.SharedSeenCells(tCells))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
 
@@ -108,8 +108,8 @@ public class JuniorExocetStrategy : AbstractStrategy
         var crossLines = je1.SCellsLinePositions().Or(je2.SCellsLinePositions());
         if (crossLines.Count == 3)
         {
-            RemoveAllNonSCells(strategyManager, je1, je1.ComputeAllCoverHouses());
-            RemoveAllNonSCells(strategyManager, je2, je2.ComputeAllCoverHouses());
+            RemoveAllNonSCells(strategyUser, je1, je1.ComputeAllCoverHouses());
+            RemoveAllNonSCells(strategyUser, je2, je2.ComputeAllCoverHouses());
         }
         else
         {
@@ -134,14 +134,14 @@ public class JuniorExocetStrategy : AbstractStrategy
                                 : new Cell(other, house1.Number);
 
                             if (!totalMap.Peek(cell))
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                         }
                     }
                 }
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
+        return strategyUser.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
                && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -154,7 +154,7 @@ public class JuniorExocetStrategy : AbstractStrategy
         return default;
     }
 
-    private bool Process(IStrategyManager strategyManager, JuniorExocet je)
+    private bool Process(IStrategyUser strategyUser, JuniorExocet je)
     {
         Possibilities[] removedBaseCandidates = { Possibilities.NewEmpty(), Possibilities.NewEmpty() };
 
@@ -168,11 +168,11 @@ public class JuniorExocetStrategy : AbstractStrategy
             
             if (computed.Count > 1) continue;
             
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base1);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base2);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.EscapeCell);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base1);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base2);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.EscapeCell);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
 
             removedBaseCandidates[0].Add(possibility);
             removedBaseCandidates[1].Add(possibility);
@@ -181,34 +181,34 @@ public class JuniorExocetStrategy : AbstractStrategy
         //Elimination 2
         foreach (var possibility in je.BaseCandidates)
         {
-            if (!strategyManager.PossibilitiesAt(je.Target1).Peek(possibility))
+            if (!strategyUser.PossibilitiesAt(je.Target1).Peek(possibility))
             {
                 foreach (var cell in je.Target1MirrorNodes)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
             
-            if (!strategyManager.PossibilitiesAt(je.Target2).Peek(possibility))
+            if (!strategyUser.PossibilitiesAt(je.Target2).Peek(possibility))
             {
                 foreach (var cell in je.Target2MirrorNodes)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
         }
         
         //Elimination 3
-        foreach (var possibility in strategyManager.PossibilitiesAt(je.Target1))
+        foreach (var possibility in strategyUser.PossibilitiesAt(je.Target1))
         {
             if (!je.BaseCandidates.Peek(possibility))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
         }
 
-        foreach (var possibility in strategyManager.PossibilitiesAt(je.Target2))
+        foreach (var possibility in strategyUser.PossibilitiesAt(je.Target2))
         {
             if (!je.BaseCandidates.Peek(possibility))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
         
         //Elimination 4 => In LinkGraph
@@ -226,16 +226,16 @@ public class JuniorExocetStrategy : AbstractStrategy
                 if (coverHouse.Unit == Unit.Column)
                 {
                     if(je.Target1.Column == coverHouse.Number)
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
                     if (je.Target2.Column == coverHouse.Number)
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
                 }
                 else
                 {
                     if(je.Target1.Row == coverHouse.Number)
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
                     if (je.Target2.Row == coverHouse.Number)
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
                 }
             }
         }
@@ -246,22 +246,22 @@ public class JuniorExocetStrategy : AbstractStrategy
             bool ok = false;
             foreach (var cell in je.Target1MirrorNodes)
             {
-                if (strategyManager.Contains(cell.Row, cell.Column, possibility)) ok = true;
+                if (strategyUser.Contains(cell.Row, cell.Column, possibility)) ok = true;
             }
 
-            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+            if (!ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
             
             ok = false;
             foreach (var cell in je.Target2MirrorNodes)
             {
-                if (strategyManager.Contains(cell.Row, cell.Column, possibility)) ok = true;
+                if (strategyUser.Contains(cell.Row, cell.Column, possibility)) ok = true;
             }
 
-            if (!ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+            if (!ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
 
         //Compatibility check
-        if (je.BaseCandidates.Count != 2 && strategyManager.UniquenessDependantStrategiesAllowed)
+        if (je.BaseCandidates.Count != 2 && strategyUser.UniquenessDependantStrategiesAllowed)
         {
             HashSet<BiValue> forbiddenPairs = new();
 
@@ -271,14 +271,14 @@ public class JuniorExocetStrategy : AbstractStrategy
                 int j = i;
                 while (je.BaseCandidates.Next(ref j))
                 {
-                    if (!je.CompatibilityCheck(strategyManager, i, j)) forbiddenPairs.Add(new BiValue(i, j));
+                    if (!je.CompatibilityCheck(strategyUser, i, j)) forbiddenPairs.Add(new BiValue(i, j));
                 }
             }
 
-            foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
+            foreach (var p1 in strategyUser.PossibilitiesAt(je.Base1))
             {
                 bool ok = false;
-                foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
+                foreach (var p2 in strategyUser.PossibilitiesAt(je.Base2))
                 {
                     if(p1 == p2) continue;
                 
@@ -291,15 +291,15 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                 if (!ok)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Column);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Column);
                     removedBaseCandidates[0].Add(p1);
                 }
             }
         
-            foreach (var p2 in strategyManager.PossibilitiesAt(je.Base2))
+            foreach (var p2 in strategyUser.PossibilitiesAt(je.Base2))
             {
                 bool ok = false;
-                foreach (var p1 in strategyManager.PossibilitiesAt(je.Base1))
+                foreach (var p1 in strategyUser.PossibilitiesAt(je.Base1))
                 {
                     if(p1 == p2) continue;
 
@@ -312,64 +312,64 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                 if (!ok)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Column);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Column);
                     removedBaseCandidates[1].Add(p2);
                 }
             }
         }
 
         //Known base digits eliminations
-        var revisedB1 = strategyManager.PossibilitiesAt(je.Base1).Difference(removedBaseCandidates[0]);
-        var revisedB2 = strategyManager.PossibilitiesAt(je.Base2).Difference(removedBaseCandidates[1]);
+        var revisedB1 = strategyUser.PossibilitiesAt(je.Base1).Difference(removedBaseCandidates[0]);
+        var revisedB2 = strategyUser.PossibilitiesAt(je.Base2).Difference(removedBaseCandidates[1]);
         var revisedBaseCandidates = revisedB1.Or(revisedB2);
 
         if (revisedBaseCandidates.Count == 2)
         {
             //Elimination 3 update
-            foreach (var possibility in strategyManager.PossibilitiesAt(je.Target1))
+            foreach (var possibility in strategyUser.PossibilitiesAt(je.Target1))
             {
                 if (!revisedBaseCandidates.Peek(possibility))
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
             }
 
-            foreach (var possibility in strategyManager.PossibilitiesAt(je.Target2))
+            foreach (var possibility in strategyUser.PossibilitiesAt(je.Target2))
             {
                 if (!revisedBaseCandidates.Peek(possibility))
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
             }
             
             //Elimination 7
             for (int i = 0; i < 2; i++)
             {
-                if (!strategyManager.ContainsAny(je.Target1MirrorNodes[i], revisedBaseCandidates))
-                    RemoveAll(strategyManager, je.Target1MirrorNodes[(i + 1) % 2], strategyManager.PossibilitiesAt(je.Target2));
+                if (!strategyUser.ContainsAny(je.Target1MirrorNodes[i], revisedBaseCandidates))
+                    RemoveAll(strategyUser, je.Target1MirrorNodes[(i + 1) % 2], strategyUser.PossibilitiesAt(je.Target2));
                 
-                if(!strategyManager.ContainsAny(je.Target2MirrorNodes[i], revisedBaseCandidates))
-                    RemoveAll(strategyManager, je.Target2MirrorNodes[(i + 1) % 2], strategyManager.PossibilitiesAt(je.Target1));
+                if(!strategyUser.ContainsAny(je.Target2MirrorNodes[i], revisedBaseCandidates))
+                    RemoveAll(strategyUser, je.Target2MirrorNodes[(i + 1) % 2], strategyUser.PossibilitiesAt(je.Target1));
             }
             
             //Elimination 8
-            var or = strategyManager.PossibilitiesAt(je.Target1MirrorNodes[0])
-                .Or(strategyManager.PossibilitiesAt(je.Target1MirrorNodes[1]));
+            var or = strategyUser.PossibilitiesAt(je.Target1MirrorNodes[0])
+                .Or(strategyUser.PossibilitiesAt(je.Target1MirrorNodes[1]));
             var diff = or.Difference(revisedBaseCandidates);
             if (diff.Count == 1)
             {
                 var p = diff.First();
                 foreach (var cell in Cells.SharedSeenCells(je.Target1MirrorNodes[0], je.Target1MirrorNodes[1]))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
                 
-            or = strategyManager.PossibilitiesAt(je.Target2MirrorNodes[0])
-                .Or(strategyManager.PossibilitiesAt(je.Target2MirrorNodes[1]));
+            or = strategyUser.PossibilitiesAt(je.Target2MirrorNodes[0])
+                .Or(strategyUser.PossibilitiesAt(je.Target2MirrorNodes[1]));
             diff = or.Difference(revisedBaseCandidates);
             if (diff.Count == 1)
             {
                 var p = diff.First();
                 foreach (var cell in Cells.SharedSeenCells(je.Target2MirrorNodes[0], je.Target2MirrorNodes[1]))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
             
@@ -380,12 +380,12 @@ public class JuniorExocetStrategy : AbstractStrategy
             {
                 foreach (var cell in Cells.SharedSeenCells(je.Base1, je.Base2))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
 
                 foreach (var cell in Cells.SharedSeenCells(je.Target1, je.Target2))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
             
@@ -407,7 +407,7 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                         if (entry.Value.Peek(cell)) continue;
 
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                     }
                 }
             }
@@ -418,20 +418,20 @@ public class JuniorExocetStrategy : AbstractStrategy
                 var gp = je.SCells[possibility];
                 foreach (var cell in gp)
                 {
-                    if (strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
+                    if (strategyUser.Sudoku[cell.Row, cell.Column] != 0) continue;
 
                     var copy = gp.Copy();
                     copy.VoidRow(cell.Row);
                     copy.VoidColumn(cell.Column);
                     copy.VoidMiniGrid(cell.Row / 3, cell.Column / 3);
 
-                    if (copy.Count == 0) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    if (copy.Count == 0) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
 
             foreach (var cell in je.AllPossibleSCells())
             {
-                if (strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
+                if (strategyUser.Sudoku[cell.Row, cell.Column] != 0) continue;
 
                 var count = 0;
                 foreach (var poss in revisedBaseCandidates)
@@ -444,30 +444,30 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                 if (count < 2) continue;
 
-                foreach (var p in strategyManager.PossibilitiesAt(cell))
+                foreach (var p in strategyUser.PossibilitiesAt(cell))
                 {
                     if (revisedBaseCandidates.Peek(p)) continue;
 
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
+        return strategyUser.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
                && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void RemoveAll(IStrategyManager strategyManager, Cell cell, IReadOnlyPossibilities except)
+    private void RemoveAll(IStrategyUser strategyUser, Cell cell, IReadOnlyPossibilities except)
     {
-        foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+        foreach (var possibility in strategyUser.PossibilitiesAt(cell))
         {
             if (except.Peek(possibility)) continue;
 
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
         }
     }
 
-    private void RemoveAllNonSCells(IStrategyManager strategyManager, JuniorExocet je,
+    private void RemoveAllNonSCells(IStrategyUser strategyUser, JuniorExocet je,
         Dictionary<int, List<CoverHouse>> coverHouses)
     {
         foreach (var entry in je.SCells)
@@ -484,7 +484,7 @@ public class JuniorExocetStrategy : AbstractStrategy
 
                     if (entry.Value.Peek(cell)) continue;
 
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                 }
             }
         }

@@ -20,11 +20,11 @@ public class SetEquivalenceStrategy : AbstractStrategy
         _searchers = searchers;
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         foreach (var searcher in _searchers)
         {
-            foreach (var equivalence in searcher.Search(strategyManager))
+            foreach (var equivalence in searcher.Search(strategyUser))
             {
                 int[] solved1 = new int[9];
                 int[] solved2 = new int[9];
@@ -34,7 +34,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
 
                 foreach (var cell in equivalence.FirstSet)
                 {
-                    var solved = strategyManager.Sudoku[cell.Row, cell.Column];
+                    var solved = strategyUser.Sudoku[cell.Row, cell.Column];
                     if (solved == 0) continue;
                 
                     solved1[solved - 1]++;
@@ -43,7 +43,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
 
                 foreach (var cell in equivalence.SecondSet)
                 {
-                    var solved = strategyManager.Sudoku[cell.Row, cell.Column];
+                    var solved = strategyUser.Sudoku[cell.Row, cell.Column];
                     if (solved == 0) continue;
                 
                     solved2[solved - 1]++;
@@ -73,13 +73,13 @@ public class SetEquivalenceStrategy : AbstractStrategy
                 {
                     foreach (var cell in equivalence.SecondSet)
                     {
-                        var possibilities = strategyManager.PossibilitiesAt(cell);
+                        var possibilities = strategyUser.PossibilitiesAt(cell);
                         if(possibilities.Count == 0) continue;
 
                         foreach (var possibility in possibilities)
                         {
                             if (solved1[possibility - 1] == 0)
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                         }
                     }
                 }
@@ -88,18 +88,18 @@ public class SetEquivalenceStrategy : AbstractStrategy
                 {
                     foreach (var cell in equivalence.FirstSet)
                     {
-                        var possibilities = strategyManager.PossibilitiesAt(cell);
+                        var possibilities = strategyUser.PossibilitiesAt(cell);
                         if(possibilities.Count == 0) continue;
 
                         foreach (var possibility in possibilities)
                         {
                             if (solved2[possibility - 1] == 0)
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                         }
                     }
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new GeometricEquivalenceReportBuilder(equivalence)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

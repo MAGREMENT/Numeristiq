@@ -24,18 +24,18 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
         _cellsSearchers = searchers;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         List<PossibilityCovers> covers = new();
         foreach (var searcher in _cellsSearchers)
         {
-            foreach (var grid in searcher.SearchGrids(strategyManager))
+            foreach (var grid in searcher.SearchGrids(strategyUser))
             {
                 var count = 0;
                 
                 for (int number = 1; number <= 9; number++)
                 {
-                    var positions = strategyManager.PositionsFor(number);
+                    var positions = strategyUser.PositionsFor(number);
                     var and = grid.And(positions);
                     if (and.Count == 0) continue;
 
@@ -44,20 +44,20 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
                     covers.Add(new PossibilityCovers(number, coverHouses.ToArray()));
                 }
 
-                if (count == grid.Count && Process(strategyManager, grid, covers)) return;
+                if (count == grid.Count && Process(strategyUser, grid, covers)) return;
                 covers.Clear();
             }
         }
     }
 
-    private bool Process(IStrategyManager strategyManager, GridPositions grid, List<PossibilityCovers> covers)
+    private bool Process(IStrategyUser strategyUser, GridPositions grid, List<PossibilityCovers> covers)
     {
         List<PossibilityCovers> alternativesTotal = new();
         HashSet<CoverHouse> emptyForbidden = new();
         
         foreach (var cover in covers)
         {
-            var positions = strategyManager.PositionsFor(cover.Possibility);
+            var positions = strategyUser.PositionsFor(cover.Possibility);
             var and = grid.And(positions);
 
             var alternatives = and.PossibleCoverHouses(cover.CoverHouses.Length, emptyForbidden, UnitMethods.All);
@@ -72,13 +72,13 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
                     foreach (var cell in method.EveryCell(house.Number))
                     {
                         if (grid.Peek(cell)) continue;
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
                     }
                 }
             } 
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -97,7 +97,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
 
 public interface IMultiSectorCellsSearcher
 {
-    public IEnumerable<GridPositions> SearchGrids(IStrategyManager strategyManager);
+    public IEnumerable<GridPositions> SearchGrids(IStrategyUser strategyUser);
 }
 
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder

@@ -16,18 +16,18 @@ public class SkyscraperStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row1 = 0; row1 < 8; row1++)
             {
-                var pos1 = strategyManager.RowPositionsAt(row1, number);
+                var pos1 = strategyUser.RowPositionsAt(row1, number);
                 if (pos1.Count != 2) continue;
 
                 for (int row2 = row1 + 1; row2 < 9; row2++)
                 {
-                    var pos2 = strategyManager.RowPositionsAt(row2, number);
+                    var pos2 = strategyUser.RowPositionsAt(row2, number);
                     if (pos2.Count != 2) continue;
 
                     var and = pos1.And(pos2);
@@ -46,11 +46,11 @@ public class SkyscraperStrategy : AbstractStrategy
                         var r1 = startRow1 + r;
                         var r2 = startRow2 + r;
                         
-                        if(r1 != row2) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, r1, other2);
-                        if(r2 != row1) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, r2, other1);
+                        if(r1 != row2) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, r1, other2);
+                        if(r2 != row1) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, r2, other1);
                     }
 
-                    if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                             new SkyscraperReportBuilder(Unit.Row, row1, row2, pos1, pos2, number))
                                 && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
@@ -58,12 +58,12 @@ public class SkyscraperStrategy : AbstractStrategy
             
             for (int col1 = 0; col1 < 8; col1++)
             {
-                var pos1 = strategyManager.ColumnPositionsAt(col1, number);
+                var pos1 = strategyUser.ColumnPositionsAt(col1, number);
                 if (pos1.Count != 2) continue;
 
                 for (int col2 = col1 + 1; col2 < 9; col2++)
                 {
-                    var pos2 = strategyManager.ColumnPositionsAt(col2, number);
+                    var pos2 = strategyUser.ColumnPositionsAt(col2, number);
                     if (pos2.Count != 2) continue;
 
                     var and = pos1.And(pos2);
@@ -82,11 +82,11 @@ public class SkyscraperStrategy : AbstractStrategy
                         var c1 = startCol1 + c;
                         var c2 = startCol2 + c;
                         
-                        if(c1 != col2) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, other2, c1);
-                        if(c2 != col1) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, other1, c2);
+                        if(c1 != col2) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other2, c1);
+                        if(c2 != col1) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other1, c2);
                     }
 
-                    if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                             new SkyscraperReportBuilder(Unit.Column, col1, col2, pos1, pos2, number)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                 }

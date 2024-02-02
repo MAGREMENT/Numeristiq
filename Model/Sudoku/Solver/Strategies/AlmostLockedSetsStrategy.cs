@@ -18,9 +18,9 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
     {
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        foreach (var linked in strategyManager.PreComputer.ConstructAlmostLockedSetGraph())
+        foreach (var linked in strategyUser.PreComputer.ConstructAlmostLockedSetGraph())
         {
             if (linked.RestrictedCommons.Count > 2) continue;
 
@@ -40,7 +40,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
                     foreach (var coord in Cells.SharedSeenCells(coords))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
             }
@@ -53,7 +53,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
                     foreach (var coord in Cells.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
                     
@@ -63,12 +63,12 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
                     foreach (var coord in Cells.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
             }
 
-            if(strategyManager.ChangeBuffer.Commit(this, new AlmostLockedSetsReportBuilder(one,
+            if(strategyUser.ChangeBuffer.Commit(this, new AlmostLockedSetsReportBuilder(one,
                    two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }

@@ -17,7 +17,7 @@ public class ReverseBUGStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         GridPositions[] positions = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
 
@@ -25,7 +25,7 @@ public class ReverseBUGStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var solution = strategyManager.Sudoku[row, col];
+                var solution = strategyUser.Sudoku[row, col];
                 if (solution != 0) positions[solution - 1].Add(row, col);
             }
         }
@@ -54,11 +54,11 @@ public class ReverseBUGStrategy : AbstractStrategy
 
                 if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(n1, soloRow, soloCol);
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(n2, soloRow, soloCol);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(n1, soloRow, soloCol);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(n2, soloRow, soloCol);
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new ReverseBugReportBuilder(or, n1)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }

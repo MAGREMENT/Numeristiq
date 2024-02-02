@@ -23,7 +23,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         var structuresDone = new HashSet<GridPositions>();
         
@@ -31,7 +31,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
         {
             for (int col = 0; col < 9; col++)
             {
-                var poss = strategyManager.PossibilitiesAt(row, col);
+                var poss = strategyUser.PossibilitiesAt(row, col);
                 if (poss.Count != 2) continue;
 
                 var first = new Cell(row, col);
@@ -45,7 +45,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
                     for (int c = col % 3; c < 3; c++)
                     {
                         var col2 = startC + c;
-                        if ((row2 == row && col2 == col) || !strategyManager.PossibilitiesAt(row2, col2).Equals(poss)) continue;
+                        if ((row2 == row && col2 == col) || !strategyUser.PossibilitiesAt(row2, col2).Equals(poss)) continue;
 
                         var second = new Cell(row2, col2);
                         var bcp = new BiCellPossibilities(first, second, poss);
@@ -66,7 +66,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
                             }
                         }
                         
-                        if (Search(strategyManager, new HashSet<BiCellPossibilities> {bcp},
+                        if (Search(strategyUser, new HashSet<BiCellPossibilities> {bcp},
                             new GridPositions {first, second}, conditionsToMeet,
                             new HashSet<IBUGLiteCondition>(), structuresDone)) return;
                     }
@@ -75,14 +75,14 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
+    private bool Search(IStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
         List<IBUGLiteCondition> conditionsToMeet, HashSet<IBUGLiteCondition> conditionsMet, HashSet<GridPositions> structuresDone)
     {
         var current = conditionsToMeet[0];
         conditionsToMeet.RemoveAt(0);
         conditionsMet.Add(current);
 
-        foreach (var match in current.ConditionMatches(strategyManager, structure))
+        foreach (var match in current.ConditionMatches(strategyUser, structure))
         {
             bool ok = true;
             foreach (var otherCondition in match.OtherConditions)
@@ -124,10 +124,10 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
 
             if (conditionsToMeet.Count == 0)
             {
-                if (Process(strategyManager, bcp)) return true;
+                if (Process(strategyUser, bcp)) return true;
             }
             else if (structure.Count < _maxStructSize &&
-                      Search(strategyManager, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
+                      Search(strategyUser, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
             
             structure.Remove(match.BiCellPossibilities.One);
             structure.Remove(match.BiCellPossibilities.Two);
@@ -147,14 +147,14 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
         return false;
     }
 
-    private bool Process(IStrategyManager strategyManager, HashSet<BiCellPossibilities> bcp)
+    private bool Process(IStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp)
     {
         var cellsNotInStructure = new List<Cell>();
         var possibilitiesNotInStructure = Possibilities.NewEmpty();
 
         foreach (var b in bcp)
         {
-            var no1 = strategyManager.PossibilitiesAt(b.One).Difference(b.Possibilities);
+            var no1 = strategyUser.PossibilitiesAt(b.One).Difference(b.Possibilities);
             if (no1.Count > 0)
             {
                 cellsNotInStructure.Add(b.One);
@@ -164,7 +164,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
                 }
             }
 
-            var no2 = strategyManager.PossibilitiesAt(b.Two).Difference(b.Possibilities);
+            var no2 = strategyUser.PossibilitiesAt(b.Two).Difference(b.Possibilities);
             if (no2.Count > 0)
             {
                 cellsNotInStructure.Add(b.Two);
@@ -180,7 +180,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
             var c = cellsNotInStructure[0];
             foreach (var p in FindStructurePossibilitiesFor(c, bcp))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, c);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
             }
         }
         else if (cellsNotInStructure.Count == 2)
@@ -194,11 +194,11 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
                 {
                     var cp1 = new CellPossibility(cellsNotInStructure[0], asArray[i]);
                     var cp2 = new CellPossibility(cellsNotInStructure[1], asArray[i]);
-                    if (Cells.AreStronglyLinked(strategyManager, cp1, cp2))
+                    if (Cells.AreStronglyLinked(strategyUser, cp1, cp2))
                     {
                         var other = asArray[(i + 1) % 2];
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[1]);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[1]);
                     }
                 }
             }
@@ -209,11 +209,11 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
             var p = possibilitiesNotInStructure.First();
             foreach (var ssc in Cells.SharedSeenCells(cellsNotInStructure))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
             }
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new BUGLiteReportBuilder(bcp)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -234,7 +234,7 @@ public record BUGLiteConditionMatch(BiCellPossibilities BiCellPossibilities, par
 
 public interface IBUGLiteCondition
 { 
-    IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyManager strategyManager, GridPositions done);
+    IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyUser strategyUser, GridPositions done);
 }
 
 public class RowBUGLiteCondition : IBUGLiteCondition
@@ -250,7 +250,7 @@ public class RowBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyManager strategyManager, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyUser strategyUser, GridPositions done)
     {
         var miniCol = _one.Column / 3;
 
@@ -261,14 +261,14 @@ public class RowBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(_one.Row, c * 3 + i);
-                if (done.Peek(first) || strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Peek(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(_two.Row, c * 3 + j);
-                    if (done.Peek(first) || strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Peek(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    var and = strategyManager.PossibilitiesAt(first).And(strategyManager.PossibilitiesAt(second));
+                    var and = strategyUser.PossibilitiesAt(first).And(strategyUser.PossibilitiesAt(second));
                     if (and.Count < 2 || !and.Peek(_possibility)) continue;
 
                     foreach (var p in and)
@@ -321,7 +321,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyManager strategyManager, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyUser strategyUser, GridPositions done)
     {
         var miniRow = _one.Row / 3;
 
@@ -332,14 +332,14 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(r * 3 + i, _one.Column);
-                if (done.Peek(first) || strategyManager.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Peek(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(r * 3 + j, _two.Column);
-                    if (done.Peek(first) || strategyManager.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Peek(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    var and = strategyManager.PossibilitiesAt(first).And(strategyManager.PossibilitiesAt(second));
+                    var and = strategyUser.PossibilitiesAt(first).And(strategyUser.PossibilitiesAt(second));
                     if (and.Count < 2 || !and.Peek(_possibility)) continue;
 
                     foreach (var p in and)

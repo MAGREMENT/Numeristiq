@@ -4,8 +4,8 @@ public interface IStrategyArgument
 {
     public string Name { get; }
     public IArgumentViewInterface Interface { get; }
-    public string Get();
-    public void Set(string s);
+    public ArgumentValue Get();
+    public void Set(ArgumentValue s);
 }
 
 public delegate T GetArgument<out T>();

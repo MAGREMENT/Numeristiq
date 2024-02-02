@@ -73,11 +73,11 @@ public class FishStrategy : AbstractStrategy
             b => _allowCannibalism = b));
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
-            var positions = strategyManager.PositionsFor(number);
+            var positions = strategyUser.PositionsFor(number);
             List<int> possibleCoverHouses = new();
             
             for (int i = 0; i < CoverHouses.Length; i++)
@@ -90,7 +90,7 @@ public class FishStrategy : AbstractStrategy
             {
                 foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(unitCount, possibleCoverHouses))
                 {
-                    if (TryFind(strategyManager, number, combination)) return;
+                    if (TryFind(strategyUser, number, combination)) return;
                 }
             }
         }
@@ -101,12 +101,12 @@ public class FishStrategy : AbstractStrategy
     private readonly GridPositions _buffer = new();
     private readonly HashSet<Cell> _endoFins = new();
     
-    private bool TryFind(IStrategyManager strategyManager, int number, int[] combination)
+    private bool TryFind(IStrategyUser strategyUser, int number, int[] combination)
     {
         _toCover.Void();
         _baseSet.Clear();
         _endoFins.Clear();
-        var positions = strategyManager.PositionsFor(number);
+        var positions = strategyUser.PositionsFor(number);
         
         foreach (var n in combination)
         {
@@ -136,7 +136,7 @@ public class FishStrategy : AbstractStrategy
         {
             foreach (var coverSet in _toCover.PossibleCoverHouses(combination.Length, _baseSet, UnitMethods.All))
             {
-                if (Process(strategyManager, number, coverSet, _buffer)) return true;
+                if (Process(strategyUser, number, coverSet, _buffer)) return true;
             }
         }
         else
@@ -144,7 +144,7 @@ public class FishStrategy : AbstractStrategy
             foreach (var coveredGrid in _toCover.PossibleCoveredGrids(combination.Length, 3, _baseSet,
                          UnitMethods.All))
             {
-                if (Process(strategyManager, number, coveredGrid.CoverHouses, coveredGrid.Remaining)) return true;
+                if (Process(strategyUser, number, coveredGrid.CoverHouses, coveredGrid.Remaining)) return true;
             }
         }
         
@@ -153,7 +153,7 @@ public class FishStrategy : AbstractStrategy
 
     private readonly List<Cell> _fins = new();
 
-    private bool Process(IStrategyManager strategyManager, int number, CoverHouse[] coverSet, IReadOnlyGridPositions exoFins)
+    private bool Process(IStrategyUser strategyUser, int number, CoverHouse[] coverSet, IReadOnlyGridPositions exoFins)
     {
         _fins.Clear();
         var gpOfCoverSet = new GridPositions();
@@ -171,7 +171,7 @@ public class FishStrategy : AbstractStrategy
         {
             foreach (var cell in diff)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell);
             } 
         }
         else
@@ -180,18 +180,18 @@ public class FishStrategy : AbstractStrategy
             {
                 if (!diff.Peek(ssc)) continue;
                     
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, ssc);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, ssc);
             }
         }
 
-        if (_allowCannibalism) ProcessCannibalism(strategyManager, number, coverSet);
+        if (_allowCannibalism) ProcessCannibalism(strategyUser, number, coverSet);
         
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new FishReportBuilder(new HashSet<CoverHouse>(_baseSet), coverSet, number,
                     _toCover.Copy(), new List<Cell>(_fins))) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void ProcessCannibalism(IStrategyManager strategyManager, int number, CoverHouse[] coverSet)
+    private void ProcessCannibalism(IStrategyUser strategyUser, int number, CoverHouse[] coverSet)
     {
         foreach (var cell in _toCover)
         {
@@ -217,7 +217,7 @@ public class FishStrategy : AbstractStrategy
                 }
             }
             
-            if(ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell);
+            if(ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell);
         }
     }
 }

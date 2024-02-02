@@ -24,18 +24,18 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
         _checkLength2 = checkLength2;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var graph = strategyManager.PreComputer.AlmostLockedSetGraph();
+        var graph = strategyUser.PreComputer.AlmostLockedSetGraph();
 
         foreach (var start in graph)
         {
-            if(Search(strategyManager, graph, start.Positions, new HashSet<IPossibilitiesPositions> {start},
+            if(Search(strategyUser, graph, start.Positions, new HashSet<IPossibilitiesPositions> {start},
                    new ChainBuilder<IPossibilitiesPositions, int>(start))) return;
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, PossibilitiesGraph<IPossibilitiesPositions> graph,
+    private bool Search(IStrategyUser strategyUser, PossibilitiesGraph<IPossibilitiesPositions> graph,
         GridPositions occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
@@ -54,8 +54,8 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
                 explored.Add(friend.To);
                 var occupiedCopy = occupied.Or(friend.To.Positions);
 
-                if (CheckForChain(strategyManager, chain)) return true;
-                if (Search(strategyManager, graph, occupiedCopy, explored, chain)) return true;
+                if (CheckForChain(strategyUser, chain)) return true;
+                if (Search(strategyUser, graph, occupiedCopy, explored, chain)) return true;
                 
                 chain.RemoveLast();
             }
@@ -64,7 +64,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
         return false;
     }
 
-    private bool CheckForLoop(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, int> builder,
+    private bool CheckForLoop(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> builder,
         IReadOnlyPossibilities possibleLastLinks, GridPositions occupied)
     {
         foreach (var ll in possibleLastLinks)
@@ -91,19 +91,19 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
                     {
                         if (occupied.Peek(ssc)) continue;
 
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                     }
                 }
             }
 
-            return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new AlmostLockedSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
         }
         
         return false;
     }
 
-    private bool CheckForChain(IStrategyManager strategyManager, ChainBuilder<IPossibilitiesPositions, int> chain)
+    private bool CheckForChain(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
 
@@ -124,11 +124,11 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
 
             foreach (var ssc in Cells.SharedSeenCells(cells))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, ssc);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, ssc);
             }
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new AlmostLockedSetsChainReportBuilder(chain.ToChain())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

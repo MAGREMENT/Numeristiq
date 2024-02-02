@@ -9,11 +9,11 @@ public static class OddagonSearcher
 {
     private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 3);
 
-    public static List<AlmostOddagon> Search(IStrategyManager strategyManager)
+    public static List<AlmostOddagon> Search(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
             ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
-        return Algorithm.Search(strategyManager, strategyManager.GraphManager.SimpleLinkGraph);
+        return Algorithm.Search(strategyUser, strategyUser.PreComputer.Graphs.SimpleLinkGraph);
     }
 
     public static IEnumerable<CellPossibility> FindGuardians(IPossibilitiesHolder holder, CellPossibility one, CellPossibility two)

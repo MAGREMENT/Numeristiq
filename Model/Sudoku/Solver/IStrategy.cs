@@ -14,16 +14,16 @@ public interface IStrategy
     public StatisticsTracker Tracker { get; }
     public IReadOnlyList<IStrategyArgument> Arguments { get; }
     
-    void Apply(IStrategyManager strategyManager);
+    void Apply(IStrategyUser strategyUser);
     void OnNewSudoku(Sudoku s);
-    void TrySetArgument(string name, string value);
+    void TrySetArgument(string name, ArgumentValue value);
     public Dictionary<string, string> ArgumentsAsDictionary()
     {
         Dictionary<string, string> result = new();
 
         foreach (var arg in Arguments)
         {
-            result.Add(arg.Name, arg.Get());
+            result.Add(arg.Name, arg.ToString()!);
         }
 
         return result;

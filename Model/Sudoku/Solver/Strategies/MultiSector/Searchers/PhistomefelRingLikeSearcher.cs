@@ -5,7 +5,7 @@ namespace Model.Sudoku.Solver.Strategies.MultiSector.Searchers;
 
 public class PhistomefelRingLikeSearcher : ISetEquivalenceSearcher
 {
-    public IEnumerable<SetEquivalence> Search(IStrategyManager strategyManager)
+    public IEnumerable<SetEquivalence> Search(IStrategyUser strategyUser)
     {
         for (int mr1 = 0; mr1 < 2; mr1++)
         {

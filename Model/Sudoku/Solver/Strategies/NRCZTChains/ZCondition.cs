@@ -10,12 +10,12 @@ public class ZCondition : INRCZTCondition
     public string Name => "Z";
 
     public IEnumerable<(CellPossibility, INRCZTConditionChainManipulation)> SearchEndUnderCondition(
-        IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, BlockChain chain,
+        IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, BlockChain chain,
         CellPossibility bStart)
     {
         var all = chain.AllCellPossibilities();
         
-        var possibilities = strategyManager.PossibilitiesAt(bStart.Row, bStart.Column);
+        var possibilities = strategyUser.PossibilitiesAt(bStart.Row, bStart.Column);
         if (possibilities.Count == 3)
         {
             bool ok = true;
@@ -45,7 +45,7 @@ public class ZCondition : INRCZTCondition
             }
         }
 
-        var rowPositions = strategyManager.RowPositionsAt(bStart.Row, bStart.Possibility);
+        var rowPositions = strategyUser.RowPositionsAt(bStart.Row, bStart.Possibility);
         if (rowPositions.Count > 2)
         {
             bool ok = true;
@@ -81,7 +81,7 @@ public class ZCondition : INRCZTCondition
             }
         }
         
-        var colPositions = strategyManager.ColumnPositionsAt(bStart.Column, bStart.Possibility);
+        var colPositions = strategyUser.ColumnPositionsAt(bStart.Column, bStart.Possibility);
         if (colPositions.Count > 2)
         {
             bool ok = true;
@@ -117,7 +117,7 @@ public class ZCondition : INRCZTCondition
             }
         }
         
-        var boxPositions = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Column / 3,
+        var boxPositions = strategyUser.MiniGridPositionsAt(bStart.Row / 3, bStart.Column / 3,
             bStart.Possibility);
         if (boxPositions.Count > 2)
         {

@@ -8,7 +8,7 @@ namespace Model.Sudoku;
 
 public interface ISolver
 {
-    public IStrategyLoader StrategyLoader { get; }
+    public IStrategyManager StrategyManager { get; }
     public void SetSudoku(Sudoku sudoku);
     public void SetState(SolverState state);
     public void Solve(bool stopAtProgress);

@@ -70,7 +70,7 @@ public class ApplicationPresenter
 
     public StrategyManagerPresenter Create(IStrategyManagerView view)
     {
-        return new StrategyManagerPresenter(_solver.StrategyLoader, view);
+        return new StrategyManagerPresenter(_solver.StrategyManager, view);
     }
 
     public PlayerPresenter Create(IPlayerView view)

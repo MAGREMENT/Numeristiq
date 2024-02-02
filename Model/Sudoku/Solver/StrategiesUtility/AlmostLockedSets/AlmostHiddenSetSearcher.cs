@@ -7,14 +7,14 @@ namespace Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 
 public class AlmostHiddenSetSearcher
 {
-    private readonly IStrategyManager _strategyManager;
+    private readonly IStrategyUser _strategyUser;
 
     public int Max { get; set; } = 5;
     public int Difference { get; set; } = 1;
 
-    public AlmostHiddenSetSearcher(IStrategyManager strategyManager)
+    public AlmostHiddenSetSearcher(IStrategyUser strategyUser)
     {
-        _strategyManager = strategyManager;
+        _strategyUser = strategyUser;
     }
 
     public List<IPossibilitiesPositions> FullGrid()
@@ -65,14 +65,14 @@ public class AlmostHiddenSetSearcher
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = _strategyManager.RowPositionsAt(row, i);
+            var pos = _strategyUser.RowPositionsAt(row, i);
             if (pos.Count == 0) continue;
 
             var or = pos.Or(current);
             possibilities.Add(i);
 
             if (or.Count == possibilities.Count + Difference) result.Add(new CAPPossibilitiesPositions(
-                or.ToCellArray(Unit.Row, row), possibilities.Copy(), _strategyManager));
+                or.ToCellArray(Unit.Row, row), possibilities.Copy(), _strategyUser));
             
             if (possibilities.Count < Max)
                 InRow(row, result, i + 1, or, possibilities);
@@ -95,14 +95,14 @@ public class AlmostHiddenSetSearcher
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = _strategyManager.ColumnPositionsAt(column, i);
+            var pos = _strategyUser.ColumnPositionsAt(column, i);
             if (pos.Count == 0) continue;
 
             var or = pos.Or(current);
             possibilities.Add(i);
 
             if (or.Count == possibilities.Count + Difference) result.Add(new CAPPossibilitiesPositions(
-                or.ToCellArray(Unit.Column, column), possibilities.Copy(), _strategyManager));
+                or.ToCellArray(Unit.Column, column), possibilities.Copy(), _strategyUser));
             
             if (possibilities.Count < Max)
                 InColumn(column, result, i + 1, or, possibilities);
@@ -126,7 +126,7 @@ public class AlmostHiddenSetSearcher
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = _strategyManager.MiniGridPositionsAt(miniRow, miniCol, i);
+            var pos = _strategyUser.MiniGridPositionsAt(miniRow, miniCol, i);
             if (pos.Count == 0) continue;
 
             var or = pos.Or(current);
@@ -136,7 +136,7 @@ public class AlmostHiddenSetSearcher
             {
                 if(!excludeSameLine || !(or.AreAllInSameColumn() || or.AreAllInSameColumn())) 
                     result.Add(new CAPPossibilitiesPositions(or.ToCellArray(),
-                        possibilities.Copy(), _strategyManager));
+                        possibilities.Copy(), _strategyUser));
             }
 
             if (possibilities.Count < Max)

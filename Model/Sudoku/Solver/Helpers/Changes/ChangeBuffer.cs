@@ -11,16 +11,16 @@ public class ChangeBuffer
         
     private readonly List<ChangeCommit> _commits = new();
 
-    private readonly IChangeManager _m;
+    private readonly IChangeProducer _m;
 
     private readonly IPushHandler[] _pushHandlers =
     {
         new ReturnPushHandler(), new WaitForAllPushHandler(), new ChooseBestPushHandler()
     };
 
-    public ChangeBuffer(IChangeManager changeManager)
+    public ChangeBuffer(IChangeProducer changeProducer)
     {
-        _m = changeManager;
+        _m = changeProducer;
     }
 
     public void ProposePossibilityRemoval(int possibility, Cell cell)
@@ -175,45 +175,45 @@ public class BuiltChangeCommit
 
 public interface IPushHandler
 {
-    void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager);
-    void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager);
+    void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer);
+    void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer);
 }
 
 public class ReturnPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
     {
-        manager.LogManager.StartPush();
-        var snapshot = manager.TakeSnapshot();
+        producer.LogManager.StartPush();
+        var snapshot = producer.TakeSnapshot();
 
         var commit = commits[0];
         
         foreach (var change in commit.Changes)
         { 
-            manager.ExecuteChange(change);
+            producer.ExecuteChange(change);
         }
 
-        if (commit.Builder is not null) manager.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
+        if (commit.Builder is not null) producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
             commit.Changes, commit.Responsible);
         
-        manager.LogManager.StopPush();
+        producer.LogManager.StopPush();
     }
 
-    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
     {
         foreach (var change in commits[0].Changes)
         {
-            manager.ExecuteChange(change);
+            producer.ExecuteChange(change);
         }
     }
 }
 
 public class WaitForAllPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
     {
-        manager.LogManager.StartPush();
-        var snapshot = manager.TakeSnapshot();
+        producer.LogManager.StartPush();
+        var snapshot = producer.TakeSnapshot();
         
         foreach (var commit in commits)
         {
@@ -221,23 +221,23 @@ public class WaitForAllPushHandler : IPushHandler
             
             foreach (var change in commit.Changes)
             {
-                if (manager.ExecuteChange(change)) impactfulChanges.Add(change);
+                if (producer.ExecuteChange(change)) impactfulChanges.Add(change);
             }
 
             if (commit.Builder is null || impactfulChanges.Count == 0) continue;
-            manager.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, commit.Responsible);
+            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, commit.Responsible);
         }
         
-        manager.LogManager.StopPush();
+        producer.LogManager.StopPush();
     }
 
-    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
     {
         foreach (var commit in commits)
         {
             foreach (var change in commit.Changes)
             {
-                manager.ExecuteChange(change);
+                producer.ExecuteChange(change);
             }
         }
     }
@@ -247,29 +247,29 @@ public class ChooseBestPushHandler : IPushHandler
 {
     private readonly ICustomCommitComparer _default = new DefaultCommitComparer();
     
-    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
     {
-        manager.LogManager.StartPush();
-        var snapshot = manager.TakeSnapshot();
+        producer.LogManager.StartPush();
+        var snapshot = producer.TakeSnapshot();
 
         var commit = GetBest(commits);
         
         foreach (var change in commit.Changes)
         { 
-            manager.ExecuteChange(change);
+            producer.ExecuteChange(change);
         }
 
-        if (commit.Builder is not null) manager.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
+        if (commit.Builder is not null) producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
             commit.Changes, commit.Responsible);
         
-        manager.LogManager.StopPush();
+        producer.LogManager.StopPush();
     }
 
-    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeManager manager)
+    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
     {
         foreach (var change in GetBest(commits).Changes)
         {
-            manager.ExecuteChange(change);
+            producer.ExecuteChange(change);
         }
     }
 

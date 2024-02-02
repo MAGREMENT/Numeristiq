@@ -20,17 +20,17 @@ public class NishioForcingNetStrategy : AbstractStrategy
     public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     { }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        ContradictionSearcher cs = new ContradictionSearcher(strategyManager);
+        ContradictionSearcher cs = new ContradictionSearcher(strategyUser);
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+                foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
                 {
-                    var coloring = strategyManager.PreComputer.OnColoring(row, col, possibility);
+                    var coloring = strategyUser.PreComputer.OnColoring(row, col, possibility);
                     foreach (var entry in coloring)
                     {
                         if (entry.Key is not CellPossibility cell) continue;
@@ -38,20 +38,20 @@ public class NishioForcingNetStrategy : AbstractStrategy
                         switch (entry.Value)
                         {
                             case Coloring.Off when cs.AddOff(cell):
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
-                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
+                                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
                                         .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col, 
-                                            possibility, cs.Cause, cell, Coloring.Off, strategyManager.GraphManager.ComplexLinkGraph)) && 
+                                            possibility, cs.Cause, cell, Coloring.Off, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
                                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
-                                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer
+                                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
                                         .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col,
-                                            possibility, cs.Cause, cell, Coloring.On, strategyManager.GraphManager.ComplexLinkGraph)) && 
+                                            possibility, cs.Cause, cell, Coloring.On, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
                                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                         }
@@ -73,11 +73,11 @@ public class ContradictionSearcher
 
     private readonly Dictionary<int, GridPositions> _onPositions = new();
 
-    private readonly IStrategyManager _view;
+    private readonly IStrategyUser _view;
 
     public ContradictionCause Cause { get; private set; } = ContradictionCause.None;
 
-    public ContradictionSearcher(IStrategyManager view)
+    public ContradictionSearcher(IStrategyUser view)
     {
         _view = view;
     }

@@ -5,13 +5,12 @@ using Model.Sudoku.Solver.Helpers.Logs;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
-using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolder
+public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProducer
 {
     private Sudoku _sudoku;
     private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
@@ -44,7 +43,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     public event OnLogsUpdate? LogsUpdated;
 
-    private IReadOnlyList<IStrategy> Strategies => _strategyLoader.Strategies;
+    private IReadOnlyList<IStrategy> Strategies => _strategyManager.Strategies;
     private int _currentStrategy = -1;
     
     private int _solutionAddedBuffer;
@@ -52,13 +51,13 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     private bool _startedSolving;
 
-    private readonly StrategyLoader _strategyLoader;
+    private readonly StrategyManager _strategyManager;
 
     public SudokuSolver() : this(new Sudoku()) { }
 
     private SudokuSolver(Sudoku s)
     {
-        _strategyLoader = new StrategyLoader();
+        _strategyManager = new StrategyManager();
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
@@ -70,8 +69,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         StartState = new SolverState(this);
 
         PreComputer = new PreComputer(this);
-
-        GraphManager = new LinkGraphManager(this);
         
         LogManager = new LogManager(this);
         LogManager.LogsUpdated += () => LogsUpdated?.Invoke();
@@ -84,12 +81,12 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     public void Bind(IRepository<List<StrategyDAO>> repository)
     {
-        _strategyLoader.Bind(repository);
+        _strategyManager.Bind(repository);
     }
 
     //Solver------------------------------------------------------------------------------------------------------------
 
-    public IStrategyLoader StrategyLoader => _strategyLoader;
+    public IStrategyManager StrategyManager => _strategyManager;
 
     public void SetSudoku(Sudoku s)
     {
@@ -101,7 +98,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
         LogManager.Clear();
         PreComputer.Reset();
-        GraphManager.Clear();
 
         _startedSolving = false;
     }
@@ -130,7 +126,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         
         LogManager.Clear();
         PreComputer.Reset();
-        GraphManager.Clear();
 
         _startedSolving = false;
     }
@@ -177,7 +172,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         
         for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
         {
-            if (!_strategyLoader.IsStrategyUsed(_currentStrategy)) continue;
+            if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
 
             CurrentStrategyChanged?.Invoke(_currentStrategy);
             var current = Strategies[_currentStrategy];
@@ -196,7 +191,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
             CurrentStrategyChanged?.Invoke(_currentStrategy);
 
             PreComputer.Reset();
-            GraphManager.Clear();
 
             if (stopAtProgress || _sudoku.IsComplete()) return;
         }
@@ -210,7 +204,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
         var realBehaviors = new Dictionary<int, OnCommitBehavior>();
         for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
         {
-            if (!_strategyLoader.IsStrategyUsed(_currentStrategy)) continue;
+            if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
             
             CurrentStrategyChanged?.Invoke(_currentStrategy);
             var current = Strategies[_currentStrategy];
@@ -226,7 +220,7 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
         foreach (var entry in realBehaviors)
         {
-            _strategyLoader.Strategies[entry.Key].OnCommitBehavior = entry.Value;
+            _strategyManager.Strategies[entry.Key].OnCommitBehavior = entry.Value;
         }
 
         return ChangeBuffer.DumpCommits();
@@ -252,28 +246,28 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
 
     public void UseAllStrategies(bool yes)
     {
-        _strategyLoader.UseAllStrategies(yes);
+        _strategyManager.UseAllStrategies(yes);
     }
 
     public void ExcludeStrategy(int number)
     {
-        _strategyLoader.ExcludeStrategy(number);
+        _strategyManager.ExcludeStrategy(number);
     }
 
     public void UseStrategy(int number)
     {
-        _strategyLoader.UseStrategy(number);
+        _strategyManager.UseStrategy(number);
     }
 
     public void AllowUniqueness(bool yes)
     {
         UniquenessDependantStrategiesAllowed = yes;
-        _strategyLoader.AllowUniqueness(yes);
+        _strategyManager.AllowUniqueness(yes);
     }
     
     public StrategyInformation[] GetStrategyInfo()
     {
-        return _strategyLoader.GetStrategiesInformation();
+        return _strategyManager.GetStrategiesInformation();
     }
     
     public Possibilities NotCachedPossibilitiesAt(int row, int col)
@@ -327,7 +321,6 @@ public class SudokuSolver : ISolver, IStrategyManager, IChangeManager, ILogHolde
     //StrategyManager---------------------------------------------------------------------------------------------------
 
     public ChangeBuffer ChangeBuffer { get; }
-    public LinkGraphManager GraphManager { get; }
     public PreComputer PreComputer { get; }
     public AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
     public AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }

@@ -9,7 +9,7 @@ public static class JuniorExocetSearcher
 {
     private const int Max = 4;
     
-    public static List<JuniorExocet> FullGrid(IStrategyManager strategyManager)
+    public static List<JuniorExocet> FullGrid(IStrategyUser strategyUser)
     {
         var result = new List<JuniorExocet>();
 
@@ -25,22 +25,22 @@ public static class JuniorExocetSearcher
                         var base1 = new Cell(unit, otherStart + o1);
                         var base2 = new Cell(unit, otherStart + o2);
 
-                        var poss1 = strategyManager.PossibilitiesAt(base1);
-                        var poss2 = strategyManager.PossibilitiesAt(base2);
+                        var poss1 = strategyUser.PossibilitiesAt(base1);
+                        var poss2 = strategyUser.PossibilitiesAt(base2);
                         var or = poss1.Or(poss2);
 
                         if (poss1.Count != 0 && poss2.Count != 0 && or.Count <= Max)
-                            TryOfBase(strategyManager, base1, base2, or, result);
+                            TryOfBase(strategyUser, base1, base2, or, result);
                         
                         base1 = new Cell(otherStart + o1, unit);
                         base2 = new Cell(otherStart + o2, unit);
 
-                        poss1 = strategyManager.PossibilitiesAt(base1);
-                        poss2 = strategyManager.PossibilitiesAt(base2);
+                        poss1 = strategyUser.PossibilitiesAt(base1);
+                        poss2 = strategyUser.PossibilitiesAt(base2);
                         or = poss1.Or(poss2);
 
                         if (poss1.Count != 0 && poss2.Count != 0 && or.Count <= Max)
-                            TryOfBase(strategyManager, base1, base2, or, result);
+                            TryOfBase(strategyUser, base1, base2, or, result);
                     }
                 }
             }
@@ -49,13 +49,13 @@ public static class JuniorExocetSearcher
         return result;
     }
 
-    private static void TryOfBase(IStrategyManager strategyManager, Cell base1, Cell base2, Possibilities basePossibilities,
+    private static void TryOfBase(IStrategyUser strategyUser, Cell base1, Cell base2, Possibilities basePossibilities,
         List<JuniorExocet> result)
     {
         var isRowJe = base1.Row == base2.Row;
         var targetCandidates = isRowJe
-            ? RowTargetCandidates(strategyManager, base1, basePossibilities)
-            : ColumnTargetCandidates(strategyManager, base1, basePossibilities);
+            ? RowTargetCandidates(strategyUser, base1, basePossibilities)
+            : ColumnTargetCandidates(strategyUser, base1, basePossibilities);
 
         for (int i = 0; i < targetCandidates.Count; i++)
         {
@@ -65,7 +65,7 @@ public static class JuniorExocetSearcher
                 var t1 = targetCandidates[i];
                 var t2 = targetCandidates[j];
 
-                if (!strategyManager.PossibilitiesAt(t1).Or(strategyManager.PossibilitiesAt(t2))
+                if (!strategyUser.PossibilitiesAt(t1).Or(strategyUser.PossibilitiesAt(t2))
                     .PeekAll(basePossibilities) || (t1.Row / 3 == t2.Row / 3 && t1.Column / 3 == t2.Column / 3) ) continue;
 
                 Cell[] t1MirrorNodes;
@@ -78,12 +78,12 @@ public static class JuniorExocetSearcher
 
                 foreach (var cell in t1MirrorNodes)
                 {
-                    if (strategyManager.ContainsAny(cell.Row, cell.Column, basePossibilities)) notOk = false;
+                    if (strategyUser.ContainsAny(cell.Row, cell.Column, basePossibilities)) notOk = false;
                 }
                 
                 foreach (var cell in t2MirrorNodes)
                 {
-                    if (strategyManager.ContainsAny(cell.Row, cell.Column, basePossibilities)) notOk = false;
+                    if (strategyUser.ContainsAny(cell.Row, cell.Column, basePossibilities)) notOk = false;
                 }
 
                 if (notOk) continue;
@@ -95,8 +95,8 @@ public static class JuniorExocetSearcher
                     sCellsPositions.Add(possibility, new GridPositions());
                 }
 
-                if (isRowJe) FillRowSCells(strategyManager, sCellsPositions, base1, base2, t1, t2, basePossibilities);
-                else FillColumnSCells(strategyManager, sCellsPositions, base1, base2, t1, t2, basePossibilities);
+                if (isRowJe) FillRowSCells(strategyUser, sCellsPositions, base1, base2, t1, t2, basePossibilities);
+                else FillColumnSCells(strategyUser, sCellsPositions, base1, base2, t1, t2, basePossibilities);
 
                 foreach (var gp in sCellsPositions.Values)
                 {
@@ -118,7 +118,7 @@ public static class JuniorExocetSearcher
         }
     }
 
-    private static List<Cell> RowTargetCandidates(IStrategyManager strategyManager, Cell base1,
+    private static List<Cell> RowTargetCandidates(IStrategyUser strategyUser, Cell base1,
         Possibilities basePossibilities)
     {
         //Rule 2
@@ -134,12 +134,12 @@ public static class JuniorExocetSearcher
             {
                 var col = gridCol * 3 + c;
 
-                var poss1 = strategyManager.PossibilitiesAt(rows[0], col);
-                var poss2 = strategyManager.PossibilitiesAt(rows[1], col);
+                var poss1 = strategyUser.PossibilitiesAt(rows[0], col);
+                var poss2 = strategyUser.PossibilitiesAt(rows[1], col);
 
-                if (poss1.PeekAny(basePossibilities) && !strategyManager.ContainsAny(rows[1], col, basePossibilities))
+                if (poss1.PeekAny(basePossibilities) && !strategyUser.ContainsAny(rows[1], col, basePossibilities))
                     result.Add(new Cell(rows[0], col));
-                else if (poss2.PeekAny(basePossibilities) && !strategyManager.ContainsAny(rows[0], col, basePossibilities))
+                else if (poss2.PeekAny(basePossibilities) && !strategyUser.ContainsAny(rows[0], col, basePossibilities))
                     result.Add(new Cell(rows[1], col));
             }
         }
@@ -147,7 +147,7 @@ public static class JuniorExocetSearcher
         return result;
     }
     
-    private static List<Cell> ColumnTargetCandidates(IStrategyManager strategyManager, Cell base1,
+    private static List<Cell> ColumnTargetCandidates(IStrategyUser strategyUser, Cell base1,
         Possibilities basePossibilities)
     {
         //Rule 2
@@ -163,12 +163,12 @@ public static class JuniorExocetSearcher
             {
                 var row = gridRow * 3 + r;
 
-                var poss1 = strategyManager.PossibilitiesAt(row, cols[0]);
-                var poss2 = strategyManager.PossibilitiesAt(row, cols[1]);
+                var poss1 = strategyUser.PossibilitiesAt(row, cols[0]);
+                var poss2 = strategyUser.PossibilitiesAt(row, cols[1]);
 
-                if (poss1.PeekAny(basePossibilities) && !strategyManager.ContainsAny(row, cols[1], basePossibilities))
+                if (poss1.PeekAny(basePossibilities) && !strategyUser.ContainsAny(row, cols[1], basePossibilities))
                     result.Add(new Cell(row, cols[0]));
-                else if (poss2.PeekAny(basePossibilities) && !strategyManager.ContainsAny(row, cols[0], basePossibilities))
+                else if (poss2.PeekAny(basePossibilities) && !strategyUser.ContainsAny(row, cols[0], basePossibilities))
                     result.Add(new Cell(row, cols[1]));
             }
         }
@@ -252,7 +252,7 @@ public static class JuniorExocetSearcher
         }
     }
 
-    private static void FillRowSCells(IStrategyManager strategyManager, Dictionary<int, GridPositions> sCellsPositions,
+    private static void FillRowSCells(IStrategyUser strategyUser, Dictionary<int, GridPositions> sCellsPositions,
         Cell base1, Cell base2, Cell t1, Cell t2, Possibilities basePossibilities)
     {
         var lastBaseCol = OtherUnitInBox(base1.Column, base2.Column);
@@ -262,19 +262,19 @@ public static class JuniorExocetSearcher
 
             foreach (var possibility in basePossibilities)
             {
-                if(strategyManager.Contains(row, lastBaseCol, possibility))
+                if(strategyUser.Contains(row, lastBaseCol, possibility))
                     sCellsPositions[possibility].Add(row, lastBaseCol);
                         
-                if(strategyManager.Contains(row, t1.Column, possibility))
+                if(strategyUser.Contains(row, t1.Column, possibility))
                     sCellsPositions[possibility].Add(row, t1.Column);
                         
-                if(strategyManager.Contains(row, t2.Column, possibility))
+                if(strategyUser.Contains(row, t2.Column, possibility))
                     sCellsPositions[possibility].Add(row, t2.Column);
             }
         }
     }
     
-    private static void FillColumnSCells(IStrategyManager strategyManager, Dictionary<int, GridPositions> sCellsPositions,
+    private static void FillColumnSCells(IStrategyUser strategyUser, Dictionary<int, GridPositions> sCellsPositions,
         Cell base1, Cell base2, Cell t1, Cell t2, Possibilities basePossibilities)
     {
         var lastBaseRow = OtherUnitInBox(base1.Row, base2.Row);
@@ -284,13 +284,13 @@ public static class JuniorExocetSearcher
 
             foreach (var possibility in basePossibilities)
             {
-                if(strategyManager.Contains(lastBaseRow, col, possibility))
+                if(strategyUser.Contains(lastBaseRow, col, possibility))
                     sCellsPositions[possibility].Add(lastBaseRow, col);
                         
-                if(strategyManager.Contains(t1.Row, col, possibility))
+                if(strategyUser.Contains(t1.Row, col, possibility))
                     sCellsPositions[possibility].Add(t1.Row, col);
                         
-                if(strategyManager.Contains(t2.Row, col, possibility))
+                if(strategyUser.Contains(t2.Row, col, possibility))
                     sCellsPositions[possibility].Add(t2.Row, col);
             }
         }

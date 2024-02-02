@@ -13,7 +13,7 @@ public class BruteForceStrategy : AbstractStrategy
     
     public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultBehavior) { }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         var positions = new GridPositions[] { new(), new(), new(), new(), new(), new(), new(), new(), new() };
 
@@ -21,31 +21,31 @@ public class BruteForceStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var n = strategyManager.Sudoku[row, col];
+                var n = strategyUser.Sudoku[row, col];
                 if (n == 0) continue;
 
                 positions[n - 1].Add(row, col);
             }
         }
         
-        Search(strategyManager, strategyManager.Sudoku.Copy(), positions, 0);
+        Search(strategyUser, strategyUser.Sudoku.Copy(), positions, 0);
     }
 
-    private bool Search(IStrategyManager strategyManager, Sudoku s, GridPositions[] positions, int current)
+    private bool Search(IStrategyUser strategyUser, Sudoku s, GridPositions[] positions, int current)
     {
         if (current == 81)
         {
-            Process(strategyManager, s);
+            Process(strategyUser, s);
             return true;
         }
         
         var row = current / 9;
         var col = current % 9;
 
-        var possibilities = strategyManager.PossibilitiesAt(row, col);
+        var possibilities = strategyUser.PossibilitiesAt(row, col);
         if (possibilities.Count == 0)
         {
-            if (Search(strategyManager, s, positions, current + 1)) return true;
+            if (Search(strategyUser, s, positions, current + 1)) return true;
         }
 
         foreach (var possibility in possibilities)
@@ -57,7 +57,7 @@ public class BruteForceStrategy : AbstractStrategy
             s[row, col] = possibility;
             pos.Add(row, col);
                 
-            if (Search(strategyManager, s, positions, current + 1)) return true;
+            if (Search(strategyUser, s, positions, current + 1)) return true;
                 
             s[row, col] = 0;
             pos.Remove(row, col);
@@ -66,19 +66,19 @@ public class BruteForceStrategy : AbstractStrategy
         return false;
     }
 
-    private void Process(IStrategyManager strategyManager, Sudoku s)
+    private void Process(IStrategyUser strategyUser, Sudoku s)
     {
         for (int r = 0; r < 9; r++)
         {
             for (int c = 0; c < 9; c++)
             {
-                if(strategyManager.Sudoku[r, c] != 0) continue;
+                if(strategyUser.Sudoku[r, c] != 0) continue;
                     
-                strategyManager.ChangeBuffer.ProposeSolutionAddition(s[r, c], r, c);
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(s[r, c], r, c);
             }
         }
 
-        strategyManager.ChangeBuffer.Commit(this, new BruteForceReportBuilder());
+        strategyUser.ChangeBuffer.Commit(this, new BruteForceReportBuilder());
     }
 }
 

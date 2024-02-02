@@ -14,19 +14,19 @@ public class NakedDoublesStrategy : AbstractStrategy
     
     public NakedDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         Dictionary<IReadOnlyPossibilities, int> dict = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var pos = strategyManager.PossibilitiesAt(row, col);
+                var pos = strategyUser.PossibilitiesAt(row, col);
                 if (pos.Count != 2) continue;
 
                 if (dict.TryGetValue(pos, out var otherCol))
                 {
-                    if (ProcessRow(strategyManager, pos, row, col, otherCol)) return;
+                    if (ProcessRow(strategyUser, pos, row, col, otherCol)) return;
                 }
                 else dict.Add(pos, col);
             }
@@ -38,12 +38,12 @@ public class NakedDoublesStrategy : AbstractStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var pos = strategyManager.PossibilitiesAt(row, col);
+                var pos = strategyUser.PossibilitiesAt(row, col);
                 if (pos.Count != 2) continue;
 
                 if (dict.TryGetValue(pos, out var otherRow))
                 {
-                    if (ProcessColumn(strategyManager, pos, col, row, otherRow)) return;
+                    if (ProcessColumn(strategyUser, pos, col, row, otherRow)) return;
                 }
                 else dict.Add(pos, row);
             }
@@ -65,13 +65,13 @@ public class NakedDoublesStrategy : AbstractStrategy
                         int row = startRow + gridRow;
                         int col = startCol + gridCol;
 
-                        var pos = strategyManager.PossibilitiesAt(row, col);
+                        var pos = strategyUser.PossibilitiesAt(row, col);
                         if (pos.Count != 2) continue;
 
                         var gridNumber = gridRow * 3 + gridCol;
                         if (dict.TryGetValue(pos, out var otherGridNumber))
                         {
-                            if (ProcessMiniGrid(strategyManager, pos, miniRow, miniCol, gridNumber, otherGridNumber))
+                            if (ProcessMiniGrid(strategyUser, pos, miniRow, miniCol, gridNumber, otherGridNumber))
                                 return;
                         }
                         else dict.Add(pos, gridNumber);
@@ -83,7 +83,7 @@ public class NakedDoublesStrategy : AbstractStrategy
         }
     }
 
-    private bool ProcessRow(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities, int row, int col1,
+    private bool ProcessRow(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities, int row, int col1,
         int col2)
     {
         for (int col = 0; col < 9; col++)
@@ -92,16 +92,16 @@ public class NakedDoublesStrategy : AbstractStrategy
 
             foreach (var possibility in possibilities)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool ProcessColumn(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities, int col,
+    private bool ProcessColumn(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities, int col,
         int row1, int row2)
     {
         for (int row = 0; row < 9; row++)
@@ -110,16 +110,16 @@ public class NakedDoublesStrategy : AbstractStrategy
 
             foreach (var possibility in possibilities)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool ProcessMiniGrid(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities,
+    private bool ProcessMiniGrid(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
         int miniRow, int miniCol, int gridNumber1, int gridNumber2)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -133,12 +133,12 @@ public class NakedDoublesStrategy : AbstractStrategy
                 int col = miniCol * 3 + gridCol;
                 foreach (var possibility in possibilities)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                 }
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }

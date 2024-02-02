@@ -15,19 +15,19 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
     }
 
 
-    public List<AlmostOddagon> Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
     {
         List<AlmostOddagon> result = new();
         foreach (var start in graph)
         {
-            Search(strategyManager, new LinkGraphChainBuilder<CellPossibility>(start),
+            Search(strategyUser, new LinkGraphChainBuilder<CellPossibility>(start),
                 new List<CellPossibility>(), graph, result);
         }
 
         return result;
     }
 
-    private void Search(IStrategyManager strategyManager, LinkGraphChainBuilder<CellPossibility> builder,
+    private void Search(IStrategyUser strategyUser, LinkGraphChainBuilder<CellPossibility> builder,
         List<CellPossibility> currentGuardians, ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
     {
         if (builder.Count > _maxLength) return;
@@ -48,7 +48,7 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
             else if (!builder.ContainsElement(friend))
             {
                 builder.Add(LinkStrength.Strong, friend);
-                Search(strategyManager, builder, currentGuardians, graph, result);
+                Search(strategyUser, builder, currentGuardians, graph, result);
                 builder.RemoveLast();
             }
         }
@@ -59,7 +59,7 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
 
             bool ok = true;
             var count = 0;
-            foreach (var guardian in OddagonSearcher.FindGuardians(strategyManager, last, friend))
+            foreach (var guardian in OddagonSearcher.FindGuardians(strategyUser, last, friend))
             {
                 if (currentGuardians.Contains(guardian)) continue;
                 if (builder.ContainsElement(guardian))
@@ -83,7 +83,7 @@ public class OddagonSearchAlgorithmV3 : IOddagonSearchAlgorithm
                 else if (!builder.ContainsElement(friend))
                 {
                     builder.Add(LinkStrength.Weak, friend);
-                    Search(strategyManager, builder, currentGuardians, graph, result);
+                    Search(strategyUser, builder, currentGuardians, graph, result);
                     builder.RemoveLast();
                 }  
             }

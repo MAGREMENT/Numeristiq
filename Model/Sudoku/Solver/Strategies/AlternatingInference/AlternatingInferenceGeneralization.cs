@@ -24,9 +24,9 @@ public class AlternatingInferenceGeneralization<T> : AbstractStrategy, ICustomCo
         _algorithm = algo;
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        _algorithm.Run(strategyManager, _type);
+        _algorithm.Run(strategyUser, _type);
     }
 
     public int Compare(ChangeCommit first, ChangeCommit second)
@@ -46,17 +46,17 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     public StrategyDifficulty Difficulty { get; }
     IStrategy? Strategy { set; get; }
     
-    ILinkGraph<T> GetGraph(IStrategyManager strategyManager);
+    ILinkGraph<T> GetGraph(IStrategyUser strategyUser);
 
-    bool ProcessFullLoop(IStrategyManager strategyManager, LinkGraphLoop<T> loop);
+    bool ProcessFullLoop(IStrategyUser strategyUser, LinkGraphLoop<T> loop);
 
-    bool ProcessWeakInferenceLoop(IStrategyManager strategyManager, T inference, LinkGraphLoop<T> loop);
+    bool ProcessWeakInferenceLoop(IStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessStrongInferenceLoop(IStrategyManager strategyManager, T inference, LinkGraphLoop<T> loop);
+    bool ProcessStrongInferenceLoop(IStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessChain(IStrategyManager strategyManager, LinkGraphChain<T> chain, ILinkGraph<T> graph);
+    bool ProcessChain(IStrategyUser strategyUser, LinkGraphChain<T> chain, ILinkGraph<T> graph);
 
-    static bool ProcessChainWithSimpleGraph(IStrategyManager strategyManager, LinkGraphChain<CellPossibility> chain,
+    static bool ProcessChainWithSimpleGraph(IStrategyUser strategyUser, LinkGraphChain<CellPossibility> chain,
         ILinkGraph<CellPossibility> graph, IStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -64,15 +64,15 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
         foreach (var target in graph.Neighbors(chain.Elements[0]))
         {
             if (graph.AreNeighbors(target, chain.Elements[^1]))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(strategy,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(strategy,
                    new AlternatingInferenceChainReportBuilder<CellPossibility>(chain)) &&
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
     
-    static bool ProcessChainWithComplexGraph(IStrategyManager strategyManager, LinkGraphChain<ISudokuElement> chain,
+    static bool ProcessChainWithComplexGraph(IStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain,
         ILinkGraph<ISudokuElement> graph, IStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -82,10 +82,10 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
             if (target is not CellPossibility cp) continue;
             
             if (graph.AreNeighbors(target, chain.Elements[^1]))
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(strategy,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(strategy,
                    new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -94,7 +94,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 public interface IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     AlgorithmType Type { get; }
-    void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type);
+    void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type);
 }
 
 public enum AlgorithmType

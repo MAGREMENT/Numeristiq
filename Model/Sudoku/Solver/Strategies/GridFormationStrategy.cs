@@ -38,23 +38,23 @@ public class GridFormationStrategy : AbstractStrategy
         }
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     { 
         for (int number = 1; number <= 9; number++)
         {
-            if (Search(strategyManager, 0, Unit.Row, number, new LinePositions(), new LinePositions())) return;
-            if (Search(strategyManager, 0, Unit.Column, number, new LinePositions(), new LinePositions())) return;
+            if (Search(strategyUser, 0, Unit.Row, number, new LinePositions(), new LinePositions())) return;
+            if (Search(strategyUser, 0, Unit.Column, number, new LinePositions(), new LinePositions())) return;
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, int start, Unit unit, int number, LinePositions or,
+    private bool Search(IStrategyUser strategyUser, int start, Unit unit, int number, LinePositions or,
         LinePositions visited)
     {
         for (int i = start; i < 9; i++)
         {
             var current = unit == Unit.Row
-                ? strategyManager.RowPositionsAt(i, number)
-                : strategyManager.ColumnPositionsAt(i, number);
+                ? strategyUser.RowPositionsAt(i, number)
+                : strategyUser.ColumnPositionsAt(i, number);
             if (current.Count > _type || current.Count < 1) continue;
 
             var newOr = or.Or(current);
@@ -65,15 +65,15 @@ public class GridFormationStrategy : AbstractStrategy
 
             if (newVisited.Count == _type)
             {
-                if (newOr.Count == _type && Process(strategyManager, newVisited, newOr, number, unit)) return true;
+                if (newOr.Count == _type && Process(strategyUser, newVisited, newOr, number, unit)) return true;
             }
-            else Search(strategyManager, i + 1, unit, number, newOr, newVisited);
+            else Search(strategyUser, i + 1, unit, number, newOr, newVisited);
         }
 
         return false;
     }
 
-    private bool Process(IStrategyManager strategyManager, LinePositions visited, LinePositions toRemove, int number, Unit unit)
+    private bool Process(IStrategyUser strategyUser, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
         foreach (var first in toRemove)
         {
@@ -81,12 +81,12 @@ public class GridFormationStrategy : AbstractStrategy
             {
                 if (visited.Peek(other)) continue;
 
-                if (unit == Unit.Row) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
-                else strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, first, other);
+                if (unit == Unit.Row) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
+                else strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, first, other);
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this, unit == Unit.Row
+        return strategyUser.ChangeBuffer.Commit(this, unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number)) 
                && OnCommitBehavior == OnCommitBehavior.Return;

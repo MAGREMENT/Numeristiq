@@ -14,7 +14,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
     
     public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         Dictionary<IReadOnlyLinePositions, int> lines = new();
         Dictionary<IReadOnlyMiniGridPositions, int> minis = new();
@@ -22,12 +22,12 @@ public class HiddenDoublesStrategy : AbstractStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var pos = strategyManager.RowPositionsAt(row, number);
+                var pos = strategyUser.RowPositionsAt(row, number);
                 if (pos.Count != 2) continue;
 
                 if (lines.TryGetValue(pos, out var n))
                 {
-                    if (ProcessRow(strategyManager, pos, row, number, n)) return;
+                    if (ProcessRow(strategyUser, pos, row, number, n)) return;
                 }
                 else lines.Add(pos, number);
             }
@@ -39,12 +39,12 @@ public class HiddenDoublesStrategy : AbstractStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var pos = strategyManager.ColumnPositionsAt(col, number);
+                var pos = strategyUser.ColumnPositionsAt(col, number);
                 if (pos.Count != 2) continue;
 
                 if (lines.TryGetValue(pos, out var n))
                 {
-                    if (ProcessColumn(strategyManager, pos, col, number, n)) return;
+                    if (ProcessColumn(strategyUser, pos, col, number, n)) return;
                 }
                 else lines.Add(pos, number);
             }
@@ -58,12 +58,12 @@ public class HiddenDoublesStrategy : AbstractStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var pos = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var pos = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (pos.Count != 2) continue;
 
                     if (minis.TryGetValue(pos, out var n))
                     {
-                        if (ProcessMiniGrid(strategyManager, pos, number, n)) return;
+                        if (ProcessMiniGrid(strategyUser, pos, number, n)) return;
                     }
                     else minis.Add(pos, number);
                 }
@@ -73,53 +73,53 @@ public class HiddenDoublesStrategy : AbstractStrategy
         }
     }
     
-    private bool ProcessRow(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int row, int n1,
+    private bool ProcessRow(IStrategyUser strategyUser, IReadOnlyLinePositions positions, int row, int n1,
         int n2)
     {
         foreach (var col in positions)
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+            foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool ProcessColumn(IStrategyManager strategyManager, IReadOnlyLinePositions positions, int col,
+    private bool ProcessColumn(IStrategyUser strategyUser, IReadOnlyLinePositions positions, int col,
         int n1, int n2)
     {
         foreach(var row in positions)
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+            foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool ProcessMiniGrid(IStrategyManager strategyManager, IReadOnlyMiniGridPositions positions, int n1, int n2)
+    private bool ProcessMiniGrid(IStrategyUser strategyUser, IReadOnlyMiniGridPositions positions, int n1, int n2)
     {
         foreach (var cell in positions)
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell.Row, cell.Column))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell.Row, cell.Column))
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
 
-        return strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(this,
             new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

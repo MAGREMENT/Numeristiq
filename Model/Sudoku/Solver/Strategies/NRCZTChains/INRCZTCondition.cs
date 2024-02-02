@@ -10,7 +10,7 @@ public interface INRCZTCondition
     public string Name { get; }
     
     public IEnumerable<(CellPossibility, INRCZTConditionChainManipulation)> SearchEndUnderCondition(
-        IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, BlockChain chain, CellPossibility bStart);
+        IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, BlockChain chain, CellPossibility bStart);
 }
 
 public interface INRCZTConditionChainManipulation

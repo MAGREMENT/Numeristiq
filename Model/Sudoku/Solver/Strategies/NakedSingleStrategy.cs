@@ -12,16 +12,16 @@ public class NakedSingleStrategy : AbstractStrategy
     
     public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior) {}
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.PossibilitiesAt(row, col).Count != 1) continue;
+                if (strategyUser.PossibilitiesAt(row, col).Count != 1) continue;
                 
-                strategyManager.ChangeBuffer.ProposeSolutionAddition(strategyManager.PossibilitiesAt(row, col).First(), row, col);
-                strategyManager.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(strategyUser.PossibilitiesAt(row, col).First(), row, col);
+                strategyUser.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
                 if (OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }

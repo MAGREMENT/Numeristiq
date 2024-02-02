@@ -22,13 +22,13 @@ public class UnitForcingNetStrategy : AbstractStrategy
         _max = maxPossibilities;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
+                var ppir = strategyUser.RowPositionsAt(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
                 var colorings = new ColoringDictionary<ISudokuElement>[ppir.Count];
@@ -36,16 +36,16 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 var cursor = 0;
                 foreach (var col in ppir)
                 {
-                    colorings[cursor] = strategyManager.PreComputer.OnColoring(row, col, number);
+                    colorings[cursor] = strategyUser.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
 
-                if (Process(strategyManager, colorings)) return;
+                if (Process(strategyUser, colorings)) return;
             }
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
+                var ppic = strategyUser.ColumnPositionsAt(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
                 var colorings = new ColoringDictionary<ISudokuElement>[ppic.Count];
@@ -53,18 +53,18 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 var cursor = 0;
                 foreach (var row in ppic)
                 {
-                    colorings[cursor] = strategyManager.PreComputer.OnColoring(row, col, number);
+                    colorings[cursor] = strategyUser.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
 
-                if (Process(strategyManager, colorings)) return;
+                if (Process(strategyUser, colorings)) return;
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
                     var colorings = new ColoringDictionary<ISudokuElement>[ppimn.Count];
@@ -72,17 +72,17 @@ public class UnitForcingNetStrategy : AbstractStrategy
                     var cursor = 0;
                     foreach (var pos in ppimn)
                     {
-                        colorings[cursor] = strategyManager.PreComputer.OnColoring(pos.Row, pos.Column, number);
+                        colorings[cursor] = strategyUser.PreComputer.OnColoring(pos.Row, pos.Column, number);
                         cursor++;
                     }
 
-                    if (Process(strategyManager, colorings)) return;
+                    if (Process(strategyUser, colorings)) return;
                 }
             }
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<ISudokuElement>[] colorings)
+    private bool Process(IStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {
@@ -106,14 +106,14 @@ public class UnitForcingNetStrategy : AbstractStrategy
                 {
                     view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new UnitForcingNetReportBuilder(colorings, current, Coloring.On, view.GraphManager.ComplexLinkGraph)) &&
+                            new UnitForcingNetReportBuilder(colorings, current, Coloring.On, view.PreComputer.Graphs.ComplexLinkGraph)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
-                            new UnitForcingNetReportBuilder(colorings, current, Coloring.Off, view.GraphManager.ComplexLinkGraph)) &&
+                            new UnitForcingNetReportBuilder(colorings, current, Coloring.Off, view.PreComputer.Graphs.ComplexLinkGraph)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }

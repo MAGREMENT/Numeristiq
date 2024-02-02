@@ -35,34 +35,34 @@ public class HiddenSetStrategy : AbstractStrategy
         }
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
-            if (RecursiveRowMashing(strategyManager, 1, new LinePositions(), Possibilities.NewEmpty(), row)) return;
+            if (RecursiveRowMashing(strategyUser, 1, new LinePositions(), Possibilities.NewEmpty(), row)) return;
         }
 
         for (int col = 0; col < 9; col++)
         {
-            if (RecursiveColumnMashing(strategyManager, 1, new LinePositions(), Possibilities.NewEmpty(), col)) return;
+            if (RecursiveColumnMashing(strategyUser, 1, new LinePositions(), Possibilities.NewEmpty(), col)) return;
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                if (RecursiveMiniGridMashing(strategyManager, 1, new MiniGridPositions(miniRow, miniCol),
+                if (RecursiveMiniGridMashing(strategyUser, 1, new MiniGridPositions(miniRow, miniCol),
                     Possibilities.NewEmpty(), miniRow, miniCol)) return;
             }
         }
     }
 
-    private bool RecursiveRowMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
+    private bool RecursiveRowMashing(IStrategyUser strategyUser, int start, LinePositions mashed,
         Possibilities visited, int row)
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.RowPositionsAt(row, i);
+            var pos = strategyUser.RowPositionsAt(row, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -75,26 +75,26 @@ public class HiddenSetStrategy : AbstractStrategy
             {
                 foreach (var col in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager);
+                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyUser);
                 }
 
-                if (strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.Commit(this,
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
             else if (newVisited.Count < _type &&
-                     RecursiveRowMashing(strategyManager, i + 1, newMashed, newVisited, row)) return true;
+                     RecursiveRowMashing(strategyUser, i + 1, newMashed, newVisited, row)) return true;
         }
 
         return false;
     }
     
-    private bool RecursiveColumnMashing(IStrategyManager strategyManager, int start, LinePositions mashed,
+    private bool RecursiveColumnMashing(IStrategyUser strategyUser, int start, LinePositions mashed,
         Possibilities visited, int col)
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.ColumnPositionsAt(col, i);
+            var pos = strategyUser.ColumnPositionsAt(col, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -107,26 +107,26 @@ public class HiddenSetStrategy : AbstractStrategy
             {
                 foreach (var row in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyManager);
+                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyUser);
                 }
 
-                if (strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.Commit(this,
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
             else if (newVisited.Count < _type &&
-                     RecursiveColumnMashing(strategyManager, i + 1, newMashed, newVisited, col)) return true;
+                     RecursiveColumnMashing(strategyUser, i + 1, newMashed, newVisited, col)) return true;
         }
 
         return false;
     }
     
-    private bool RecursiveMiniGridMashing(IStrategyManager strategyManager, int start, MiniGridPositions mashed,
+    private bool RecursiveMiniGridMashing(IStrategyUser strategyUser, int start, MiniGridPositions mashed,
         Possibilities visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyManager.MiniGridPositionsAt(miniRow, miniCol, i);
+            var pos = strategyUser.MiniGridPositionsAt(miniRow, miniCol, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -139,14 +139,14 @@ public class HiddenSetStrategy : AbstractStrategy
             {
                 foreach (var position in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, strategyManager);
+                    RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, strategyUser);
                 }
 
-                if (strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.Commit(this,
                         new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
-            else if (newVisited.Count < _type && RecursiveMiniGridMashing(strategyManager, i + 1, newMashed,
+            else if (newVisited.Count < _type && RecursiveMiniGridMashing(strategyUser, i + 1, newMashed,
                          newVisited, miniRow, miniCol)) return true;
         }
 
@@ -154,13 +154,13 @@ public class HiddenSetStrategy : AbstractStrategy
     }
 
     private void RemoveAllPossibilitiesExcept(int row, int col, Possibilities except,
-        IStrategyManager strategyManager)
+        IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             if (!except.Peek(number))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
     }

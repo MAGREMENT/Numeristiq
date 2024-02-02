@@ -25,11 +25,11 @@ public class GurthTheorem : AbstractStrategy
         };
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         foreach (var symmetry in _symmetries)
         {
-            symmetry.Run(strategyManager);
+            symmetry.Run(strategyUser);
         }
     }
 
@@ -57,11 +57,11 @@ public abstract class Symmetry
         _strategy = strategy;
     }
 
-    public void Run(IStrategyManager strategyManager)
+    public void Run(IStrategyUser strategyUser)
     {
         if (!_isSymmetric)
         {
-            if (Check(strategyManager))
+            if (Check(strategyUser))
             {
                 _isSymmetric = true;
             }
@@ -70,14 +70,14 @@ public abstract class Symmetry
 
         if (!_appliedOnce)
         {
-            ApplyOnce(strategyManager);
+            ApplyOnce(strategyUser);
             _appliedOnce = true;
         }
 
-        ApplyEveryTime(strategyManager);
+        ApplyEveryTime(strategyUser);
 
-        if (strategyManager.ChangeBuffer.NotEmpty())
-            strategyManager.ChangeBuffer.Commit(_strategy, new GurthTheoremReportBuilder());
+        if (strategyUser.ChangeBuffer.NotEmpty())
+            strategyUser.ChangeBuffer.Commit(_strategy, new GurthTheoremReportBuilder());
     }
 
     public void Reset()
@@ -89,41 +89,41 @@ public abstract class Symmetry
     protected abstract IEnumerable<Cell> CenterCells();
     protected abstract Cell GetSymmetricalCell(int row, int col);
 
-    private void ApplyOnce(IStrategyManager strategyManager)
+    private void ApplyOnce(IStrategyUser strategyUser)
     {
         var selfMap = SelfMap();
 
         foreach (var cell in CenterCells())
         {
-            foreach (var possibility in strategyManager.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
             {
                 if (!selfMap.Peek(possibility))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                 }
             }
         }
     }
 
-    private void ApplyEveryTime(IStrategyManager strategyManager)
+    private void ApplyEveryTime(IStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
                 var symmetry = GetSymmetricalCell(row, col);
-                var solved = strategyManager.Sudoku[row, col];
+                var solved = strategyUser.Sudoku[row, col];
 
-                if (solved != 0) strategyManager.ChangeBuffer.ProposeSolutionAddition(_mapping[solved - 1],
+                if (solved != 0) strategyUser.ChangeBuffer.ProposeSolutionAddition(_mapping[solved - 1],
                     symmetry.Row, symmetry.Column);
                 else
                 {
-                    var symmetricPossibilities = strategyManager.PossibilitiesAt(symmetry);
-                    var mappedPossibilities = GetMappedPossibilities(strategyManager.PossibilitiesAt(row, col));
+                    var symmetricPossibilities = strategyUser.PossibilitiesAt(symmetry);
+                    var mappedPossibilities = GetMappedPossibilities(strategyUser.PossibilitiesAt(row, col));
 
                     foreach (var possibility in symmetricPossibilities)
                     {
-                        if(!mappedPossibilities.Peek(possibility)) strategyManager.ChangeBuffer
+                        if(!mappedPossibilities.Peek(possibility)) strategyUser.ChangeBuffer
                             .ProposePossibilityRemoval(possibility, symmetry.Row, symmetry.Column);
                     }
                 }
@@ -131,7 +131,7 @@ public abstract class Symmetry
         }
     }
 
-    private bool Check(IStrategyManager strategyManager)
+    private bool Check(IStrategyUser strategyUser)
     {
         _mapping = new int[9];
         HashSet<Cell> centerCells = new HashSet<Cell>(CenterCells());
@@ -142,12 +142,12 @@ public abstract class Symmetry
             {
                 if (centerCells.Contains(new Cell(row, col))) continue;
 
-                var solved = strategyManager.Sudoku[row, col];
+                var solved = strategyUser.Sudoku[row, col];
                 if (solved == 0) continue;
 
                 var symmetricCell = GetSymmetricalCell(row, col);
 
-                var symmetry = strategyManager.Sudoku[symmetricCell.Row, symmetricCell.Column];
+                var symmetry = strategyUser.Sudoku[symmetricCell.Row, symmetricCell.Column];
                 if (symmetry == 0) return false;
 
                 var definedSymmetry = _mapping[solved - 1];

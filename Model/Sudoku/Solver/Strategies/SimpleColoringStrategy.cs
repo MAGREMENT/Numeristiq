@@ -17,41 +17,41 @@ public class SimpleColoringStrategy : AbstractStrategy
     
     public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
-                     Coloring.On, strategyManager.LogsManaged))
+                     Coloring.On, strategyUser.LogsManaged))
         {
             if(coloredVertices.Count <= 1) continue;
 
-            if (SearchForTwiceInTheSameUnit(strategyManager, coloredVertices))
+            if (SearchForTwiceInTheSameUnit(strategyUser, coloredVertices))
             {
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new SimpleColoringReportBuilder(coloredVertices, true)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                 
                 continue;
             }
             
-            SearchForTwoColorsElsewhere(strategyManager, coloredVertices);
+            SearchForTwoColorsElsewhere(strategyUser, coloredVertices);
             
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }
 
-    private bool SearchForTwiceInTheSameUnit(IStrategyManager strategyManager,
+    private bool SearchForTwiceInTheSameUnit(IStrategyUser strategyUser,
         ColoringList<CellPossibility> cv)
     {
-        return SearchColorForTwiceInTheSameUnit(strategyManager, cv.On, cv.Off) ||
-               SearchColorForTwiceInTheSameUnit(strategyManager, cv.Off, cv.On);
+        return SearchColorForTwiceInTheSameUnit(strategyUser, cv.On, cv.Off) ||
+               SearchColorForTwiceInTheSameUnit(strategyUser, cv.Off, cv.On);
     }
 
-    private bool SearchColorForTwiceInTheSameUnit(IStrategyManager strategyManager,
+    private bool SearchColorForTwiceInTheSameUnit(IStrategyUser strategyUser,
         IReadOnlyList<CellPossibility> toSearch, IReadOnlyList<CellPossibility> other)
     {
         for (int i = 0; i < toSearch.Count; i++)
@@ -62,7 +62,7 @@ public class SimpleColoringStrategy : AbstractStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyManager.ChangeBuffer.ProposeSolutionAddition(coord);
+                        strategyUser.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -73,7 +73,7 @@ public class SimpleColoringStrategy : AbstractStrategy
         return false;
     }
 
-    private void SearchForTwoColorsElsewhere(IStrategyManager strategyManager,
+    private void SearchForTwoColorsElsewhere(IStrategyUser strategyUser,
         ColoringList<CellPossibility> cv)
     {
         HashSet<CellPossibility> inGraph = new(cv.On);
@@ -88,7 +88,7 @@ public class SimpleColoringStrategy : AbstractStrategy
                     var current = new CellPossibility(coord, on.Possibility);
                     if (inGraph.Contains(current)) continue;
                     
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Column);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Column);
                 }
             }
         }

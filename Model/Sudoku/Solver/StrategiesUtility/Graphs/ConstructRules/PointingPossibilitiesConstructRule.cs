@@ -5,7 +5,7 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class PointingPossibilitiesConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -13,20 +13,20 @@ public class PointingPossibilitiesConstructRule : IConstructRule
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, n);
+                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, n);
                     if (ppimn.Count < 2) continue;
-                    SearchForPointingInMiniGrid(strategyManager, linkGraph, ppimn, miniRow, miniCol, n);
+                    SearchForPointingInMiniGrid(strategyUser, linkGraph, ppimn, miniRow, miniCol, n);
                 }
             }
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
     {
         
     }
 
-    private void SearchForPointingInMiniGrid(IStrategyManager strategyManager, ILinkGraph<ISudokuElement> linkGraph,
+    private void SearchForPointingInMiniGrid(IStrategyUser strategyUser, ILinkGraph<ISudokuElement> linkGraph,
         IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -79,7 +79,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (strategyManager.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (strategyUser.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -151,7 +151,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (strategyManager.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (strategyUser.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);

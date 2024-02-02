@@ -25,13 +25,13 @@ public class PatternOverlayStrategy : AbstractStrategy
         _maxPatternNumber = maxPatternNumber;
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var allPatterns = GetPatterns(strategyManager);
+        var allPatterns = GetPatterns(strategyUser);
 
         for (int number = 1; number <= 9; number++)
         {
-            if (SearchForElimination(strategyManager, number, allPatterns[number - 1])) return;
+            if (SearchForElimination(strategyUser, number, allPatterns[number - 1])) return;
         }
         
         foreach (var p in allPatterns)
@@ -70,7 +70,7 @@ public class PatternOverlayStrategy : AbstractStrategy
                     });
                 }
                 
-                if (SearchForElimination(strategyManager, i + 1, allPatterns[i])) return;
+                if (SearchForElimination(strategyUser, i + 1, allPatterns[i])) return;
             }
         }
     }
@@ -99,25 +99,25 @@ public class PatternOverlayStrategy : AbstractStrategy
         }
     }
 
-    private bool SearchForElimination(IStrategyManager strategyManager, int number, List<GridPositions> patterns)
+    private bool SearchForElimination(IStrategyUser strategyUser, int number, List<GridPositions> patterns)
     {
         if (patterns.Count == 0) return false;
         
         foreach (var cell in patterns[0].And(patterns))
         {
-            strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cell.Row, cell.Column);
+            strategyUser.ChangeBuffer.ProposeSolutionAddition(number, cell.Row, cell.Column);
         }
 
-        foreach (var cell in strategyManager.PositionsFor(number).Difference(patterns[0].Or(patterns)))
+        foreach (var cell in strategyUser.PositionsFor(number).Difference(patterns[0].Or(patterns)))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return strategyManager.ChangeBuffer.Commit(this, new PatternOverlayReportBuilder(patterns, number))
+        return strategyUser.ChangeBuffer.Commit(this, new PatternOverlayReportBuilder(patterns, number))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private List<GridPositions>[] GetPatterns(IStrategyManager strategyManager)
+    private List<GridPositions>[] GetPatterns(IStrategyUser strategyUser)
     {
         List<GridPositions>[] result = new List<GridPositions>[9];
 
@@ -125,7 +125,7 @@ public class PatternOverlayStrategy : AbstractStrategy
         {
             List<GridPositions> currentResult = new();
 
-            SearchForPattern(strategyManager, new LinePositions(), new LinePositions(),
+            SearchForPattern(strategyUser, new LinePositions(), new LinePositions(),
                 new GridPositions(), i + 1, currentResult, 0);
 
             result[i] = currentResult;
@@ -134,7 +134,7 @@ public class PatternOverlayStrategy : AbstractStrategy
         return result;
     }
 
-    private void SearchForPattern(IStrategyManager strategyManager, LinePositions colsUsed, LinePositions miniColsUsed,
+    private void SearchForPattern(IStrategyUser strategyUser, LinePositions colsUsed, LinePositions miniColsUsed,
         GridPositions current, int number, List<GridPositions> result, int row)
     {
         if (row == 9)
@@ -143,7 +143,7 @@ public class PatternOverlayStrategy : AbstractStrategy
             return;
         }
         
-        var cols = strategyManager.RowPositionsAt(row, number);
+        var cols = strategyUser.RowPositionsAt(row, number);
         LinePositions nextMcu;
         
         if (cols.Count != 0)
@@ -163,7 +163,7 @@ public class PatternOverlayStrategy : AbstractStrategy
                     nextMcu.FillMiniGrid(col / 3);
                 }
 
-                SearchForPattern(strategyManager, colsUsed, nextMcu, current, number, result, row + 1);
+                SearchForPattern(strategyUser, colsUsed, nextMcu, current, number, result, row + 1);
 
                 current.Remove(cell);
                 colsUsed.Remove(col);
@@ -174,7 +174,7 @@ public class PatternOverlayStrategy : AbstractStrategy
             int col = 0;
             for (; col < 9; col++)
             {
-                if (strategyManager.Sudoku[row, col] == number) break;
+                if (strategyUser.Sudoku[row, col] == number) break;
             }
 
             colsUsed.Add(col);
@@ -185,7 +185,7 @@ public class PatternOverlayStrategy : AbstractStrategy
                 nextMcu.FillMiniGrid(col / 3);
             }
 
-            SearchForPattern(strategyManager, colsUsed, nextMcu, current, number, result, row + 1);
+            SearchForPattern(strategyUser, colsUsed, nextMcu, current, number, result, row + 1);
         }
     }
 }

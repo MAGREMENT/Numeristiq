@@ -6,13 +6,13 @@ namespace Model.Sudoku.Solver.Strategies.BlossomLoops.Types;
 public class UnitType : IBlossomLoopType
 {
     public string Name => BlossomLoopStrategy.OfficialNameForUnit;
-    public IEnumerable<CellPossibility[]> Candidates(IStrategyManager strategyManager)
+    public IEnumerable<CellPossibility[]> Candidates(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var lp = strategyManager.RowPositionsAt(row, number);
+                var lp = strategyUser.RowPositionsAt(row, number);
                 if (lp.Count < 3) continue;
                 
                 var cps = new CellPossibility[lp.Count];
@@ -27,7 +27,7 @@ public class UnitType : IBlossomLoopType
             
             for (int col = 0; col < 9; col++)
             {
-                var lp = strategyManager.ColumnPositionsAt(col, number);
+                var lp = strategyUser.ColumnPositionsAt(col, number);
                 if (lp.Count < 3) continue;
                 
                 var cps = new CellPossibility[lp.Count];
@@ -44,7 +44,7 @@ public class UnitType : IBlossomLoopType
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    var mgp = strategyManager.MiniGridPositionsAt(r, c, number);
+                    var mgp = strategyUser.MiniGridPositionsAt(r, c, number);
                     if (mgp.Count < 3) continue;
                     
                     var cps = new CellPossibility[mgp.Count];

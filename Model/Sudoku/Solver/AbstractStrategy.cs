@@ -24,9 +24,9 @@ public abstract class AbstractStrategy : IStrategy
         OnCommitBehavior = defaultBehavior;
     }
     
-    public abstract void Apply(IStrategyManager strategyManager);
+    public abstract void Apply(IStrategyUser strategyUser);
     public virtual void OnNewSudoku(Sudoku s) { }
-    public void TrySetArgument(string name, string value)
+    public void TrySetArgument(string name, ArgumentValue value)
     {
         foreach (var arg in Arguments)
         {

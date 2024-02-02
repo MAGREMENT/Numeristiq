@@ -38,13 +38,13 @@ public class ClaimingSetStrategy : AbstractStrategy
     
     public ClaimingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
+                var ppir = strategyUser.RowPositionsAt(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int startRow = row / 3 * 3;
@@ -58,12 +58,12 @@ public class ClaimingSetStrategy : AbstractStrategy
                             int removeFromCol = startCol + c;
 
                             if (removedFromRow != row)
-                                strategyManager.ChangeBuffer
+                                strategyUser.ChangeBuffer
                                     .ProposePossibilityRemoval(number, removedFromRow, removeFromCol);
                         }
                     }
 
-                    if (strategyManager.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(row,
+                    if (strategyUser.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(row,
                             ppir, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
@@ -71,7 +71,7 @@ public class ClaimingSetStrategy : AbstractStrategy
             for (int col = 0; col < 9; col++)
             {
 
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
+                var ppic = strategyUser.ColumnPositionsAt(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
                     int startRow = ppic.First() / 3 * 3;
@@ -85,12 +85,12 @@ public class ClaimingSetStrategy : AbstractStrategy
                             int removedFromCol = startCol + c;
 
                             if (removedFromCol != col)
-                                strategyManager.ChangeBuffer
+                                strategyUser.ChangeBuffer
                                     .ProposePossibilityRemoval(number, removedFromRow, removedFromCol);
                         }
                     }
 
-                    if(strategyManager.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(col,
+                    if(strategyUser.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(col,
                            ppic, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }

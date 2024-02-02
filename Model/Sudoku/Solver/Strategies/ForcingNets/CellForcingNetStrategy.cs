@@ -23,29 +23,29 @@ public class CellForcingNetStrategy : AbstractStrategy
         _max = maxPossibilities;
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.PossibilitiesAt(row, col).Count < 2 ||
-                    strategyManager.PossibilitiesAt(row, col).Count > _max) continue;
-                var possAsArray = strategyManager.PossibilitiesAt(row, col).ToArray();
+                if (strategyUser.PossibilitiesAt(row, col).Count < 2 ||
+                    strategyUser.PossibilitiesAt(row, col).Count > _max) continue;
+                var possAsArray = strategyUser.PossibilitiesAt(row, col).ToArray();
 
                 var colorings = new ColoringDictionary<ISudokuElement>[possAsArray.Length];
 
                 for (int i = 0; i < possAsArray.Length; i++)
                 {
-                    colorings[i] = strategyManager.PreComputer.OnColoring(row, col, possAsArray[i]);
+                    colorings[i] = strategyUser.PreComputer.OnColoring(row, col, possAsArray[i]);
                 }
 
-                if (Process(strategyManager, colorings, new Cell(row, col))) return;
+                if (Process(strategyUser, colorings, new Cell(row, col))) return;
             }
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
+    private bool Process(IStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
     {
         foreach (var element in colorings[0])
         {
@@ -70,14 +70,14 @@ public class CellForcingNetStrategy : AbstractStrategy
                     view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
-                                view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
-                                view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }

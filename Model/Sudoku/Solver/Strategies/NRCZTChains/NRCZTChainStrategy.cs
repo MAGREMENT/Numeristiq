@@ -35,11 +35,11 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
         };
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
             ConstructRule.CellStrongLink, ConstructRule.CellWeakLink);
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
+        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var start in graph)
         {
@@ -53,13 +53,13 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
                 if (start == friend || endVisited.Contains(friend)) continue;
 
                 endVisited.Add(friend);
-                if (Search(strategyManager, graph, startVisited, endVisited,
+                if (Search(strategyUser, graph, startVisited, endVisited,
                         new BlockChain(new Block(start, friend), graph))) return;
             }
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph,
+    private bool Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph,
         HashSet<CellPossibility> startVisited, HashSet<CellPossibility> endVisited, BlockChain chain)
     {
         var all = chain.AllCellPossibilities();
@@ -80,8 +80,8 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 
                 if (chain.PossibleTargets.Count > 0)
                 {
-                    if (Check(strategyManager, chain, graph)) return true;
-                    if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true; 
+                    if (Check(strategyUser, chain, graph)) return true;
+                    if (Search(strategyUser, graph, startVisited, endVisited, chain)) return true; 
                 }
                 
                 chain.RemoveLast(graph);
@@ -89,7 +89,7 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 
             foreach (var condition in _conditions)
             {
-                foreach (var (bEnd, manipulation) in condition.SearchEndUnderCondition(strategyManager,
+                foreach (var (bEnd, manipulation) in condition.SearchEndUnderCondition(strategyUser,
                              graph, chain, bStart))
                 {
                     if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
@@ -102,8 +102,8 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
 
                     if (chain.PossibleTargets.Count > 0)
                     {
-                        if (Check(strategyManager, chain, graph)) return true;
-                        if (Search(strategyManager, graph, startVisited, endVisited, chain)) return true; 
+                        if (Check(strategyUser, chain, graph)) return true;
+                        if (Search(strategyUser, graph, startVisited, endVisited, chain)) return true; 
                     }
                     
                     manipulation.AfterSearch(chain, graph);
@@ -116,16 +116,16 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
         return false;
     }
 
-    private bool Check(IStrategyManager strategyManager, BlockChain chain, ILinkGraph<CellPossibility> graph)
+    private bool Check(IStrategyUser strategyUser, BlockChain chain, ILinkGraph<CellPossibility> graph)
     {
         var last = chain.Last().End;
         
         foreach (var target in chain.PossibleTargets)
         {
-            if (graph.AreNeighbors(target, last)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (graph.AreNeighbors(target, last)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

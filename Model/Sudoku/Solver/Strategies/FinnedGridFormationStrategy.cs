@@ -26,38 +26,38 @@ public class FinnedGridFormationStrategy : AbstractStrategy
             _ => throw new ArgumentException("Type not valid")
         };
     }
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppic = strategyManager.RowPositionsAt(row, number);
+                var ppic = strategyUser.RowPositionsAt(row, number);
                 if (ppic.Count == 0) continue;
 
                 var here = new LinePositions { row };
 
-                if(SearchRowCandidate(strategyManager, row + 1, ppic, here, number)) return;
+                if(SearchRowCandidate(strategyUser, row + 1, ppic, here, number)) return;
             }
             
             for (int col = 0; col < 9; col++)
             {
-                var ppir = strategyManager.ColumnPositionsAt(col, number);
+                var ppir = strategyUser.ColumnPositionsAt(col, number);
                 if (ppir.Count == 0) continue;
 
                 var here = new LinePositions { col };
 
-                if (SearchColumnCandidate(strategyManager, col + 1, ppir, here, number)) return;
+                if (SearchColumnCandidate(strategyUser, col + 1, ppir, here, number)) return;
             }
         }
     }
 
-    private bool SearchRowCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
+    private bool SearchRowCandidate(IStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int row = start; row < 9; row++)
         {
-            var ppic = strategyManager.RowPositionsAt(row, number);
+            var ppic = strategyUser.RowPositionsAt(row, number);
             if (ppic.Count > _type) continue;
 
             var newMashed = mashed.Or(ppic);
@@ -68,22 +68,22 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 
             if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
             {
-                if (SearchRowFinned(strategyManager, newMashed, newVisited, number)) return true;
+                if (SearchRowFinned(strategyUser, newMashed, newVisited, number)) return true;
             }
-            else if(newVisited.Count < _type) SearchRowCandidate(strategyManager, row + 1, newMashed, newVisited, number);
+            else if(newVisited.Count < _type) SearchRowCandidate(strategyUser, row + 1, newMashed, newVisited, number);
         }
 
         return false;
     }
 
-    private bool SearchRowFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchRowFinned(IStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int row = 0; row < 9; row++)
         {
             if (visited.Peek(row)) continue;
 
-            var ppic = strategyManager.RowPositionsAt(row, number);
+            var ppic = strategyUser.RowPositionsAt(row, number);
 
             int miniCol = -1;
 
@@ -110,11 +110,11 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                     int eliminationRow = startRow + gridRow;
                     if (visited.Peek(eliminationRow) || row == eliminationRow) continue;
 
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, eliminationRow, col);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, eliminationRow, col);
                 }
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
@@ -122,12 +122,12 @@ public class FinnedGridFormationStrategy : AbstractStrategy
         return false;
     }
     
-    private bool SearchColumnCandidate(IStrategyManager strategyManager, int start, IReadOnlyLinePositions mashed,
+    private bool SearchColumnCandidate(IStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int col = start; col < 9; col++)
         {
-            var ppir = strategyManager.ColumnPositionsAt(col, number);
+            var ppir = strategyUser.ColumnPositionsAt(col, number);
             if(ppir.Count > _type) continue;
 
             var newMashed = mashed.Or(ppir);
@@ -138,22 +138,22 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 
             if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
             {
-                if (SearchColumnFinned(strategyManager, newMashed, newVisited, number)) return true;
+                if (SearchColumnFinned(strategyUser, newMashed, newVisited, number)) return true;
             }
-            else if(newVisited.Count < _type) SearchColumnCandidate(strategyManager, col + 1, newMashed, newVisited, number);
+            else if(newVisited.Count < _type) SearchColumnCandidate(strategyUser, col + 1, newMashed, newVisited, number);
         }
 
         return false;
     }
     
-    private bool SearchColumnFinned(IStrategyManager strategyManager, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchColumnFinned(IStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int col = 0; col < 9; col++)
         {
             if (visited.Peek(col)) continue;
 
-            var ppic = strategyManager.ColumnPositionsAt(col, number);
+            var ppic = strategyUser.ColumnPositionsAt(col, number);
 
             int miniRow = -1;
 
@@ -180,11 +180,11 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                     int eliminationCol = startCol + gridCol;
                     if (visited.Peek(eliminationCol) || col == eliminationCol) continue;
 
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, eliminationCol);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, eliminationCol);
                 }
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
         }

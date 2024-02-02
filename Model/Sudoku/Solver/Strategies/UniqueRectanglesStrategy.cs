@@ -25,14 +25,14 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             b => _allowMissingCandidates = b));
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyManager.PossibilitiesAt(row, col);
+                var possibilities = strategyUser.PossibilitiesAt(row, col);
                 if (possibilities.Count != 2) continue;
 
                 var asArray = possibilities.ToArray();
@@ -48,7 +48,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 {
                     foreach (var cell in list)
                     {
-                        if (Search(strategyManager, biValue, cell, current)) return;
+                        if (Search(strategyUser, biValue, cell, current)) return;
                     }
                 }
 
@@ -60,42 +60,42 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         {
             foreach (var cell in entry.Value)
             {
-                if (SearchHidden(strategyManager, entry.Key, cell)) return;
+                if (SearchHidden(strategyUser, entry.Key, cell)) return;
             }
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, BiValue values, params Cell[] floor)
+    private bool Search(IStrategyUser strategyUser, BiValue values, params Cell[] floor)
     {
         foreach (var roof in Cells.DeadlyPatternRoofs(floor))
         {
-            if (Try(strategyManager, values, floor, roof)) return true;
+            if (Try(strategyUser, values, floor, roof)) return true;
         }
 
         return false;
     }
 
-    private bool Try(IStrategyManager strategyManager, BiValue values, Cell[] floor, params Cell[] roof)
+    private bool Try(IStrategyUser strategyUser, BiValue values, Cell[] floor, params Cell[] roof)
     {
-        var roofOnePossibilities = strategyManager.PossibilitiesAt(roof[0]);
-        var roofTwoPossibilities = strategyManager.PossibilitiesAt(roof[1]);
+        var roofOnePossibilities = strategyUser.PossibilitiesAt(roof[0]);
+        var roofTwoPossibilities = strategyUser.PossibilitiesAt(roof[1]);
 
-        if (!ValidateRoof(strategyManager, values, roof[0], ref roofOnePossibilities) ||
-            !ValidateRoof(strategyManager, values, roof[1], ref roofTwoPossibilities)) return false;
+        if (!ValidateRoof(strategyUser, values, roof[0], ref roofOnePossibilities) ||
+            !ValidateRoof(strategyUser, values, roof[1], ref roofTwoPossibilities)) return false;
         
         //Type 1
         if (values.Equals(roofOnePossibilities))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
         }
         else if (values.Equals(roofTwoPossibilities))
         {
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
-            strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
         }
 
-        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
@@ -109,12 +109,12 @@ public class UniqueRectanglesStrategy : AbstractStrategy
 
                 foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
         }
         
-        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
@@ -124,12 +124,12 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         notBiValuePossibilities.Remove(values.Two);
 
         var ssc = new List<Cell>(Cells.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(ssc))
+        foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
 
-            ProcessUrWithAls(strategyManager, roof, als);
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            ProcessUrWithAls(strategyUser, roof, als);
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new UniqueRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
@@ -142,21 +142,21 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             //Type 4
             foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
             {
-                if (strategyManager.PossibilitiesAt(cell).Peek(values.One)) oneOk = true;
-                if (strategyManager.PossibilitiesAt(cell).Peek(values.Two)) twoOke = true;
+                if (strategyUser.PossibilitiesAt(cell).Peek(values.One)) oneOk = true;
+                if (strategyUser.PossibilitiesAt(cell).Peek(values.Two)) twoOke = true;
 
                 if (oneOk && twoOke) break;
             }
             
             if (!oneOk)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
             }
             else if (!twoOke)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
             }
         }
         else
@@ -166,20 +166,20 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             {
                 if (unit != roof[0].Column && unit != roof[1].Column)
                 {
-                    if (strategyManager.PossibilitiesAt(roof[0].Row, unit).Peek(values.One)) oneOk = true;
-                    if (strategyManager.PossibilitiesAt(roof[0].Row, unit).Peek(values.Two)) twoOke = true;
+                    if (strategyUser.PossibilitiesAt(roof[0].Row, unit).Peek(values.One)) oneOk = true;
+                    if (strategyUser.PossibilitiesAt(roof[0].Row, unit).Peek(values.Two)) twoOke = true;
                     
-                    if (strategyManager.PossibilitiesAt(roof[1].Row, unit).Peek(values.One)) oneOk = true;
-                    if (strategyManager.PossibilitiesAt(roof[1].Row, unit).Peek(values.Two)) twoOke = true;
+                    if (strategyUser.PossibilitiesAt(roof[1].Row, unit).Peek(values.One)) oneOk = true;
+                    if (strategyUser.PossibilitiesAt(roof[1].Row, unit).Peek(values.Two)) twoOke = true;
                 }
                 
                 if (unit != roof[0].Row && unit != roof[1].Row)
                 {
-                    if (strategyManager.PossibilitiesAt(unit, roof[0].Column).Peek(values.One)) oneOk = true;
-                    if (strategyManager.PossibilitiesAt(unit, roof[0].Column).Peek(values.Two)) twoOke = true;
+                    if (strategyUser.PossibilitiesAt(unit, roof[0].Column).Peek(values.One)) oneOk = true;
+                    if (strategyUser.PossibilitiesAt(unit, roof[0].Column).Peek(values.Two)) twoOke = true;
                     
-                    if (strategyManager.PossibilitiesAt(unit, roof[1].Column).Peek(values.One)) oneOk = true;
-                    if (strategyManager.PossibilitiesAt(unit, roof[1].Column).Peek(values.Two)) twoOke = true;
+                    if (strategyUser.PossibilitiesAt(unit, roof[1].Column).Peek(values.One)) oneOk = true;
+                    if (strategyUser.PossibilitiesAt(unit, roof[1].Column).Peek(values.Two)) twoOke = true;
                 }
                 
                 if (oneOk && twoOke) break;
@@ -187,25 +187,25 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             
             if (!oneOk)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[0]);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[1]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[0]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[1]);
             }
             else if (!twoOke)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[0]);
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[1]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[0]);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[1]);
             }
         }
         
-        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
         //Type 6 (aka hidden type 2)
         if (roof[0].Row == roof[1].Row || roof[0].Column == roof[1].Column)
         {
-            strategyManager.GraphManager.ConstructSimple(ConstructRule.UnitStrongLink);
-            var graph = strategyManager.GraphManager.SimpleLinkGraph;
+            strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+            var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
             for (int i = 0; i < 2; i++)
             {
@@ -219,16 +219,16 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                 
                     if (graph.AreNeighbors(cpr1, cpf1, LinkStrength.Strong))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
-                        if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
+                        if (strategyUser.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr1, cpf1)))
                                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
                 
                     if (graph.AreNeighbors(cpr2, cpf2, LinkStrength.Strong))
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
-                        if (strategyManager.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
+                        if (strategyUser.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr2, cpf2)))
                                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
@@ -239,70 +239,70 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         return false;
     }
 
-    private void ProcessUrWithAls(IStrategyManager strategyManager, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessUrWithAls(IStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities)
         {
             foreach (var cell in als.EachCell())
             {
-                if(strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+                if(strategyUser.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
             }
 
             foreach (var r in roof)
             {
-                if (strategyManager.PossibilitiesAt(r).Peek(possibility)) buffer.Add(r);
+                if (strategyUser.PossibilitiesAt(r).Peek(possibility)) buffer.Add(r);
             }
 
             foreach (var cell in Cells.SharedSeenCells(buffer))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
             buffer.Clear();
         }
     }
 
-    private bool SearchHidden(IStrategyManager strategyManager, BiValue values, Cell cell)
+    private bool SearchHidden(IStrategyUser strategyUser, BiValue values, Cell cell)
     {
         for (int row = 0; row < 9; row++)
         {
             if(row == cell.Row) continue;
-            var rowPossibilities = strategyManager.PossibilitiesAt(row, cell.Column);
+            var rowPossibilities = strategyUser.PossibilitiesAt(row, cell.Column);
 
             var oneWasChanged = false;
             var twoWasChanged = false;
-            if (!ValidateRoof(strategyManager, values, new Cell(row, cell.Column), ref rowPossibilities,
+            if (!ValidateRoof(strategyUser, values, new Cell(row, cell.Column), ref rowPossibilities,
                     ref oneWasChanged, ref twoWasChanged) || (oneWasChanged && twoWasChanged)) continue;
 
             for (int col = 0; col < 9; col++)
             {
                 if (col == cell.Column || !Cells.AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Column)) continue;
-                var colPossibilities = strategyManager.PossibilitiesAt(cell.Row, col);
+                var colPossibilities = strategyUser.PossibilitiesAt(cell.Row, col);
 
                 var oneWasChangedCopy = oneWasChanged;
                 var twoWasChangedCopy = twoWasChanged;
-                if (!ValidateRoof(strategyManager, values, new Cell(cell.Row, col), ref colPossibilities,
+                if (!ValidateRoof(strategyUser, values, new Cell(cell.Row, col), ref colPossibilities,
                         ref oneWasChangedCopy, ref twoWasChangedCopy)) continue;
 
                 var opposite = new Cell(row, col);
-                var oppositePossibilities = strategyManager.PossibilitiesAt(opposite);
+                var oppositePossibilities = strategyUser.PossibilitiesAt(opposite);
                 
                 if (!oppositePossibilities.Peek(values.One) || !oppositePossibilities.Peek(values.Two)) continue;
 
-                if (!oneWasChangedCopy && strategyManager.RowPositionsAt(row, values.One).Count == 2 &&
-                    strategyManager.ColumnPositionsAt(col, values.One).Count == 2)
+                if (!oneWasChangedCopy && strategyUser.RowPositionsAt(row, values.One).Count == 2 &&
+                    strategyUser.ColumnPositionsAt(col, values.One).Count == 2)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
-                    if (strategyManager.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
+                    if (strategyUser.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
                             cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 
-                if (!twoWasChangedCopy && strategyManager.RowPositionsAt(row, values.Two).Count == 2 &&
-                    strategyManager.ColumnPositionsAt(col, values.Two).Count == 2)
+                if (!twoWasChangedCopy && strategyUser.RowPositionsAt(row, values.Two).Count == 2 &&
+                    strategyUser.ColumnPositionsAt(col, values.Two).Count == 2)
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
-                    if (strategyManager.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
+                    if (strategyUser.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
                             cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
@@ -311,11 +311,11 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         return false;
     }
 
-    private bool ValidateRoof(IStrategyManager strategyManager, BiValue biValue, Cell cell, ref IReadOnlyPossibilities possibilities)
+    private bool ValidateRoof(IStrategyUser strategyUser, BiValue biValue, Cell cell, ref IReadOnlyPossibilities possibilities)
     {
         if (!possibilities.Peek(biValue.One))
         {
-            if (_allowMissingCandidates && strategyManager.NotCachedPossibilitiesAt(cell).Peek(biValue.One))
+            if (_allowMissingCandidates && strategyUser.NotCachedPossibilitiesAt(cell).Peek(biValue.One))
             {
                 var copy = possibilities.Copy();
                 copy.Add(biValue.One);
@@ -326,7 +326,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         
         if (!possibilities.Peek(biValue.Two))
         {
-            if (_allowMissingCandidates && strategyManager.NotCachedPossibilitiesAt(cell).Peek(biValue.Two))
+            if (_allowMissingCandidates && strategyUser.NotCachedPossibilitiesAt(cell).Peek(biValue.Two))
             {
                 var copy = possibilities.Copy();
                 copy.Add(biValue.Two);
@@ -338,12 +338,12 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         return true;
     }
     
-    private bool ValidateRoof(IStrategyManager strategyManager, BiValue biValue, Cell cell,
+    private bool ValidateRoof(IStrategyUser strategyUser, BiValue biValue, Cell cell,
         ref IReadOnlyPossibilities possibilities, ref bool oneWasChanged, ref bool twoWasChanged)
     {
         if (!possibilities.Peek(biValue.One))
         {
-            if (_allowMissingCandidates && strategyManager.NotCachedPossibilitiesAt(cell).Peek(biValue.One))
+            if (_allowMissingCandidates && strategyUser.NotCachedPossibilitiesAt(cell).Peek(biValue.One))
             {
                 var copy = possibilities.Copy();
                 copy.Add(biValue.One);
@@ -355,7 +355,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
         
         if (!possibilities.Peek(biValue.Two))
         {
-            if (_allowMissingCandidates && strategyManager.NotCachedPossibilitiesAt(cell).Peek(biValue.Two))
+            if (_allowMissingCandidates && strategyUser.NotCachedPossibilitiesAt(cell).Peek(biValue.Two))
             {
                 var copy = possibilities.Copy();
                 copy.Add(biValue.Two);

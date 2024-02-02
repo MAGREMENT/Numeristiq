@@ -15,7 +15,7 @@ public class SKLoopsStrategy : AbstractStrategy
     
     public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) { }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int miniCol = 0; miniCol < 2; miniCol++)
         {
@@ -28,7 +28,7 @@ public class SKLoopsStrategy : AbstractStrategy
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (!IsCellValid(strategyManager, row, col)) continue;
+                        if (!IsCellValid(strategyUser, row, col)) continue;
 
                         for (int nextMiniCol = miniCol + 1; nextMiniCol < 3; nextMiniCol++)
                         {
@@ -36,7 +36,7 @@ public class SKLoopsStrategy : AbstractStrategy
                             {
                                 int nextCol = nextMiniCol * 3 + nextGridCol;
                                 
-                                if(!IsCellValid(strategyManager, row, nextCol)) continue;
+                                if(!IsCellValid(strategyUser, row, nextCol)) continue;
 
                                 for (int nextMiniRow = miniRow + 1; nextMiniRow < 3; nextMiniRow++)
                                 {
@@ -44,10 +44,10 @@ public class SKLoopsStrategy : AbstractStrategy
                                     {
                                         int nextRow = nextMiniRow * 3 + nextGridRow;
 
-                                        if (!IsCellValid(strategyManager, nextRow, col)
-                                            || !IsCellValid(strategyManager, nextRow, nextCol)) continue;
+                                        if (!IsCellValid(strategyUser, nextRow, col)
+                                            || !IsCellValid(strategyUser, nextRow, nextCol)) continue;
 
-                                        if (ConfirmPattern(strategyManager, new Cell(row, col), new Cell(row, nextCol),
+                                        if (ConfirmPattern(strategyUser, new Cell(row, col), new Cell(row, nextCol),
                                                 new Cell(nextRow, nextCol), new Cell(nextRow, col))) return;
                                     }
                                 }
@@ -59,9 +59,9 @@ public class SKLoopsStrategy : AbstractStrategy
         }
     }
     
-    private bool IsCellValid(IStrategyManager strategyManager, int row, int col)
+    private bool IsCellValid(IStrategyUser strategyUser, int row, int col)
     {
-        if (strategyManager.Sudoku[row, col] == 0) return false;
+        if (strategyUser.Sudoku[row, col] == 0) return false;
         
         int startCol = col / 3 * 3;
         int startRow = row / 3 * 3;
@@ -73,23 +73,23 @@ public class SKLoopsStrategy : AbstractStrategy
         {
             int crossCol = startCol + gridCol;
 
-            if (strategyManager.Sudoku[row, crossCol] != 0) countRow++;
+            if (strategyUser.Sudoku[row, crossCol] != 0) countRow++;
         }
         
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
             int crossRow = startRow + gridRow;
 
-            if (strategyManager.Sudoku[crossRow, col] != 0) countCol++;
+            if (strategyUser.Sudoku[crossRow, col] != 0) countCol++;
         }
 
         return countRow <= 2 && countCol <= 2;
     }
 
-    private bool ConfirmPattern(IStrategyManager strategyManager, params Cell[] cells)
+    private bool ConfirmPattern(IStrategyUser strategyUser, params Cell[] cells)
     {
-        var one = CrossColPossibilities(strategyManager, cells[0]);
-        var two = CrossColPossibilities(strategyManager, cells[3]);
+        var one = CrossColPossibilities(strategyUser, cells[0]);
+        var two = CrossColPossibilities(strategyUser, cells[3]);
         var and = one.Possibilities.And(two.Possibilities);
         if (and.Count == 0) return false;
 
@@ -98,7 +98,7 @@ public class SKLoopsStrategy : AbstractStrategy
         foreach (var combination in combinations)
         {
             if (combination.Equals(one.Possibilities) || combination.Equals(two.Possibilities)) continue;
-            if (IsLoop(strategyManager, cells, combination)) return true;
+            if (IsLoop(strategyUser, cells, combination)) return true;
         }
 
         return false;
@@ -124,7 +124,7 @@ public class SKLoopsStrategy : AbstractStrategy
         }
     }
     
-    private bool IsLoop(IStrategyManager strategyManager, Cell[] cells, Possibilities start)
+    private bool IsLoop(IStrategyUser strategyUser, Cell[] cells, Possibilities start)
     {
         int possibilityCount = 0;
         int cellCount = 0;
@@ -135,8 +135,8 @@ public class SKLoopsStrategy : AbstractStrategy
         for (int i = 0; i < total; i++)
         {
             var pan = (i + 1) / 2 % 2 == 1
-                ? CrossRowPossibilities(strategyManager, cells[i / 2])
-                : CrossColPossibilities(strategyManager, cells[i / 2]);
+                ? CrossRowPossibilities(strategyUser, cells[i / 2])
+                : CrossColPossibilities(strategyUser, cells[i / 2]);
             pan.Possibilities.Remove(poss);
             if (pan.Possibilities.Count == 0) return false;
             
@@ -150,10 +150,10 @@ public class SKLoopsStrategy : AbstractStrategy
 
         if (possibilityCount > cellCount) return false;
 
-        return ProcessPattern(strategyManager, cells, links);
+        return ProcessPattern(strategyUser, cells, links);
     }
 
-    private bool ProcessPattern(IStrategyManager strategyManager, Cell[] cells, Possibilities[] links)
+    private bool ProcessPattern(IStrategyUser strategyUser, Cell[] cells, Possibilities[] links)
     {
         var miniCol1 = cells[0].Column / 3;
         var miniCol2 = cells[1].Column / 3;
@@ -165,12 +165,12 @@ public class SKLoopsStrategy : AbstractStrategy
 
             foreach (var possibility in links[1])
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[0].Row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[0].Row, col);
             }
             
             foreach (var possibility in links[5])
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[2].Row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[2].Row, col);
             }
         }
 
@@ -185,7 +185,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[0])
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
                 
@@ -196,7 +196,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[2])
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
                 
@@ -207,7 +207,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[4])
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
                 
@@ -218,7 +218,7 @@ public class SKLoopsStrategy : AbstractStrategy
                 {
                     foreach (var possibility in links[6])
                     {
-                        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
                 }
             }
@@ -234,20 +234,20 @@ public class SKLoopsStrategy : AbstractStrategy
             
             foreach (var possibility in links[3])
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Column);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Column);
             }
             
             foreach (var possibility in links[7])
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Column);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Column);
             }
         }
         
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new SKLoopsReportBuilder(cells, links)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private PossibilitiesAndNumber CrossRowPossibilities(IStrategyManager strategyManager, Cell cell)
+    private PossibilitiesAndNumber CrossRowPossibilities(IStrategyUser strategyUser, Cell cell)
     {
         int startCol = cell.Column / 3 * 3;
         Possibilities result = Possibilities.NewEmpty();
@@ -258,7 +258,7 @@ public class SKLoopsStrategy : AbstractStrategy
             int crossCol = startCol + gridCol;
             if (crossCol == cell.Column) continue;
 
-            var poss = strategyManager.PossibilitiesAt(cell.Row, crossCol);
+            var poss = strategyUser.PossibilitiesAt(cell.Row, crossCol);
             if (poss.Count > 0)
             {
                 result.Add(poss);
@@ -269,7 +269,7 @@ public class SKLoopsStrategy : AbstractStrategy
         return new PossibilitiesAndNumber(result, count);
     }
 
-    private PossibilitiesAndNumber CrossColPossibilities(IStrategyManager strategyManager, Cell cell)
+    private PossibilitiesAndNumber CrossColPossibilities(IStrategyUser strategyUser, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
         Possibilities result = Possibilities.NewEmpty();
@@ -280,7 +280,7 @@ public class SKLoopsStrategy : AbstractStrategy
             int crossRow = startRow + gridRow;
             if (crossRow == cell.Row) continue;
 
-            var poss = strategyManager.PossibilitiesAt(crossRow, cell.Column);
+            var poss = strategyUser.PossibilitiesAt(crossRow, cell.Column);
             if (poss.Count > 0)
             {
                 result.Add(poss);

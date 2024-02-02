@@ -2,6 +2,7 @@
 using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
+using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -15,7 +16,7 @@ public class HiddenSingleStrategy : AbstractStrategy
     
     public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior){}
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -25,28 +26,28 @@ public class HiddenSingleStrategy : AbstractStrategy
                 {
                     var u = i * 3 + j;
                     
-                    var rp = strategyManager.RowPositionsAt(u, number);
+                    var rp = strategyUser.RowPositionsAt(u, number);
                     if (rp.Count == 1)
                     {
-                        strategyManager.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
-                        strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Row));
+                        strategyUser.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
+                        strategyUser.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Row));
                         if (OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                     
-                    var cp = strategyManager.ColumnPositionsAt(u, number);
+                    var cp = strategyUser.ColumnPositionsAt(u, number);
                     if (cp.Count == 1)
                     {
-                        strategyManager.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
-                        strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Column));
+                        strategyUser.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
+                        strategyUser.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Column));
                         if (OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                     
-                    var mp = strategyManager.MiniGridPositionsAt(i, j, number);
+                    var mp = strategyUser.MiniGridPositionsAt(i, j, number);
                     if (mp.Count != 1) continue;
                     
                     var pos = mp.First();
-                    strategyManager.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
-                    strategyManager.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.MiniGrid));
+                    strategyUser.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
+                    strategyUser.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.MiniGrid));
                     if (OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }

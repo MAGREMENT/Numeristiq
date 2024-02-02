@@ -25,7 +25,7 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
             i => _minSharedSeenCells = i, new SliderViewInterface(5, 12, 1)));
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int start1 = 0; start1 < 9; start1 += 3)
         {
@@ -40,15 +40,15 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                     var c2 = new Cell(start1 + i, start2 + 1);
                     var c3 = new Cell(start1 + i, start2 + 2);
                     
-                    if (strategyManager.Sudoku[c1.Row, c1.Column] == 0 && strategyManager.Sudoku[c2.Row, c2.Column] == 0 &&
-                        strategyManager.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyManager, c1, c2, c3)) return;
+                    if (strategyUser.Sudoku[c1.Row, c1.Column] == 0 && strategyUser.Sudoku[c2.Row, c2.Column] == 0 &&
+                        strategyUser.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyUser, c1, c2, c3)) return;
 
                     c1 = new Cell(start1, start2 + i);
                     c2 = new Cell(start1 + 1, start2 + i);
                     c3 = new Cell(start1 + 2, start2 + i);
                     
-                    if (strategyManager.Sudoku[c1.Row, c1.Column] == 0 && strategyManager.Sudoku[c2.Row, c2.Column] == 0 &&
-                        strategyManager.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyManager, c1, c2, c3)) return;
+                    if (strategyUser.Sudoku[c1.Row, c1.Column] == 0 && strategyUser.Sudoku[c2.Row, c2.Column] == 0 &&
+                        strategyUser.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyUser, c1, c2, c3)) return;
                 }
             }
             
@@ -69,46 +69,46 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                         {
                             if (i == j) continue;
                             
-                            if (strategyManager.Sudoku[unit1, i] == 0 && strategyManager.Sudoku[unit1, j] == 0)
+                            if (strategyUser.Sudoku[unit1, i] == 0 && strategyUser.Sudoku[unit1, j] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyManager.Sudoku[unit2, k] != 0) continue;
+                                    if(k / 3 == i / 3 || strategyUser.Sudoku[unit2, k] != 0) continue;
 
-                                    if (Search(strategyManager, new Cell(unit1, i), new Cell(unit1, j),
+                                    if (Search(strategyUser, new Cell(unit1, i), new Cell(unit1, j),
                                             new Cell(unit2, k))) return;
                                 }
                             }
                             
-                            if (strategyManager.Sudoku[unit2, i] == 0 && strategyManager.Sudoku[unit2, j] == 0)
+                            if (strategyUser.Sudoku[unit2, i] == 0 && strategyUser.Sudoku[unit2, j] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyManager.Sudoku[unit1, k] != 0) continue;
+                                    if(k / 3 == i / 3 || strategyUser.Sudoku[unit1, k] != 0) continue;
 
-                                    if (Search(strategyManager, new Cell(unit2, i), new Cell(unit2, j),
+                                    if (Search(strategyUser, new Cell(unit2, i), new Cell(unit2, j),
                                             new Cell(unit1, k))) return;
                                 }
                             }
                             
-                            if (strategyManager.Sudoku[i, unit1] == 0 && strategyManager.Sudoku[j, unit1] == 0)
+                            if (strategyUser.Sudoku[i, unit1] == 0 && strategyUser.Sudoku[j, unit1] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyManager.Sudoku[k, unit2] != 0) continue;
+                                    if(k / 3 == i / 3 || strategyUser.Sudoku[k, unit2] != 0) continue;
 
-                                    if (Search(strategyManager, new Cell(i, unit1), new Cell(j, unit1),
+                                    if (Search(strategyUser, new Cell(i, unit1), new Cell(j, unit1),
                                             new Cell(k, unit2))) return;
                                 }
                             }
                             
-                            if (strategyManager.Sudoku[i, unit2] == 0 && strategyManager.Sudoku[j, unit2] == 0)
+                            if (strategyUser.Sudoku[i, unit2] == 0 && strategyUser.Sudoku[j, unit2] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyManager.Sudoku[k, unit1] != 0) continue;
+                                    if(k / 3 == i / 3 || strategyUser.Sudoku[k, unit1] != 0) continue;
 
-                                    if (Search(strategyManager, new Cell(i, unit2), new Cell(j, unit2),
+                                    if (Search(strategyUser, new Cell(i, unit2), new Cell(j, unit2),
                                             new Cell(k, unit1))) return;
                                 }
                             }
@@ -137,7 +137,7 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                                 var other1 = start2 + i;
                                 var other2 = start2 + j;
 
-                                if (strategyManager.Sudoku[unit1, other1] == 0 & strategyManager.Sudoku[unit2, other2] == 0)
+                                if (strategyUser.Sudoku[unit1, other1] == 0 & strategyUser.Sudoku[unit2, other2] == 0)
                                 {
                                     for (int startOther = 0; startOther < 9; startOther += 3)
                                     {
@@ -146,15 +146,15 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                                         for (int k = 0; k < 3; k++)
                                         {
                                             var other3 = startOther + k;
-                                            if(strategyManager.Sudoku[unit3, other3] != 0) continue;
+                                            if(strategyUser.Sudoku[unit3, other3] != 0) continue;
                                             
-                                            if(Search(strategyManager, new Cell(unit1, other1),
+                                            if(Search(strategyUser, new Cell(unit1, other1),
                                                    new Cell(unit2, other2), new Cell(unit3, other3))) return;
                                         }
                                     }
                                 }
                                 
-                                if (strategyManager.Sudoku[other1, unit1] == 0 & strategyManager.Sudoku[other2, unit2] == 0)
+                                if (strategyUser.Sudoku[other1, unit1] == 0 & strategyUser.Sudoku[other2, unit2] == 0)
                                 {
                                     for (int startOther = 0; startOther < 3; startOther++)
                                     {
@@ -163,9 +163,9 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                                         for (int k = 0; k < 3; k++)
                                         {
                                             var other3 = startOther + k;
-                                            if(strategyManager.Sudoku[other3, unit3] != 0) continue;
+                                            if(strategyUser.Sudoku[other3, unit3] != 0) continue;
                                             
-                                            if(Search(strategyManager, new Cell(other1, unit1),
+                                            if(Search(strategyUser, new Cell(other1, unit1),
                                                    new Cell(other2, unit2), new Cell(other3, unit3))) return;
                                         }
                                     }
@@ -190,13 +190,13 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, Cell c1, Cell c2, Cell c3)
+    private bool Search(IStrategyUser strategyUser, Cell c1, Cell c2, Cell c3)
     {
-        var ssc = Cells.SharedSeenEmptyCells(strategyManager, c1, c2, c3);
+        var ssc = Cells.SharedSeenEmptyCells(strategyUser, c1, c2, c3);
 
-        var poss1 = strategyManager.PossibilitiesAt(c1);
-        var poss2 = strategyManager.PossibilitiesAt(c2);
-        var poss3 = strategyManager.PossibilitiesAt(c3);
+        var poss1 = strategyUser.PossibilitiesAt(c1);
+        var poss2 = strategyUser.PossibilitiesAt(c2);
+        var poss3 = strategyUser.PossibilitiesAt(c3);
         var or = poss1.Or(poss2).Or(poss3);
 
         if (ssc.Count < poss1.Count || ssc.Count < poss2.Count || ssc.Count < poss3.Count) return false;
@@ -205,7 +205,7 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
         HashSet<TriValue> forbiddenTri = new();
         HashSet<BiValue> forbiddenBi = new();
 
-        var searcher = strategyManager.AlmostNakedSetSearcher;
+        var searcher = strategyUser.AlmostNakedSetSearcher;
 
         searcher.Difference = 2;
         foreach (var aals in searcher.InCells(ssc))
@@ -255,15 +255,15 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
             if (useful) usefulThings.Add(als);
         }
         
-        SearchForElimination(strategyManager, poss1, poss2, poss3, c1, c2, c3, forbiddenTri, forbiddenBi);
-        SearchForElimination(strategyManager, poss2, poss1, poss3, c2, c1, c3, forbiddenTri, forbiddenBi);
-        SearchForElimination(strategyManager, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
+        SearchForElimination(strategyUser, poss1, poss2, poss3, c1, c2, c3, forbiddenTri, forbiddenBi);
+        SearchForElimination(strategyUser, poss2, poss1, poss3, c2, c1, c3, forbiddenTri, forbiddenBi);
+        SearchForElimination(strategyUser, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this, 
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this, 
             new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void SearchForElimination(IStrategyManager strategyManager, IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2,
+    private void SearchForElimination(IStrategyUser strategyUser, IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2,
         IReadOnlyPossibilities poss3, Cell c1, Cell c2, Cell c3, HashSet<TriValue> forbiddenTri, HashSet<BiValue> forbiddenBi)
     {
         foreach (var p1 in poss1)
@@ -292,7 +292,7 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
                 if (!toDelete) break;
             }
 
-            if (toDelete) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, c1);
+            if (toDelete) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p1, c1);
         }
     }
 }

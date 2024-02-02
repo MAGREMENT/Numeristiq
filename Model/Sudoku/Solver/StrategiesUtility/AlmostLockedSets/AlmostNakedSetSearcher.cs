@@ -7,14 +7,14 @@ namespace Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 
 public class AlmostNakedSetSearcher
 {
-    private readonly IStrategyManager _strategyManager;
+    private readonly IStrategyUser _strategyUser;
 
     public int Max { get; set; } = 5;
     public int Difference { get; set; } = 1;
 
-    public AlmostNakedSetSearcher(IStrategyManager strategyManager)
+    public AlmostNakedSetSearcher(IStrategyUser strategyUser)
     {
-        _strategyManager = strategyManager;
+        _strategyUser = strategyUser;
     }
     
     public List<IPossibilitiesPositions> InCells(List<Cell> coords)
@@ -33,7 +33,7 @@ public class AlmostNakedSetSearcher
         {
             if (!Cells.ShareAUnitWithAll(coords[i], visited)) continue;
 
-            var inspected = _strategyManager.PossibilitiesAt(coords[i].Row, coords[i].Column);
+            var inspected = _strategyUser.PossibilitiesAt(coords[i].Row, coords[i].Column);
             if(inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             Possibilities or = current.Or(inspected);
@@ -41,7 +41,7 @@ public class AlmostNakedSetSearcher
 
             if (or.Count == visited.Count + Difference)
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), or, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), or, _strategyUser));
             }
 
             if (Max > visited.Count) InCells(coords, visited, or, i + 1, result);
@@ -115,7 +115,7 @@ public class AlmostNakedSetSearcher
     {
         for (int col = start; col < 9; col++)
         {
-            var inspected = _strategyManager.PossibilitiesAt(row, col);
+            var inspected = _strategyUser.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             Possibilities mashed = current.Or(inspected);
@@ -123,7 +123,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + Difference)
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyUser));
             }
 
             if(Max > visited.Count) InRow(row, col + 1, mashed, visited, result);
@@ -137,7 +137,7 @@ public class AlmostNakedSetSearcher
     {
         for (int row = start; row < 9; row++)
         {
-            var inspected = _strategyManager.PossibilitiesAt(row, col);
+            var inspected = _strategyUser.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             Possibilities mashed = current.Or(inspected);
@@ -145,7 +145,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + Difference && (!excludeSingles || visited.Count > 1))
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyUser));
             }
 
             if(Max > visited.Count) InColumn(col, row + 1, mashed, visited, result, excludeSingles);
@@ -162,7 +162,7 @@ public class AlmostNakedSetSearcher
             int row = miniRow * 3 + n / 3;
             int col = miniCol * 3 + n % 3;
 
-            var inspected = _strategyManager.PossibilitiesAt(row, col);
+            var inspected = _strategyUser.PossibilitiesAt(row, col);
             if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
 
             Possibilities mashed = current.Or(inspected);
@@ -170,7 +170,7 @@ public class AlmostNakedSetSearcher
 
             if (mashed.Count == visited.Count + Difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyManager));
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _strategyUser));
             }
 
             if(Max > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);

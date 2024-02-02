@@ -31,7 +31,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         List<Cell> perfect = new();
         List<Cell> notPerfect = new();
@@ -51,7 +51,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
                 {
                     for (int col = 0; col < 9; col++)
                     {
-                        var p = strategyManager.PossibilitiesAt(row, col);
+                        var p = strategyUser.PossibilitiesAt(row, col);
                         if (p.Count == 0) continue;
 
                         var cell = new Cell(row, col);
@@ -60,7 +60,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
                     }
                 }
 
-                if (perfect.Count > possCount && Try(strategyManager, perfect, notPerfect, poss)) return;
+                if (perfect.Count > possCount && Try(strategyUser, perfect, notPerfect, poss)) return;
                 
                 poss.RemoveAll();
                 perfect.Clear();
@@ -69,7 +69,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
         }
     }
 
-    private bool Try(IStrategyManager strategyManager, List<Cell> perfect, List<Cell> notPerfect, Possibilities poss)
+    private bool Try(IStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, Possibilities poss)
     {
         List<CellPossibility> outPossibilities = new();
         foreach (var combination in
@@ -77,7 +77,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
         {
             foreach (var cell in combination)
             {
-                foreach (var p in strategyManager.PossibilitiesAt(cell))
+                foreach (var p in strategyUser.PossibilitiesAt(cell))
                 {
                     if (!poss.Peek(p)) outPossibilities.Add(new CellPossibility(cell, p));
                 }
@@ -85,7 +85,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
 
             var targets = outPossibilities.Count == 1 
                 ? outPossibilities 
-                : Cells.SharedSeenExistingPossibilities(strategyManager, outPossibilities);
+                : Cells.SharedSeenExistingPossibilities(strategyUser, outPossibilities);
             if (targets.Count == 0 || IsPatternValid(perfect, combination, poss.Count))
             {
                 outPossibilities.Clear();
@@ -94,11 +94,11 @@ public class NonColorablePatternStrategy : AbstractStrategy
 
             foreach (var cp in targets)
             {
-                if(outPossibilities.Count == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(outPossibilities[0]);
-                else strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                if(outPossibilities.Count == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(outPossibilities[0]);
+                else strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss.Copy())) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }

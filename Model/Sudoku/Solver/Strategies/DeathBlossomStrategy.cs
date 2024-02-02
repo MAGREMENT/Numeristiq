@@ -19,16 +19,16 @@ public class DeathBlossomStrategy : AbstractStrategy
     {
     }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        var allAls = strategyManager.PreComputer.AlmostLockedSets();
+        var allAls = strategyUser.PreComputer.AlmostLockedSets();
         Dictionary<int, List<IPossibilitiesPositions>> concernedAls = new();
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyManager.PossibilitiesAt(row, col);
+                var possibilities = strategyUser.PossibilitiesAt(row, col);
                 if (possibilities.Count == 0) continue;
 
                 var current = new Cell(row, col);
@@ -50,7 +50,7 @@ public class DeathBlossomStrategy : AbstractStrategy
 
                         foreach (var cell in als.EachCell())
                         {
-                            if (strategyManager.PossibilitiesAt(cell).Peek(possibilityInCommon) &&
+                            if (strategyUser.PossibilitiesAt(cell).Peek(possibilityInCommon) &&
                                 !Cells.ShareAUnit(cell, current))
                             {
                                 ok = false;
@@ -81,16 +81,16 @@ public class DeathBlossomStrategy : AbstractStrategy
 
                             foreach (var cell in als.EachCell())
                             {
-                                if (strategyManager.PossibilitiesAt(cell).Peek(alsPossibility)) buffer.Add(cell);
+                                if (strategyUser.PossibilitiesAt(cell).Peek(alsPossibility)) buffer.Add(cell);
                             }
 
                             foreach (var seenCell in Cells.SharedSeenCells(buffer))
                             {
-                                if (seenCell == current || strategyManager.Sudoku[seenCell.Row, seenCell.Column] != 0) continue;
+                                if (seenCell == current || strategyUser.Sudoku[seenCell.Row, seenCell.Column] != 0) continue;
 
                                 if (!eliminations.TryGetValue(seenCell, out var value))
                                 {
-                                    value = strategyManager.PossibilitiesAt(seenCell).Copy();
+                                    value = strategyUser.PossibilitiesAt(seenCell).Copy();
                                     eliminations[seenCell] = value;
                                     eliminationsCauses[seenCell] = new HashSet<IPossibilitiesPositions>();
                                 }
@@ -98,7 +98,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                                 if (value.Remove(alsPossibility)) eliminationsCauses[seenCell].Add(als);
                                 if (value.Count != 0) continue;
                                 
-                                Process(strategyManager, current, seenCell, eliminationsCauses[seenCell],
+                                Process(strategyUser, current, seenCell, eliminationsCauses[seenCell],
                                     possibility);
                                 if (OnCommitBehavior == OnCommitBehavior.Return) return;
                             }
@@ -116,16 +116,16 @@ public class DeathBlossomStrategy : AbstractStrategy
         }
     }
 
-    private void Process(IStrategyManager strategyManager, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
+    private void Process(IStrategyUser strategyUser, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
     {
         List<Cell> buffer = new();
-        strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
+        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
 
         foreach (var als in sets)
         {
             foreach (var cell in als.EachCell())
             {
-                if (strategyManager.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+                if (strategyUser.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
             }
         }
 
@@ -136,11 +136,11 @@ public class DeathBlossomStrategy : AbstractStrategy
             {
                 if (cell == stem) continue;
 
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
         
-        strategyManager.ChangeBuffer.Commit(this, new DeathBlossomReportBuilder(allStems, target, sets));
+        strategyUser.ChangeBuffer.Commit(this, new DeathBlossomReportBuilder(allStems, target, sets));
     }
 }
 

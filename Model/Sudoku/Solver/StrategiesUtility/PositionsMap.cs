@@ -14,13 +14,13 @@ public class PositionsMap
         { new(2, 0), new(2, 1), new(2, 2) }
     };
     
-    public PositionsMap(IStrategyManager strategyManager, Filter filter)
+    public PositionsMap(IStrategyUser strategyUser, Filter filter)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (!filter(strategyManager.PossibilitiesAt(row, col))) continue;
+                if (!filter(strategyUser.PossibilitiesAt(row, col))) continue;
 
                 Rows[row].Add(col);
                 Columns[col].Add(row);

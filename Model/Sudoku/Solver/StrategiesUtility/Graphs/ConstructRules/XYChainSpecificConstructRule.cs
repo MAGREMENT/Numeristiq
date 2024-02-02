@@ -4,28 +4,28 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Graphs.ConstructRules;
 
 public class XYChainSpecificConstructRule : IConstructRule
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
     {
         
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, number);
+                var ppir = strategyUser.RowPositionsAt(row, number);
                 if(ppir.Count < 2) continue;
 
                 var asArray = ppir.ToArray();
                 for (int i = 0; i < asArray.Length; i++)
                 {
-                    if (strategyManager.PossibilitiesAt(row, asArray[i]).Count != 2) continue;
+                    if (strategyUser.PossibilitiesAt(row, asArray[i]).Count != 2) continue;
                     
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        if (strategyManager.PossibilitiesAt(row, asArray[j]).Count != 2) continue;
+                        if (strategyUser.PossibilitiesAt(row, asArray[j]).Count != 2) continue;
                         
                         linkGraph.Add(new CellPossibility(row, asArray[i], number),
                             new CellPossibility(row, asArray[j], number), LinkStrength.Weak);
@@ -35,17 +35,17 @@ public class XYChainSpecificConstructRule : IConstructRule
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositionsAt(col, number);
+                var ppic = strategyUser.ColumnPositionsAt(col, number);
                 if(ppic.Count < 2) continue;
 
                 var asArray = ppic.ToArray();
                 for (int i = 0; i < asArray.Length; i++)
                 {
-                    if (strategyManager.PossibilitiesAt(asArray[i], col).Count != 2) continue;
+                    if (strategyUser.PossibilitiesAt(asArray[i], col).Count != 2) continue;
                     
                     for (int j = i + 1; j < asArray.Length; j++)
                     {
-                        if (strategyManager.PossibilitiesAt(asArray[j], col).Count != 2) continue;
+                        if (strategyUser.PossibilitiesAt(asArray[j], col).Count != 2) continue;
                         
                         linkGraph.Add(new CellPossibility(asArray[i], col, number),
                             new CellPossibility(asArray[j], col, number), LinkStrength.Weak);
@@ -57,17 +57,17 @@ public class XYChainSpecificConstructRule : IConstructRule
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 2) continue;
 
                     var asArray = ppimn.ToArray();
                     for (int i = 0; i < asArray.Length; i++)
                     {
-                        if (strategyManager.PossibilitiesAt(asArray[i]).Count != 2) continue;
+                        if (strategyUser.PossibilitiesAt(asArray[i]).Count != 2) continue;
                         
                         for (int j = i + 1; j < asArray.Length; j++)
                         {
-                            if (strategyManager.PossibilitiesAt(asArray[j]).Count != 2) continue;
+                            if (strategyUser.PossibilitiesAt(asArray[j]).Count != 2) continue;
                             
                             linkGraph.Add(new CellPossibility(asArray[i].Row, asArray[i].Column, number),
                                 new CellPossibility(asArray[j].Row, asArray[j].Column, number), LinkStrength.Weak);

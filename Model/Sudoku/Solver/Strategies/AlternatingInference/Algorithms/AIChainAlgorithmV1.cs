@@ -6,20 +6,20 @@ namespace Model.Sudoku.Solver.Strategies.AlternatingInference.Algorithms;
 public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
-    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyManager);
+        var graph = type.GetGraph(strategyUser);
         HashSet<T> processed = new();
 
         foreach (var start in graph)
         {
-            if (Search(strategyManager, graph, type, new LinkGraphChainBuilder<T>(start),
+            if (Search(strategyUser, graph, type, new LinkGraphChainBuilder<T>(start),
                     new HashSet<T> { start }, processed)) return;
             processed.Add(start);
         }
     }
 
-    private bool Search(IStrategyManager manager, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Search(IStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChainBuilder<T> builder, HashSet<T> explored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
@@ -33,8 +33,8 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
             explored.Add(friend);
             
             if (builder.Count >= 3 && !processed.Contains(friend) && next == LinkStrength.Strong &&
-                Check(manager, graph, type, builder.ToChain())) return true;
-            if (Search(manager, graph, type, builder, explored, processed)) return true;
+                Check(user, graph, type, builder.ToChain())) return true;
+            if (Search(user, graph, type, builder, explored, processed)) return true;
             
             builder.RemoveLast();
         }
@@ -48,7 +48,7 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
                 builder.Add(next, friend);
                 explored.Add(friend);
                 
-                if (Search(manager, graph, type, builder, explored, processed)) return true;
+                if (Search(user, graph, type, builder, explored, processed)) return true;
             
                 builder.RemoveLast();
             }
@@ -57,9 +57,9 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
         return false;
     }
 
-    private bool Check(IStrategyManager manager, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Check(IStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChain<T> chain)
     {
-        return type.ProcessChain(manager, chain, graph);
+        return type.ProcessChain(user, chain, graph);
     }
 }

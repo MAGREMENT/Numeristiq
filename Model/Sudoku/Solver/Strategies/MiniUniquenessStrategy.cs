@@ -22,7 +22,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int mini = 0; mini < 3; mini++)
         {
@@ -37,7 +37,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                 for (int r = 0; r < 3; r++)
                 {
                     var row = mini * 3 + r;
-                    var solved = strategyManager.Sudoku[row, col];
+                    var solved = strategyUser.Sudoku[row, col];
                     
                     if (solved == 0) availabilityCount++;
                     else presence.Add(solved);
@@ -57,16 +57,16 @@ public class MiniUniquenessStrategy : AbstractStrategy
                     for (int r = 0; r < 3; r++)
                     {
                         var row = mini * 3 + r;
-                        if (strategyManager.Sudoku[row, col] != 0) continue;
+                        if (strategyUser.Sudoku[row, col] != 0) continue;
 
                         foreach (var p in presence)
                         {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
+                            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                         }
                     }
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }
@@ -81,7 +81,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                 for (int c = 0; c < 3; c++)
                 {
                     var col = mini * 3 + c;
-                    var solved = strategyManager.Sudoku[row, col];
+                    var solved = strategyUser.Sudoku[row, col];
                     
                     if (solved == 0) availabilityCount++;
                     else presence.Add(solved);
@@ -101,16 +101,16 @@ public class MiniUniquenessStrategy : AbstractStrategy
                     for (int c = 0; c < 3; c++)
                     {
                         var col = mini * 3 + c;
-                        if (strategyManager.Sudoku[row, col] != 0) continue;
+                        if (strategyUser.Sudoku[row, col] != 0) continue;
 
                         foreach (var p in presence)
                         {
-                            strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
+                            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                         }
                     }
                 }
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return;
             }

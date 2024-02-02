@@ -16,7 +16,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
 
     public AlignedPairExclusionStrategy() : base(OfficialName,  StrategyDifficulty.Hard, DefaultBehavior) { }
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int start1 = 0; start1 < 9; start1 += 3)
         {
@@ -32,15 +32,15 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                             var c1 = start2 + j;
                             var c2 = start2 + k;
 
-                            if (strategyManager.Sudoku[r, c1] == 0 && strategyManager.Sudoku[r, c2] == 0 &&
-                                Search(strategyManager, r, c1, r, c2)) return;
+                            if (strategyUser.Sudoku[r, c1] == 0 && strategyUser.Sudoku[r, c2] == 0 &&
+                                Search(strategyUser, r, c1, r, c2)) return;
 
                             var c = start2 + i;
                             var r1 = start1 + j;
                             var r2 = start1 + k;
 
-                            if (strategyManager.Sudoku[r1, c] == 0 && strategyManager.Sudoku[r2, c] == 0 &&
-                                Search(strategyManager, r1, c, r2, c)) return;
+                            if (strategyUser.Sudoku[r1, c] == 0 && strategyUser.Sudoku[r2, c] == 0 &&
+                                Search(strategyUser, r1, c, r2, c)) return;
                         }
                     }
                 }
@@ -55,23 +55,23 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
 
                     for (int i = 0; i < 9; i++)
                     {
-                        if (strategyManager.Sudoku[unit1, i] == 0)
+                        if (strategyUser.Sudoku[unit1, i] == 0)
                         {
                             for (int j = 0; j < 9; j++)
                             {
-                                if (i / 3 == j / 3 || strategyManager.Sudoku[unit2, j] != 0) continue;
+                                if (i / 3 == j / 3 || strategyUser.Sudoku[unit2, j] != 0) continue;
 
-                                if (Search(strategyManager, unit1, i, unit2, j)) return;
+                                if (Search(strategyUser, unit1, i, unit2, j)) return;
                             }
                         }
 
-                        if (strategyManager.Sudoku[i, unit1] == 0)
+                        if (strategyUser.Sudoku[i, unit1] == 0)
                         {
                             for (int j = 0; j < 9; j++)
                             {
-                                if (i / 3 == j / 3 || strategyManager.Sudoku[j, unit2] != 0) continue;
+                                if (i / 3 == j / 3 || strategyUser.Sudoku[j, unit2] != 0) continue;
 
-                                if (Search(strategyManager, i, unit1, j, unit2)) return;
+                                if (Search(strategyUser, i, unit1, j, unit2)) return;
                             }
                         }
                     }
@@ -80,12 +80,12 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, int row1, int col1, int row2, int col2)
+    private bool Search(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
-        var shared = new List<Cell>(Cells.SharedSeenEmptyCells(strategyManager, row1, col1, row2, col2));
+        var shared = new List<Cell>(Cells.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2));
 
-        var poss1 = strategyManager.PossibilitiesAt(row1, col1);
-        var poss2 = strategyManager.PossibilitiesAt(row2, col2);
+        var poss1 = strategyUser.PossibilitiesAt(row1, col1);
+        var poss2 = strategyUser.PossibilitiesAt(row2, col2);
         var or = poss1.Or(poss2);
         
         if (shared.Count < poss1.Count || shared.Count < poss2.Count) return false;
@@ -95,7 +95,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
         List<IPossibilitiesPositions> usefulAls = new();
         HashSet<BiValue> forbidden = new();
 
-        foreach (var als in strategyManager.AlmostNakedSetSearcher.InCells(shared))
+        foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(shared))
         {
             int i = 0;
             bool useful = false;
@@ -115,15 +115,15 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
             if (useful) usefulAls.Add(als);
         }
 
-        SearchForElimination(strategyManager, poss1, poss2, forbidden, row1, col1, inSameUnit);
-        SearchForElimination(strategyManager, poss2, poss1, forbidden, row2, col2, inSameUnit);
+        SearchForElimination(strategyUser, poss1, poss2, forbidden, row1, col1, inSameUnit);
+        SearchForElimination(strategyUser, poss2, poss1, forbidden, row2, col2, inSameUnit);
         
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this, 
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this, 
             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2))
                 && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void SearchForElimination(IStrategyManager strategyManager, IReadOnlyPossibilities poss1,
+    private void SearchForElimination(IStrategyUser strategyUser, IReadOnlyPossibilities poss1,
         IReadOnlyPossibilities poss2, HashSet<BiValue> forbidden, int row, int col, bool inSameUnit)
     {
         foreach (var p1 in poss1)
@@ -139,7 +139,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                 }
             }
             
-            if(toDelete) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p1, row, col);
+            if(toDelete) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p1, row, col);
         }
     }
 }

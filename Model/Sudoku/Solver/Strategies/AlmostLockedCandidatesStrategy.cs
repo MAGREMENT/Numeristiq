@@ -30,7 +30,7 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
         }
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -55,82 +55,82 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
 
                     foreach (var cell in rowCenterCells)
                     {
-                        rowPossibilities.Add(strategyManager.PossibilitiesAt(cell));
+                        rowPossibilities.Add(strategyUser.PossibilitiesAt(cell));
                     }
 
                     foreach (var cell in colCenterCells)
                     {
-                        colPossibilities.Add(strategyManager.PossibilitiesAt(cell));
+                        colPossibilities.Add(strategyUser.PossibilitiesAt(cell));
                     }
                     
-                    foreach (var als in SearchRowForAls(strategyManager, miniRow * 3 + u, miniCol))
+                    foreach (var als in SearchRowForAls(strategyUser, miniRow * 3 + u, miniCol))
                     {
                         if(!rowPossibilities.PeekAll(als.Possibilities)) continue;
                         
-                        var correspondence = MiniGridCorrespondence(strategyManager, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(strategyUser, als.Possibilities,
                             u, Unit.Row, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(strategyManager, als.Possibilities, correspondence);
-                        HandleAls(strategyManager, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(strategyUser, als.Possibilities, correspondence);
+                        HandleAls(strategyUser, als.Possibilities, rowCenterCells, als);
 
-                        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, rowCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
 
-                    foreach (var als in SearchColumnForAls(strategyManager, miniCol * 3 + u, miniRow))
+                    foreach (var als in SearchColumnForAls(strategyUser, miniCol * 3 + u, miniRow))
                     {
                         if(!colPossibilities.PeekAll(als.Possibilities)) continue;
                         
-                        var correspondence = MiniGridCorrespondence(strategyManager, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(strategyUser, als.Possibilities,
                             u, Unit.Column, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(strategyManager, als.Possibilities, correspondence);
-                        HandleAls(strategyManager, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(strategyUser, als.Possibilities, correspondence);
+                        HandleAls(strategyUser, als.Possibilities, colCenterCells, als);
                         
-                        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, colCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
 
-                    foreach (var als in SearchMiniGridForAls(strategyManager, miniRow, miniCol,
+                    foreach (var als in SearchMiniGridForAls(strategyUser, miniRow, miniCol,
                                  u, Unit.Row))
                     {
                         if(!rowPossibilities.PeekAll(als.Possibilities)) continue;
                         
                         var row = miniRow * 3 + u;
                         
-                        var correspondence = RowCorrespondence(strategyManager, als.Possibilities, miniCol,
+                        var correspondence = RowCorrespondence(strategyUser, als.Possibilities, miniCol,
                             row);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Row, row);
-                        HandleCorrespondence(strategyManager, als.Possibilities, cells);
-                        HandleAls(strategyManager, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(strategyUser, als.Possibilities, cells);
+                        HandleAls(strategyUser, als.Possibilities, rowCenterCells, als);
                         
-                        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                                 new AlmostLockedCandidatesReportBuilder(als, cells, rowCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                     
-                    foreach (var als in SearchMiniGridForAls(strategyManager, miniRow, miniCol,
+                    foreach (var als in SearchMiniGridForAls(strategyUser, miniRow, miniCol,
                                  u, Unit.Column))
                     {
                         if(!colPossibilities.PeekAll(als.Possibilities)) continue;
                         
                         var col = miniCol * 3 + u;
                         
-                        var correspondence = ColumnCorrespondence(strategyManager, als.Possibilities, miniRow,
+                        var correspondence = ColumnCorrespondence(strategyUser, als.Possibilities, miniRow,
                             col);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Column, col);
-                        HandleCorrespondence(strategyManager, als.Possibilities, cells);
-                        HandleAls(strategyManager, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(strategyUser, als.Possibilities, cells);
+                        HandleAls(strategyUser, als.Possibilities, colCenterCells, als);
                         
-                        if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                                 new AlmostLockedCandidatesReportBuilder(als, cells, colCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
@@ -139,40 +139,40 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
         }
     }
 
-    private void HandleCorrespondence(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities,
+    private void HandleCorrespondence(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
         IEnumerable<Cell> cells)
     {
         foreach (var cell in cells)
         {
-            foreach (var p in strategyManager.PossibilitiesAt(cell))
+            foreach (var p in strategyUser.PossibilitiesAt(cell))
             {
-                if (!possibilities.Peek(p)) strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                if (!possibilities.Peek(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
             }
         }
     }
 
-    private void HandleAls(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities,
+    private void HandleAls(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
         Cell[] centerCells, IPossibilitiesPositions als)
     {
         List<Cell> total = new List<Cell>(centerCells);
         total.AddRange(als.EachCell());
-        foreach (var ssc in Cells.SharedSeenEmptyCells(strategyManager, total))
+        foreach (var ssc in Cells.SharedSeenEmptyCells(strategyUser, total))
         {
             foreach (var p in possibilities)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
             }
         }
     }
 
-    private LinePositions RowCorrespondence(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities,
+    private LinePositions RowCorrespondence(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
         int exceptMiniCol, int row)
     {
         LinePositions result = new LinePositions();
 
         foreach (var p in possibilities)
         {
-            var pos = strategyManager.RowPositionsAt(row, p).Copy();
+            var pos = strategyUser.RowPositionsAt(row, p).Copy();
             pos.VoidMiniGrid(exceptMiniCol);
 
             result = result.Or(pos);
@@ -181,14 +181,14 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
         return result;
     }
     
-    private LinePositions ColumnCorrespondence(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities,
+    private LinePositions ColumnCorrespondence(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
         int exceptMiniRow, int col)
     {
         LinePositions result = new LinePositions();
 
         foreach (var p in possibilities)
         {
-            var pos = strategyManager.ColumnPositionsAt(col, p).Copy();
+            var pos = strategyUser.ColumnPositionsAt(col, p).Copy();
             pos.VoidMiniGrid(exceptMiniRow);
 
             result = result.Or(pos);
@@ -197,14 +197,14 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
         return result;
     }
 
-    private MiniGridPositions MiniGridCorrespondence(IStrategyManager strategyManager, IReadOnlyPossibilities possibilities,
+    private MiniGridPositions MiniGridCorrespondence(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
         int exceptNumber, Unit unitExcept, int miniRow, int miniCol)
     {
         MiniGridPositions result = new(miniRow, miniCol);
 
         foreach (var p in possibilities)
         {
-            var pos = strategyManager.MiniGridPositionsAt(miniRow, miniCol, p).Copy();
+            var pos = strategyUser.MiniGridPositionsAt(miniRow, miniCol, p).Copy();
             if (unitExcept == Unit.Row) pos.VoidGridRow(exceptNumber);
             else pos.VoidGridColumn(exceptNumber);
 
@@ -214,24 +214,24 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
         return result;
     }
 
-    private List<IPossibilitiesPositions> SearchRowForAls(IStrategyManager strategyManager, int row,
+    private List<IPossibilitiesPositions> SearchRowForAls(IStrategyUser strategyUser, int row,
         int miniColExcept)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        SearchRowForAls(strategyManager, row, miniColExcept, 0, Possibilities.NewEmpty(), new LinePositions(), result);
+        SearchRowForAls(strategyUser, row, miniColExcept, 0, Possibilities.NewEmpty(), new LinePositions(), result);
         
         return result;
     }
 
-    private void SearchRowForAls(IStrategyManager strategyManager, int row, int miniColExcept, int start,
+    private void SearchRowForAls(IStrategyUser strategyUser, int row, int miniColExcept, int start,
         Possibilities currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int col = start; col < 9; col++)
         {
             if (col / 3 == miniColExcept) continue;
 
-            var poss = strategyManager.PossibilitiesAt(row, col);
+            var poss = strategyUser.PossibilitiesAt(row, col);
             if (poss.Count == 0) continue;
             
             var newPossibilities = currentPossibilities.Or(poss);
@@ -240,33 +240,33 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
             currentPositions.Add(col);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, strategyManager));
-            else if (currentPositions.Count < _type - 1) SearchRowForAls(strategyManager, row, miniColExcept, col + 1,
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, strategyUser));
+            else if (currentPositions.Count < _type - 1) SearchRowForAls(strategyUser, row, miniColExcept, col + 1,
                     newPossibilities, currentPositions, result);
 
             currentPositions.Remove(col);
         }
     }
     
-    private List<IPossibilitiesPositions> SearchColumnForAls(IStrategyManager strategyManager, int col,
+    private List<IPossibilitiesPositions> SearchColumnForAls(IStrategyUser strategyUser, int col,
         int miniRowExcept)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        SearchColumnForAls(strategyManager, col, miniRowExcept, 0, Possibilities.NewEmpty(),
+        SearchColumnForAls(strategyUser, col, miniRowExcept, 0, Possibilities.NewEmpty(),
             new LinePositions(), result);
 
         return result;
     }
     
-    private void SearchColumnForAls(IStrategyManager strategyManager, int col, int miniRowExcept, int start,
+    private void SearchColumnForAls(IStrategyUser strategyUser, int col, int miniRowExcept, int start,
         Possibilities currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int row = start; row < 9; row++)
         {
             if (row / 3 == miniRowExcept) continue;
 
-            var poss = strategyManager.PossibilitiesAt(row, col);
+            var poss = strategyUser.PossibilitiesAt(row, col);
             if (poss.Count == 0) continue;
             
             var newPossibilities = currentPossibilities.Or(poss);
@@ -275,26 +275,26 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
             currentPositions.Add(row);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, strategyManager));
-            else if (currentPositions.Count < _type - 1) SearchColumnForAls(strategyManager, col, miniRowExcept, row + 1,
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, strategyUser));
+            else if (currentPositions.Count < _type - 1) SearchColumnForAls(strategyUser, col, miniRowExcept, row + 1,
                 newPossibilities, currentPositions, result);
 
             currentPositions.Remove(row);
         }
     }
 
-    private List<IPossibilitiesPositions> SearchMiniGridForAls(IStrategyManager strategyManager, int miniRow,
+    private List<IPossibilitiesPositions> SearchMiniGridForAls(IStrategyUser strategyUser, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        SearchMiniGridForAls(strategyManager, miniRow, miniCol, exceptNumber, exceptUnit, 0, Possibilities.NewEmpty(),
+        SearchMiniGridForAls(strategyUser, miniRow, miniCol, exceptNumber, exceptUnit, 0, Possibilities.NewEmpty(),
             new MiniGridPositions(miniRow, miniCol), result);
 
         return result;
     }
 
-    private void SearchMiniGridForAls(IStrategyManager strategyManager, int miniRow,
+    private void SearchMiniGridForAls(IStrategyUser strategyUser, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit, int start, Possibilities currentPossibilities,
         MiniGridPositions currentPositions, List<IPossibilitiesPositions> result)
     {
@@ -312,7 +312,7 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
                     break;
             }
 
-            var poss = strategyManager.PossibilitiesAt(r, c);
+            var poss = strategyUser.PossibilitiesAt(r, c);
             if (poss.Count == 0) continue;
             
             var newPossibilities = currentPossibilities.Or(poss);
@@ -321,8 +321,8 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
             currentPositions.Add(number);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, strategyManager));
-            else if (currentPositions.Count < _type - 1) SearchMiniGridForAls(strategyManager, miniRow, miniCol,
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, strategyUser));
+            else if (currentPositions.Count < _type - 1) SearchMiniGridForAls(strategyUser, miniRow, miniCol,
                     exceptNumber, exceptUnit, number + 1, newPossibilities, currentPositions, result);
 
             currentPositions.Remove(number);

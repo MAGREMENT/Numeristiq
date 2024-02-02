@@ -18,16 +18,16 @@ public class EmptyRectangleStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+                foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
                 {
-                    var rowPositions = strategyManager.RowPositionsAt(row, possibility).Copy();
-                    var columnPositions = strategyManager.ColumnPositionsAt(col, possibility).Copy();
+                    var rowPositions = strategyUser.RowPositionsAt(row, possibility).Copy();
+                    var columnPositions = strategyUser.ColumnPositionsAt(col, possibility).Copy();
                     if (rowPositions.AreAllInSameMiniGrid() || columnPositions.AreAllInSameMiniGrid()) continue;
 
                     bool rowStrong = rowPositions.Count == 2;
@@ -43,7 +43,7 @@ public class EmptyRectangleStrategy : AbstractStrategy
                     switch (rowStrong, colStrong)
                     {
                         case (true, true) :
-                            if (Check(strategyManager, possibility, current, new Cell(row, rowPositions.First(col)),
+                            if (Check(strategyUser, possibility, current, new Cell(row, rowPositions.First(col)),
                                     new Cell(columnPositions.First(row), col), true, true)) return;
                             break;
                         case (true, false) :
@@ -52,7 +52,7 @@ public class EmptyRectangleStrategy : AbstractStrategy
                             {
                                 if (r == row) continue;
 
-                                if (Check(strategyManager, possibility, current, rCell, new Cell(
+                                if (Check(strategyUser, possibility, current, rCell, new Cell(
                                         r, col), true, false)) return;
                             }
 
@@ -63,7 +63,7 @@ public class EmptyRectangleStrategy : AbstractStrategy
                             {
                                 if (c == col) continue;
 
-                                if (Check(strategyManager, possibility, current, cCell, new Cell(
+                                if (Check(strategyUser, possibility, current, cCell, new Cell(
                                         row, c), true, false)) return;
                             }
 
@@ -76,10 +76,10 @@ public class EmptyRectangleStrategy : AbstractStrategy
         }
     }
 
-    private bool Check(IStrategyManager strategyManager, int possibility, Cell hinge, Cell one, Cell two,
+    private bool Check(IStrategyUser strategyUser, int possibility, Cell hinge, Cell one, Cell two,
         bool isOneLinkStrong, bool isTwoLinkStrong)
     {
-        var positions = strategyManager.PositionsFor(possibility).Copy();
+        var positions = strategyUser.PositionsFor(possibility).Copy();
         
         int miniRow = one.Row == hinge.Row ? two.Row / 3 : one.Row / 3;
         int miniCol = one.Column == hinge.Column ? two.Column / 3 : one.Column / 3;
@@ -93,10 +93,10 @@ public class EmptyRectangleStrategy : AbstractStrategy
 
         if (positions.MiniGridCount(miniRow, miniCol) != 0) return false;
 
-        if (isOneLinkStrong) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, two);
-        if (isTwoLinkStrong) strategyManager.ChangeBuffer.ProposePossibilityRemoval(possibility, one);
+        if (isOneLinkStrong) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, two);
+        if (isTwoLinkStrong) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, one);
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
             new RectangleEliminationReportBuilder(hinge, one, two, isOneLinkStrong, isTwoLinkStrong,
                 miniRow, miniCol, possibility)) && OnCommitBehavior == OnCommitBehavior.Return;
     }

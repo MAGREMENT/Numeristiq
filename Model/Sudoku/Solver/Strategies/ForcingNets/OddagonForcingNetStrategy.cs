@@ -26,9 +26,9 @@ public class OddagonForcingNetStrategy : AbstractStrategy
             i => _maxNumberOfGuardians = i, new SliderViewInterface(1, 20, 1)));
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        foreach (var oddagon in strategyManager.PreComputer.AlmostOddagons())
+        foreach (var oddagon in strategyUser.PreComputer.AlmostOddagons())
         {
             if (oddagon.Guardians.Length > _maxNumberOfGuardians) continue;
 
@@ -36,7 +36,7 @@ public class OddagonForcingNetStrategy : AbstractStrategy
             for (int i = 0; i < oddagon.Guardians.Length; i++)
             {
                 var current = oddagon.Guardians[i];
-                colorings[i] = strategyManager.PreComputer.OnColoring(current.Row, current.Column, current.Possibility);
+                colorings[i] = strategyUser.PreComputer.OnColoring(current.Row, current.Column, current.Possibility);
             }
 
             foreach (var element in colorings[0])
@@ -56,12 +56,12 @@ public class OddagonForcingNetStrategy : AbstractStrategy
 
                 if (ok)
                 {
-                    if (element.Value == Coloring.On) strategyManager.ChangeBuffer.ProposeSolutionAddition(cp);
-                    else strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                    if (element.Value == Coloring.On) strategyUser.ChangeBuffer.ProposeSolutionAddition(cp);
+                    else strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
 
-                    if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this, 
+                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this, 
                             new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
-                                strategyManager.GraphManager.ComplexLinkGraph, cp)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                                strategyUser.PreComputer.Graphs.ComplexLinkGraph, cp)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
         }

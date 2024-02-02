@@ -5,7 +5,7 @@ namespace Model.Sudoku.Solver.Helpers.Logs;
 
 public class LogManager
 {
-    private readonly ILogHolder _holder;
+    private readonly ILogProducer _producer;
 
     public bool IsEnabled { get; set; }
     public List<ISolverLog> Logs { get; } = new();
@@ -16,9 +16,9 @@ public class LogManager
     private SolverState? _stateBuffer;
     private int _lastLogCount;
 
-    public LogManager(ILogHolder holder)
+    public LogManager(ILogProducer producer)
     {
-        _holder = holder;
+        _producer = producer;
     }
     
     public void Clear()
@@ -34,7 +34,7 @@ public class LogManager
     {
         if (!IsEnabled) return;
 
-        _stateBuffer = _holder.CurrentState;
+        _stateBuffer = _producer.CurrentState;
     }
 
     public void AddFromReport(ChangeReport report, IReadOnlyList<SolverChange> changes, IStrategy strategy)
@@ -56,7 +56,7 @@ public class LogManager
     {
         if (!IsEnabled) return;
         
-        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, stateBefore, _holder.CurrentState));
+        Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, stateBefore, _producer.CurrentState));
         TryCallLogsUpdatedEvent();
     }
 

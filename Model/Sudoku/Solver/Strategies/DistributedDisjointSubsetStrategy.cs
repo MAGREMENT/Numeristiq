@@ -17,7 +17,7 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
     {
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         HashSet<GridPositions> alreadyExplored = new();
         
@@ -25,30 +25,30 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyManager.Sudoku[row, col] != 0) continue;
+                if (strategyUser.Sudoku[row, col] != 0) continue;
 
                 var current = new Cell(row, col);
                 
                 GridPositions positions = new GridPositions();
                 positions.Add(row, col);
                 Dictionary<int, List<Cell>> possibilitiesCells = new();
-                foreach (var p in strategyManager.PossibilitiesAt(row, col))
+                foreach (var p in strategyUser.PossibilitiesAt(row, col))
                 {
                     possibilitiesCells.Add(p, new List<Cell>{current});
                 }
 
-                if (Search(strategyManager, possibilitiesCells, positions, alreadyExplored)) return;
+                if (Search(strategyUser, possibilitiesCells, positions, alreadyExplored)) return;
             }
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, Dictionary<int, List<Cell>> possibilitiesCells,
+    private bool Search(IStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells,
         GridPositions positions, HashSet<GridPositions> alreadyExplored)
     {
         foreach (var cell in positions.AllSeenCells())
         {
-            if (strategyManager.Sudoku[cell.Row, cell.Column] != 0 ||
-                !ShareAUnitWithAll(strategyManager, cell, possibilitiesCells)) continue;
+            if (strategyUser.Sudoku[cell.Row, cell.Column] != 0 ||
+                !ShareAUnitWithAll(strategyUser, cell, possibilitiesCells)) continue;
             
             positions.Add(cell);
             if (alreadyExplored.Contains(positions))
@@ -59,7 +59,7 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
 
             alreadyExplored.Add(positions.Copy());
             
-            foreach (var p in strategyManager.PossibilitiesAt(cell))
+            foreach (var p in strategyUser.PossibilitiesAt(cell))
             {
                 if (!possibilitiesCells.TryGetValue(p, out var list))
                 {
@@ -72,13 +72,13 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
 
             if (positions.Count == possibilitiesCells.Count)
             {
-                if (Process(strategyManager, possibilitiesCells)) return true;
+                if (Process(strategyUser, possibilitiesCells)) return true;
             }
             
-            if (Search(strategyManager, possibilitiesCells, positions, alreadyExplored)) return true;
+            if (Search(strategyUser, possibilitiesCells, positions, alreadyExplored)) return true;
 
             positions.Remove(cell);
-            foreach (var p in strategyManager.PossibilitiesAt(cell))
+            foreach (var p in strategyUser.PossibilitiesAt(cell))
             {
                 var list = possibilitiesCells[p];
 
@@ -90,17 +90,17 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
         return false;
     }
 
-    private bool Process(IStrategyManager strategyManager, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool Process(IStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         foreach (var entry in possibilitiesCells)
         {
             foreach (var ssc in Cells.SharedSeenCells(entry.Value))
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(entry.Key, ssc);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, ssc);
             }
         }
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                    new DistributedDisjointSubsetReportBuilder(PossibilitiesCellsDeepCopy(possibilitiesCells))) &&
                OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -117,10 +117,10 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
         return result;
     }
 
-    private bool ShareAUnitWithAll(IStrategyManager strategyManager, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool ShareAUnitWithAll(IStrategyUser strategyUser, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         bool ok = false;
-        foreach (var poss in strategyManager.PossibilitiesAt(cell))
+        foreach (var poss in strategyUser.PossibilitiesAt(cell))
         {
             if (!possibilitiesCells.TryGetValue(poss, out var toShareAUnitWith)) continue;
 

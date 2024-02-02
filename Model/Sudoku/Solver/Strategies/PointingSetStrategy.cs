@@ -38,7 +38,7 @@ public class PointingSetStrategy : AbstractStrategy
     
     public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -46,16 +46,16 @@ public class PointingSetStrategy : AbstractStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var ppimg = strategyManager.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimg = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
                         int row = ppimg.First().Row;
                         for (int col = 0; col < 9; col++)
                         {
-                            if (col / 3 != miniCol) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                            if (col / 3 != miniCol) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
                         
-                        if(strategyManager.ChangeBuffer.Commit(this,
+                        if(strategyUser.ChangeBuffer.Commit(this,
                             new PointingPossibilitiesReportBuilder(number, ppimg)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
@@ -64,10 +64,10 @@ public class PointingSetStrategy : AbstractStrategy
                         int col = ppimg.First().Column;
                         for (int row = 0; row < 9; row++)
                         {
-                            if (row / 3 != miniRow) strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                            if (row / 3 != miniRow) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
 
-                        if (strategyManager.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.Commit(this,
                                 new PointingPossibilitiesReportBuilder(number, ppimg)) &&
                                     OnCommitBehavior == OnCommitBehavior.Return) return;
                     }

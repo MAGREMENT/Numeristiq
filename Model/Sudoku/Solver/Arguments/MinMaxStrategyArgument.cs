@@ -1,4 +1,6 @@
-﻿namespace Model.Sudoku.Solver.Arguments;
+﻿using Model.Utility;
+
+namespace Model.Sudoku.Solver.Arguments;
 
 public class MinMaxStrategyArgument : IStrategyArgument
 {
@@ -21,26 +23,15 @@ public class MinMaxStrategyArgument : IStrategyArgument
         Interface = new MinMaxSliderViewInterface(minMin, minMax, maxMin, maxMax, tickFrequency);
     }
     
-    public string Get()
+    public ArgumentValue Get()
     {
-        return $"{_minGetter()},{_maxGetter()}";
+        return new MinMaxArgumentValue(new MinMax(_minGetter(), _maxGetter()));
     }
 
-    public void Set(string s)
+    public void Set(ArgumentValue s)
     {
-        var i = s.IndexOf(',');
-        if (i == -1) return;
-
-        try
-        {
-            var min = int.Parse(s[..i]);
-            var max = int.Parse(s[(i + 1)..]);
-            _minSetter(min);
-            _maxSetter(max);
-        }
-        catch
-        {
-            // ignored
-        }
+        var mm = s.ToMinMax();
+        _minSetter(mm.Min);
+        _maxSetter(mm.Max);
     }
 }

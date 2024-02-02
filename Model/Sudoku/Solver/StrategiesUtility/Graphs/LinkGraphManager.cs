@@ -10,7 +10,7 @@ public class LinkGraphManager
     public ILinkGraph<CellPossibility> SimpleLinkGraph { get; } = ILinkGraph<CellPossibility>.New();
     private long _rulesAppliedOnSimple;
 
-    private readonly IStrategyManager _solver;
+    private readonly IStrategyUser _solver;
     
     private readonly IConstructRule[] _rules =
     {
@@ -24,7 +24,7 @@ public class LinkGraphManager
         new JuniorExocetConstructRule()
     };
 
-    public LinkGraphManager(IStrategyManager solver)
+    public LinkGraphManager(IStrategyUser solver)
     {
         _solver = solver;
     }
@@ -104,7 +104,7 @@ public enum ConstructRule
 
 public interface IConstructRule
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyManager strategyManager);
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser);
     
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyManager strategyManager);
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser);
 }

@@ -17,18 +17,18 @@ public class TwoStringKiteStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var rowPositions = strategyManager.RowPositionsAt(row, number);
+                var rowPositions = strategyUser.RowPositionsAt(row, number);
                 if (rowPositions.Count != 2 || rowPositions.AreAllInSameMiniGrid()) continue;
 
                 for (int col = 0; col < 9; col++)
                 {
-                    var colPositions = strategyManager.ColumnPositionsAt(col, number);
+                    var colPositions = strategyUser.ColumnPositionsAt(col, number);
                     if (colPositions.Count != 2 || colPositions.AreAllInSameMiniGrid()) continue;
 
                     var rowCell = rowPositions.ToCellArray(Unit.Row, row);
@@ -48,10 +48,10 @@ public class TwoStringKiteStrategy : AbstractStrategy
 
                             foreach (var c in Cells.SharedSeenCells(rOther, cOther))
                             {
-                                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, c);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, c);
                             }
 
-                            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                                     new TwoStringKiteReportBuilder(number, rCommon, cCommon, rOther,
                                         cOther)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                         }

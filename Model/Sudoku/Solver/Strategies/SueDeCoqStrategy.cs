@@ -23,7 +23,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         _maxNotDrawnCandidates = maxNotDrawnCandidates;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int startRow = 0; startRow < 9; startRow += 3)
         {
@@ -44,28 +44,28 @@ public class SueDeCoqStrategy : AbstractStrategy
                             var otherColumn2 = startCol + j;
                             var otherRow2 = startRow + j;
 
-                            if (strategyManager.Sudoku[unitRow, otherColumn1] == 0 &&
-                                strategyManager.Sudoku[unitRow, otherColumn2] == 0)
+                            if (strategyUser.Sudoku[unitRow, otherColumn1] == 0 &&
+                                strategyUser.Sudoku[unitRow, otherColumn2] == 0)
                             {
                                 var c1 = new Cell(unitRow, otherColumn1);
                                 var c2 = new Cell(unitRow, otherColumn2);
                                 
-                                if (Try(strategyManager, Unit.Row, c1, c2)) return;
+                                if (Try(strategyUser, Unit.Row, c1, c2)) return;
 
-                                if (j == 1 && strategyManager.Sudoku[unitRow, startCol + 2] == 0 &&
-                                    Try(strategyManager, Unit.Row, c1, c2, new Cell(unitRow, startCol + 2))) return;
+                                if (j == 1 && strategyUser.Sudoku[unitRow, startCol + 2] == 0 &&
+                                    Try(strategyUser, Unit.Row, c1, c2, new Cell(unitRow, startCol + 2))) return;
                             }
                             
-                            if (strategyManager.Sudoku[otherRow1, unitColumn] == 0 &&
-                                strategyManager.Sudoku[otherRow2, unitColumn] == 0)
+                            if (strategyUser.Sudoku[otherRow1, unitColumn] == 0 &&
+                                strategyUser.Sudoku[otherRow2, unitColumn] == 0)
                             {
                                 var c1 = new Cell(otherRow1, unitColumn);
                                 var c2 = new Cell(otherRow2, unitColumn);
                                 
-                                if (Try(strategyManager, Unit.Column, c1, c2)) return;
+                                if (Try(strategyUser, Unit.Column, c1, c2)) return;
 
-                                if (j == 1 && strategyManager.Sudoku[startRow + 2, unitColumn] == 0 &&
-                                    Try(strategyManager, Unit.Column, c1, c2, new Cell(startRow + 2, unitColumn))) return;
+                                if (j == 1 && strategyUser.Sudoku[startRow + 2, unitColumn] == 0 &&
+                                    Try(strategyUser, Unit.Column, c1, c2, new Cell(startRow + 2, unitColumn))) return;
                             }
                         }
                     }
@@ -74,20 +74,20 @@ public class SueDeCoqStrategy : AbstractStrategy
         }
     }
 
-    private bool Try(IStrategyManager strategyManager, Unit unit, params Cell[] cells)
+    private bool Try(IStrategyUser strategyUser, Unit unit, params Cell[] cells)
     {
         var possibilities = Possibilities.NewEmpty();
         foreach (var cell in cells)
         {
-            possibilities.Add(strategyManager.PossibilitiesAt(cell));
+            possibilities.Add(strategyUser.PossibilitiesAt(cell));
         }
 
         if (possibilities.Count < cells.Length + 2) return false;
 
-        var cellsInBox = CellsInBox(strategyManager, cells);
+        var cellsInBox = CellsInBox(strategyUser, cells);
         if (cellsInBox.Count == 0) return false;
 
-        var cellsInUnit = CellsInUnit(strategyManager, cells, unit);
+        var cellsInUnit = CellsInUnit(strategyUser, cells, unit);
         if (cellsInUnit.Count == 0) return false;
         
         var minimumPossibilitiesDrawn = possibilities.Count - cells.Length;
@@ -100,12 +100,12 @@ public class SueDeCoqStrategy : AbstractStrategy
             foreach (var cell in boxCombination)
             {
                 forbiddenPositions.Add(cell);
-                boxPossibilities.Add(strategyManager.PossibilitiesAt(cell));
+                boxPossibilities.Add(strategyUser.PossibilitiesAt(cell));
             }
 
             var forbiddenPossibilities = boxPossibilities.And(possibilities);
 
-            foreach (var unitPP in Combinations(strategyManager, forbiddenPositions,
+            foreach (var unitPP in Combinations(strategyUser, forbiddenPositions,
                          forbiddenPossibilities, maxCellsPerUnit, cellsInUnit))
             {
                 var outOfCenterPossibilities = boxPossibilities.Or(unitPP.Possibilities);
@@ -115,10 +115,10 @@ public class SueDeCoqStrategy : AbstractStrategy
                 if(unitPP.Possibilities.Count + boxPossibilities.Count + notDrawnPossibilities.Count 
                    != cells.Length + boxCombination.Length + unitPP.PositionsCount) continue;
 
-                var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, strategyManager);
-                Process(strategyManager, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
+                var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, strategyUser);
+                Process(strategyUser, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
 
-                if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                         new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
         }
@@ -126,7 +126,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         return false;
     }
 
-    private void Process(IStrategyManager strategyManager, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
+    private void Process(IStrategyUser strategyUser, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
         Cell[] center, Possibilities centerPossibilities, List<Cell> cellsInBox, List<Cell> cellsInUnit)
     {
         var centerGP = new GridPositions();
@@ -147,7 +147,7 @@ public class SueDeCoqStrategy : AbstractStrategy
             
             foreach (var p in boxElimination)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
             }
         }
 
@@ -157,12 +157,12 @@ public class SueDeCoqStrategy : AbstractStrategy
 
             foreach (var p in unitElimination)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
             }
         }
     }
 
-    private static List<Cell> CellsInBox(IStrategyManager strategyManager, Cell[] cells)
+    private static List<Cell> CellsInBox(IStrategyUser strategyUser, Cell[] cells)
     {
         var result = new List<Cell>();
 
@@ -175,7 +175,7 @@ public class SueDeCoqStrategy : AbstractStrategy
             {
                 var cell = new Cell(startRow + r, startCol + c);
 
-                if (cells.Contains(cell) || strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
+                if (cells.Contains(cell) || strategyUser.Sudoku[cell.Row, cell.Column] != 0) continue;
 
                 result.Add(cell);
             }
@@ -184,14 +184,14 @@ public class SueDeCoqStrategy : AbstractStrategy
         return result;
     }
 
-    private static List<Cell> CellsInUnit(IStrategyManager strategyManager, Cell[] cells, Unit unit)
+    private static List<Cell> CellsInUnit(IStrategyUser strategyUser, Cell[] cells, Unit unit)
     {
         var result = new List<Cell>();
 
         for (int u = 0; u < 9; u++)
         {
             var cell = unit == Unit.Row ? new Cell(cells[0].Row, u) : new Cell(u, cells[0].Column);
-            if (cells.Contains(cell) || strategyManager.Sudoku[cell.Row, cell.Column] != 0) continue;
+            if (cells.Contains(cell) || strategyUser.Sudoku[cell.Row, cell.Column] != 0) continue;
 
             result.Add(cell);
         }
@@ -199,18 +199,18 @@ public class SueDeCoqStrategy : AbstractStrategy
         return result;
     }
     
-    private static List<IPossibilitiesPositions> Combinations(IStrategyManager strategyManager, GridPositions forbiddenPositions, 
+    private static List<IPossibilitiesPositions> Combinations(IStrategyUser strategyUser, GridPositions forbiddenPositions, 
         Possibilities forbiddenPossibilities, int max, IReadOnlyList<Cell> sample)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        Combinations(strategyManager, forbiddenPositions, forbiddenPossibilities, max, 0, sample, result, new List<Cell>(),
+        Combinations(strategyUser, forbiddenPositions, forbiddenPossibilities, max, 0, sample, result, new List<Cell>(),
             Possibilities.NewEmpty());
 
         return result;
     }
 
-    private static void Combinations(IStrategyManager strategyManager, GridPositions forbiddenPositions, 
+    private static void Combinations(IStrategyUser strategyUser, GridPositions forbiddenPositions, 
         Possibilities forbiddenPossibilities, int max, int start, IReadOnlyList<Cell> sample,
         List<IPossibilitiesPositions> result, List<Cell> currentCells, Possibilities currentPossibilities)
     {
@@ -219,14 +219,14 @@ public class SueDeCoqStrategy : AbstractStrategy
             var c = sample[i];
             if (forbiddenPositions.Peek(c)) continue;
             
-            var poss = strategyManager.PossibilitiesAt(c);
+            var poss = strategyUser.PossibilitiesAt(c);
             if (forbiddenPossibilities.PeekAny(poss)) continue;
             
             currentCells.Add(c);
             var newPossibilities = poss.Or(currentPossibilities);
             
-            result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, strategyManager)); 
-            if (currentCells.Count < max) Combinations(strategyManager, forbiddenPositions, forbiddenPossibilities, max,
+            result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, strategyUser)); 
+            if (currentCells.Count < max) Combinations(strategyUser, forbiddenPositions, forbiddenPossibilities, max,
                 i + 1, sample, result, currentCells, newPossibilities);
 
             currentCells.RemoveAt(currentCells.Count - 1);

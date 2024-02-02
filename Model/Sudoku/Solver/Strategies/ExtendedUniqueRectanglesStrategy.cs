@@ -19,19 +19,19 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        strategyManager.GraphManager.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.UnitStrongLink,
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.UnitStrongLink,
             ConstructRule.CellWeakLink, ConstructRule.UnitWeakLink);
         
         for (int mini = 0; mini < 3; mini++)
         {
-            if (Search(strategyManager, mini, Unit.Row)) return;
-            if (Search(strategyManager, mini, Unit.Column)) return;
+            if (Search(strategyUser, mini, Unit.Row)) return;
+            if (Search(strategyUser, mini, Unit.Column)) return;
         }
     }
 
-    private bool Search(IStrategyManager strategyManager, int mini, Unit unit)
+    private bool Search(IStrategyUser strategyUser, int mini, Unit unit)
     {
         for (int u = 0; u < 3; u++)
         {
@@ -39,17 +39,17 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
             {
                 var o1 = mini * 3 + miniO1;
                 var c1 = unit == Unit.Row ? new Cell(o1, u) : new Cell( u, o1);
-                var p1 = strategyManager.PossibilitiesAt(c1);
+                var p1 = strategyUser.PossibilitiesAt(c1);
                 if (p1.Count == 0) continue;
                 
                 for (int miniO2 = miniO1 + 1; miniO2 < 3; miniO2++)
                 {
                     var o2 = mini * 3 + miniO2;
                     var c2 = unit == Unit.Row ? new Cell(o2, u) : new Cell(u, o2);
-                    var p2 = strategyManager.PossibilitiesAt(c2);
+                    var p2 = strategyUser.PossibilitiesAt(c2);
                     if (p2.Count == 0 || !p1.PeekAll(p2)) continue;
 
-                    if (ContinueSearch(strategyManager, unit, c1, c2, p1.Or(p2))) return true;
+                    if (ContinueSearch(strategyUser, unit, c1, c2, p1.Or(p2))) return true;
                 }
             }
         }
@@ -57,18 +57,18 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
         return false;
     }
 
-    private bool ContinueSearch(IStrategyManager strategyManager, Unit unit, Cell c1, Cell c2, Possibilities poss)
+    private bool ContinueSearch(IStrategyUser strategyUser, Unit unit, Cell c1, Cell c2, Possibilities poss)
     {
         var list = new List<Cell> { c1, c2 };
 
         for (int u = 3; u < 6; u++)
         {
             var c3 = unit == Unit.Row ? new Cell(c1.Row, u) : new Cell(u, c1.Column);
-            var p3 = strategyManager.PossibilitiesAt(c3);
+            var p3 = strategyUser.PossibilitiesAt(c3);
             if (p3.Count == 0 || !poss.PeekAny(p3)) continue;
             
             var c4 = unit == Unit.Row ? new Cell(c2.Row, u) : new Cell(u, c2.Column);
-            var p4 = strategyManager.PossibilitiesAt(c4);
+            var p4 = strategyUser.PossibilitiesAt(c4);
             if (p4.Count == 0 || !poss.PeekAny(p3) || !p4.PeekAny(p3)) continue;
 
             list.Add(c3);
@@ -77,17 +77,17 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
             for (int w = 6; w < 9; w++)
             {
                 var c5 = unit == Unit.Row ? new Cell(c1.Row, w) : new Cell(w, c1.Column);
-                var p5 = strategyManager.PossibilitiesAt(c5);
+                var p5 = strategyUser.PossibilitiesAt(c5);
                 if (p5.Count == 0 || !poss.PeekAny(p5)) continue;
             
                 var c6 = unit == Unit.Row ? new Cell(c2.Row, w) : new Cell(w, c2.Column);
-                var p6 = strategyManager.PossibilitiesAt(c6);
+                var p6 = strategyUser.PossibilitiesAt(c6);
                 if (p6.Count == 0 || !poss.PeekAny(p6) || !p6.PeekAny(p5)) continue;
 
                 list.Add(c5);
                 list.Add(c6);
 
-                if (ProcessCombinations(strategyManager, poss.Or(p3, p4, p5, p6), list)) return true;
+                if (ProcessCombinations(strategyUser, poss.Or(p3, p4, p5, p6), list)) return true;
                 list.RemoveRange(list.Count - 2, 2);
             }
 
@@ -97,28 +97,28 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
         return false;
     }
 
-    private bool ProcessCombinations(IStrategyManager strategyManager, Possibilities poss, List<Cell> cells)
+    private bool ProcessCombinations(IStrategyUser strategyUser, Possibilities poss, List<Cell> cells)
     {
         if (poss.Count < 3) return false;
         var array = poss.ToArray();
 
         foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, array))
         {
-            if (Process(strategyManager, Possibilities.FromEnumerable(combination), cells)) return true;
+            if (Process(strategyUser, Possibilities.FromEnumerable(combination), cells)) return true;
         }
         
         return false;
     }
 
-    private bool Process(IStrategyManager strategyManager, Possibilities poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
+    private bool Process(IStrategyUser strategyUser, Possibilities poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
     {
         List<CellPossibility> pNotInPattern = new List<CellPossibility>();
         List<Cell> cNotInPattern = new List<Cell>();
-        var graph = strategyManager.GraphManager.SimpleLinkGraph;
+        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
         
         foreach (var cell in cells)
         {
-            var p = strategyManager.PossibilitiesAt(cell).Difference(poss);
+            var p = strategyUser.PossibilitiesAt(cell).Difference(poss);
             if (p.Count == 0) continue;
 
             cNotInPattern.Add(cell);
@@ -134,10 +134,10 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
         {
             foreach (var p in poss)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(p, cNotInPattern[0].Row, cNotInPattern[0].Column);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cNotInPattern[0].Row, cNotInPattern[0].Column);
             }
             
-            return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                        new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
                    OnCommitBehavior == OnCommitBehavior.Return;
         }
@@ -154,8 +154,8 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
                 foreach (var elimination in poss)
                 {
                     if (elimination == p) continue;
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[0]);
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[1]);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[0]);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[1]);
                 }
             }
         }
@@ -172,11 +172,11 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
                 }
             }
 
-            if (ok) strategyManager.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
         }
         
 
-        return strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                    new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
                         OnCommitBehavior == OnCommitBehavior.Return;
     }

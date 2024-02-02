@@ -19,26 +19,26 @@ public class DigitForcingNetStrategy : AbstractStrategy
         
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyManager.PossibilitiesAt(row, col))
+                foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
                 {
-                    var onColoring = strategyManager.PreComputer.OnColoring(row, col, possibility);
-                    var offColoring = strategyManager.PreComputer.OffColoring(row, col, possibility);
+                    var onColoring = strategyUser.PreComputer.OnColoring(row, col, possibility);
+                    var offColoring = strategyUser.PreComputer.OffColoring(row, col, possibility);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
 
-                    if (Process(strategyManager, onColoring, offColoring)) return;
+                    if (Process(strategyUser, onColoring, offColoring)) return;
                 }
             }
         }
     }
 
-    private bool Process(IStrategyManager view, ColoringDictionary<ISudokuElement> onColoring,
+    private bool Process(IStrategyUser view, ColoringDictionary<ISudokuElement> onColoring,
         ColoringDictionary<ISudokuElement> offColoring)
     {
         foreach (var on in onColoring)
@@ -59,7 +59,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
                 if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(this,
                         new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
-                            possOn, other, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
 
             if (on.Value != Coloring.On) continue;
@@ -72,7 +72,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                     RemoveAll(view, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
@@ -83,7 +83,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                     
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.GraphManager.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }
         }
@@ -91,7 +91,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
         return false;
     }
 
-    private void RemoveAll(IStrategyManager view, int row, int col, int except1, int except2)
+    private void RemoveAll(IStrategyUser view, int row, int col, int except1, int except2)
     {
         foreach (var possibility in view.PossibilitiesAt(row, col))
         {

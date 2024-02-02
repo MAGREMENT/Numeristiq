@@ -23,12 +23,12 @@ public class BUGStrategy : AbstractStrategy
             i => _maxAdditionalCandidates = i, new SliderViewInterface(1, 5, 1)));
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         List<CellPossibility> additionalCandidates = new(_maxAdditionalCandidates);
         for (int number = 1; number <= 9; number++)
         {
-            var pos = strategyManager.PositionsFor(number);
+            var pos = strategyUser.PositionsFor(number);
             if (pos.Count == 0) continue;
 
             var copy = pos.Copy();
@@ -51,19 +51,19 @@ public class BUGStrategy : AbstractStrategy
         {
             case 0 : return;
             case 1 : 
-                strategyManager.ChangeBuffer.ProposeSolutionAddition(additionalCandidates[0]);
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(additionalCandidates[0]);
                 break;
             default:
-                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyManager, additionalCandidates))
+                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyUser, additionalCandidates))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }
 
                 break;
         }
 
         
-        if(strategyManager.ChangeBuffer.NotEmpty()) strategyManager.ChangeBuffer.Commit(this,
+        if(strategyUser.ChangeBuffer.NotEmpty()) strategyUser.ChangeBuffer.Commit(this,
             new BUGStrategyReportBuilder(additionalCandidates));
     }
 }

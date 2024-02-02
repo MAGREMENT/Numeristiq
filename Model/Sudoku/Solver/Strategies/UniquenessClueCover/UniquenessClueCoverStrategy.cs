@@ -22,15 +22,15 @@ public class UniquenessClueCoverStrategy : AbstractStrategy
     }
 
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         foreach (var c in _collections)
         {
             if (_needFilter)
             {
-                if (c.Filter(strategyManager)) return;
+                if (c.Filter(strategyUser)) return;
             }
-            else if (c.Apply(strategyManager)) return;
+            else if (c.Apply(strategyUser)) return;
         }
 
         _needFilter = false;

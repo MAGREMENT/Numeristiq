@@ -17,20 +17,20 @@ public class OddagonStrategy : AbstractStrategy
     {
     }
     
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        foreach (var ao in strategyManager.PreComputer.AlmostOddagons())
+        foreach (var ao in strategyUser.PreComputer.AlmostOddagons())
         {
-            if (ao.Guardians.Length == 1) strategyManager.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
+            if (ao.Guardians.Length == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
             else
             {
-                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyManager, ao.Guardians))
+                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyUser, ao.Guardians))
                 {
-                    strategyManager.ChangeBuffer.ProposePossibilityRemoval(cp);
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }
             }
 
-            if (strategyManager.ChangeBuffer.NotEmpty() && strategyManager.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                     new OddagonReportBuilder(ao)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }

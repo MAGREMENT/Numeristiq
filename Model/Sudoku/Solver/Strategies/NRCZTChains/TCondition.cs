@@ -14,11 +14,11 @@ public class TCondition : INRCZTCondition
     public string Name => "T";
 
     public IEnumerable<(CellPossibility, INRCZTConditionChainManipulation)> SearchEndUnderCondition(
-        IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph, BlockChain chain, CellPossibility bStart)
+        IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, BlockChain chain, CellPossibility bStart)
     {
         var all = chain.AllCellPossibilities();
         
-        var poss = strategyManager.PossibilitiesAt(bStart.Row, bStart.Column);
+        var poss = strategyUser.PossibilitiesAt(bStart.Row, bStart.Column);
         if (poss.Count > 2)
         {
             var ignorable = Possibilities.NewEmpty();
@@ -51,7 +51,7 @@ public class TCondition : INRCZTCondition
             }
         }
 
-        var rowPos = strategyManager.RowPositionsAt(bStart.Row, bStart.Possibility);
+        var rowPos = strategyUser.RowPositionsAt(bStart.Row, bStart.Possibility);
         if (rowPos.Count > 2)
         {
             var ignorable = new LinePositions();
@@ -85,7 +85,7 @@ public class TCondition : INRCZTCondition
             }
         }
         
-        var colPos = strategyManager.ColumnPositionsAt(bStart.Column, bStart.Possibility);
+        var colPos = strategyUser.ColumnPositionsAt(bStart.Column, bStart.Possibility);
         if (colPos.Count > 2)
         {
             var ignorable = new LinePositions();
@@ -119,7 +119,7 @@ public class TCondition : INRCZTCondition
             }
         }
 
-        var miniPos = strategyManager.MiniGridPositionsAt(bStart.Row / 3, bStart.Column / 3, bStart.Possibility);
+        var miniPos = strategyUser.MiniGridPositionsAt(bStart.Row / 3, bStart.Column / 3, bStart.Possibility);
         if (miniPos.Count > 2)
         {
             var ignorable = new MiniGridPositions(bStart.Row / 3, bStart.Column / 3);

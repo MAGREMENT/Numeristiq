@@ -15,20 +15,20 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(IStrategyManager strategyManager, IAlternatingInferenceType<T> type)
+    public void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyManager);
+        var graph = type.GetGraph(strategyUser);
         
         Dictionary<T, HashSet<T>> globallySearched = new();
         Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
         {
-            if (Search(strategyManager, graph, type, new LinkGraphChainBuilder<T>(start), globallySearched, locallySearched)) return;
+            if (Search(strategyUser, graph, type, new LinkGraphChainBuilder<T>(start), globallySearched, locallySearched)) return;
             locallySearched.Clear();
         }
     }
 
-    private bool Search(IStrategyManager view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
+    private bool Search(IStrategyUser view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
         Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return false;

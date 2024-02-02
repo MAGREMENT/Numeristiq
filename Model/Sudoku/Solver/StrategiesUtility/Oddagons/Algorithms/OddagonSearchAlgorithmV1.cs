@@ -6,7 +6,7 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Oddagons.Algorithms;
 
 public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
 {
-    public List<AlmostOddagon> Search(IStrategyManager strategyManager, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
     {
         
         var result = new List<AlmostOddagon>();
@@ -42,7 +42,7 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
                         Array.Copy(path1, 0, elements, 0, path1.Length);
                         Array.Copy(path2, 1, elements, path1.Length, path2.Length - 1);
                         
-                        result.Add(AlmostOddagon.FromBoard(strategyManager, new LinkGraphLoop<CellPossibility>(elements,
+                        result.Add(AlmostOddagon.FromBoard(strategyUser, new LinkGraphLoop<CellPossibility>(elements,
                             SearchLinks(elements, graph))));
                     }
                     else

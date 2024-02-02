@@ -39,7 +39,7 @@ public class XWingStrategy : AbstractStrategy
     
     public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
 
-    public override void Apply(IStrategyManager strategyManager)
+    public override void Apply(IStrategyUser strategyUser)
     {
         Dictionary<IReadOnlyLinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)
@@ -47,12 +47,12 @@ public class XWingStrategy : AbstractStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyManager.RowPositionsAt(row, n);
+                var ppir = strategyUser.RowPositionsAt(row, n);
                 if (ppir.Count != 2) continue;
                 
                 if (!dict.TryAdd(ppir, row))
                 {
-                    if (RemoveFromColumns(strategyManager, ppir, dict[ppir], row, n)) return;
+                    if (RemoveFromColumns(strategyUser, ppir, dict[ppir], row, n)) return;
                 }
             }
             dict.Clear();
@@ -60,19 +60,19 @@ public class XWingStrategy : AbstractStrategy
             //Columns
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyManager.ColumnPositionsAt(col, n);
+                var ppic = strategyUser.ColumnPositionsAt(col, n);
                 if (ppic.Count != 2) continue;
                 
                 if (!dict.TryAdd(ppic, col))
                 {
-                    if (RemoveFromRows(strategyManager, ppic, dict[ppic], col, n)) return;
+                    if (RemoveFromRows(strategyUser, ppic, dict[ppic], col, n)) return;
                 }
             }
             dict.Clear();
         }
     }
 
-    private bool RemoveFromColumns(IStrategyManager strategyManager, IReadOnlyLinePositions cols, int row1, int row2, int number)
+    private bool RemoveFromColumns(IStrategyUser strategyUser, IReadOnlyLinePositions cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -80,15 +80,15 @@ public class XWingStrategy : AbstractStrategy
             
             foreach (var col in cols)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
         
-        return strategyManager.ChangeBuffer.Commit(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
+        return strategyUser.ChangeBuffer.Commit(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool RemoveFromRows(IStrategyManager strategyManager, IReadOnlyLinePositions rows, int col1, int col2, int number)
+    private bool RemoveFromRows(IStrategyUser strategyUser, IReadOnlyLinePositions rows, int col1, int col2, int number)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -96,11 +96,11 @@ public class XWingStrategy : AbstractStrategy
             
             foreach (var row in rows)
             {
-                strategyManager.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
         
-        return strategyManager.ChangeBuffer.Commit(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
+        return strategyUser.ChangeBuffer.Commit(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }
