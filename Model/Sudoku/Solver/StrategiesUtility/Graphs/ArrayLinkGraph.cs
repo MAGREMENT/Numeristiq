@@ -20,7 +20,7 @@ public class ArrayLinkGraph<T> : ILinkGraph<T> where T : notnull
         if (from is CellPossibility cp)
         {
             _cp[cp.Row, cp.Column, (int)strength] ??= new UniqueList<T>();
-            _cp[cp.Row, cp.Column, (int)strength].Add(to);
+            _cp[cp.Row, cp.Column, (int)strength]!.Add(to);
         }
         else
         {

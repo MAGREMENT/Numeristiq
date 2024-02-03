@@ -48,7 +48,7 @@ public class BruteForceStrategy : AbstractStrategy
             if (Search(strategyUser, s, positions, current + 1)) return true;
         }
 
-        foreach (var possibility in possibilities)
+        foreach (var possibility in possibilities.EnumeratePossibilities())
         {
             var pos = positions[possibility - 1];
             if(pos.RowCount(row) > 0 || pos.ColumnCount(col) > 0

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -28,11 +29,11 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
             var one = linked.One;
             var two = linked.Two;
             
-            foreach (var restrictedCommon in restrictedCommons)
+            foreach (var restrictedCommon in restrictedCommons.EnumeratePossibilities())
             {
-                foreach (var possibility in one.Possibilities)
+                foreach (var possibility in one.Possibilities.EnumeratePossibilities())
                 {
-                    if (!two.Possibilities.Peek(possibility) || possibility == restrictedCommon) continue;
+                    if (!two.Possibilities.Contains(possibility) || possibility == restrictedCommon) continue;
 
                     List<Cell> coords = new();
                     coords.AddRange(one.EachCell(possibility));
@@ -47,9 +48,9 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
 
             if (restrictedCommons.Count == 2)
             {
-                foreach (var possibility in one.Possibilities)
+                foreach (var possibility in one.Possibilities.EnumeratePossibilities())
                 {
-                    if (restrictedCommons.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
+                    if (restrictedCommons.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
 
                     foreach (var coord in Cells.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
                     {
@@ -57,9 +58,9 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
                     }
                 }
                     
-                foreach (var possibility in two.Possibilities)
+                foreach (var possibility in two.Possibilities.EnumeratePossibilities())
                 {
-                    if (restrictedCommons.Peek(possibility) || one.Possibilities.Peek(possibility)) continue;
+                    if (restrictedCommons.Contains(possibility) || one.Possibilities.Contains(possibility)) continue;
 
                     foreach (var coord in Cells.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
                     {
@@ -78,9 +79,9 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
 {
     private readonly IPossibilitiesPositions _one;
     private readonly IPossibilitiesPositions _two;
-    private readonly Possibilities _restrictedCommons;
+    private readonly ReadOnlyBitSet16 _restrictedCommons;
 
-    public AlmostLockedSetsReportBuilder(IPossibilitiesPositions one, IPossibilitiesPositions two, Possibilities restrictedCommons)
+    public AlmostLockedSetsReportBuilder(IPossibilitiesPositions one, IPossibilitiesPositions two, ReadOnlyBitSet16 restrictedCommons)
     {
         _one = one;
         _two = two;
@@ -101,17 +102,17 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
             }
 
-            foreach (var possibility in _restrictedCommons)
+            foreach (var possibility in _restrictedCommons.EnumeratePossibilities())
             {
                 foreach (var coord in _one.EachCell())
                 {
-                    if(snapshot.PossibilitiesAt(coord).Peek(possibility))
+                    if(snapshot.PossibilitiesAt(coord).Contains(possibility))
                         lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
                 }
                 
                 foreach (var coord in _two.EachCell())
                 {
-                    if(snapshot.PossibilitiesAt(coord).Peek(possibility))
+                    if(snapshot.PossibilitiesAt(coord).Contains(possibility))
                         lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
                 }
             }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -26,7 +27,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
     {
         for (int mini = 0; mini < 3; mini++)
         {
-            var presence = Possibilities.NewEmpty();
+            var presence = new ReadOnlyBitSet16();
             var availability = new LinePositions();
             var singleAvailability = new LinePositions();
 
@@ -40,7 +41,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                     var solved = strategyUser.Sudoku[row, col];
                     
                     if (solved == 0) availabilityCount++;
-                    else presence.Add(solved);
+                    else presence += solved;
                 }
 
                 if (availabilityCount > 0)
@@ -59,7 +60,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                         var row = mini * 3 + r;
                         if (strategyUser.Sudoku[row, col] != 0) continue;
 
-                        foreach (var p in presence)
+                        foreach (var p in presence.EnumeratePossibilities())
                         {
                             strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                         }
@@ -70,8 +71,8 @@ public class MiniUniquenessStrategy : AbstractStrategy
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }
-            
-            presence.RemoveAll();
+
+            presence = new ReadOnlyBitSet16();
             availability.Void();
             singleAvailability.Void();
             for (int row = 0; row < 9; row++)
@@ -84,7 +85,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                     var solved = strategyUser.Sudoku[row, col];
                     
                     if (solved == 0) availabilityCount++;
-                    else presence.Add(solved);
+                    else presence += solved;
                 }
 
                 if (availabilityCount > 0)
@@ -103,7 +104,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                         var col = mini * 3 + c;
                         if (strategyUser.Sudoku[row, col] != 0) continue;
 
-                        foreach (var p in presence)
+                        foreach (var p in presence.EnumeratePossibilities())
                         {
                             strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                         }
@@ -122,9 +123,9 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
 {
     private readonly int _mini;
     private readonly Unit _unit;
-    private readonly Possibilities _presence;
+    private readonly ReadOnlyBitSet16 _presence;
 
-    public MiniUniquenessReportBuilder(int mini, Unit unit, Possibilities presence)
+    public MiniUniquenessReportBuilder(int mini, Unit unit, ReadOnlyBitSet16 presence)
     {
         _mini = mini;
         _unit = unit;
@@ -136,7 +137,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
         return new ChangeReport( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
-            foreach (var p in _presence)
+            foreach (var p in _presence.EnumeratePossibilities())
             {
                 for (int u = 0; u < 3; u++)
                 {

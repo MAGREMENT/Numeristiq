@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -42,14 +43,14 @@ public class NakedSetStrategy : AbstractStrategy
         for (int row = 0; row < 9; row++)
         {
             var possibleCols = EveryRowCellWithLessPossibilities(strategyUser, row, _type + 1);
-            if (RecursiveRowMashing(strategyUser, Possibilities.NewEmpty(), possibleCols, -1, row,
+            if (RecursiveRowMashing(strategyUser, new ReadOnlyBitSet16(), possibleCols, -1, row,
                     new LinePositions())) return;
         }
         
         for (int col = 0; col < 9; col++)
         {
             var possibleRows = EveryColumnCellWithLessPossibilities(strategyUser, col, _type + 1);
-            if (RecursiveColumnMashing(strategyUser, Possibilities.NewEmpty(), possibleRows, -1, col,
+            if (RecursiveColumnMashing(strategyUser, new ReadOnlyBitSet16(), possibleRows, -1, col,
                     new LinePositions())) return;
         }
         
@@ -58,7 +59,7 @@ public class NakedSetStrategy : AbstractStrategy
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
                 var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(strategyUser, miniRow, miniCol, _type + 1);
-                if (RecursiveMiniGridMashing(strategyUser, Possibilities.NewEmpty(), possibleGridNumbers, -1,
+                if (RecursiveMiniGridMashing(strategyUser, new ReadOnlyBitSet16(), possibleGridNumbers, -1,
                         miniRow, miniCol, new MiniGridPositions(miniRow, miniCol))) return;
             }
         }
@@ -76,7 +77,7 @@ public class NakedSetStrategy : AbstractStrategy
         return result;
     }
 
-    private bool RecursiveRowMashing(IStrategyUser strategyUser, Possibilities current,
+    private bool RecursiveRowMashing(IStrategyUser strategyUser, ReadOnlyBitSet16 current,
         LinePositions possibleCols, int cursor, int row, LinePositions visited)
     {
         int col;
@@ -85,7 +86,7 @@ public class NakedSetStrategy : AbstractStrategy
             var possibilities = strategyUser.PossibilitiesAt(row, col);
             if(possibilities.Count > _type) continue;
             
-            var newCurrent = current.Or(possibilities);
+            var newCurrent = current | possibilities;
             if (newCurrent.Count > _type) continue;
             
             var newVisited = visited.Copy();
@@ -106,9 +107,9 @@ public class NakedSetStrategy : AbstractStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromRow(IStrategyUser strategyUser, int row, Possibilities toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromRow(IStrategyUser strategyUser, int row, ReadOnlyBitSet16 toRemove, LinePositions except)
     {
-        foreach (var n in toRemove)
+        foreach (var n in toRemove.EnumeratePossibilities())
         {
             for (int col = 0; col < 9; col++)
             {
@@ -132,7 +133,7 @@ public class NakedSetStrategy : AbstractStrategy
         return result;
     }
     
-    private bool RecursiveColumnMashing(IStrategyUser strategyUser, Possibilities current,
+    private bool RecursiveColumnMashing(IStrategyUser strategyUser, ReadOnlyBitSet16 current,
         LinePositions possibleRows, int cursor, int col, LinePositions visited)
     {
         int row;
@@ -141,7 +142,7 @@ public class NakedSetStrategy : AbstractStrategy
             var possibilities = strategyUser.PossibilitiesAt(row, col);
             if(possibilities.Count > _type) continue;
             
-            var newCurrent = current.Or(possibilities);
+            var newCurrent = current | possibilities;
             if (newCurrent.Count > _type) continue;
             
             var newVisited = visited.Copy();
@@ -161,9 +162,9 @@ public class NakedSetStrategy : AbstractStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromColumn(IStrategyUser strategyUser, int col, Possibilities toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromColumn(IStrategyUser strategyUser, int col, ReadOnlyBitSet16 toRemove, LinePositions except)
     {
-        foreach (var n in toRemove)
+        foreach (var n in toRemove.EnumeratePossibilities())
         {
             for (int row = 0; row < 9; row++)
             {
@@ -193,7 +194,7 @@ public class NakedSetStrategy : AbstractStrategy
         return result;
     }
     
-    private bool RecursiveMiniGridMashing(IStrategyUser strategyUser, Possibilities current,
+    private bool RecursiveMiniGridMashing(IStrategyUser strategyUser, ReadOnlyBitSet16 current,
         MiniGridPositions possiblePos, int cursor, int miniRow, int miniCol, MiniGridPositions visited)
     {
         Cell pos;
@@ -202,7 +203,7 @@ public class NakedSetStrategy : AbstractStrategy
             var possibilities = strategyUser.PossibilitiesAt(pos.Row, pos.Column);
             if(possibilities.Count > _type) continue;
             
-            var newCurrent = current.Or(possibilities);
+            var newCurrent = current | possibilities;
             if (newCurrent.Count > _type) continue;
             
             var newVisited = visited.Copy();
@@ -223,10 +224,10 @@ public class NakedSetStrategy : AbstractStrategy
         return false;
     }
     
-    private bool RemovePossibilitiesFromMiniGrid(IStrategyUser strategyUser, int miniRow, int miniCol, Possibilities toRemove,
+    private bool RemovePossibilitiesFromMiniGrid(IStrategyUser strategyUser, int miniRow, int miniCol, ReadOnlyBitSet16 toRemove,
         MiniGridPositions except)
     {
-        foreach (var n in toRemove)
+        foreach (var n in toRemove.EnumeratePossibilities())
         {
             for (int gridRow = 0; gridRow < 3; gridRow++)
             {
@@ -247,13 +248,13 @@ public class NakedSetStrategy : AbstractStrategy
 
 public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly Possibilities _possibilities;
+    private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
     private readonly int _unitNumber;
     private readonly Unit _unit;
 
 
-    public LineNakedPossibilitiesReportBuilder(Possibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineNakedPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
@@ -267,16 +268,16 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
         {
             foreach (var other in _linePos)
             {
-                foreach (var possibility in _possibilities)
+                foreach (var possibility in _possibilities.EnumeratePossibilities())
                 {
                     switch (_unit)
                     {
                         case Unit.Row :
-                            if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
+                            if(snapshot.PossibilitiesAt(_unitNumber, other).Contains(possibility))
                                 lighter.HighlightPossibility(possibility, _unitNumber, other, ChangeColoration.CauseOffOne);
                             break;
                         case Unit.Column :
-                            if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
+                            if(snapshot.PossibilitiesAt(other, _unitNumber).Contains(possibility))
                                 lighter.HighlightPossibility(possibility, other, _unitNumber, ChangeColoration.CauseOffOne);
                             break;
                     }
@@ -296,10 +297,10 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
 
 public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly Possibilities _possibilities;
+    private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridNakedPossibilitiesReportBuilder(Possibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridNakedPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;
@@ -311,9 +312,9 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         {
             foreach (var pos in _miniPos)
             {
-                foreach (var possibility in _possibilities)
+                foreach (var possibility in _possibilities.EnumeratePossibilities())
                 {
-                    if(snapshot.PossibilitiesAt(pos.Row, pos.Column).Peek(possibility))
+                    if(snapshot.PossibilitiesAt(pos.Row, pos.Column).Contains(possibility))
                         lighter.HighlightPossibility(possibility, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
                 }
             }

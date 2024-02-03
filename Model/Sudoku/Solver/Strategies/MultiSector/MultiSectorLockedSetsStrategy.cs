@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies.MultiSector;
@@ -156,7 +156,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
 
 public class CoveringUnits
 {
-    private readonly Dictionary<CoverHouse, Possibilities> _dictionary = new();
+    private readonly Dictionary<CoverHouse, ReadOnlyBitSet16> _dictionary = new();
 
     public CoveringUnits(IReadOnlyList<PossibilityCovers> list)
     {
@@ -166,11 +166,10 @@ public class CoveringUnits
             {
                 if (!_dictionary.TryGetValue(house, out var poss))
                 {
-                    poss = Possibilities.NewEmpty();
-                    _dictionary[house] = poss;
+                    _dictionary[house] = new ReadOnlyBitSet16();
                 }
 
-                poss.Add(cover.Possibility);
+                _dictionary[house] += cover.Possibility;
             }
         }
     }
@@ -197,9 +196,9 @@ public class CoveringUnits
                 {
                     if (!gp.Peek(cell)) continue;
                     
-                    foreach (var p in entry.Value)
+                    foreach (var p in entry.Value.EnumeratePossibilities())
                     {
-                        if(snapshot.PossibilitiesAt(cell).Peek(p)) lighter.HighlightPossibility(p, cell.Row, cell.Column, color);
+                        if(snapshot.PossibilitiesAt(cell).Contains(p)) lighter.HighlightPossibility(p, cell.Row, cell.Column, color);
                     }
                 }
             });
@@ -216,7 +215,7 @@ public class CoveringUnits
 
         foreach (var entry in _dictionary)
         {
-            foreach (var p in entry.Value)
+            foreach (var p in entry.Value.EnumeratePossibilities())
             {
                 result.Append(p);
             }

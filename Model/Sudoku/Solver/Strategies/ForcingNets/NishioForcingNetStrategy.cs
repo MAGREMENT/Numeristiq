@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
@@ -28,7 +29,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
+                foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
                     var coloring = strategyUser.PreComputer.OnColoring(row, col, possibility);
                     foreach (var entry in coloring)
@@ -66,7 +67,7 @@ public class NishioForcingNetStrategy : AbstractStrategy
 
 public class ContradictionSearcher
 {
-    private readonly Dictionary<int, Possibilities> _offCells = new();
+    private readonly Dictionary<int, ReadOnlyBitSet16> _offCells = new();
     private readonly Dictionary<int, LinePositions> _offRows = new();
     private readonly Dictionary<int, LinePositions> _offCols = new();
     private readonly Dictionary<int, MiniGridPositions> _offMinis = new();
@@ -90,16 +91,14 @@ public class ContradictionSearcher
     public bool AddOff(CellPossibility cell)
     {
         var cellInt = cell.Row * 9 + cell.Column;
-        if (!_offCells.TryGetValue(cellInt, out var poss))
+        if (!_offCells.ContainsKey(cellInt))
         {
-            var copy = _view.PossibilitiesAt(cell.Row, cell.Column).Copy();
-            copy.Remove(cell.Possibility);
-            _offCells[cellInt] = copy;
+            _offCells[cellInt] = _view.PossibilitiesAt(cell.Row, cell.Column) - cell.Possibility;
         }
         else
         {
-            poss.Remove(cell.Possibility);
-            if (poss.Count == 0)
+            _offCells[cellInt] -= cell.Possibility;
+            if (_offCells[cellInt].Count == 0)
             {
                 Cause = ContradictionCause.Cell;
                 return true;
@@ -244,7 +243,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
             case ContradictionCause.Cell :
                 var possibilities = snapshot.PossibilitiesAt(_lastChecked.Row, _lastChecked.Column);
 
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     var current = new CellPossibility(_lastChecked.Row, _lastChecked.Column, possibility);
                     if (!_coloring.TryGetColoredElement(current, out var c) || c != _causeColoring) continue;

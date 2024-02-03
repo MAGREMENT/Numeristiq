@@ -97,46 +97,46 @@ public class BlossomLoopStrategy : AbstractStrategy
         if (toTakeIntoAccount.Count == 0) HandleWeakBranchLink(strategyUser, one, two, nope);
         else
         {
-            var and = one.EveryPossibilities().And(two.EveryPossibilities());
-            var or = one.EveryPossibilities().Or(two.EveryPossibilities());
+            var and = one.EveryPossibilities() & two.EveryPossibilities();
+            var or = one.EveryPossibilities() | two.EveryPossibilities();
             var cells = new HashSet<Cell>(one.EveryCell());
             cells.UnionWith(two.EveryCell());
 
             foreach (var element in toTakeIntoAccount)
             {
-                and = and.And(element.EveryPossibilities());
-                or = or.Or(element.EveryPossibilities());
+                and &= element.EveryPossibilities();
+                or |= element.EveryPossibilities();
                 cells.UnionWith(element.EveryCell());
             }
 
             if (cells.Count == 1)
             {
                 var c = cells.First();
-                foreach (var p in strategyUser.PossibilitiesAt(c))
+                foreach (var p in strategyUser.PossibilitiesAt(c).EnumeratePossibilities())
                 {
-                    if (!or.Peek(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
+                    if (!or.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
                 }
             }
 
-            foreach (var p in and)
+            foreach (var p in and.EnumeratePossibilities())
             {
                 List<Cell> c = new();
                 
                 foreach (var cp in one.EveryCellPossibilities())
                 {
-                    if(cp.Possibilities.Peek(p)) c.Add(cp.Cell);
+                    if(cp.Possibilities.Contains(p)) c.Add(cp.Cell);
                 }
                 
                 foreach (var cp in two.EveryCellPossibilities())
                 {
-                    if(cp.Possibilities.Peek(p)) c.Add(cp.Cell);
+                    if(cp.Possibilities.Contains(p)) c.Add(cp.Cell);
                 }
 
                 foreach (var element in toTakeIntoAccount)
                 {
                     foreach (var cp in element.EveryCellPossibilities())
                     {
-                        if(cp.Possibilities.Peek(p)) c.Add(cp.Cell);
+                        if(cp.Possibilities.Contains(p)) c.Add(cp.Cell);
                     }
                 }
 
@@ -159,9 +159,9 @@ public class BlossomLoopStrategy : AbstractStrategy
 
         if (cp1.Length == 1 && cp2.Length == 1 && pos1.Count == 1 && pos2.Count == 1 && cp1[0].Cell == cp2[0].Cell)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cp1[0].Cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cp1[0].Cell).EnumeratePossibilities())
             {
-                if (pos1.Peek(possibility) || pos2.Peek(possibility)) continue;
+                if (pos1.Contains(possibility) || pos2.Contains(possibility)) continue;
 
                 var cp = new CellPossibility(cp1[0].Cell.Row, cp1[0].Cell.Column, possibility);
                 if (!nope.Contains(cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
@@ -170,20 +170,20 @@ public class BlossomLoopStrategy : AbstractStrategy
             return;
         }
 
-        var and = pos1.And(pos2);
+        var and = pos1 & pos2;
 
-        foreach (var possibility in and)
+        foreach (var possibility in and.EnumeratePossibilities())
         {
             List<Cell> cells = new();
             
             foreach (var cp in cp1)
             {
-                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
             
             foreach (var cp in cp2)
             {
-                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
 
             foreach (var cell in Cells.SharedSeenCells(cells))

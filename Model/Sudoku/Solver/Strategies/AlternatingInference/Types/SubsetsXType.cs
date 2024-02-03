@@ -35,7 +35,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         List<Cell> cells = new List<Cell>(one.EveryCell());
         cells.AddRange(two.EveryCell());
 
-        var possibility = one.EveryPossibilities().First();
+        var possibility = one.EveryPossibilities().FirstPossibility();
         foreach (var cell in Cells.SharedSeenCells(cells))
         {
             view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -33,18 +33,18 @@ public class XYZWingStrategy : AbstractStrategy
                     if (mini.Row == row && mini.Column == col) continue;
 
                     var firstCorner = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
-                    Possibilities and;
-                    if ((and = firstCorner.And(hinge)).Count != 2) continue;
+                    ReadOnlyBitSet16 and;
+                    if ((and = firstCorner & hinge).Count != 2) continue;
 
                     foreach (var otherCol in map.Rows[row])
                     {
                         if(otherCol / 3 == miniCol) continue;
 
                         var secondCorner = strategyUser.PossibilitiesAt(row, otherCol);
-                        if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
+                        if((secondCorner | firstCorner) != hinge) continue;
 
                         if (Process(strategyUser, row, col, mini.Row, mini.Column, row,
-                                otherCol, and.And(secondCorner).First())) return;
+                                otherCol, (and & secondCorner).FirstPossibility())) return;
                     }
 
                     foreach (var otherRow in map.Columns[col])
@@ -52,10 +52,10 @@ public class XYZWingStrategy : AbstractStrategy
                         if(otherRow / 3 == miniRow) continue;
 
                         var secondCorner = strategyUser.PossibilitiesAt(otherRow, col);
-                        if(!secondCorner.Or(firstCorner).Equals(hinge)) continue;
+                        if((secondCorner | firstCorner) != hinge) continue;
 
                         if (Process(strategyUser, row, col, mini.Row, mini.Column,
-                                otherRow, col, and.And(secondCorner).First())) return;
+                                otherRow, col, (and & secondCorner).FirstPossibility())) return;
                     }
                 }
             }
@@ -75,7 +75,7 @@ public class XYZWingStrategy : AbstractStrategy
             new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
     
-    private static bool Only2Possibilities(IReadOnlyPossibilities possibilities)
+    private static bool Only2Possibilities(ReadOnlyBitSet16 possibilities)
     {
         return possibilities.Count == 2;
     }

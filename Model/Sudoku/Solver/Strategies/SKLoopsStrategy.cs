@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -90,7 +91,7 @@ public class SKLoopsStrategy : AbstractStrategy
     {
         var one = CrossColPossibilities(strategyUser, cells[0]);
         var two = CrossColPossibilities(strategyUser, cells[3]);
-        var and = one.Possibilities.And(two.Possibilities);
+        var and = one.Possibilities & two.Possibilities;
         if (and.Count == 0) return false;
 
         var combinations = EachCombination(and);
@@ -104,40 +105,40 @@ public class SKLoopsStrategy : AbstractStrategy
         return false;
     }
 
-    private static List<Possibilities> EachCombination(Possibilities possibilities)
+    private static List<ReadOnlyBitSet16> EachCombination(ReadOnlyBitSet16 possibilities)
     {
-        List<Possibilities> result = new();
-        EachCombination(result, possibilities, Possibilities.NewEmpty(), 0);
+        List<ReadOnlyBitSet16> result = new();
+        EachCombination(result, possibilities, new ReadOnlyBitSet16(), 0);
         return result;
     }
 
-    private static void EachCombination(List<Possibilities> result, Possibilities total, Possibilities toSearch, int cursor)
+    private static void EachCombination(List<ReadOnlyBitSet16> result, ReadOnlyBitSet16 total, ReadOnlyBitSet16 toSearch, int cursor)
     {
         while(total.Next(ref cursor))
         {
-            if (toSearch.Peek(cursor)) continue;
+            if (toSearch.Contains(cursor)) continue;
 
-            toSearch.Add(cursor);
-            result.Add(toSearch.Copy());
+            toSearch += cursor;
+            result.Add(toSearch);
             EachCombination(result, total, toSearch, cursor);
-            toSearch.Remove(cursor);
+            toSearch -= cursor;
         }
     }
     
-    private bool IsLoop(IStrategyUser strategyUser, Cell[] cells, Possibilities start)
+    private bool IsLoop(IStrategyUser strategyUser, Cell[] cells, ReadOnlyBitSet16 start)
     {
         int possibilityCount = 0;
         int cellCount = 0;
         int total = cells.Length * 2;
         
-        Possibilities[] links = new Possibilities[total];
+        var links = new ReadOnlyBitSet16[total];
         var poss = start;
         for (int i = 0; i < total; i++)
         {
             var pan = (i + 1) / 2 % 2 == 1
                 ? CrossRowPossibilities(strategyUser, cells[i / 2])
                 : CrossColPossibilities(strategyUser, cells[i / 2]);
-            pan.Possibilities.Remove(poss);
+            pan.RemoveToPossibilities(poss);
             if (pan.Possibilities.Count == 0) return false;
             
             if (i == total - 1 && !pan.Possibilities.Equals(start)) return false;
@@ -153,7 +154,7 @@ public class SKLoopsStrategy : AbstractStrategy
         return ProcessPattern(strategyUser, cells, links);
     }
 
-    private bool ProcessPattern(IStrategyUser strategyUser, Cell[] cells, Possibilities[] links)
+    private bool ProcessPattern(IStrategyUser strategyUser, Cell[] cells, ReadOnlyBitSet16[] links)
     {
         var miniCol1 = cells[0].Column / 3;
         var miniCol2 = cells[1].Column / 3;
@@ -163,12 +164,12 @@ public class SKLoopsStrategy : AbstractStrategy
             var miniCol = col / 3;
             if(miniCol == miniCol1 || miniCol == miniCol2) continue;
 
-            foreach (var possibility in links[1])
+            foreach (var possibility in links[1].EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[0].Row, col);
             }
             
-            foreach (var possibility in links[5])
+            foreach (var possibility in links[5].EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cells[2].Row, col);
             }
@@ -183,7 +184,7 @@ public class SKLoopsStrategy : AbstractStrategy
 
                 if (row != cells[0].Row && col != cells[0].Column)
                 {
-                    foreach (var possibility in links[0])
+                    foreach (var possibility in links[0].EnumeratePossibilities())
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
@@ -194,7 +195,7 @@ public class SKLoopsStrategy : AbstractStrategy
 
                 if (row != cells[1].Row && col != cells[1].Column)
                 {
-                    foreach (var possibility in links[2])
+                    foreach (var possibility in links[2].EnumeratePossibilities())
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
@@ -205,7 +206,7 @@ public class SKLoopsStrategy : AbstractStrategy
 
                 if (row != cells[2].Row && col != cells[2].Column)
                 {
-                    foreach (var possibility in links[4])
+                    foreach (var possibility in links[4].EnumeratePossibilities())
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
@@ -216,7 +217,7 @@ public class SKLoopsStrategy : AbstractStrategy
 
                 if (row != cells[3].Row && col != cells[3].Column)
                 {
-                    foreach (var possibility in links[6])
+                    foreach (var possibility in links[6].EnumeratePossibilities())
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                     }
@@ -232,12 +233,12 @@ public class SKLoopsStrategy : AbstractStrategy
             var miniRow = row / 3;
             if (miniRow == miniRow1 || miniRow == miniRow2) continue;
             
-            foreach (var possibility in links[3])
+            foreach (var possibility in links[3].EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[1].Column);
             }
             
-            foreach (var possibility in links[7])
+            foreach (var possibility in links[7].EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, cells[3].Column);
             }
@@ -250,7 +251,7 @@ public class SKLoopsStrategy : AbstractStrategy
     private PossibilitiesAndNumber CrossRowPossibilities(IStrategyUser strategyUser, Cell cell)
     {
         int startCol = cell.Column / 3 * 3;
-        Possibilities result = Possibilities.NewEmpty();
+        var result = new ReadOnlyBitSet16();
         int count = 0;
 
         for (int gridCol = 0; gridCol < 3; gridCol++)
@@ -261,7 +262,7 @@ public class SKLoopsStrategy : AbstractStrategy
             var poss = strategyUser.PossibilitiesAt(cell.Row, crossCol);
             if (poss.Count > 0)
             {
-                result.Add(poss);
+                result += poss;
                 count++;
             }
         }
@@ -272,7 +273,7 @@ public class SKLoopsStrategy : AbstractStrategy
     private PossibilitiesAndNumber CrossColPossibilities(IStrategyUser strategyUser, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
-        Possibilities result = Possibilities.NewEmpty();
+        var result = new ReadOnlyBitSet16();
         int count = 0;
 
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -283,7 +284,7 @@ public class SKLoopsStrategy : AbstractStrategy
             var poss = strategyUser.PossibilitiesAt(crossRow, cell.Column);
             if (poss.Count > 0)
             {
-                result.Add(poss);
+                result += poss;
                 count++;
             }
         }
@@ -294,22 +295,27 @@ public class SKLoopsStrategy : AbstractStrategy
 
 public class PossibilitiesAndNumber
 {
-    public PossibilitiesAndNumber(Possibilities possibilities, int number)
+    public PossibilitiesAndNumber(ReadOnlyBitSet16 possibilities, int number)
     {
         Possibilities = possibilities;
         Number = number;
     }
 
-    public Possibilities Possibilities { get; }
+    public void RemoveToPossibilities(ReadOnlyBitSet16 set)
+    {
+        Possibilities -= set;
+    }
+
+    public ReadOnlyBitSet16 Possibilities { get; private set; }
     public int Number { get; }
 }
 
 public class SKLoopsReportBuilder : IChangeReportBuilder
 {
     private readonly Cell[] _cells;
-    private readonly Possibilities[] _links;
+    private readonly ReadOnlyBitSet16[] _links;
 
-    public SKLoopsReportBuilder(Cell[] cells, Possibilities[] links)
+    public SKLoopsReportBuilder(Cell[] cells, ReadOnlyBitSet16[] links)
     {
         _cells = cells;
         _links = links;
@@ -330,15 +336,15 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
             {
                 var before = i - 1;
                 if (before < 0) before = _links.Length - 1;
-                foreach (var possibility in _links[before])
+                foreach (var possibility in _links[before].EnumeratePossibilities())
                 {
-                    if(snapshot.PossibilitiesAt(cell).Peek(possibility))
+                    if(snapshot.PossibilitiesAt(cell).Contains(possibility))
                         on.Add(new CellPossibility(cell, possibility));
                 }
             
-                foreach (var possibility in _links[i])
+                foreach (var possibility in _links[i].EnumeratePossibilities())
                 {
-                    if(snapshot.PossibilitiesAt(cell).Peek(possibility))
+                    if(snapshot.PossibilitiesAt(cell).Contains(possibility))
                         off.Add(new CellPossibility(cell, possibility));
                 }
             }

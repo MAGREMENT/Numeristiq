@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -8,27 +8,27 @@ namespace Model.Sudoku.Solver.PossibilityPosition;
 
 public interface IPossibilitiesPositions
 {
-    IReadOnlyPossibilities Possibilities { get; }
+    ReadOnlyBitSet16 Possibilities { get; }
     GridPositions Positions { get; }
     int PossibilityCount { get; }
     int PositionsCount { get; }
     
     IEnumerable<Cell> EachCell();
     IEnumerable<Cell> EachCell(int with);
-    IReadOnlyPossibilities PossibilitiesInCell(Cell cell);
+    ReadOnlyBitSet16 PossibilitiesInCell(Cell cell);
 
     CellPossibilities[] ToCellPossibilitiesArray();
     bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility);
     
-    public Possibilities RestrictedCommons(IPossibilitiesPositions other)
+    public ReadOnlyBitSet16 RestrictedCommons(IPossibilitiesPositions other)
     {
-        Possibilities result = Possibility.Possibilities.NewEmpty();
+        ReadOnlyBitSet16 result = new();
 
-        foreach (var possibility in Possibilities)
+        foreach (var possibility in Possibilities.EnumeratePossibilities())
         {
-            if (!other.Possibilities.Peek(possibility)) continue;
+            if (!other.Possibilities.Contains(possibility)) continue;
 
-            if (IsPossibilityRestricted(other, possibility)) result.Add(possibility);
+            if (IsPossibilityRestricted(other, possibility)) result += possibility;
         }
 
         return result;
@@ -36,6 +36,6 @@ public interface IPossibilitiesPositions
 
     public bool Contains(CellPossibility cp)
     {
-        return Possibilities.Peek(cp.Possibility) && Positions.Peek(cp.Row, cp.Column);
+        return Possibilities.Contains(cp.Possibility) && Positions.Peek(cp.Row, cp.Column);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -86,7 +86,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
 
         var poss1 = strategyUser.PossibilitiesAt(row1, col1);
         var poss2 = strategyUser.PossibilitiesAt(row2, col2);
-        var or = poss1.Or(poss2);
+        var or = poss1 | poss2;
         
         if (shared.Count < poss1.Count || shared.Count < poss2.Count) return false;
 
@@ -101,12 +101,12 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
             bool useful = false;
             while (als.Possibilities.Next(ref i))
             {
-                if (!or.Peek(i)) continue;
+                if (!or.Contains(i)) continue;
                 
                 int j = i;
                 while (als.Possibilities.Next(ref j))
                 {
-                    if (!or.Peek(j)) continue;
+                    if (!or.Contains(j)) continue;
                     
                     if(forbidden.Add(new BiValue(i, j))) useful = true;
                 }
@@ -123,13 +123,13 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
                 && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void SearchForElimination(IStrategyUser strategyUser, IReadOnlyPossibilities poss1,
-        IReadOnlyPossibilities poss2, HashSet<BiValue> forbidden, int row, int col, bool inSameUnit)
+    private void SearchForElimination(IStrategyUser strategyUser, ReadOnlyBitSet16 poss1,
+        ReadOnlyBitSet16 poss2, HashSet<BiValue> forbidden, int row, int col, bool inSameUnit)
     {
-        foreach (var p1 in poss1)
+        foreach (var p1 in poss1.EnumeratePossibilities())
         {
             bool toDelete = true;
-            foreach (var p2 in poss2)
+            foreach (var p2 in poss2.EnumeratePossibilities())
             {
                 if (p1 == p2 && inSameUnit) continue;
                 if (!forbidden.Contains(new BiValue(p1, p2)))
@@ -168,13 +168,13 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);
 
-            Possibilities removed = new Possibilities();
-            foreach (var change in changes) removed.Add(change.Number);
+            var removed = new ReadOnlyBitSet16();
+            foreach (var change in changes) removed += change.Number;
             
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var als in _als)
             {
-                if (!removed.PeekAny(als.Possibilities)) continue;
+                if (!removed.ContainsAny(als.Possibilities)) continue;
                 foreach (var coord in als.EachCell())
                 {
                     lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);

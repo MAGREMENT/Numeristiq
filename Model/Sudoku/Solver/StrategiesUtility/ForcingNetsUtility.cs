@@ -194,7 +194,7 @@ public static class ForcingNetsUtility
             var possibilities = snapshot.PossibilitiesAt(from.Row, from.Column);
             bool ok = true;
 
-            foreach (var pos in possibilities)
+            foreach (var pos in possibilities.EnumeratePossibilities())
             {
                 if (pos == from.Possibility || pos == to.Possibility) continue;
 
@@ -209,7 +209,7 @@ public static class ForcingNetsUtility
             if (ok)
             {
                 var buffer = new List<CellPossibility>();
-                foreach (var pos in possibilities)
+                foreach (var pos in possibilities.EnumeratePossibilities())
                 {
                     if (pos == from.Possibility || pos == to.Possibility) continue;
 

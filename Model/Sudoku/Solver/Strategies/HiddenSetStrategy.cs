@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
@@ -39,26 +39,26 @@ public class HiddenSetStrategy : AbstractStrategy
     {
         for (int row = 0; row < 9; row++)
         {
-            if (RecursiveRowMashing(strategyUser, 1, new LinePositions(), Possibilities.NewEmpty(), row)) return;
+            if (RecursiveRowMashing(strategyUser, 1, new LinePositions(), new ReadOnlyBitSet16(), row)) return;
         }
 
         for (int col = 0; col < 9; col++)
         {
-            if (RecursiveColumnMashing(strategyUser, 1, new LinePositions(), Possibilities.NewEmpty(), col)) return;
+            if (RecursiveColumnMashing(strategyUser, 1, new LinePositions(), new ReadOnlyBitSet16(), col)) return;
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                if (RecursiveMiniGridMashing(strategyUser, 1, new MiniGridPositions(miniRow, miniCol),
-                    Possibilities.NewEmpty(), miniRow, miniCol)) return;
+                if (RecursiveMiniGridMashing(strategyUser, 1, new MiniGridPositions(miniRow, miniCol), 
+                        new ReadOnlyBitSet16(), miniRow, miniCol)) return;
             }
         }
     }
 
     private bool RecursiveRowMashing(IStrategyUser strategyUser, int start, LinePositions mashed,
-        Possibilities visited, int row)
+        ReadOnlyBitSet16 visited, int row)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -68,8 +68,8 @@ public class HiddenSetStrategy : AbstractStrategy
             var newMashed = mashed.Or(pos);
             if(newMashed.Count > _type) continue;
 
-            var newVisited = visited.Copy();
-            newVisited.Add(i);
+            var newVisited = visited;
+            newVisited += i;
 
             if (newVisited.Count == _type && newMashed.Count == _type)
             {
@@ -90,7 +90,7 @@ public class HiddenSetStrategy : AbstractStrategy
     }
     
     private bool RecursiveColumnMashing(IStrategyUser strategyUser, int start, LinePositions mashed,
-        Possibilities visited, int col)
+        ReadOnlyBitSet16 visited, int col)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -100,8 +100,8 @@ public class HiddenSetStrategy : AbstractStrategy
             var newMashed = mashed.Or(pos);
             if(newMashed.Count > _type) continue;
 
-            var newVisited = visited.Copy();
-            newVisited.Add(i);
+            var newVisited = visited;
+            newVisited += i;
 
             if (newVisited.Count == _type && newMashed.Count == _type)
             {
@@ -122,7 +122,7 @@ public class HiddenSetStrategy : AbstractStrategy
     }
     
     private bool RecursiveMiniGridMashing(IStrategyUser strategyUser, int start, MiniGridPositions mashed,
-        Possibilities visited, int miniRow, int miniCol)
+        ReadOnlyBitSet16 visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
         {
@@ -132,8 +132,8 @@ public class HiddenSetStrategy : AbstractStrategy
             var newMashed = mashed.Or(pos);
             if(newMashed.Count > _type) continue;
 
-            var newVisited = visited.Copy();
-            newVisited.Add(i);
+            var newVisited = visited;
+            newVisited += i;
 
             if (newVisited.Count == _type && newMashed.Count == _type)
             {
@@ -153,12 +153,11 @@ public class HiddenSetStrategy : AbstractStrategy
         return false;
     }
 
-    private void RemoveAllPossibilitiesExcept(int row, int col, Possibilities except,
-        IStrategyUser strategyUser)
+    private void RemoveAllPossibilitiesExcept(int row, int col, ReadOnlyBitSet16 except, IStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
-            if (!except.Peek(number))
+            if (!except.Contains(number))
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
@@ -168,13 +167,13 @@ public class HiddenSetStrategy : AbstractStrategy
 
 public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly Possibilities _possibilities;
+    private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
     private readonly int _unitNumber;
     private readonly Unit _unit;
 
 
-    public LineHiddenPossibilitiesReportBuilder(Possibilities possibilities, LinePositions linePos, int unitNumber, Unit unit)
+    public LineHiddenPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, LinePositions linePos, int unitNumber, Unit unit)
     {
         _possibilities = possibilities;
         _linePos = linePos;
@@ -186,18 +185,18 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport( Explanation(), lighter =>
         {
-            foreach (var possibility in _possibilities)
+            foreach (var possibility in _possibilities.EnumeratePossibilities())
             {
                 foreach (var other in _linePos)
                 {
                     switch (_unit)
                     {
                         case Unit.Row :
-                            if(snapshot.PossibilitiesAt(_unitNumber, other).Peek(possibility))
+                            if(snapshot.PossibilitiesAt(_unitNumber, other).Contains(possibility))
                                 lighter.HighlightPossibility(possibility, _unitNumber, other, ChangeColoration.CauseOffOne);
                             break;
                         case Unit.Column :
-                            if(snapshot.PossibilitiesAt(other, _unitNumber).Peek(possibility))
+                            if(snapshot.PossibilitiesAt(other, _unitNumber).Contains(possibility))
                                 lighter.HighlightPossibility(possibility, other, _unitNumber, ChangeColoration.CauseOffOne);
                             break;
                     }  
@@ -217,10 +216,10 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 
 public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
 {
-    private readonly Possibilities _possibilities;
+    private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;
 
-    public MiniGridHiddenPossibilitiesReportBuilder(Possibilities possibilities, MiniGridPositions miniPos)
+    public MiniGridHiddenPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, MiniGridPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;
@@ -230,11 +229,11 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport( Explanation(), lighter =>
         {
-            foreach (var possibility in _possibilities)
+            foreach (var possibility in _possibilities.EnumeratePossibilities())
             {
                 foreach (var pos in _miniPos)
                 {
-                    if (snapshot.PossibilitiesAt(pos.Row, pos.Column).Peek(possibility))
+                    if (snapshot.PossibilitiesAt(pos.Row, pos.Column).Contains(possibility))
                         lighter.HighlightPossibility(possibility, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
                 }
             }

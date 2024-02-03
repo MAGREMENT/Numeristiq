@@ -86,7 +86,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                 if (possibilities.Count == 0) continue;
 
                 bool emptied = true;
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     if (!seen[possibility - 1].Peek(row, col)
                         || inGraph.Contains(new CellPossibility(row, col, possibility)))
@@ -133,11 +133,11 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                         RemoveAllExcept(strategyUser, first.Row, first.Column, first.Possibility, second.Possibility);
                     else if(first.ShareAUnit(second))
                     {
-                        if(strategyUser.PossibilitiesAt(first.Row, first.Column).Peek(second.Possibility) &&
+                        if(strategyUser.PossibilitiesAt(first.Row, first.Column).Contains(second.Possibility) &&
                            !inGraph.Contains(new CellPossibility(first.Row, first.Column, second.Possibility)))
                             strategyUser.ChangeBuffer.ProposePossibilityRemoval(second.Possibility, first.Row, first.Column);
                         
-                        if(strategyUser.PossibilitiesAt(second.Row, second.Column).Peek(first.Possibility) &&
+                        if(strategyUser.PossibilitiesAt(second.Row, second.Column).Contains(first.Possibility) &&
                            !inGraph.Contains(new CellPossibility(second.Row, second.Column, first.Possibility)))
                             strategyUser.ChangeBuffer.ProposePossibilityRemoval(first.Possibility, second.Row, second.Column);
                     }

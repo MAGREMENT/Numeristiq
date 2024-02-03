@@ -1,14 +1,15 @@
-﻿using Model.Sudoku.Solver.Position;
+﻿using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Possibility;
 
 public class SolverSnapshot : IPossibilitiesHolder
 {
     private readonly Sudoku _sudoku;
-    private readonly Possibilities[,] _possibilities;
+    private readonly ReadOnlyBitSet16[,] _possibilities;
     private readonly GridPositions[] _positions;
 
-    private SolverSnapshot(Sudoku sudoku, Possibilities[,] possibilities, GridPositions[] positions)
+    private SolverSnapshot(Sudoku sudoku, ReadOnlyBitSet16[,] possibilities, GridPositions[] positions)
     {
         _sudoku = sudoku;
         _positions = positions;
@@ -17,14 +18,14 @@ public class SolverSnapshot : IPossibilitiesHolder
     
     public static IPossibilitiesHolder TakeSnapshot(IPossibilitiesHolder holder)
     {
-        var possibilities = new Possibilities[9, 9];
+        var possibilities = new ReadOnlyBitSet16[9, 9];
         var positions = new GridPositions[9];
         
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                possibilities[row, col] = holder.PossibilitiesAt(row, col).Copy();
+                possibilities[row, col] = holder.PossibilitiesAt(row, col);
             }
         }
 
@@ -38,7 +39,7 @@ public class SolverSnapshot : IPossibilitiesHolder
 
     public IReadOnlySudoku Sudoku => _sudoku;
 
-    public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
         return _possibilities[row, col];
     }

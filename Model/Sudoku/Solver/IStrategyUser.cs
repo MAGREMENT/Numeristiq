@@ -1,8 +1,7 @@
-﻿using Model.Sudoku.Solver.Helpers;
+﻿using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.Helpers;
 using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
-using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver;
@@ -23,10 +22,10 @@ public interface IStrategyUser : IPossibilitiesHolder
 
     bool UniquenessDependantStrategiesAllowed { get; }
 
-    public Possibilities NotCachedPossibilitiesAt(int row, int col);
-    public Possibilities NotCachedPossibilitiesAt(Cell cell)
+    public ReadOnlyBitSet16 RawPossibilitiesAt(int row, int col);
+    public ReadOnlyBitSet16 RawPossibilitiesAt(Cell cell)
     {
-        return NotCachedPossibilitiesAt(cell.Row, cell.Column);
+        return RawPossibilitiesAt(cell.Row, cell.Column);
     }
 }
 

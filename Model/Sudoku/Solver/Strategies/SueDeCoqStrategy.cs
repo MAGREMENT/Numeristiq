@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -76,10 +77,10 @@ public class SueDeCoqStrategy : AbstractStrategy
 
     private bool Try(IStrategyUser strategyUser, Unit unit, params Cell[] cells)
     {
-        var possibilities = Possibilities.NewEmpty();
+        var possibilities = new ReadOnlyBitSet16();
         foreach (var cell in cells)
         {
-            possibilities.Add(strategyUser.PossibilitiesAt(cell));
+            possibilities += strategyUser.PossibilitiesAt(cell);
         }
 
         if (possibilities.Count < cells.Length + 2) return false;
@@ -96,22 +97,22 @@ public class SueDeCoqStrategy : AbstractStrategy
         foreach (var boxCombination in CombinationCalculator.EveryCombinationWithMaxCount(maxCellsPerUnit, cellsInBox))
         {
             var forbiddenPositions = new GridPositions();
-            var boxPossibilities = Possibilities.NewEmpty();
+            var boxPossibilities = new ReadOnlyBitSet16();
             foreach (var cell in boxCombination)
             {
                 forbiddenPositions.Add(cell);
-                boxPossibilities.Add(strategyUser.PossibilitiesAt(cell));
+                boxPossibilities += strategyUser.PossibilitiesAt(cell);
             }
 
-            var forbiddenPossibilities = boxPossibilities.And(possibilities);
+            var forbiddenPossibilities = boxPossibilities & possibilities;
 
             foreach (var unitPP in Combinations(strategyUser, forbiddenPositions,
                          forbiddenPossibilities, maxCellsPerUnit, cellsInUnit))
             {
-                var outOfCenterPossibilities = boxPossibilities.Or(unitPP.Possibilities);
-                if (outOfCenterPossibilities.And(possibilities).Count < minimumPossibilitiesDrawn) continue;
+                var outOfCenterPossibilities = boxPossibilities | unitPP.Possibilities;
+                if ((outOfCenterPossibilities & possibilities).Count < minimumPossibilitiesDrawn) continue;
 
-                var notDrawnPossibilities = possibilities.Difference(outOfCenterPossibilities);
+                var notDrawnPossibilities = possibilities - outOfCenterPossibilities;
                 if(unitPP.Possibilities.Count + boxPossibilities.Count + notDrawnPossibilities.Count 
                    != cells.Length + boxCombination.Length + unitPP.PositionsCount) continue;
 
@@ -127,7 +128,7 @@ public class SueDeCoqStrategy : AbstractStrategy
     }
 
     private void Process(IStrategyUser strategyUser, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
-        Cell[] center, Possibilities centerPossibilities, List<Cell> cellsInBox, List<Cell> cellsInUnit)
+        Cell[] center, ReadOnlyBitSet16 centerPossibilities, List<Cell> cellsInBox, List<Cell> cellsInUnit)
     {
         var centerGP = new GridPositions();
         foreach (var cell in center)
@@ -138,14 +139,14 @@ public class SueDeCoqStrategy : AbstractStrategy
         var forbiddenBox = centerGP.Or(boxPP.Positions);
         var forbiddenUnit = centerGP.Or(unitPP.Positions);
 
-        var boxElimination = boxPP.Possibilities.Or(centerPossibilities.Difference(unitPP.Possibilities));
-        var unitElimination = unitPP.Possibilities.Or(centerPossibilities.Difference(boxPP.Possibilities));
+        var boxElimination = boxPP.Possibilities | (centerPossibilities - unitPP.Possibilities);
+        var unitElimination = unitPP.Possibilities | (centerPossibilities - boxPP.Possibilities);
 
         foreach (var cell in cellsInBox)
         {
             if (forbiddenBox.Peek(cell)) continue;
             
-            foreach (var p in boxElimination)
+            foreach (var p in boxElimination.EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
             }
@@ -155,7 +156,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         {
             if (forbiddenUnit.Peek(cell)) continue;
 
-            foreach (var p in unitElimination)
+            foreach (var p in unitElimination.EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
             }
@@ -200,19 +201,19 @@ public class SueDeCoqStrategy : AbstractStrategy
     }
     
     private static List<IPossibilitiesPositions> Combinations(IStrategyUser strategyUser, GridPositions forbiddenPositions, 
-        Possibilities forbiddenPossibilities, int max, IReadOnlyList<Cell> sample)
+        ReadOnlyBitSet16 forbiddenPossibilities, int max, IReadOnlyList<Cell> sample)
     {
         var result = new List<IPossibilitiesPositions>();
 
         Combinations(strategyUser, forbiddenPositions, forbiddenPossibilities, max, 0, sample, result, new List<Cell>(),
-            Possibilities.NewEmpty());
+            new ReadOnlyBitSet16());
 
         return result;
     }
 
     private static void Combinations(IStrategyUser strategyUser, GridPositions forbiddenPositions, 
-        Possibilities forbiddenPossibilities, int max, int start, IReadOnlyList<Cell> sample,
-        List<IPossibilitiesPositions> result, List<Cell> currentCells, Possibilities currentPossibilities)
+        ReadOnlyBitSet16 forbiddenPossibilities, int max, int start, IReadOnlyList<Cell> sample,
+        List<IPossibilitiesPositions> result, List<Cell> currentCells, ReadOnlyBitSet16 currentPossibilities)
     {
         for (int i = start; i < sample.Count; i++)
         {
@@ -220,10 +221,10 @@ public class SueDeCoqStrategy : AbstractStrategy
             if (forbiddenPositions.Peek(c)) continue;
             
             var poss = strategyUser.PossibilitiesAt(c);
-            if (forbiddenPossibilities.PeekAny(poss)) continue;
+            if (forbiddenPossibilities.ContainsAny(poss)) continue;
             
             currentCells.Add(c);
-            var newPossibilities = poss.Or(currentPossibilities);
+            var newPossibilities = poss | currentPossibilities;
             
             result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, strategyUser)); 
             if (currentCells.Count < max) Combinations(strategyUser, forbiddenPositions, forbiddenPossibilities, max,
@@ -256,11 +257,11 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
             {
                 lighter.HighlightCell(cell, ChangeColoration.Neutral);
 
-                foreach (var possibility in snapshot.PossibilitiesAt(cell))
+                foreach (var possibility in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
-                    if(_boxPP.Possibilities.Peek(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
+                    if(_boxPP.Possibilities.Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
                         cell.Column, ChangeColoration.CauseOffOne);
-                    else if(_unitPP.Possibilities.Peek(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
+                    else if(_unitPP.Possibilities.Contains(possibility)) lighter.HighlightPossibility(possibility, cell.Row,
                         cell.Column, ChangeColoration.CauseOffTwo);
                     else lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOnOne);
                 }

@@ -113,7 +113,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         {
             foreach (var col in _cols)
             {
-                if (snapshot.PossibilitiesAt(row, col).Peek(_number)) coords.Add(new Cell(row, col));
+                if (snapshot.PossibilitiesAt(row, col).Contains(_number)) coords.Add(new Cell(row, col));
             }
         }
         return new ChangeReport( "", lighter =>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -125,11 +126,9 @@ public class PointingRow : ISudokuElement
         return result;
     }
 
-    public Possibilities EveryPossibilities()
+    public ReadOnlyBitSet16 EveryPossibilities()
     {
-        var result = Possibilities.NewEmpty();
-        result.Add(Possibility);
-        return result;
+        return new ReadOnlyBitSet16(Possibility);
     }
 
     public CellPossibility[] EveryCellPossibility()

@@ -79,7 +79,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (strategyUser.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (strategyUser.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -151,7 +151,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (strategyUser.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (strategyUser.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);

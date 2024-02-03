@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Possibility;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Utility;
 
@@ -21,22 +21,22 @@ public class AlmostNakedSetSearcher
     {
         List<IPossibilitiesPositions> result = new();
 
-        InCells(coords, new List<Cell>(), Possibilities.NewEmpty(), 0, result);
+        InCells(coords, new List<Cell>(), new ReadOnlyBitSet16(), 0, result);
         
         return result;
     }
 
     private void InCells(List<Cell> coords, List<Cell> visited,
-        IReadOnlyPossibilities current, int start, List<IPossibilitiesPositions> result)
+        ReadOnlyBitSet16 current, int start, List<IPossibilitiesPositions> result)
     {
         for (int i = start; i < coords.Count; i++)
         {
             if (!Cells.ShareAUnitWithAll(coords[i], visited)) continue;
 
             var inspected = _strategyUser.PossibilitiesAt(coords[i].Row, coords[i].Column);
-            if(inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
+            if(inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
-            Possibilities or = current.Or(inspected);
+            var or = current | inspected;
             visited.Add(coords[i]);
 
             if (or.Count == visited.Count + Difference)
@@ -53,20 +53,20 @@ public class AlmostNakedSetSearcher
     public List<IPossibilitiesPositions> FullGrid()
     {
         var result = new List<IPossibilitiesPositions>();
-        var possibilities = Possibilities.NewEmpty();
+        var possibilities = new ReadOnlyBitSet16();
         var cells = new List<Cell>();
 
         for (int row = 0; row < 9; row++)
         {
             InRow(row, 0, possibilities, cells, result);
-            possibilities.RemoveAll();
+            possibilities = new ReadOnlyBitSet16();
             cells.Clear();
         }
         
         for (int col = 0; col < 9; col++)
         {
             InColumn(col, 0, possibilities, cells, result, true);
-            possibilities.RemoveAll();
+            possibilities = new ReadOnlyBitSet16();
             cells.Clear();
         }
 
@@ -75,7 +75,7 @@ public class AlmostNakedSetSearcher
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
                 InMiniGrid(miniRow, miniCol, 0, possibilities, cells, result, true);
-                possibilities.RemoveAll();
+                possibilities = new ReadOnlyBitSet16();
                 cells.Clear();
             }
         }
@@ -87,7 +87,7 @@ public class AlmostNakedSetSearcher
     {
         var result = new List<IPossibilitiesPositions>();
 
-        InRow(row, 0, Possibilities.NewEmpty(), new List<Cell>(), result);
+        InRow(row, 0, new ReadOnlyBitSet16(), new List<Cell>(), result);
 
         return result;
     }
@@ -96,7 +96,7 @@ public class AlmostNakedSetSearcher
     {
         var result = new List<IPossibilitiesPositions>();
 
-        InColumn(col, 0, Possibilities.NewEmpty(), new List<Cell>(), result, false);
+        InColumn(col, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
 
         return result;
     }
@@ -105,20 +105,20 @@ public class AlmostNakedSetSearcher
     {
         var result = new List<IPossibilitiesPositions>();
 
-        InMiniGrid(miniRow, miniCol, 0, Possibilities.NewEmpty(), new List<Cell>(), result, false);
+        InMiniGrid(miniRow, miniCol, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
 
         return result;
     }
     
-    private void InRow(int row, int start, IReadOnlyPossibilities current,
+    private void InRow(int row, int start, ReadOnlyBitSet16 current,
         List<Cell> visited, List<IPossibilitiesPositions> result)
     {
         for (int col = start; col < 9; col++)
         {
             var inspected = _strategyUser.PossibilitiesAt(row, col);
-            if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
+            if (inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
-            Possibilities mashed = current.Or(inspected);
+            var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
             if (mashed.Count == visited.Count + Difference)
@@ -132,15 +132,15 @@ public class AlmostNakedSetSearcher
         }
     }
     
-    private void InColumn(int col, int start, IReadOnlyPossibilities current,
+    private void InColumn(int col, int start, ReadOnlyBitSet16 current,
         List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSingles)
     {
         for (int row = start; row < 9; row++)
         {
             var inspected = _strategyUser.PossibilitiesAt(row, col);
-            if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
+            if (inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
-            Possibilities mashed = current.Or(inspected);
+            var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
             if (mashed.Count == visited.Count + Difference && (!excludeSingles || visited.Count > 1))
@@ -155,7 +155,7 @@ public class AlmostNakedSetSearcher
     }
 
     private void InMiniGrid(int miniRow, int miniCol, int start,
-        IReadOnlyPossibilities current, List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSameLine)
+        ReadOnlyBitSet16 current, List<Cell> visited, List<IPossibilitiesPositions> result, bool excludeSameLine)
     {
         for (int n = start; n < 9; n++)
         {
@@ -163,9 +163,9 @@ public class AlmostNakedSetSearcher
             int col = miniCol * 3 + n % 3;
 
             var inspected = _strategyUser.PossibilitiesAt(row, col);
-            if (inspected.Count == 0 || (current.Count != 0 && !current.PeekAny(inspected))) continue;
+            if (inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
 
-            Possibilities mashed = current.Or(inspected);
+            var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
             if (mashed.Count == visited.Count + Difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))

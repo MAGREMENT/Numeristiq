@@ -17,7 +17,7 @@ public class CellType : IBlossomLoopType
 
                 var cps = new CellPossibility[poss.Count];
                 int cursor = 0;
-                foreach (var p in poss)
+                foreach (var p in poss.EnumeratePossibilities())
                 {
                     cps[cursor++] = new CellPossibility(row, col, p);
                 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Sudoku.Solver.Possibility;
+using Model.Sudoku.Solver.BitSets;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
@@ -9,7 +9,7 @@ public class PossibilitiesGraph<T> : IEnumerable<T> where T : notnull
 {
     private readonly Dictionary<T, HashSet<PossibilitiesLink<T>>> _links = new();
 
-    public void Add(T from, T to, Possibilities poss, LinkType type = LinkType.BiDirectional)
+    public void Add(T from, T to, ReadOnlyBitSet16 poss, LinkType type = LinkType.BiDirectional)
     {
         if (!_links.TryGetValue(from, out var hs))
         {
@@ -44,4 +44,4 @@ public class PossibilitiesGraph<T> : IEnumerable<T> where T : notnull
     }
 }
 
-public record PossibilitiesLink<T>(T To, IReadOnlyPossibilities Possibilities);
+public record PossibilitiesLink<T>(T To, ReadOnlyBitSet16 Possibilities);

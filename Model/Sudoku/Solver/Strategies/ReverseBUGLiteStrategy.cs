@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -29,8 +30,8 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
             {
                 var row2 = startR + r;
                 
-                var poss1 = Possibilities.NewEmpty();
-                var poss2 = Possibilities.NewEmpty();
+                var poss1 = new ReadOnlyBitSet16();
+                var poss2 = new ReadOnlyBitSet16();
 
                 var cols1 = new LinePositions();
                 var cols2 = new LinePositions();
@@ -40,26 +41,25 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                     var current = strategyUser.Sudoku[row1, col];
                     if (current != 0)
                     {
-                        poss1.Add(current);
+                        poss1 += current;
                         cols1.Add(col);
                     }
                     
                     current = strategyUser.Sudoku[row2, col];
                     if (current != 0)
                     {
-                        poss2.Add(current);
+                        poss2 += current;
                         cols2.Add(col);
                     }
                 }
-
-                var and = poss1.And(poss2);
-                var solo = poss1.Difference(and).Or(poss2).Difference(and);
+                
+                var solo = (poss1 | poss2) - (poss1 & poss2);
                 if (solo.Count != 1) continue;
 
                 var or = cols1.Or(cols2);
                 if (or.Count != Math.Max(cols1.Count, cols2.Count)) continue;
 
-                var p = solo.First();
+                var p = solo.FirstPossibility();
                 foreach (var col in or)
                 {
                     if (!cols1.Peek(col))
@@ -89,9 +89,9 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
             for (int c = miniC + 1; c < 3; c++)
             {
                 var col2 = startC + c;
-                
-                var poss1 = Possibilities.NewEmpty();
-                var poss2 = Possibilities.NewEmpty();
+
+                var poss1 = new ReadOnlyBitSet16();
+                var poss2 = new ReadOnlyBitSet16();
 
                 var rows1 = new LinePositions();
                 var rows2 = new LinePositions();
@@ -101,26 +101,25 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                     var current = strategyUser.Sudoku[row, col1];
                     if (current != 0)
                     {
-                        poss1.Add(current);
+                        poss1 += current;
                         rows1.Add(row);
                     }
                     
                     current = strategyUser.Sudoku[row, col2];
                     if (current != 0)
                     {
-                        poss2.Add(current);
+                        poss2 += current;
                         rows2.Add(row);
                     }
                 }
 
-                var and = poss1.And(poss2);
-                var solo = poss1.Difference(and).Or(poss2).Difference(and);
+                var solo = (poss1 | poss2) - (poss1 & poss2);
                 if (solo.Count != 1) continue;
 
                 var or = rows1.Or(rows2);
                 if (or.Count != Math.Max(rows1.Count, rows2.Count)) continue;
 
-                var p = solo.First();
+                var p = solo.FirstPossibility();
                 foreach (var row in or)
                 {
                     if (!rows1.Peek(row))

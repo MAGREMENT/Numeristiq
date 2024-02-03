@@ -2,5 +2,5 @@
 
 public abstract class AbstractStrategy
 {
-    public abstract void Apply(ISolvable solvable);
+    public abstract void Apply(IStrategyUser strategyUser);
 }

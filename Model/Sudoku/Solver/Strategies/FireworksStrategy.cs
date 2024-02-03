@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
@@ -35,7 +36,7 @@ public class FireworksStrategy : AbstractStrategy
                 var possibilities = strategyUser.PossibilitiesAt(row, col);
                 if (possibilities.Count == 0) continue;
 
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     var rowPositions = strategyUser.RowPositionsAt(row, possibility);
                     var colPositions = strategyUser.ColumnPositionsAt(col, possibility);
@@ -118,9 +119,7 @@ public class FireworksStrategy : AbstractStrategy
                         
                         if (or.Count == 3)
                         {
-                            var poss = Possibilities.NewEmpty();
-                            poss.Add(i + 1);
-                            poss.Add(j + 1);
+                            var poss = new ReadOnlyBitSet16(i + 1, j + 1);
                             dualFireworks.Add(new Fireworks(or, poss));
                         }
 
@@ -135,10 +134,7 @@ public class FireworksStrategy : AbstractStrategy
                                 
                                 if (or2.Count == 3)
                                 {
-                                    var poss = Possibilities.NewEmpty();
-                                    poss.Add(i + 1);
-                                    poss.Add(j + 1);
-                                    poss.Add(k + 1);
+                                    var poss = new ReadOnlyBitSet16(i + 1, j + 1, k + 1);
                                     
                                     if(ProcessTripleFireworks(strategyUser, new Fireworks(or2, poss)) &&
                                        OnCommitBehavior == OnCommitBehavior.Return) return;
@@ -160,21 +156,21 @@ public class FireworksStrategy : AbstractStrategy
 
     private bool ProcessTripleFireworks(IStrategyUser user, Fireworks fireworks)
     {
-        foreach (var possibility in user.PossibilitiesAt(fireworks.Cross))
+        foreach (var possibility in user.PossibilitiesAt(fireworks.Cross).EnumeratePossibilities())
         {
-            if (!fireworks.Possibilities.Peek(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
+            if (!fireworks.Possibilities.Contains(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
                     fireworks.Cross.Row, fireworks.Cross.Column);
         }
         
-        foreach (var possibility in user.PossibilitiesAt(fireworks.RowWing))
+        foreach (var possibility in user.PossibilitiesAt(fireworks.RowWing).EnumeratePossibilities())
         {
-            if (!fireworks.Possibilities.Peek(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
+            if (!fireworks.Possibilities.Contains(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
                 fireworks.RowWing.Row, fireworks.RowWing.Column);
         }
         
-        foreach (var possibility in user.PossibilitiesAt(fireworks.ColumnWing))
+        foreach (var possibility in user.PossibilitiesAt(fireworks.ColumnWing).EnumeratePossibilities())
         {
-            if (!fireworks.Possibilities.Peek(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
+            if (!fireworks.Possibilities.Contains(possibility)) user.ChangeBuffer.ProposePossibilityRemoval(possibility,
                 fireworks.ColumnWing.Row, fireworks.ColumnWing.Column);
         }
 
@@ -190,31 +186,31 @@ public class FireworksStrategy : AbstractStrategy
             {
                 var one = fireworksList[i];
                 var two = fireworksList[j];
-                if (one.Possibilities.PeekAny(two.Possibilities)) continue;
+                if (one.Possibilities.ContainsAny(two.Possibilities)) continue;
 
                 if (one.RowWing != two.ColumnWing || one.ColumnWing != two.RowWing) continue;
                 
-                foreach (var possibility in user.PossibilitiesAt(one.Cross))
+                foreach (var possibility in user.PossibilitiesAt(one.Cross).EnumeratePossibilities())
                 {
-                    if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
+                    if (!one.Possibilities.Contains(possibility) && !two.Possibilities.Contains(possibility))
                         user.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
                 }
                 
-                foreach (var possibility in user.PossibilitiesAt(one.RowWing))
+                foreach (var possibility in user.PossibilitiesAt(one.RowWing).EnumeratePossibilities())
                 {
-                    if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
+                    if (!one.Possibilities.Contains(possibility) && !two.Possibilities.Contains(possibility))
                         user.ChangeBuffer.ProposePossibilityRemoval(possibility, one.RowWing.Row, one.RowWing.Column);
                 }
                 
-                foreach (var possibility in user.PossibilitiesAt(two.Cross))
+                foreach (var possibility in user.PossibilitiesAt(two.Cross).EnumeratePossibilities())
                 {
-                    if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
+                    if (!one.Possibilities.Contains(possibility) && !two.Possibilities.Contains(possibility))
                         user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
                 }
                 
-                foreach (var possibility in user.PossibilitiesAt(two.RowWing))
+                foreach (var possibility in user.PossibilitiesAt(two.RowWing).EnumeratePossibilities())
                 {
-                    if (!one.Possibilities.Peek(possibility) && !two.Possibilities.Peek(possibility))
+                    if (!one.Possibilities.Contains(possibility) && !two.Possibilities.Contains(possibility))
                         user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Column);
                 }
 
@@ -231,7 +227,7 @@ public class FireworksStrategy : AbstractStrategy
         {
             foreach (var als in allAls)
             {
-                if (!als.Possibilities.PeekAll(df.Possibilities)) continue;
+                if (!als.Possibilities.ContainsAll(df.Possibilities)) continue;
 
                 bool one = true;
                 bool two = true;
@@ -246,9 +242,9 @@ public class FireworksStrategy : AbstractStrategy
                     }
 
                     var possibilities = user.PossibilitiesAt(cell);
-                    foreach (var possibility in df.Possibilities)
+                    foreach (var possibility in df.Possibilities.EnumeratePossibilities())
                     {
-                        if (!possibilities.Peek(possibility)) continue;
+                        if (!possibilities.Contains(possibility)) continue;
 
                         if (!Cells.ShareAUnit(cell, df.RowWing)) one = false;
                         if (!Cells.ShareAUnit(cell, df.ColumnWing)) two = false;
@@ -276,7 +272,7 @@ public class FireworksStrategy : AbstractStrategy
                             sharedSeenCell == df.ColumnWing || !Cells.ShareAUnit(sharedSeenCell, df.RowWing) ||
                             !Cells.ShareAUnit(sharedSeenCell, df.ColumnWing)) continue;
 
-                        foreach (var possibility in df.Possibilities)
+                        foreach (var possibility in df.Possibilities.EnumeratePossibilities())
                         {
                             user.ChangeBuffer.ProposePossibilityRemoval(possibility, sharedSeenCell.Row, sharedSeenCell.Column);
                         }
@@ -295,9 +291,9 @@ public class FireworksStrategy : AbstractStrategy
         //L-Wing
         foreach (var df in fireworksList)
         {
-            foreach (var possibility in user.PossibilitiesAt(df.ColumnWing))
+            foreach (var possibility in user.PossibilitiesAt(df.ColumnWing).EnumeratePossibilities())
             {
-                if (df.Possibilities.Peek(possibility)) continue;
+                if (df.Possibilities.Contains(possibility)) continue;
 
                 var current = new CellPossibility(df.ColumnWing, possibility);
                 foreach (var friend in Cells.DefaultStrongLinks(user, current))
@@ -312,9 +308,9 @@ public class FireworksStrategy : AbstractStrategy
                 }
             }
             
-            foreach (var possibility in user.PossibilitiesAt(df.RowWing))
+            foreach (var possibility in user.PossibilitiesAt(df.RowWing).EnumeratePossibilities())
             {
-                if (df.Possibilities.Peek(possibility)) continue;
+                if (df.Possibilities.Contains(possibility)) continue;
 
                 var current = new CellPossibility(df.RowWing, possibility);
                 foreach (var friend in Cells.DefaultStrongLinks(user, current))
@@ -336,9 +332,9 @@ public class FireworksStrategy : AbstractStrategy
             var opposite = new Cell(df.ColumnWing.Row, df.RowWing.Column);
             if (user.PossibilitiesAt(opposite).Equals(df.Possibilities))
             {
-                foreach (var p in user.PossibilitiesAt(df.Cross))
+                foreach (var p in user.PossibilitiesAt(df.Cross).EnumeratePossibilities())
                 {
-                    if (!df.Possibilities.Peek(p)) user.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
+                    if (!df.Possibilities.Contains(p)) user.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
                 }
 
                 if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
@@ -360,21 +356,21 @@ public class FireworksStrategy : AbstractStrategy
                 var center = new Cell(one.ColumnWing.Row, two.RowWing.Column);
                 if (!user.PossibilitiesAt(center).Equals(one.Possibilities)) continue;
 
-                foreach (var possibility in user.PossibilitiesAt(one.Cross))
+                foreach (var possibility in user.PossibilitiesAt(one.Cross).EnumeratePossibilities())
                 {
-                    if (one.Possibilities.Peek(possibility)) continue;
+                    if (one.Possibilities.Contains(possibility)) continue;
                     
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, one.Cross.Row, one.Cross.Column);
                 }
                 
-                foreach (var possibility in user.PossibilitiesAt(two.Cross))
+                foreach (var possibility in user.PossibilitiesAt(two.Cross).EnumeratePossibilities())
                 {
-                    if (one.Possibilities.Peek(possibility)) continue;
+                    if (one.Possibilities.Contains(possibility)) continue;
                     
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.Cross.Row, two.Cross.Column);
                 }
 
-                foreach (var possibility in one.Possibilities)
+                foreach (var possibility in one.Possibilities.EnumeratePossibilities())
                 {
                     for (int unit = 0; unit < 9; unit++)
                     {
@@ -400,7 +396,7 @@ public class FireworksStrategy : AbstractStrategy
 
 public class Fireworks
 {
-    public Fireworks(Cell cross, Cell rowWing, Cell columnWing, Possibilities possibilities)
+    public Fireworks(Cell cross, Cell rowWing, Cell columnWing, ReadOnlyBitSet16 possibilities)
     {
         Cross = cross;
         RowWing = rowWing;
@@ -408,7 +404,7 @@ public class Fireworks
         Possibilities = possibilities;
     }
 
-    public Fireworks(GridPositions gp, Possibilities possibilities)
+    public Fireworks(GridPositions gp, ReadOnlyBitSet16 possibilities)
     {
         var asArray = gp.ToArray();
         var first = asArray[0];
@@ -448,20 +444,20 @@ public class Fireworks
     public Cell Cross { get; }
     public Cell RowWing { get; }
     public Cell ColumnWing { get; }
-    public Possibilities Possibilities { get; }
+    public ReadOnlyBitSet16 Possibilities { get; }
 }
 
 public static class FireworksHighlightUtils
 {
     public static void Highlight(IHighlighter lighter, Fireworks firework, IPossibilitiesHolder snapshot, ref int startColor)
     {
-        foreach (var possibility in firework.Possibilities)
+        foreach (var possibility in firework.Possibilities.EnumeratePossibilities())
         {
-            if(snapshot.PossibilitiesAt(firework.ColumnWing).Peek(possibility))
+            if(snapshot.PossibilitiesAt(firework.ColumnWing).Contains(possibility))
                 lighter.HighlightPossibility(possibility, firework.ColumnWing.Row, firework.ColumnWing.Column,
                     (ChangeColoration) startColor);
                 
-            if(snapshot.PossibilitiesAt(firework.RowWing).Peek(possibility))
+            if(snapshot.PossibilitiesAt(firework.RowWing).Contains(possibility))
                 lighter.HighlightPossibility(possibility, firework.RowWing.Row, firework.RowWing.Column,
                     (ChangeColoration) startColor);
                 

@@ -147,17 +147,17 @@ public class HighlighterTranslator : IHighlighter
         switch (possibilitiesFrom.Count, possibilitiesTo.Count)
         {
             case(1, 1) :
-                if (possibilitiesFrom.Equals(possibilitiesTo)) possibilitySearch = possibilitiesFrom.First();
+                if (possibilitiesFrom.Equals(possibilitiesTo)) possibilitySearch = possibilitiesFrom.FirstPossibility();
                 else possibilitySearch = -1;
                 break;
             case (1, > 1) :
-                first = possibilitiesFrom.First();
-                if (possibilitiesTo.Peek(first)) possibilitySearch = first;
+                first = possibilitiesFrom.FirstPossibility();
+                if (possibilitiesTo.Contains(first)) possibilitySearch = first;
                 else possibilitySearch = -1;
                 break;
             case (> 1, 1) :
-                first = possibilitiesTo.First();
-                if (possibilitiesFrom.Peek(first)) possibilitySearch = first;
+                first = possibilitiesTo.FirstPossibility();
+                if (possibilitiesFrom.Contains(first)) possibilitySearch = first;
                 else possibilitySearch = -1;
                 break;
             default :
@@ -172,11 +172,11 @@ public class HighlighterTranslator : IHighlighter
         {
             foreach (var cellT in to.EveryCellPossibilities())
             {
-                foreach (var possF in cellF.Possibilities)
+                foreach (var possF in cellF.Possibilities.EnumeratePossibilities())
                 {
                     if (possibilitySearch != -1 && possF != possibilitySearch) continue;
 
-                    foreach (var possT in cellT.Possibilities)
+                    foreach (var possT in cellT.Possibilities.EnumeratePossibilities())
                     {
                         if (possibilitySearch != -1 && possT != possibilitySearch) continue;
 

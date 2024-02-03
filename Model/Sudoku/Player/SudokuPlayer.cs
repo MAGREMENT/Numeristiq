@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Possibility;
+using Model.Sudoku.Solver.BitSets;
 using Model.Utility;
 
 namespace Model.Sudoku.Player;
@@ -179,7 +179,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
     
     public void ComputeDefaultPossibilities()
     {
-        var possibilities = new Possibilities();
+        var possibilities = ReadOnlyBitSet16.Filled(1, 9);
         bool yes = false;
         
         for (int row = 0; row < 9; row++)
@@ -191,7 +191,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 PossibilitiesFor(possibilities, row, col);
                 for (int n = 1; n <= 9; n++)
                 {
-                    if (possibilities.Peek(n))
+                    if (possibilities.Contains(n))
                     {
                         if (!yes && !_cells[row, col].PeekPossibility(n, PossibilitiesLocation.Middle))
                         {
@@ -213,7 +213,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                     }
                 }
                 
-                possibilities.Reset();
+                possibilities = ReadOnlyBitSet16.Filled(1, 9);
             }
         }
         
@@ -222,7 +222,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
 
     public void ComputeDefaultPossibilities(IEnumerable<Cell> cells)
     {
-        var possibilities = new Possibilities();
+        var possibilities = ReadOnlyBitSet16.Filled(1, 9);
         bool yes = false;
 
         foreach (var c in cells)
@@ -232,7 +232,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             PossibilitiesFor(possibilities, c.Row, c.Column);
             for (int n = 1; n <= 9; n++)
             {
-                if (possibilities.Peek(n))
+                if (possibilities.Contains(n))
                 {
                     if (!yes && !_cells[c.Row, c.Column].PeekPossibility(n, PossibilitiesLocation.Middle))
                     {
@@ -254,7 +254,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 }
             }
                 
-            possibilities.Reset();
+            possibilities = ReadOnlyBitSet16.Filled(1, 9);
         }
         
         if(yes) Changed?.Invoke();
@@ -383,7 +383,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 var current = ss.At(row, col);
                 if (current.IsPossibilities)
                 {
-                    foreach (var p in current.AsPossibilities)
+                    foreach (var p in current.AsPossibilities.EnumeratePossibilities())
                     {
                         _cells[row, col].AddPossibility(p, PossibilitiesLocation.Middle);
                     }
@@ -432,12 +432,12 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
     
     //Private-----------------------------------------------------------------------------------------------------------
 
-    private void PossibilitiesFor(Possibilities possibilities, int row, int col)
+    private void PossibilitiesFor(ReadOnlyBitSet16 possibilities, int row, int col)
     {
         for (int u = 0; u < 9; u++)
         {
-            if (u != row && _cells[u, col].IsNumber()) possibilities.Remove(_cells[u, col].Number());
-            if (u != col && _cells[row, u].IsNumber()) possibilities.Remove(_cells[row, u].Number());
+            if (u != row && _cells[u, col].IsNumber()) possibilities -= _cells[u, col].Number();
+            if (u != col && _cells[row, u].IsNumber()) possibilities -= _cells[row, u].Number();
         }
 
         var startR = row / 3 * 3;
@@ -450,7 +450,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 var inspectedCol = startC + c;
 
                 if ((row != inspectedRow || col != inspectedCol) && _cells[inspectedRow, inspectedCol].IsNumber())
-                    possibilities.Remove(_cells[inspectedRow, inspectedCol].Number());
+                    possibilities -= _cells[inspectedRow, inspectedCol].Number();
             }
         }
     }

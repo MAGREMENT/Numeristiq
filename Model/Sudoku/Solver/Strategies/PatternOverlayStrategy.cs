@@ -298,7 +298,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
                 {
                     for (int col = 0; col < 9; col++)
                     {
-                        if (!snapshot.PossibilitiesAt(row, col).Peek(_number)) continue;
+                        if (!snapshot.PossibilitiesAt(row, col).Contains(_number)) continue;
 
                         lighter.HighlightCell(row, col, current.Peek(row, col) 
                             ? ChangeColoration.CauseOnOne : ChangeColoration.Neutral);

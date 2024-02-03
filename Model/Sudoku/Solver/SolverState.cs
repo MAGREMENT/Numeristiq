@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 
@@ -17,7 +18,7 @@ public class SolverState : ITranslatable
             for(int col = 0; col < 9; col++)
             {
                 if (solver.Sudoku[row, col] != 0) _cellStates[row, col] = new CellState(solver.Sudoku[row, col]);
-                else _cellStates[row, col] = solver.PossibilitiesAt(row, col).ToCellState();
+                else _cellStates[row, col] = CellState.FromBits(solver.PossibilitiesAt(row, col).Bits);
             }
         }
     }
@@ -54,7 +55,7 @@ public class SolverState : ITranslatable
         } 
     }
 
-    public Possibilities PossibilitiesAt(int row, int col)
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
         return At(row, col).AsPossibilities;
     }
@@ -69,8 +70,8 @@ public class SolverState : ITranslatable
             if (change.ChangeType == ChangeType.Possibility)
             {
                 var poss = buffer[change.Row, change.Column].AsPossibilities;
-                poss.Remove(change.Number);
-                buffer[change.Row, change.Column] = poss.ToCellState();
+                poss -= change.Number;
+                buffer[change.Row, change.Column] = CellState.FromBits(poss.Bits);
             }
             else
             {
@@ -82,16 +83,16 @@ public class SolverState : ITranslatable
                     if (current.IsPossibilities)
                     {
                         var poss = current.AsPossibilities;
-                        poss.Remove(change.Number);
-                        buffer[unit, change.Column] = poss.ToCellState();
+                        poss -= change.Number;
+                        buffer[unit, change.Column] = CellState.FromBits(poss.Bits);
                     }
 
                     current = buffer[change.Row, unit];
                     if (current.IsPossibilities)
                     {
                         var poss = current.AsPossibilities;
-                        poss.Remove(change.Number);
-                        buffer[change.Row, unit] = poss.ToCellState();
+                        poss -= change.Number;
+                        buffer[change.Row, unit] = CellState.FromBits(poss.Bits);
                     }
                 }
 
@@ -106,8 +107,8 @@ public class SolverState : ITranslatable
                         if (current.IsPossibilities)
                         {
                             var poss = current.AsPossibilities;
-                            poss.Remove(change.Number);
-                            buffer[row, col] = poss.ToCellState();
+                            poss -= change.Number;
+                            buffer[row, col] = CellState.FromBits(poss.Bits);
                         }
                     }
                 }
@@ -120,26 +121,26 @@ public class SolverState : ITranslatable
 
 public readonly struct CellState
 {
-    private readonly short _bits;
+    private readonly ushort _bits;
 
     public CellState(int solved)
     {
-        _bits = (short) (solved << 10);
+        _bits = (ushort) (solved << 10);
     }
 
-    private CellState(short bits)
+    private CellState(ushort bits)
     {
         _bits = bits;
     }
 
-    public static CellState FromBits(short bits)
+    public static CellState FromBits(ushort bits)
     {
         return new CellState(bits);
     }
 
     public bool IsPossibilities => _bits <= 0x3FE;
     
-    public Possibilities AsPossibilities => Possibilities.FromBits(_bits & 0x3FE);
+    public ReadOnlyBitSet16 AsPossibilities => ReadOnlyBitSet16.FromBits((ushort) (_bits & 0x3FE));
 
     public int AsNumber => _bits >> 10;
 }

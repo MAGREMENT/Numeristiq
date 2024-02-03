@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Logs;
@@ -13,7 +14,7 @@ namespace Model.Sudoku.Solver;
 public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProducer
 {
     private Sudoku _sudoku;
-    private readonly Possibilities[,] _possibilities = new Possibilities[9, 9];
+    private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
     private readonly GridPositions[] _positions = new GridPositions[9];
     private readonly LinePositions[,] _rowsPositions = new LinePositions[9, 9];
     private readonly LinePositions[,] _colsPositions = new LinePositions[9, 9];
@@ -116,9 +117,9 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
                 if (!at.IsPossibilities) continue;
 
                 var asPoss = at.AsPossibilities;
-                foreach (var p in PossibilitiesAt(row, col))
+                foreach (var p in PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
-                    if (!asPoss.Peek(p)) RemovePossibility(p, row, col, false);
+                    if (!asPoss.Contains(p)) RemovePossibility(p, row, col, false);
                 }
             }
         }
@@ -270,22 +271,22 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
         return _strategyManager.GetStrategiesInformation();
     }
     
-    public Possibilities NotCachedPossibilitiesAt(int row, int col)
+    public ReadOnlyBitSet16 RawPossibilitiesAt(int row, int col)
     {
-        if (Sudoku[row, col] != 0) return Possibilities.NewEmpty();
+        if (Sudoku[row, col] != 0) return new ReadOnlyBitSet16();
         
-        Possibilities result = new();
+        var result = ReadOnlyBitSet16.Filled(1, 9);
 
         var startR = row / 3 * 3;
         var startC = col / 3 * 3;
         for (int u = 0; u < 9; u++)
         {
-            if (u != row) result.Remove(Sudoku[u, col]);
-            if (u != col) result.Remove(Sudoku[row, u]);
+            if (u != row) result -= Sudoku[u, col];
+            if (u != col) result -= Sudoku[row, u];
 
             var r = startR + u / 3;
             var c = startC + u % 3;
-            if (r != row || c != col) result.Remove(Sudoku[r, c]);
+            if (r != row || c != col) result -= Sudoku[r, c];
         }
 
         return result;
@@ -293,7 +294,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
     
     //PossibilityHolder-------------------------------------------------------------------------------------------------
     
-    public IReadOnlyPossibilities PossibilitiesAt(int row, int col)
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
         return _possibilities[row, col];
     }
@@ -353,7 +354,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
     
     private bool AddSolution(int number, int row, int col, bool callEvents = true)
     {
-        if (!_possibilities[row, col].Peek(number)) return false;
+        if (!_possibilities[row, col].Contains(number)) return false;
         
         _sudoku[row, col] = number;
         UpdatePossibilitiesAfterSolutionAdded(number, row, col);
@@ -372,8 +373,9 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
 
     private bool RemovePossibility(int possibility, int row, int col, bool callEvents = true)
     {
-        if (!_possibilities[row, col].Remove(possibility)) return false;
-        
+        if (!_possibilities[row, col].Contains(possibility)) return false;
+
+        _possibilities[row, col] -= possibility;
         _positions[possibility - 1].Remove(row, col);
         _rowsPositions[row, possibility - 1].Remove(col);
         _colsPositions[col, possibility - 1].Remove(row);
@@ -389,7 +391,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
         {
             for (int j = 0; j < 9; j++)
             {
-                _possibilities[i, j] = new Possibilities();
+                _possibilities[i, j] = ReadOnlyBitSet16.Filled(1, 9);
                 _rowsPositions[i, j] = LinePositions.Filled();
                 _colsPositions[i, j] = LinePositions.Filled();
                 _minisPositions[i / 3, i % 3, j] = MiniGridPositions.Filled(i / 3, i % 3);
@@ -416,7 +418,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
         {
             for (int j = 0; j < 9; j++)
             {
-                _possibilities[i, j].Reset();
+                _possibilities[i, j] = ReadOnlyBitSet16.Filled(1, 9);
                 _rowsPositions[i, j].Fill();
                 _colsPositions[i, j].Fill();
                 _minisPositions[i / 3, i % 3, j].Fill();
@@ -445,8 +447,8 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
             gridCol = col % 3,
             startRow = miniRow * 3,
             startCol = miniCol * 3;
-        
-        _possibilities[row, col].RemoveAll();
+
+        _possibilities[row, col] = new ReadOnlyBitSet16();
         for (int i = 0; i < 9; i++)
         {
             _positions[i].Remove(row, col);
@@ -465,7 +467,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
     
     private void RemovePossibilityCheckLess(int possibility, int row, int col)
     {
-        _possibilities[row, col].Remove(possibility);
+        _possibilities[row, col] -= possibility;
         _positions[possibility - 1].Remove(row, col);
         _rowsPositions[row, possibility - 1].Remove(col);
         _colsPositions[col, possibility - 1].Remove(row);

@@ -139,7 +139,7 @@ public class ThorsHammerStrategy : AbstractStrategy
             foreach (var cell in mgp)
             {
                 cells.Add(cell);
-                foreach (var p in strategyUser.PossibilitiesAt(cell))
+                foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
                     if(!possibilities.Contains(p)) notInPattern.Add(new CellPossibility(cell, p));
                 }

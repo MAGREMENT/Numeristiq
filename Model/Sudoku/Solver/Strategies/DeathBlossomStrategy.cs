@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -32,7 +33,7 @@ public class DeathBlossomStrategy : AbstractStrategy
                 if (possibilities.Count == 0) continue;
 
                 var current = new Cell(row, col);
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     concernedAls[possibility] = new List<IPossibilitiesPositions>();
                 }
@@ -41,16 +42,16 @@ public class DeathBlossomStrategy : AbstractStrategy
                 {
                     if (als.Positions.Peek(current)) continue;
                     
-                    var and = als.Possibilities.And(possibilities);
+                    var and = als.Possibilities & possibilities;
                     if (and.Count == 0) continue;
 
-                    foreach (var possibilityInCommon in and)
+                    foreach (var possibilityInCommon in and.EnumeratePossibilities())
                     {
                         var ok = true;
 
                         foreach (var cell in als.EachCell())
                         {
-                            if (strategyUser.PossibilitiesAt(cell).Peek(possibilityInCommon) &&
+                            if (strategyUser.PossibilitiesAt(cell).Contains(possibilityInCommon) &&
                                 !Cells.ShareAUnit(cell, current))
                             {
                                 ok = false;
@@ -65,23 +66,23 @@ public class DeathBlossomStrategy : AbstractStrategy
                     }
                 }
 
-                Dictionary<Cell, Possibilities> eliminations = new();
+                Dictionary<Cell, ReadOnlyBitSet16> eliminations = new();
                 Dictionary<Cell, HashSet<IPossibilitiesPositions>> eliminationsCauses = new();
                 List<Cell> buffer = new();
                 
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     foreach (var als in concernedAls[possibility])
                     {
-                        if (!als.Possibilities.Peek(possibility)) continue;
+                        if (!als.Possibilities.Contains(possibility)) continue;
 
-                        foreach (var alsPossibility in als.Possibilities)
+                        foreach (var alsPossibility in als.Possibilities.EnumeratePossibilities())
                         {
                             if(alsPossibility == possibility) continue;
 
                             foreach (var cell in als.EachCell())
                             {
-                                if (strategyUser.PossibilitiesAt(cell).Peek(alsPossibility)) buffer.Add(cell);
+                                if (strategyUser.PossibilitiesAt(cell).Contains(alsPossibility)) buffer.Add(cell);
                             }
 
                             foreach (var seenCell in Cells.SharedSeenCells(buffer))
@@ -90,12 +91,17 @@ public class DeathBlossomStrategy : AbstractStrategy
 
                                 if (!eliminations.TryGetValue(seenCell, out var value))
                                 {
-                                    value = strategyUser.PossibilitiesAt(seenCell).Copy();
+                                    value = strategyUser.PossibilitiesAt(seenCell);
                                     eliminations[seenCell] = value;
                                     eliminationsCauses[seenCell] = new HashSet<IPossibilitiesPositions>();
                                 }
 
-                                if (value.Remove(alsPossibility)) eliminationsCauses[seenCell].Add(als);
+                                if (value.Contains(alsPossibility))
+                                {
+                                    value -= alsPossibility;
+                                    eliminations[seenCell] = value;
+                                    eliminationsCauses[seenCell].Add(als);
+                                }
                                 if (value.Count != 0) continue;
                                 
                                 Process(strategyUser, current, seenCell, eliminationsCauses[seenCell],
@@ -125,7 +131,7 @@ public class DeathBlossomStrategy : AbstractStrategy
         {
             foreach (var cell in als.EachCell())
             {
-                if (strategyUser.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+                if (strategyUser.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
         }
 

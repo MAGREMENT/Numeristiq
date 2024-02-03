@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -16,7 +16,7 @@ public class NakedDoublesStrategy : AbstractStrategy
 
     public override void Apply(IStrategyUser strategyUser)
     {
-        Dictionary<IReadOnlyPossibilities, int> dict = new();
+        Dictionary<ReadOnlyBitSet16, int> dict = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -83,14 +83,14 @@ public class NakedDoublesStrategy : AbstractStrategy
         }
     }
 
-    private bool ProcessRow(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities, int row, int col1,
+    private bool ProcessRow(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int row, int col1,
         int col2)
     {
         for (int col = 0; col < 9; col++)
         {
             if (col == col1 || col == col2) continue;
 
-            foreach (var possibility in possibilities)
+            foreach (var possibility in possibilities.EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
@@ -101,14 +101,14 @@ public class NakedDoublesStrategy : AbstractStrategy
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool ProcessColumn(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities, int col,
+    private bool ProcessColumn(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int col,
         int row1, int row2)
     {
         for (int row = 0; row < 9; row++)
         {
             if (row == row1 || row == row2) continue;
 
-            foreach (var possibility in possibilities)
+            foreach (var possibility in possibilities.EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
@@ -119,7 +119,7 @@ public class NakedDoublesStrategy : AbstractStrategy
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private bool ProcessMiniGrid(IStrategyUser strategyUser, IReadOnlyPossibilities possibilities,
+    private bool ProcessMiniGrid(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         int miniRow, int miniCol, int gridNumber1, int gridNumber2)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -131,7 +131,7 @@ public class NakedDoublesStrategy : AbstractStrategy
 
                 int row = miniRow * 3 + gridRow;
                 int col = miniCol * 3 + gridCol;
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                 }
@@ -147,13 +147,13 @@ public class NakedDoublesStrategy : AbstractStrategy
 
 public class LineNakedDoublesReportBuilder : IChangeReportBuilder
 {
-    private readonly IReadOnlyPossibilities _pos;
+    private readonly ReadOnlyBitSet16 _pos;
     private readonly int _unitNumber;
     private readonly int _other1;
     private readonly int _other2;
     private readonly Unit _unit;
 
-    public LineNakedDoublesReportBuilder(IReadOnlyPossibilities pos, int unitNumber, int other1, int other2, Unit unit)
+    public LineNakedDoublesReportBuilder(ReadOnlyBitSet16 pos, int unitNumber, int other1, int other2, Unit unit)
     {
         _pos = pos;
         _unitNumber = unitNumber;
@@ -166,7 +166,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
     {
         return new ChangeReport( Explanation(), lighter =>
         {
-            foreach (var possibility in _pos)
+            foreach (var possibility in _pos.EnumeratePossibilities())
             {
                 switch (_unit)
                 {
@@ -197,13 +197,13 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
 
 public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
 {
-    private readonly IReadOnlyPossibilities _pos;
+    private readonly ReadOnlyBitSet16 _pos;
     private readonly int _miniRow;
     private readonly int _miniCol;
     private readonly int _gn1;
     private readonly int _gn2;
 
-    public MiniGridNakedDoublesReportBuilder(IReadOnlyPossibilities pos, int miniRow, int miniCol, int gn1, int gn2)
+    public MiniGridNakedDoublesReportBuilder(ReadOnlyBitSet16 pos, int miniRow, int miniCol, int gn1, int gn2)
     {
         _pos = pos;
         _miniRow = miniRow;
@@ -216,7 +216,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
     {
         List<CellPossibility> cells = new(4);
         
-        foreach (var possibility in _pos)
+        foreach (var possibility in _pos.EnumeratePossibilities())
         {
             cells.Add(new CellPossibility(_miniRow * 3 + _gn1 / 3, _miniCol * 3 + _gn1 % 3, possibility));
             cells.Add(new CellPossibility(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3, possibility));

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -17,7 +17,7 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
 
     public IEnumerable<int> EachPossibility()
     {
-        return Possibilities;
+        return Possibilities.EnumeratePossibilities();
     }
 
     public IEnumerable<Cell> EachCell()
@@ -32,28 +32,28 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
     {
         foreach (var cp in _cps)
         {
-            if (cp.Possibilities.Peek(possibility)) yield return cp.Cell;
+            if (cp.Possibilities.Contains(possibility)) yield return cp.Cell;
         }
     }
 
-    public IReadOnlyPossibilities PossibilitiesInCell(Cell cell)
+    public ReadOnlyBitSet16 PossibilitiesInCell(Cell cell)
     {
         foreach (var cp in _cps)
         {
             if (cp.Cell == cell) return cp.Possibilities;
         }
 
-        return Possibility.Possibilities.NewEmpty();
+        return new ReadOnlyBitSet16();
     }
 
-    public IReadOnlyPossibilities Possibilities
+    public ReadOnlyBitSet16 Possibilities
     {
         get
         {
-            Possibilities result = Possibility.Possibilities.NewEmpty();
+            ReadOnlyBitSet16 result = new();
             foreach (var cp in _cps)
             {
-                result.Add(cp.Possibilities);
+                result += cp.Possibilities;
             }
 
             return result;

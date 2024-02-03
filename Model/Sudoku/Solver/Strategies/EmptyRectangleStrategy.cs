@@ -24,7 +24,7 @@ public class EmptyRectangleStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
+                foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
                     var rowPositions = strategyUser.RowPositionsAt(row, possibility).Copy();
                     var columnPositions = strategyUser.ColumnPositionsAt(col, possibility).Copy();
@@ -146,7 +146,7 @@ public class RectangleEliminationReportBuilder : IChangeReportBuilder
                     var row = _miniRow * 3 + gridRow;
                     var col = _miniCol * 3 + gridCol;
                     
-                    if(snapshot.PossibilitiesAt(row, col).Peek(_possibility)) lighter.HighlightPossibility(
+                    if(snapshot.PossibilitiesAt(row, col).Contains(_possibility)) lighter.HighlightPossibility(
                         _possibility, row, col, ChangeColoration.CauseOffThree);
                 }
             }

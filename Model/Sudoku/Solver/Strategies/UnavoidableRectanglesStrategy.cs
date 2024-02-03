@@ -84,14 +84,14 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
         var possibilitiesRoofOne = strategyUser.PossibilitiesAt(roof[0]);
         var possibilitiesRoofTwo = strategyUser.PossibilitiesAt(roof[1]);
 
-        if (!possibilitiesRoofOne.Peek(values.Two) || !possibilitiesRoofTwo.Peek(values.One)) return false;
+        if (!possibilitiesRoofOne.Contains(values.Two) || !possibilitiesRoofTwo.Contains(values.One)) return false;
 
         if (possibilitiesRoofOne.Count == 2 && possibilitiesRoofTwo.Count == 2)
         {
-            var and = possibilitiesRoofOne.And(possibilitiesRoofTwo);
+            var and = possibilitiesRoofOne & possibilitiesRoofTwo;
             if (and.Count == 1)
             {
-                var possibility = and.First();
+                var possibility = and.FirstPossibility();
                 foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
@@ -102,13 +102,13 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
                 new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
 
-        var notBiValuePossibilities = possibilitiesRoofOne.Or(possibilitiesRoofTwo);
-        notBiValuePossibilities.Remove(values.One);
-        notBiValuePossibilities.Remove(values.Two);
+        var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
+        notBiValuePossibilities -= values.One;
+        notBiValuePossibilities -= values.Two;
         var ssc = new List<Cell>(Cells.SharedSeenCells(roof[0], roof[1]));
         foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(ssc))
         {
-            if (!als.Possibilities.PeekAll(notBiValuePossibilities)) continue;
+            if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 
             ProcessArWithAls(strategyUser, roof, als);
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
@@ -122,16 +122,16 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
     private void ProcessArWithAls(IStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
-        foreach (var possibility in als.Possibilities)
+        foreach (var possibility in als.Possibilities.EnumeratePossibilities())
         {
             foreach (var cell in als.EachCell())
             {
-                if(strategyUser.PossibilitiesAt(cell).Peek(possibility)) buffer.Add(cell);
+                if(strategyUser.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
 
             foreach (var r in roof)
             {
-                if (strategyUser.PossibilitiesAt(r).Peek(possibility)) buffer.Add(r);
+                if (strategyUser.PossibilitiesAt(r).Contains(possibility)) buffer.Add(r);
             }
 
             foreach (var cell in Cells.SharedSeenCells(buffer))

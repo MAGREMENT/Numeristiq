@@ -47,7 +47,7 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
     
     private void RemoveAllExcept(IStrategyUser strategyUser, int row, int col, params int[] except)
     {
-        foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
+        foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
         {
             if (!except.Contains(possibility))
             {

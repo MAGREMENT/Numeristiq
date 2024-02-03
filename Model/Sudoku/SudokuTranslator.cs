@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Possibility;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Utility;
 
 namespace Model.Sudoku;
@@ -85,7 +85,7 @@ public static class SudokuTranslator
                 var first = col % 3 == 0 ? "|" : " ";
                 
                 var toPut = translatable[row, col] == 0
-                    ? translatable.PossibilitiesAt(row, col).ToSlimString()
+                    ? translatable.PossibilitiesAt(row, col).ToValuesString()
                     : $"<{translatable[row, col]}>";
                 builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
             }
@@ -180,7 +180,7 @@ public static class SudokuTranslator
             int pos = 0;
             var numberBuffer = -1;
             var isNumber = false;
-            Possibilities? possibilitiesBuffer = null;
+            ReadOnlyBitSet16? possibilitiesBuffer = null;
             while (pos < 81 && i < grid.Length)
             {
                 var c = grid[i];
@@ -194,11 +194,7 @@ public static class SudokuTranslator
                     var asInt = int.Parse(c.ToString());
 
                     if (isNumber) numberBuffer = asInt;
-                    else
-                    {
-                        possibilitiesBuffer ??= Possibilities.NewEmpty();
-                        possibilitiesBuffer.Add(asInt);
-                    }
+                    else possibilitiesBuffer ??= new ReadOnlyBitSet16(asInt);
                 }
                 else
                 {
@@ -214,9 +210,9 @@ public static class SudokuTranslator
                     }
                     else if (possibilitiesBuffer is not null)
                     {
-                        cellStates[row, col] = soloPossibilityToGiven && possibilitiesBuffer.Count == 1 
-                            ? new CellState(possibilitiesBuffer.First()) 
-                            : possibilitiesBuffer.ToCellState();
+                        cellStates[row, col] = soloPossibilityToGiven && possibilitiesBuffer.Value.Count == 1 
+                            ? new CellState(possibilitiesBuffer.Value.FirstPossibility()) 
+                            : CellState.FromBits(possibilitiesBuffer.Value.Bits);
                         possibilitiesBuffer = null;
                         pos++;
                     }
@@ -243,7 +239,7 @@ public static class SudokuTranslator
 public interface ITranslatable
 {
     int this[int row, int col] { get; }
-    Possibilities PossibilitiesAt(int row, int col);
+    ReadOnlyBitSet16 PossibilitiesAt(int row, int col);
 }
 
 public enum SudokuStringFormat
