@@ -36,6 +36,6 @@ public interface IPossibilitiesPositions
 
     public bool Contains(CellPossibility cp)
     {
-        return Possibilities.Contains(cp.Possibility) && Positions.Peek(cp.Row, cp.Column);
+        return Possibilities.Contains(cp.Possibility) && Positions.Contains(cp.Row, cp.Column);
     }
 }

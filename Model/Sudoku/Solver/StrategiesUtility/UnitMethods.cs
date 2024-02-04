@@ -62,7 +62,7 @@ public class RowMethods : IUnitMethods
         for (int col = 0; col < 9; col++)
         {
             var c = new Cell(unit, col);
-            if (gp.Peek(c)) yield return c;
+            if (gp.Contains(c)) yield return c;
         }
     }
 
@@ -130,7 +130,7 @@ public class ColumnMethods : IUnitMethods
         for (int row = 0; row < 9; row++)
         {
             var c = new Cell(row, unit);
-            if (gp.Peek(c)) yield return c;
+            if (gp.Contains(c)) yield return c;
         }
     }
 
@@ -215,7 +215,7 @@ public class BoxMethods : IUnitMethods
             for (int c = 0; c < 3; c++)
             {
                 var cell = new Cell(startRow + r, startCol + c);
-                if (gp.Peek(cell)) yield return cell;
+                if (gp.Contains(cell)) yield return cell;
             }
         }
     }

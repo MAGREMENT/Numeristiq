@@ -256,12 +256,12 @@ public class RowBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(_one.Row, c * 3 + i);
-                if (done.Peek(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Contains(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(_two.Row, c * 3 + j);
-                    if (done.Peek(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Contains(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
 
                     var and = strategyUser.PossibilitiesAt(first) & strategyUser.PossibilitiesAt(second);
                     if (and.Count < 2 || !and.Contains(_possibility)) continue;
@@ -325,12 +325,12 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(r * 3 + i, _one.Column);
-                if (done.Peek(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Contains(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(r * 3 + j, _two.Column);
-                    if (done.Peek(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Contains(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
 
                     var and = strategyUser.PossibilitiesAt(first) & strategyUser.PossibilitiesAt(second);
                     if (and.Count < 2 || !and.Contains(_possibility)) continue;

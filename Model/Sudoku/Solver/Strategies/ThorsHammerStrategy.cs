@@ -181,7 +181,7 @@ public class ThorsHammerStrategy : AbstractStrategy
         var first = -1;
         for (int i = 0; i < 3; i++)
         {
-            if (mgp.Peek(i, 0))
+            if (mgp.Contains(i, 0))
             {
                 first = i;
                 break;
@@ -191,10 +191,10 @@ public class ThorsHammerStrategy : AbstractStrategy
         if (first == -1) throw new Exception();
 
         var down = (first + 1) % 3;
-        if (mgp.Peek(down, 1)) return ParityTransfer.Same;
+        if (mgp.Contains(down, 1)) return ParityTransfer.Same;
 
         var up = first - 1 < 0 ? 2 : first - 1;
-        if (mgp.Peek(up, 1)) return ParityTransfer.Opposite;
+        if (mgp.Contains(up, 1)) return ParityTransfer.Opposite;
 
         throw new Exception();
     }
@@ -412,7 +412,7 @@ public class BoxLoop
 
         foreach (var n in bl._array)
         {
-            if (!lp.Peek(n)) return false;
+            if (!lp.Contains(n)) return false;
         }
 
         return true;

@@ -44,7 +44,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
             /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
                 CheckForLoop(strategyManager, chain, friend.Possibilities, occupied)) return true;*/
             
-            if (explored.Contains(friend.To) || occupied.PeakAny(friend.To.Positions)) continue;
+            if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Positions)) continue;
 
             var lastLink = chain.LastLink();
             foreach (var possibleLink in friend.Possibilities.EnumeratePossibilities())
@@ -90,7 +90,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
 
                     foreach (var ssc in cells)
                     {
-                        if (occupied.Peek(ssc)) continue;
+                        if (occupied.Contains(ssc)) continue;
 
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                     }

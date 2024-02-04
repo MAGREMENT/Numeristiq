@@ -134,7 +134,7 @@ public class JuniorExocetStrategy : AbstractStrategy
                                 ? new Cell(house1.Number, other)
                                 : new Cell(other, house1.Number);
 
-                            if (!totalMap.Peek(cell))
+                            if (!totalMap.Contains(cell))
                                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                         }
                     }
@@ -406,7 +406,7 @@ public class JuniorExocetStrategy : AbstractStrategy
                             ? new Cell(coverHouse.Number, i)
                             : new Cell(i, coverHouse.Number);
 
-                        if (entry.Value.Peek(cell)) continue;
+                        if (entry.Value.Contains(cell)) continue;
 
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                     }
@@ -437,7 +437,7 @@ public class JuniorExocetStrategy : AbstractStrategy
                 var count = 0;
                 foreach (var poss in revisedBaseCandidates.EnumeratePossibilities())
                 {
-                    if (je.SCells[poss].Peek(cell))
+                    if (je.SCells[poss].Contains(cell))
                     {
                         count++;
                     }
@@ -483,7 +483,7 @@ public class JuniorExocetStrategy : AbstractStrategy
                         ? new Cell(coverHouse.Number, i)
                         : new Cell(i, coverHouse.Number);
 
-                    if (entry.Value.Peek(cell)) continue;
+                    if (entry.Value.Contains(cell)) continue;
 
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                 }

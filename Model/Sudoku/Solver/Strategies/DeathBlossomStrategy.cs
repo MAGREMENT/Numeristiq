@@ -40,7 +40,7 @@ public class DeathBlossomStrategy : AbstractStrategy
 
                 foreach (var als in allAls)
                 {
-                    if (als.Positions.Peek(current)) continue;
+                    if (als.Positions.Contains(current)) continue;
                     
                     var and = als.Possibilities & possibilities;
                     if (and.Count == 0) continue;

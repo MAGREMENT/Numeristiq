@@ -62,13 +62,13 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                 var p = solo.FirstPossibility();
                 foreach (var col in or)
                 {
-                    if (!cols1.Peek(col))
+                    if (!cols1.Contains(col))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row1, col);
                         break;
                     }
 
-                    if (!cols2.Peek(col))
+                    if (!cols2.Contains(col))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row2, col);
                         break;
@@ -122,13 +122,13 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                 var p = solo.FirstPossibility();
                 foreach (var row in or)
                 {
-                    if (!rows1.Peek(row))
+                    if (!rows1.Contains(row))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col1);
                         break;
                     }
 
-                    if (!rows2.Peek(row))
+                    if (!rows2.Contains(row))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col2);
                         break;

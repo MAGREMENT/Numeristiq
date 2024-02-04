@@ -88,7 +88,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
                 bool emptied = true;
                 foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
-                    if (!seen[possibility - 1].Peek(row, col)
+                    if (!seen[possibility - 1].Contains(row, col)
                         || inGraph.Contains(new CellPossibility(row, col, possibility)))
                     {
                         emptied = false;

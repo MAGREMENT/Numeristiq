@@ -71,7 +71,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
                     var method = UnitMethods.Get(house.Unit);
                     foreach (var cell in method.EveryCell(house.Number))
                     {
-                        if (grid.Peek(cell)) continue;
+                        if (grid.Contains(cell)) continue;
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
                     }
                 }
@@ -194,7 +194,7 @@ public class CoveringUnits
                 lighter.EncircleRectangle(entry.Key, color);
                 foreach (var cell in UnitMethods.Get(entry.Key.Unit).EveryCell(entry.Key.Number))
                 {
-                    if (!gp.Peek(cell)) continue;
+                    if (!gp.Contains(cell)) continue;
                     
                     foreach (var p in entry.Value.EnumeratePossibilities())
                     {

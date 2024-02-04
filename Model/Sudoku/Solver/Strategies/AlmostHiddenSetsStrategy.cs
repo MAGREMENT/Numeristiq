@@ -39,7 +39,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
     {
         foreach (var cell in one.EachCell())
         {
-            if (two.Positions.Peek(cell)) continue;
+            if (two.Positions.Contains(cell)) continue;
                     
             foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
@@ -51,7 +51,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                     
         foreach (var cell in two.EachCell())
         {
-            if (one.Positions.Peek(cell)) continue;
+            if (one.Positions.Contains(cell)) continue;
                     
             foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
@@ -84,7 +84,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                     {
                         var asCell = friendOfFriend.ToCell();
 
-                        if (two.Positions.Peek(asCell) && asCell != cell)
+                        if (two.Positions.Contains(asCell) && asCell != cell)
                         {
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));

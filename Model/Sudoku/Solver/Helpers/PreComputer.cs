@@ -160,7 +160,7 @@ public class PreComputer
             {
                 var one = allAls[i];
                 var two = allAls[j];
-                if (one.Positions.PeakAny(two.Positions)) continue;
+                if (one.Positions.ContainsAny(two.Positions)) continue;
 
                 var rcc = one.RestrictedCommons(two);
                 if(rcc.Count > 0) graph.Add(one, two, rcc);
@@ -181,7 +181,7 @@ public class PreComputer
             {
                 var one = allAls[i];
                 var two = allAls[j];
-                if (one.Positions.PeakAny(two.Positions)) continue;
+                if (one.Positions.ContainsAny(two.Positions)) continue;
 
                 var rcc = one.RestrictedCommons(two);
                 if (rcc.Count == 0) continue;

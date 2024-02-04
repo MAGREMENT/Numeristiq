@@ -58,18 +58,18 @@ public class GridPositions : IReadOnlyGridPositions
         }
     }
     
-    public bool Peek(int row, int col)
+    public bool Contains(int row, int col)
     {
         int n = row * 9 + col;
         return n > FirstLimit ? ((_second >> (n - FirstLimit - 1)) & 1) > 0 : ((_first >> n) & 1) > 0;
     }
 
-    public bool Peek(Cell coord)
+    public bool Contains(Cell coord)
     {
-        return Peek(coord.Row, coord.Column);
+        return Contains(coord.Row, coord.Column);
     }
 
-    public bool PeakAny(GridPositions gp)
+    public bool ContainsAny(GridPositions gp)
     {
         return (gp._first & _first) != 0ul || (gp._second & _second) != 0ul;
     }
@@ -92,7 +92,7 @@ public class GridPositions : IReadOnlyGridPositions
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Peek(row, col)) return new Cell(row, col);
+                if (Contains(row, col)) return new Cell(row, col);
             }
         }
 
@@ -294,7 +294,7 @@ public class GridPositions : IReadOnlyGridPositions
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Peek(row, col))
+                if (Contains(row, col))
                 {
                     result[cursor++] = new Cell(row, col);
                     if (cursor == result.Length) return result;
@@ -438,7 +438,7 @@ public class GridPositions : IReadOnlyGridPositions
         for (int i = start; i < cells.Length; i++)
         {
             var c = cells[i];
-            if (!gp.Peek(c)) continue;
+            if (!gp.Contains(c)) continue;
 
             foreach (var method in methods)
             {
@@ -506,7 +506,7 @@ public class GridPositions : IReadOnlyGridPositions
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Peek(row, col)) result += $"r{row + 1}c{col + 1} ";
+                if (Contains(row, col)) result += $"r{row + 1}c{col + 1} ";
             }
         }
 
@@ -524,7 +524,7 @@ public class GridPositions : IReadOnlyGridPositions
         {
             for (int col = 0; col < 9; col++)
             {
-                if (Peek(row, col)) yield return new Cell(row, col);
+                if (Contains(row, col)) yield return new Cell(row, col);
             }
         }
     }

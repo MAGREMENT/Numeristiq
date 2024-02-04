@@ -59,10 +59,10 @@ public class FinnedXWingStrategy : AbstractStrategy
     {
         var asArray = normalPos.ToArray();
 
-        if (finnedPos.Peek(asArray[0]) && HasSameMiniCol(finnedPos, asArray[1], asArray[0]))
+        if (finnedPos.Contains(asArray[0]) && HasSameMiniCol(finnedPos, asArray[1], asArray[0]))
             ProcessRow(strategyUser, normalRow, finnedRow, asArray[1], number);
         
-        if (finnedPos.Peek(asArray[1]) && HasSameMiniCol(finnedPos, asArray[0], asArray[1]))
+        if (finnedPos.Contains(asArray[1]) && HasSameMiniCol(finnedPos, asArray[0], asArray[1]))
             ProcessRow(strategyUser, normalRow, finnedRow, asArray[0], number);
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
@@ -75,10 +75,10 @@ public class FinnedXWingStrategy : AbstractStrategy
     {
         var asArray = normalPos.ToArray();
 
-        if (finnedPos.Peek(asArray[0]) && HasSameMiniRow(finnedPos, asArray[1], asArray[0]))
+        if (finnedPos.Contains(asArray[0]) && HasSameMiniRow(finnedPos, asArray[1], asArray[0]))
             ProcessColumn(strategyUser, normalCol, finnedCol, asArray[1], number);
         
-        if (finnedPos.Peek(asArray[1]) && HasSameMiniRow(finnedPos, asArray[0], asArray[1]))
+        if (finnedPos.Contains(asArray[1]) && HasSameMiniRow(finnedPos, asArray[0], asArray[1]))
             ProcessColumn(strategyUser, normalCol, finnedCol, asArray[0], number);
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
@@ -169,10 +169,10 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
             {
                 if (_unit == Unit.Row)
                     lighter.HighlightPossibility(_number, _finnedUnit, finnedOther,
-                        _normal.Peek(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
+                        _normal.Contains(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
                 else
                     lighter.HighlightPossibility(_number, finnedOther, _finnedUnit,
-                        _normal.Peek(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
+                        _normal.Contains(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
             }
             
             IChangeReportBuilder.HighlightChanges(lighter, changes);

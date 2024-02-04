@@ -7,7 +7,7 @@ public interface IReadOnlyGridPositions : IEnumerable<Cell>
 {
     int Count { get; }
     
-    bool Peek(Cell cell);
+    bool Contains(Cell cell);
     int RowCount(int row);
     int ColumnCount(int col);
     int MiniGridCount(int miniRow, int miniCol);
@@ -21,7 +21,7 @@ public interface IReadOnlyGridPositions : IEnumerable<Cell>
         var result = new GridPositions();
         foreach (var pos in one)
         {
-            if(two.Peek(pos)) result.Add(pos);
+            if(two.Contains(pos)) result.Add(pos);
         }
 
         return result;

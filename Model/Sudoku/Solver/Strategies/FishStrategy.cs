@@ -178,7 +178,7 @@ public class FishStrategy : AbstractStrategy
         {
             foreach (var ssc in Cells.SharedSeenCells(_fins))
             {
-                if (!diff.Peek(ssc)) continue;
+                if (!diff.Contains(ssc)) continue;
                     
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, ssc);
             }

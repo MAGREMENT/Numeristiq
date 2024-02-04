@@ -120,7 +120,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
 
         foreach (var cell in first.EachCell())
         {
-            if (nope.Peek(cell)) continue;
+            if (nope.Contains(cell)) continue;
             
             foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
@@ -129,13 +129,13 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
                 var current = new CellPossibility(cell, possibility);
                 foreach (var friend in linkGraph.Neighbors(current, LinkStrength.Strong))
                 {
-                    if (nope.Peek(friend.ToCell())) continue;
+                    if (nope.Contains(friend.ToCell())) continue;
                     
                     foreach (var friendOfFriend in linkGraph.Neighbors(friend, LinkStrength.Strong))
                     {
                         var asCell = friendOfFriend.ToCell();
 
-                        if (last.Positions.Peek(friendOfFriend.ToCell()) && asCell != cell && !nope.Peek(asCell))
+                        if (last.Positions.Contains(friendOfFriend.ToCell()) && asCell != cell && !nope.Contains(asCell))
                         {
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));

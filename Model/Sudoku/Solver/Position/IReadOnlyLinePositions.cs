@@ -10,7 +10,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
     public int First(int except);
     public int Next(ref int cursor);
 
-    public bool Peek(int i);
+    public bool Contains(int i);
     public LinePositions Or(IReadOnlyLinePositions pos);
     public LinePositions And(IReadOnlyLinePositions pos);
     public LinePositions Difference(IReadOnlyLinePositions pos);
@@ -25,7 +25,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
         var result = new LinePositions();
         for (int i = 0; i < 9; i++)
         {
-            if (one.Peek(i) || two.Peek(i)) result.Add(i);
+            if (one.Contains(i) || two.Contains(i)) result.Add(i);
         }
 
         return result;
@@ -36,7 +36,7 @@ public interface IReadOnlyLinePositions : IEnumerable<int>
         var result = new LinePositions();
         for (int i = 0; i < 9; i++)
         {
-            if (one.Peek(i) && two.Peek(i)) result.Add(i);
+            if (one.Contains(i) && two.Contains(i)) result.Add(i);
         }
 
         return result;

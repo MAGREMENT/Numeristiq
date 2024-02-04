@@ -183,7 +183,7 @@ public class ContradictionSearcher
         
         foreach (var entry in _onPositions)
         {
-            if (entry.Key != cell.Possibility && entry.Value.Peek(cell.Row, cell.Column))
+            if (entry.Key != cell.Possibility && entry.Value.Contains(cell.Row, cell.Column))
             {
                 Cause = ContradictionCause.Cell;
                 return true;

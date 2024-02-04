@@ -79,7 +79,7 @@ public class GridFormationStrategy : AbstractStrategy
         {
             for (int other = 0; other < 9; other++)
             {
-                if (visited.Peek(other)) continue;
+                if (visited.Contains(other)) continue;
 
                 if (unit == Unit.Row) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
                 else strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, first, other);

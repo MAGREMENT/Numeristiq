@@ -79,7 +79,7 @@ public class PointingRow : ISudokuElement
         if (pr.Possibility != Possibility || pr.Row != Row || _pos.Count != pr._pos.Count) return false;
         foreach (var col in _pos)
         {
-            if (!pr._pos.Peek(col)) return false;
+            if (!pr._pos.Contains(col)) return false;
         }
 
         return true;

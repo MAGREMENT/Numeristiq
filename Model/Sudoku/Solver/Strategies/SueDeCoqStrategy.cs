@@ -144,7 +144,7 @@ public class SueDeCoqStrategy : AbstractStrategy
 
         foreach (var cell in cellsInBox)
         {
-            if (forbiddenBox.Peek(cell)) continue;
+            if (forbiddenBox.Contains(cell)) continue;
             
             foreach (var p in boxElimination.EnumeratePossibilities())
             {
@@ -154,7 +154,7 @@ public class SueDeCoqStrategy : AbstractStrategy
 
         foreach (var cell in cellsInUnit)
         {
-            if (forbiddenUnit.Peek(cell)) continue;
+            if (forbiddenUnit.Contains(cell)) continue;
 
             foreach (var p in unitElimination.EnumeratePossibilities())
             {
@@ -218,7 +218,7 @@ public class SueDeCoqStrategy : AbstractStrategy
         for (int i = start; i < sample.Count; i++)
         {
             var c = sample[i];
-            if (forbiddenPositions.Peek(c)) continue;
+            if (forbiddenPositions.Contains(c)) continue;
             
             var poss = strategyUser.PossibilitiesAt(c);
             if (forbiddenPossibilities.ContainsAny(poss)) continue;
