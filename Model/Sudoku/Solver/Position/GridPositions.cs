@@ -10,13 +10,15 @@ namespace Model.Sudoku.Solver.Position;
 public class GridPositions : IReadOnlyGridPositions
 {
     private const int FirstLimit = 53;
-    private const ulong RowMask = 0x1FF;
-    private const ulong FirstColumnMask = 0x201008040201;
-    private const ulong SecondColumnMask = 0x40201;
-    private const ulong MiniGridMask = 0x1C0E07;
+    private const ulong LongRowMask = 0x1FF;
+    private const uint IntRowMask = 0x1FF;
+    private const ulong LongColumnMask = 0x201008040201;
+    private const uint IntColumnMask = 0x40201;
+    private const ulong LongBoxMask = 0x1C0E07;
+    private const uint IntBoxMask = 0x1C0E07;
 
     private ulong _first; //0 to 53 => First 6 boxes
-    private ulong _second; // 54 to 80 => Last 3 boxes
+    private uint _second; // 54 to 80 => Last 3 boxes
 
     public int Count =>
         System.Numerics.BitOperations.PopCount(_first) + System.Numerics.BitOperations.PopCount(_second);
@@ -27,7 +29,7 @@ public class GridPositions : IReadOnlyGridPositions
         _second = 0;
     }
 
-    private GridPositions(ulong first, ulong second)
+    private GridPositions(ulong first, uint second)
     {
         _first = first;
         _second = second;
@@ -41,7 +43,7 @@ public class GridPositions : IReadOnlyGridPositions
     public void Add(int row, int col)
     {
         int n = row * 9 + col;
-        if (n > FirstLimit) _second |= 1ul << (n - FirstLimit - 1);
+        if (n > FirstLimit) _second |= 1u << (n - FirstLimit - 1);
         else _first |= 1ul << n;
     }
 
@@ -77,7 +79,7 @@ public class GridPositions : IReadOnlyGridPositions
     public void Remove(int row, int col)
     {
         int n = row * 9 + col;
-        if (n > FirstLimit) _second &= ~(1ul << (n - FirstLimit - 1));
+        if (n > FirstLimit) _second &= ~(1u << (n - FirstLimit - 1));
         else _first &= ~(1ul << n);
     }
 
@@ -102,26 +104,26 @@ public class GridPositions : IReadOnlyGridPositions
     public int RowCount(int row)
     {
         return row < 6
-            ? System.Numerics.BitOperations.PopCount(_first & (RowMask << (row * 9)))
-            : System.Numerics.BitOperations.PopCount(_second & (RowMask << ((row - 6) * 9)));
+            ? System.Numerics.BitOperations.PopCount(_first & (LongRowMask << (row * 9)))
+            : System.Numerics.BitOperations.PopCount(_second & (IntRowMask << ((row - 6) * 9)));
     }
 
     public int ColumnCount(int column)
     {
-        return System.Numerics.BitOperations.PopCount(_first & (FirstColumnMask << column)) +
-               System.Numerics.BitOperations.PopCount(_second & (SecondColumnMask << column));
+        return System.Numerics.BitOperations.PopCount(_first & (LongColumnMask << column)) +
+               System.Numerics.BitOperations.PopCount(_second & (IntColumnMask << column));
     }
 
     public int MiniGridCount(int miniRow, int miniCol)
     {
         return miniRow < 2
-            ? System.Numerics.BitOperations.PopCount(_first & (MiniGridMask << (miniRow * 27 + miniCol * 3)))
-            : System.Numerics.BitOperations.PopCount(_second & (MiniGridMask << (miniCol * 3)));
+            ? System.Numerics.BitOperations.PopCount(_first & (LongBoxMask << (miniRow * 27 + miniCol * 3)))
+            : System.Numerics.BitOperations.PopCount(_second & (IntBoxMask << (miniCol * 3)));
     }
     
     public LinePositions RowPositions(int row)
     {
-        var i = row >= 6 ? (_second >> ((row - 6) * 9)) & RowMask : (_first >> (row * 9)) & RowMask;
+        var i = row >= 6 ? (_second >> ((row - 6) * 9)) & IntRowMask : (_first >> (row * 9)) & LongRowMask;
         return LinePositions.FromBits((int)i);
     }
 
@@ -151,43 +153,43 @@ public class GridPositions : IReadOnlyGridPositions
     public void Void()
     {
         _first = 0ul;
-        _second = 0ul;
+        _second = 0u;
     }
 
     public void FillRow(int row)
     {
-        if (row < 6) _first |= RowMask << (row * 9);
-        else _second |= RowMask << ((row - 6) * 9);
+        if (row < 6) _first |= LongRowMask << (row * 9);
+        else _second |= IntRowMask << ((row - 6) * 9);
     }
 
     public void VoidRow(int row)
     {
-        if (row < 6) _first &= ~(RowMask << (row * 9));
-        else _second &= ~(RowMask << ((row - 6) * 9));
+        if (row < 6) _first &= ~(LongRowMask << (row * 9));
+        else _second &= ~(IntRowMask << ((row - 6) * 9));
     }
 
     public void FillColumn(int column)
     {
-        _first |= FirstColumnMask << column;
-        _second |= SecondColumnMask << column;
+        _first |= LongColumnMask << column;
+        _second |= IntColumnMask << column;
     }
 
     public void VoidColumn(int column)
     {
-        _first &= ~(FirstColumnMask << column);
-        _second &= ~(SecondColumnMask << column);
+        _first &= ~(LongColumnMask << column);
+        _second &= ~(IntColumnMask << column);
     }
 
     public void FillMiniGrid(int miniRow, int miniCol)
     {
-        if (miniRow < 2) _first |= MiniGridMask << (miniRow * 27 + miniCol * 3);
-        else _second |= MiniGridMask << (miniCol * 3);
+        if (miniRow < 2) _first |= LongBoxMask << (miniRow * 27 + miniCol * 3);
+        else _second |= IntBoxMask << (miniCol * 3);
     }
 
     public void VoidMiniGrid(int miniRow, int miniCol)
     {
-        if (miniRow < 2) _first &= ~(MiniGridMask << (miniRow * 27 + miniCol * 3));
-        else _second &= ~(MiniGridMask << (miniCol * 3));
+        if (miniRow < 2) _first &= ~(LongBoxMask << (miniRow * 27 + miniCol * 3));
+        else _second &= ~(IntBoxMask << (miniCol * 3));
     }
 
     public GridPositions Copy()
