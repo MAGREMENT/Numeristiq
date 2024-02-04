@@ -7,6 +7,10 @@
 /View/obj
 /View/.idea
 
+/NewView/bin
+/NewView/obj
+/NewView/.idea
+
 /RunTester/bin
 /RunTester/obj
 

@@ -6,75 +6,89 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
-using View.Utility;
-using Brushes = System.Windows.Media.Brushes;
-using FlowDirection = System.Windows.FlowDirection;
+using NewView.Utility;
 
-namespace View.Pages;
+namespace NewView;
 
-public class SudokuGrid : FrameworkElement
+public class SudokuBoard : DrawingBoard
 {
-    private static readonly Brush StrongLinkBrush = Brushes.Indigo;
-    private const double LinkOffset = 20;
-    private const double CursorWidth = 3;
-    
-    private readonly int _possibilitySize;
-    private readonly int _cellSize;
-    private readonly int _smallLineWidth;
-    private readonly int _bigLineWidth;
-    private readonly double _size;
-
-    private readonly DrawingVisual _visual = new();
-
-    private readonly List<IDrawableComponent>[] Layers =
-    {
-        new(), new(), new(), new(), new(), new(), new(), new(), new(), new()
-    };
     private const int BackgroundIndex = 0;
     private  const int CellsHighlightIndex = 1;
     private  const int PossibilitiesHighlightIndex = 2;
     private  const int CursorIndex = 3;
-    private  const int SmallMarginsIndex = 4;
-    private  const int BigMarginsIndex = 5;
+    private  const int SmallLinesIndex = 4;
+    private  const int BigLinesIndex = 5;
     private  const int NumbersIndex = 6;
     private  const int EncirclesIndex = 7;
     private  const int LinksIndex = 8;
+    
+    private static readonly Brush StrongLinkBrush = Brushes.Indigo;
+    private const double LinkOffset = 20;
+    private const double CursorWidth = 3;
+    
+    private double _possibilitySize;
+    private double _cellSize;
+    private double _smallLineWidth;
+    private double _bigLineWidth;
+    private double _size;
 
+    public double PossibilitySize
+    {
+        get => _possibilitySize;
+        set
+        {
+            _possibilitySize = value;
+            _cellSize = _possibilitySize * 3;
+            UpdateSize();
+        }
+    }
+    
+    public double CellSize
+    {
+        get => _cellSize;
+        set
+        {
+            _cellSize = value;
+            _possibilitySize = _cellSize / 3;
+            UpdateSize();
+        }
+    }
+    
+    public double SmallLineWidth
+    {
+        get => _smallLineWidth;
+        set
+        {
+            _smallLineWidth = value;
+            UpdateSize();
+        }
+    }
+    
+    public double BigLineWidth
+    {
+        get => _bigLineWidth;
+        set
+        {
+            _bigLineWidth = value;
+            UpdateSize();
+        }
+    }
+    
     private bool _isSelecting;
     private bool _overrideSelection = true;
 
     public event OnCellSelection? CellSelected;
     public event OnCellSelection? CellAddedToSelection;
 
-    public SudokuGrid()
-    {
-        
-    }
-
-    public SudokuGrid(int possibilitySize, int smallLineWidth, int bigLineWidth)
+    public delegate void OnCellSelection(int row, int col);
+    
+    public SudokuBoard() : base(9)
     {
         Focusable = true;
-
-        Loaded += AddVisualToTree;
-        Unloaded += RemoveVisualFromTree;
         
-        _possibilitySize = possibilitySize;
-        _smallLineWidth = smallLineWidth;
-        _bigLineWidth = bigLineWidth;
-        _cellSize = _possibilitySize * 3;
-        
-        _size = ComputeSize();
-        Width = _size;
-        Height = _size;
-        Layers[BackgroundIndex].Add(new FilledRectangleComponent(new Rect(0, 0, _size, _size), Brushes.White));
-        
-        UpdateMargins();
-        Refresh();
-
         MouseLeftButtonDown += (_, args) =>
         {
             Focus();
@@ -101,31 +115,6 @@ public class SudokuGrid : FrameworkElement
         KeyDown += AnalyseKeyDown;
         KeyUp += AnalyseKeyUp;
     }
-
-    //DrawingNecessities------------------------------------------------------------------------------------------------
-    
-    // Provide a required override for the VisualChildrenCount property.
-    protected override int VisualChildrenCount => 1;
-
-    // Provide a required override for the GetVisualChild method.
-    protected override Visual GetVisualChild(int index)
-    {
-        return _visual;
-    }
-    
-    private void AddVisualToTree(object sender, RoutedEventArgs e)
-    {
-        AddVisualChild(_visual);
-        AddLogicalChild(_visual);
-    }
-
-    private void RemoveVisualFromTree(object sender, RoutedEventArgs e)
-    {
-        RemoveLogicalChild(_visual);
-        RemoveVisualChild(_visual);
-    }
-    
-    //------------------------------------------------------------------------------------------------------------------
     
     public void ClearNumbers()
     {
@@ -148,17 +137,18 @@ public class SudokuGrid : FrameworkElement
     public void ShowGridPossibility(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"),  (double)_possibilitySize / 4 * 3, color, 1);
+            new Typeface("Arial"), _possibilitySize / 4 * 3, color, 1);
+        
         Layers[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-            _possibilitySize, _possibilitySize), TextHorizontalAlignment.Center, TextVerticalAlignment.Center));
+            _possibilitySize, _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
     }
 
     public void ShowSolution(int row, int col, int possibility, Brush color)
     {
         var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"), (double)_cellSize / 4 * 3, color, 1);
+            new Typeface("Arial"), _cellSize / 4 * 3, color, 1);
         Layers[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col), GetTop(row),
-            _cellSize, _cellSize), TextHorizontalAlignment.Center, TextVerticalAlignment.Center));
+            _cellSize, _cellSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
     }
 
     public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location,
@@ -167,13 +157,13 @@ public class SudokuGrid : FrameworkElement
         var builder = new StringBuilder();
         foreach (var p in possibilities) builder.Append(p);
         var text = new FormattedText(builder.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"), (double)_possibilitySize / 4 * 2, color, 1);
+            new Typeface("Arial"), _possibilitySize / 4 * 2, color, 1);
         var ha = location switch
         {
-            PossibilitiesLocation.Bottom => TextHorizontalAlignment.Right,
-            PossibilitiesLocation.Middle => TextHorizontalAlignment.Center,
-            PossibilitiesLocation.Top => TextHorizontalAlignment.Left,
-            _ => TextHorizontalAlignment.Center
+            PossibilitiesLocation.Bottom => ComponentHorizontalAlignment.Right,
+            PossibilitiesLocation.Middle => ComponentHorizontalAlignment.Center,
+            PossibilitiesLocation.Top => ComponentHorizontalAlignment.Left,
+            _ => ComponentHorizontalAlignment.Center
         };
         var n = location switch
         {
@@ -184,23 +174,7 @@ public class SudokuGrid : FrameworkElement
         };
 
         Layers[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col), GetTop(row, n), _cellSize,
-            _possibilitySize), ha, TextVerticalAlignment.Center));
-    }
-    
-    public void Refresh()
-    {
-        var context = _visual.RenderOpen();
-
-        foreach (var list in Layers)
-        {
-            foreach (var component in list)
-            {
-                component.Draw(context);
-            }
-        }
-        
-        context.Close();
-        InvalidateVisual();
+            _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
     public void FillCell(int row, int col, Color color)
@@ -241,14 +215,14 @@ public class SudokuGrid : FrameworkElement
 
     public void EncircleCell(int row, int col)
     {
-        var delta = (double)_bigLineWidth / 2;
+        var delta = _bigLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
             _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(StrongLinkBrush, _bigLineWidth)));
     }
     
     public void EncirclePossibility(int row, int col, int possibility)
     {
-        var delta = (double)_smallLineWidth / 2;
+        var delta = _smallLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
             _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(StrongLinkBrush, _bigLineWidth)));
     }
@@ -323,7 +297,7 @@ public class SudokuGrid : FrameworkElement
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
         int possibilityTo, Color color)
     {
-        var delta = (double)_smallLineWidth / 2;
+        var delta = _smallLineWidth / 2;
         
         var xFrom = GetLeft(colFrom, possibilityFrom) - delta;
         var yFrom = GetTop(rowFrom, possibilityFrom) - delta;
@@ -361,7 +335,7 @@ public class SudokuGrid : FrameworkElement
     
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, Color color)
     {
-        var delta = (double)_bigLineWidth / 2;
+        var delta = _bigLineWidth / 2;
         
         var xFrom = GetLeft(colFrom) - delta;
         var yFrom = GetTop(rowFrom) - delta;
@@ -399,7 +373,7 @@ public class SudokuGrid : FrameworkElement
 
     public void EncircleCellPatch(Cell[] cells, Color color)
     {
-        var delta = (double)_bigLineWidth / 2;
+        var delta = _bigLineWidth / 2;
         var brush = new SolidColorBrush(color);
         var pen = new Pen(brush, _bigLineWidth);
 
@@ -480,40 +454,9 @@ public class SudokuGrid : FrameworkElement
         }
     }
 
-    public BitmapFrame AsImage()
-    {
-        var rtb = new RenderTargetBitmap((int)_size, (int)_size, 96, 96, PixelFormats.Pbgra32);
-        rtb.Render(_visual);
-        return BitmapFrame.Create(rtb);
-    }
+    
     
     //Private-----------------------------------------------------------------------------------------------------------
-
-    private double ComputeSize()
-    {
-        return _cellSize * 9 + _smallLineWidth * 6 + _bigLineWidth * 4;
-    }
-
-    private void UpdateMargins()
-    {
-        var delta = _bigLineWidth + _cellSize;
-        for (int i = 0; i < 6; i++)
-        {
-            Layers[SmallMarginsIndex].Add(new FilledRectangleComponent(new Rect(0, delta, _size, _smallLineWidth), Brushes.Black));
-            Layers[SmallMarginsIndex].Add(new FilledRectangleComponent(new Rect(delta, 0, _smallLineWidth, _size), Brushes.Black));
-
-            delta += i % 2 == 0 ? _smallLineWidth + _cellSize : _smallLineWidth + _cellSize + _bigLineWidth + _cellSize;
-        }
-
-        delta = 0;
-        for (int i = 0; i < 4; i++)
-        {
-            Layers[BigMarginsIndex].Add(new FilledRectangleComponent(new Rect(0, delta, _size, _bigLineWidth), Brushes.Black));
-            Layers[BigMarginsIndex].Add(new FilledRectangleComponent(new Rect(delta, 0, _bigLineWidth, _size), Brushes.Black));
-
-            delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
-        }
-    }
     
     private void AddShortenedLine(Point from, Point to, bool isWeak)
     {
@@ -584,13 +527,13 @@ public class SudokuGrid : FrameworkElement
 
     private Point Center(int row, int col, int possibility)
     {
-        var delta = (double)_possibilitySize / 2;
+        var delta = _possibilitySize / 2;
         return new Point(GetLeft(col, possibility) + delta, GetTop(row, possibility) + delta);
     }
 
     private Point Center(int row, int col)
     {
-        var delta = (double)_cellSize / 2;
+        var delta = _cellSize / 2;
         return new Point(GetLeft(col) + delta, GetTop(row) + delta);
     }
 
@@ -637,6 +580,50 @@ public class SudokuGrid : FrameworkElement
     {
         if (args.Key == Key.LeftCtrl) _overrideSelection = true;
     }
+    
+    private void UpdateSize()
+    {
+        var newSize = _cellSize * 9 + _smallLineWidth * 6 + _bigLineWidth * 4;
+        if (Math.Abs(_size - newSize) < 0.01) return;
+        
+        _size = newSize;
+        Width = _size;
+        Height = _size;
+        
+        Clear();
+        UpdateBackground();
+        UpdateLines();
+        Draw();
+    }
+
+    private void UpdateBackground()
+    {
+        Layers[BackgroundIndex].Add(new FilledRectangleComponent(
+            new Rect(0, 0, _size, _size), Brushes.White));
+    }
+    
+    private void UpdateLines()
+    {
+        var delta = _bigLineWidth + _cellSize;
+        for (int i = 0; i < 6; i++)
+        {
+            Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
+                new Rect(0, delta, _size, _smallLineWidth), Brushes.Black));
+            Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
+                new Rect(delta, 0, _smallLineWidth, _size), Brushes.Black));
+
+            delta += i % 2 == 0 ? _smallLineWidth + _cellSize : _smallLineWidth + _cellSize + _bigLineWidth + _cellSize;
+        }
+
+        delta = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            Layers[BigLinesIndex].Add(new FilledRectangleComponent(
+                new Rect(0, delta, _size, _bigLineWidth), Brushes.Black));
+            Layers[BigLinesIndex].Add(new FilledRectangleComponent(
+                new Rect(delta, 0, _bigLineWidth, _size), Brushes.Black));
+
+            delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
+        }
+    }
 }
-
-
