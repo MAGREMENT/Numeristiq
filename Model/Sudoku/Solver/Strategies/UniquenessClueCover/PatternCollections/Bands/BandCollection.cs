@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
@@ -153,7 +154,7 @@ public class BandCollection : IPatternCollection
         _cluesBuffer.Clear();
 
         int clueCount = 0;
-        Possibilities differentClues = Possibilities.NewEmpty();
+        var differentClues = new ReadOnlyBitSet16();
         for (int w = 0; w < 3; w++)
         {
             for (int l = 0; l < 9; l++)
@@ -163,7 +164,7 @@ public class BandCollection : IPatternCollection
                 if (clue == 0) continue;
 
                 clueCount++;
-                differentClues.Add(clue);
+                differentClues += clue;
                 if (clueCount > maxClueCount || differentClues.Count > maxDifferentClueCount) return false;
 
                 _cluesBuffer.Add(cell);

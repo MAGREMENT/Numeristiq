@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
@@ -43,10 +44,10 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
             /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
                 CheckForLoop(strategyManager, chain, friend.Possibilities, occupied)) return true;*/
             
-            if (explored.Contains(friend.To) || occupied.PeakAny(friend.To.Positions)) continue;
+            if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Positions)) continue;
 
             var lastLink = chain.LastLink();
-            foreach (var possibleLink in friend.Possibilities)
+            foreach (var possibleLink in friend.Possibilities.EnumeratePossibilities())
             {
                 if (lastLink == possibleLink) continue;
 
@@ -65,9 +66,9 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
     }
 
     private bool CheckForLoop(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> builder,
-        IReadOnlyPossibilities possibleLastLinks, GridPositions occupied)
+        ReadOnlyBitSet16 possibleLastLinks, GridPositions occupied)
     {
-        foreach (var ll in possibleLastLinks)
+        foreach (var ll in possibleLastLinks.EnumeratePossibilities())
         {
             if (ll.Equals(builder.FirstLink())) continue;
 
@@ -75,7 +76,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
             for (int i = 0; i < chain.Elements.Length; i++)
             {
                 var element = chain.Elements[i];
-                foreach (var p in element.Possibilities)
+                foreach (var p in element.Possibilities.EnumeratePossibilities())
                 {
                     var indexBefore = i - 1 < 0 ? chain.Links.Length - 1 : i - 1;
                     if (p == chain.Links[indexBefore]) continue;
@@ -89,7 +90,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
 
                     foreach (var ssc in cells)
                     {
-                        if (occupied.Peek(ssc)) continue;
+                        if (occupied.Contains(ssc)) continue;
 
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                     }
@@ -110,13 +111,11 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
         var first = chain.FirstElement();
         var last = chain.LastElement();
 
-        var nope = Possibilities.NewEmpty();
-        nope.Add(chain.FirstLink());
-        nope.Add(chain.LastLink());
+        var nope = new ReadOnlyBitSet16(chain.FirstLink(), chain.LastLink());
 
-        foreach (var possibility in first.Possibilities)
+        foreach (var possibility in first.Possibilities.EnumeratePossibilities())
         {
-            if (!last.Possibilities.Peek(possibility) || nope.Peek(possibility)) continue;
+            if (!last.Possibilities.Contains(possibility) || nope.Contains(possibility)) continue;
 
             var cells = new List<Cell>();
             cells.AddRange(first.EachCell(possibility));

@@ -40,7 +40,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
     public void Add(int gridRow, int gridCol)
     {
-        if (!Peek(gridRow, gridCol)) Count++;
+        if (!Contains(gridRow, gridCol)) Count++;
         _pos |= 1 << (gridRow * 3 + gridCol);
     }
     
@@ -79,16 +79,16 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
     public void Add(int gridNumber)
     {
-        if (!Peek(gridNumber)) Count++;
+        if (!Contains(gridNumber)) Count++;
         _pos |= 1 << gridNumber;
     }
 
-    public bool Peek(int gridRow, int gridCol)
+    public bool Contains(int gridRow, int gridCol)
     {
         return ((_pos >> (gridRow * 3 + gridCol)) & 1) > 0;
     }
 
-    public bool Peek(int gridNumber)
+    public bool Contains(int gridNumber)
     {
         return ((_pos >> gridNumber) & 1) > 0;
     }
@@ -127,13 +127,13 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     {
         for (int i = 0; i < 3; i++)
         {
-            if (!Peek(i, 0)) continue;
+            if (!Contains(i, 0)) continue;
             for (int j = 0; j < 3; j++)
             {
-                if (j == i || !Peek(j, 1)) continue;
+                if (j == i || !Contains(j, 1)) continue;
                 for (int k = 0; k < 3; k++)
                 {
-                    if (k == i || k == j || !Peek(k, 2)) continue;
+                    if (k == i || k == j || !Contains(k, 2)) continue;
 
                     var mgp = new MiniGridPositions(_startRow / 3, _startCol / 3);
                     mgp.Add(i, 0);
@@ -201,7 +201,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     {
         for (int i = 0; i < 9; i++)
         {
-            if (Peek(i)) return new Cell(_startRow + i / 3, _startCol + i % 3);
+            if (Contains(i)) return new Cell(_startRow + i / 3, _startCol + i % 3);
         }
 
         return new Cell(-1, -1);
@@ -211,7 +211,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     {
         for (int i = 0; i < 9; i++)
         {
-            if (!Peek(i)) continue;
+            if (!Contains(i)) continue;
 
             var current = new Cell(_startRow + i / 3, _startCol + i % 3);
             if (current != except) return current;
@@ -225,7 +225,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         cursor++;
         for (; cursor < 9; cursor++)
         {
-            if (Peek(cursor)) return new Cell(_startRow + cursor / 3, _startCol + cursor % 3);
+            if (Contains(cursor)) return new Cell(_startRow + cursor / 3, _startCol + cursor % 3);
         }
 
         return new Cell(-1, -1);
@@ -235,7 +235,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     {
         for (int i = 0; i < 9; i++)
         {
-            if (Peek(i)) yield return new Cell(_startRow + i / 3, _startCol + i % 3);
+            if (Contains(i)) yield return new Cell(_startRow + i / 3, _startCol + i % 3);
         }
     }
 

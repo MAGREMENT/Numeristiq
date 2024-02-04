@@ -39,9 +39,9 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
 
         if (cp1.Length == 1 && cp2.Length == 1 && pos1.Count == 1 && pos2.Count == 1 && cp1[0].Cell == cp2[0].Cell)
         {
-            foreach (var possibility in view.PossibilitiesAt(cp1[0].Cell))
+            foreach (var possibility in view.PossibilitiesAt(cp1[0].Cell).EnumeratePossibilities())
             {
-                if (pos1.Peek(possibility) || pos2.Peek(possibility)) continue;
+                if (pos1.Contains(possibility) || pos2.Contains(possibility)) continue;
                 
                 view.ChangeBuffer.ProposePossibilityRemoval(possibility, cp1[0].Cell.Row, cp1[0].Cell.Column);
             }
@@ -49,20 +49,20 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
             return;
         }
 
-        var and = pos1.And(pos2);
+        var and = pos1 & pos2;
 
-        foreach (var possibility in and)
+        foreach (var possibility in and.EnumeratePossibilities())
         {
             List<Cell> cells = new();
             
             foreach (var cp in cp1)
             {
-                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
             
             foreach (var cp in cp2)
             {
-                if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
 
             foreach (var cell in Cells.SharedSeenCells(cells))
@@ -73,7 +73,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
 
         if (one is NakedSet ans && two is CellPossibility cellPossibility)
         {
-            foreach (var possibility in ans.EveryPossibilities())
+            foreach (var possibility in ans.EveryPossibilities().EnumeratePossibilities())
             {
                 if (possibility == cellPossibility.Possibility) continue;
                 
@@ -81,7 +81,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
 
                 foreach (var cp in ans.EveryCellPossibilities())
                 {
-                    if (cp.Possibilities.Peek(possibility)) cells.Add(cp.Cell);
+                    if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
                 }
                 
                 foreach (var cell in Cells.SharedSeenCells(cells))

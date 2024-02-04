@@ -249,14 +249,14 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         {
             foreach (var cell in SharedSeenCells(row1, col1, row2, col2))
             {
-                if(strategyUser.PossibilitiesAt(cell).Peek(pos1)) yield return new CellPossibility(cell, pos1);
+                if(strategyUser.PossibilitiesAt(cell).Contains(pos1)) yield return new CellPossibility(cell, pos1);
             }
         }
         else
         {
             if (row1 == row2 && col1 == col2)
             {
-                foreach (var p in strategyUser.PossibilitiesAt(row1, col1))
+                foreach (var p in strategyUser.PossibilitiesAt(row1, col1).EnumeratePossibilities())
                 {
                     if (p == pos1 || p == pos2) continue;
                     yield return new CellPossibility(row1, col1, p);
@@ -264,8 +264,8 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             }
             else if(Cells.ShareAUnit(row1, col1, row2, col2))
             {
-                if(strategyUser.PossibilitiesAt(row1, col1).Peek(pos2)) yield return new CellPossibility(row1, col1, pos2);
-                if(strategyUser.PossibilitiesAt(row2, col2).Peek(pos1)) yield return new CellPossibility(row2, col2, pos1);
+                if(strategyUser.PossibilitiesAt(row1, col1).Contains(pos2)) yield return new CellPossibility(row1, col1, pos2);
+                if(strategyUser.PossibilitiesAt(row2, col2).Contains(pos1)) yield return new CellPossibility(row2, col2, pos1);
             }
         }
     }

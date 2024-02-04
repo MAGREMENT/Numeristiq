@@ -1,5 +1,5 @@
-﻿using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
+﻿using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 
@@ -29,5 +29,5 @@ public class PositionsMap
         }
     }
 
-    public delegate bool Filter(IReadOnlyPossibilities possibilities);
+    public delegate bool Filter(ReadOnlyBitSet16 possibilities);
 }

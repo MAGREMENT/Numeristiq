@@ -79,7 +79,7 @@ public class GridFormationStrategy : AbstractStrategy
         {
             for (int other = 0; other < 9; other++)
             {
-                if (visited.Peek(other)) continue;
+                if (visited.Contains(other)) continue;
 
                 if (unit == Unit.Row) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
                 else strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, first, other);
@@ -113,7 +113,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         {
             foreach (var col in _cols)
             {
-                if (snapshot.PossibilitiesAt(row, col).Peek(_number)) coords.Add(new Cell(row, col));
+                if (snapshot.PossibilitiesAt(row, col).Contains(_number)) coords.Add(new Cell(row, col));
             }
         }
         return new ChangeReport( "", lighter =>

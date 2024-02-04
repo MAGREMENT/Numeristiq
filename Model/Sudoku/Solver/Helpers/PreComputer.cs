@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -159,7 +160,7 @@ public class PreComputer
             {
                 var one = allAls[i];
                 var two = allAls[j];
-                if (one.Positions.PeakAny(two.Positions)) continue;
+                if (one.Positions.ContainsAny(two.Positions)) continue;
 
                 var rcc = one.RestrictedCommons(two);
                 if(rcc.Count > 0) graph.Add(one, two, rcc);
@@ -180,7 +181,7 @@ public class PreComputer
             {
                 var one = allAls[i];
                 var two = allAls[j];
-                if (one.Positions.PeakAny(two.Positions)) continue;
+                if (one.Positions.ContainsAny(two.Positions)) continue;
 
                 var rcc = one.RestrictedCommons(two);
                 if (rcc.Count == 0) continue;
@@ -203,7 +204,7 @@ public class PreComputer
                 var one = allAhs[i];
                 var two = allAhs[j];
 
-                if (one.Possibilities.PeekAny(two.Possibilities)) continue;
+                if (one.Possibilities.ContainsAny(two.Possibilities)) continue;
 
                 var and = one.Positions.And(two.Positions);
                 if(and.Count > 0) graph.Add(one, two, and.ToArray());
@@ -224,7 +225,7 @@ public class PreComputer
                 var one = allAhs[i];
                 var two = allAhs[j];
 
-                if (one.Possibilities.PeekAny(two.Possibilities)) continue;
+                if (one.Possibilities.ContainsAny(two.Possibilities)) continue;
 
                 var and = one.Positions.And(two.Positions);
                 if (and.Count == 0) continue;
@@ -238,5 +239,5 @@ public class PreComputer
     }
 }
 
-public record LinkedAlmostLockedSets(IPossibilitiesPositions One, IPossibilitiesPositions Two, Possibilities RestrictedCommons);
+public record LinkedAlmostLockedSets(IPossibilitiesPositions One, IPossibilitiesPositions Two, ReadOnlyBitSet16 RestrictedCommons);
 public record LinkedAlmostHiddenSets(IPossibilitiesPositions One, IPossibilitiesPositions Two, Cell[] Cells);

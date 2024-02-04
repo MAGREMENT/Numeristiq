@@ -81,7 +81,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
     {
         for (int row = 0; row < 9; row++)
         {
-            if (visited.Peek(row)) continue;
+            if (visited.Contains(row)) continue;
 
             var ppic = strategyUser.RowPositionsAt(row, number);
 
@@ -89,7 +89,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 
             foreach (var col in ppic)
             {
-                if (mashed.Peek(col)) continue;
+                if (mashed.Contains(col)) continue;
                 if (miniCol == -1) miniCol = col / 3;
                 else if(col / 3 != miniCol)
                 {
@@ -108,7 +108,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                 for (int gridRow = 0; gridRow < 3; gridRow++)
                 {
                     int eliminationRow = startRow + gridRow;
-                    if (visited.Peek(eliminationRow) || row == eliminationRow) continue;
+                    if (visited.Contains(eliminationRow) || row == eliminationRow) continue;
 
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, eliminationRow, col);
                 }
@@ -151,7 +151,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
     {
         for (int col = 0; col < 9; col++)
         {
-            if (visited.Peek(col)) continue;
+            if (visited.Contains(col)) continue;
 
             var ppic = strategyUser.ColumnPositionsAt(col, number);
 
@@ -159,7 +159,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
 
             foreach (var row in ppic)
             {
-                if (mashed.Peek(row)) continue;
+                if (mashed.Contains(row)) continue;
                 if (miniRow == -1) miniRow = row / 3;
                 else if(row / 3 != miniRow)
                 {
@@ -178,7 +178,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                 for (int gridCol = 0; gridCol < 3; gridCol++)
                 {
                     int eliminationCol = startCol + gridCol;
-                    if (visited.Peek(eliminationCol) || col == eliminationCol) continue;
+                    if (visited.Contains(eliminationCol) || col == eliminationCol) continue;
 
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, eliminationCol);
                 }
@@ -222,7 +222,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
                 int row = _unit == Unit.Row ? visited : mashed;
                 int col = _unit == Unit.Row ? mashed : visited;
 
-                if (snapshot.PossibilitiesAt(row, col).Peek(_number)) normal.Add(new Cell(row, col));
+                if (snapshot.PossibilitiesAt(row, col).Contains(_number)) normal.Add(new Cell(row, col));
             }
         }
 
@@ -231,9 +231,9 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
             int row = _unit == Unit.Row ? _fin : n;
             int col = _unit == Unit.Row ? n : _fin;
 
-            if (snapshot.PossibilitiesAt(row, col).Peek(_number))
+            if (snapshot.PossibilitiesAt(row, col).Contains(_number))
             {
-                if (_mashed.Peek(n)) normal.Add(new Cell(row, col));
+                if (_mashed.Contains(n)) normal.Add(new Cell(row, col));
                 else finned.Add(new Cell(row, col));
             }
         }

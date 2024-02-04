@@ -20,7 +20,7 @@ public class ZCondition : INRCZTCondition
         {
             bool ok = true;
             
-            foreach (var p in possibilities)
+            foreach (var p in possibilities.EnumeratePossibilities())
             {
                 if (all.Contains(new CellPossibility(bStart.Row, bStart.Column, p)))
                 {
@@ -31,14 +31,14 @@ public class ZCondition : INRCZTCondition
 
             if (ok)
             {
-                var copy = possibilities.Copy();
-                copy.Remove(bStart.Possibility);
+                var copy = possibilities;
+                copy -= bStart.Possibility;
                 
-                foreach (var possibility in possibilities)
+                foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
                     if (possibility == bStart.Possibility) continue;
 
-                    var other = copy.First(possibility);
+                    var other = copy.FirstPossibility(possibility);
                     yield return (new CellPossibility(bStart.Row, bStart.Column, possibility),
                         new TargetMustSeeChainManipulation(new CellPossibility(bStart.Row, bStart.Column, other)));
                 }

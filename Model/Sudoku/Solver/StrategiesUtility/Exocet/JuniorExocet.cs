@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Exocet;
@@ -12,7 +12,7 @@ public class JuniorExocet
     public Cell Base2 { get; }
     public Cell Target1 { get; }
     public Cell Target2 { get; }
-    public Possibilities BaseCandidates { get; }
+    public ReadOnlyBitSet16 BaseCandidates { get; }
     public Cell EscapeCell { get; }
     
     public Cell[] Target1MirrorNodes { get; }
@@ -21,7 +21,7 @@ public class JuniorExocet
     
     public Dictionary<int, GridPositions> SCells { get; }
 
-    public JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, Possibilities baseCandidates,
+    public JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, ReadOnlyBitSet16 baseCandidates,
         Cell escapeCell, Cell[] target1MirrorNodes, Cell[] target2MirrorNodes, Dictionary<int, GridPositions> sCells)
     {
         Base1 = base1;
@@ -89,7 +89,7 @@ public class JuniorExocet
 
     public bool CompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
     {
-        if (!BaseCandidates.Peek(poss1) || !BaseCandidates.Peek(poss2))
+        if (!BaseCandidates.Contains(poss1) || !BaseCandidates.Contains(poss2))
             throw new ArgumentException("Possibility not in base candidates");
         
         if (poss1 == poss2) return false;
@@ -102,9 +102,7 @@ public class JuniorExocet
     private bool RowCompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
     {
         int urThreatCount = 0;
-        var possibilities = Possibilities.NewEmpty();
-        possibilities.Add(poss1);
-        possibilities.Add(poss2);
+        var possibilities = new ReadOnlyBitSet16(poss1, poss2);
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -118,8 +116,8 @@ public class JuniorExocet
                     strategyUser.Contains(row, Target1.Column, poss1) || strategyUser.Contains(row, Target1.Column, poss2) ||
                     strategyUser.Contains(row, Target2.Column, poss1) || strategyUser.Contains(row, Target2.Column, poss2)) continue;
 
-                if (!strategyUser.PossibilitiesAt(row, Base1.Column).PeekAll(possibilities) ||
-                    !strategyUser.PossibilitiesAt(row, Base2.Column).PeekAll(possibilities)) continue;
+                if (!strategyUser.PossibilitiesAt(row, Base1.Column).ContainsAll(possibilities) ||
+                    !strategyUser.PossibilitiesAt(row, Base2.Column).ContainsAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;
@@ -143,9 +141,7 @@ public class JuniorExocet
     private bool ColumnCompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
     {
         int urThreatCount = 0;
-        var possibilities = Possibilities.NewEmpty();
-        possibilities.Add(poss1);
-        possibilities.Add(poss2);
+        var possibilities = new ReadOnlyBitSet16(poss1, poss2);
 
         for (int miniCol = 0; miniCol < 3; miniCol++)
         {
@@ -159,8 +155,8 @@ public class JuniorExocet
                     strategyUser.Contains(Target1.Row, col, poss1) || strategyUser.Contains(Target1.Row, col, poss2) ||
                     strategyUser.Contains(Target2.Row, col, poss1) || strategyUser.Contains(Target2.Row, col, poss2)) continue;
 
-                if (!strategyUser.PossibilitiesAt(Base1.Row, col).PeekAll(possibilities) ||
-                    !strategyUser.PossibilitiesAt(Base2.Row, col).PeekAll(possibilities)) continue;
+                if (!strategyUser.PossibilitiesAt(Base1.Row, col).ContainsAll(possibilities) ||
+                    !strategyUser.PossibilitiesAt(Base2.Row, col).ContainsAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;
@@ -185,7 +181,7 @@ public class JuniorExocet
     {
         var result = new Dictionary<int, List<CoverHouse>>();
 
-        foreach (var possibility in BaseCandidates)
+        foreach (var possibility in BaseCandidates.EnumeratePossibilities())
         {
             result.Add(possibility, ComputeCoverHouses(possibility));
         }
@@ -195,7 +191,7 @@ public class JuniorExocet
 
     public List<CoverHouse> ComputeCoverHouses(int possibility)
     {
-        if (!BaseCandidates.Peek(possibility)) return new List<CoverHouse>();
+        if (!BaseCandidates.Contains(possibility)) return new List<CoverHouse>();
 
         return SCells[possibility].BestCoverHouses(MethodsInPriorityOrder());
     }

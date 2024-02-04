@@ -35,7 +35,7 @@ public class ChangeBuffer
 
     public void ProposePossibilityRemoval(CellPossibility cp)
     {
-        if (!_m.PossibilitiesAt(cp.Row, cp.Column).Peek(cp.Possibility)) return;
+        if (!_m.PossibilitiesAt(cp.Row, cp.Column).Contains(cp.Possibility)) return;
         
         _possibilityRemovedBuffer.Add(cp);
     }

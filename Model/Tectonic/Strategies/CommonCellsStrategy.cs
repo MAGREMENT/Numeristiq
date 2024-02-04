@@ -2,9 +2,9 @@
 
 public class CommonCellsStrategy : AbstractStrategy
 {
-    public override void Apply(ISolvable solvable)
+    public override void Apply(IStrategyUser strategyUser)
     {
-        foreach (var zone in solvable.Tectonic.Zones)
+        foreach (var zone in strategyUser.Tectonic.Zones)
         {
             
         }

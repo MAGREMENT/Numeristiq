@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
@@ -95,9 +96,9 @@ public abstract class Symmetry
 
         foreach (var cell in CenterCells())
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (!selfMap.Peek(possibility))
+                if (!selfMap.Contains(possibility))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                 }
@@ -121,9 +122,9 @@ public abstract class Symmetry
                     var symmetricPossibilities = strategyUser.PossibilitiesAt(symmetry);
                     var mappedPossibilities = GetMappedPossibilities(strategyUser.PossibilitiesAt(row, col));
 
-                    foreach (var possibility in symmetricPossibilities)
+                    foreach (var possibility in symmetricPossibilities.EnumeratePossibilities())
                     {
-                        if(!mappedPossibilities.Peek(possibility)) strategyUser.ChangeBuffer
+                        if(!mappedPossibilities.Contains(possibility)) strategyUser.ChangeBuffer
                             .ProposePossibilityRemoval(possibility, symmetry.Row, symmetry.Column);
                     }
                 }
@@ -167,23 +168,23 @@ public abstract class Symmetry
         return count >= MinimumSelfMapCount;
     }
 
-    private Possibilities SelfMap()
+    private ReadOnlyBitSet16 SelfMap()
     {
-        Possibilities selfMap = Possibilities.NewEmpty();
+        var selfMap = new ReadOnlyBitSet16();
         for (int i = 0; i < _mapping.Length; i++)
         {
-            if (_mapping[i] == i + 1) selfMap.Add(i + 1);
+            if (_mapping[i] == i + 1) selfMap += i + 1;
         }
 
         return selfMap;
     }
 
-    private Possibilities GetMappedPossibilities(IReadOnlyPossibilities possibilities)
+    private ReadOnlyBitSet16 GetMappedPossibilities(ReadOnlyBitSet16 possibilities)
     {
-        Possibilities result = Possibilities.NewEmpty();
-        foreach (var possibility in possibilities)
+        var result = new ReadOnlyBitSet16();
+        foreach (var possibility in possibilities.EnumeratePossibilities())
         {
-            result.Add(_mapping[possibility - 1]);
+            result += _mapping[possibility - 1];
         }
 
         return result;

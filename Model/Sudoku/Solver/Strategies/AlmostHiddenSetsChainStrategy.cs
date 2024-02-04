@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -38,7 +39,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
     }
 
     private bool Search(IStrategyUser strategyUser, PositionsGraph<IPossibilitiesPositions> graph,
-        IReadOnlyPossibilities occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
+        ReadOnlyBitSet16 occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
         ILinkGraph<CellPossibility> linkGraph)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
@@ -46,7 +47,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
             /*if (chain.Count > 2 && chain.FirstElement().Equals(friend.To) &&
                  CheckForLoop(strategyManager, chain, friend.Cells)) return true;*/
             
-            if (explored.Contains(friend.To) || occupied.PeekAny(friend.To.Possibilities)) continue;
+            if (explored.Contains(friend.To) || occupied.ContainsAny(friend.To.Possibilities)) continue;
 
             var lastLink = chain.LastLink();
             foreach (var possibleLink in friend.Cells)
@@ -55,7 +56,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
 
                 chain.Add(possibleLink, friend.To);
                 explored.Add(friend.To);
-                var occupiedCopy = occupied.Or(friend.To.Possibilities);
+                var occupiedCopy = occupied | friend.To.Possibilities;
 
                 if (CheckForChain(strategyUser, chain, linkGraph)) return true;
                 if(Search(strategyUser, graph, occupiedCopy, explored, chain, linkGraph)) return true;
@@ -79,7 +80,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
             {
                 foreach (var cell in pp.EachCell())
                 {
-                    foreach (var p in strategyUser.PossibilitiesAt(cell))
+                    foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
                     {
                         var cp = new CellPossibility(cell, p);
                         if (!Contains(chain, cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
@@ -119,22 +120,22 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
 
         foreach (var cell in first.EachCell())
         {
-            if (nope.Peek(cell)) continue;
+            if (nope.Contains(cell)) continue;
             
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (first.Possibilities.Peek(possibility) || last.Possibilities.Peek(possibility)) continue;
+                if (first.Possibilities.Contains(possibility) || last.Possibilities.Contains(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
                 foreach (var friend in linkGraph.Neighbors(current, LinkStrength.Strong))
                 {
-                    if (nope.Peek(friend.ToCell())) continue;
+                    if (nope.Contains(friend.ToCell())) continue;
                     
                     foreach (var friendOfFriend in linkGraph.Neighbors(friend, LinkStrength.Strong))
                     {
                         var asCell = friendOfFriend.ToCell();
 
-                        if (last.Positions.Peek(friendOfFriend.ToCell()) && asCell != cell && !nope.Peek(asCell))
+                        if (last.Positions.Contains(friendOfFriend.ToCell()) && asCell != cell && !nope.Contains(asCell))
                         {
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));
@@ -178,7 +179,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var ahs in _chain.Elements)
             {
-                foreach (var possibility in ahs.Possibilities)
+                foreach (var possibility in ahs.Possibilities.EnumeratePossibilities())
                 {
                     foreach (var cell in ahs.EachCell(possibility))
                     {

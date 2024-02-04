@@ -20,7 +20,7 @@ public class NakedSingleStrategy : AbstractStrategy
             {
                 if (strategyUser.PossibilitiesAt(row, col).Count != 1) continue;
                 
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(strategyUser.PossibilitiesAt(row, col).First(), row, col);
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(strategyUser.PossibilitiesAt(row, col).FirstPossibility(), row, col);
                 strategyUser.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
                 if (OnCommitBehavior == OnCommitBehavior.Return) return;
             }

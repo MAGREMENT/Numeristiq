@@ -31,18 +31,18 @@ public class LinePositions : IReadOnlyLinePositions
 
     public void Add(int pos)
     {
-        if (!Peek(pos)) Count++;
+        if (!Contains(pos)) Count++;
         _pos |= 1 << pos;
     }
 
-    public bool Peek(int pos)
+    public bool Contains(int pos)
     {
         return ((_pos >> pos) & 1) > 0;
     }
 
     public void Remove(int pos)
     {
-        bool old = Peek(pos);
+        bool old = Contains(pos);
         _pos &= ~(1 << pos);
         if (old) Count--;
     }
@@ -115,7 +115,7 @@ public class LinePositions : IReadOnlyLinePositions
     {
         for (int i = 0; i < 9; i++)
         {
-            if(Peek(i)) return i;
+            if(Contains(i)) return i;
         }
 
         return -1;
@@ -127,7 +127,7 @@ public class LinePositions : IReadOnlyLinePositions
         {
             if (i == except) continue;
             
-            if(Peek(i)) return i;
+            if(Contains(i)) return i;
         }
 
         return -1;
@@ -137,7 +137,7 @@ public class LinePositions : IReadOnlyLinePositions
     {
         for (int i = 0; i < 9; i++)
         {
-            if (Peek(i)) yield return i;
+            if (Contains(i)) yield return i;
         }
     }
 
@@ -146,7 +146,7 @@ public class LinePositions : IReadOnlyLinePositions
         cursor++;
         for (; cursor < 9; cursor++)
         {
-            if (Peek(cursor)) return cursor;
+            if (Contains(cursor)) return cursor;
         }
 
         return -1;
@@ -174,7 +174,7 @@ public class LinePositions : IReadOnlyLinePositions
         string result = "";
         for (int i = 0; i < 9; i++)
         {
-            if (Peek(i)) result += i + " ";
+            if (Contains(i)) result += i + " ";
         }
 
         return result;

@@ -51,7 +51,7 @@ public static class OddagonSearcher
         }
         else if (one.Row == two.Row && one.Column == two.Column)
         {
-            foreach (var p in holder.PossibilitiesAt(one.Row, one.Column))
+            foreach (var p in holder.PossibilitiesAt(one.Row, one.Column).EnumeratePossibilities())
             {
                 if (p == one.Possibility || p == two.Possibility) continue;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.SharedSeenCellSearchers;
@@ -260,7 +261,7 @@ public static class Cells
     public static IEnumerable<CellPossibility> DefaultStrongLinks(IStrategyUser strategyUser, CellPossibility cp)
     {
         var poss = strategyUser.PossibilitiesAt(cp.Row, cp.Column);
-        if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.First(cp.Possibility));
+        if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.FirstPossibility(cp.Possibility));
 
         var rPos = strategyUser.RowPositionsAt(cp.Row, cp.Possibility);
         if (rPos.Count == 2) yield return new CellPossibility(cp.Row, rPos.First(cp.Column), cp.Possibility);
@@ -472,10 +473,10 @@ public readonly struct CellPossibility : ISudokuElement, ICellPossibility
         return new Cell[] { new(Row, Column) };
     }
 
-    public Possibilities EveryPossibilities()
+    public ReadOnlyBitSet16 EveryPossibilities()
     {
-        var result = Possibilities.NewEmpty();
-        result.Add(Possibility);
+        var result = new ReadOnlyBitSet16();
+        result += Possibility;
         return result;
     }
 
@@ -503,9 +504,9 @@ public readonly struct CellPossibility : ISudokuElement, ICellPossibility
 public class CellPossibilities
 {
     public Cell Cell { get; }
-    public IReadOnlyPossibilities Possibilities { get; }
+    public ReadOnlyBitSet16 Possibilities { get; }
     
-    public CellPossibilities(Cell cell, IReadOnlyPossibilities possibilities)
+    public CellPossibilities(Cell cell, ReadOnlyBitSet16 possibilities)
     {
         Cell = cell;
         Possibilities = possibilities;
@@ -514,16 +515,16 @@ public class CellPossibilities
     public CellPossibilities(Cell cell, int possibility)
     {
         Cell = cell;
-        var buffer = Possibility.Possibilities.NewEmpty();
-        buffer.Add(possibility);
+        var buffer = new ReadOnlyBitSet16();
+        buffer += possibility;
         Possibilities = buffer;
     }
     
     public CellPossibilities(CellPossibility coord)
     {
         Cell = new Cell(coord.Row, coord.Column);
-        var buffer = Possibility.Possibilities.NewEmpty();
-        buffer.Add(coord.Possibility);
+        var buffer = new ReadOnlyBitSet16();
+        buffer += coord.Possibility;
         Possibilities = buffer;
     }
 

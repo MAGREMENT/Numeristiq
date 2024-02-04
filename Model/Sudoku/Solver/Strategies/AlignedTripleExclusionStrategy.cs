@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -197,7 +198,7 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
         var poss1 = strategyUser.PossibilitiesAt(c1);
         var poss2 = strategyUser.PossibilitiesAt(c2);
         var poss3 = strategyUser.PossibilitiesAt(c3);
-        var or = poss1.Or(poss2).Or(poss3);
+        var or = poss1.OrMulti(poss2, poss3);
 
         if (ssc.Count < poss1.Count || ssc.Count < poss2.Count || ssc.Count < poss3.Count) return false;
 
@@ -214,17 +215,17 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
             bool useful = false;
             while (aals.Possibilities.Next(ref i))
             {
-                if (!or.Peek(i)) continue;
+                if (!or.Contains(i)) continue;
 
                 int j = i;
                 while (aals.Possibilities.Next(ref j))
                 {
-                    if (!or.Peek(j)) continue;
+                    if (!or.Contains(j)) continue;
 
                     int k = j;
                     while (aals.Possibilities.Next(ref k))
                     {
-                        if (!or.Peek(k)) continue;
+                        if (!or.Contains(k)) continue;
 
                         if (forbiddenTri.Add(new TriValue(i, j, k))) useful = true;
                     }
@@ -241,12 +242,12 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
             bool useful = false;
             while (als.Possibilities.Next(ref i))
             {
-                if (!or.Peek(i)) continue;
+                if (!or.Contains(i)) continue;
                 
                 int j = i;
                 while (als.Possibilities.Next(ref j))
                 {
-                    if (!or.Peek(j)) continue;
+                    if (!or.Contains(j)) continue;
 
                     if (forbiddenBi.Add(new BiValue(i, j))) useful = true;
                 }
@@ -263,19 +264,19 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
             new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private void SearchForElimination(IStrategyUser strategyUser, IReadOnlyPossibilities poss1, IReadOnlyPossibilities poss2,
-        IReadOnlyPossibilities poss3, Cell c1, Cell c2, Cell c3, HashSet<TriValue> forbiddenTri, HashSet<BiValue> forbiddenBi)
+    private void SearchForElimination(IStrategyUser strategyUser, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,
+        ReadOnlyBitSet16 poss3, Cell c1, Cell c2, Cell c3, HashSet<TriValue> forbiddenTri, HashSet<BiValue> forbiddenBi)
     {
-        foreach (var p1 in poss1)
+        foreach (var p1 in poss1.EnumeratePossibilities())
         {
             var toDelete = true;
-            foreach (var p2 in poss2)
+            foreach (var p2 in poss2.EnumeratePossibilities())
             {
                 if (p1 == p2 && Cells.ShareAUnit(c1, c2)) continue;
 
                 if (forbiddenBi.Contains(new BiValue(p1, p2))) continue;
 
-                foreach (var p3 in poss3)
+                foreach (var p3 in poss3.EnumeratePossibilities())
                 {
                     if((p1 == p3 && Cells.ShareAUnit(c1, c3)) || (p2 == p3 && Cells.ShareAUnit(c2, c3))) continue;
 
@@ -359,13 +360,13 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder
             lighter.HighlightCell(_c2, ChangeColoration.Neutral);
             lighter.HighlightCell(_c3, ChangeColoration.Neutral);
 
-            Possibilities removed = new Possibilities();
-            foreach (var change in changes) removed.Add(change.Number);
+            var removed = new ReadOnlyBitSet16();
+            foreach (var change in changes) removed += change.Number;
             
             int color = (int) ChangeColoration.CauseOffOne;
             foreach (var als in _useful)
             {
-                if (!removed.PeekAny(als.Possibilities)) continue;
+                if (!removed.ContainsAny(als.Possibilities)) continue;
                 foreach (var coord in als.EachCell())
                 {
                     lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);

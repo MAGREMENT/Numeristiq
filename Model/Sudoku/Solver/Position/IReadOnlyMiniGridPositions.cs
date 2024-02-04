@@ -18,8 +18,8 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
     public bool AreAllInSameRow();
     public bool AreAllInSameColumn();
     
-    public bool Peek(int gridRow, int gridCol);
-    public bool Peek(int gridNumber);
+    public bool Contains(int gridRow, int gridCol);
+    public bool Contains(int gridNumber);
     
     public MiniGridPositions Or(IReadOnlyMiniGridPositions pos);
     public MiniGridPositions Difference(IReadOnlyMiniGridPositions pos);
@@ -37,7 +37,7 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
         {
             for (int j = 0; j < 3; j++)
             {
-                if (one.Peek(i, j) || two.Peek(i, j)) result.Add(i, j);
+                if (one.Contains(i, j) || two.Contains(i, j)) result.Add(i, j);
             }
         }
 

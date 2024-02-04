@@ -1,4 +1,4 @@
-﻿using Model.Sudoku.Solver.Possibility;
+﻿using Model.Sudoku.Solver.BitSets;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -6,7 +6,7 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
 public interface ISudokuElement
 {
     int DifficultyRank { get; }
-    Possibilities EveryPossibilities();
+    ReadOnlyBitSet16 EveryPossibilities();
     CellPossibilities[] EveryCellPossibilities();
     Cell[] EveryCell();
     CellPossibility[] EveryCellPossibility();

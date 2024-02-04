@@ -39,11 +39,11 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
     {
         foreach (var cell in one.EachCell())
         {
-            if (two.Positions.Peek(cell)) continue;
+            if (two.Positions.Contains(cell)) continue;
                     
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (one.Possibilities.Peek(possibility)) continue;
+                if (one.Possibilities.Contains(possibility)) continue;
 
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
@@ -51,11 +51,11 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                     
         foreach (var cell in two.EachCell())
         {
-            if (one.Positions.Peek(cell)) continue;
+            if (one.Positions.Contains(cell)) continue;
                     
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (two.Possibilities.Peek(possibility)) continue;
+                if (two.Possibilities.Contains(possibility)) continue;
 
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
@@ -73,9 +73,9 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
 
         foreach (var cell in one.EachCell())
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (one.Possibilities.Peek(possibility) || two.Possibilities.Peek(possibility)) continue;
+                if (one.Possibilities.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
 
                 var current = new CellPossibility(cell, possibility);
                 foreach (var friend in graph.Neighbors(current, LinkStrength.Strong))
@@ -84,7 +84,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
                     {
                         var asCell = friendOfFriend.ToCell();
 
-                        if (two.Positions.Peek(asCell) && asCell != cell)
+                        if (two.Positions.Contains(asCell) && asCell != cell)
                         {
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));
@@ -121,7 +121,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in _one.EachCell())
             {
-                foreach (var possibility in _one.PossibilitiesInCell(cell))
+                foreach (var possibility in _one.PossibilitiesInCell(cell).EnumeratePossibilities())
                 {
                     lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
                 }
@@ -129,7 +129,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
             
             foreach (var cell in _two.EachCell())
             {
-                foreach (var possibility in _two.PossibilitiesInCell(cell))
+                foreach (var possibility in _two.PossibilitiesInCell(cell).EnumeratePossibilities())
                 {
                     lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
                 }

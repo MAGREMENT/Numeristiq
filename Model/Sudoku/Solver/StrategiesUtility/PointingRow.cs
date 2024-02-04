@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -78,7 +79,7 @@ public class PointingRow : ISudokuElement
         if (pr.Possibility != Possibility || pr.Row != Row || _pos.Count != pr._pos.Count) return false;
         foreach (var col in _pos)
         {
-            if (!pr._pos.Peek(col)) return false;
+            if (!pr._pos.Contains(col)) return false;
         }
 
         return true;
@@ -125,11 +126,9 @@ public class PointingRow : ISudokuElement
         return result;
     }
 
-    public Possibilities EveryPossibilities()
+    public ReadOnlyBitSet16 EveryPossibilities()
     {
-        var result = Possibilities.NewEmpty();
-        result.Add(Possibility);
-        return result;
+        return new ReadOnlyBitSet16(Possibility);
     }
 
     public CellPossibility[] EveryCellPossibility()

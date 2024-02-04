@@ -32,7 +32,7 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
                 GridPositions positions = new GridPositions();
                 positions.Add(row, col);
                 Dictionary<int, List<Cell>> possibilitiesCells = new();
-                foreach (var p in strategyUser.PossibilitiesAt(row, col))
+                foreach (var p in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
                     possibilitiesCells.Add(p, new List<Cell>{current});
                 }
@@ -59,7 +59,7 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
 
             alreadyExplored.Add(positions.Copy());
             
-            foreach (var p in strategyUser.PossibilitiesAt(cell))
+            foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 if (!possibilitiesCells.TryGetValue(p, out var list))
                 {
@@ -78,7 +78,7 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
             if (Search(strategyUser, possibilitiesCells, positions, alreadyExplored)) return true;
 
             positions.Remove(cell);
-            foreach (var p in strategyUser.PossibilitiesAt(cell))
+            foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 var list = possibilitiesCells[p];
 
@@ -120,7 +120,7 @@ public class DistributedDisjointSubsetStrategy : AbstractStrategy
     private bool ShareAUnitWithAll(IStrategyUser strategyUser, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         bool ok = false;
-        foreach (var poss in strategyUser.PossibilitiesAt(cell))
+        foreach (var poss in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
         {
             if (!possibilitiesCells.TryGetValue(poss, out var toShareAUnitWith)) continue;
 

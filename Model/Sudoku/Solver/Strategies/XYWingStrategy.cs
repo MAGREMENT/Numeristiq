@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -28,7 +29,7 @@ public class XYWingStrategy : AbstractStrategy
                     if (col == otherCol) continue;
                     
                     var secondPoss = strategyUser.PossibilitiesAt(row, otherCol);
-                    if(!firstPoss.PeekOnlyOne(secondPoss)) continue;
+                    if(!firstPoss.ContainsOnlyOne(secondPoss)) continue;
 
                     //Rows & Cols
                     foreach (var otherRow in map.Columns[col])
@@ -36,9 +37,9 @@ public class XYWingStrategy : AbstractStrategy
                         if(row == otherRow) continue;
 
                         var thirdPoss = strategyUser.PossibilitiesAt(otherRow, col);
-                        var and = thirdPoss.And(secondPoss);
+                        var and = thirdPoss & secondPoss;
                         int toRemove;
-                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
+                        if(and.Count != 1 || firstPoss.Contains(toRemove = and.FirstPossibility()) || !firstPoss.ContainsOnlyOne(thirdPoss)) continue;
 
                         if(Process(strategyUser, row, col, row, otherCol, otherRow, col, toRemove))
                             return;
@@ -50,9 +51,9 @@ public class XYWingStrategy : AbstractStrategy
                         if(mini.Row == row) continue;
 
                         var thirdPoss = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
-                        var and = thirdPoss.And(secondPoss);
+                        var and = thirdPoss & secondPoss;
                         int toRemove;
-                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
+                        if(and.Count != 1 || firstPoss.Contains(toRemove = and.FirstPossibility()) || !firstPoss.ContainsOnlyOne(thirdPoss)) continue;
 
                         if (Process(strategyUser, row, col, row, otherCol, mini.Row, mini.Column, toRemove))
                             return;
@@ -65,16 +66,16 @@ public class XYWingStrategy : AbstractStrategy
                     if(row == otherRow) continue;
 
                     var secondPoss = strategyUser.PossibilitiesAt(otherRow, col);
-                    if(!firstPoss.PeekOnlyOne(secondPoss)) continue;
+                    if(!firstPoss.ContainsOnlyOne(secondPoss)) continue;
                     
                     foreach (var mini in map.Minis[row / 3, col / 3])
                     {
                         if(mini.Column == col) continue;
 
                         var thirdPoss = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
-                        var and = thirdPoss.And(secondPoss);
+                        var and = thirdPoss & secondPoss;
                         int toRemove;
-                        if(and.Count != 1 || firstPoss.Peek(toRemove = and.First()) || !firstPoss.PeekOnlyOne(thirdPoss)) continue;
+                        if(and.Count != 1 || firstPoss.Contains(toRemove = and.FirstPossibility()) || !firstPoss.ContainsOnlyOne(thirdPoss)) continue;
 
                         if (Process(strategyUser, row, col, otherRow, col, mini.Row, mini.Column, toRemove))
                             return;
@@ -84,7 +85,7 @@ public class XYWingStrategy : AbstractStrategy
         }
     }
 
-    private static bool Only2Possibilities(IReadOnlyPossibilities possibilities)
+    private static bool Only2Possibilities(ReadOnlyBitSet16 possibilities)
     {
         return possibilities.Count == 2;
     }

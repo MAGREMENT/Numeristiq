@@ -76,7 +76,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                         var possibilities = strategyUser.PossibilitiesAt(cell);
                         if(possibilities.Count == 0) continue;
 
-                        foreach (var possibility in possibilities)
+                        foreach (var possibility in possibilities.EnumeratePossibilities())
                         {
                             if (solved1[possibility - 1] == 0)
                                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
@@ -91,7 +91,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                         var possibilities = strategyUser.PossibilitiesAt(cell);
                         if(possibilities.Count == 0) continue;
 
-                        foreach (var possibility in possibilities)
+                        foreach (var possibility in possibilities.EnumeratePossibilities())
                         {
                             if (solved2[possibility - 1] == 0)
                                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);

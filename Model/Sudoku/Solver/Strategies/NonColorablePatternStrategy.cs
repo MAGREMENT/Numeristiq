@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -35,7 +36,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
     {
         List<Cell> perfect = new();
         List<Cell> notPerfect = new();
-        var poss = Possibilities.NewEmpty();
+        var poss = new ReadOnlyBitSet16();
 
         for (int possCount = _minPossCount; possCount <= _maxPossCount; possCount++)
         {
@@ -44,7 +45,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
             {
                 foreach (var i in combination)
                 {
-                    poss.Add(i);
+                    poss += i;
                 }
 
                 for (int row = 0; row < 9; row++)
@@ -55,21 +56,21 @@ public class NonColorablePatternStrategy : AbstractStrategy
                         if (p.Count == 0) continue;
 
                         var cell = new Cell(row, col);
-                        if (poss.PeekAll(p)) perfect.Add(cell);
-                        else if (poss.PeekAny(p)) notPerfect.Add(cell);
+                        if (poss.ContainsAll(p)) perfect.Add(cell);
+                        else if (poss.ContainsAny(p)) notPerfect.Add(cell);
                     }
                 }
 
                 if (perfect.Count > possCount && Try(strategyUser, perfect, notPerfect, poss)) return;
-                
-                poss.RemoveAll();
+
+                poss = new ReadOnlyBitSet16();
                 perfect.Clear();
                 notPerfect.Clear();
             }
         }
     }
 
-    private bool Try(IStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, Possibilities poss)
+    private bool Try(IStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
     {
         List<CellPossibility> outPossibilities = new();
         foreach (var combination in
@@ -77,9 +78,9 @@ public class NonColorablePatternStrategy : AbstractStrategy
         {
             foreach (var cell in combination)
             {
-                foreach (var p in strategyUser.PossibilitiesAt(cell))
+                foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
-                    if (!poss.Peek(p)) outPossibilities.Add(new CellPossibility(cell, p));
+                    if (!poss.Contains(p)) outPossibilities.Add(new CellPossibility(cell, p));
                 }
             }
 
@@ -99,7 +100,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
             }
 
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
-                    new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss.Copy())) &&
+                    new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
         
@@ -144,9 +145,9 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder
 {
     private readonly IReadOnlyList<Cell> _perfect;
     private readonly IReadOnlyList<Cell> _notPerfect;
-    private readonly Possibilities _possibilities;
+    private readonly ReadOnlyBitSet16 _possibilities;
 
-    public NonColorablePatternReportBuilder(IReadOnlyList<Cell> perfect, IReadOnlyList<Cell> notPerfect, Possibilities possibilities)
+    public NonColorablePatternReportBuilder(IReadOnlyList<Cell> perfect, IReadOnlyList<Cell> notPerfect, ReadOnlyBitSet16 possibilities)
     {
         _perfect = perfect;
         _notPerfect = notPerfect;
@@ -159,16 +160,16 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder
         {
             foreach (var cell in _perfect)
             {
-                foreach (var p in snapshot.PossibilitiesAt(cell))
+                foreach (var p in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
                     lighter.HighlightPossibility(p, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
                 }
             }
             foreach (var cell in _notPerfect)
             {
-                foreach (var p in snapshot.PossibilitiesAt(cell))
+                foreach (var p in snapshot.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
-                    lighter.HighlightPossibility(p, cell.Row, cell.Column, _possibilities.Peek(p)
+                    lighter.HighlightPossibility(p, cell.Row, cell.Column, _possibilities.Contains(p)
                     ? ChangeColoration.CauseOffTwo : ChangeColoration.CauseOnOne);
                 }
             }

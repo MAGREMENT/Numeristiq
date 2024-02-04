@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
@@ -52,7 +53,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
                         var conditionsToMeet = new List<IBUGLiteCondition>();
                         if (row != row2)
                         {
-                            foreach (var p in poss)
+                            foreach (var p in poss.EnumeratePossibilities())
                             {
                                 conditionsToMeet.Add(new RowBUGLiteCondition(first, second, p));
                             }
@@ -60,7 +61,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
 
                         if (col != col2)
                         {
-                            foreach (var p in poss)
+                            foreach (var p in poss.EnumeratePossibilities())
                             {
                                 conditionsToMeet.Add(new ColumnBUGLiteCondition(first, second, p));
                             }
@@ -150,35 +151,29 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
     private bool Process(IStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp)
     {
         var cellsNotInStructure = new List<Cell>();
-        var possibilitiesNotInStructure = Possibilities.NewEmpty();
+        var possibilitiesNotInStructure = new ReadOnlyBitSet16();
 
         foreach (var b in bcp)
         {
-            var no1 = strategyUser.PossibilitiesAt(b.One).Difference(b.Possibilities);
+            var no1 = strategyUser.PossibilitiesAt(b.One) - b.Possibilities;
             if (no1.Count > 0)
             {
                 cellsNotInStructure.Add(b.One);
-                foreach (var p in no1)
-                {
-                    possibilitiesNotInStructure.Add(p);
-                }
+                possibilitiesNotInStructure |= no1;
             }
 
-            var no2 = strategyUser.PossibilitiesAt(b.Two).Difference(b.Possibilities);
+            var no2 = strategyUser.PossibilitiesAt(b.Two) - b.Possibilities;
             if (no2.Count > 0)
             {
                 cellsNotInStructure.Add(b.Two);
-                foreach (var p in no2)
-                {
-                    possibilitiesNotInStructure.Add(p);
-                }
+                possibilitiesNotInStructure |= no2;
             }
         }
 
         if (cellsNotInStructure.Count == 1)
         {
             var c = cellsNotInStructure[0];
-            foreach (var p in FindStructurePossibilitiesFor(c, bcp))
+            foreach (var p in FindStructurePossibilitiesFor(c, bcp).EnumeratePossibilities())
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
             }
@@ -206,7 +201,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
 
         if (possibilitiesNotInStructure.Count == 1)
         {
-            var p = possibilitiesNotInStructure.First();
+            var p = possibilitiesNotInStructure.FirstPossibility();
             foreach (var ssc in Cells.SharedSeenCells(cellsNotInStructure))
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
@@ -217,18 +212,18 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
             new BUGLiteReportBuilder(bcp)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    private static IReadOnlyPossibilities FindStructurePossibilitiesFor(Cell cell, IEnumerable<BiCellPossibilities> bcp)
+    private static ReadOnlyBitSet16 FindStructurePossibilitiesFor(Cell cell, IEnumerable<BiCellPossibilities> bcp)
     {
         foreach (var b in bcp)
         {
             if (b.One == cell || b.Two == cell) return b.Possibilities;
         }
 
-        return Possibilities.NewEmpty();
+        return new ReadOnlyBitSet16();
     }
 }
 
-public record BiCellPossibilities(Cell One, Cell Two, IReadOnlyPossibilities Possibilities);
+public record BiCellPossibilities(Cell One, Cell Two, ReadOnlyBitSet16 Possibilities);
 
 public record BUGLiteConditionMatch(BiCellPossibilities BiCellPossibilities, params IBUGLiteCondition[] OtherConditions);
 
@@ -261,23 +256,21 @@ public class RowBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(_one.Row, c * 3 + i);
-                if (done.Peek(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Contains(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(_two.Row, c * 3 + j);
-                    if (done.Peek(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Contains(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    var and = strategyUser.PossibilitiesAt(first).And(strategyUser.PossibilitiesAt(second));
-                    if (and.Count < 2 || !and.Peek(_possibility)) continue;
+                    var and = strategyUser.PossibilitiesAt(first) & strategyUser.PossibilitiesAt(second);
+                    if (and.Count < 2 || !and.Contains(_possibility)) continue;
 
-                    foreach (var p in and)
+                    foreach (var p in and.EnumeratePossibilities())
                     {
                         if (p == _possibility) continue;
 
-                        var poss = Possibilities.NewEmpty();
-                        poss.Add(_possibility);
-                        poss.Add(p);
+                        var poss = new ReadOnlyBitSet16(_possibility, p);
                         var bcp = new BiCellPossibilities(first, second, poss);
 
                         if (first.Column == second.Column) yield return new BUGLiteConditionMatch(
@@ -332,23 +325,21 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(r * 3 + i, _one.Column);
-                if (done.Peek(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Contains(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(r * 3 + j, _two.Column);
-                    if (done.Peek(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Contains(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    var and = strategyUser.PossibilitiesAt(first).And(strategyUser.PossibilitiesAt(second));
-                    if (and.Count < 2 || !and.Peek(_possibility)) continue;
+                    var and = strategyUser.PossibilitiesAt(first) & strategyUser.PossibilitiesAt(second);
+                    if (and.Count < 2 || !and.Contains(_possibility)) continue;
 
-                    foreach (var p in and)
+                    foreach (var p in and.EnumeratePossibilities())
                     {
                         if (p == _possibility) continue;
 
-                        var poss = Possibilities.NewEmpty();
-                        poss.Add(_possibility);
-                        poss.Add(p);
+                        var poss = new ReadOnlyBitSet16(_possibility, p);
                         var bcp = new BiCellPossibilities(first, second, poss);
 
                         if (first.Row == second.Row)
@@ -396,7 +387,7 @@ public class BUGLiteReportBuilder : IChangeReportBuilder
         {
             foreach (var b in _bcp)
             {
-                foreach (var p in b.Possibilities)
+                foreach (var p in b.Possibilities.EnumeratePossibilities())
                 {
                     lighter.HighlightPossibility(p, b.One.Row, b.One.Column, ChangeColoration.CauseOffTwo);
                     lighter.HighlightPossibility(p, b.Two.Row, b.Two.Column, ChangeColoration.CauseOffTwo);

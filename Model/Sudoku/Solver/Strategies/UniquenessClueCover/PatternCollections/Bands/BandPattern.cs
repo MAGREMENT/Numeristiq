@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
@@ -87,13 +88,13 @@ public readonly struct EliminationFlag
     {
         if (_reverse)
         {
-            Possibilities result = new();
+            ReadOnlyBitSet16 result = ReadOnlyBitSet16.Filled(1, 9);
             for (int i = 0; i < 8; i++)
             {
-                if (((_n >> i) & 1) > 0) result.Remove(numberEquivalence[i]);
+                if (((_n >> i) & 1) > 0) result -= numberEquivalence[i];
             }
 
-            foreach (var p in result)
+            foreach (var p in result.EnumeratePossibilities())
             {
                 yield return p;
             }

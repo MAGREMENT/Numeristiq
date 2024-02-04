@@ -25,7 +25,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
+                foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
                     var onColoring = strategyUser.PreComputer.OnColoring(row, col, possibility);
                     var offColoring = strategyUser.PreComputer.OffColoring(row, col, possibility);
@@ -93,7 +93,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
 
     private void RemoveAll(IStrategyUser view, int row, int col, int except1, int except2)
     {
-        foreach (var possibility in view.PossibilitiesAt(row, col))
+        foreach (var possibility in view.PossibilitiesAt(row, col).EnumeratePossibilities())
         {
             if (possibility == except1 || possibility == except2) continue;
             view.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);

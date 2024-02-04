@@ -58,7 +58,7 @@ public class PatternOverlayStrategy : AbstractStrategy
                         {
                             var current = enumerator.Current;
 
-                            if (!pattern.PeakAny(current))
+                            if (!pattern.ContainsAny(current))
                             {
                                 toRemove = false;
                                 break;
@@ -150,7 +150,7 @@ public class PatternOverlayStrategy : AbstractStrategy
         {
             foreach (var col in cols)
             {
-                if (colsUsed.Peek(col) || miniColsUsed.Peek(col)) continue;
+                if (colsUsed.Contains(col) || miniColsUsed.Contains(col)) continue;
 
                 var cell = new Cell(row, col);
                 current.Add(cell);
@@ -298,9 +298,9 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
                 {
                     for (int col = 0; col < 9; col++)
                     {
-                        if (!snapshot.PossibilitiesAt(row, col).Peek(_number)) continue;
+                        if (!snapshot.PossibilitiesAt(row, col).Contains(_number)) continue;
 
-                        lighter.HighlightCell(row, col, current.Peek(row, col) 
+                        lighter.HighlightCell(row, col, current.Contains(row, col) 
                             ? ChangeColoration.CauseOnOne : ChangeColoration.Neutral);
                     }
                 }

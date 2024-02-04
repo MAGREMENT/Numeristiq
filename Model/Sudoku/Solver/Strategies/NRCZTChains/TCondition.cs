@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -21,16 +22,16 @@ public class TCondition : INRCZTCondition
         var poss = strategyUser.PossibilitiesAt(bStart.Row, bStart.Column);
         if (poss.Count > 2)
         {
-            var ignorable = Possibilities.NewEmpty();
+            var ignorable = new ReadOnlyBitSet16();
             
-            foreach (var p in poss)
+            foreach (var p in poss.EnumeratePossibilities())
             {
                 if (p == bStart.Possibility) continue;
 
                 var current = new CellPossibility(bStart.Row, bStart.Column, p);
 
                 if (!all.Contains(current) && chain.IsWeaklyLinkedToAtLeastOneEnd(current))
-                    ignorable.Add(p);
+                    ignorable += p;
             }
 
             var diff = poss.Count - ignorable.Count;
@@ -38,12 +39,12 @@ public class TCondition : INRCZTCondition
             switch (diff)
             {
                 case 2 :
-                    var both = poss.Difference(ignorable);
-                    yield return (new CellPossibility(bStart.Row, bStart.Column, both.First(bStart.Possibility)),
+                    var both = poss - ignorable;
+                    yield return (new CellPossibility(bStart.Row, bStart.Column, both.FirstPossibility(bStart.Possibility)),
                         _manipulation);
                     break;
                 case 1 :
-                    foreach (var possibility in ignorable)
+                    foreach (var possibility in ignorable.EnumeratePossibilities())
                     {
                         yield return (new CellPossibility(bStart.Row, bStart.Column, possibility), _manipulation);
                     }

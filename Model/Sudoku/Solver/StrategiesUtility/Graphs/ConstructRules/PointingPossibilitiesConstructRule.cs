@@ -42,7 +42,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                     for (int a = 0; a < 3; a++)
                     {
                         if (a == gridRow) continue;
-                        if (ppimn.Peek(a, gridCol))
+                        if (ppimn.Contains(a, gridCol))
                         {
                             singles.Add(new CellPossibility(miniRow * 3 + a, miniCol * 3 + gridCol, numba));
                             if (buffer == -1) buffer = a;
@@ -79,7 +79,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (strategyUser.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (strategyUser.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -114,7 +114,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                     for (int a = 0; a < 3; a++)
                     {
                         if (a == gridCol) continue;
-                        if (ppimn.Peek(gridRow, a))
+                        if (ppimn.Contains(gridRow, a))
                         {
                             singles.Add(new CellPossibility(miniRow * 3 + gridRow, miniCol * 3 + a, numba));
                             if (buffer == -1) buffer = a;
@@ -151,7 +151,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (strategyUser.PossibilitiesAt(row, col).Peek(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (strategyUser.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);

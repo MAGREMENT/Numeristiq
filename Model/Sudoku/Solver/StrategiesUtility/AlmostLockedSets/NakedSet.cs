@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -34,13 +35,13 @@ public class NakedSet : ISudokuElement
         return result;
     }
 
-    public Possibilities EveryPossibilities()
+    public ReadOnlyBitSet16 EveryPossibilities()
     {
-        Possibilities result = Possibilities.NewEmpty();
+        ReadOnlyBitSet16 result = new();
 
         foreach (var cp in _cellPossibilities)
         {
-            result = result.Or(cp.Possibilities);
+            result |= cp.Possibilities;
         }
 
         return result;
@@ -51,7 +52,7 @@ public class NakedSet : ISudokuElement
         List<CellPossibility> result = new();
         foreach (var cp in _cellPossibilities)
         {
-            foreach (var p in cp.Possibilities)
+            foreach (var p in cp.Possibilities.EnumeratePossibilities())
             {
                 result.Add(new CellPossibility(cp.Cell, p));
             }
@@ -84,7 +85,7 @@ public class NakedSet : ISudokuElement
 
     public override string ToString()
     {
-        var result = $"{EveryPossibilities().ToSlimString()}";
+        var result = $"{EveryPossibilities().ToValuesString()}";
         foreach (var coord in _cellPossibilities)
         {
             result += $"{coord.Cell}, ";

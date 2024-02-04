@@ -78,7 +78,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
     {
         foreach (var col in positions)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
+            foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
             {
                 if(possibility == n1 || possibility == n2) continue;
 
@@ -95,7 +95,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
     {
         foreach(var row in positions)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(row, col))
+            foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
             {
                 if(possibility == n1 || possibility == n2) continue;
 
@@ -111,7 +111,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
     {
         foreach (var cell in positions)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell.Row, cell.Column))
+            foreach (var possibility in strategyUser.PossibilitiesAt(cell.Row, cell.Column).EnumeratePossibilities())
             {
                 if(possibility == n1 || possibility == n2) continue;
 

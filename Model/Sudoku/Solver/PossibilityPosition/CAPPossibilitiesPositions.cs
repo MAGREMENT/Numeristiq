@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -14,18 +15,18 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     private readonly IPossibilitiesHolder _snapshot;
     private GridPositions? _gp;
     
-    public IReadOnlyPossibilities Possibilities { get; }
+    public ReadOnlyBitSet16 Possibilities { get; }
     public int PossibilityCount => Possibilities.Count;
     public int PositionsCount => _cells.Length;
 
-    public CAPPossibilitiesPositions(Cell[] cells, IReadOnlyPossibilities possibilities, IPossibilitiesHolder snapshot)
+    public CAPPossibilitiesPositions(Cell[] cells, ReadOnlyBitSet16 possibilities, IPossibilitiesHolder snapshot)
     {
         _cells = cells;
         Possibilities = possibilities;
         _snapshot = snapshot;
     }
     
-    public CAPPossibilitiesPositions(Cell cell, IReadOnlyPossibilities possibilities, IPossibilitiesHolder snapshot)
+    public CAPPossibilitiesPositions(Cell cell, ReadOnlyBitSet16 possibilities, IPossibilitiesHolder snapshot)
     {
         _cells = new[] { cell };
         Possibilities = possibilities;
@@ -34,7 +35,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     
     public IEnumerable<int> EachPossibility()
     {
-        return Possibilities;
+        return Possibilities.EnumeratePossibilities();
     }
 
     public IEnumerable<Cell> EachCell()
@@ -46,13 +47,13 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     {
         foreach(var cell in _cells)
         {
-            if (_snapshot.PossibilitiesAt(cell.Row, cell.Column).Peek(possibility)) yield return cell;
+            if (_snapshot.PossibilitiesAt(cell.Row, cell.Column).Contains(possibility)) yield return cell;
         }
     }
 
-    public IReadOnlyPossibilities PossibilitiesInCell(Cell cell)
+    public ReadOnlyBitSet16 PossibilitiesInCell(Cell cell)
     {
-        return Possibilities.And(_snapshot.PossibilitiesAt(cell));
+        return Possibilities & _snapshot.PossibilitiesAt(cell);
     }
 
     public GridPositions Positions
@@ -77,7 +78,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
         CellPossibilities[] result = new CellPossibilities[PositionsCount];
         for (int i = 0; i < _cells.Length; i++)
         {
-            result[i] = new CellPossibilities(_cells[i], _snapshot.PossibilitiesAt(_cells[i]).And(Possibilities));
+            result[i] = new CellPossibilities(_cells[i], _snapshot.PossibilitiesAt(_cells[i]) & Possibilities);
         }
 
         return result;
@@ -104,7 +105,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     {
         var builder = new StringBuilder();
 
-        foreach (var pos in Possibilities)
+        foreach (var pos in Possibilities.EnumeratePossibilities())
         {
             builder.Append(pos);
         }

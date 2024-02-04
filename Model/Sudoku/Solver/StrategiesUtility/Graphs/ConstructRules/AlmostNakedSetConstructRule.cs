@@ -10,7 +10,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
     {
         foreach (var als in strategyUser.PreComputer.AlmostLockedSets())
         {
-            foreach (var p in als.Possibilities)
+            foreach (var p in als.Possibilities.EnumeratePossibilities())
             {
                 var rowBuffer = -1;
                 var colBuffer = -1;
@@ -22,8 +22,8 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 
                 foreach (var cell in als.EachCell())
                 {
-                    var possibilities = als.PossibilitiesInCell(cell).Copy();
-                    if (possibilities.Peek(p))
+                    var possibilities = als.PossibilitiesInCell(cell);
+                    if (possibilities.Contains(p))
                     {
                         notIn.Add(cell);
                         if (soloRow)
@@ -38,7 +38,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                         }
                     }
                     
-                    possibilities.Remove(p);
+                    possibilities -= p;
                     cps.Add(new CellPossibilities(cell, possibilities));
                 }
 
@@ -60,19 +60,19 @@ public class AlmostNakedSetConstructRule : IConstructRule
 
                     foreach (var ssc in Cells.SharedSeenCells(notIn))
                     {
-                        if (strategyUser.PossibilitiesAt(ssc).Peek(p)) linkGraph.Add(new CellPossibility(ssc, p),
+                        if (strategyUser.PossibilitiesAt(ssc).Contains(p)) linkGraph.Add(new CellPossibility(ssc, p),
                                 element, LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
                 
-                foreach (var possibility in als.Possibilities)
+                foreach (var possibility in als.Possibilities.EnumeratePossibilities())
                 {
                     if (possibility == p) continue;
                     List<Cell> cells = new List<Cell>(als.EachCell(possibility));
 
                     foreach (var ssc in Cells.SharedSeenCells(cells))
                     {
-                        if(strategyUser.PossibilitiesAt(ssc).Peek(possibility)) linkGraph.Add(nakedSet,
+                        if(strategyUser.PossibilitiesAt(ssc).Contains(possibility)) linkGraph.Add(nakedSet,
                             new CellPossibility(ssc, possibility), LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }

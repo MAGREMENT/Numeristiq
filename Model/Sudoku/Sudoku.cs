@@ -1,4 +1,5 @@
-﻿using Model.Sudoku.Solver.Possibility;
+﻿using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Utility;
 
 namespace Model.Sudoku;
@@ -77,9 +78,9 @@ public class Sudoku : IReadOnlySudoku
         }
     }
 
-    public Possibilities PossibilitiesAt(int row, int col)
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
-        return Possibilities.NewEmpty();
+        return new ReadOnlyBitSet16();
     }
 
     public int RowCount(int row, int number)

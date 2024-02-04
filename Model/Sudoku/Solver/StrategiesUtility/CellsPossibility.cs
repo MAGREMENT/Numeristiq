@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -36,11 +37,9 @@ public class CellsPossibility : ISudokuElement
         return _cells;
     }
 
-    public Possibilities EveryPossibilities()
+    public ReadOnlyBitSet16 EveryPossibilities()
     {
-        var poss = Possibilities.NewEmpty();
-        poss.Add(_possibility);
-        return poss;
+        return new ReadOnlyBitSet16(_possibility);
     }
 
     public CellPossibility[] EveryCellPossibility()
