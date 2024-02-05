@@ -1,4 +1,5 @@
-﻿using Model.Sudoku.Solver;
+﻿using System.Collections.Generic;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -40,34 +41,56 @@ public interface IChangeBuffer
     public bool Commit(IChangeReportBuilder builder);
 
     public void Push(IStrategy pusher);
+
+    public void PushCommit(BuiltChangeCommit commit);
+}
+
+public static class ChangeBufferHelper
+{
+    public static SolverChange[] EstablishChangeList(HashSet<CellPossibility> solutionsAdded, HashSet<CellPossibility> possibilitiesRemoved)
+    {
+        var count = 0;
+        var changes = new SolverChange[solutionsAdded.Count + possibilitiesRemoved.Count];
+        
+        foreach (var solution in solutionsAdded)
+        {
+            changes[count++] = new SolverChange(ChangeType.Solution, solution);
+        }
+        
+        foreach (var possibility in possibilitiesRemoved)
+        {
+            changes[count++] = new SolverChange(ChangeType.Possibility, possibility);
+        }
+        
+        solutionsAdded.Clear();
+        possibilitiesRemoved.Clear();
+
+        return changes;
+    }
 }
 
 public class ChangeCommit
 {
     public SolverChange[] Changes { get; }
-    public IChangeReportBuilder? Builder { get; }
+    public IChangeReportBuilder Builder { get; }
 
     public ChangeCommit(SolverChange[] changes, IChangeReportBuilder builder)
     {
         Changes = changes;
         Builder = builder;
     }
-
-    public ChangeCommit(SolverChange[] changes)
-    {
-        Changes = changes;
-        Builder = null;
-    }
 }
 
 public class BuiltChangeCommit
 {
-    public BuiltChangeCommit(SolverChange[] changes, ChangeReport report)
+    public BuiltChangeCommit(IStrategy strategy, SolverChange[] changes, ChangeReport report)
     {
+        Strategy = strategy;
         Changes = changes;
         Report = report;
     }
     
+    public IStrategy Strategy { get; }
     public SolverChange[] Changes { get; }
     public ChangeReport Report { get; }
 }

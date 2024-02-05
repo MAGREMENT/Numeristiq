@@ -1,4 +1,8 @@
-﻿namespace Model.Tectonic.Strategies;
+﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Sudoku.Solver;
+
+namespace Model.Tectonic.Strategies;
 
 public class NakedSingleStrategy : AbstractStrategy
 {
@@ -6,11 +10,20 @@ public class NakedSingleStrategy : AbstractStrategy
     {
         foreach (var cell in strategyUser.Tectonic.EachCell())
         {
-            var candidates = strategyUser.PossibilitiesAt(cell);
-            if (candidates.Count == 1)
-            {
-                //Make definitive
-            }
+            var p = strategyUser.PossibilitiesAt(cell);
+            if (p.Count != 1) continue;
+            
+            strategyUser.ChangeBuffer.ProposeSolutionAddition(
+                p.First(1, strategyUser.Tectonic.GetZone(cell).Count), cell);
+            strategyUser.ChangeBuffer.Commit(new NakedSingleReportBuilder());
         }
+    }
+}
+
+public class NakedSingleReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return ChangeReport.Default(changes);
     }
 }

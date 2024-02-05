@@ -6,7 +6,10 @@ public class CommonCellsStrategy : AbstractStrategy
     {
         foreach (var zone in strategyUser.Tectonic.Zones)
         {
-            
+            for (int n = 1; n <= zone.Count; n++)
+            {
+                
+            }
         }
     }
 }

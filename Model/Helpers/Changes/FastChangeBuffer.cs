@@ -48,4 +48,12 @@ public class FastChangeBuffer : IChangeBuffer
             _producer.ExecuteChange(new SolverChange(ChangeType.Possibility, possibility));
         }
     }
+
+    public void PushCommit(BuiltChangeCommit commit)
+    {
+        foreach (var change in commit.Changes)
+        {
+            _producer.ExecuteChange(change);
+        }
+    }
 }

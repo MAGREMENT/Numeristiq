@@ -50,9 +50,9 @@ public class RunTester
         
         _currentRunResult = new RunResult();
         
-        _currentSolver = new SudokuSolver(ChangeBufferType.Fast)
+        _currentSolver = new SudokuSolver
         {
-            LogsManaged = false,
+            ChangeManagement = ChangeManagement.Fast,
             StatisticsTracked = true
         };
         _currentSolver.Bind(_repository);

@@ -24,7 +24,16 @@ public interface IReadOnlyTectonic
     public IReadOnlyList<Zone> Zones { get; }
     public Zone GetZone(Cell cell);
 
+    public Zone GetZone(int row, int col)
+    {
+        return GetZone(new Cell(row, col));
+    }
+
     public IEnumerable<Cell> GetNeighbors(Cell cell);
+    public IEnumerable<Cell> GetNeighbors(int row, int col)
+    {
+        return GetNeighbors(new Cell(row, col));
+    }
 
     public IEnumerable<Cell> EachCell();
     public IEnumerable<CellNumber> EachCellNumber();
@@ -49,10 +58,10 @@ public readonly struct CellNumber
 
 public class Zone : IEnumerable<Cell>
 {
-    private static readonly Zone _empty = new Zone(Array.Empty<Cell>());
-
+    private static readonly Zone _empty = new(Array.Empty<Cell>());
     public static Zone Empty() => _empty;
     
+
     private readonly Cell[] _cells;
 
     public int Count => _cells.Length;
@@ -74,4 +83,6 @@ public class Zone : IEnumerable<Cell>
     {
         return GetEnumerator();
     }
+
+    public Cell this[int index] => _cells[index];
 }

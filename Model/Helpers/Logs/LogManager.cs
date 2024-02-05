@@ -8,8 +8,7 @@ namespace Model.Helpers.Logs;
 public class LogManager
 {
     private readonly ILogProducer _producer;
-
-    public bool IsEnabled { get; set; }
+    
     public List<ISolverLog> Logs { get; } = new();
     
     public event OnLogsUpdate? LogsUpdated;
@@ -25,8 +24,6 @@ public class LogManager
     
     public void Clear()
     {
-        if (!IsEnabled) return;
-
         _idCount = 1;
         Logs.Clear();
         TryCallLogsUpdatedEvent();
@@ -34,30 +31,24 @@ public class LogManager
 
     public void StartPush()
     {
-        if (!IsEnabled) return;
-
         _stateBuffer = _producer.CurrentState;
     }
 
     public void AddFromReport(ChangeReport report, IReadOnlyList<SolverChange> changes, IStrategy strategy)
     {
-        if (!IsEnabled || _stateBuffer == null) return;
+        if (_stateBuffer == null) return;
         Logs.Add(new ChangeReportLog(_idCount++, strategy, changes, report, _stateBuffer,
             _stateBuffer.Apply(changes)));
     }
 
     public void StopPush()
     {
-        if (!IsEnabled) return;
-
         _stateBuffer = null;
         TryCallLogsUpdatedEvent();
     }
 
     public void AddByHand(int possibility, int row, int col, ChangeType changeType, SolverState stateBefore)
     {
-        if (!IsEnabled) return;
-        
         Logs.Add(new ByHandLog(_idCount++, possibility, row, col, changeType, stateBefore, _producer.CurrentState));
         TryCallLogsUpdatedEvent();
     }

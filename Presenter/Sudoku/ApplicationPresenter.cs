@@ -26,10 +26,10 @@ public class ApplicationPresenter
         _manager = manager;
         
         //Solver
-        var solver = new SudokuSolver(ChangeBufferType.LogManaged)
+        var solver = new SudokuSolver
         {
             StatisticsTracked = false,
-            LogsManaged = true
+            ChangeManagement = ChangeManagement.WithLogs
         };
         IRepository<List<StrategyDAO>> strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json"); //TODO to array ?
         strategyRepository.InitializeOrDefault(new List<StrategyDAO>());

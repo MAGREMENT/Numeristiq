@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
@@ -25,13 +24,26 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     public IReadOnlySudoku Sudoku => _sudoku;
     public IReadOnlyList<ISolverLog> Logs => LogManager.Logs;
     
-    public bool LogsManaged
+    public ChangeManagement ChangeManagement
     {
-        get => LogManager.IsEnabled;
-        init => LogManager.IsEnabled = value;
+        init
+        {
+            switch (value)
+            {
+                case ChangeManagement.Fast :
+                    ChangeBuffer = new FastChangeBuffer(this);
+                    LogsManaged = false;
+                    break;
+                case ChangeManagement.WithLogs :
+                    ChangeBuffer = new LogManagedChangeBuffer(this);
+                    LogsManaged = true;
+                    break;
+            }
+        }
     }
     public bool StatisticsTracked { get; init; }
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
+    public bool LogsManaged { get; private init; }
 
     public SolverState CurrentState => new(this);
     public SolverState StartState { get; private set; }
@@ -56,12 +68,12 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     private readonly StrategyManager _strategyManager;
 
-    public SudokuSolver(ChangeBufferType changeBuffer) : this(changeBuffer, new Sudoku()) { }
+    public SudokuSolver() : this(new Sudoku()) { }
 
-    private SudokuSolver(ChangeBufferType changeBuffer, Sudoku s)
+    private SudokuSolver(Sudoku s)
     {
         _strategyManager = new StrategyManager();
-        SetChangeBuffer(changeBuffer);
+        ChangeManagement = ChangeManagement.Fast;
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
@@ -205,9 +217,10 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     public BuiltChangeCommit[] EveryPossibleNextStep()
     {
-        return Array.Empty<BuiltChangeCommit>();
+        var oldBuffer = ChangeBuffer;
+        ChangeBuffer = new NotExecutedChangeBuffer(this);
         
-        /*var realBehaviors = new Dictionary<int, OnCommitBehavior>();
+        var realBehaviors = new Dictionary<int, OnCommitBehavior>();
         for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
         {
             if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
@@ -219,6 +232,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
             current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
             
             current.Apply(this);
+            ChangeBuffer.Push(current);
         }
         
         _currentStrategy = -1;
@@ -229,12 +243,14 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
             _strategyManager.Strategies[entry.Key].OnCommitBehavior = entry.Value;
         }
 
-        return ChangeBuffer.DumpCommits();*/
+        var result = ((NotExecutedChangeBuffer)ChangeBuffer).DumpCommits();
+        ChangeBuffer = oldBuffer;
+        return result;
     }
     
     public void ApplyCommit(BuiltChangeCommit commit)
     {
-        //ChangeBuffer.PushCommit(commit);
+        ChangeBuffer.PushCommit(commit);
     }
 
     public bool IsWrong()
@@ -358,16 +374,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     public LogManager LogManager { get; }
 
     //Private-----------------------------------------------------------------------------------------------------------
-
-    private void SetChangeBuffer(ChangeBufferType type)
-    {
-        ChangeBuffer = type switch
-        {
-            ChangeBufferType.Fast => new FastChangeBuffer(this),
-            ChangeBufferType.LogManaged => new LogManagedChangeBuffer(this),
-            _ => new FastChangeBuffer(this)
-        };
-    }
 
     private void CallOnNewSudokuForEachStrategy()
     {
@@ -500,8 +506,8 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     }
 }
 
-public enum ChangeBufferType
+public enum ChangeManagement
 {
-    LogManaged, Fast
+    WithLogs, Fast
 }
 

@@ -1,7 +1,6 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
-using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Arguments;
 
 namespace Presenter.Sudoku.Translators;
@@ -59,7 +58,7 @@ public static class ModelToViewTranslator
 
         for (int i = 0; i < commits.Length; i++)
         {
-            result[i] = new ViewCommit("", Intensity.Zero);
+            result[i] = new ViewCommit(commits[i].Strategy.Name, (Intensity)commits[i].Strategy.Difficulty);
         }
 
         return result;
@@ -67,7 +66,7 @@ public static class ModelToViewTranslator
 
     public static ViewCommitInformation Translate(BuiltChangeCommit commit)
     {
-        return new ViewCommitInformation("", Intensity.Zero,
+        return new ViewCommitInformation(commit.Strategy.Name, (Intensity)commit.Strategy.Difficulty,
             IChangeReportBuilder.ChangesToString(commit.Changes) , commit.Report.HighlightManager.CursorPosition(),
             commit.Report.HighlightManager.Count);
     }

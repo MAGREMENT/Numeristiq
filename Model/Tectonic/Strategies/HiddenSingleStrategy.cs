@@ -1,4 +1,7 @@
-﻿using Model.Utility;
+﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Sudoku.Solver;
+using Model.Utility;
 
 namespace Model.Tectonic.Strategies;
 
@@ -6,26 +9,24 @@ public class HiddenSingleStrategy : AbstractStrategy
 {
     public override void Apply(IStrategyUser strategyUser)
     {
-        foreach (var zone in strategyUser.Tectonic.Zones)
+        for(int i = 0; i < strategyUser.Tectonic.Zones.Count; i++)
         {
-            for (int n = 1; n <= zone.Count; n++)
+            for (int n = 1; n <= strategyUser.Tectonic.Zones[i].Count; n++)
             {
-                Cell? target = null;
-                foreach (var cell in zone)
-                {
-                    if (strategyUser.PossibilitiesAt(cell).Contains(n))
-                    {
-                        if (target is null) target = cell;
-                        else
-                        {
-                            target = null;
-                            break;
-                        }
-                    }
-                }
+                var poss = strategyUser.ZonePositionsFor(i, n);
+                if (poss.Count != 1) continue;
 
-                if (target is not null) ; //Add as definitive
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(n, strategyUser.Tectonic.Zones[i][poss.First(0, strategyUser.Tectonic.Zones[i].Count)]);
+                strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder());
             }
         }
+    }
+}
+
+public class HiddenSingleReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return ChangeReport.Default(changes);
     }
 }
