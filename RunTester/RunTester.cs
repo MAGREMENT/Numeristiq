@@ -1,9 +1,9 @@
 ﻿using System.Globalization;
 using System.Text;
 using Model;
+using Model.Helpers;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Helpers;
 using Model.Sudoku.Utility;
 
 namespace RunTester;
@@ -50,7 +50,7 @@ public class RunTester
         
         _currentRunResult = new RunResult();
         
-        _currentSolver = new SudokuSolver
+        _currentSolver = new SudokuSolver(ChangeBufferType.Fast)
         {
             LogsManaged = false,
             StatisticsTracked = true

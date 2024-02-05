@@ -1,4 +1,4 @@
-namespace Model.Sudoku.Solver.Helpers.Highlighting;
+namespace Model.Helpers.Highlighting;
 
 public class HighlightManager : IHighlightable
 {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
@@ -30,7 +30,7 @@ public class OddagonStrategy : AbstractStrategy
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new OddagonReportBuilder(ao)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }

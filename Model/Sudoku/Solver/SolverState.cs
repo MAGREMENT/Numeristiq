@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 
 namespace Model.Sudoku.Solver;

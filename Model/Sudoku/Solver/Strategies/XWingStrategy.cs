@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -84,7 +84,7 @@ public class XWingStrategy : AbstractStrategy
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit(this, new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
+        return strategyUser.ChangeBuffer.Commit( new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -100,7 +100,7 @@ public class XWingStrategy : AbstractStrategy
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit(this, new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
+        return strategyUser.ChangeBuffer.Commit( new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -75,7 +75,7 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
                         HandleCorrespondence(strategyUser, als.Possibilities, correspondence);
                         HandleAls(strategyUser, als.Possibilities, rowCenterCells, als);
 
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, rowCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
@@ -91,7 +91,7 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
                         HandleCorrespondence(strategyUser, als.Possibilities, correspondence);
                         HandleAls(strategyUser, als.Possibilities, colCenterCells, als);
                         
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, colCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
@@ -111,7 +111,7 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
                         HandleCorrespondence(strategyUser, als.Possibilities, cells);
                         HandleAls(strategyUser, als.Possibilities, rowCenterCells, als);
                         
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, cells, rowCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
@@ -131,7 +131,7 @@ public class AlmostLockedCandidatesStrategy : AbstractStrategy
                         HandleCorrespondence(strategyUser, als.Possibilities, cells);
                         HandleAls(strategyUser, als.Possibilities, colCenterCells, als);
                         
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, cells, colCenterCells)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                     }

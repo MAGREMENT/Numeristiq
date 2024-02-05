@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Text;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -146,7 +146,7 @@ public class DeathBlossomStrategy : AbstractStrategy
             }
         }
         
-        strategyUser.ChangeBuffer.Commit(this, new DeathBlossomReportBuilder(allStems, target, sets));
+        strategyUser.ChangeBuffer.Commit( new DeathBlossomReportBuilder(allStems, target, sets));
     }
 }
 

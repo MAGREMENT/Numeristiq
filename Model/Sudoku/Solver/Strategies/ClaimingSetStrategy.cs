@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -63,7 +63,7 @@ public class ClaimingSetStrategy : AbstractStrategy
                         }
                     }
 
-                    if (strategyUser.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(row,
+                    if (strategyUser.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(row,
                             ppir, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }
@@ -90,7 +90,7 @@ public class ClaimingSetStrategy : AbstractStrategy
                         }
                     }
 
-                    if(strategyUser.ChangeBuffer.Commit(this, new BoxLineReductionReportBuilder(col,
+                    if(strategyUser.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(col,
                            ppic, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }

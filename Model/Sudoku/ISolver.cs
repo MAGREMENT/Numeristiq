@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Changes;
+using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Helpers;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Logs;
 
 namespace Model.Sudoku;
 

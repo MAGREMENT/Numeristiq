@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Arguments;
-using Model.Sudoku.Solver.Helpers;
 
 namespace Model.Sudoku;
 

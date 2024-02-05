@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -119,7 +119,7 @@ public class SueDeCoqStrategy : AbstractStrategy
                 var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, strategyUser);
                 Process(strategyUser, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
         }

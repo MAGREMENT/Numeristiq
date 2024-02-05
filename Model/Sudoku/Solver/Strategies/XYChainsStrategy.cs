@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
@@ -63,7 +63,7 @@ public class XYChainsStrategy : AbstractStrategy
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
         }
         
-        return strategyUser.ChangeBuffer.Commit(this, new XYChainReportBuilder(visited))
+        return strategyUser.ChangeBuffer.Commit( new XYChainReportBuilder(visited))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

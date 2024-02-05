@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -30,7 +30,7 @@ public class SimpleColoringStrategy : AbstractStrategy
 
             if (SearchForTwiceInTheSameUnit(strategyUser, coloredVertices))
             {
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new SimpleColoringReportBuilder(coloredVertices, true)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
                 
@@ -39,7 +39,7 @@ public class SimpleColoringStrategy : AbstractStrategy
             
             SearchForTwoColorsElsewhere(strategyUser, coloredVertices);
             
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }

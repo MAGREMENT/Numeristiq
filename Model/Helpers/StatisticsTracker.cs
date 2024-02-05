@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Model.Sudoku.Solver.Helpers;
+namespace Model.Helpers;
 
 public class StatisticsTracker : IReadOnlyTracker
 {

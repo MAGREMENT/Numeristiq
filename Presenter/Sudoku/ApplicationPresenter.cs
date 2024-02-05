@@ -1,7 +1,7 @@
-﻿using Model.Sudoku;
+﻿using Model.Helpers.Changes;
+using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Presenter.Sudoku.Player;
 using Presenter.Sudoku.Solver;
 using Presenter.Sudoku.StepChooser;
@@ -26,7 +26,7 @@ public class ApplicationPresenter
         _manager = manager;
         
         //Solver
-        var solver = new SudokuSolver
+        var solver = new SudokuSolver(ChangeBufferType.LogManaged)
         {
             StatisticsTracked = false,
             LogsManaged = true

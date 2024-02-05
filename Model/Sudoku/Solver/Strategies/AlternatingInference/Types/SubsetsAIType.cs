@@ -27,7 +27,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
     {
         loop.ForEachLink((one, two) => ProcessWeakLink(strategyUser, one, two), LinkStrength.Weak);
 
-        return strategyUser.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.NiceLoop));
+        return strategyUser.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.NiceLoop));
     }
 
     private void ProcessWeakLink(IStrategyUser view, ISudokuElement one, ISudokuElement two)
@@ -97,7 +97,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
         if (inference is not CellPossibility pos) return false;
         strategyUser.ChangeBuffer.ProposePossibilityRemoval(pos.Possibility, pos.Row, pos.Column);
 
-        return strategyUser.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.WeakInference));
+        return strategyUser.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInferenceLoop(IStrategyUser strategyUser, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
@@ -105,7 +105,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
         if (inference is not CellPossibility pos) return false;
         strategyUser.ChangeBuffer.ProposeSolutionAddition(pos.Possibility, pos.Row, pos.Column);
 
-        return strategyUser.ChangeBuffer.Commit(Strategy!, new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.StrongInference));
+        return strategyUser.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.StrongInference));
     }
 
     public bool ProcessChain(IStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain, ILinkGraph<ISudokuElement> graph)

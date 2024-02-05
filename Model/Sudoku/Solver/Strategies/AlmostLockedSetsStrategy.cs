@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -69,7 +69,7 @@ public class AlmostLockedSetsStrategy : AbstractStrategy
                 }
             }
 
-            if(strategyUser.ChangeBuffer.Commit(this, new AlmostLockedSetsReportBuilder(one,
+            if(strategyUser.ChangeBuffer.Commit( new AlmostLockedSetsReportBuilder(one,
                    two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }

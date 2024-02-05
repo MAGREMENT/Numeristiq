@@ -1,6 +1,6 @@
-﻿using Model.Sudoku;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
+﻿using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
+using Model.Sudoku;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;

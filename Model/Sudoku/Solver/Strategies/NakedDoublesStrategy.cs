@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -96,7 +96,7 @@ public class NakedDoublesStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -114,7 +114,7 @@ public class NakedDoublesStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -138,7 +138,7 @@ public class NakedDoublesStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }

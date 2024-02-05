@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -51,7 +51,7 @@ public class TwoStringKiteStrategy : AbstractStrategy
                                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, c);
                             }
 
-                            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                     new TwoStringKiteReportBuilder(number, rCommon, cCommon, rOther,
                                         cOther)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                         }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -174,7 +174,7 @@ public class FireworksStrategy : AbstractStrategy
                 fireworks.ColumnWing.Row, fireworks.ColumnWing.Column);
         }
 
-        return user.ChangeBuffer.Commit(this, new FireworksReportBuilder(fireworks));
+        return user.ChangeBuffer.Commit( new FireworksReportBuilder(fireworks));
     }
 
     private void ProcessDualFireworks(IStrategyUser user, List<Fireworks> fireworksList)
@@ -214,7 +214,7 @@ public class FireworksStrategy : AbstractStrategy
                         user.ChangeBuffer.ProposePossibilityRemoval(possibility, two.RowWing.Row, two.RowWing.Column);
                 }
 
-                if (user.ChangeBuffer.Commit(this, new FireworksReportBuilder(one, two)) &&
+                if (user.ChangeBuffer.Commit( new FireworksReportBuilder(one, two)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
@@ -278,7 +278,7 @@ public class FireworksStrategy : AbstractStrategy
                         }
                     }
 
-                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
+                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                             new FireworksWithAlmostLockedSetsReportBuilder(df, one, two))
                                                         && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
@@ -301,7 +301,7 @@ public class FireworksStrategy : AbstractStrategy
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
-                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
+                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                     break;
@@ -318,7 +318,7 @@ public class FireworksStrategy : AbstractStrategy
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
-                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
+                    if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                     break;
@@ -337,7 +337,7 @@ public class FireworksStrategy : AbstractStrategy
                     if (!df.Possibilities.Contains(p)) user.ChangeBuffer.ProposePossibilityRemoval(p, df.Cross);
                 }
 
-                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
+                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                         new FireworksReportBuilder(df)) && OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }
@@ -386,7 +386,7 @@ public class FireworksStrategy : AbstractStrategy
                     }  
                 }
 
-                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(this,
+                if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                         new FireworksWithCellReportBuilder(center, one, two)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
@@ -67,7 +67,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(strategy,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<CellPossibility>(chain)) &&
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -85,7 +85,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(strategy,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
                             strategy.OnCommitBehavior == OnCommitBehavior.Return;
     }

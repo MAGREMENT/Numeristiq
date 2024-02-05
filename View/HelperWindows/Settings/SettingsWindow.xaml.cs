@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
+using Model.Helpers.Changes;
 using Model.Sudoku;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Presenter.Sudoku;
 using Presenter.Sudoku.Player;
 using Presenter.Sudoku.Solver;

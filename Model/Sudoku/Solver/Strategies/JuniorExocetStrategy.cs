@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Exocet;
@@ -142,7 +142,7 @@ public class JuniorExocetStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this, new DoubleJuniorExocetReportBuilder(je1, je2))
+        return strategyUser.ChangeBuffer.Commit( new DoubleJuniorExocetReportBuilder(je1, je2))
                && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -454,7 +454,7 @@ public class JuniorExocetStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this, new JuniorExocetReportBuilder(je))
+        return strategyUser.ChangeBuffer.Commit( new JuniorExocetReportBuilder(je))
                && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

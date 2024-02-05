@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
@@ -10,7 +10,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
 using Model.Utility;
 
-namespace Model.Sudoku.Solver.Helpers;
+namespace Model.Helpers;
 
 public class PreComputer
 {

@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -170,7 +170,7 @@ public class ThorsHammerStrategy : AbstractStrategy
             }
         }
 
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new ThorsHammerReportBuilder(cells, notInPattern)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
 
         return false;

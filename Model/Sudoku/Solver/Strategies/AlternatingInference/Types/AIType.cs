@@ -26,7 +26,7 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
         loop.ForEachLink((one, two)
             => ProcessWeakLink(strategyUser, one, two), LinkStrength.Weak);
         
-        return strategyUser.ChangeBuffer.Commit(Strategy!,
+        return strategyUser.ChangeBuffer.Commit(
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
     }
 
@@ -59,14 +59,14 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
     public bool ProcessWeakInferenceLoop(IStrategyUser strategyUser, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
         strategyUser.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Column);
-        return strategyUser.ChangeBuffer.Commit(Strategy!,
+        return strategyUser.ChangeBuffer.Commit(
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
     }
 
     public bool ProcessStrongInferenceLoop(IStrategyUser strategyUser, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
         strategyUser.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Column);
-        return strategyUser.ChangeBuffer.Commit(Strategy!,
+        return strategyUser.ChangeBuffer.Commit(
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
     }
 

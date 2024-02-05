@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 
@@ -98,7 +98,7 @@ public class XYWingStrategy : AbstractStrategy
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new XYWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }

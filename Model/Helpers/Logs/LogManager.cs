@@ -1,7 +1,9 @@
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
+using Model.Sudoku;
+using Model.Sudoku.Solver;
 
-namespace Model.Sudoku.Solver.Helpers.Logs;
+namespace Model.Helpers.Logs;
 
 public class LogManager
 {

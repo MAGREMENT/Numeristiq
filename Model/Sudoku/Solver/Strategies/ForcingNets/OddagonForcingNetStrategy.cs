@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Arguments;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -59,7 +59,7 @@ public class OddagonForcingNetStrategy : AbstractStrategy
                     if (element.Value == Coloring.On) strategyUser.ChangeBuffer.ProposeSolutionAddition(cp);
                     else strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
 
-                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this, 
+                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
                             new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
                                 strategyUser.PreComputer.Graphs.ComplexLinkGraph, cp)) && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }

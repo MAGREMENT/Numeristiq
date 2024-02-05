@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Changes;
+using Model.Helpers.Logs;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Logs;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
+using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 
 namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProducer
+public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ILogProducer
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -54,11 +56,12 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
 
     private readonly StrategyManager _strategyManager;
 
-    public SudokuSolver() : this(new Sudoku()) { }
+    public SudokuSolver(ChangeBufferType changeBuffer) : this(changeBuffer, new Sudoku()) { }
 
-    private SudokuSolver(Sudoku s)
+    private SudokuSolver(ChangeBufferType changeBuffer, Sudoku s)
     {
         _strategyManager = new StrategyManager();
+        SetChangeBuffer(changeBuffer);
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
@@ -74,7 +77,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
         LogManager = new LogManager(this);
         LogManager.LogsUpdated += () => LogsUpdated?.Invoke();
         
-        ChangeBuffer = new ChangeBuffer(this);
+        ChangeBuffer = new LogManagedChangeBuffer(this);
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
@@ -202,7 +205,9 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
 
     public BuiltChangeCommit[] EveryPossibleNextStep()
     {
-        var realBehaviors = new Dictionary<int, OnCommitBehavior>();
+        return Array.Empty<BuiltChangeCommit>();
+        
+        /*var realBehaviors = new Dictionary<int, OnCommitBehavior>();
         for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
         {
             if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
@@ -224,12 +229,12 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
             _strategyManager.Strategies[entry.Key].OnCommitBehavior = entry.Value;
         }
 
-        return ChangeBuffer.DumpCommits();
+        return ChangeBuffer.DumpCommits();*/
     }
     
     public void ApplyCommit(BuiltChangeCommit commit)
     {
-        ChangeBuffer.PushCommit(commit);
+        //ChangeBuffer.PushCommit(commit);
     }
 
     public bool IsWrong()
@@ -321,7 +326,7 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
 
     //StrategyManager---------------------------------------------------------------------------------------------------
 
-    public ChangeBuffer ChangeBuffer { get; }
+    public IChangeBuffer ChangeBuffer { get; private set; }
     public PreComputer PreComputer { get; }
     public AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
     public AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
@@ -331,6 +336,16 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
     public IPossibilitiesHolder TakeSnapshot()
     {
         return SolverSnapshot.TakeSnapshot(this);
+    }
+
+    public bool CanRemovePossibility(CellPossibility cp)
+    {
+        return PossibilitiesAt(cp.Row, cp.Column).Contains(cp.Possibility);
+    }
+
+    public bool CanAddSolution(CellPossibility cp)
+    {
+        return Sudoku[cp.Row, cp.Column] == 0;
     }
 
     public bool ExecuteChange(SolverChange change)
@@ -343,6 +358,16 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
     public LogManager LogManager { get; }
 
     //Private-----------------------------------------------------------------------------------------------------------
+
+    private void SetChangeBuffer(ChangeBufferType type)
+    {
+        ChangeBuffer = type switch
+        {
+            ChangeBufferType.Fast => new FastChangeBuffer(this),
+            ChangeBufferType.LogManaged => new LogManagedChangeBuffer(this),
+            _ => new FastChangeBuffer(this)
+        };
+    }
 
     private void CallOnNewSudokuForEachStrategy()
     {
@@ -473,5 +498,10 @@ public class SudokuSolver : ISolver, IStrategyUser, IChangeProducer, ILogProduce
         _colsPositions[col, possibility - 1].Remove(row);
         _minisPositions[row / 3, col / 3, possibility - 1].Remove(row % 3, col % 3);
     }
+}
+
+public enum ChangeBufferType
+{
+    LogManaged, Fast
 }
 

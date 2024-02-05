@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -57,7 +57,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                         break;
                 }
 
-                if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(this,
+                if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(
                         new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
                             possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
@@ -70,7 +70,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                 if (possOff.Row == possOn.Row && possOn.Column == possOff.Column)
                 {
                     RemoveAll(view, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
                                 possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
@@ -81,7 +81,7 @@ public class DigitForcingNetStrategy : AbstractStrategy
                         view.ChangeBuffer.ProposePossibilityRemoval(possOn.Possibility, coord.Row, coord.Column);
                     }
                     
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
                                 possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }

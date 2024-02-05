@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Explanation;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 
-namespace Model.Sudoku.Solver.Helpers.Changes;
+namespace Model.Helpers.Changes;
 
 public class ChangeReport
 {

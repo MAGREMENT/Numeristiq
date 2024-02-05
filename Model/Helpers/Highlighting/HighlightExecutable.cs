@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
+using Model.Sudoku;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
-namespace Model.Sudoku.Solver.Helpers.Highlighting;
+namespace Model.Helpers.Highlighting;
 
 /// <summary>
 /// This class is made so not too many model class instances are kept in memory just for the logs.

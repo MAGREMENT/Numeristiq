@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -88,7 +88,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
                 }
             }
 
-            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new AlmostHiddenSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
         }
 
@@ -147,7 +147,7 @@ public class AlmostHiddenSetsChainStrategy : AbstractStrategy
             }
         }
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new AlmostHiddenSetsChainReportBuilder(chain.ToChain(), links)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

@@ -1,4 +1,4 @@
-﻿using Model.Sudoku.Solver.Helpers.Logs;
+﻿using Model.Helpers.Logs;
 using Presenter.Sudoku.Translators;
 
 namespace Presenter.Sudoku.Solver;

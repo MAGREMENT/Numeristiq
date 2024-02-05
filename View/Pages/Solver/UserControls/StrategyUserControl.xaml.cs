@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Model.Sudoku.Solver.Helpers.Logs;
+using Model.Helpers.Logs;
 using Presenter.Sudoku.Translators;
 using View.Utility;
 

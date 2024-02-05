@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -86,7 +86,7 @@ public class GridFormationStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this, unit == Unit.Row
+        return strategyUser.ChangeBuffer.Commit( unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number)) 
                && OnCommitBehavior == OnCommitBehavior.Return;

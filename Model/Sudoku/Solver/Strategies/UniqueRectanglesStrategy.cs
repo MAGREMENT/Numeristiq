@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -95,7 +95,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
         }
 
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
@@ -114,7 +114,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             }
         }
         
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
@@ -129,7 +129,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 
             ProcessUrWithAls(strategyUser, roof, als);
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new UniqueRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
@@ -197,7 +197,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
             }
         }
         
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         
@@ -220,7 +220,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     if (graph.AreNeighbors(cpr1, cpf1, LinkStrength.Strong))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
-                        if (strategyUser.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
+                        if (strategyUser.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr1, cpf1)))
                                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
@@ -228,7 +228,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     if (graph.AreNeighbors(cpr2, cpf2, LinkStrength.Strong))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
-                        if (strategyUser.ChangeBuffer.Commit(this, new UniqueRectanglesWithStrongLinkReportBuilder(
+                        if (strategyUser.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr2, cpf2)))
                                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
                     }
@@ -294,7 +294,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     strategyUser.ColumnPositionsAt(col, values.One).Count == 2)
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
-                    if (strategyUser.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
+                    if (strategyUser.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
                             cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 
@@ -302,7 +302,7 @@ public class UniqueRectanglesStrategy : AbstractStrategy
                     strategyUser.ColumnPositionsAt(col, values.Two).Count == 2)
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
-                    if (strategyUser.ChangeBuffer.Commit(this, new HiddenUniqueRectanglesReportBuilder(
+                    if (strategyUser.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
                             cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
             }

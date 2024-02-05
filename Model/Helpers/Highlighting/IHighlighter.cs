@@ -1,9 +1,9 @@
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 
-namespace Model.Sudoku.Solver.Helpers.Highlighting;
+namespace Model.Helpers.Highlighting;
 
 public interface IHighlighter
 {

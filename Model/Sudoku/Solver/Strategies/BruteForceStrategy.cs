@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -78,7 +78,7 @@ public class BruteForceStrategy : AbstractStrategy
             }
         }
 
-        strategyUser.ChangeBuffer.Commit(this, new BruteForceReportBuilder());
+        strategyUser.ChangeBuffer.Commit( new BruteForceReportBuilder());
     }
 }
 

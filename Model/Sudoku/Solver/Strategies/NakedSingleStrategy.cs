@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 
 namespace Model.Sudoku.Solver.Strategies;
 
@@ -21,7 +21,7 @@ public class NakedSingleStrategy : AbstractStrategy
                 if (strategyUser.PossibilitiesAt(row, col).Count != 1) continue;
                 
                 strategyUser.ChangeBuffer.ProposeSolutionAddition(strategyUser.PossibilitiesAt(row, col).FirstPossibility(), row, col);
-                strategyUser.ChangeBuffer.Commit(this, new NakedSingleReportBuilder());
+                strategyUser.ChangeBuffer.Commit( new NakedSingleReportBuilder());
                 if (OnCommitBehavior == OnCommitBehavior.Return) return;
             }
         }

@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Strategies;
@@ -19,7 +21,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Utility;
 
-namespace Model.Sudoku.Solver.Helpers;
+namespace Model.Helpers;
 
 public class StrategyManager : IStrategyManager
 {

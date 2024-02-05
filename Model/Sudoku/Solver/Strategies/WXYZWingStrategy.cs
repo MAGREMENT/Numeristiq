@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -253,7 +253,7 @@ public class WXYZWingStrategy : AbstractStrategy
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Column);
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber))
             && OnCommitBehavior == OnCommitBehavior.Return;
         

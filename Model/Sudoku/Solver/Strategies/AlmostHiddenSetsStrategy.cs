@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -61,7 +61,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, new List<Link<CellPossibility>>()))
                                                        && OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -96,7 +96,7 @@ public class AlmostHiddenSetsStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links)) &&
                         OnCommitBehavior == OnCommitBehavior.Return;
     }

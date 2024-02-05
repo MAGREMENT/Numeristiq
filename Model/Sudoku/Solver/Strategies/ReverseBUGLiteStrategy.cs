@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 
@@ -75,7 +75,7 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(row1, row2, cols1, cols2, Unit.Row)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }
@@ -135,7 +135,7 @@ public class ReverseBUGLiteStrategy : AbstractStrategy
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(col1, col2, rows1, rows2, Unit.Column)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

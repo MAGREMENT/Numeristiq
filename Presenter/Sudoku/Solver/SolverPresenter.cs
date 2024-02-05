@@ -1,7 +1,7 @@
-﻿using Model.Sudoku;
+﻿using Model.Helpers.Changes;
+using Model.Helpers.Logs;
+using Model.Sudoku;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Logs;
 using Model.Utility;
 using Presenter.Sudoku.StepChooser;
 using Presenter.Sudoku.Translators;

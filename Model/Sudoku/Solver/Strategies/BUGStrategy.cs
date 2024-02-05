@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Arguments;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 
@@ -63,7 +63,7 @@ public class BUGStrategy : AbstractStrategy
         }
 
         
-        if(strategyUser.ChangeBuffer.NotEmpty()) strategyUser.ChangeBuffer.Commit(this,
+        if(strategyUser.ChangeBuffer.NotEmpty()) strategyUser.ChangeBuffer.Commit(
             new BUGStrategyReportBuilder(additionalCandidates));
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -86,7 +86,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -103,7 +103,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
@@ -119,7 +119,7 @@ public class HiddenDoublesStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.Commit(
             new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

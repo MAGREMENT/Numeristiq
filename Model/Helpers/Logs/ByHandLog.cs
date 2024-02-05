@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Explanation;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 
-namespace Model.Sudoku.Solver.Helpers.Logs;
+namespace Model.Helpers.Logs;
 
 public class ByHandLog : ISolverLog
 {

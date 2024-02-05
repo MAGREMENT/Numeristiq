@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.NRCZTChains;
@@ -125,7 +125,7 @@ public class NRCZTChainStrategy : AbstractStrategy, ICustomCommitComparer
             if (graph.AreNeighbors(target, last)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

@@ -1,4 +1,6 @@
-﻿namespace Model.Sudoku.Solver.Helpers.Changes;
+﻿using Model.Sudoku.Solver.StrategiesUtility;
+
+namespace Model.Helpers.Changes;
 
 public readonly struct SolverChange
 {
@@ -7,6 +9,11 @@ public readonly struct SolverChange
     public SolverChange(ChangeType changeType, int number, int row, int column)
     {
         _bits = column & 0x1F | ((row & 0x1F) << 5) | ((number & 0x1F) << 10) | ((int)changeType << 15);
+    }
+
+    public SolverChange(ChangeType changeType, CellPossibility cp) : this(changeType, cp.Possibility, cp.Row, cp.Column)
+    {
+        
     }
 
     public ChangeType ChangeType => (ChangeType) (_bits >> 15);

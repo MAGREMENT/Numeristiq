@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
@@ -21,8 +21,8 @@ public class GurthTheorem : AbstractStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _symmetries = new List<Symmetry>
         {
-            new TopLeftToBottomRightCross(this), new TopRightToBottomLeftCross(this),
-            new Rotational90(this), new Rotational180(this), new Rotational270(this)
+            new TopLeftToBottomRightCross(), new TopRightToBottomLeftCross(),
+            new Rotational90(), new Rotational180(), new Rotational270()
         };
     }
 
@@ -47,16 +47,9 @@ public class GurthTheorem : AbstractStrategy
 
 public abstract class Symmetry
 {
-    private readonly IStrategy _strategy;
-
     private int[] _mapping = Array.Empty<int>();
     private bool _isSymmetric;
     private bool _appliedOnce;
-
-    protected Symmetry(IStrategy strategy)
-    {
-        _strategy = strategy;
-    }
 
     public void Run(IStrategyUser strategyUser)
     {
@@ -78,7 +71,7 @@ public abstract class Symmetry
         ApplyEveryTime(strategyUser);
 
         if (strategyUser.ChangeBuffer.NotEmpty())
-            strategyUser.ChangeBuffer.Commit(_strategy, new GurthTheoremReportBuilder());
+            strategyUser.ChangeBuffer.Commit(new GurthTheoremReportBuilder());
     }
 
     public void Reset()
@@ -194,10 +187,6 @@ public abstract class Symmetry
 
 public class TopLeftToBottomRightCross : Symmetry
 {
-    public TopLeftToBottomRightCross(IStrategy strategy) : base(strategy)
-    {
-    }
-
     protected override int MinimumSelfMapCount => 3;
 
     protected override IEnumerable<Cell> CenterCells()
@@ -216,10 +205,6 @@ public class TopLeftToBottomRightCross : Symmetry
 
 public class TopRightToBottomLeftCross : Symmetry
 {
-    public TopRightToBottomLeftCross(IStrategy strategy) : base(strategy)
-    {
-    }
-
     protected override int MinimumSelfMapCount => 3;
 
     protected override IEnumerable<Cell> CenterCells()
@@ -237,11 +222,7 @@ public class TopRightToBottomLeftCross : Symmetry
 }
 
 public class Rotational90 : Symmetry
-{
-    public Rotational90(IStrategy strategy) : base(strategy)
-    {
-    }
-
+{ 
     protected override int MinimumSelfMapCount => 1;
     protected override IEnumerable<Cell> CenterCells()
     {
@@ -256,10 +237,6 @@ public class Rotational90 : Symmetry
 
 public class Rotational180 : Symmetry
 {
-    public Rotational180(IStrategy strategy) : base(strategy)
-    {
-    }
-
     protected override int MinimumSelfMapCount => 1;
     protected override IEnumerable<Cell> CenterCells()
     {
@@ -274,10 +251,6 @@ public class Rotational180 : Symmetry
 
 public class Rotational270 : Symmetry
 {
-    public Rotational270(IStrategy strategy) : base(strategy)
-    {
-    }
-
     protected override int MinimumSelfMapCount => 1;
     protected override IEnumerable<Cell> CenterCells()
     {

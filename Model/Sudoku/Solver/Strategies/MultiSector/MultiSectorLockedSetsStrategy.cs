@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 
@@ -78,7 +78,7 @@ public class MultiSectorLockedSetsStrategy : AbstractStrategy
             } 
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

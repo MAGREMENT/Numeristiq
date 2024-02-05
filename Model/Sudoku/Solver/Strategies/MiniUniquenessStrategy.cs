@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
@@ -67,7 +67,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }
@@ -111,7 +111,7 @@ public class MiniUniquenessStrategy : AbstractStrategy
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return;
             }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
@@ -117,7 +117,7 @@ public class NakedSetStrategy : AbstractStrategy
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit(this, new LineNakedPossibilitiesReportBuilder(toRemove,
+        return strategyUser.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove,
             except, row, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
     
@@ -172,7 +172,7 @@ public class NakedSetStrategy : AbstractStrategy
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit(this, new LineNakedPossibilitiesReportBuilder(toRemove, except,
+        return strategyUser.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove, except,
             col, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
     
@@ -241,7 +241,7 @@ public class NakedSetStrategy : AbstractStrategy
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit(this, new MiniGridNakedPossibilitiesReportBuilder(toRemove,
+        return strategyUser.ChangeBuffer.Commit( new MiniGridNakedPossibilitiesReportBuilder(toRemove,
             except)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

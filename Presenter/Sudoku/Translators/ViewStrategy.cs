@@ -1,6 +1,6 @@
-﻿using Model.Sudoku.Solver;
+﻿using Model.Helpers.Logs;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Arguments;
-using Model.Sudoku.Solver.Helpers.Logs;
 
 namespace Presenter.Sudoku.Translators;
 

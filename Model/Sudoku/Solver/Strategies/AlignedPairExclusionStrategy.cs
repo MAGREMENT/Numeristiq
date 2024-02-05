@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -118,7 +118,7 @@ public class AlignedPairExclusionStrategy : AbstractStrategy
         SearchForElimination(strategyUser, poss1, poss2, forbidden, row1, col1, inSameUnit);
         SearchForElimination(strategyUser, poss2, poss1, forbidden, row2, col2, inSameUnit);
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this, 
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2))
                 && OnCommitBehavior == OnCommitBehavior.Return;
     }

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -58,7 +58,7 @@ public class BlossomLoopStrategy : AbstractStrategy
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new BlossomLoopReportBuilder(loop, branches, cps)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
@@ -145,7 +145,7 @@ public class BandCollection : IPatternCollection
             }
         }
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(Strategy!,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.OnCommitBehavior == OnCommitBehavior.Return;
     }
     

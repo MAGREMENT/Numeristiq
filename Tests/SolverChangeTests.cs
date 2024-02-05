@@ -1,4 +1,4 @@
-﻿using Model.Sudoku.Solver.Helpers.Changes;
+﻿using Model.Helpers.Changes;
 
 namespace Tests;
 

@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
-namespace Model.Sudoku.Solver.Helpers.Changes;
+namespace Model.Helpers.Changes;
 
-public class ChangeBuffer
+public class LogManagedChangeBuffer : IChangeBuffer
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
         
     private readonly List<ChangeCommit> _commits = new();
 
-    private readonly IChangeProducer _m;
+    private readonly ILogManagedChangeProducer _producer;
 
     private readonly IPushHandler[] _pushHandlers =
     {
         new ReturnPushHandler(), new WaitForAllPushHandler(), new ChooseBestPushHandler()
     };
 
-    public ChangeBuffer(IChangeProducer changeProducer)
+    public LogManagedChangeBuffer(ILogManagedChangeProducer changeProducer)
     {
-        _m = changeProducer;
+        _producer = changeProducer;
     }
 
     public void ProposePossibilityRemoval(int possibility, Cell cell)
@@ -35,9 +36,7 @@ public class ChangeBuffer
 
     public void ProposePossibilityRemoval(CellPossibility cp)
     {
-        if (!_m.PossibilitiesAt(cp.Row, cp.Column).Contains(cp.Possibility)) return;
-        
-        _possibilityRemovedBuffer.Add(cp);
+        if (_producer.CanRemovePossibility(cp)) _possibilityRemovedBuffer.Add(cp);
     }
 
     public void ProposeSolutionAddition(int number, int row, int col)
@@ -52,14 +51,24 @@ public class ChangeBuffer
 
     public void ProposeSolutionAddition(CellPossibility cp)
     {
-        if(_m.Sudoku[cp.Row, cp.Column] != 0) return;
-
-        _solutionAddedBuffer.Add(cp);
+        if(_producer.CanAddSolution(cp)) _solutionAddedBuffer.Add(cp);
     }
 
     public bool NotEmpty()
     {
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
+    }
+    
+    public bool Commit(IChangeReportBuilder builder)
+    {
+        if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
+
+        var changes = BuffersToChangeList();
+        _commits.Add(_producer.LogManager.IsEnabled
+            ? new ChangeCommit(changes, builder)
+            : new ChangeCommit(changes));
+
+        return true;
     }
 
     public void Push(IStrategy pusher)
@@ -68,27 +77,15 @@ public class ChangeBuffer
 
         var handler = _pushHandlers[(int)pusher.OnCommitBehavior];
 
-        if (_m.LogManager.IsEnabled) handler.PushWithLogsManaged(_commits, _m);
-        else handler.PushWithoutLogsManaged(_commits, _m);
+        if (_producer.LogManager.IsEnabled) handler.PushWithLogsManaged(pusher, _commits, _producer);
+        else handler.PushWithoutLogsManaged(pusher, _commits, _producer);
         
         _commits.Clear();
     }
 
-    public bool Commit(IStrategy strategy, IChangeReportBuilder builder)
+    public void PushCommit(BuiltChangeCommit commit) //TODO FIX
     {
-        if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
-
-        var changes = BuffersToChangeList();
-        _commits.Add(_m.LogManager.IsEnabled
-            ? new ChangeCommit(strategy, changes, builder)
-            : new ChangeCommit(strategy, changes));
-
-        return true;
-    }
-
-    public void PushCommit(BuiltChangeCommit commit)
-    {
-        _m.LogManager.StartPush();
+        /*_m.LogManager.StartPush();
 
         foreach (var change in commit.Changes)
         {
@@ -96,18 +93,18 @@ public class ChangeBuffer
         }
         _m.LogManager.AddFromReport(commit.Report, commit.Changes, commit.Responsible);
         
-        _m.LogManager.StopPush();
+        _m.LogManager.StopPush();*/
     }
     
-    public BuiltChangeCommit[] DumpCommits()
+    public BuiltChangeCommit[] DumpCommits()  //TODO FIX
     {
-        var snapshot = _m.TakeSnapshot();
+        var snapshot = _producer.TakeSnapshot();
         List<BuiltChangeCommit> result = new(_commits.Count);
         
         foreach (var c in _commits)
         {
             if (c.Builder is null) continue;
-            result.Add(new BuiltChangeCommit(c.Responsible, c.Changes, c.Builder.Build(c.Changes, snapshot)));
+            result.Add(new BuiltChangeCommit(c.Changes, c.Builder.Build(c.Changes, snapshot)));
         }
         
         _commits.Clear();
@@ -121,14 +118,12 @@ public class ChangeBuffer
         
         foreach (var solution in _solutionAddedBuffer)
         {
-            changes[count++] = new SolverChange(ChangeType.Solution, solution.Possibility,
-                solution.Row, solution.Column);
+            changes[count++] = new SolverChange(ChangeType.Solution, solution);
         }
         
         foreach (var possibility in _possibilityRemovedBuffer)
         {
-            changes[count++] = new SolverChange(ChangeType.Possibility, 
-                possibility.Possibility, possibility.Row, possibility.Column);
+            changes[count++] = new SolverChange(ChangeType.Possibility, possibility);
         }
         
         _possibilityRemovedBuffer.Clear();
@@ -138,50 +133,15 @@ public class ChangeBuffer
     }
 }
 
-public class ChangeCommit
-{
-    public IStrategy Responsible { get; }
-    public SolverChange[] Changes { get; }
-    public IChangeReportBuilder? Builder { get; }
-
-    public ChangeCommit(IStrategy responsible, SolverChange[] changes, IChangeReportBuilder builder)
-    {
-        Responsible = responsible;
-        Changes = changes;
-        Builder = builder;
-    }
-
-    public ChangeCommit(IStrategy responsible, SolverChange[] changes)
-    {
-        Responsible = responsible;
-        Changes = changes;
-        Builder = null;
-    }
-}
-
-public class BuiltChangeCommit
-{
-    public BuiltChangeCommit(IStrategy responsible, SolverChange[] changes, ChangeReport report)
-    {
-        Responsible = responsible;
-        Changes = changes;
-        Report = report;
-    }
-
-    public IStrategy Responsible { get; }
-    public SolverChange[] Changes { get; }
-    public ChangeReport Report { get; }
-}
-
 public interface IPushHandler
 {
-    void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer);
-    void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer);
+    void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer);
+    void PushWithoutLogsManaged(IStrategy pusher, List<ChangeCommit> commits, IChangeProducer producer);
 }
 
 public class ReturnPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
+    public void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
@@ -194,12 +154,12 @@ public class ReturnPushHandler : IPushHandler
         }
 
         if (commit.Builder is not null) producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
-            commit.Changes, commit.Responsible);
+            commit.Changes, pusher);
         
         producer.LogManager.StopPush();
     }
 
-    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
+    public void PushWithoutLogsManaged(IStrategy pusher, List<ChangeCommit> commits, IChangeProducer producer)
     {
         foreach (var change in commits[0].Changes)
         {
@@ -210,7 +170,7 @@ public class ReturnPushHandler : IPushHandler
 
 public class WaitForAllPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
+    public void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
@@ -225,13 +185,13 @@ public class WaitForAllPushHandler : IPushHandler
             }
 
             if (commit.Builder is null || impactfulChanges.Count == 0) continue;
-            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, commit.Responsible);
+            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, pusher);
         }
         
         producer.LogManager.StopPush();
     }
 
-    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
+    public void PushWithoutLogsManaged(IStrategy pusher, List<ChangeCommit> commits, IChangeProducer producer)
     {
         foreach (var commit in commits)
         {
@@ -247,12 +207,12 @@ public class ChooseBestPushHandler : IPushHandler
 {
     private readonly ICustomCommitComparer _default = new DefaultCommitComparer();
     
-    public void PushWithLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
+    public void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
 
-        var commit = GetBest(commits);
+        var commit = GetBest(pusher, commits);
         
         foreach (var change in commit.Changes)
         { 
@@ -260,26 +220,26 @@ public class ChooseBestPushHandler : IPushHandler
         }
 
         if (commit.Builder is not null) producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot),
-            commit.Changes, commit.Responsible);
+            commit.Changes, pusher);
         
         producer.LogManager.StopPush();
     }
 
-    public void PushWithoutLogsManaged(List<ChangeCommit> commits, IChangeProducer producer)
+    public void PushWithoutLogsManaged(IStrategy pusher, List<ChangeCommit> commits, IChangeProducer producer)
     {
-        foreach (var change in GetBest(commits).Changes)
+        foreach (var change in GetBest(pusher, commits).Changes)
         {
             producer.ExecuteChange(change);
         }
     }
 
-    private ChangeCommit GetBest(List<ChangeCommit> commits)
+    private ChangeCommit GetBest(IStrategy pusher, List<ChangeCommit> commits)
     {
         var best = commits[0];
+        var comparer = pusher as ICustomCommitComparer ?? _default;
 
         for (int i = 1; i < commits.Count; i++)
         {
-            var comparer = best.Responsible as ICustomCommitComparer ?? _default;
             if (comparer.Compare(best, commits[i]) < 0) best = commits[i];
         }
 

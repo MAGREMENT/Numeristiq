@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -113,7 +113,7 @@ public class PatternOverlayStrategy : AbstractStrategy
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return strategyUser.ChangeBuffer.Commit(this, new PatternOverlayReportBuilder(patterns, number))
+        return strategyUser.ChangeBuffer.Commit( new PatternOverlayReportBuilder(patterns, number))
             && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

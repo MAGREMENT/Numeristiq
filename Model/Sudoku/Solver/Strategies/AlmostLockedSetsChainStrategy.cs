@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -97,7 +97,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
                 }
             }
 
-            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new AlmostLockedSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
         }
         
@@ -127,7 +127,7 @@ public class AlmostLockedSetsChainStrategy : AbstractStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new AlmostLockedSetsChainReportBuilder(chain.ToChain())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 }

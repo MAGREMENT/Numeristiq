@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.MultiSector;
@@ -99,7 +99,7 @@ public class SetEquivalenceStrategy : AbstractStrategy
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new GeometricEquivalenceReportBuilder(equivalence)) &&
                             OnCommitBehavior == OnCommitBehavior.Return) return;
             }

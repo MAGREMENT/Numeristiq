@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -42,8 +42,8 @@ public class NishioForcingNetStrategy : AbstractStrategy
                                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
                                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
-                                        .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col, 
-                                            possibility, cs.Cause, cell, Coloring.Off, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
+                                        .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
+                                            cs.Cause, cell, Coloring.Off, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
                                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                             
@@ -51,8 +51,8 @@ public class NishioForcingNetStrategy : AbstractStrategy
                                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
                                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
-                                        .Commit(this, new NishioForcingNetReportBuilder(coloring, row, col,
-                                            possibility, cs.Cause, cell, Coloring.On, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
+                                        .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
+                                            cs.Cause, cell, Coloring.On, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
                                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                                 break;
                         }

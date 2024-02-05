@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -96,7 +96,7 @@ public class EmptyRectangleStrategy : AbstractStrategy
         if (isOneLinkStrong) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, two);
         if (isTwoLinkStrong) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, one);
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new RectangleEliminationReportBuilder(hinge, one, two, isOneLinkStrong, isTwoLinkStrong,
                 miniRow, miniCol, possibility)) && OnCommitBehavior == OnCommitBehavior.Return;
     }

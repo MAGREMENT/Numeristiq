@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Explanation;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -30,7 +30,7 @@ public class HiddenSingleStrategy : AbstractStrategy
                     if (rp.Count == 1)
                     {
                         strategyUser.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
-                        strategyUser.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Row));
+                        strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.Row));
                         if (OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                     
@@ -38,7 +38,7 @@ public class HiddenSingleStrategy : AbstractStrategy
                     if (cp.Count == 1)
                     {
                         strategyUser.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
-                        strategyUser.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.Column));
+                        strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.Column));
                         if (OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
                     
@@ -47,7 +47,7 @@ public class HiddenSingleStrategy : AbstractStrategy
                     
                     var pos = mp.First();
                     strategyUser.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
-                    strategyUser.ChangeBuffer.Commit(this, new HiddenSingleReportBuilder(Unit.MiniGrid));
+                    strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.MiniGrid));
                     if (OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
             }

@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -260,7 +260,7 @@ public class AlignedTripleExclusionStrategy : AbstractStrategy
         SearchForElimination(strategyUser, poss2, poss1, poss3, c2, c1, c3, forbiddenTri, forbiddenBi);
         SearchForElimination(strategyUser, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this, 
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
             new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -208,7 +208,7 @@ public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (proble
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new BUGLiteReportBuilder(bcp)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 

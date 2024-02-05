@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -65,7 +65,7 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
                 if (solved2 == values.One)
                 {
                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
-                   return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                   return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                               new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return;
                 }
 
@@ -74,7 +74,7 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
                 if (solved1 == values.Two)
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
-                    return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                    return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return;
                 }
                 
@@ -99,7 +99,7 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
             }
         }
 
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
 
         var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
@@ -111,7 +111,7 @@ public class UnavoidableRectanglesStrategy : AbstractStrategy
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 
             ProcessArWithAls(strategyUser, roof, als);
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new AvoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }

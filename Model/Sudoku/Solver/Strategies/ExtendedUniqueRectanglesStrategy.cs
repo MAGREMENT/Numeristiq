@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -138,7 +138,7 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cNotInPattern[0].Row, cNotInPattern[0].Column);
             }
             
-            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                        new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
                    OnCommitBehavior == OnCommitBehavior.Return;
         }
@@ -177,7 +177,7 @@ public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
         }
         
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
                         OnCommitBehavior == OnCommitBehavior.Return;
     }

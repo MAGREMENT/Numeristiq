@@ -33,7 +33,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             if (SearchColor(strategyUser, coloredVertices.On, coloredVertices.Off, inGraph) ||
                 SearchColor(strategyUser, coloredVertices.Off, coloredVertices.On, inGraph))
             {
-                if(strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                if(strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                        new SimpleColoringReportBuilder(coloredVertices, true)) && 
                         OnCommitBehavior == OnCommitBehavior.Return) return;
                 
@@ -41,7 +41,7 @@ public class ThreeDimensionMedusaStrategy : AbstractStrategy
             }
             
             SearchMix(strategyUser, coloredVertices.On, coloredVertices.Off, inGraph);
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
         }
     }

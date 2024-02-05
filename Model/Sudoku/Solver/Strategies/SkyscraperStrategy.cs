@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -50,7 +50,7 @@ public class SkyscraperStrategy : AbstractStrategy
                         if(r2 != row1) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, r2, other1);
                     }
 
-                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                             new SkyscraperReportBuilder(Unit.Row, row1, row2, pos1, pos2, number))
                                 && OnCommitBehavior == OnCommitBehavior.Return) return;
                 }
@@ -86,7 +86,7 @@ public class SkyscraperStrategy : AbstractStrategy
                         if(c2 != col1) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other1, c2);
                     }
 
-                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                             new SkyscraperReportBuilder(Unit.Column, col1, col2, pos1, pos2, number)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                 }

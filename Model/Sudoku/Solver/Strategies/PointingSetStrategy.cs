@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -55,7 +55,7 @@ public class PointingSetStrategy : AbstractStrategy
                             if (col / 3 != miniCol) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
                         
-                        if(strategyUser.ChangeBuffer.Commit(this,
+                        if(strategyUser.ChangeBuffer.Commit(
                             new PointingPossibilitiesReportBuilder(number, ppimg)) &&
                                 OnCommitBehavior == OnCommitBehavior.Return) return;
                     }
@@ -67,7 +67,7 @@ public class PointingSetStrategy : AbstractStrategy
                             if (row / 3 != miniRow) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
 
-                        if (strategyUser.ChangeBuffer.Commit(this,
+                        if (strategyUser.ChangeBuffer.Commit(
                                 new PointingPossibilitiesReportBuilder(number, ppimg)) &&
                                     OnCommitBehavior == OnCommitBehavior.Return) return;
                     }

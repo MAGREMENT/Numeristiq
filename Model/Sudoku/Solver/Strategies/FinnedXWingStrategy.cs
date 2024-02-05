@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -65,7 +65,7 @@ public class FinnedXWingStrategy : AbstractStrategy
         if (finnedPos.Contains(asArray[1]) && HasSameMiniCol(finnedPos, asArray[0], asArray[1]))
             ProcessRow(strategyUser, normalRow, finnedRow, asArray[0], number);
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new FinnedXWingReportBuilder(normalPos, normalRow, finnedPos,
                 finnedRow, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
     }
@@ -81,7 +81,7 @@ public class FinnedXWingStrategy : AbstractStrategy
         if (finnedPos.Contains(asArray[1]) && HasSameMiniRow(finnedPos, asArray[0], asArray[1]))
             ProcessColumn(strategyUser, normalCol, finnedCol, asArray[0], number);
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new FinnedXWingReportBuilder(normalPos, normalCol,
                     finnedPos, finnedCol, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -114,7 +114,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row)) &&
                     OnCommitBehavior == OnCommitBehavior.Return) return true;
         }
@@ -184,7 +184,7 @@ public class FinnedGridFormationStrategy : AbstractStrategy
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
         }

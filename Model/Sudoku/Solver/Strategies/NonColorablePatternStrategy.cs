@@ -1,7 +1,7 @@
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -99,7 +99,7 @@ public class NonColorablePatternStrategy : AbstractStrategy
                 else strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss)) &&
                         OnCommitBehavior == OnCommitBehavior.Return) return true;
         }

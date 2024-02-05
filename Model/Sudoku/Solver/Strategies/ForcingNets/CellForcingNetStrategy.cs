@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Highlighting;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -68,14 +68,14 @@ public class CellForcingNetStrategy : AbstractStrategy
                 if (currentColoring == Coloring.On)
                 {
                     view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
                                 view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
-                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(this,
+                    if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
                                 view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
                 }

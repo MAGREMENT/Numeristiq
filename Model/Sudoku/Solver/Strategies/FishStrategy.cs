@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Arguments;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -186,7 +186,7 @@ public class FishStrategy : AbstractStrategy
 
         if (_allowCannibalism) ProcessCannibalism(strategyUser, number, coverSet);
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(this,
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new FishReportBuilder(new HashSet<CoverHouse>(_baseSet), coverSet, number,
                     _toCover.Copy(), new List<Cell>(_fins))) && OnCommitBehavior == OnCommitBehavior.Return;
     }

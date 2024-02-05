@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -78,7 +78,7 @@ public class HiddenSetStrategy : AbstractStrategy
                     RemoveAllPossibilitiesExcept(row, col, newVisited, strategyUser);
                 }
 
-                if (strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.Commit(
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
@@ -110,7 +110,7 @@ public class HiddenSetStrategy : AbstractStrategy
                     RemoveAllPossibilitiesExcept(row, col, newVisited, strategyUser);
                 }
 
-                if (strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.Commit(
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }
@@ -142,7 +142,7 @@ public class HiddenSetStrategy : AbstractStrategy
                     RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, strategyUser);
                 }
 
-                if (strategyUser.ChangeBuffer.Commit(this,
+                if (strategyUser.ChangeBuffer.Commit(
                         new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed))
                     && OnCommitBehavior == OnCommitBehavior.Return) return true;
             }

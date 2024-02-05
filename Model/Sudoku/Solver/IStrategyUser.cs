@@ -1,6 +1,6 @@
-﻿using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Helpers;
-using Model.Sudoku.Solver.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Utility;
 
@@ -12,7 +12,7 @@ public interface IStrategyUser : IPossibilitiesHolder
     
     bool LogsManaged { get; }
 
-    ChangeBuffer ChangeBuffer { get; }
+    IChangeBuffer ChangeBuffer { get; }
     
     PreComputer PreComputer { get; }
     

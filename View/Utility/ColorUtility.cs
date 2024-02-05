@@ -1,9 +1,9 @@
 ﻿using System.Windows.Media;
+using Model.Helpers.Changes;
+using Model.Helpers.Logs;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Sudoku.Solver.Explanation;
-using Model.Sudoku.Solver.Helpers.Changes;
-using Model.Sudoku.Solver.Helpers.Logs;
 using Model.Utility;
 
 namespace View.Utility;
