@@ -1,5 +1,4 @@
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Utility;
 
 namespace Tests;
 

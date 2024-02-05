@@ -120,7 +120,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     public void SetState(SolverState state)
     {
-        _sudoku = SudokuTranslator.TranslateToSudoku(state);
+        _sudoku = SudokuTranslator.TranslateTranslatable(state);
         CallOnNewSudokuForEachStrategy();
         
         ResetPossibilities();

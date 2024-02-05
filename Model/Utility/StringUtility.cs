@@ -1,6 +1,6 @@
 ﻿using System.Text;
 
-namespace Model.Sudoku.Utility;
+namespace Model.Utility;
 
 public static class StringUtility
 {

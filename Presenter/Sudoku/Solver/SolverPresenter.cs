@@ -35,7 +35,7 @@ public class SolverPresenter : IStepChooserCallback
         Settings = settings;
         Settings.ShownStateChanged += () => SelectLog(_currentlySelectedLog);
         Settings.TranslationTypeChanged += () =>
-            _view.SetTranslation(SudokuTranslator.TranslateToLine(_shownState, Settings.TranslationType));
+            _view.SetTranslation(SudokuTranslator.TranslateLineFormat(_shownState, Settings.TranslationType));
         Settings.UniquenessAllowedChanged += () =>
         {
             _solver.AllowUniqueness(Settings.UniquenessAllowed);
@@ -66,7 +66,7 @@ public class SolverPresenter : IStepChooserCallback
     public void NewSudokuFromString(string s)
     {
         _shouldUpdateSudokuTranslation = false;
-        NewSudoku(SudokuTranslator.TranslateToSudoku(s));
+        NewSudoku(SudokuTranslator.TranslateLineFormat(s));
         _shouldUpdateSudokuTranslation = true;
     }
 
@@ -195,18 +195,18 @@ public class SolverPresenter : IStepChooserCallback
 
     public void Copy()
     {
-        _view.ToClipboard(SudokuTranslator.TranslateToGrid(_shownState));
+        _view.ToClipboard(SudokuTranslator.TranslateGridFormat(_shownState));
     }
 
     public void Paste(string s)
     {
-        switch (SudokuTranslator.TryGetFormat(s))
+        switch (SudokuTranslator.GuessFormat(s))
         {
             case SudokuStringFormat.Line :
-                _solver.SetSudoku(SudokuTranslator.TranslateToSudoku(s));
+                _solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
                 break;
             case SudokuStringFormat.Grid :
-                _solver.SetState(SudokuTranslator.TranslateToState(s, Settings.TransformSoloPossibilityIntoGiven));
+                _solver.SetState(SudokuTranslator.TranslateGridFormat(s, Settings.TransformSoloPossibilityIntoGiven));
                 break;
         }
         
@@ -259,7 +259,7 @@ public class SolverPresenter : IStepChooserCallback
         }
         _view.Refresh();
         
-        if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.TranslateToLine(state, Settings.TranslationType));
+        if(_shouldUpdateSudokuTranslation) _view.SetTranslation(SudokuTranslator.TranslateLineFormat(state, Settings.TranslationType));
     }
 
     private void Redraw()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Model.Utility;
 
 namespace Model.Tectonic;
@@ -38,8 +39,7 @@ public class ArrayTectonic : ITectonic
 
     public Zone GetZone(Cell cell)
     {
-        if (!IsValid(cell)) throw new ArgumentOutOfRangeException();
-        return _zones[_cells[cell.Row, cell.Column]!.Zone];
+        return IsValid(cell) ? _zones[_cells[cell.Row, cell.Column]!.Zone] : Zone.Empty();
     }
 
     public IEnumerable<Cell> GetNeighbors(Cell cell)
@@ -69,6 +69,11 @@ public class ArrayTectonic : ITectonic
         if (IsValid(result)) yield return result;
     }
 
+    public bool AreNeighbors(Cell c1, Cell c2)
+    {
+        return GetZone(c1).Contains(c2);
+    }
+
     public IEnumerable<Cell> EachCell()
     {
         for (int row = 0; row < _cells.GetLength(0); row++)
@@ -92,12 +97,49 @@ public class ArrayTectonic : ITectonic
         }
     }
 
+    public override string ToString()
+    {
+        StringBuilder builder = new();
+
+        for (int row = 0; row < RowCount; row++)
+        {
+            if (row == 0) builder.Append(StringUtility.Repeat("+---", ColumnCount) + "+\n");
+            else
+            {
+                for (int col = 0; col < ColumnCount; col++)
+                {
+                    builder.Append(AreNeighbors(new Cell(row, col), new Cell(row - 1, col))
+                        ? "+   "
+                        : "+---");
+                }
+
+                builder.Append("+\n");
+            }
+
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var c = _cells[row, col];
+                var n = c is null || c.Number == 0 ? " " : c.Number.ToString();
+                if (col == 0 || !AreNeighbors(new Cell(row, col), new Cell(row, col - 1))) builder.Append($"| {n} ");
+                else builder.Append($"  {n} ");
+            }
+
+            builder.Append("|\n");
+        }
+        
+        builder.Append(StringUtility.Repeat("+---", ColumnCount) + "+\n");
+
+        return builder.ToString();
+    }
+
     private bool IsValid(Cell cell)
     {
-        return cell.Row > 0 && cell.Row < _cells.GetLength(0)
-                            && cell.Column > 0 && cell.Column < _cells.GetLength(1)
+        return cell.Row >= 0 && cell.Row < _cells.GetLength(0)
+                            && cell.Column >= 0 && cell.Column < _cells.GetLength(1)
                             && _cells[cell.Row, cell.Column] != null;
     }
+    
+    
 }
 
 public class TectonicCell

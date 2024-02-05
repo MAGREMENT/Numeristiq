@@ -34,6 +34,7 @@ public interface IReadOnlyTectonic
     {
         return GetNeighbors(new Cell(row, col));
     }
+    public bool AreNeighbors(Cell c1, Cell c2);
 
     public IEnumerable<Cell> EachCell();
     public IEnumerable<CellNumber> EachCellNumber();
@@ -85,4 +86,14 @@ public class Zone : IEnumerable<Cell>
     }
 
     public Cell this[int index] => _cells[index];
+
+    public bool Contains(Cell c)
+    {
+        foreach (var cell in _cells)
+        {
+            if (c == cell) return true;
+        }
+
+        return false;
+    }
 }

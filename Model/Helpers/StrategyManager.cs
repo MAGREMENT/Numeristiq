@@ -19,7 +19,7 @@ using Model.Sudoku.Solver.Strategies.UniquenessClueCover;
 using Model.Sudoku.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
-using Model.Sudoku.Utility;
+using Model.Utility;
 
 namespace Model.Helpers;
 

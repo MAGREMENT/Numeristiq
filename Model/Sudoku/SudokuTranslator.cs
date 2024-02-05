@@ -2,7 +2,7 @@
 using System.Text;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Utility;
+using Model.Utility;
 
 namespace Model.Sudoku;
 
@@ -13,7 +13,7 @@ public enum SudokuTranslationType
 
 public static class SudokuTranslator
 {
-    public static string TranslateToLine(ITranslatable translatable, SudokuTranslationType type)
+    public static string TranslateLineFormat(ITranslatable translatable, SudokuTranslationType type)
     {
         string result = "";
         int voidCount = 0;
@@ -53,7 +53,7 @@ public static class SudokuTranslator
         return result;
     }
     
-    public static string TranslateToGrid(ITranslatable translatable)
+    public static string TranslateGridFormat(ITranslatable translatable)
     {
         var maxWidth = 0;
         for (int row = 0; row < 9; row++)
@@ -104,7 +104,7 @@ public static class SudokuTranslator
         return builder.ToString();
     }
     
-    public static Sudoku TranslateToSudoku(string asString)
+    public static Sudoku TranslateLineFormat(string asString)
     {
         Sudoku s = new();
         int n = 0;
@@ -154,7 +154,7 @@ public static class SudokuTranslator
         return s;
     }
 
-    public static Sudoku TranslateToSudoku(ITranslatable translatable)
+    public static Sudoku TranslateTranslatable(ITranslatable translatable)
     {
         Sudoku result = new();
 
@@ -169,7 +169,7 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static SolverState TranslateToState(string grid, bool soloPossibilityToGiven)
+    public static SolverState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
     {
         grid += ' ';
         var cellStates = new CellState[9, 9];
@@ -230,7 +230,7 @@ public static class SudokuTranslator
         return new SolverState(cellStates);
     }
 
-    public static SudokuStringFormat TryGetFormat(string s)
+    public static SudokuStringFormat GuessFormat(string s)
     {
         return s.Contains('\n') ? SudokuStringFormat.Grid : SudokuStringFormat.Line;
     }

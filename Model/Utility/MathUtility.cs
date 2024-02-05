@@ -1,4 +1,4 @@
-namespace Model.Sudoku.Utility;
+namespace Model.Utility;
 
 public static class MathUtility
 {

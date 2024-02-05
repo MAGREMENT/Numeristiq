@@ -26,6 +26,11 @@ public class BlankTectonic : ITectonic
         yield break;
     }
 
+    public bool AreNeighbors(Cell c1, Cell c2)
+    {
+        return false;
+    }
+
     public IEnumerable<Cell> EachCell()
     {
         yield break;

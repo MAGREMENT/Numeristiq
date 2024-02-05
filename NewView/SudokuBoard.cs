@@ -9,7 +9,7 @@ using System.Windows.Media;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
-using NewView.Utility;
+using MathUtility = NewView.Utility.MathUtility;
 
 namespace NewView;
 

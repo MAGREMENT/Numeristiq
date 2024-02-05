@@ -136,13 +136,13 @@ public class PlayerPresenter
 
     public void Paste(string s)
     {
-        switch (SudokuTranslator.TryGetFormat(s))
+        switch (SudokuTranslator.GuessFormat(s))
         {
             case SudokuStringFormat.Line :
-                _player.Paste(SudokuTranslator.TranslateToSudoku(s));
+                _player.Paste(SudokuTranslator.TranslateLineFormat(s));
                 break;
             case SudokuStringFormat.Grid :
-                _player.Paste(SudokuTranslator.TranslateToState(s, Settings.TransformSoloPossibilityIntoGiven));
+                _player.Paste(SudokuTranslator.TranslateGridFormat(s, Settings.TransformSoloPossibilityIntoGiven));
                 break;
         }
     }

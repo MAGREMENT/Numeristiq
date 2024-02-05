@@ -8,11 +8,11 @@ namespace Model.Tectonic;
 /// Line format : X.X:X.X;X.X;X.X;...
 /// X = number
 /// X.X: = dimensions (rows then columns)
-/// X.X = number + zone (number can be omitted => ;.X;
+/// X.X = number + zone (number can be omitted => ;.X;)
 /// </summary>
 public static class TectonicTranslator
 {
-    public static ITectonic TranslateFromLine(string line)
+    public static ITectonic TranslateLineFormat(string line)
     {
         Dictionary<int, List<Cell>> zones = new();
         Dictionary<Cell, int> numbers = new();

@@ -10,9 +10,9 @@ using System.Windows.Media.Imaging;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
-using View.Utility;
 using Brushes = System.Windows.Media.Brushes;
 using FlowDirection = System.Windows.FlowDirection;
+using MathUtility = View.Utility.MathUtility;
 
 namespace View.Pages;
 

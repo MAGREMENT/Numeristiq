@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Tectonic.Strategies;
 using Model.Utility;
 
 namespace Model.Tectonic;
@@ -11,6 +12,8 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;
+
+    private readonly AbstractStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy() };
 
     public IChangeBuffer ChangeBuffer { get; }
 
@@ -73,6 +76,15 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
         _tectonic[change.Row, change.Column] = change.Number;
         UpdatePossibilitiesAfterSolutionAdded(change.Row, change.Column, change.Number);
         return true;
+    }
+
+    public void Solve()
+    {
+        for (int i = 0; i < _strategies.Length; i++)
+        {
+            _strategies[i].Apply(this);
+            //ChangeBuffer.Push(_strategies[i]);
+        }
     }
     
     //Private-----------------------------------------------------------------------------------------------------------

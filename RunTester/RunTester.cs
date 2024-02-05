@@ -4,7 +4,7 @@ using Model;
 using Model.Helpers;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Utility;
+using Model.Utility;
 
 namespace RunTester;
 
@@ -65,7 +65,7 @@ public class RunTester
             int commentStart = line.IndexOf('#');
             var s = commentStart == -1 ? line : line[..commentStart];
             
-            _currentSolver.SetSudoku(SudokuTranslator.TranslateToSudoku(s));
+            _currentSolver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
             _currentSolver.Solve();
 
             _currentRunResult.SolveDone(_currentSolver);

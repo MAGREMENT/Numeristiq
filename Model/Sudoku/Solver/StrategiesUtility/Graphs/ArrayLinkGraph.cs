@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Model.Sudoku.Utility;
+using Model.Utility;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
 

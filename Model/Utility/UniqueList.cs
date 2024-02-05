@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Model.Sudoku.Utility;
+namespace Model.Utility;
 
 public class UniqueList<T> : IReadOnlyList<T> where T : notnull
 {
