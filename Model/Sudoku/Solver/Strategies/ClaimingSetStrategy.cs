@@ -29,7 +29,7 @@ namespace Model.Sudoku.Solver.Strategies;
 /// If a possibility is present in only the x-marked cells in the first row, then it can be removed from all
 /// y-marked cells
 /// </summary>
-public class ClaimingSetStrategy : AbstractStrategy
+public class ClaimingSetStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Claiming Set";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

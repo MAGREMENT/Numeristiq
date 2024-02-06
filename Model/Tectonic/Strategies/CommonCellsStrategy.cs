@@ -1,15 +1,47 @@
-﻿namespace Model.Tectonic.Strategies;
+﻿using System.Collections.Generic;
+using Model.Helpers.Changes;
+using Model.Sudoku.Solver;
+using Model.Utility;
 
-public class CommonCellsStrategy : AbstractStrategy
+namespace Model.Tectonic.Strategies;
+
+public class CommonCellsStrategy : AbstractTectonicStrategy
 {
+    public CommonCellsStrategy() : base("Common Cells", StrategyDifficulty.Easy, OnCommitBehavior.WaitForAll)
+    {
+    }
+    
     public override void Apply(IStrategyUser strategyUser)
     {
+        List<Cell> buffer = new();
+        
         foreach (var zone in strategyUser.Tectonic.Zones)
         {
             for (int n = 1; n <= zone.Count; n++)
             {
-                
+                foreach (var cell in zone)
+                {
+                    if (strategyUser.PossibilitiesAt(cell).Contains(n)) buffer.Add(cell);
+                }
+
+                if (buffer.Count == 0) continue;
+
+                foreach (var neighbor in Cells.SharedNeighboringCells(strategyUser.Tectonic, buffer))
+                {
+                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
+                }
+
+                strategyUser.ChangeBuffer.Commit(new CommonCellsReportBuilder());
+                buffer.Clear();
             }
         }
+    }
+}
+
+public class CommonCellsReportBuilder : IChangeReportBuilder
+{
+    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    {
+        return ChangeReport.Default(changes);
     }
 }

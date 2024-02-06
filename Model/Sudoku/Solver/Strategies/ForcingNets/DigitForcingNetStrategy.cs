@@ -7,7 +7,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 
-public class DigitForcingNetStrategy : AbstractStrategy
+public class DigitForcingNetStrategy : AbstractSudokuStrategy
 { 
     public const string OfficialName = "Digit Forcing Net";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

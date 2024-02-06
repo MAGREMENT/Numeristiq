@@ -4,7 +4,7 @@ using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class BruteForceStrategy : AbstractStrategy
+public class BruteForceStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Brute Force";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

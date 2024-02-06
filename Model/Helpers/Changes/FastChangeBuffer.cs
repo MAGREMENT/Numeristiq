@@ -23,7 +23,7 @@ public class FastChangeBuffer : IChangeBuffer
 
     public void ProposeSolutionAddition(CellPossibility cp)
     {
-        if (_producer.CanAddSolution(cp)) _possibilityRemovedBuffer.Add(cp);
+        if (_producer.CanAddSolution(cp)) _solutionAddedBuffer.Add(cp);
     }
 
     public bool NotEmpty()
@@ -36,7 +36,7 @@ public class FastChangeBuffer : IChangeBuffer
         return NotEmpty();
     }
 
-    public void Push(IStrategy pusher)
+    public void Push(ICommitMaker pusher)
     {
         foreach (var solution in _solutionAddedBuffer)
         {

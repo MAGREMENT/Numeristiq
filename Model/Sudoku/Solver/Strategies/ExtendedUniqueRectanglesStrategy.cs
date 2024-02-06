@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class ExtendedUniqueRectanglesStrategy : AbstractStrategy
+public class ExtendedUniqueRectanglesStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Extended Unique Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

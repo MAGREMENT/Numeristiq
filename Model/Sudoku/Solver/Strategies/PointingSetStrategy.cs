@@ -29,7 +29,7 @@ namespace Model.Sudoku.Solver.Strategies;
 /// If a possibility is present in only the x-marked cells in the first mini grid, then it can be removed from all
 /// y-marked cells
 /// </summary>
-public class PointingSetStrategy : AbstractStrategy
+public class PointingSetStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Pointing Set";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

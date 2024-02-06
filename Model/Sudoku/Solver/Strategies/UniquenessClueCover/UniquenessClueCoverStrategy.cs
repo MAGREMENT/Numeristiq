@@ -1,6 +1,6 @@
 ﻿namespace Model.Sudoku.Solver.Strategies.UniquenessClueCover;
 
-public class UniquenessClueCoverStrategy : AbstractStrategy
+public class UniquenessClueCoverStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Uniqueness Clue Cover";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

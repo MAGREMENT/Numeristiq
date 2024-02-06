@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.MultiSector;
 
-public class SetEquivalenceStrategy : AbstractStrategy
+public class SetEquivalenceStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Set Equivalence";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

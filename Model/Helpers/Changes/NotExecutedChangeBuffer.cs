@@ -43,7 +43,7 @@ public class NotExecutedChangeBuffer : IChangeBuffer
         return true;
     }
 
-    public void Push(IStrategy pusher)
+    public void Push(ICommitMaker pusher)
     {
         var snapshot = _producer.TakeSnapshot();
         

@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class FishStrategy : AbstractStrategy
+public class FishStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Fish";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

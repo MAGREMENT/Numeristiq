@@ -8,7 +8,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 
-public class UnitForcingNetStrategy : AbstractStrategy
+public class UnitForcingNetStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Unit Forcing Net";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

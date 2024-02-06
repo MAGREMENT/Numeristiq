@@ -3,7 +3,7 @@ using Model.Helpers.Changes;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class NakedSingleStrategy : AbstractStrategy
+public class NakedSingleStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Naked Single";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

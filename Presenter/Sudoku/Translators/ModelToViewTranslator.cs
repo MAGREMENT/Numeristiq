@@ -58,7 +58,7 @@ public static class ModelToViewTranslator
 
         for (int i = 0; i < commits.Length; i++)
         {
-            result[i] = new ViewCommit(commits[i].Strategy.Name, (Intensity)commits[i].Strategy.Difficulty);
+            result[i] = new ViewCommit(commits[i].Maker.Name, (Intensity)commits[i].Maker.Difficulty);
         }
 
         return result;
@@ -66,7 +66,7 @@ public static class ModelToViewTranslator
 
     public static ViewCommitInformation Translate(BuiltChangeCommit commit)
     {
-        return new ViewCommitInformation(commit.Strategy.Name, (Intensity)commit.Strategy.Difficulty,
+        return new ViewCommitInformation(commit.Maker.Name, (Intensity)commit.Maker.Difficulty,
             IChangeReportBuilder.ChangesToString(commit.Changes) , commit.Report.HighlightManager.CursorPosition(),
             commit.Report.HighlightManager.Count);
     }

@@ -7,7 +7,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class ThreeDimensionMedusaStrategy : AbstractStrategy
+public class ThreeDimensionMedusaStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "3D Medusa";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

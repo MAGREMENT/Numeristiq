@@ -5,7 +5,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class NakedDoublesStrategy : AbstractStrategy
+public class NakedDoublesStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Naked Doubles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

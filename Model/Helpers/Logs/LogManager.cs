@@ -34,10 +34,10 @@ public class LogManager
         _stateBuffer = _producer.CurrentState;
     }
 
-    public void AddFromReport(ChangeReport report, IReadOnlyList<SolverChange> changes, IStrategy strategy)
+    public void AddFromReport(ChangeReport report, IReadOnlyList<SolverChange> changes, ICommitMaker maker)
     {
         if (_stateBuffer == null) return;
-        Logs.Add(new ChangeReportLog(_idCount++, strategy, changes, report, _stateBuffer,
+        Logs.Add(new ChangeReportLog(_idCount++, maker, changes, report, _stateBuffer,
             _stateBuffer.Apply(changes)));
     }
 

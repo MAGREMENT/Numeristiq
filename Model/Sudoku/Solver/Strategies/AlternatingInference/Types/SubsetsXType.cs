@@ -13,7 +13,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
     public string LoopName => OfficialLoopName;
     public string ChainName => OfficialChainName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public IStrategy? Strategy { get; set; }
+    public ISudokuStrategy? Strategy { get; set; }
     
     public ILinkGraph<ISudokuElement> GetGraph(IStrategyUser strategyUser)
     {

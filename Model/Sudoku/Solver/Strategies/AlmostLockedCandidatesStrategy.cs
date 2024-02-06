@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class AlmostLockedCandidatesStrategy : AbstractStrategy
+public class AlmostLockedCandidatesStrategy : AbstractSudokuStrategy
 {
     public const string OfficialNameForType2 = "Almost Locked Pair";
     public const string OfficialNameForType3 = "Almost Locked Triple";

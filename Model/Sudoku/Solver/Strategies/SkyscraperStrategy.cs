@@ -4,7 +4,7 @@ using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class SkyscraperStrategy : AbstractStrategy
+public class SkyscraperStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Skyscraper";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

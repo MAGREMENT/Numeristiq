@@ -20,12 +20,12 @@ public class ChangeReportLog : ISolverLog
     public bool FromSolving => true;
 
 
-    public ChangeReportLog(int id, IStrategy strategy, IReadOnlyList<SolverChange> changes, ChangeReport report,
+    public ChangeReportLog(int id, ICommitMaker maker, IReadOnlyList<SolverChange> changes, ChangeReport report,
         SolverState stateBefore, SolverState stateAfter)
     {
         Id = id;
-        Title = strategy.Name;
-        Intensity = (Intensity)strategy.Difficulty;
+        Title = maker.Name;
+        Intensity = (Intensity)maker.Difficulty;
         Changes = changes;
         Description = report.Description;
         StateBefore = stateBefore;

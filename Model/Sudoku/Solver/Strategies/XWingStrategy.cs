@@ -30,7 +30,7 @@ namespace Model.Sudoku.Solver.Strategies;
 /// x-marked cells in row 3 & 7 that arent in the X, so [3, 4] & [7, 1].
 /// 
 /// </summary>
-public class XWingStrategy : AbstractStrategy
+public class XWingStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "X-Wing";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

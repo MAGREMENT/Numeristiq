@@ -14,7 +14,7 @@ public class BandCollection : IPatternCollection
     private readonly HashSet<Cell> _cluesBuffer = new();
     private readonly List<Cell> _usedBuffer = new();
 
-    public IStrategy? Strategy { get; set; }
+    public ISudokuStrategy? Strategy { get; set; }
 
     public BandCollection(params BandPattern[] collection)
     {

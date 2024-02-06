@@ -4,7 +4,7 @@ using Model.Sudoku.Solver.Arguments;
 
 namespace Model.Sudoku.Solver;
 
-public abstract class AbstractStrategy : IStrategy
+public abstract class AbstractSudokuStrategy : ISudokuStrategy
 { 
     public string Name { get; protected init; }
     public StrategyDifficulty Difficulty { get; protected init; }
@@ -16,7 +16,7 @@ public abstract class AbstractStrategy : IStrategy
 
     protected List<IStrategyArgument> ArgumentsList { get; } = new();
 
-    protected AbstractStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
+    protected AbstractSudokuStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
     {
         Name = name;
         Difficulty = difficulty;

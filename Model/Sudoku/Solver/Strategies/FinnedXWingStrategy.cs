@@ -5,7 +5,7 @@ using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class FinnedXWingStrategy : AbstractStrategy
+public class FinnedXWingStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Finned X-Wing";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

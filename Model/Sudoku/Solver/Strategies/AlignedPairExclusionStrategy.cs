@@ -7,7 +7,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class AlignedPairExclusionStrategy : AbstractStrategy
+public class AlignedPairExclusionStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Aligned Pair Exclusion";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

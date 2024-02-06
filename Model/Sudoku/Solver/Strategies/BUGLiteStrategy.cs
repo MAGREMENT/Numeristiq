@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class BUGLiteStrategy : AbstractStrategy //TODO improve detection (problem with structureDone)
+public class BUGLiteStrategy : AbstractSudokuStrategy //TODO improve detection (problem with structureDone)
 {
     public const string OfficialName = "BUG-Lite";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

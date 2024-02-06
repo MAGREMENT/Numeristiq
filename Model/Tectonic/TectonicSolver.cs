@@ -13,7 +13,10 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;
 
-    private readonly AbstractStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy() };
+    private readonly AbstractTectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(), new CommonCellsStrategy() };
+
+    private int _possibilityRemovedBuffer;
+    private int _solutionAddedBuffer;
 
     public IChangeBuffer ChangeBuffer { get; }
 
@@ -47,7 +50,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
         for (int i = 0; i < z.Count; i++)
         {
             var cell = z[i];
-            if (_possibilities[cell.Row, cell.Column].Contains(n)) result += n;
+            if (_possibilities[cell.Row, cell.Column].Contains(n)) result += i;
         }
 
         return result;
@@ -65,17 +68,9 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
 
     public bool ExecuteChange(SolverChange change)
     {
-        if (change.ChangeType == ChangeType.Possibility)
-        {
-            var yes = _possibilities[change.Row, change.Column].Contains(change.Number);
-            if(yes) _possibilities[change.Row, change.Column] -= change.Number;
-            return yes;
-        }
-
-        if (_tectonic[change.Row, change.Column] != 0) return false;
-        _tectonic[change.Row, change.Column] = change.Number;
-        UpdatePossibilitiesAfterSolutionAdded(change.Row, change.Column, change.Number);
-        return true;
+        return change.ChangeType == ChangeType.Possibility 
+            ? RemovePossibility(change.Row, change.Column, change.Number) 
+            : AddSolution(change.Row, change.Column, change.Number);
     }
 
     public void Solve()
@@ -83,7 +78,13 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
         for (int i = 0; i < _strategies.Length; i++)
         {
             _strategies[i].Apply(this);
-            //ChangeBuffer.Push(_strategies[i]);
+            ChangeBuffer.Push(_strategies[i]);
+
+            if (_solutionAddedBuffer == 0 && _possibilityRemovedBuffer == 0) continue;
+
+            _solutionAddedBuffer = 0;
+            _possibilityRemovedBuffer = 0;
+            i = -1;
         }
     }
     
@@ -120,5 +121,26 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
         {
             _possibilities[cell.Row, cell.Column] -= number;
         }
+    }
+
+    private bool RemovePossibility(int row, int col, int number)
+    {
+        if (!_possibilities[row, col].Contains(number)) return false;
+        
+        _possibilities[row, col] -= number;
+        _possibilityRemovedBuffer++;
+
+        return true;
+    }
+
+    private bool AddSolution(int row, int col, int number)
+    {
+        if (_tectonic[row, col] != 0) return false;
+        
+        _tectonic[row, col] = number;
+        UpdatePossibilitiesAfterSolutionAdded(row, col, number);
+        _solutionAddedBuffer++;
+        
+        return true;
     }
 }

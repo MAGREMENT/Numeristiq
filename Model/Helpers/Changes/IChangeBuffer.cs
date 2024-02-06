@@ -40,7 +40,7 @@ public interface IChangeBuffer
 
     public bool Commit(IChangeReportBuilder builder);
 
-    public void Push(IStrategy pusher);
+    public void Push(ICommitMaker pusher);
 
     public void PushCommit(BuiltChangeCommit commit);
 }
@@ -83,14 +83,14 @@ public class ChangeCommit
 
 public class BuiltChangeCommit
 {
-    public BuiltChangeCommit(IStrategy strategy, SolverChange[] changes, ChangeReport report)
+    public BuiltChangeCommit(ICommitMaker maker, SolverChange[] changes, ChangeReport report)
     {
-        Strategy = strategy;
+        Maker = maker;
         Changes = changes;
         Report = report;
     }
     
-    public IStrategy Strategy { get; }
+    public ICommitMaker Maker { get; }
     public SolverChange[] Changes { get; }
     public ChangeReport Report { get; }
 }

@@ -7,7 +7,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class GurthTheorem : AbstractStrategy
+public class GurthTheorem : AbstractSudokuStrategy
 {
     public const string OfficialName = "Gurth's Theorem";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

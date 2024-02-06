@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Arguments;
 
 namespace Model.Sudoku.Solver;
 
-public interface IStrategy
+public interface ISudokuStrategy : ICommitMaker
 { 
-    public string Name { get; }
-    public StrategyDifficulty Difficulty { get; }
     public UniquenessDependency UniquenessDependency { get; }
-    public OnCommitBehavior OnCommitBehavior { get; set; }
     public OnCommitBehavior DefaultOnCommitBehavior { get; }
     public StatisticsTracker Tracker { get; }
     public IReadOnlyList<IStrategyArgument> Arguments { get; }

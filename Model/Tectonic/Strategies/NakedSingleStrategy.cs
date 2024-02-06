@@ -4,8 +4,12 @@ using Model.Sudoku.Solver;
 
 namespace Model.Tectonic.Strategies;
 
-public class NakedSingleStrategy : AbstractStrategy
+public class NakedSingleStrategy : AbstractTectonicStrategy
 {
+    public NakedSingleStrategy() : base("Naked Single", StrategyDifficulty.Basic, OnCommitBehavior.WaitForAll)
+    {
+    }
+    
     public override void Apply(IStrategyUser strategyUser)
     {
         foreach (var cell in strategyUser.Tectonic.EachCell())

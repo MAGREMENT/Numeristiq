@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class EmptyRectangleStrategy : AbstractStrategy
+public class EmptyRectangleStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Empty Rectangle";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

@@ -11,7 +11,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 
-public class NishioForcingNetStrategy : AbstractStrategy
+public class NishioForcingNetStrategy : AbstractSudokuStrategy
 { 
     public const string OfficialName = "Nishio Forcing Net";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

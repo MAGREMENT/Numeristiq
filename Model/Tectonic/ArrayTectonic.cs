@@ -69,7 +69,7 @@ public class ArrayTectonic : ITectonic
         if (IsValid(result)) yield return result;
     }
 
-    public bool AreNeighbors(Cell c1, Cell c2)
+    public bool ShareAZone(Cell c1, Cell c2)
     {
         return GetZone(c1).Contains(c2);
     }
@@ -108,7 +108,7 @@ public class ArrayTectonic : ITectonic
             {
                 for (int col = 0; col < ColumnCount; col++)
                 {
-                    builder.Append(AreNeighbors(new Cell(row, col), new Cell(row - 1, col))
+                    builder.Append(ShareAZone(new Cell(row, col), new Cell(row - 1, col))
                         ? "+   "
                         : "+---");
                 }
@@ -120,7 +120,7 @@ public class ArrayTectonic : ITectonic
             {
                 var c = _cells[row, col];
                 var n = c is null || c.Number == 0 ? " " : c.Number.ToString();
-                if (col == 0 || !AreNeighbors(new Cell(row, col), new Cell(row, col - 1))) builder.Append($"| {n} ");
+                if (col == 0 || !ShareAZone(new Cell(row, col), new Cell(row, col - 1))) builder.Append($"| {n} ");
                 else builder.Append($"  {n} ");
             }
 

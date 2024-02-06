@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class AlignedTripleExclusionStrategy : AbstractStrategy
+public class AlignedTripleExclusionStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Aligned Triple Exclusion";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

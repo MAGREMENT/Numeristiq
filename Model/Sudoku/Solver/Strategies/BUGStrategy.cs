@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class BUGStrategy : AbstractStrategy
+public class BUGStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "BUG";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

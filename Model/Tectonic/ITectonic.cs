@@ -34,7 +34,7 @@ public interface IReadOnlyTectonic
     {
         return GetNeighbors(new Cell(row, col));
     }
-    public bool AreNeighbors(Cell c1, Cell c2);
+    public bool ShareAZone(Cell c1, Cell c2);
 
     public IEnumerable<Cell> EachCell();
     public IEnumerable<CellNumber> EachCellNumber();

@@ -14,7 +14,8 @@ public class TectonicSolverTests
 
         var solver = new TectonicSolver();
         solver.SetTectonic(t);
-        
-        
+        solver.Solve();
+
+        Console.WriteLine(t);
     }
 }

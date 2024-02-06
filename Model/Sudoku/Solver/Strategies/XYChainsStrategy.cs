@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class XYChainsStrategy : AbstractStrategy
+public class XYChainsStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "XY-Chains";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

@@ -5,8 +5,12 @@ using Model.Utility;
 
 namespace Model.Tectonic.Strategies;
 
-public class HiddenSingleStrategy : AbstractStrategy
+public class HiddenSingleStrategy : AbstractTectonicStrategy
 {
+    public HiddenSingleStrategy() : base("Hidden Single", StrategyDifficulty.Basic, OnCommitBehavior.WaitForAll)
+    {
+    }
+    
     public override void Apply(IStrategyUser strategyUser)
     {
         for(int i = 0; i < strategyUser.Tectonic.Zones.Count; i++)

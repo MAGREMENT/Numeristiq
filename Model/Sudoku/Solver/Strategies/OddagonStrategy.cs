@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class OddagonStrategy : AbstractStrategy
+public class OddagonStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Oddagon";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

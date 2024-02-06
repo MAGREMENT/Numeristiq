@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class NonColorablePatternStrategy : AbstractStrategy
+public class NonColorablePatternStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Non-Colorable Pattern";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

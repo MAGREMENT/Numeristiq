@@ -10,7 +10,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 
-public class OddagonForcingNetStrategy : AbstractStrategy
+public class OddagonForcingNetStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Oddagon Forcing Net";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

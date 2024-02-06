@@ -7,7 +7,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class SKLoopsStrategy : AbstractStrategy
+public class SKLoopsStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "SK-Loops";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

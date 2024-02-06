@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class ThorsHammerStrategy : AbstractStrategy
+public class ThorsHammerStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Thor's Hammer";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

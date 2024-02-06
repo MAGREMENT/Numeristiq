@@ -25,7 +25,7 @@ namespace Model.Helpers;
 
 public class StrategyManager : IStrategyManager
 {
-    private static readonly Dictionary<string, IStrategy> StrategyPool = new()
+    private static readonly Dictionary<string, ISudokuStrategy> StrategyPool = new()
     {
         {NakedSingleStrategy.OfficialName, new NakedSingleStrategy()},
         {HiddenSingleStrategy.OfficialName, new HiddenSingleStrategy()},
@@ -115,11 +115,11 @@ public class StrategyManager : IStrategyManager
         {NonColorablePatternStrategy.OfficialName, new NonColorablePatternStrategy(3, 3, 3)}
     };
 
-    private readonly UniqueList<IStrategy> _strategies = new();
+    private readonly UniqueList<ISudokuStrategy> _strategies = new();
     private readonly InfiniteBitSet _excludedStrategies = new();
     private readonly InfiniteBitSet _lockedStrategies = new();
     
-    public IReadOnlyList<IStrategy> Strategies => _strategies;
+    public IReadOnlyList<ISudokuStrategy> Strategies => _strategies;
 
     public event OnListUpdate? ListUpdated;
     private bool _callEvent = true;
@@ -377,7 +377,7 @@ public class StrategyInformation
     public IReadOnlyTracker Tracker { get; }
     public IReadOnlyList<IStrategyArgument> Arguments { get; }
 
-    public StrategyInformation(IStrategy strategy, bool used, bool locked)
+    public StrategyInformation(ISudokuStrategy strategy, bool used, bool locked)
     {
         StrategyName = strategy.Name;
         Difficulty = strategy.Difficulty;

@@ -58,7 +58,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     public event OnLogsUpdate? LogsUpdated;
 
-    private IReadOnlyList<IStrategy> Strategies => _strategyManager.Strategies;
+    private IReadOnlyList<ISudokuStrategy> Strategies => _strategyManager.Strategies;
     private int _currentStrategy = -1;
     
     private int _solutionAddedBuffer;

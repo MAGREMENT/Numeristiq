@@ -67,7 +67,7 @@ public class LogManagedChangeBuffer : IChangeBuffer
         return true;
     }
 
-    public void Push(IStrategy pusher)
+    public void Push(ICommitMaker pusher)
     {
         if (_commits.Count == 0) return;
 
@@ -85,7 +85,7 @@ public class LogManagedChangeBuffer : IChangeBuffer
         {
             _producer.ExecuteChange(change);
         }
-        _producer.LogManager.AddFromReport(commit.Report, commit.Changes, commit.Strategy);
+        _producer.LogManager.AddFromReport(commit.Report, commit.Changes, commit.Maker);
         
         _producer.LogManager.StopPush();
     }
@@ -93,12 +93,12 @@ public class LogManagedChangeBuffer : IChangeBuffer
 
 public interface IPushHandler
 {
-    void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer);
+    void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer);
 }
 
 public class ReturnPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
@@ -117,7 +117,7 @@ public class ReturnPushHandler : IPushHandler
 
 public class WaitForAllPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
@@ -144,7 +144,7 @@ public class ChooseBestPushHandler : IPushHandler
 {
     private readonly ICustomCommitComparer _default = new DefaultCommitComparer();
     
-    public void PushWithLogsManaged(IStrategy pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
@@ -160,7 +160,7 @@ public class ChooseBestPushHandler : IPushHandler
         producer.LogManager.StopPush();
     }
 
-    private ChangeCommit GetBest(IStrategy pusher, List<ChangeCommit> commits)
+    private ChangeCommit GetBest(ICommitMaker pusher, List<ChangeCommit> commits)
     {
         var best = commits[0];
         var comparer = pusher as ICustomCommitComparer ?? _default;

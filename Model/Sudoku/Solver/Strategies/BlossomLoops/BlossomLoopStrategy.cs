@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.BlossomLoops;
 
-public class BlossomLoopStrategy : AbstractStrategy
+public class BlossomLoopStrategy : AbstractSudokuStrategy
 {
     public const string OfficialNameForCell = "Cell Blossom Loop";
     public const string OfficialNameForUnit = "Unit Blossom Loop";

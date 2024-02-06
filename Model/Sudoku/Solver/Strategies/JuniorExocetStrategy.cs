@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class JuniorExocetStrategy : AbstractStrategy
+public class JuniorExocetStrategy : AbstractSudokuStrategy
 {
     public const string OfficialName = "Junior Exocet";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

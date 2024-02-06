@@ -26,7 +26,7 @@ public class BlankTectonic : ITectonic
         yield break;
     }
 
-    public bool AreNeighbors(Cell c1, Cell c2)
+    public bool ShareAZone(Cell c1, Cell c2)
     {
         return false;
     }
