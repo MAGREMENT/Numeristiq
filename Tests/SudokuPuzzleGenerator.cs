@@ -1,20 +1,32 @@
 ﻿using Model.Sudoku;
 using Model.Sudoku.Generator;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
+using Repository;
 
 namespace Tests;
 
 public class SudokuPuzzleGenerator
 {
-    private const int SudokuCount = 5;
-
-    private readonly ISudokuPuzzleGenerator _generator =
-        new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+    private const int SudokuCount = 25;
+    
 
     [Test]
     public void GenerationTest()
     {
-        var puzzles = _generator.Generate(SudokuCount);
+        var repo = new JSONRepository<List<StrategyDAO>>("strategies.json");
+        try
+        {
+            repo.Initialize();
+        }
+        catch (RepositoryInitializationException)
+        {
+            Assert.That(true, Is.False);
+        }
+
+        var generator =
+            new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator(), repo, StrategyDifficulty.Extreme);
+        var puzzles = generator.Generate(SudokuCount);
         
         Assert.Multiple(() =>
         {

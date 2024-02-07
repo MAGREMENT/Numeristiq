@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection.Metadata;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Generator;
@@ -8,14 +9,26 @@ namespace Model.Sudoku.Generator;
 /// <summary>
 /// RCR = Random Cell Removal
 /// </summary>
-public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
+public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator //TODO => to 2 separate generator (with & without solver)
 {
     private readonly Random _random = new();
+    private readonly SudokuSolver _solver;
+    private readonly HighestDifficultyFinder _finder;
     private readonly IFilledSudokuGenerator _filledGenerator;
+    
+    public StrategyDifficulty MaxDifficulty { get; set; }
 
-    public RCRSudokuPuzzleGenerator(IFilledSudokuGenerator filledGenerator)
+    public RCRSudokuPuzzleGenerator(IFilledSudokuGenerator filledGenerator, IRepository<List<StrategyDAO>> repo, StrategyDifficulty maxDifficulty)
     {
         _filledGenerator = filledGenerator;
+        _solver = new SudokuSolver
+        {
+            ChangeManagement = ChangeManagement.Fast
+        };
+        _solver.Bind(repo);
+
+        _finder = new HighestDifficultyFinder(_solver);
+        MaxDifficulty = maxDifficulty;
     }
 
     public Sudoku Generate()
@@ -40,6 +53,15 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
             {
                 filled[row, col] = n;
             }
+            else if(MaxDifficulty != StrategyDifficulty.ByTrial)
+            {
+                _solver.SetSudoku(filled.Copy());
+                
+                _finder.Clear();
+                _solver.Solve();
+                
+                if(_finder.Highest > MaxDifficulty) filled[row, col] = n;
+            }
         }
 
         return filled;
@@ -55,6 +77,27 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
         }
 
         return result;
+    }
+}
+
+public class HighestDifficultyFinder
+{
+    public StrategyDifficulty Highest { get; private set; } = StrategyDifficulty.None;
+
+    public HighestDifficultyFinder(SudokuSolver solver)
+    {
+        var info = solver.GetStrategyInfo();
+        solver.StrategyStopped += (i, a, p) =>
+        {
+            if (i >= info.Length || a + p == 0) return;
+
+            if (info[i].Difficulty > Highest) Highest = info[i].Difficulty;
+        };
+    }
+
+    public void Clear()
+    {
+        Highest = StrategyDifficulty.None;
     }
 }
 

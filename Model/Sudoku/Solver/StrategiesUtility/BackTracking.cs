@@ -43,20 +43,22 @@ public static class BackTracking
         {
             if (Search(result, current, giver, positions, position + 1, stopAt)) return true;
         }
-
-        foreach (var possibility in giver.EnumeratePossibilitiesAt(row, col))
+        else
         {
-            var pos = positions[possibility - 1];
-            if(pos.IsRowNotEmpty(row) || pos.IsColumnNotEmpty(col) 
-                                      || pos.IsMiniGridNotEmpty(row / 3, col / 3)) continue;
+            foreach (var possibility in giver.EnumeratePossibilitiesAt(row, col))
+            {
+                var pos = positions[possibility - 1];
+                if(pos.IsRowNotEmpty(row) || pos.IsColumnNotEmpty(col) 
+                                          || pos.IsMiniGridNotEmpty(row / 3, col / 3)) continue;
                 
-            current[row, col] = possibility;
-            pos.Add(row, col);
+                current[row, col] = possibility;
+                pos.Add(row, col);
 
-            if (Search(result, current, giver, positions, position + 1, stopAt)) return true;
+                if (Search(result, current, giver, positions, position + 1, stopAt)) return true;
                 
-            current[row, col] = 0;
-            pos.Remove(row, col);
+                current[row, col] = 0;
+                pos.Remove(row, col);
+            }
         }
 
         return false;
