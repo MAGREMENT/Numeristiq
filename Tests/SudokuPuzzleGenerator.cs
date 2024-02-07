@@ -10,6 +10,8 @@ public class SudokuPuzzleGenerator
 {
     private const int SudokuCount = 25;
     
+    private readonly ISudokuPuzzleGenerator generator =
+        new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
     [Test]
     public void GenerationTest()
@@ -24,15 +26,25 @@ public class SudokuPuzzleGenerator
             Assert.That(true, Is.False);
         }
 
-        var generator =
-            new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator(), repo, StrategyDifficulty.Extreme);
+        var solver = new SudokuSolver
+        {
+            ChangeManagement = ChangeManagement.Fast
+        };
+        solver.Bind(repo);
+
+        var finder = new HardestStrategyFinder(solver);
+        
         var puzzles = generator.Generate(SudokuCount);
         
         Assert.Multiple(() =>
         {
             foreach (var p in puzzles)
             {
-                Console.WriteLine(SudokuTranslator.TranslateLineFormat(p, SudokuTranslationType.Points));
+                Console.Write(SudokuTranslator.TranslateLineFormat(p, SudokuTranslationType.Points));
+                solver.SetSudoku(p);
+                finder.Clear();
+                solver.Solve();
+                Console.WriteLine(" - " + finder.Hardest.StrategyName);
 
                 var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, 2);
                 Assert.That(solution, Has.Length.EqualTo(1));
