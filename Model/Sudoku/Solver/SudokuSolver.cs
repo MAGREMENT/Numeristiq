@@ -41,22 +41,15 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
             }
         }
     }
-    public bool StatisticsTracked { get; init; }
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
     public bool LogsManaged { get; private init; }
 
     public SolverState CurrentState => new(this);
     public SolverState StartState { get; private set; }
 
-    public delegate void SolutionAddition(int number, int row, int col);
-    public event SolutionAddition? SolutionAdded;
-
-    public delegate void PossibilityRemoval(int number, int row, int col);
-    public event PossibilityRemoval? PossibilityRemoved;
-    
-    public event OnCurrentStrategyChange? CurrentStrategyChanged;
-
     public event OnLogsUpdate? LogsUpdated;
+    public event OnStrategyStart? StrategyStarted;
+    public event OnStrategyStop? StrategyStopped;
 
     private IReadOnlyList<ISudokuStrategy> Strategies => _strategyManager.Strategies;
     private int _currentStrategy = -1;
@@ -77,9 +70,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
-
-        SolutionAdded += (_, _, _) => _solutionAddedBuffer++;
-        PossibilityRemoved += (_, _, _) => _possibilityRemovedBuffer++;
 
         InitPossibilities();
         StartState = new SolverState(this);
@@ -189,14 +179,13 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
         {
             if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
-
-            CurrentStrategyChanged?.Invoke(_currentStrategy);
+            
             var current = Strategies[_currentStrategy];
 
-            if (StatisticsTracked) current.Tracker.StartUsing();
+            StrategyStarted?.Invoke(_currentStrategy);
             current.Apply(this);
             ChangeBuffer.Push(current);
-            if (StatisticsTracked) current.Tracker.StopUsing(_solutionAddedBuffer, _possibilityRemovedBuffer);
+            StrategyStopped?.Invoke(_currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
 
@@ -204,7 +193,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
             _possibilityRemovedBuffer = 0;
             
             _currentStrategy = -1;
-            CurrentStrategyChanged?.Invoke(_currentStrategy);
 
             PreComputer.Reset();
 
@@ -212,7 +200,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         }
 
         _currentStrategy = -1;
-        CurrentStrategyChanged?.Invoke(_currentStrategy);
     }
 
     public BuiltChangeCommit[] EveryPossibleNextStep()
@@ -225,18 +212,21 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         {
             if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
             
-            CurrentStrategyChanged?.Invoke(_currentStrategy);
             var current = Strategies[_currentStrategy];
 
             realBehaviors[_currentStrategy] = current.OnCommitBehavior;
             current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
             
+            StrategyStarted?.Invoke(_currentStrategy);
             current.Apply(this);
             ChangeBuffer.Push(current);
+            StrategyStopped?.Invoke(_currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
+            
+            _solutionAddedBuffer = 0;
+            _possibilityRemovedBuffer = 0;
         }
         
         _currentStrategy = -1;
-        CurrentStrategyChanged?.Invoke(_currentStrategy);
 
         foreach (var entry in realBehaviors)
         {
@@ -390,7 +380,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         _sudoku[row, col] = number;
         UpdatePossibilitiesAfterSolutionAdded(number, row, col);
         
-        if(callEvents) SolutionAdded?.Invoke(number, row, col);
+        if(callEvents) _solutionAddedBuffer++;
         return true;
     }
 
@@ -412,7 +402,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         _colsPositions[col, possibility - 1].Remove(row);
         _minisPositions[row / 3, col / 3, possibility - 1].Remove(row % 3, col % 3);
         
-        if(callEvents) PossibilityRemoved?.Invoke(possibility, row, col);
+        if(callEvents) _possibilityRemovedBuffer++;
         return true;
     }
 

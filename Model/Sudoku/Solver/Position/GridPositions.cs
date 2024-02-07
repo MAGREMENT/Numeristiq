@@ -107,10 +107,23 @@ public class GridPositions : IReadOnlyGridPositions
             : System.Numerics.BitOperations.PopCount(_second & (IntRowMask << ((row - 6) * 9)));
     }
 
+    public bool IsRowNotEmpty(int row)
+    {
+        return row < 6
+            ? (_first & (LongRowMask << (row * 9))) != 0
+            : (_second & (IntRowMask << ((row - 6) * 9))) != 0;
+
+    }
+
     public int ColumnCount(int column)
     {
         return System.Numerics.BitOperations.PopCount(_first & (LongColumnMask << column)) +
                System.Numerics.BitOperations.PopCount(_second & (IntColumnMask << column));
+    }
+
+    public bool IsColumnNotEmpty(int column)
+    {
+        return (_first & (LongColumnMask << column)) != 0 || (_second & (IntColumnMask << column)) != 0;
     }
 
     public int MiniGridCount(int miniRow, int miniCol)
@@ -118,6 +131,13 @@ public class GridPositions : IReadOnlyGridPositions
         return miniRow < 2
             ? System.Numerics.BitOperations.PopCount(_first & (LongBoxMask << (miniRow * 27 + miniCol * 3)))
             : System.Numerics.BitOperations.PopCount(_second & (IntBoxMask << (miniCol * 3)));
+    }
+
+    public bool IsMiniGridNotEmpty(int miniRow, int miniCol)
+    {
+        return miniRow < 2
+            ? (_first & (LongBoxMask << (miniRow * 27 + miniCol * 3))) != 0
+            : (_second & (IntBoxMask << (miniCol * 3))) != 0;
     }
     
     public LinePositions RowPositions(int row)

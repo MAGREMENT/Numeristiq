@@ -6,16 +6,17 @@ namespace Tests;
 public class FilledSudokuGeneratorTests
 {
     private const int SudokuCount = 5;
+
+    private readonly IFilledSudokuGenerator _generator = new BackTrackingFilledSudokuGenerator();
     
     [Test]
-    public void TestGeneration()
+    public void GenerationTest()
     {
         var suds = new Sudoku[SudokuCount];
-        var generator = new BackTrackingFilledSudokuGenerator();
 
         for (int i = 0; i < SudokuCount; i++)
         {
-            suds[i] = generator.Generate();
+            suds[i] = _generator.Generate();
             Console.WriteLine(suds[i]);
         }
         

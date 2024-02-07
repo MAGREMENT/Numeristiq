@@ -15,6 +15,7 @@ public interface ISolverView : ISolverDrawer
     void InitializeStrategies(IReadOnlyList<ViewStrategy> strategies);
     void UpdateStrategies(IReadOnlyList<ViewStrategy> strategies);
     void LightUpStrategy(int number);
+    void StopLightingUpStrategy(int number);
     void ToClipboard(string s);
     void ShowPossibleSteps(StepChooserPresenterBuilder builder);
     void ShowExplanation(ISolverLog log);

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Helpers.Changes;
@@ -47,6 +46,9 @@ public class FastChangeBuffer : IChangeBuffer
         {
             _producer.ExecuteChange(new SolverChange(ChangeType.Possibility, possibility));
         }
+        
+        _solutionAddedBuffer.Clear();
+        _possibilityRemovedBuffer.Clear();
     }
 
     public void PushCommit(BuiltChangeCommit commit)

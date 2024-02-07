@@ -8,7 +8,7 @@ public class BackTrackingFilledSudokuGenerator : IFilledSudokuGenerator
 {
     public Sudoku Generate()
     {
-        return BackTracking.Fill(new Sudoku(), new RandomPossibilitiesGiver(), true)[0];
+        return BackTracking.Fill(new Sudoku(), new RandomPossibilitiesGiver(), 1)[0];
     }
 }
 

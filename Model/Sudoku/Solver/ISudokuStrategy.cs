@@ -9,7 +9,6 @@ public interface ISudokuStrategy : ICommitMaker
 { 
     public UniquenessDependency UniquenessDependency { get; }
     public OnCommitBehavior DefaultOnCommitBehavior { get; }
-    public StatisticsTracker Tracker { get; }
     public IReadOnlyList<IStrategyArgument> Arguments { get; }
     
     void Apply(IStrategyUser strategyUser);
@@ -21,7 +20,7 @@ public interface ISudokuStrategy : ICommitMaker
 
         foreach (var arg in Arguments)
         {
-            result.Add(arg.Name, arg.ToString()!);
+            result.Add(arg.Name, arg.Get().ToString()!);
         }
 
         return result;

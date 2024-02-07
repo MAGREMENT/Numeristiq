@@ -5,7 +5,7 @@ namespace Model.Sudoku.Solver.StrategiesUtility;
 
 public static class BackTracking
 {
-    public static Sudoku[] Fill(Sudoku start, IPossibilitiesGiver giver, bool stopAtFirst)
+    public static Sudoku[] Fill(Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
         List<Sudoku> result = new();
         
@@ -22,18 +22,18 @@ public static class BackTracking
             }
         }
         
-        Search(result, start, giver, positions, 0, stopAtFirst);
+        Search(result, start, giver, positions, 0, stopAt);
 
         return result.ToArray();
     }
     
     private static bool Search(List<Sudoku> result, Sudoku current, IPossibilitiesGiver giver,
-        GridPositions[] positions, int position, bool stopAtFirst)
+        GridPositions[] positions, int position, int stopAt)
     {
         if (position == 81)
         {
             result.Add(current.Copy());
-            return stopAtFirst;
+            return result.Count >= stopAt;
         }
         
         var row = position / 9;
@@ -41,19 +41,19 @@ public static class BackTracking
         
         if (current[row, col] != 0)
         {
-            if (Search(result, current, giver, positions, position + 1, stopAtFirst)) return true;
+            if (Search(result, current, giver, positions, position + 1, stopAt)) return true;
         }
 
         foreach (var possibility in giver.EnumeratePossibilitiesAt(row, col))
         {
             var pos = positions[possibility - 1];
-            if(pos.RowCount(row) > 0 || pos.ColumnCount(col) > 0
-                                     || pos.MiniGridCount(row / 3, col / 3) > 0) continue;
+            if(pos.IsRowNotEmpty(row) || pos.IsColumnNotEmpty(col) 
+                                      || pos.IsMiniGridNotEmpty(row / 3, col / 3)) continue;
                 
             current[row, col] = possibility;
             pos.Add(row, col);
 
-            if (Search(result, current, giver, positions, position + 1, stopAtFirst)) return true;
+            if (Search(result, current, giver, positions, position + 1, stopAt)) return true;
                 
             current[row, col] = 0;
             pos.Remove(row, col);

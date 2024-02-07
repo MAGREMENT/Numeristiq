@@ -11,8 +11,6 @@ public partial class StrategyListUserControl
 
     public delegate void OnAllStrategiesUse(bool used);
     public event OnAllStrategiesUse? AllStrategiesUsed;
-
-    private int _currentlyHighlighted = -1;
     
     public StrategyListUserControl()
     {
@@ -48,19 +46,17 @@ public partial class StrategyListUserControl
     public void LightUpStrategy(int number)
     {
         var children = List.Children;
-        if (number >= children.Count) return;
+        if (number >= children.Count || number < 0) return;
         
-        if (_currentlyHighlighted != -1)
-        {
-            ((StrategyUserControl) children[_currentlyHighlighted]).UnLightUp();
-        }
+        ((StrategyUserControl) children[number]).LightUp();
+    }
 
-        if (number != -1)
-        {
-            ((StrategyUserControl) children[number]).LightUp();
-        }
-
-        _currentlyHighlighted = number;
+    public void StopLightingUpStrategy(int number)
+    {
+        var children = List.Children;
+        if (number >= children.Count || number < 0) return;
+        
+        ((StrategyUserControl) children[number]).UnLightUp();
     }
 
     private void UseAllStrategies(object sender, MouseButtonEventArgs e)

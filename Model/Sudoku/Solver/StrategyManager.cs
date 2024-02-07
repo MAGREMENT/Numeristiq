@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku;
-using Model.Sudoku.Solver;
+using Model.Helpers;
 using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Strategies;
@@ -21,7 +20,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 
-namespace Model.Helpers;
+namespace Model.Sudoku.Solver;
 
 public class StrategyManager : IStrategyManager
 {
@@ -371,10 +370,9 @@ public class StrategyInformation
 {
     public string StrategyName { get; }
     public StrategyDifficulty Difficulty { get; }
-    public bool Used { get; }
+    public bool Used { get; } //TODO move to strategy directly
     public bool Locked { get; }
     public OnCommitBehavior Behavior { get; }
-    public IReadOnlyTracker Tracker { get; }
     public IReadOnlyList<IStrategyArgument> Arguments { get; }
 
     public StrategyInformation(ISudokuStrategy strategy, bool used, bool locked)
@@ -385,7 +383,6 @@ public class StrategyInformation
         Locked = locked;
         Arguments = strategy.Arguments;
         Behavior = strategy.OnCommitBehavior;
-        Tracker = strategy.Tracker;
     }
 }
 

@@ -16,7 +16,7 @@ public class BruteForceStrategy : AbstractSudokuStrategy
 
     public override void Apply(IStrategyUser strategyUser)
     {
-        var solution = BackTracking.Fill(strategyUser.Sudoku.Copy(), strategyUser, true);
+        var solution = BackTracking.Fill(strategyUser.Sudoku.Copy(), strategyUser, 1);
 
         if (solution.Length == 1) Process(strategyUser, solution[0]);
     }

@@ -1,6 +1,7 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Arguments;
 
 namespace Presenter.Sudoku.Translators;

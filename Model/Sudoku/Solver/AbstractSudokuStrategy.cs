@@ -11,7 +11,6 @@ public abstract class AbstractSudokuStrategy : ISudokuStrategy
     public UniquenessDependency UniquenessDependency { get; protected init; }
     public OnCommitBehavior OnCommitBehavior { get; set; }
     public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
-    public StatisticsTracker Tracker { get; } = new();
     public IReadOnlyList<IStrategyArgument> Arguments => ArgumentsList.ToArray();
 
     protected List<IStrategyArgument> ArgumentsList { get; } = new();

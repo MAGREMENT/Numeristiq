@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;
@@ -143,6 +144,11 @@ public partial class SolverPage : ISolverView
     public void LightUpStrategy(int number)
     {
         StrategyList.Dispatcher.Invoke(() => StrategyList.LightUpStrategy(number));
+    }
+
+    public void StopLightingUpStrategy(int number)
+    {
+        StrategyList.Dispatcher.Invoke(() => StrategyList.StopLightingUpStrategy(number));
     }
 
     public void PutCursorOn(Cell cell)

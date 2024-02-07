@@ -169,7 +169,7 @@
     "Behavior": 0,
     "Args": {
       "Possibility count": "3,3",
-      "Max out of pattern cells": "3"
+      "Max out of pattern cells": "5"
     }
   },
   {
@@ -379,7 +379,7 @@
     "Used": false,
     "Behavior": 0,
     "Args": {
-      "Maximum number of guardians": "5"
+      "Maximum number of guardians": "4"
     }
   },
   {
@@ -390,7 +390,7 @@
   },
   {
     "Name": "Brute Force",
-    "Used": false,
+    "Used": true,
     "Behavior": 1,
     "Args": {}
   }
