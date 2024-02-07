@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
+using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
@@ -15,55 +16,9 @@ public class BruteForceStrategy : AbstractSudokuStrategy
 
     public override void Apply(IStrategyUser strategyUser)
     {
-        var positions = new GridPositions[] { new(), new(), new(), new(), new(), new(), new(), new(), new() };
+        var solution = BackTracking.Fill(strategyUser.Sudoku.Copy(), strategyUser, true);
 
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var n = strategyUser.Sudoku[row, col];
-                if (n == 0) continue;
-
-                positions[n - 1].Add(row, col);
-            }
-        }
-        
-        Search(strategyUser, strategyUser.Sudoku.Copy(), positions, 0);
-    }
-
-    private bool Search(IStrategyUser strategyUser, Sudoku s, GridPositions[] positions, int current)
-    {
-        if (current == 81)
-        {
-            Process(strategyUser, s);
-            return true;
-        }
-        
-        var row = current / 9;
-        var col = current % 9;
-
-        var possibilities = strategyUser.PossibilitiesAt(row, col);
-        if (possibilities.Count == 0)
-        {
-            if (Search(strategyUser, s, positions, current + 1)) return true;
-        }
-
-        foreach (var possibility in possibilities.EnumeratePossibilities())
-        {
-            var pos = positions[possibility - 1];
-            if(pos.RowCount(row) > 0 || pos.ColumnCount(col) > 0
-                                     || pos.MiniGridCount(row / 3, col / 3) > 0) continue;
-                
-            s[row, col] = possibility;
-            pos.Add(row, col);
-                
-            if (Search(strategyUser, s, positions, current + 1)) return true;
-                
-            s[row, col] = 0;
-            pos.Remove(row, col);
-        }
-
-        return false;
+        if (solution.Length == 1) Process(strategyUser, solution[0]);
     }
 
     private void Process(IStrategyUser strategyUser, Sudoku s)
@@ -78,7 +33,7 @@ public class BruteForceStrategy : AbstractSudokuStrategy
             }
         }
 
-        strategyUser.ChangeBuffer.Commit( new BruteForceReportBuilder());
+        strategyUser.ChangeBuffer.Commit(new BruteForceReportBuilder());
     }
 }
 

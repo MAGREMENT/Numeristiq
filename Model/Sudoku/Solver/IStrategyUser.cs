@@ -1,12 +1,13 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver;
 
-public interface IStrategyUser : IPossibilitiesHolder
+public interface IStrategyUser : IPossibilitiesHolder, IPossibilitiesGiver
 { 
     SolverState StartState { get; }
     

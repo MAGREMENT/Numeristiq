@@ -504,6 +504,11 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         _colsPositions[col, possibility - 1].Remove(row);
         _minisPositions[row / 3, col / 3, possibility - 1].Remove(row % 3, col % 3);
     }
+
+    public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col)
+    {
+        return _possibilities[row, col].EnumeratePossibilities();
+    }
 }
 
 public enum ChangeManagement
