@@ -32,7 +32,7 @@ public class SudokuPuzzleGenerator
         };
         solver.Bind(repo);
 
-        var finder = new HardestStrategyFinder(solver);
+        var finder = new HardestStrategyTracker(solver);
         
         var puzzles = generator.Generate(SudokuCount);
         

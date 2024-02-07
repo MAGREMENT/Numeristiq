@@ -1,8 +1,8 @@
 using System;
 
-namespace Model.Sudoku.Solver.StrategiesUtility;
+namespace Model.Sudoku.Solver;
 
-public class HardestStrategyFinder
+public class HardestStrategyTracker
 {
     private readonly StrategyInformation[] _info;
     private int _current = -1;
@@ -16,7 +16,7 @@ public class HardestStrategyFinder
         }
     }
 
-    public HardestStrategyFinder(SudokuSolver solver)
+    public HardestStrategyTracker(SudokuSolver solver)
     {
         _info = solver.GetStrategyInfo();
         solver.StrategyStopped += (i, a, p) =>

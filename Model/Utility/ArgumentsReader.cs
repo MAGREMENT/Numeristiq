@@ -1,4 +1,7 @@
-﻿namespace RunTester;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Model.Utility;
 
 public class ArgumentsReader
 {

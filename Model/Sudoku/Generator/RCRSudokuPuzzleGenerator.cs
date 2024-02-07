@@ -12,8 +12,6 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 {
     private readonly Random _random = new();
     private readonly IFilledSudokuGenerator _filledGenerator;
-    
-    public StrategyDifficulty MaxDifficulty { get; set; }
 
     public RCRSudokuPuzzleGenerator(IFilledSudokuGenerator filledGenerator)
     {

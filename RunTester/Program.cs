@@ -1,5 +1,6 @@
 ﻿using Model;
 using Model.Sudoku;
+using Model.Utility;
 using Repository;
 
 namespace RunTester;
@@ -49,9 +50,9 @@ public static class Program
     {
         var result = new ArgumentsReader();
 
-        result.AddAllowedArgument("f", ArgumentValueType.Mandatory);
-        result.AddAllowedArgument("r", ArgumentValueType.None);
-        result.AddAllowedArgument("w", ArgumentValueType.None);
+        result.AddAllowedArgument("f", ArgumentValueType.Mandatory); //File name
+        result.AddAllowedArgument("r", ArgumentValueType.None); //Feedback for each Sudoku
+        result.AddAllowedArgument("w", ArgumentValueType.None); //All strategies to wait for all
         
         return result;
     }

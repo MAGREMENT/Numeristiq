@@ -14,11 +14,11 @@
 /RunTester/bin
 /RunTester/obj
 
+/SudokuGenerator/bin
+/SudokuGenerator/obj
+
 /Tests/bin
 /Tests/obj
-
-/Global/bin
-/Global/obj
 
 /Presenter/bin
 /Presenter/obj

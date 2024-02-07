@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewView", "NewView\NewView.csproj", "{3710EE41-5AF7-4546-82FA-B1FA862A407A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SudokuGenerator", "SudokuGenerator\SudokuGenerator.csproj", "{C385CABE-76DB-4AED-8E53-1DDEE51B505C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{3710EE41-5AF7-4546-82FA-B1FA862A407A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3710EE41-5AF7-4546-82FA-B1FA862A407A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3710EE41-5AF7-4546-82FA-B1FA862A407A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C385CABE-76DB-4AED-8E53-1DDEE51B505C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C385CABE-76DB-4AED-8E53-1DDEE51B505C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C385CABE-76DB-4AED-8E53-1DDEE51B505C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C385CABE-76DB-4AED-8E53-1DDEE51B505C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
