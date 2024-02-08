@@ -13,6 +13,7 @@
             
             <MenuItem Header="File" FontSize="15">
                 <MenuItem FontSize="12" Header="Settings" Click="Settings"></MenuItem>
+                <MenuItem FontSize="12" Header="ScreenShot" Click="TakeScreenShot" InputGestureText="CTRL+S"></MenuItem>
             </MenuItem>
             <MenuItem Header="Edit" FontSize="15">
                 <MenuItem FontSize="12" Header="Paste" Click="Paste" InputGestureText="CTRL+V"></MenuItem>

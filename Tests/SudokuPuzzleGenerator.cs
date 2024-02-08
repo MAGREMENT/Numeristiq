@@ -17,14 +17,7 @@ public class SudokuPuzzleGenerator
     public void GenerationTest()
     {
         var repo = new JSONRepository<List<StrategyDAO>>("strategies.json");
-        try
-        {
-            repo.Initialize();
-        }
-        catch (RepositoryInitializationException)
-        {
-            Assert.That(true, Is.False);
-        }
+        repo.Initialize();
 
         var solver = new SudokuSolver
         {
@@ -46,7 +39,7 @@ public class SudokuPuzzleGenerator
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest.StrategyName);
 
-                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, 2);
+                var solution = BackTracking.Fill(p, new ConstantPossibilitiesGiver(), 2);
                 Assert.That(solution, Has.Length.EqualTo(1));
                 Assert.That(solution[0].IsCorrect, Is.True);
             }

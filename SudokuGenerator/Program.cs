@@ -38,7 +38,13 @@ public static class Program
         var hardest = new HardestStrategyTracker(solver);
 
         Console.WriteLine("Started generating...");
-        foreach (var p in generator.Generate(count))
+        var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        var generated = generator.Generate(count);
+        Console.WriteLine($"Finished generating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
+        
+        Console.WriteLine("Started evaluating...");
+        start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        foreach (var p in generated)
         {
             solver.SetSudoku(p.Copy());
             solver.Solve();
@@ -48,8 +54,7 @@ public static class Program
             ratings.Clear();
             hardest.Clear();
         }
-
-        Console.WriteLine("Finished generating.");
+        Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
 
         if (argResult.Contains("s"))
         {

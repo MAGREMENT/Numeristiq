@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
@@ -14,6 +16,8 @@ using View.HelperWindows.Settings;
 using View.Pages.Player.UserControls;
 using View.Themes;
 using View.Utility;
+using Clipboard = System.Windows.Clipboard;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
 
 namespace View.Pages.Player;
 
@@ -187,6 +191,9 @@ public partial class PlayerPage : IPlayerView
                 case Key.V :
                     _presenter.Paste(Clipboard.GetText());
                     break;
+                case Key.S :
+                    TakeScreenShot(null, new RoutedEventArgs());
+                    break;
             }
         }
         else
@@ -282,5 +289,26 @@ public partial class PlayerPage : IPlayerView
     {
         _settingsWindow.Refresh();
         _settingsWindow.Show();
+    }
+    
+    private void TakeScreenShot(object? sender, RoutedEventArgs e)
+    {
+        SaveFileDialog dialog = new SaveFileDialog
+        {
+            AddExtension = true,
+            DefaultExt = "png",
+            RestoreDirectory = true,
+            Filter = "PNG Image (*.png)|*.png"
+        };
+        var result = dialog.ShowDialog();
+
+        if (result is DialogResult.OK)
+        {
+            using var stream = dialog.OpenFile();
+            
+            var png = new PngBitmapEncoder();
+            png.Frames.Add(_grid.AsImage());
+            png.Save(stream);
+        }
     }
 }
