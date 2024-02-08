@@ -39,8 +39,7 @@ public partial class MainSudokuWindow : IPageHandler, IViewManager
         {
             if (!_navigationAllowed) args.Cancel = true;
         };
-
-        //SizeChanged += (_, _) => Center(); TODO fix
+        
         presenter.ViewInitializationFinished();
         ShowPage(PagesName.First);
     }

@@ -30,7 +30,7 @@ public class ApplicationPresenter
         {
             ChangeManagement = ChangeManagement.WithLogs
         };
-        IRepository<List<StrategyDAO>> strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json"); //TODO to array ?
+        IRepository<List<StrategyDAO>> strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json");
         strategyRepository.InitializeOrDefault(new List<StrategyDAO>());
         solver.Bind(strategyRepository);
         _solver = solver;

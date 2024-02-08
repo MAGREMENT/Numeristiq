@@ -6,9 +6,9 @@ namespace NewView
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class WelcomeWindow : Window
     {
-        public MainWindow()
+        public WelcomeWindow()
         {
             InitializeComponent();
             

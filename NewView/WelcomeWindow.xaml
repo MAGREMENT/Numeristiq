@@ -1,0 +1,29 @@
+﻿<Window x:Class="NewView.WelcomeWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="600"
+        WindowStyle="None">
+    <Grid Background="{StaticResource BackGround2}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <StackPanel Grid.Column="0">
+            <TextBlock FontSize="25" HorizontalAlignment="Center" FontWeight="Bold" Margin="0, 150, 0, 0">NextLogic</TextBlock>
+            <TextBlock FontSize="20" Margin="20, 10, 0, 0" FontWeight="SemiBold">- Generate</TextBlock>
+            <TextBlock FontSize="20" Margin="20, 0, 0, 0" FontWeight="SemiBold">- Solve</TextBlock>
+            <TextBlock FontSize="20" Margin="20, 0, 0, 0" FontWeight="SemiBold">- Learn</TextBlock>
+        </StackPanel>
+        
+        <StackPanel Grid.Column="1">
+            <Button Template="{StaticResource WelcomeButtonTemplate}"
+                    Style="{StaticResource WelcomeButtonStyle}">Sudoku</Button>
+            <Button Template="{StaticResource WelcomeButtonTemplate}"
+                    Style="{StaticResource WelcomeButtonStyle}">Tectonic</Button>
+        </StackPanel>
+    </Grid>
+</Window>

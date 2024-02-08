@@ -205,31 +205,38 @@ public class ThorsHammerStrategy : AbstractSudokuStrategy
     }
 }
 
-public class BoxGraph : IEnumerable<int> //TODO simplify this
+public class BoxGraph : IEnumerable<int>
 {
-    private readonly Dictionary<int, HashSet<int>> _links = new();
+    private readonly int[] _links = new int[9];
 
     public void AddLink(int one, int two)
     {
-        _links.TryAdd(one, new HashSet<int>());
-        _links[one].Add(two);
-        _links.TryAdd(two, new HashSet<int>());
-        _links[two].Add(one);
+        _links[one] |= 1 << two;
+        _links[two] |= 1 << one;
     }
     
     public IEnumerable<int> GetLinks(int n)
     {
-        return _links.TryGetValue(n, out var r) ? r : Enumerable.Empty<int>();
+        var l = _links[n];
+        if(l == 0) yield break;
+
+        for (int i = 0; i < 9; i++)
+        {
+            if (((l >> i) & 1) > 0) yield return i;
+        }
     }
 
     public bool Contains(int n)
     {
-        return _links.ContainsKey(n);
+        return _links[n] != 0;
     }
 
     public IEnumerator<int> GetEnumerator()
     {
-        return _links.Keys.GetEnumerator();
+        for (int i = 0; i < 9; i++)
+        {
+            if (_links[i] != 0) yield return i;
+        }
     }
 
     IEnumerator IEnumerable.GetEnumerator()
