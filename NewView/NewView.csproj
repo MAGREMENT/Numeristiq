@@ -12,4 +12,8 @@
       <ProjectReference Include="..\Model\Model.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Resource Include="Images\appicon.png" />
+    </ItemGroup>
+
 </Project>
