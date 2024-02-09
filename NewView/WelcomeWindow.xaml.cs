@@ -1,4 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace NewView;
 
@@ -10,6 +14,9 @@ public partial class WelcomeWindow
     public WelcomeWindow()
     {
         InitializeComponent();
+        
+        RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
+        RenderOptions.SetBitmapScalingMode(GameImage, BitmapScalingMode.Fant);
             
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -20,8 +27,18 @@ public partial class WelcomeWindow
         WindowState = WindowState.Minimized;
     }
 
-    private void Maximize()
+    private void ChangeSize()
     {
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    }
+
+    private void OnSudokuMouseEnter(object sender, MouseEventArgs e)
+    {
+        GameImage.Source = new BitmapImage(new Uri("/Images/SudokuImage.png", UriKind.Relative));
+    }
+
+    private void OnTectonicMouseEnter(object sender, MouseEventArgs e)
+    {
+        GameImage.Source = new BitmapImage(new Uri("/Images/TectonicImage.png", UriKind.Relative));
     }
 }

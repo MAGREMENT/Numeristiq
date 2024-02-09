@@ -7,15 +7,21 @@ namespace NewView;
 public partial class TitleBarControl : UserControl
 {
     public event TitleBarAction? Minimize;
-    public event TitleBarAction? Maximize;
+    public event TitleBarAction? ChangeSize;
     public event TitleBarAction? Close;
+
+    private bool _allowResize = true;
 
     public bool AllowResize
     {
         set
         {
-            MaximizeButton.IsEnabled = value;
-            RestoreButton.IsEnabled = value;
+            _allowResize = value;
+            if (value == false)
+            {
+                MaximizeButton.Visibility = Visibility.Collapsed;
+                RestoreButton.Visibility = Visibility.Collapsed;
+            }
         }
     }
 
@@ -43,7 +49,7 @@ public partial class TitleBarControl : UserControl
 
     private void OnMaximizeRestoreButtonClick(object sender, RoutedEventArgs e)
     {
-        Maximize?.Invoke();
+        if (_allowResize) ChangeSize?.Invoke();
     }
 
     private void OnCloseButtonClick(object sender, RoutedEventArgs e)
@@ -53,6 +59,8 @@ public partial class TitleBarControl : UserControl
     
     public void RefreshMaximizeRestoreButton(WindowState state)
     {
+        if (!_allowResize) return;
+        
         if (state == WindowState.Maximized)
         {
             MaximizeButton.Visibility = Visibility.Collapsed;

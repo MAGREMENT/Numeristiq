@@ -14,6 +14,10 @@
 
     <ItemGroup>
       <Resource Include="Images\appicon.png" />
+      <None Remove="Images\SudokuImage.png" />
+      <Resource Include="Images\SudokuImage.png" />
+      <None Remove="Images\TectonicImage.png" />
+      <Resource Include="Images\TectonicImage.png" />
     </ItemGroup>
 
 </Project>

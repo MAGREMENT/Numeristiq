@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NewView"
         mc:Ignorable="d"
-        Title="MainWindow" Height="250" Width="450"
+        Title="MainWindow" Height="282" Width="450"
         WindowStyle="None"
         ResizeMode="NoResize">
     
@@ -14,26 +14,29 @@
     </WindowChrome.WindowChrome>
     
     <DockPanel>
-        <local:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" Maximize="Maximize" Close="Close"
-                               AllowResize="False" AppIcon="Images/appicon.png"/>
+        <local:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
+                               AllowResize="False"/>
         
         <Grid Background="{StaticResource BackGround1}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
-                <ColumnDefinition Width="*"></ColumnDefinition>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
         
             <StackPanel Grid.Column="0">
-                <TextBlock FontSize="25" HorizontalAlignment="Center" FontWeight="Bold" Margin="0, 50, 0, 0" Foreground="{StaticResource Text}">NextLogic</TextBlock>
-                <TextBlock FontSize="20" Margin="20, 10, 0, 0" FontWeight="SemiBold" Foreground="{StaticResource Text}">- Generate</TextBlock>
-                <TextBlock FontSize="20" Margin="20, 0, 0, 0" FontWeight="SemiBold" Foreground="{StaticResource Text}">- Solve</TextBlock>
-                <TextBlock FontSize="20" Margin="20, 0, 0, 0" FontWeight="SemiBold" Foreground="{StaticResource Text}">- Learn</TextBlock>
+                <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 20" HorizontalAlignment="Center">
+                    <Image Width="50" Height="50" VerticalAlignment="Center" x:Name="Image" Source="Images/appicon.png"/>
+                    <TextBlock FontSize="25" FontWeight="Bold" Margin="10, 0, 0, 0"
+                               Foreground="{StaticResource Text}" VerticalAlignment="Center">NextLogic</TextBlock>
+                </StackPanel>
+                
+                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnSudokuMouseEnter">Sudoku</Button>
+                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnTectonicMouseEnter">Tectonic</Button>
             </StackPanel>
         
-            <StackPanel Grid.Column="1">
-                <Button Style="{StaticResource WelcomeButtonStyle}">Sudoku</Button>
-                <Button Style="{StaticResource WelcomeButtonStyle}">Tectonic</Button>
-            </StackPanel>
+            <Border Margin="10" BorderThickness="5" BorderBrush="{StaticResource BackGround2}" Width="230" Height="230" Grid.Column="1">
+                <Image Width="220" Height="220" x:Name="GameImage"/>
+            </Border>
         </Grid>
     </DockPanel>
 </Window>
