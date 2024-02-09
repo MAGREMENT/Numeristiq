@@ -11,11 +11,11 @@
         Title="Settings" SizeToContent="WidthAndHeight">
     <StackPanel Orientation="Horizontal" Height="450" Width="600">
         <ScrollViewer Width="150" Height="450">
-            <StackPanel x:Name="Titles" Background="{DynamicResource Background1}"/>
+            <StackPanel x:Name="Titles" Background="{DynamicResource BackGround1}"/>
         </ScrollViewer>
         <StackPanel Orientation="Vertical" Height="450" Width="450">
             <Frame x:Name="Page" Height="400" Width="450" NavigationUIVisibility="Hidden"></Frame>
-            <StackPanel Orientation="Horizontal" Height="50" Width="450" Background="{DynamicResource Background2}">
+            <StackPanel Orientation="Horizontal" Height="50" Width="450" Background="{DynamicResource BackGround1}">
                 <TextBlock Height="40" Width="340" FontSize="12" x:Name="OptionExplanation" TextWrapping="Wrap" Margin="5" Foreground="{DynamicResource Text}"/>
                 <c:GlowButton Height="35" Width="80" FontSize="15" HorizontalAlignment="Right" Margin="0, 7.5, 10, 7.5" 
                         Click="Finished" Text="Finished"/>

@@ -5,7 +5,17 @@
     <Application.Resources>
          <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
-                 <ResourceDictionary/>
+                 <ResourceDictionary>
+                     <Brush x:Key="BackGround1">#FFFFFF</Brush>
+                     <Brush x:Key="BackGround2">#F9F9F9</Brush>
+                     <Brush x:Key="BackGround3">#F0F0F0</Brush>
+                     <Brush x:Key="Primary1">#FC880B</Brush>
+                     <Brush x:Key="Primary2">#EE810C</Brush>
+                     <Brush x:Key="Secondary1">#F52A0A</Brush>
+                     <Brush x:Key="Secondary2">#E8280B</Brush>
+                     <Brush x:Key="Accent">#F50EE2</Brush>
+                     <Brush x:Key="Text">#000000</Brush>
+                 </ResourceDictionary>
              </ResourceDictionary.MergedDictionaries>
          </ResourceDictionary>
     </Application.Resources>

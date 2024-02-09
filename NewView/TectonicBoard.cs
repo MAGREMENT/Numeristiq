@@ -91,7 +91,7 @@ public class TectonicBoard : DrawingBoard, IAddChild
         Clear();
         UpdateBackground();
         UpdateLines();
-        Draw();
+        Refresh();
     }
     
     private void UpdateBackground()
@@ -105,7 +105,7 @@ public class TectonicBoard : DrawingBoard, IAddChild
         Layers[SmallLineIndex].Clear();
         Layers[BigLineIndex].Clear();
         UpdateLines();
-        Draw();
+        Refresh();
     }
 
     private void UpdateLines()

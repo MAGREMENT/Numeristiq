@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
@@ -9,10 +10,10 @@ namespace NewView;
 public abstract class DrawingBoard : FrameworkElement
 {
     private readonly DrawingVisual _visual = new();
-
     private readonly List<IDrawableComponent>[] _layers;
     
     protected IReadOnlyList<List<IDrawableComponent>> Layers => _layers;
+    public bool RefreshAllowed { get; set; } = true;
 
     protected DrawingBoard(int layerCount)
     {
@@ -51,8 +52,10 @@ public abstract class DrawingBoard : FrameworkElement
     
     //------------------------------------------------------------------------------------------------------------------
     
-    public void Draw()
+    public void Refresh()
     {
+        if (!RefreshAllowed) return;
+        
         var context = _visual.RenderOpen();
 
         foreach (var list in _layers)
@@ -75,23 +78,34 @@ public abstract class DrawingBoard : FrameworkElement
         }
     }
     
+    protected void SetLayerBrush(int index, Brush brush)
+    {
+        foreach (var comp in _layers[index])
+        {
+            comp.SetBrush(brush);
+        }
+    }
+    
     public BitmapFrame AsImage()
     {
         var rtb = new RenderTargetBitmap((int)Width, (int)Height, 96, 96, PixelFormats.Pbgra32);
         rtb.Render(_visual);
         return BitmapFrame.Create(rtb);
     }
+    
+    
 }
 
 public interface IDrawableComponent
 { 
     void Draw(DrawingContext context);
+    void SetBrush(Brush brush);
 }
 
 public class FilledRectangleComponent : IDrawableComponent
 {
     private readonly Rect _rect;
-    private readonly Brush _brush;
+    private Brush _brush;
 
     public FilledRectangleComponent(Rect rect, Brush brush)
     {
@@ -102,6 +116,11 @@ public class FilledRectangleComponent : IDrawableComponent
     public void Draw(DrawingContext context)
     {
         context.DrawRectangle(_brush, null, _rect);
+    }
+
+    public void SetBrush(Brush brush)
+    {
+        _brush = brush;
     }
 }
 
@@ -120,12 +139,17 @@ public class OutlinedRectangleComponent : IDrawableComponent
     {
         context.DrawRectangle(null, _pen, _rect);
     }
+
+    public void SetBrush(Brush brush)
+    {
+        _pen.Brush = brush;
+    }
 }
 
 public class FilledPolygonComponent : IDrawableComponent
 {
     private readonly Point[] _points;
-    private readonly Brush _brush;
+    private Brush _brush;
 
     public FilledPolygonComponent(Brush brush, params Point[] points)
     {
@@ -162,6 +186,11 @@ public class FilledPolygonComponent : IDrawableComponent
 
         context.DrawGeometry(_brush, null, geometry);
     }
+
+    public void SetBrush(Brush brush)
+    {
+        _brush = brush;
+    }
 }
 
 public class LineComponent : IDrawableComponent
@@ -181,19 +210,28 @@ public class LineComponent : IDrawableComponent
     {
         context.DrawLine(_pen, _from, _to);
     }
+
+    public void SetBrush(Brush brush)
+    {
+        _pen.Brush = brush;
+    }
 }
 
 public class TextInRectangleComponent : IDrawableComponent
 {
+    private static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
+    private const FlowDirection Flow = FlowDirection.LeftToRight;
+    private static readonly Typeface Typeface = new("Arial");
+    
     private readonly FormattedText _text;
     private readonly Rect _rect;
     private readonly ComponentHorizontalAlignment _horizontalAlignment;
     private readonly ComponentVerticalAlignment _verticalAlignment;
 
-    public TextInRectangleComponent(FormattedText text, Rect rect, ComponentHorizontalAlignment horizontalAlignment,
-        ComponentVerticalAlignment verticalAlignment)
+    public TextInRectangleComponent(string text, double size, Brush foreground, Rect rect,
+        ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment)
     {
-        _text = text;
+        _text = new FormattedText(text, Info, Flow, Typeface, size, foreground, 1);
         _rect = rect;
         _horizontalAlignment = horizontalAlignment;
         _verticalAlignment = verticalAlignment;
@@ -206,6 +244,11 @@ public class TextInRectangleComponent : IDrawableComponent
             
         context.DrawText(_text, new Point(_rect.X + deltaX * (int)_horizontalAlignment, 
             _rect.Y + deltaY * (int)_verticalAlignment));
+    }
+
+    public void SetBrush(Brush brush)
+    {
+        _text.SetForegroundBrush(brush);
     }
 }
 

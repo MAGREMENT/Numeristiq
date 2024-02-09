@@ -418,11 +418,11 @@ public class SudokuGrid : FrameworkElement
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left, top, CursorWidth, CursorWidth), brush));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), brush));
             }
             
             if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(

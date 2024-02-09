@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -25,7 +24,6 @@ public class SudokuBoard : DrawingBoard
     private  const int EncirclesIndex = 7;
     private  const int LinksIndex = 8;
     
-    private static readonly Brush StrongLinkBrush = Brushes.Indigo;
     private const double LinkOffset = 20;
     private const double CursorWidth = 3;
     
@@ -34,6 +32,63 @@ public class SudokuBoard : DrawingBoard
     private double _smallLineWidth;
     private double _bigLineWidth;
     private double _size;
+    
+    private Brush _linkBrush = Brushes.Indigo;
+    private Brush _numberBrush = Brushes.Black;
+    private Brush _backgroundBrush = Brushes.White;
+    private Brush _lineBrush = Brushes.Black;
+    private Brush _cursorBrush = Brushes.MediumPurple;
+
+    public Brush LinkBrush
+    {
+        set
+        {
+            _linkBrush = value;
+            SetLayerBrush(LinksIndex, value);
+            Refresh();
+        }
+    }
+
+    public Brush NumberBrush
+    {
+        set
+        {
+            _numberBrush = value;
+            SetLayerBrush(NumbersIndex, value);
+            Refresh();
+        }
+    }
+
+    public Brush BackgroundBrush
+    {
+        set
+        {
+            _backgroundBrush = value;
+            SetLayerBrush(BackgroundIndex, value);
+            Refresh();
+        }
+    }
+    
+    public Brush LineBrush
+    {
+        set
+        {
+            _lineBrush = value;
+            SetLayerBrush(SmallLinesIndex, value);
+            SetLayerBrush(BigLinesIndex, value);
+            Refresh();
+        }
+    }
+    
+    public Brush CursorBrush
+    {
+        set
+        {
+            _cursorBrush = value;
+            SetLayerBrush(CursorIndex, value);
+            Refresh();
+        }
+    }
 
     public double PossibilitySize
     {
@@ -134,30 +189,25 @@ public class SudokuBoard : DrawingBoard
        Layers[CursorIndex].Clear();
     }
     
-    public void ShowGridPossibility(int row, int col, int possibility, Brush color)
+    public void ShowGridPossibility(int row, int col, int possibility)
     {
-        var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"), _possibilitySize / 4 * 3, color, 1);
-        
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-            _possibilitySize, _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
+            _numberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
+                _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
     }
 
-    public void ShowSolution(int row, int col, int possibility, Brush color)
+    public void ShowSolution(int row, int col, int possibility)
     {
-        var text = new FormattedText(possibility.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"), _cellSize / 4 * 3, color, 1);
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col), GetTop(row),
-            _cellSize, _cellSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _cellSize / 4 * 3, _numberBrush,
+            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), ComponentHorizontalAlignment.Center,
+            ComponentVerticalAlignment.Center));
     }
 
-    public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location,
-        Brush color)
+    public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location)
     {
         var builder = new StringBuilder();
         foreach (var p in possibilities) builder.Append(p);
-        var text = new FormattedText(builder.ToString(), CultureInfo.CurrentUICulture, FlowDirection.LeftToRight,
-            new Typeface("Arial"), _possibilitySize / 4 * 2, color, 1);
+       
         var ha = location switch
         {
             PossibilitiesLocation.Bottom => ComponentHorizontalAlignment.Right,
@@ -173,8 +223,8 @@ public class SudokuBoard : DrawingBoard
             _ => 3
         };
 
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(text, new Rect(GetLeft(col), GetTop(row, n), _cellSize,
-            _possibilitySize), ha, ComponentVerticalAlignment.Center));
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, _numberBrush,
+            new Rect(GetLeft(col), GetTop(row, n), _cellSize, _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
     public void FillCell(int row, int col, Color color)
@@ -217,14 +267,14 @@ public class SudokuBoard : DrawingBoard
     {
         var delta = _bigLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
-            _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(StrongLinkBrush, _bigLineWidth)));
+            _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(_linkBrush, _bigLineWidth)));
     }
     
     public void EncirclePossibility(int row, int col, int possibility)
     {
         var delta = _smallLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
-            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(StrongLinkBrush, _bigLineWidth)));
+            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(_linkBrush, _bigLineWidth)));
     }
 
     public void PutCursorOn(int row, int col)
@@ -234,7 +284,7 @@ public class SudokuBoard : DrawingBoard
         var delta = CursorWidth / 2;
         var left = GetLeft(col);
         var top = GetTop(row);
-        var pen = new Pen(Brushes.MediumPurple, CursorWidth);
+        var pen = new Pen(_cursorBrush, CursorWidth);
 
         var list = Layers[CursorIndex];
         list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
@@ -252,7 +302,7 @@ public class SudokuBoard : DrawingBoard
         ClearCursor();
         
         var delta = CursorWidth / 2;
-        var pen = new Pen(Brushes.MediumPurple, CursorWidth);
+        var pen = new Pen(_cursorBrush, CursorWidth);
 
         var list = Layers[CursorIndex];
         foreach (var cell in cells)
@@ -269,11 +319,11 @@ public class SudokuBoard : DrawingBoard
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left, top, CursorWidth, CursorWidth), _cursorBrush));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), _cursorBrush));
             }
             
             if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
@@ -285,11 +335,11 @@ public class SudokuBoard : DrawingBoard
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), _cursorBrush));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), _cursorBrush));
             }
         }
     }
@@ -392,11 +442,11 @@ public class SudokuBoard : DrawingBoard
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left, top, CursorWidth, CursorWidth), brush));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), Brushes.MediumPurple));
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), brush));
             }
             
             if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
@@ -491,7 +541,7 @@ public class SudokuBoard : DrawingBoard
 
     private void AddLine(Point from, Point to, bool isWeak)
     {
-        Layers[LinksIndex].Add(new LineComponent(from, to, new Pen(StrongLinkBrush, 2)
+        Layers[LinksIndex].Add(new LineComponent(from, to, new Pen(_linkBrush, 2)
         {
             DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
         }));
@@ -593,13 +643,13 @@ public class SudokuBoard : DrawingBoard
         Clear();
         UpdateBackground();
         UpdateLines();
-        Draw();
+        Refresh();
     }
 
     private void UpdateBackground()
     {
         Layers[BackgroundIndex].Add(new FilledRectangleComponent(
-            new Rect(0, 0, _size, _size), Brushes.White));
+            new Rect(0, 0, _size, _size), _backgroundBrush));
     }
     
     private void UpdateLines()
@@ -608,9 +658,9 @@ public class SudokuBoard : DrawingBoard
         for (int i = 0; i < 6; i++)
         {
             Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(0, delta, _size, _smallLineWidth), Brushes.Black));
+                new Rect(0, delta, _size, _smallLineWidth), _lineBrush));
             Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(delta, 0, _smallLineWidth, _size), Brushes.Black));
+                new Rect(delta, 0, _smallLineWidth, _size), _lineBrush));
 
             delta += i % 2 == 0 ? _smallLineWidth + _cellSize : _smallLineWidth + _cellSize + _bigLineWidth + _cellSize;
         }
@@ -619,9 +669,9 @@ public class SudokuBoard : DrawingBoard
         for (int i = 0; i < 4; i++)
         {
             Layers[BigLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(0, delta, _size, _bigLineWidth), Brushes.Black));
+                new Rect(0, delta, _size, _bigLineWidth), _lineBrush));
             Layers[BigLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(delta, 0, _bigLineWidth, _size), Brushes.Black));
+                new Rect(delta, 0, _bigLineWidth, _size), _lineBrush));
 
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
         }
