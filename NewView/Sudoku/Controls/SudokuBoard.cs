@@ -10,7 +10,7 @@ using Model.Sudoku.Player;
 using Model.Utility;
 using MathUtility = NewView.Utility.MathUtility;
 
-namespace NewView;
+namespace NewView.Sudoku.Controls;
 
 public class SudokuBoard : DrawingBoard
 {

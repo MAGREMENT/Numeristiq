@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using NewView.Sudoku;
 
 namespace NewView;
 
@@ -40,5 +41,12 @@ public partial class WelcomeWindow
     private void OnTectonicMouseEnter(object sender, MouseEventArgs e)
     {
         GameImage.Source = new BitmapImage(new Uri("/Images/TectonicImage.png", UriKind.Relative));
+    }
+
+    private void OnSudokuClick(object sender, RoutedEventArgs e)
+    {
+        var window = new SudokuWindow();
+        window.Show();
+        Close();
     }
 }

@@ -2,9 +2,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace NewView;
+namespace NewView.Controls;
 
-public partial class TitleBarControl : UserControl
+public partial class TitleBarControl
 {
     public event TitleBarAction? Minimize;
     public event TitleBarAction? ChangeSize;

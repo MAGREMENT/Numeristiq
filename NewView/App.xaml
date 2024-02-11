@@ -41,6 +41,44 @@
 	            </Setter.Value>
             </Setter>
         </Style>
+	    
+	    <Style x:Key="BottomSelectionRadioButtonStyle" TargetType="RadioButton">
+		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="Background" Value="{StaticResource BackGround2}"/>
+		    <Setter Property="FontSize" Value="18"/>
+		    <Setter Property="FontWeight" Value="Normal"></Setter>
+		    
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="RadioButton">
+					    <Border x:Name="CheckBorder" BorderThickness="0, 0, 0, 2"
+					            BorderBrush="{TemplateBinding Background}"
+					            Background="{TemplateBinding Background}"
+					            VerticalAlignment="Stretch"
+					            HorizontalAlignment="Stretch">
+						    
+						    <ContentPresenter
+							    Margin="0"
+							    HorizontalAlignment="Center"
+							    VerticalAlignment="Center"
+							    RecognizesAccessKey="True"
+							    Content="{TemplateBinding Content}"/>
+					    </Border>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsChecked" Value="True">
+							    <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource Secondary1}"/>
+						    </Trigger>
+						    
+						    <Trigger Property="IsMouseOver" Value="True">
+							    <Setter Property="Background" Value="{StaticResource BackGround3}"/>
+							    <Setter Property="Foreground" Value="{StaticResource Primary1}"/>
+						    </Trigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
         
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
 			<Setter Property="Foreground" Value="{StaticResource Text}" />

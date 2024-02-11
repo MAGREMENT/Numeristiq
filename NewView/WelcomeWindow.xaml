@@ -3,18 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:NewView"
+        xmlns:controls="clr-namespace:NewView.Controls"
         mc:Ignorable="d"
-        Title="MainWindow" Height="282" Width="450"
+        Height="290" Width="450"
         WindowStyle="None"
         ResizeMode="NoResize">
     
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>
     
     <DockPanel>
-        <local:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
+        <controls:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                AllowResize="False"/>
         
         <Grid Background="{StaticResource BackGround1}">
@@ -30,7 +30,8 @@
                                Foreground="{StaticResource Text}" VerticalAlignment="Center">NextLogic</TextBlock>
                 </StackPanel>
                 
-                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnSudokuMouseEnter">Sudoku</Button>
+                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnSudokuMouseEnter"
+                        Click="OnSudokuClick">Sudoku</Button>
                 <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnTectonicMouseEnter">Tectonic</Button>
             </StackPanel>
         
