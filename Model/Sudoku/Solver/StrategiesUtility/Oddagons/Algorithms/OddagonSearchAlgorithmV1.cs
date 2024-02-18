@@ -8,7 +8,6 @@ public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
 {
     public List<AlmostOddagon> Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
     {
-        
         var result = new List<AlmostOddagon>();
 
         Queue<CellPossibility> queue = new();

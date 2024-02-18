@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.Position;
+using Model.Sudoku.Solver.Settings;
+using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -62,14 +63,14 @@ public class FishStrategy : AbstractSudokuStrategy
         _maxNumberOfExoFins = maxNumberOfExoFins;
         _maxNumberOfEndoFins = maxNumberOfEndoFins;
         _allowCannibalism = allowCannibalism;
-        ArgumentsList.Add(new MinMaxStrategyArgument("Unit count", 2, 4, 2, 5, 1,
+        ModifiableSettings.Add(new MinMaxSetting("Unit count", 2, 4, 2, 5, 1,
             () => _minUnitCount, i => _minUnitCount = i, () => _maxUnitCount,
             i => _maxUnitCount = i));
-        ArgumentsList.Add(new IntStrategyArgument("Max number of exo fins", () => _maxNumberOfExoFins,
+        ModifiableSettings.Add(new IntSetting("Max number of exo fins", () => _maxNumberOfExoFins,
             i => _maxNumberOfExoFins = i, new SliderViewInterface(0, 5, 1)));
-        ArgumentsList.Add(new IntStrategyArgument("Max number of endo fins", () => _maxNumberOfEndoFins,
+        ModifiableSettings.Add(new IntSetting("Max number of endo fins", () => _maxNumberOfEndoFins,
             i => _maxNumberOfEndoFins = i, new SliderViewInterface(0, 5, 1)));
-        ArgumentsList.Add(new BooleanStrategyArgument("Allow cannibalism", () => _allowCannibalism,
+        ModifiableSettings.Add(new BooleanSetting("Allow cannibalism", () => _allowCannibalism,
             b => _allowCannibalism = b));
     }
     

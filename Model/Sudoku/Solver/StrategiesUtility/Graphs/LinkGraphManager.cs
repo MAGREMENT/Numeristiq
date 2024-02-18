@@ -4,10 +4,10 @@ namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 public class LinkGraphManager
 {
-    public ILinkGraph<ISudokuElement> ComplexLinkGraph { get; } = ILinkGraph<ISudokuElement>.New();
+    public ILinkGraph<ISudokuElement> ComplexLinkGraph { get; } = LinkGraphs.NewComplex();
     private long _rulesAppliedOnComplex;
 
-    public ILinkGraph<CellPossibility> SimpleLinkGraph { get; } = ILinkGraph<CellPossibility>.New();
+    public ILinkGraph<CellPossibility> SimpleLinkGraph { get; } = LinkGraphs.NewSimple();
     private long _rulesAppliedOnSimple;
 
     private readonly IStrategyUser _solver;

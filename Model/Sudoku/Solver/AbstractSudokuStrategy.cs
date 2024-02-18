@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 
 namespace Model.Sudoku.Solver;
 
@@ -11,9 +11,9 @@ public abstract class AbstractSudokuStrategy : ISudokuStrategy
     public UniquenessDependency UniquenessDependency { get; protected init; }
     public OnCommitBehavior OnCommitBehavior { get; set; }
     public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
-    public IReadOnlyList<IStrategyArgument> Arguments => ArgumentsList.ToArray();
+    public IReadOnlyList<ISetting> Settings => ModifiableSettings.ToArray();
 
-    protected List<IStrategyArgument> ArgumentsList { get; } = new();
+    protected List<ISetting> ModifiableSettings { get; } = new();
 
     protected AbstractSudokuStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
     {
@@ -25,9 +25,9 @@ public abstract class AbstractSudokuStrategy : ISudokuStrategy
     
     public abstract void Apply(IStrategyUser strategyUser);
     public virtual void OnNewSudoku(Sudoku s) { }
-    public void TrySetArgument(string name, ArgumentValue value)
+    public void TrySetArgument(string name, SettingValue value)
     {
-        foreach (var arg in Arguments)
+        foreach (var arg in Settings)
         {
             if (!arg.Name.Equals(name)) continue;
 

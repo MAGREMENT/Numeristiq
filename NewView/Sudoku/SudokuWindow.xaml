@@ -24,7 +24,7 @@
         <global:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                 AllowResize="False" AppIcon="../Images/appicon.png" AppTitle="NextLogic"/>
         
-        <ContentControl Grid.Row="1" Width="1300" Height="668" x:Name="Frame"/>
+        <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Width="1300" Height="660" x:Name="Frame"/>
         
         <local:BottomSelectionControl Grid.Row="2" Height="50"/>
     </Grid>

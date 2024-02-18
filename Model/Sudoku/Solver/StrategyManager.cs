@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
-using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.Settings;
 using Model.Sudoku.Solver.Strategies;
 using Model.Sudoku.Solver.Strategies.AlternatingInference;
 using Model.Sudoku.Solver.Strategies.AlternatingInference.Algorithms;
@@ -142,7 +142,7 @@ public class StrategyManager : IStrategyManager
                 strategy.OnCommitBehavior = dao.Behavior;
                 foreach (var arg in dao.Args)
                 {
-                    strategy.TrySetArgument(arg.Key, new StringArgumentValue(arg.Value));
+                    strategy.TrySetArgument(arg.Key, new StringSettingValue(arg.Value));
                 }
                 
                 _strategies.Add(StrategyPool[dao.Name], _ => {});
@@ -313,7 +313,7 @@ public class StrategyManager : IStrategyManager
         TryCallEvent();
     }
     
-    public void ChangeArgument(string strategyName, string argumentName, ArgumentValue value)
+    public void ChangeArgument(string strategyName, string argumentName, SettingValue value)
     {
         var i = _strategies.Find(s => s.Name.Equals(strategyName));
         if (i == -1) return;
@@ -373,7 +373,7 @@ public class StrategyInformation
     public bool Used { get; } //TODO move to strategy directly
     public bool Locked { get; }
     public OnCommitBehavior Behavior { get; }
-    public IReadOnlyList<IStrategyArgument> Arguments { get; }
+    public IReadOnlyList<ISetting> Arguments { get; }
 
     public StrategyInformation(ISudokuStrategy strategy, bool used, bool locked)
     {
@@ -381,7 +381,7 @@ public class StrategyInformation
         Difficulty = strategy.Difficulty;
         Used = used;
         Locked = locked;
-        Arguments = strategy.Arguments;
+        Arguments = strategy.Settings;
         Behavior = strategy.OnCommitBehavior;
     }
 }

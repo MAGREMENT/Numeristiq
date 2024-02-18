@@ -3,10 +3,39 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:NewView.Sudoku.Pages"
+      xmlns:local="clr-namespace:NewView.Sudoku.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" Height="450" Width="800">
-    <Grid>
+      Title="SolvePage" Height="660" Width="1300">
+    <Grid Background="{StaticResource BackGround1}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         
+        <Grid Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="40"/>
+            </Grid.RowDefinitions>
+            
+            <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="4" Background="{StaticResource BackGround2}"
+                    Padding="10" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="5">
+                <local:SudokuBoard  PossibilitySize="20" BigLineWidth="3"
+                                    SmallLineWidth="1" BackgroundBrush="Transparent" NumberBrush="{StaticResource Text}"
+                                    LineBrush="{StaticResource Text}" CursorBrush="{StaticResource Primary1}"/>
+            </Border>
+            
+            <Button Grid.Row="1" Grid.Column="0">Solve</Button>
+            <Button Grid.Row="1" Grid.Column="1">Advance</Button>
+            <Button Grid.Row="1" Grid.Column="2">Choose Step</Button>
+            <Button Grid.Row="1" Grid.Column="3">Clear</Button>
+        </Grid>
     </Grid>
 </Page>

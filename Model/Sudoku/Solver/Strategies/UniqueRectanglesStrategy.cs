@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.PossibilityPosition;
+using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -21,7 +21,7 @@ public class UniqueRectanglesStrategy : AbstractSudokuStrategy
     {
         _allowMissingCandidates = allowMissingCandidates;
         UniquenessDependency = UniquenessDependency.FullyDependent;
-        ArgumentsList.Add(new BooleanStrategyArgument("Missing candidates allowed", () => _allowMissingCandidates,
+        ModifiableSettings.Add(new BooleanSetting("Missing candidates allowed", () => _allowMissingCandidates,
             b => _allowMissingCandidates = b));
     }
     

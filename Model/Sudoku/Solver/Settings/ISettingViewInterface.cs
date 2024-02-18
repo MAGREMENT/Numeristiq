@@ -1,11 +1,11 @@
-﻿namespace Model.Sudoku.Solver.Arguments;
+﻿namespace Model.Sudoku.Solver.Settings;
 
-public interface IArgumentViewInterface
+public interface ISettingViewInterface
 {
     
 }
 
-public class SliderViewInterface : IArgumentViewInterface
+public class SliderViewInterface : ISettingViewInterface
 {
     public SliderViewInterface(int min, int max, int tickFrequency)
     {
@@ -19,7 +19,7 @@ public class SliderViewInterface : IArgumentViewInterface
     public int TickFrequency { get; }
 }
 
-public class MinMaxSliderViewInterface : IArgumentViewInterface
+public class MinMaxSliderViewInterface : ISettingViewInterface
 {
     public MinMaxSliderViewInterface(int minMin, int minMax, int maxMin, int maxMax, int tickFrequency)
     {
@@ -39,7 +39,7 @@ public class MinMaxSliderViewInterface : IArgumentViewInterface
 
 
 
-public class BooleanViewInterface : IArgumentViewInterface
+public class BooleanViewInterface : ISettingViewInterface
 {
     
 }

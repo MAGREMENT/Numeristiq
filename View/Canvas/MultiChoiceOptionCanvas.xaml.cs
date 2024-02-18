@@ -1,17 +1,17 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using View.Themes;
 
 namespace View.Canvas;
 
 public partial class MultiChoiceOptionCanvas
 {
-    private readonly SetArgument<int> _setter;
-    private readonly GetArgument<int> _getter;
+    private readonly SetSetting<int> _setter;
+    private readonly GetSetting<int> _getter;
     
-    public MultiChoiceOptionCanvas(string name, string explanation, GetArgument<int> getter, 
-        SetArgument<int> setter, params string[] choices)
+    public MultiChoiceOptionCanvas(string name, string explanation, GetSetting<int> getter, 
+        SetSetting<int> setter, params string[] choices)
     {
         InitializeComponent();
 

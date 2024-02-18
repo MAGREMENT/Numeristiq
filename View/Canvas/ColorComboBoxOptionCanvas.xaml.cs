@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using Model.Sudoku;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using View.Themes;
 using View.Utility;
 
@@ -10,10 +10,10 @@ namespace View.Canvas;
 
 public partial class ColorComboBoxOptionCanvas
 {
-    private readonly SetArgument<int> _setter;
-    private readonly GetArgument<int> _getter;
+    private readonly SetSetting<int> _setter;
+    private readonly GetSetting<int> _getter;
     
-    public ColorComboBoxOptionCanvas(string name, string explanation, GetArgument<int> getter, SetArgument<int> setter)
+    public ColorComboBoxOptionCanvas(string name, string explanation, GetSetting<int> getter, SetSetting<int> setter)
     {
         InitializeComponent();
 

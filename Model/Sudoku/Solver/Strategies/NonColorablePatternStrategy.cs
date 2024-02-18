@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
+using Model.Sudoku.Solver.Settings;
+using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -25,9 +26,9 @@ public class NonColorablePatternStrategy : AbstractSudokuStrategy
         _minPossCount = minPossCount;
         _maxPossCount = maxPossCount;
         _maxNotInPatternCell = maxNotInPatternCell;
-        ArgumentsList.Add(new MinMaxStrategyArgument("Possibility count", 2, 5, 2, 5, 1,
+        ModifiableSettings.Add(new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1,
             () => _minPossCount, i => _minPossCount = i, () => _maxPossCount, i => _maxPossCount = i));
-        ArgumentsList.Add(new IntStrategyArgument("Max out of pattern cells", () => _maxNotInPatternCell,
+        ModifiableSettings.Add(new IntSetting("Max out of pattern cells", () => _maxNotInPatternCell,
             i => _maxNotInPatternCell = i, new SliderViewInterface(1, 5, 1)));
     }
 

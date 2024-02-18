@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using Presenter.Sudoku.Translators;
 using View.Canvas;
 
@@ -49,18 +49,18 @@ public partial class OptionModifierUserControl
                 SliderViewInterface svi => new SliderOptionCanvas(i.Name, "", svi.Min,
                     svi.Max, svi.TickFrequency, () => i.CurrentValue.ToInt(), n =>
                     {
-                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new IntArgumentValue(n));
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new IntSettingValue(n));
                     }),
                 BooleanViewInterface => new CheckBoxOptionCanvas(i.Name, "", 
                     () => i.CurrentValue.ToBool(), n =>
                     {
-                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new BoolArgumentValue(n));
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new BoolSettingValue(n));
                     }),
                 MinMaxSliderViewInterface mm => new MinMaxSliderOptionCanvas(i.Name, "",
                     mm.MinMin, mm.MinMax, mm.MaxMin, mm.MaxMax, mm.TickFrequency, () => i.CurrentValue.ToMinMax(),
                     n =>
                     {
-                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new MinMaxArgumentValue(n));
+                        ArgumentChanged?.Invoke(strategy.Name, i.Name, new MinMaxSettingValue(n));
                     }),
                 _ => null
             };
@@ -105,4 +105,4 @@ public partial class OptionModifierUserControl
 
 public delegate void OnUsageChange(string name, bool yes);
 public delegate void OnBehaviorChange(string name, OnCommitBehavior behavior);
-public delegate void OnArgumentChange(string strategyName, string argumentName, ArgumentValue value);
+public delegate void OnArgumentChange(string strategyName, string argumentName, SettingValue value);

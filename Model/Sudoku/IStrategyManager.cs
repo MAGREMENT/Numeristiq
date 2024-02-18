@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 
 namespace Model.Sudoku;
 
@@ -17,7 +17,7 @@ public interface IStrategyManager
     public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior);
     public void ChangeStrategyBehaviorForAll(OnCommitBehavior behavior);
     public void ChangeStrategyUsage(string name, bool yes);
-    public void ChangeArgument(string strategyName, string argumentName, ArgumentValue value);
+    public void ChangeArgument(string strategyName, string argumentName, SettingValue value);
     
     public event OnListUpdate? ListUpdated;
 }

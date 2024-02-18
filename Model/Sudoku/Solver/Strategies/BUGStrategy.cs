@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.Position;
+using Model.Sudoku.Solver.Settings;
+using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -19,7 +20,7 @@ public class BUGStrategy : AbstractSudokuStrategy
     {
         _maxAdditionalCandidates = maxAdditionalCandidates;
         UniquenessDependency = UniquenessDependency.FullyDependent;
-        ArgumentsList.Add(new IntStrategyArgument("Max additional candidates", () => _maxAdditionalCandidates,
+        ModifiableSettings.Add(new IntSetting("Max additional candidates", () => _maxAdditionalCandidates,
             i => _maxAdditionalCandidates = i, new SliderViewInterface(1, 5, 1)));
     }
     

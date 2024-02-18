@@ -1,18 +1,18 @@
 ﻿using System.Windows;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using Model.Utility;
 
 namespace View.Canvas;
 
 public partial class MinMaxSliderOptionCanvas
 {
-    private readonly SetArgument<MinMax> _setter;
-    private readonly GetArgument<MinMax> _getter;
+    private readonly SetSetting<MinMax> _setter;
+    private readonly GetSetting<MinMax> _getter;
     
     public override string Explanation { get; }
     
     public MinMaxSliderOptionCanvas(string name, string explanation, int minMin, int minMax,
-        int maxMin, int maxMax, int tickFrequency, GetArgument<MinMax> getter, SetArgument<MinMax> setter)
+        int maxMin, int maxMax, int tickFrequency, GetSetting<MinMax> getter, SetSetting<MinMax> setter)
     {
         InitializeComponent();
         

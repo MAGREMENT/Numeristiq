@@ -1,9 +1,9 @@
 ﻿using System;
 using Model.Utility;
 
-namespace Model.Sudoku.Solver.Arguments;
+namespace Model.Sudoku.Solver.Settings;
 
-public abstract class ArgumentValue
+public abstract class SettingValue
 {
     public virtual bool ToBool()
     {
@@ -19,27 +19,17 @@ public abstract class ArgumentValue
     {
         return default;
     }
-}
-
-public class StringArgumentValue : ArgumentValue
-{
-    private readonly string _s;
-
-    public StringArgumentValue(string s)
+    
+    protected static bool TranslateBoolean(string s)
     {
-        _s = s;
+        return s.ToLower() == "true";
     }
 
-    public override bool ToBool()
-    {
-        return _s.ToLower() == "true";
-    }
-
-    public override int ToInt()
+    protected static int TranslateInt(string s)
     {
         try
         {
-            return int.Parse(_s);
+            return int.Parse(s);
         }
         catch (Exception)
         {
@@ -47,9 +37,9 @@ public class StringArgumentValue : ArgumentValue
         }
     }
 
-    public override MinMax ToMinMax()
+    protected static MinMax TranslateMinMax(string s)
     {
-        var split = _s.Split();
+        var split = s.Split();
         if (split.Length != 2) return default;
 
         try
@@ -61,6 +51,31 @@ public class StringArgumentValue : ArgumentValue
             return default;
         }
     }
+}
+
+public class StringSettingValue : SettingValue
+{
+    private readonly string _s;
+
+    public StringSettingValue(string s)
+    {
+        _s = s;
+    }
+
+    public override bool ToBool()
+    {
+        return TranslateBoolean(_s);
+    }
+
+    public override int ToInt()
+    {
+        return TranslateInt(_s);
+    }
+
+    public override MinMax ToMinMax()
+    {
+        return TranslateMinMax(_s);
+    }
 
     public override string ToString()
     {
@@ -68,25 +83,18 @@ public class StringArgumentValue : ArgumentValue
     }
 }
 
-public class IntArgumentValue : ArgumentValue
+public class IntSettingValue : SettingValue
 {
     private readonly int _i;
 
-    public IntArgumentValue(int i)
+    public IntSettingValue(int i)
     {
         _i = i;
     }
 
-    public IntArgumentValue(string s)
+    public IntSettingValue(string s)
     {
-        try
-        {
-            _i = int.Parse(s);
-        }
-        catch (Exception)
-        {
-            _i = 0;
-        }
+        _i = TranslateInt(s);
     }
 
     public override int ToInt()
@@ -100,18 +108,18 @@ public class IntArgumentValue : ArgumentValue
     }
 }
 
-public class BoolArgumentValue : ArgumentValue
+public class BoolSettingValue : SettingValue
 {
     private readonly bool _b;
 
-    public BoolArgumentValue(bool b)
+    public BoolSettingValue(bool b)
     {
         _b = b;
     }
 
-    public BoolArgumentValue(string s)
+    public BoolSettingValue(string s)
     {
-        _b = s.ToLower() == "true";
+        _b = TranslateBoolean(s);
     }
 
     public override bool ToBool()
@@ -125,32 +133,18 @@ public class BoolArgumentValue : ArgumentValue
     }
 }
 
-public class MinMaxArgumentValue : ArgumentValue
+public class MinMaxSettingValue : SettingValue
 {
     private readonly MinMax _minMax;
 
-    public MinMaxArgumentValue(MinMax minMax)
+    public MinMaxSettingValue(MinMax minMax)
     {
         _minMax = minMax;
     }
 
-    public MinMaxArgumentValue(string s)
+    public MinMaxSettingValue(string s)
     {
-        var split = s.Split();
-        if (split.Length != 2)
-        {
-            _minMax = default;
-            return;
-        }
-
-        try
-        {
-            _minMax = new MinMax(int.Parse(split[0]), int.Parse(split[1]));
-        }
-        catch (Exception)
-        {
-            _minMax = default;
-        }
+        TranslateMinMax(s);
     }
 
     public override MinMax ToMinMax()

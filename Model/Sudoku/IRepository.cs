@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Arguments;
 using Model.Utility;
 
 namespace Model.Sudoku;

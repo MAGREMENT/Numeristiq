@@ -2,7 +2,7 @@
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 
 namespace Presenter.Sudoku.Translators;
 
@@ -36,7 +36,7 @@ public static class ModelToViewTranslator
         return new ViewStrategy(info.StrategyName, (Intensity)info.Difficulty, info.Used, info.Locked, info.Behavior, interfaces);
     }
 
-    private static ViewStrategyArgument Translate(IStrategyArgument argument)
+    private static ViewStrategyArgument Translate(ISetting argument)
     {
         return new ViewStrategyArgument(argument.Name, argument.Interface, argument.Get());
     }

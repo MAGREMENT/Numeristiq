@@ -1,15 +1,15 @@
 ﻿using System.Windows;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using View.Themes;
 
 namespace View.Canvas;
 
 public partial class SliderOptionCanvas
 {
-    private readonly SetArgument<int> _setter;
-    private readonly GetArgument<int> _getter;
+    private readonly SetSetting<int> _setter;
+    private readonly GetSetting<int> _getter;
     
-    public SliderOptionCanvas(string name, string explanation, int min, int max, int tickFrequency, GetArgument<int> getter, SetArgument<int> setter)
+    public SliderOptionCanvas(string name, string explanation, int min, int max, int tickFrequency, GetSetting<int> getter, SetSetting<int> setter)
     {
         InitializeComponent();
 

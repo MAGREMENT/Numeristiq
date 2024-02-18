@@ -1,15 +1,15 @@
 ﻿using System.Windows;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using View.Themes;
 
 namespace View.Canvas;
 
 public partial class CheckBoxOptionCanvas
 {
-    private readonly SetArgument<bool> _setter;
-    private readonly GetArgument<bool> _getter;
+    private readonly SetSetting<bool> _setter;
+    private readonly GetSetting<bool> _getter;
 
-    public CheckBoxOptionCanvas(string text, string explanation, GetArgument<bool> getter, SetArgument<bool> setter)
+    public CheckBoxOptionCanvas(string text, string explanation, GetSetting<bool> getter, SetSetting<bool> setter)
     {
         InitializeComponent();
         

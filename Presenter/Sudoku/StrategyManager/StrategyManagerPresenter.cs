@@ -1,6 +1,6 @@
 ﻿using Model.Sudoku;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
 using Presenter.Sudoku.Translators;
 
 namespace Presenter.Sudoku.StrategyManager;
@@ -65,7 +65,7 @@ public class StrategyManagerPresenter
         _manager.ChangeStrategyUsage(name, yes);
     }
 
-    public void ChangeArgument(string strategyName, string argumentName, ArgumentValue value)
+    public void ChangeArgument(string strategyName, string argumentName, SettingValue value)
     {
         _manager.ChangeArgument(strategyName, argumentName, value);
     }

@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.Arguments;
+using Model.Sudoku.Solver.Settings;
+using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -22,7 +23,7 @@ public class OddagonForcingNetStrategy : AbstractSudokuStrategy
     public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _maxNumberOfGuardians = maxNumberOfGuardians;
-        ArgumentsList.Add(new IntStrategyArgument("Maximum number of guardians", () => _maxNumberOfGuardians,
+        ModifiableSettings.Add(new IntSetting("Maximum number of guardians", () => _maxNumberOfGuardians,
             i => _maxNumberOfGuardians = i, new SliderViewInterface(1, 20, 1)));
     }
     

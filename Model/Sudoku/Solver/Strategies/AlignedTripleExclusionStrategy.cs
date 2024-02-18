@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Arguments;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
+using Model.Sudoku.Solver.Settings;
+using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -22,7 +23,7 @@ public class AlignedTripleExclusionStrategy : AbstractSudokuStrategy
     public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
         _minSharedSeenCells = minSharedSeenCells;
-        ArgumentsList.Add(new IntStrategyArgument("Minimum shared seen cells", () => _minSharedSeenCells,
+        ModifiableSettings.Add(new IntSetting("Minimum shared seen cells", () => _minSharedSeenCells,
             i => _minSharedSeenCells = i, new SliderViewInterface(5, 12, 1)));
     }
 
