@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;

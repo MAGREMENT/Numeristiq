@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Tectonic.Strategies;

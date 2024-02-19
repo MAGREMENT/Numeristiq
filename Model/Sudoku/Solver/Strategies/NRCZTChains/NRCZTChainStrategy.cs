@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.NRCZTChains;

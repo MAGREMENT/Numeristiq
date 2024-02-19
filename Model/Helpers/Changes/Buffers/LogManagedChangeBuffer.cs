@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
-namespace Model.Helpers.Changes;
+namespace Model.Helpers.Changes.Buffers;
 
 public class LogManagedChangeBuffer : IChangeBuffer
 {

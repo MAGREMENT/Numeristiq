@@ -6,6 +6,7 @@
         <UseWPF>true</UseWPF>
         <RootNamespace>Model</RootNamespace>
 
+
     </PropertyGroup>
 
 
