@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
-public class CellPossibilityLinkGraph : ILinkGraph<CellPossibility>
+public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
 {
     private UniqueList<CellPossibility>?[,,,] _cps = new UniqueList<CellPossibility>[9, 9, 9, 2];
     
@@ -19,7 +19,7 @@ public class CellPossibilityLinkGraph : ILinkGraph<CellPossibility>
     {
         if (strength == LinkStrength.Any) return Neighbors(from);
         
-        return _cps[from.Row, from.Column, from.Possibility - 1, (int)strength] ?? Enumerable.Empty<CellPossibility>();
+        return _cps[from.Row, from.Column, from.Possibility - 1, (int)strength - 1] ?? Enumerable.Empty<CellPossibility>();
     }
 
     public IEnumerable<CellPossibility> Neighbors(CellPossibility from)
@@ -37,7 +37,9 @@ public class CellPossibilityLinkGraph : ILinkGraph<CellPossibility>
  
     public bool AreNeighbors(CellPossibility from, CellPossibility to, LinkStrength strength)
     {
-        var l = _cps[from.Row, from.Column, from.Possibility - 1, (int)strength];
+        if (strength == LinkStrength.Any) return AreNeighbors(from, to);
+        
+        var l = _cps[from.Row, from.Column, from.Possibility - 1, (int)strength - 1];
         return l is not null && l.Contains(to);
     }
 
@@ -79,7 +81,7 @@ public class CellPossibilityLinkGraph : ILinkGraph<CellPossibility>
     
     private void AddMono(CellPossibility from, CellPossibility to, LinkStrength strength)
     {
-        _cps[from.Row, from.Column, from.Possibility - 1, (int)strength] ??= new UniqueList<CellPossibility>();
-        _cps[from.Row, from.Column, from.Possibility - 1, (int)strength]!.Add(to);
+        _cps[from.Row, from.Column, from.Possibility - 1, (int)strength - 1] ??= new UniqueList<CellPossibility>();
+        _cps[from.Row, from.Column, from.Possibility - 1, (int)strength - 1]!.Add(to);
     }
 }

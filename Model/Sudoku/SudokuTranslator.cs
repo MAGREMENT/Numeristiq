@@ -53,57 +53,6 @@ public static class SudokuTranslator
         return result;
     }
     
-    public static string TranslateGridFormat(ITranslatable translatable)
-    {
-        var maxWidth = 0;
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                var width = translatable[row, col] == 0 ? translatable.PossibilitiesAt(row, col).Count : 3;
-                maxWidth = Math.Max(width, maxWidth);
-            }
-        }
-
-        var builder = new StringBuilder();
-
-        for (int row = 0; row < 9; row++)
-        {
-            if (row % 3 == 0)
-            {
-                for (int i = 0; i < 9; i++)
-                {
-                    var first = i % 3 == 0 ? "+" : "-";
-                    builder.Append(first + StringUtility.Repeat('-', maxWidth));
-                }
-
-                builder.Append("+\n");
-            }
-            
-            for (int col = 0; col < 9; col++)
-            {
-                var first = col % 3 == 0 ? "|" : " ";
-                
-                var toPut = translatable[row, col] == 0
-                    ? translatable.PossibilitiesAt(row, col).ToValuesString()
-                    : $"<{translatable[row, col]}>";
-                builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
-            }
-
-            builder.Append("|\n");
-        }
-        
-        for (int i = 0; i < 9; i++)
-        {
-            var first = i % 3 == 0 ? "+" : "-";
-            builder.Append(first + StringUtility.Repeat('-', maxWidth));
-        }
-
-        builder.Append("+\n");
-
-        return builder.ToString();
-    }
-    
     public static Sudoku TranslateLineFormat(string asString)
     {
         Sudoku s = new();
@@ -153,20 +102,56 @@ public static class SudokuTranslator
 
         return s;
     }
-
-    public static Sudoku TranslateTranslatable(ITranslatable translatable)
+    
+    public static string TranslateGridFormat(ITranslatable translatable)
     {
-        Sudoku result = new();
-
+        var maxWidth = 0;
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                result[row, col] = translatable[row, col];
+                var width = translatable[row, col] == 0 ? translatable.PossibilitiesAt(row, col).Count : 3;
+                maxWidth = Math.Max(width, maxWidth);
             }
         }
 
-        return result;
+        var builder = new StringBuilder();
+
+        for (int row = 0; row < 9; row++)
+        {
+            if (row % 3 == 0)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    var first = i % 3 == 0 ? "+" : "-";
+                    builder.Append(first + StringUtility.Repeat('-', maxWidth));
+                }
+
+                builder.Append("+\n");
+            }
+            
+            for (int col = 0; col < 9; col++)
+            {
+                var first = col % 3 == 0 ? "|" : " ";
+                
+                var toPut = translatable[row, col] == 0
+                    ? translatable.PossibilitiesAt(row, col).ToValuesString()
+                    : $"<{translatable[row, col]}>";
+                builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
+            }
+
+            builder.Append("|\n");
+        }
+        
+        for (int i = 0; i < 9; i++)
+        {
+            var first = i % 3 == 0 ? "+" : "-";
+            builder.Append(first + StringUtility.Repeat('-', maxWidth));
+        }
+
+        builder.Append("+\n");
+
+        return builder.ToString();
     }
 
     public static SolverState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
@@ -230,9 +215,100 @@ public static class SudokuTranslator
         return new SolverState(cellStates);
     }
 
+    public static SolverState TranslateBase32Format(string s)
+    {
+        var cellStates = new CellState[9, 9];
+
+        for (int i = 0; i < s.Length / 2; i++)
+        {
+            var row = i / 9;
+            var col = i % 9;
+
+            var bits = CharToValue(s[i * 2]) << 5 + CharToValue(s[i * 2 + 1]);
+            if ((bits & 1) > 1) cellStates[row, col] = new CellState(bits >> 1);
+            else cellStates[row, col] = CellState.FromBits((ushort)(bits >> 1));
+        }
+
+        return new SolverState(cellStates);
+    }
+
+    public static string TranslateBase32Format(ITranslatable translatable)
+    {
+        var builder = new StringBuilder();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var solved = translatable[row, col];
+                int bits = solved == 0 ? translatable.PossibilitiesAt(row, col).Bits << 1 : solved << 1 | 1;
+
+                builder.Append(ValueToChar(bits & 0x1F));
+                builder.Append(ValueToChar((bits >> 5) & 0x1F));
+            }
+        }
+
+        return builder.ToString();
+    }
+    
+    public static Sudoku TranslateTranslatable(ITranslatable translatable)
+    {
+        Sudoku result = new();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                result[row, col] = translatable[row, col];
+            }
+        }
+
+        return result;
+    }
+
     public static SudokuStringFormat GuessFormat(string s)
     {
-        return s.Contains('\n') ? SudokuStringFormat.Grid : SudokuStringFormat.Line;
+        if (s.Contains('\n')) return SudokuStringFormat.Grid;
+
+        return s.Length == 162 ? SudokuStringFormat.Base32 : SudokuStringFormat.Line;
+    }
+    
+    //Private-----------------------------------------------------------------------------------------------------------
+    
+    private static int CharToValue(char c)
+    {
+        //65-90 == uppercase letters
+        if (c < 91 && c > 64)
+        {
+            return c - 65;
+        }
+        //50-55 == numbers 2-7
+        if (c < 56 && c > 49)
+        {
+            return c - 24;
+        }
+        //97-122 == lowercase letters
+        if (c < 123 && c > 96)
+        {
+            return c - 97;
+        }
+
+        return 0;
+    }
+
+    private static char ValueToChar(int s)
+    {
+        if (s < 26)
+        {
+            return (char)(s + 65);
+        }
+
+        if (s < 32)
+        {
+            return (char)(s + 24);
+        }
+
+        return 'A';
     }
 }
 
@@ -244,5 +320,5 @@ public interface ITranslatable
 
 public enum SudokuStringFormat
 {
-    None, Line, Grid
+    None, Line, Grid, Base32
 }

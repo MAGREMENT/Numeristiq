@@ -16,7 +16,7 @@ public static class LinkGraphs
 {
     public static ILinkGraph<CellPossibility> NewSimple()
     {
-        return new DictionaryLinkGraph<CellPossibility>();
+        return new CellPossibilityArrayLinkGraph();
     }
     
     public static ILinkGraph<ISudokuElement> NewComplex()
