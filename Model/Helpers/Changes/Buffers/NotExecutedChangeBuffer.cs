@@ -19,6 +19,8 @@ public class NotExecutedChangeBuffer : IChangeBuffer
         _producer = producer;
     }
 
+    public bool HandlesLog => false;
+
     public void ProposePossibilityRemoval(CellPossibility cp)
     {
         if (_producer.CanRemovePossibility(cp)) _possibilityRemovedBuffer.Add(cp);

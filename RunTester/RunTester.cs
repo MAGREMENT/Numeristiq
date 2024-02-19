@@ -47,11 +47,8 @@ public class RunTester
         SetRunStatus(true);
         
         _currentRunResult = new RunResult();
-        
-        _currentSolver = new SudokuSolver
-        {
-            ChangeManagement = ChangeManagement.Fast
-        };
+
+        _currentSolver = new SudokuSolver();
         _currentSolver.StrategyManager.AddStrategies(_repository.Download());
         if(_toWaitForAll) _currentSolver.StrategyManager.ChangeStrategyBehaviorForAll(OnCommitBehavior.WaitForAll);
 

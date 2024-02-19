@@ -6,6 +6,7 @@ namespace Model.Sudoku.Solver;
 
 public class StrategyManager
 {
+    public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
     private readonly UniqueList<SudokuStrategy> _strategies = new();
     public IReadOnlyList<SudokuStrategy> Strategies => _strategies;
 
@@ -19,6 +20,7 @@ public class StrategyManager
     
     public void AllowUniqueness(bool allowed)
     {
+        UniquenessDependantStrategiesAllowed = allowed;
         foreach (var strategy in _strategies)
         {
             if (strategy.UniquenessDependency == UniquenessDependency.FullyDependent) strategy.Locked = !allowed;
