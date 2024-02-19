@@ -179,7 +179,11 @@ public static class SudokuTranslator
                     var asInt = int.Parse(c.ToString());
 
                     if (isNumber) numberBuffer = asInt;
-                    else possibilitiesBuffer ??= new ReadOnlyBitSet16(asInt);
+                    else
+                    {
+                        possibilitiesBuffer ??= new ReadOnlyBitSet16();
+                        possibilitiesBuffer += asInt;
+                    }
                 }
                 else
                 {
@@ -219,14 +223,14 @@ public static class SudokuTranslator
     {
         var cellStates = new CellState[9, 9];
 
-        for (int i = 0; i < s.Length / 2; i++)
+        for (int i = 0; i < s.Length / 2 && i < 81; i++)
         {
             var row = i / 9;
             var col = i % 9;
 
-            var bits = CharToValue(s[i * 2]) << 5 + CharToValue(s[i * 2 + 1]);
-            if ((bits & 1) > 1) cellStates[row, col] = new CellState(bits >> 1);
-            else cellStates[row, col] = CellState.FromBits((ushort)(bits >> 1));
+            var bits = CharToValue(s[i * 2]) << 5 | CharToValue(s[i * 2 + 1]);
+            if ((bits & 1) > 0) cellStates[row, col] = new CellState(bits >> 1);
+            else cellStates[row, col] = CellState.FromBits((ushort)bits);
         }
 
         return new SolverState(cellStates);
@@ -241,10 +245,10 @@ public static class SudokuTranslator
             for (int col = 0; col < 9; col++)
             {
                 var solved = translatable[row, col];
-                int bits = solved == 0 ? translatable.PossibilitiesAt(row, col).Bits << 1 : solved << 1 | 1;
+                int bits = solved == 0 ? translatable.PossibilitiesAt(row, col).Bits : solved << 1 | 1;
 
-                builder.Append(ValueToChar(bits & 0x1F));
                 builder.Append(ValueToChar((bits >> 5) & 0x1F));
+                builder.Append(ValueToChar(bits & 0x1F));
             }
         }
 
@@ -287,11 +291,6 @@ public static class SudokuTranslator
         {
             return c - 24;
         }
-        //97-122 == lowercase letters
-        if (c < 123 && c > 96)
-        {
-            return c - 97;
-        }
 
         return 0;
     }
@@ -300,7 +299,7 @@ public static class SudokuTranslator
     {
         if (s < 26)
         {
-            return (char)(s + 65);
+            return (char)(s + 'A');
         }
 
         if (s < 32)

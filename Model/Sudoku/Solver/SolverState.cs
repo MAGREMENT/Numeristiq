@@ -117,6 +117,21 @@ public class SolverState : ITranslatable
 
         return new SolverState(buffer);
     }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is not SolverState state) return false;
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (_cellStates[row, col] != state._cellStates[row, col]) return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 public readonly struct CellState
@@ -143,4 +158,14 @@ public readonly struct CellState
     public ReadOnlyBitSet16 AsPossibilities => ReadOnlyBitSet16.FromBits((ushort) (_bits & 0x3FE));
 
     public int AsNumber => _bits >> 10;
+
+    public static bool operator ==(CellState left, CellState right)
+    {
+        return left._bits == right._bits;
+    }
+    
+    public static bool operator !=(CellState left, CellState right)
+    {
+        return left._bits != right._bits;
+    }
 }
