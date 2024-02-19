@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class AlmostLockedSetsStrategy : AbstractSudokuStrategy
+public class AlmostLockedSetsStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Locked Sets";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

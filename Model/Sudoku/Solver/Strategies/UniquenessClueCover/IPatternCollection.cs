@@ -2,7 +2,7 @@
 
 public interface IPatternCollection
 {
-    public ISudokuStrategy? Strategy { set; }
+    public SudokuStrategy? Strategy { set; }
 
     public bool Filter(IStrategyUser strategyUser);
     public bool Apply(IStrategyUser strategyUser);

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver.BitSets;
@@ -51,16 +50,13 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     public event OnStrategyStart? StrategyStarted;
     public event OnStrategyStop? StrategyStopped;
 
-    private IReadOnlyList<ISudokuStrategy> Strategies => _strategyManager.Strategies;
+    private readonly StrategyManager _strategyManager;
     private int _currentStrategy = -1;
     
     private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
-
     private bool _startedSolving;
-
-    private readonly StrategyManager _strategyManager;
-
+    
     public SudokuSolver() : this(new Sudoku()) { }
 
     private SudokuSolver(Sudoku s)
@@ -85,14 +81,9 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
     }
 
-    public void Bind(IRepository<List<StrategyDAO>> repository)
-    {
-        _strategyManager.Bind(repository);
-    }
-
     //Solver------------------------------------------------------------------------------------------------------------
 
-    public IStrategyManager StrategyManager => _strategyManager;
+    public StrategyManager StrategyManager => _strategyManager;
 
     public void SetSudoku(Sudoku s)
     {
@@ -176,11 +167,10 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     {
         _startedSolving = true;
         
-        for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
+        for (_currentStrategy = 0; _currentStrategy < _strategyManager.Strategies.Count; _currentStrategy++)
         {
-            if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
-            
-            var current = Strategies[_currentStrategy];
+            var current = _strategyManager.Strategies[_currentStrategy];
+            if (!current.Enabled) continue;
 
             StrategyStarted?.Invoke(_currentStrategy);
             current.Apply(this);
@@ -208,11 +198,10 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         ChangeBuffer = new NotExecutedChangeBuffer(this);
         
         var realBehaviors = new Dictionary<int, OnCommitBehavior>();
-        for (_currentStrategy = 0; _currentStrategy < Strategies.Count; _currentStrategy++)
+        for (_currentStrategy = 0; _currentStrategy < _strategyManager.Strategies.Count; _currentStrategy++)
         {
-            if (!_strategyManager.IsStrategyUsed(_currentStrategy)) continue;
-            
-            var current = Strategies[_currentStrategy];
+            var current = _strategyManager.Strategies[_currentStrategy];
+            if (!current.Enabled) continue;
 
             realBehaviors[_currentStrategy] = current.OnCommitBehavior;
             current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
@@ -254,32 +243,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         }
 
         return false;
-    }
-
-    public void UseAllStrategies(bool yes)
-    {
-        _strategyManager.UseAllStrategies(yes);
-    }
-
-    public void ExcludeStrategy(int number)
-    {
-        _strategyManager.ExcludeStrategy(number);
-    }
-
-    public void UseStrategy(int number)
-    {
-        _strategyManager.UseStrategy(number);
-    }
-
-    public void AllowUniqueness(bool yes)
-    {
-        UniquenessDependantStrategiesAllowed = yes;
-        _strategyManager.AllowUniqueness(yes);
-    }
-    
-    public StrategyInformation[] GetStrategyInfo()
-    {
-        return _strategyManager.GetStrategiesInformation();
     }
     
     public ReadOnlyBitSet16 RawPossibilitiesAt(int row, int col)
@@ -367,7 +330,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     private void CallOnNewSudokuForEachStrategy()
     {
-        foreach (var s in Strategies)
+        foreach (var s in _strategyManager.Strategies)
         {
             s.OnNewSudoku(_sudoku);
         }

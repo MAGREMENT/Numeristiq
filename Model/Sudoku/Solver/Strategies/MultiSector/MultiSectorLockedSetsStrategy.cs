@@ -9,7 +9,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies.MultiSector;
 
-public class MultiSectorLockedSetsStrategy : AbstractSudokuStrategy
+public class MultiSectorLockedSetsStrategy : SudokuStrategy
 {
     public const string OfficialName = "Multi-Sector Locked Sets";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

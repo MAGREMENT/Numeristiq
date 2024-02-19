@@ -11,7 +11,7 @@ public class XType : IAlternatingInferenceType<CellPossibility>
     public string LoopName => OfficialLoopName;
     public string ChainName => OfficialChainName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
-    public ISudokuStrategy? Strategy { get; set; }
+    public SudokuStrategy? Strategy { get; set; }
     public ILinkGraph<CellPossibility> GetGraph(IStrategyUser strategyUser)
     {
         strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);

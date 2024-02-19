@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Settings;
 
 namespace Model.Sudoku.Solver;
 
-public abstract class AbstractSudokuStrategy : ISudokuStrategy
-{ 
+public abstract class SudokuStrategy : ICommitMaker
+{
+    private bool _enabled = true;
+    private bool _locked;
+    
     public string Name { get; protected init; }
     public StrategyDifficulty Difficulty { get; protected init; }
     public UniquenessDependency UniquenessDependency { get; protected init; }
@@ -15,7 +18,26 @@ public abstract class AbstractSudokuStrategy : ISudokuStrategy
 
     protected List<ISetting> ModifiableSettings { get; } = new();
 
-    protected AbstractSudokuStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
+    public bool Enabled
+    {
+        get => _enabled;
+        set
+        {
+            if (!_locked) _enabled = value;
+        }
+    }
+
+    public bool Locked
+    {
+        get => _locked;
+        set
+        {
+            _locked = value;
+            if (_locked) _enabled = false;
+        }
+    }
+
+    protected SudokuStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
     {
         Name = name;
         Difficulty = difficulty;
@@ -24,8 +46,8 @@ public abstract class AbstractSudokuStrategy : ISudokuStrategy
     }
     
     public abstract void Apply(IStrategyUser strategyUser);
-    public virtual void OnNewSudoku(Sudoku s) { }
-    public void TrySetArgument(string name, SettingValue value)
+    public virtual void OnNewSudoku(IReadOnlySudoku s) { }
+    public void TrySetSetting(string name, SettingValue value)
     {
         foreach (var arg in Settings)
         {
@@ -34,4 +56,19 @@ public abstract class AbstractSudokuStrategy : ISudokuStrategy
             arg.Set(value);
         }
     }
+}
+
+public enum StrategyDifficulty
+{
+    None, Basic, Easy, Medium, Hard, Extreme, ByTrial
+}
+
+public enum UniquenessDependency
+{
+    NotDependent, PartiallyDependent, FullyDependent
+}
+
+public enum OnCommitBehavior
+{
+    Return, WaitForAll, ChooseBest
 }

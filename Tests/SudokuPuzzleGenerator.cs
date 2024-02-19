@@ -16,14 +16,14 @@ public class SudokuPuzzleGenerator
     [Test]
     public void GenerationTest()
     {
-        var repo = new JSONRepository<List<StrategyDAO>>("strategies.json");
-        repo.Initialize();
+        var repo = new SudokuStrategiesJSONRepository("strategies.json");
+        if (!repo.Initialize(false)) Assert.Fail();
 
         var solver = new SudokuSolver
         {
             ChangeManagement = ChangeManagement.Fast
         };
-        solver.Bind(repo);
+        solver.StrategyManager.AddStrategies(repo.Download());
 
         var finder = new HardestStrategyTracker(solver);
         
@@ -37,7 +37,7 @@ public class SudokuPuzzleGenerator
                 solver.SetSudoku(p);
                 finder.Clear();
                 solver.Solve();
-                Console.WriteLine(" - " + finder.Hardest.StrategyName);
+                Console.WriteLine(" - " + finder.Hardest.Name);
 
                 var solution = BackTracking.Fill(p, new ConstantPossibilitiesGiver(), 2);
                 Assert.That(solution, Has.Length.EqualTo(1));

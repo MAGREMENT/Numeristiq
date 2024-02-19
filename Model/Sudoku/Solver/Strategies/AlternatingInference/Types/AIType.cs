@@ -12,7 +12,7 @@ public class AIType : IAlternatingInferenceType<CellPossibility>
     public string LoopName => OfficialLoopName;
     public string ChainName => OfficialChainName;
     public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
-    public ISudokuStrategy? Strategy { get; set; }
+    public SudokuStrategy? Strategy { get; set; }
 
     public ILinkGraph<CellPossibility> GetGraph(IStrategyUser strategyUser)
     {

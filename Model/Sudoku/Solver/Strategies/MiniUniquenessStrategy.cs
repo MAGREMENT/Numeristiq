@@ -11,7 +11,7 @@ namespace Model.Sudoku.Solver.Strategies;
 /// If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes)
 /// is spread over max N+1 minirows/-columns, then the group will contain at least one unavoidable set.
 /// </summary>
-public class MiniUniquenessStrategy : AbstractSudokuStrategy
+public class MiniUniquenessStrategy : SudokuStrategy
 {
     public const string OfficialName = "Mini-Uniqueness";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

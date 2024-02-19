@@ -1,6 +1,6 @@
 ﻿namespace Model.Sudoku.Solver.Strategies;
 
-public class NoStrategy : AbstractSudokuStrategy
+public class NoStrategy : SudokuStrategy
 {
     public const string OfficialName = "No Strategy";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

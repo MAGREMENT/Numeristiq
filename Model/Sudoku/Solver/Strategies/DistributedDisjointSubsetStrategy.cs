@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class DistributedDisjointSubsetStrategy : AbstractSudokuStrategy
+public class DistributedDisjointSubsetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Distributed Disjoint Subset";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

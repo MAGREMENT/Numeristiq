@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class PatternOverlayStrategy : AbstractSudokuStrategy
+public class PatternOverlayStrategy : SudokuStrategy
 {
     public const string OfficialName = "Pattern Overlay";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

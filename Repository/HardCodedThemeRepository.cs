@@ -8,9 +8,9 @@ public class HardCodedThemeRepository : IRepository<ThemeDAO[]>
 {
     public bool UploadAllowed { get; set; }
 
-    public void Initialize()
+    public bool Initialize(bool createNewOnNoneExistingFound)
     {
-        
+        return true;
     }
 
     public ThemeDAO[] Download()
@@ -28,13 +28,8 @@ public class HardCodedThemeRepository : IRepository<ThemeDAO[]>
         };
     }
 
-    public void Upload(ThemeDAO[] DAO)
+    public bool Upload(ThemeDAO[] DAO)
     {
-        
-    }
-
-    public void New(ThemeDAO[] DAO)
-    {
-        
+        return false;
     }
 }

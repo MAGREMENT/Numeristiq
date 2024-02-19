@@ -7,7 +7,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class BUGStrategy : AbstractSudokuStrategy
+public class BUGStrategy : SudokuStrategy
 {
     public const string OfficialName = "BUG";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

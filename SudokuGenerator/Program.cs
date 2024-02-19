@@ -18,21 +18,17 @@ public static class Program
 
         List<GeneratedSudoku> puzzles = new(count);
         
-        var repo = new JSONRepository<List<StrategyDAO>>("strategies.json");
-        try
+        var repo = new SudokuStrategiesJSONRepository("strategies.json");
+        if (!repo.Initialize(false))
         {
-            repo.Initialize();
-        }
-        catch (RepositoryInitializationException e)
-        {
-            Console.WriteLine("Exception while initializing repository : " + e.Message);
+            Console.WriteLine("Exception while initializing repository : ");
             return;
         }
 
         var solver = new SudokuSolver{
             ChangeManagement = ChangeManagement.Fast
         };
-        solver.Bind(repo);
+        solver.StrategyManager.AddStrategies(repo.Download());
 
         var ratings = new RatingTracker(solver);
         var hardest = new HardestStrategyTracker(solver);
@@ -49,7 +45,7 @@ public static class Program
             solver.SetSudoku(p.Copy());
             solver.Solve();
             puzzles.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(p, SudokuTranslationType.Points),
-                ratings.Rating, hardest.Hardest.StrategyName));
+                ratings.Rating, hardest.Hardest.Name));
             
             ratings.Clear();
             hardest.Clear();

@@ -1,397 +1,461 @@
 [
   {
     "Name": "Naked Single",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Hidden Single",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Naked Doubles",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Hidden Doubles",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Pointing Set",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Claiming Set",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Hidden Triple",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Naked Triple",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Naked Quad",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Hidden Quad",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Gurth\u0027s Theorem",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Uniqueness Clue Cover",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "X-Wing",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "XY-Wing",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "XYZ-Wing",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Swordfish",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Jellyfish",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Simple Coloring",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Mini-Uniqueness",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "BUG",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {
+    "Settings": {
       "Max additional candidates": "5"
     }
   },
   {
     "Name": "Reverse BUG",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Reverse BUG-Lite",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Empty Rectangle",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Almost Locked Pair",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Almost Locked Triple",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Junior Exocet",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Thor\u0027s Hammer",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Non-Colorable Pattern",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {
-      "Possibility count": "3,3",
-      "Max out of pattern cells": "5"
+    "Settings": {
+      "Possibility count": "0,0",
+      "Max out of pattern cells": "3"
     }
   },
   {
     "Name": "Skyscraper",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Two-String Kite",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Finned X-Wing",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Finned Swordfish",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Finned Jellyfish",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Fireworks",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "SK-Loops",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Unique Rectangles",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {
+    "Settings": {
       "Missing candidates allowed": "True"
     }
   },
   {
     "Name": "Unavoidable Rectangles",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Extended Unique Rectangles",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "BUG-Lite",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "XY-Chains",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "3D Medusa",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Sue-De-Coq",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "WXYZ-Wing",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Aligned Pair Exclusion",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Aligned Triple Exclusion",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {
+    "Settings": {
       "Minimum shared seen cells": "5"
     }
   },
   {
     "Name": "Subsets X-Cycles",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 2,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Oddagon",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Almost Hidden Sets",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Almost Locked Sets",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Almost Hidden Sets Chain",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Almost Locked Sets Chain",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Death Blossom",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Subsets Alternating Inference Loops",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 2,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Distributed Disjoint Subset",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Multi-Sector Locked Sets",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Cell Blossom Loop",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Unit Blossom Loop",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Pattern Overlay",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Digit Forcing Net",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Cell Forcing Net",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Unit Forcing Net",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Oddagon Forcing Net",
-    "Used": false,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {
-      "Maximum number of guardians": "4"
+    "Settings": {
+      "Maximum number of guardians": "3"
     }
   },
   {
     "Name": "Nishio Forcing Net",
-    "Used": true,
+    "Enabled": true,
+    "Locked": false,
     "Behavior": 0,
-    "Args": {}
+    "Settings": {}
   },
   {
     "Name": "Brute Force",
-    "Used": true,
+    "Enabled": false,
+    "Locked": false,
     "Behavior": 1,
-    "Args": {}
+    "Settings": {}
   }
 ]

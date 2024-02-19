@@ -25,14 +25,12 @@ public class StatisticsTracker
         _retransmissions.Clear();
         _statistics.Clear();
 
-        var infos = _solver.GetStrategyInfo();
-
-        foreach (var info in infos)
+        foreach (var strategy in _solver.StrategyManager.Strategies)
         {
-            if (info.Used)
+            if (strategy.Enabled)
             {
                 _retransmissions.Add(_statistics.Count);
-                _statistics.Add(new SudokuStatistics(info.StrategyName));
+                _statistics.Add(new SudokuStatistics(strategy.Name));
             }
             else _retransmissions.Add(-1);
         }

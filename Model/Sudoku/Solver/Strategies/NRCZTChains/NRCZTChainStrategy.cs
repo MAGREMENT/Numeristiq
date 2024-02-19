@@ -7,7 +7,7 @@ using Model.Sudoku.Solver.StrategiesUtility.NRCZTChains;
 
 namespace Model.Sudoku.Solver.Strategies.NRCZTChains;
 
-public class NRCZTChainStrategy : AbstractSudokuStrategy, ICustomCommitComparer
+public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer
 {
     public const string OfficialNameForDefault = "NRC-Chains";
     public const string OfficialNameForTCondition = "NRCT-Chains";

@@ -1,6 +1,6 @@
 ﻿namespace Model.Sudoku.Solver.Strategies.UniquenessClueCover;
 
-public class UniquenessClueCoverStrategy : AbstractSudokuStrategy
+public class UniquenessClueCoverStrategy : SudokuStrategy
 {
     public const string OfficialName = "Uniqueness Clue Cover";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
@@ -36,7 +36,7 @@ public class UniquenessClueCoverStrategy : AbstractSudokuStrategy
         _needFilter = false;
     }
 
-    public override void OnNewSudoku(Sudoku s)
+    public override void OnNewSudoku(IReadOnlySudoku s)
     {
         _needFilter = true;
     }

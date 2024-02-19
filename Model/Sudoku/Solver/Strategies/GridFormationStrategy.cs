@@ -9,7 +9,7 @@ namespace Model.Sudoku.Solver.Strategies;
 /// <summary>
 /// This class generalize the XWing, Swordfish and JellyFish strategy
 /// </summary>
-public class GridFormationStrategy : AbstractSudokuStrategy
+public class GridFormationStrategy : SudokuStrategy
 {
     public const string OfficialNameForType2 = "X-Wing";
     public const string OfficialNameForType3 = "Swordfish";

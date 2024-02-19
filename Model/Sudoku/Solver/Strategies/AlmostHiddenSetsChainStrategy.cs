@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class AlmostHiddenSetsChainStrategy : AbstractSudokuStrategy
+public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Hidden Sets Chain";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

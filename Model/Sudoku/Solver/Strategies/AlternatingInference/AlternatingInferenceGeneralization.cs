@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization<T> : AbstractSudokuStrategy, ICustomCommitComparer where T : ISudokuElement
+public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomCommitComparer where T : ISudokuElement
 {
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
     
@@ -44,7 +44,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     public string LoopName { get; }
     public string ChainName { get; }
     public StrategyDifficulty Difficulty { get; }
-    ISudokuStrategy? Strategy { set; get; }
+    SudokuStrategy? Strategy { set; get; }
     
     ILinkGraph<T> GetGraph(IStrategyUser strategyUser);
 
@@ -57,7 +57,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     bool ProcessChain(IStrategyUser strategyUser, LinkGraphChain<T> chain, ILinkGraph<T> graph);
 
     static bool ProcessChainWithSimpleGraph(IStrategyUser strategyUser, LinkGraphChain<CellPossibility> chain,
-        ILinkGraph<CellPossibility> graph, ISudokuStrategy strategy)
+        ILinkGraph<CellPossibility> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 
@@ -73,7 +73,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     }
     
     static bool ProcessChainWithComplexGraph(IStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain,
-        ILinkGraph<ISudokuElement> graph, ISudokuStrategy strategy)
+        ILinkGraph<ISudokuElement> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
 

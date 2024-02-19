@@ -8,7 +8,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class SimpleColoringStrategy : AbstractSudokuStrategy
+public class SimpleColoringStrategy : SudokuStrategy
 {
     public const string OfficialName = "Simple Coloring";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class WXYZWingStrategy : AbstractSudokuStrategy
+public class WXYZWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "WXYZ-Wing";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

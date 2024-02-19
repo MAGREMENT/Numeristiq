@@ -1,31 +1,32 @@
 using System;
+using System.Collections.Generic;
 
 namespace Model.Sudoku.Solver;
 
 public class HardestStrategyTracker
 {
-    private readonly StrategyInformation[] _info;
+    private readonly IReadOnlyList<SudokuStrategy> _s;
     private int _current = -1;
 
-    public StrategyInformation Hardest {
+    public SudokuStrategy Hardest {
         get
         {
             if (_current == -1) throw new Exception("No strategy found");
 
-            return _info[_current];
+            return _s[_current];
         }
     }
 
     public HardestStrategyTracker(SudokuSolver solver)
     {
-        _info = solver.GetStrategyInfo();
+        _s = solver.StrategyManager.Strategies;
         solver.StrategyStopped += (i, a, p) =>
         {
-            if (i >= _info.Length || a + p == 0) return;
+            if (i >= _s.Count || a + p == 0) return;
 
             if (_current == -1) _current = i;
-            else if (_info[_current].Difficulty < _info[i].Difficulty) _current = i;
-            else if (_info[_current].Difficulty == _info[i].Difficulty && i > _current) _current = i;
+            else if (_s[_current].Difficulty < _s[i].Difficulty) _current = i;
+            else if (_s[_current].Difficulty == _s[i].Difficulty && i > _current) _current = i;
         };
     }
 

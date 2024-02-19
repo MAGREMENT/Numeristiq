@@ -9,14 +9,10 @@ public static class Program
 {
     public static void Main(string[] args)
     {
-        var repo = new JSONRepository<List<StrategyDAO>>("strategies.json");
-        try
+        var repo = new SudokuStrategiesJSONRepository("strategies.json");
+        if (!repo.Initialize(false))
         {
-            repo.Initialize();
-        }
-        catch (RepositoryInitializationException e)
-        {
-            Console.WriteLine("Exception while initializing repository : " + e.Message);
+            Console.WriteLine("Exception while initializing repository : ");
             return;
         }
         

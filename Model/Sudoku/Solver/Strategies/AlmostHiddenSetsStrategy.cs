@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class AlmostHiddenSetsStrategy : AbstractSudokuStrategy
+public class AlmostHiddenSetsStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Hidden Sets";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

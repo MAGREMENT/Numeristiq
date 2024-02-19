@@ -4,12 +4,11 @@ using Model.Sudoku;
 
 namespace Repository;
 
-public class JSONRepository<T> : IRepository<T>
+public class JSONRepository<T> : IRepository<T> where T : class?
 {
-    private string _path = "";
-    private bool _pathFound;
-
     private readonly string _fileName;
+
+    private string? _path;
 
     public JSONRepository(string fileName)
     {
@@ -18,75 +17,83 @@ public class JSONRepository<T> : IRepository<T>
 
     public bool UploadAllowed { get; set; } = true;
     
-    public void Initialize()
+    public bool Initialize(bool createNewOnNoneExistingFound)
     {
-        if (_pathFound) return;
+        if (_path is not null) return true;
 
+        _path = SearchPathToJSONFile();
+        if (_path is not null) return true;
+        if (!createNewOnNoneExistingFound) return false;
+        
+        var buffer = $@"{Directory.GetCurrentDirectory()}\{_fileName}";
         try
         {
-            _path = SearchPathToJSONFile();
-            _pathFound = true;
+            using var stream = File.Create(buffer);
+            return true;
         }
         catch (Exception)
         {
-            throw new RepositoryInitializationException("Couldn't find json file");
+            return false;
         }
     }
 
-    public T? Download()
+    public virtual T? Download()
     {
+        return InternalDownload<T>();
+    }
+
+    protected TDownload? InternalDownload<TDownload>() where TDownload : class?
+    {
+        if (_path is null) return null;
+        
         using var reader = new StreamReader(_path, Encoding.UTF8);
-
-        var result = JsonSerializer.Deserialize<T>(reader.ReadToEnd());
-
-        return result;
-    }
-
-    public void Upload(T DAO)
-    {
-        if (!UploadAllowed) return;
-        
-        using var writer = new StreamWriter(_path, new FileStreamOptions
+        try
         {
-            Mode = FileMode.Truncate,
-            Access = FileAccess.Write,
-            Share = FileShare.None
-        });
-        
-        writer.Write(JsonSerializer.Serialize(DAO, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        }));
-    }
-
-    public void New(T DAO)
-    {
-        if (!_pathFound)
-        {
-            _path = $@"{Directory.GetCurrentDirectory()}\{_fileName}";
-            _pathFound = true;
+            return JsonSerializer.Deserialize<TDownload>(reader.ReadToEnd());
         }
-        
-        using var writer = new StreamWriter(_path, new FileStreamOptions
+        catch (Exception)
         {
-            Mode = FileMode.CreateNew,
-            Access = FileAccess.Write,
-            Share = FileShare.None
-        });
-        
-        writer.Write(JsonSerializer.Serialize(DAO, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        }));
+            return null;
+        }
     }
 
-    private string SearchPathToJSONFile()
+    public virtual bool Upload(T DAO)
+    {
+        return InternalUpload(DAO);
+    }
+
+    protected bool InternalUpload<TUpload>(TUpload DAO)
+    {
+        if (!UploadAllowed || _path is null) return false;
+
+        try
+        {
+            using var writer = new StreamWriter(_path, new FileStreamOptions
+            {
+                Mode = FileMode.Truncate,
+                Access = FileAccess.Write,
+                Share = FileShare.None
+            });
+
+            writer.Write(JsonSerializer.Serialize(DAO, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            }));
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
+    private string? SearchPathToJSONFile()
     {
         var current = Directory.GetCurrentDirectory();
         while (!File.Exists($@"{current}\{_fileName}"))
         {
             var buffer = Directory.GetParent(current);
-            if (buffer is null) throw new Exception();
+            if (buffer is null) return null;
 
             current = buffer.FullName;
         }

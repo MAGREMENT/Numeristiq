@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class FinnedGridFormationStrategy : AbstractSudokuStrategy
+public class FinnedGridFormationStrategy : SudokuStrategy
 {
     public const string OfficialNameForType3 = "Finned Swordfish";
     public const string OfficialNameForType4 = "Finned Jellyfish";

@@ -11,7 +11,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 
-public class OddagonForcingNetStrategy : AbstractSudokuStrategy
+public class OddagonForcingNetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Oddagon Forcing Net";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

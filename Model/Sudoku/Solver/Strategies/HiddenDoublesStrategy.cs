@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class HiddenDoublesStrategy : AbstractSudokuStrategy
+public class HiddenDoublesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Hidden Doubles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

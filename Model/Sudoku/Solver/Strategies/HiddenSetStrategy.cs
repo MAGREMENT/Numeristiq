@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class HiddenSetStrategy : AbstractSudokuStrategy
+public class HiddenSetStrategy : SudokuStrategy
 {
     public const string OfficialNameForType2 = "Hidden Double";
     public const string OfficialNameForType3 = "Hidden Triple";

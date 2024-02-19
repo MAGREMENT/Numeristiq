@@ -38,8 +38,8 @@ public class SolverPresenter : IStepChooserCallback
             _view.SetTranslation(SudokuTranslator.TranslateLineFormat(_shownState, Settings.TranslationType));
         Settings.UniquenessAllowedChanged += () =>
         {
-            _solver.AllowUniqueness(Settings.UniquenessAllowed);
-            _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
+            _solver.StrategyManager.AllowUniqueness(Settings.UniquenessAllowed);
+            _view.UpdateStrategies(ModelToViewTranslator.Translate(_solver.StrategyManager.Strategies));
         };
         Settings.RedrawNeeded += Redraw;
         
@@ -56,12 +56,12 @@ public class SolverPresenter : IStepChooserCallback
         _solver.StrategyStopped += (i, _, _) => _view.StopLightingUpStrategy(i);
 
         ChangeShownState(_shownState);
-        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
+        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.StrategyManager.Strategies));
     }
 
     public void RefreshStrategies()
     {
-        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.GetStrategyInfo()));
+        _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.StrategyManager.Strategies));
     }
 
     public void NewSudokuFromString(string s)
@@ -143,15 +143,14 @@ public class SolverPresenter : IStepChooserCallback
         _view.Refresh();
     }
 
-    public void UseStrategy(int number, bool yes)
+    public void EnableStrategy(int number, bool enabled)
     {
-        if (yes) _solver.UseStrategy(number);
-        else _solver.ExcludeStrategy(number);
+        _solver.StrategyManager.Strategies[number].Enabled = enabled;
     }
 
     public void UseAllStrategies(bool yes)
     {
-        _solver.UseAllStrategies(yes);
+        _solver.StrategyManager.EnableAllStrategies(yes);
     }
 
     public void SelectCell(Cell cell)

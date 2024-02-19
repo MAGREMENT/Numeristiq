@@ -21,10 +21,10 @@ public class RunTester
     public delegate void OnRunStatusChanged(bool running);
     public event OnRunStatusChanged? RunStatusChanged;
 
-    private readonly IRepository<List<StrategyDAO>> _repository;
+    private readonly IRepository<IReadOnlyList<SudokuStrategy>> _repository;
     private readonly bool _toWaitForAll;
 
-    public RunTester(IRepository<List<StrategyDAO>> repository, bool toWaitForAll)
+    public RunTester(IRepository<IReadOnlyList<SudokuStrategy>> repository, bool toWaitForAll)
     {
         _repository = repository;
         _repository.UploadAllowed = false;
@@ -52,7 +52,7 @@ public class RunTester
         {
             ChangeManagement = ChangeManagement.Fast
         };
-        _currentSolver.Bind(_repository);
+        _currentSolver.StrategyManager.AddStrategies(_repository.Download());
         if(_toWaitForAll) _currentSolver.StrategyManager.ChangeStrategyBehaviorForAll(OnCommitBehavior.WaitForAll);
 
         var tracker = new StatisticsTracker(_currentSolver);

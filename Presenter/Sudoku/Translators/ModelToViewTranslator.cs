@@ -1,5 +1,4 @@
-﻿using Model.Helpers;
-using Model.Helpers.Changes;
+﻿using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Settings;
@@ -26,14 +25,14 @@ public static class ModelToViewTranslator
         return result;
     }
     
-    public static ViewStrategy Translate(StrategyInformation info)
+    public static ViewStrategy Translate(SudokuStrategy info)
     {
-        List<ViewStrategyArgument> interfaces = new(info.Arguments.Count);
-        foreach (var arg in info.Arguments)
+        List<ViewStrategyArgument> interfaces = new(info.Settings.Count);
+        foreach (var arg in info.Settings)
         {
             interfaces.Add(Translate(arg));
         }
-        return new ViewStrategy(info.StrategyName, (Intensity)info.Difficulty, info.Used, info.Locked, info.Behavior, interfaces);
+        return new ViewStrategy(info.Name, (Intensity)info.Difficulty, info.Enabled, info.Locked, info.OnCommitBehavior, interfaces);
     }
 
     private static ViewStrategyArgument Translate(ISetting argument)
@@ -41,9 +40,9 @@ public static class ModelToViewTranslator
         return new ViewStrategyArgument(argument.Name, argument.Interface, argument.Get());
     }
 
-    public static IReadOnlyList<ViewStrategy> Translate(StrategyInformation[] infos)
+    public static IReadOnlyList<ViewStrategy> Translate(IReadOnlyList<SudokuStrategy> infos)
     {
-        var result = new List<ViewStrategy>(infos.Length);
+        var result = new List<ViewStrategy>(infos.Count);
 
         foreach (var info in infos)
         {

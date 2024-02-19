@@ -1,6 +1,6 @@
 ﻿using Presenter.Sudoku.Translators;
 
-namespace Presenter.Sudoku.StrategyManager;
+namespace Presenter.Sudoku.StrategyManaging;
 
 public interface IStrategyManagerView
 {

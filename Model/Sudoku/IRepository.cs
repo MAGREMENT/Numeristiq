@@ -6,34 +6,13 @@ using Model.Utility;
 
 namespace Model.Sudoku;
 
-public interface IRepository<T>
+public interface IRepository<T> where T : class?
 {
     public bool UploadAllowed { set; }
     
-    public void Initialize();
+    public bool Initialize(bool createNewOnNoneExisting);
     public T? Download();
-    public void Upload(T DAO);
-    public void New(T DAO);
-
-    public void InitializeOrDefault(T defaultValue)
-    {
-        try
-        {
-            Initialize();
-        }
-        catch (RepositoryInitializationException)
-        {
-            New(defaultValue);
-        }
-    }
-}
-
-public class RepositoryInitializationException : Exception
-{
-    public RepositoryInitializationException(string s) : base(s)
-    {
-        
-    }
+    public bool Upload(T DAO);
 }
 
 public enum CellColor
@@ -60,8 +39,6 @@ public enum IconColor
 {
     White, Black
 }
-
-public record StrategyDAO(string Name, bool Used, OnCommitBehavior Behavior, Dictionary<string, string> Args);
 
 public record SettingsDAO(StateShown StateShown, SudokuTranslationType TranslationType,
     int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ChangeType ActionOnCellChange,

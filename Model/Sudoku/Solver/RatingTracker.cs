@@ -9,13 +9,12 @@ public class RatingTracker
 
     public RatingTracker(SudokuSolver solver)
     {
-        var info = solver.GetStrategyInfo();
         solver.StrategyStopped += (i, a, p) =>
         {
             if (a + p == 0) return;
 
             count++;
-            total += (int)info[i].Difficulty;
+            total += (int)solver.StrategyManager.Strategies[i].Difficulty;
         };
     }
 

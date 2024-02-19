@@ -1,7 +1,4 @@
-﻿using System.Windows.Forms;
-using System.Windows.Interop;
-using Presenter;
-using Presenter.Sudoku;
+﻿using Presenter.Sudoku;
 using Presenter.Sudoku.Translators;
 using View.Pages;
 using View.Pages.Player;
@@ -42,6 +39,8 @@ public partial class MainSudokuWindow : IPageHandler, IViewManager
         
         presenter.ViewInitializationFinished();
         ShowPage(PagesName.First);
+
+        Closed += (_, _) => presenter.Close();
     }
 
     public void ShowPage(PagesName pageName)
@@ -61,13 +60,5 @@ public partial class MainSudokuWindow : IPageHandler, IViewManager
     {
         var theme = Theme.From(dao);
         ((App)Application.Current).ChangeTheme(theme);
-    }
-
-    private void Center()
-    {
-        var screen = Screen.FromHandle(new WindowInteropHelper(this).Handle);
-        
-        Left = screen.WorkingArea.Left + (screen.WorkingArea.Width - ActualWidth) / 2;
-        Top = screen.WorkingArea.Top + (screen.WorkingArea.Height - ActualHeight) / 2;
     }
 }

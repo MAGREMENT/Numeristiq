@@ -2,7 +2,7 @@
 using System.Windows;
 using Presenter;
 using Presenter.Sudoku;
-using Presenter.Sudoku.StrategyManager;
+using Presenter.Sudoku.StrategyManaging;
 using Presenter.Sudoku.Translators;
 using View.Themes;
 

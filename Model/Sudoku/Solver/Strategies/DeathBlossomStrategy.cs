@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class DeathBlossomStrategy : AbstractSudokuStrategy
+public class DeathBlossomStrategy : SudokuStrategy
 {
     public const string OfficialName = "Death Blossom";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

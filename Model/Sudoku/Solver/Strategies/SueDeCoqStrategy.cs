@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class SueDeCoqStrategy : AbstractSudokuStrategy
+public class SueDeCoqStrategy : SudokuStrategy
 {
     public const string OfficialName = "Sue-De-Coq";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;

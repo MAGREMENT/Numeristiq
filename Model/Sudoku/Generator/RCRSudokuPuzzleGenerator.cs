@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Generator;

@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class NakedSetStrategy : AbstractSudokuStrategy
+public class NakedSetStrategy : SudokuStrategy
 {
     public const string OfficialNameForType2 = "Naked Double";
     public const string OfficialNameForType3 = "Naked Triple";

@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 
-public class CellForcingNetStrategy : AbstractSudokuStrategy
+public class CellForcingNetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Cell Forcing Net";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

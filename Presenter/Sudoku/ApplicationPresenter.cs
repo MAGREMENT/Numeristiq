@@ -5,7 +5,7 @@ using Model.Sudoku.Solver;
 using Presenter.Sudoku.Player;
 using Presenter.Sudoku.Solver;
 using Presenter.Sudoku.StepChooser;
-using Presenter.Sudoku.StrategyManager;
+using Presenter.Sudoku.StrategyManaging;
 using Presenter.Sudoku.Translators;
 using Repository;
 
@@ -19,6 +19,8 @@ public class ApplicationPresenter
     private readonly ISolver _solver;
     private readonly IPlayer _player;
 
+    private readonly IRepository<IReadOnlyList<SudokuStrategy>> _strategyRepository;
+
     private readonly ViewTheme[] _themes;
 
     private ApplicationPresenter(IViewManager manager)
@@ -30,9 +32,9 @@ public class ApplicationPresenter
         {
             ChangeManagement = ChangeManagement.WithLogs
         };
-        IRepository<List<StrategyDAO>> strategyRepository = new JSONRepository<List<StrategyDAO>>("strategies.json");
-        strategyRepository.InitializeOrDefault(new List<StrategyDAO>());
-        solver.Bind(strategyRepository);
+        _strategyRepository = new SudokuStrategiesJSONRepository("strategies.json");
+        _strategyRepository.Initialize(true);
+        solver.StrategyManager.AddStrategies(_strategyRepository.Download());
         _solver = solver;
 
         //Player
@@ -41,12 +43,12 @@ public class ApplicationPresenter
         //Settings
         _settings = new Settings();
         IRepository<SettingsDAO> settingsRepository = new JSONRepository<SettingsDAO>("settings.json");
-        settingsRepository.InitializeOrDefault(_settings.ToDAO());
+        settingsRepository.Initialize(true);
         _settings.Bind(settingsRepository);
 
         //Themes
         IRepository<ThemeDAO[]> themeRepository = new HardCodedThemeRepository();
-        themeRepository.InitializeOrDefault(Array.Empty<ThemeDAO>());
+        themeRepository.Initialize(true);
         var download = themeRepository.Download();
         _themes = download is null ? Array.Empty<ViewTheme>() : ViewTheme.From(download);
         _settings.ThemeChanged += () => _manager.ApplyTheme(_themes[_settings.Theme]);
@@ -60,6 +62,11 @@ public class ApplicationPresenter
     public void ViewInitializationFinished()
     {
         if(_themes.Length > 0) _manager.ApplyTheme(_themes[_settings.Theme]);
+    }
+
+    public void Close()
+    {
+        _strategyRepository.Upload(_solver.StrategyManager.Strategies);
     }
 
     public SolverPresenter Create(ISolverView view)

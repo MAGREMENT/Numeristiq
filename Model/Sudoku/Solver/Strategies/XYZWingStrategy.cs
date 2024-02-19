@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class XYZWingStrategy : AbstractSudokuStrategy
+public class XYZWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "XYZ-Wing";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

@@ -5,7 +5,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class ReverseBUGStrategy : AbstractSudokuStrategy
+public class ReverseBUGStrategy : SudokuStrategy
 {
     public const string OfficialName = "Reverse BUG";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

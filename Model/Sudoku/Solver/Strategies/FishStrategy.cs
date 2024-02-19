@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class FishStrategy : AbstractSudokuStrategy
+public class FishStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fish";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

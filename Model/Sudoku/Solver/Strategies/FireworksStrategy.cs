@@ -12,7 +12,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class FireworksStrategy : AbstractSudokuStrategy
+public class FireworksStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fireworks";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

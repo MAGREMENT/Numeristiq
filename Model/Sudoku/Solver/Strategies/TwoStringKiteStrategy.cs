@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class TwoStringKiteStrategy : AbstractSudokuStrategy
+public class TwoStringKiteStrategy : SudokuStrategy
 {
     public const string OfficialName = "Two-String Kite";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

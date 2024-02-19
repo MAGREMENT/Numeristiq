@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class UniqueRectanglesStrategy : AbstractSudokuStrategy
+public class UniqueRectanglesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Unique Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;

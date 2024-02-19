@@ -7,7 +7,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class HiddenSingleStrategy : AbstractSudokuStrategy
+public class HiddenSingleStrategy : SudokuStrategy
 {
     public const string OfficialName = "Hidden Single";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;

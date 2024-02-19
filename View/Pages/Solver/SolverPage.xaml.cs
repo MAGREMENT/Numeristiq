@@ -55,7 +55,7 @@ public partial class SolverPage : ISolverView
         LogViewer.StateShownChanged += ss => _presenter.Settings.StateShown = ss;
         LogViewer.LogHighlightShifted += _presenter.ShiftLogHighlight;
         LogViewer.ExplanationAsked += _presenter.ShowExplanation;
-        StrategyList.StrategyUsed += _presenter.UseStrategy;
+        StrategyList.StrategyUsed += _presenter.EnableStrategy;
         StrategyList.AllStrategiesUsed += _presenter.UseAllStrategies;
 
         _stepChooserWindow = new StepChooserWindow();

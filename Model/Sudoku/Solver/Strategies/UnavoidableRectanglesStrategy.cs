@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class UnavoidableRectanglesStrategy : AbstractSudokuStrategy
+public class UnavoidableRectanglesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Unavoidable Rectangles";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
