@@ -52,8 +52,8 @@ public class SolverPresenter : IStepChooserCallback
     public void Bind()
     {
         _solver.LogsUpdated += UpdateLogs;
-        _solver.StrategyStarted += _view.LightUpStrategy;
-        _solver.StrategyStopped += (i, _, _) => _view.StopLightingUpStrategy(i);
+        //_solver.StrategyStarted += _view.LightUpStrategy; TODO
+        //_solver.StrategyStopped += (i, _, _) => _view.StopLightingUpStrategy(i); TODO
 
         ChangeShownState(_shownState);
         _view.InitializeStrategies(ModelToViewTranslator.Translate(_solver.StrategyManager.Strategies));

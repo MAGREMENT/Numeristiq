@@ -2,6 +2,7 @@
 using Model.Sudoku.Generator;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Sudoku.Solver.Trackers;
 using Repository;
 
 namespace Tests;
@@ -22,7 +23,8 @@ public class SudokuPuzzleGenerator
         var solver = new SudokuSolver();
         solver.StrategyManager.AddStrategies(repo.Download());
 
-        var finder = new HardestStrategyTracker(solver);
+        var finder = new HardestStrategyTracker();
+        solver.AddTracker(finder);
         
         var puzzles = generator.Generate(SudokuCount);
         

@@ -7,12 +7,13 @@ using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
+using Model.Sudoku.Solver.Trackers;
 
 namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ILogProducer
+public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ILogProducer, ISolveResult
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -31,8 +32,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     public SolverState StartState { get; private set; }
 
     public event OnLogsUpdate? LogsUpdated;
-    public event OnStrategyStart? StrategyStarted;
-    public event OnStrategyStop? StrategyStopped;
 
     private int _currentStrategy = -1;
     
@@ -41,6 +40,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     private bool _startedSolving;
 
     private IChangeBuffer _changeBuffer;
+    private readonly TrackerManager _trackerManager;
     
     public SudokuSolver() : this(new Sudoku()) { }
 
@@ -48,6 +48,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     {
         StrategyManager = new StrategyManager();
         _changeBuffer = new FastChangeBuffer(this);
+        _trackerManager = new TrackerManager(this);
         
         _sudoku = s;
         CallOnNewSudokuForEachStrategy();
@@ -59,11 +60,19 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         
         LogManager = new LogManager(this);
         LogManager.LogsUpdated += () => LogsUpdated?.Invoke();
-        
-        ChangeBuffer = new LogManagedChangeBuffer(this);
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
+    }
+
+    public void AddTracker(Tracker tracker)
+    {
+        _trackerManager.AddTracker(tracker);
+    }
+
+    public void RemoveTracker(Tracker tracker)
+    {
+        _trackerManager.RemoveTracker(tracker);
     }
 
     //Solver------------------------------------------------------------------------------------------------------------
@@ -157,10 +166,10 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
             var current = StrategyManager.Strategies[_currentStrategy];
             if (!current.Enabled) continue;
 
-            StrategyStarted?.Invoke(_currentStrategy);
+            _trackerManager.OnStrategyStart(current, _currentStrategy);
             current.Apply(this);
             ChangeBuffer.Push(current);
-            StrategyStopped?.Invoke(_currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
+            _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
 
@@ -171,10 +180,46 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
             PreComputer.Reset();
 
-            if (stopAtProgress || _sudoku.IsComplete()) return;
+            if (stopAtProgress || _sudoku.IsComplete()) break;
         }
 
         _currentStrategy = -1;
+        _trackerManager.OnSolveDone(this);
+    }
+    
+    public void Solve(OnCommitBehavior behavior)
+    {
+        _startedSolving = true;
+        
+        for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
+        {
+            var current = StrategyManager.Strategies[_currentStrategy];
+            if (!current.Enabled) continue;
+            
+            var old = current.OnCommitBehavior;
+            current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
+
+            _trackerManager.OnStrategyStart(current, _currentStrategy);
+            current.Apply(this);
+            ChangeBuffer.Push(current);
+            _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
+
+            current.OnCommitBehavior = old;
+
+            if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
+
+            _solutionAddedBuffer = 0;
+            _possibilityRemovedBuffer = 0;
+            
+            _currentStrategy = -1;
+
+            PreComputer.Reset();
+
+            if (_sudoku.IsComplete()) break;
+        }
+
+        _currentStrategy = -1;
+        _trackerManager.OnSolveDone(this);
     }
 
     public BuiltChangeCommit[] EveryPossibleNextStep()
@@ -182,30 +227,25 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         var oldBuffer = ChangeBuffer;
         ChangeBuffer = new NotExecutedChangeBuffer(this);
         
-        var realBehaviors = new Dictionary<int, OnCommitBehavior>();
         for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
         {
             var current = StrategyManager.Strategies[_currentStrategy];
             if (!current.Enabled) continue;
 
-            realBehaviors[_currentStrategy] = current.OnCommitBehavior;
+            var behavior = current.OnCommitBehavior;
             current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
             
-            StrategyStarted?.Invoke(_currentStrategy);
+            _trackerManager.OnStrategyStart(current, _currentStrategy);
             current.Apply(this);
             ChangeBuffer.Push(current);
-            StrategyStopped?.Invoke(_currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
-            
+            _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
+
+            current.OnCommitBehavior = behavior;
             _solutionAddedBuffer = 0;
             _possibilityRemovedBuffer = 0;
         }
         
         _currentStrategy = -1;
-
-        foreach (var entry in realBehaviors)
-        {
-            StrategyManager.Strategies[entry.Key].OnCommitBehavior = entry.Value;
-        }
 
         var result = ((NotExecutedChangeBuffer)ChangeBuffer).DumpCommits();
         ChangeBuffer = oldBuffer;

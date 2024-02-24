@@ -6,6 +6,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
     private int _defaultCommand = -1;
     
     public IReadOnlyList<Command> Commands => _commands;
+    public Instantiator Instantiator { get; } = new();
 
     public void AddCommand(Command command, bool isDefault = false)
     {
@@ -118,6 +119,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
                     return false;
                 }
             case OptionValueType.File :
+                objectValue = value;
                 return File.Exists(value);
         }
 
@@ -128,5 +130,6 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
 public interface IReadOnlyArgumentInterpreter
 {
     public IReadOnlyList<Command> Commands { get; }
+    public Instantiator Instantiator { get; }
     public void Execute(string[] args);
 }

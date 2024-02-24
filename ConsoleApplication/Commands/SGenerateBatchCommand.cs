@@ -1,11 +1,11 @@
 ﻿using Model.Sudoku;
 using Model.Sudoku.Generator;
 using Model.Sudoku.Solver;
-using Repository;
+using Model.Sudoku.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
 
-public class GenerateBatchCommand : Command
+public class SGenerateBatchCommand : Command
 {
     private const int CountIndex = 0;
     private const int RateIndex = 1;
@@ -16,7 +16,7 @@ public class GenerateBatchCommand : Command
     
     private readonly ISudokuPuzzleGenerator _generator = new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
     
-    public GenerateBatchCommand() : base("GenerateBatch", 
+    public SGenerateBatchCommand() : base("SGenerateBatch", 
         new Option("-c", "Count", OptionValueRequirement.Mandatory, OptionValueType.Int),
         new Option("-r", "Rate puzzles difficulty"),
         new Option("-h", "Find hardest strategy used"),
@@ -37,18 +37,13 @@ public class GenerateBatchCommand : Command
 
         if (report.IsUsed(RateIndex) || report.IsUsed(HardestIndex))
         {
-            var repo = new SudokuStrategiesJSONRepository("strategies.json");
-            if (!repo.Initialize(false))
-            {
-                Console.WriteLine("Exception while initializing repository");
-                return;
-            }
+            if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
-            var solver = new SudokuSolver();
-            solver.StrategyManager.AddStrategies(repo.Download());
+            var ratings = report.IsUsed(RateIndex) ? new RatingTracker() : null;
+            var hardest = report.IsUsed(HardestIndex) ? new HardestStrategyTracker() : null;
 
-            var ratings = report.IsUsed(RateIndex) ? new RatingTracker(solver) : null;
-            var hardest = report.IsUsed(HardestIndex) ? new HardestStrategyTracker(solver) : null;
+            if (ratings is not null) solver.AddTracker(ratings);
+            if (hardest is not null) solver.AddTracker(hardest);
             
             Console.WriteLine("Started evaluating...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -63,6 +58,9 @@ public class GenerateBatchCommand : Command
                 hardest?.Clear();
             }
             Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
+            
+            if (ratings is not null) solver.RemoveTracker(ratings);
+            if (hardest is not null) solver.RemoveTracker(hardest);
         }
         else
         {

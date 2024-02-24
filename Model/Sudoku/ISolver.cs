@@ -22,10 +22,6 @@ public interface ISolver
     
     
     public event OnLogsUpdate? LogsUpdated;
-    public event OnStrategyStart? StrategyStarted;
-    public event OnStrategyStop? StrategyStopped;
 }
 
 public delegate void OnLogsUpdate();
-public delegate void OnStrategyStart(int index);
-public delegate void OnStrategyStop(int index, int solutionAdded, int possibilitiesRemoved);
