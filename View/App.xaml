@@ -6,9 +6,9 @@
          <ResourceDictionary>
              <ResourceDictionary.MergedDictionaries>
                  <ResourceDictionary>
-                     <Brush x:Key="BackGround1">#FFFFFF</Brush>
-                     <Brush x:Key="BackGround2">#F9F9F9</Brush>
-                     <Brush x:Key="BackGround3">#F0F0F0</Brush>
+                     <Brush x:Key="Background1">#FFFFFF</Brush>
+                     <Brush x:Key="Background2">#F9F9F9</Brush>
+                     <Brush x:Key="Background3">#F0F0F0</Brush>
                      <Brush x:Key="Primary1">#FC880B</Brush>
                      <Brush x:Key="Primary2">#EE810C</Brush>
                      <Brush x:Key="Secondary1">#F52A0A</Brush>
