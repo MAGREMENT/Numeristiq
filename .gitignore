@@ -26,6 +26,9 @@
 /Repository/bin
 /Repository/obj
 
+/ConsoleApplication/bin
+/ConsoleApplication/obj
+
 /publish
 
 *.user

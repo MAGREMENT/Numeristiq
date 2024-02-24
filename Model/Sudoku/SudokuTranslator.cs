@@ -157,7 +157,7 @@ public static class SudokuTranslator
     public static SolverState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
     {
         grid += ' ';
-        var cellStates = new CellState[9, 9];
+        var result = new SolverState();
         
         try
         {
@@ -192,16 +192,16 @@ public static class SudokuTranslator
                         
                     if (isNumber && numberBuffer != -1)
                     {
-                        cellStates[row, col] = new CellState(numberBuffer);
+                        result.Set(row, col, new CellState(numberBuffer));
                         isNumber = false;
                         numberBuffer = -1;
                         pos++;
                     }
                     else if (possibilitiesBuffer is not null)
                     {
-                        cellStates[row, col] = soloPossibilityToGiven && possibilitiesBuffer.Value.Count == 1 
+                        result.Set(row, col, soloPossibilityToGiven && possibilitiesBuffer.Value.Count == 1 
                             ? new CellState(possibilitiesBuffer.Value.FirstPossibility()) 
-                            : CellState.FromBits(possibilitiesBuffer.Value.Bits);
+                            : CellState.FromBits(possibilitiesBuffer.Value.Bits));
                         possibilitiesBuffer = null;
                         pos++;
                     }
@@ -212,16 +212,16 @@ public static class SudokuTranslator
         }
         catch (Exception)
         {
-            return new SolverState();
+            return result;
         }
 
 
-        return new SolverState(cellStates);
+        return result;
     }
 
     public static SolverState TranslateBase32Format(string s)
     {
-        var cellStates = new CellState[9, 9];
+        var result = new SolverState();
 
         for (int i = 0; i < s.Length / 2 && i < 81; i++)
         {
@@ -229,11 +229,12 @@ public static class SudokuTranslator
             var col = i % 9;
 
             var bits = CharToValue(s[i * 2]) << 5 | CharToValue(s[i * 2 + 1]);
-            if ((bits & 1) > 0) cellStates[row, col] = new CellState(bits >> 1);
-            else cellStates[row, col] = CellState.FromBits((ushort)bits);
+            result.Set(row, col, (bits & 1) > 0 
+                ? new CellState(bits >> 1) 
+                : CellState.FromBits((ushort)bits));
         }
 
-        return new SolverState(cellStates);
+        return result;
     }
 
     public static string TranslateBase32Format(ITranslatable translatable)

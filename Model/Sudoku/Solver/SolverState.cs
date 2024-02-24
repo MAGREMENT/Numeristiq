@@ -26,22 +26,19 @@ public class SolverState : ITranslatable
     public SolverState()
     {
         _cellStates = new CellState[9, 9];
-        for (int row = 0; row < 9; row++)
-        {
-            for(int col = 0; col < 9; col++)
-            {
-                _cellStates[row, col] = CellState.FromBits(0x1FF);
-            }
-        }
     }
 
-    public SolverState(CellState[,] cellStates)
+    private SolverState(CellState[,] cellStates)
     {
-        if (cellStates.Length != 81) throw new ArgumentException("Not enough cells");
         _cellStates = cellStates;
     }
 
-    public CellState At(int row, int col)
+    public void Set(int row, int col, CellState state)
+    {
+        _cellStates[row, col] = state;
+    }
+
+    public CellState Get(int row, int col)
     {
         return _cellStates[row, col];
     }
@@ -57,7 +54,7 @@ public class SolverState : ITranslatable
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
-        return At(row, col).AsPossibilities;
+        return Get(row, col).AsPossibilities;
     }
 
     public SolverState Apply(IReadOnlyList<SolverChange> changes)
@@ -132,6 +129,11 @@ public class SolverState : ITranslatable
 
         return true;
     }
+
+    public override int GetHashCode()
+    {
+        return _cellStates.GetHashCode();
+    }
 }
 
 public readonly struct CellState
@@ -158,6 +160,16 @@ public readonly struct CellState
     public ReadOnlyBitSet16 AsPossibilities => ReadOnlyBitSet16.FromBits((ushort) (_bits & 0x3FE));
 
     public int AsNumber => _bits >> 10;
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CellState cs && cs._bits == _bits;
+    }
+
+    public override int GetHashCode()
+    {
+        return _bits;
+    }
 
     public static bool operator ==(CellState left, CellState right)
     {

@@ -26,7 +26,7 @@ public partial class ExplanationWindow : IExplanationShower
         {
             for (int col = 0; col < 9; col++)
             {
-                var current = log.StateBefore.At(row, col);
+                var current = log.StateBefore.Get(row, col);
                 if(current.IsPossibilities) Grid.SetCellTo(row, col, current.AsPossibilities.ToArray(), CellColor.Black);
                 else Grid.SetCellTo(row, col, current.AsNumber, CellColor.Black);
             }

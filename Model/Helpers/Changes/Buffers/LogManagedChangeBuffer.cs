@@ -148,19 +148,6 @@ public class ChooseBestPushHandler : IPushHandler
         producer.LogManager.StartPush();
         var snapshot = producer.TakeSnapshot();
 
-        var commit = GetBest(pusher, commits);
-        
-        foreach (var change in commit.Changes)
-        { 
-            producer.ExecuteChange(change);
-        }
-
-        producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot), commit.Changes, pusher);
-        producer.LogManager.StopPush();
-    }
-
-    private ChangeCommit GetBest(ICommitMaker pusher, List<ChangeCommit> commits)
-    {
         var best = commits[0];
         var comparer = pusher as ICustomCommitComparer ?? _default;
 
@@ -168,8 +155,14 @@ public class ChooseBestPushHandler : IPushHandler
         {
             if (comparer.Compare(best, commits[i]) < 0) best = commits[i];
         }
+        
+        foreach (var change in best.Changes)
+        { 
+            producer.ExecuteChange(change);
+        }
 
-        return best;
+        producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, snapshot), best.Changes, pusher);
+        producer.LogManager.StopPush();
     }
 }
 
@@ -194,19 +187,18 @@ public class DefaultCommitComparer : ICustomCommitComparer
     
     public int Compare(ChangeCommit first, ChangeCommit second)
     {
-        int firstScore = 0;
-        int secondScore = 0;
+        int score = 0;
 
         foreach (var change in first.Changes)
         {
-            firstScore += change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
+            score += change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
         }
 
         foreach (var change in second.Changes)
         {
-            secondScore += change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
+            score -= change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
         }
 
-        return firstScore - secondScore;
+        return score;
     }
 }

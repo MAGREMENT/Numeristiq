@@ -380,7 +380,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             for (int col = 0; col < 9; col++)
             {
                 _cells[row, col].Empty();
-                var current = ss.At(row, col);
+                var current = ss.Get(row, col);
                 if (current.IsPossibilities)
                 {
                     foreach (var p in current.AsPossibilities.EnumeratePossibilities())

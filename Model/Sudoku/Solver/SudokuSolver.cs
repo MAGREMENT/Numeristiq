@@ -110,7 +110,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         {
             for (int col = 0; col < 9; col++)
             {
-                var at = state.At(row, col);
+                var at = state.Get(row, col);
                 if (!at.IsPossibilities) continue;
 
                 var asPoss = at.AsPossibilities;

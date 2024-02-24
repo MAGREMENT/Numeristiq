@@ -252,7 +252,7 @@ public class SolverPresenter : IStepChooserCallback
         {
             for (int col = 0; col < 9; col++)
             {
-                var current = state.At(row, col);
+                var current = state.Get(row, col);
                 if (current.IsPossibilities) _view.ShowPossibilities(row, col, current.AsPossibilities.ToArray(), GetCellColor(row, col));
                 else _view.ShowSolution(row, col, current.AsNumber, GetCellColor(row, col));
             }
@@ -269,7 +269,7 @@ public class SolverPresenter : IStepChooserCallback
         {
             for (int col = 0; col < 9; col++)
             {
-                var current = _shownState.At(row, col);
+                var current = _shownState.Get(row, col);
                 if (current.IsPossibilities) _view.ShowPossibilities(row, col, current.AsPossibilities.ToArray(), GetCellColor(row, col));
                 else _view.ShowSolution(row, col, current.AsNumber, GetCellColor(row, col));
             }

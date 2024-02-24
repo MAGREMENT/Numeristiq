@@ -37,7 +37,7 @@ public class StepChooserPresenter
         {
             for (int col = 0; col < 9; col++)
             {
-                var c = _state.At(row, col);
+                var c = _state.Get(row, col);
                 if (c.IsPossibilities)
                     _view.ShowPossibilities(row, col, c.AsPossibilities.ToArray(), _callback.GetCellColor(row, col));
                 else _view.ShowSolution(row, col, c.AsNumber, _callback.GetCellColor(row, col));

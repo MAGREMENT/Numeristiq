@@ -14,6 +14,5 @@ public interface IChangeProducer
 public interface ILogManagedChangeProducer : IChangeProducer
 {
     public LogManager LogManager { get; }
-    
     public IPossibilitiesHolder TakeSnapshot();
 }
