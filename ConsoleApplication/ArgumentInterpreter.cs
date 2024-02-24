@@ -88,8 +88,8 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
                     break;
             }
 
-            if (value is null) report.AddUsedOption(i);
-            else report.AddUsedOption(i, value);
+            if (value is null) report.AddUsedOption(index);
+            else report.AddUsedOption(index, value);
         }
 
         c.Execute(this, report);

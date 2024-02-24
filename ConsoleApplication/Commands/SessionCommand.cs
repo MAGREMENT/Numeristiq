@@ -28,7 +28,7 @@ public class SessionCommand : Command
 
         while (true)
         {
-            Console.Write("Command : ");
+            Console.Write("\nCommand : ");
             string? response;
             try
             {

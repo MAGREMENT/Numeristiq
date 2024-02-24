@@ -18,6 +18,7 @@ public static class Program
             _instance = new ArgumentInterpreter();
             _instance.AddCommand(new HelpCommand(), true);
             _instance.AddCommand(new SessionCommand());
+            _instance.AddCommand(new GenerateBatchCommand());
         }
 
         return _instance;

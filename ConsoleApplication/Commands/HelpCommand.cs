@@ -23,7 +23,7 @@ public class HelpCommand : Command
                 foreach (var option in command.Options)
                 {
                     Console.WriteLine($"   {option.Name} ({option.ValueRequirement.ToString().ToLower()}" +
-                                      $"{option.ValueType.ToString().ToLower()} value) -> {option.Description}");
+                                      $" {option.ValueType.ToString().ToLower()} value) -> {option.Description}");
                 }
             }
         }

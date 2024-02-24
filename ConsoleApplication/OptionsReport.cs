@@ -20,9 +20,8 @@ public class OptionsReport : IReadOnlyOptionsReport
 
     public void AddUsedOption(int index, object value)
     {
-        var r = _reports[index];
-        r.IsUsed = true;
-        r.Value = value;
+        _reports[index].IsUsed = true;
+        _reports[index].Value = value;
     }
 
     public bool IsUsed(int index)
@@ -30,7 +29,7 @@ public class OptionsReport : IReadOnlyOptionsReport
         return _reports[index].IsUsed;
     }
 
-    public object? GetArgument(int index)
+    public object? GetValue(int index)
     {
         return _reports[index].Value;
     }
@@ -39,7 +38,7 @@ public class OptionsReport : IReadOnlyOptionsReport
 public interface IReadOnlyOptionsReport
 {
     public bool IsUsed(int index);
-    public object? GetArgument(int index);
+    public object? GetValue(int index);
 }
 
 public struct Report
