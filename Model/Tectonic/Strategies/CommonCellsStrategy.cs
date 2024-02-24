@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Tectonic.Strategies;
 
-public class CommonCellsStrategy : AbstractTectonicStrategy
+public class CommonCellsStrategy : TectonicStrategy
 {
     public CommonCellsStrategy() : base("Common Cells", StrategyDifficulty.Easy, OnCommitBehavior.WaitForAll)
     {

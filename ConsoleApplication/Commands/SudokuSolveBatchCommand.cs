@@ -5,17 +5,17 @@ using Model.Sudoku.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
 
-public class SSolveBatchCommand : Command
+public class SudokuSolveBatchCommand : Command
 {
     private const int FileIndex = 0;
     private const int FeedbackIndex = 1;
     private const int WaitForAllIndex = 2;
     
-    public override string Description => "Solves all the sudoku's in a text file";
+    public override string Description => "Solves all the Sudoku's in a text file";
     
-    public SSolveBatchCommand() : base("SSolveBatch",
-        new Option("-f", "Text file containing the sudoku's", OptionValueRequirement.Mandatory, OptionValueType.File),
-        new Option("--feedback", "Feedback for each sudoku"),
+    public SudokuSolveBatchCommand() : base("SudokuSolveBatch",
+        new Option("-f", "Text file containing the Sudoku's", OptionValueRequirement.Mandatory, OptionValueType.File),
+        new Option("--feedback", "Feedback for each Sudoku"),
         new Option("-w", "Set all strategies behavior to wait for all"))
     {
     }

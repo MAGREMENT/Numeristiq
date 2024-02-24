@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Tectonic.Strategies;
 
-public class HiddenSingleStrategy : AbstractTectonicStrategy
+public class HiddenSingleStrategy : TectonicStrategy
 {
     public HiddenSingleStrategy() : base("Hidden Single", StrategyDifficulty.Basic, OnCommitBehavior.WaitForAll)
     {

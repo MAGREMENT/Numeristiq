@@ -1,18 +1,20 @@
 ﻿using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver;
+using Model.Tectonic;
 using Repository;
 
 namespace ConsoleApplication;
 
 public class Instantiator
 {
-    private SudokuSolver? _solver;
+    private SudokuSolver? _ssolver;
+    private TectonicSolver? _tsolver;
 
     public bool InstantiateSudokuSolver(out SudokuSolver solver)
     {
-        if (_solver is not null)
+        if (_ssolver is not null)
         {
-            solver = _solver;
+            solver = _ssolver;
             return true;
         }
         
@@ -24,10 +26,17 @@ public class Instantiator
             return false;
         }
 
-        _solver = new SudokuSolver();
-        _solver.StrategyManager.AddStrategies(repo.Download());
+        _ssolver = new SudokuSolver();
+        _ssolver.StrategyManager.AddStrategies(repo.Download());
 
-        solver = _solver;
+        solver = _ssolver;
+        return true;
+    }
+
+    public bool InstantiateTectonicSolver(out TectonicSolver solver)
+    {
+        _tsolver ??= new TectonicSolver();
+        solver = _tsolver;
         return true;
     }
 }

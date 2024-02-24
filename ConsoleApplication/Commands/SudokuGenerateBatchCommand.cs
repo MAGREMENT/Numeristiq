@@ -5,22 +5,22 @@ using Model.Sudoku.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
 
-public class SGenerateBatchCommand : Command
+public class SudokuGenerateBatchCommand : Command
 {
     private const int CountIndex = 0;
     private const int RateIndex = 1;
     private const int HardestIndex = 2;
     private const int SortIndex = 3;
     
-    public override string Description => "Generate a determined amount of sudoku's";
+    public override string Description => "Generate a determined amount of Sudoku's";
     
     private readonly ISudokuPuzzleGenerator _generator = new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
     
-    public SGenerateBatchCommand() : base("SGenerateBatch", 
+    public SudokuGenerateBatchCommand() : base("SudokuGenerateBatch", 
         new Option("-c", "Count", OptionValueRequirement.Mandatory, OptionValueType.Int),
         new Option("-r", "Rate puzzles difficulty"),
         new Option("-h", "Find hardest strategy used"),
-        new Option("-s", "Sort sudoku's"))
+        new Option("-s", "Sort Sudoku's"))
     {
     }
     

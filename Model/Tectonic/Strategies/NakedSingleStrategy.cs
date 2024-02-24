@@ -4,7 +4,7 @@ using Model.Sudoku.Solver;
 
 namespace Model.Tectonic.Strategies;
 
-public class NakedSingleStrategy : AbstractTectonicStrategy
+public class NakedSingleStrategy : TectonicStrategy
 {
     public NakedSingleStrategy() : base("Naked Single", StrategyDifficulty.Basic, OnCommitBehavior.WaitForAll)
     {

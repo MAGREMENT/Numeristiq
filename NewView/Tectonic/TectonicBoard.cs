@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
@@ -194,7 +195,7 @@ public class TectonicBoard : DrawingBoard, IAddChild
 
     public void AddText(string text)
     {
-       
+        
     }
 }
 
@@ -215,8 +216,180 @@ public class NotifyingList<T> : IList, IList<T>
 {
     private T[] _array = Array.Empty<T>();
     
+    public int Count { get; private set; }
+    public bool IsSynchronized => false;
+    public object SyncRoot => null!;
+    public bool IsFixedSize => false;
+    public bool IsReadOnly => false;
+    
     public event OnElementAddition? ElementAdded;
+    
+    public int Add(object? value)
+    {
+        if (value is not T item) return -1;
 
+        GrowIfNecessary();
+
+        _array[Count++] = item;
+        ElementAdded?.Invoke();
+        return Count - 1;
+    }
+
+    public void Add(T item)
+    {
+        GrowIfNecessary();
+
+        _array[Count++] = item;
+        ElementAdded?.Invoke();
+    }
+
+    public void Clear()
+    {
+        Count = 0;
+    }
+
+    public bool Contains(T item)
+    {
+        for(int i = 0; i < Count; i++)
+        {
+            var o = _array[i];
+            if (o is not null && o.Equals(item)) return true;
+        }
+
+        return false;
+    }
+    
+    public bool Contains(object? value)
+    {
+        for(int i = 0; i < Count; i++)
+        {
+            var o = _array[i];
+            if (o is null)
+            {
+                if (value is null) return true;
+            }else if (o.Equals(value)) return true;
+        }
+
+        return false;
+    }
+    
+    public void CopyTo(Array array, int index)
+    {
+        Array.Copy(_array, 0, array, index, Count);
+    }
+
+    public void CopyTo(T[] array, int arrayIndex)
+    {
+        Array.Copy(_array, 0, array, arrayIndex, Count);
+    }
+
+    public int IndexOf(object? value)
+    {
+        for(int i = 0; i < Count; i++)
+        {
+            var o = _array[i];
+            if (o is null)
+            {
+                if (value is null) return i;
+            }else if (o.Equals(value)) return i;
+        }
+
+        return -1;
+    }
+    
+    public int IndexOf(T item)
+    {
+        for(int i = 0; i < Count; i++)
+        {
+            var o = _array[i];
+            if (o is not null && o.Equals(item)) return i;
+        }
+
+        return -1;
+    }
+
+    public void Remove(object? value)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            var o = _array[i];
+            if (o is null)
+            {
+                if (value is null)
+                {
+                    RemoveAt(i);
+                    return;
+                }
+            }
+            else if (o.Equals(value))
+            {
+                RemoveAt(i);
+                return;
+            }
+        }
+    }
+    
+    public bool Remove(T item)
+    {
+        for (int i = 0; i < Count; i++)
+        {
+            var o = _array[i];
+            if (o is not null && o.Equals(item))
+            {
+                RemoveAt(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public void Insert(int index, T item)
+    {
+        if (index < 0 || index > Count) return;
+        
+        GrowIfNecessary();
+        
+        if (index == Count)
+        {
+            Add(item);
+            return;
+        }
+
+        Array.Copy(_array, index, _array, index + 1, Count - index);
+        _array[index] = item;
+    }
+    
+    public void Insert(int index, object? value)
+    {
+        if (value is not T item) return;
+
+        Insert(index, item);
+    }
+
+    public void RemoveAt(int index)
+    {
+        if (index < 0 || index >= Count) return;
+        
+        Array.Copy(_array, index + 1, _array, index, Count - index - 1);
+        Count--;
+    }
+
+    T IList<T>.this[int index]
+    {
+        get => _array[index];
+        set => _array[index] = value;
+    }
+
+    public object? this[int index]
+    {
+        get => _array[index];
+        set
+        {
+            if(value is T item) _array[index] = item;
+        } 
+    }
+    
     IEnumerator<T> IEnumerable<T>.GetEnumerator()
     {
         for (int i = 0; i < Count; i++)
@@ -232,24 +405,11 @@ public class NotifyingList<T> : IList, IList<T>
             yield return _array[i];
         }
     }
+    
+    //Private-----------------------------------------------------------------------------------------------------------
 
-    public void CopyTo(Array array, int index)
+    private void GrowIfNecessary()
     {
-        Array.Copy(_array, 0, array, index, Count);
-    }
-
-    public bool Remove(T item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int Count { get; private set; }
-    public bool IsSynchronized => false;
-    public object SyncRoot => null!;
-    public int Add(object? value)
-    {
-        if (value is not T item) return -1;
-
         if (_array.Length <= Count)
         {
             if (_array.Length == 0)
@@ -263,80 +423,6 @@ public class NotifyingList<T> : IList, IList<T>
                 _array = buffer;
             }
         }
-
-        _array[Count++] = item;
-        ElementAdded?.Invoke();
-        return Count - 1;
-    }
-
-    public void Add(T item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Clear()
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Contains(T item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void CopyTo(T[] array, int arrayIndex)
-    {
-        throw new NotImplementedException();
-    }
-
-    public bool Contains(object? value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int IndexOf(object? value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Insert(int index, object? value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Remove(object? value)
-    {
-        throw new NotImplementedException();
-    }
-
-    public int IndexOf(T item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void Insert(int index, T item)
-    {
-        throw new NotImplementedException();
-    }
-
-    public void RemoveAt(int index)
-    {
-        throw new NotImplementedException();
-    }
-
-    T IList<T>.this[int index]
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
-    }
-
-    public bool IsFixedSize => false;
-    public bool IsReadOnly => false;
-
-    public object? this[int index]
-    {
-        get => throw new NotImplementedException();
-        set => throw new NotImplementedException();
     }
 }
 
