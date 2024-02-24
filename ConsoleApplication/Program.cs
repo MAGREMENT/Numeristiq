@@ -1,4 +1,6 @@
-﻿namespace ConsoleApplication;
+﻿using ConsoleApplication.Commands;
+
+namespace ConsoleApplication;
 
 public static class Program
 {
@@ -7,11 +9,18 @@ public static class Program
         Interpreter().Execute(args);
     }
 
+    private static ArgumentInterpreter? _instance;
+    
     private static ArgumentInterpreter Interpreter()
     {
-        var result = new ArgumentInterpreter();
+        if (_instance is null)
+        {
+            _instance = new ArgumentInterpreter();
+            _instance.AddCommand(new HelpCommand(), true);
+            _instance.AddCommand(new SessionCommand());
+        }
 
-        return result;
+        return _instance;
     }
 }
 

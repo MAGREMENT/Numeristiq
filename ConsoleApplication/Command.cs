@@ -5,6 +5,8 @@ public abstract class Command
     public string Name { get; }
     public IReadOnlyList<Option> Options { get; }
     
+    public abstract string Description { get; }
+    
     protected Command(string name)
     {
         Name = name;

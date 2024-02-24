@@ -1,6 +1,6 @@
 ﻿namespace ConsoleApplication;
 
-public record Option(string Name, OptionValueRequirement ValueRequirement = OptionValueRequirement.None,
+public record Option(string Name, string Description, OptionValueRequirement ValueRequirement = OptionValueRequirement.None,
     OptionValueType ValueType = OptionValueType.None);
 
 public enum OptionValueRequirement

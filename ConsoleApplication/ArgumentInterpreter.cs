@@ -128,4 +128,5 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
 public interface IReadOnlyArgumentInterpreter
 {
     public IReadOnlyList<Command> Commands { get; }
+    public void Execute(string[] args);
 }
