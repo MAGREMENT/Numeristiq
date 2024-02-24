@@ -23,6 +23,8 @@ public class LogManagedChangeBuffer : IChangeBuffer
         _producer = changeProducer;
     }
 
+    public bool HandlesLog => true;
+
     public void ProposePossibilityRemoval(int possibility, Cell cell)
     {
         ProposePossibilityRemoval(new CellPossibility(cell, possibility));

@@ -19,10 +19,7 @@ public class SudokuPuzzleGenerator
         var repo = new SudokuStrategiesJSONRepository("strategies.json");
         if (!repo.Initialize(false)) Assert.Fail();
 
-        var solver = new SudokuSolver
-        {
-            ChangeManagement = ChangeManagement.Fast
-        };
+        var solver = new SudokuSolver();
         solver.StrategyManager.AddStrategies(repo.Download());
 
         var finder = new HardestStrategyTracker(solver);

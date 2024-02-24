@@ -12,6 +12,8 @@ namespace Model.Helpers.Changes;
 /// </summary>
 public interface IChangeBuffer
 {
+    public bool HandlesLog { get; }
+    
     public void ProposePossibilityRemoval(int possibility, Cell cell)
     {
         ProposePossibilityRemoval(new CellPossibility(cell, possibility));

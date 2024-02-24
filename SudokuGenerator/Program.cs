@@ -25,9 +25,7 @@ public static class Program
             return;
         }
 
-        var solver = new SudokuSolver{
-            ChangeManagement = ChangeManagement.Fast
-        };
+        var solver = new SudokuSolver();
         solver.StrategyManager.AddStrategies(repo.Download());
 
         var ratings = new RatingTracker(solver);

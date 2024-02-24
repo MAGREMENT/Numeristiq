@@ -1,4 +1,5 @@
 ﻿using Model.Helpers.Changes;
+using Model.Helpers.Changes.Buffers;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Sudoku.Solver;
@@ -28,10 +29,8 @@ public class ApplicationPresenter
         _manager = manager;
         
         //Solver
-        var solver = new SudokuSolver
-        {
-            ChangeManagement = ChangeManagement.WithLogs
-        };
+        var solver = new SudokuSolver();
+        solver.ChangeBuffer = new LogManagedChangeBuffer(solver);
         _strategyRepository = new SudokuStrategiesJSONRepository("strategies.json");
         _strategyRepository.Initialize(true);
         solver.StrategyManager.AddStrategies(_strategyRepository.Download());
