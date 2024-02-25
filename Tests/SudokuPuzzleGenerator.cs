@@ -36,7 +36,7 @@ public class SudokuPuzzleGenerator
                 solver.SetSudoku(p);
                 finder.Clear();
                 solver.Solve();
-                Console.WriteLine(" - " + finder.Hardest.Name);
+                Console.WriteLine(" - " + finder.Hardest?.Name);
 
                 var solution = BackTracking.Fill(p, new ConstantPossibilitiesGiver(), 2);
                 Assert.That(solution, Has.Length.EqualTo(1));
