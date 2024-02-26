@@ -18,8 +18,9 @@ public static class Program
             _instance = new ArgumentInterpreter();
             _instance.AddCommand(new HelpCommand(), true);
             _instance.AddCommand(new SessionCommand());
-            _instance.AddCommand(new SudokuGenerateBatchCommand());
+            _instance.AddCommand(new SudokuSolveCommand());
             _instance.AddCommand(new SudokuSolveBatchCommand());
+            _instance.AddCommand(new SudokuGenerateBatchCommand());
             _instance.AddCommand(new TectonicSolveCommand());
         }
 

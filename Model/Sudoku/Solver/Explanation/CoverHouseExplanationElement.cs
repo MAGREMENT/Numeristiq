@@ -26,8 +26,8 @@ public class CoverHouseExplanationElement : ExplanationElement
     public override bool ShouldBeBold => true;
     public override ExplanationColor Color => ExplanationColor.Secondary;
 
-    public override void Show(IExplanationShower shower)
+    public override void Show(IExplanationHighlighter highlighter)
     {
-        shower.ShowCoverHouse(_coverHouse);
+        highlighter.ShowCoverHouse(_coverHouse);
     }
 }

@@ -1,11 +1,11 @@
-﻿<Application x:Class="NewView.App"
+﻿<Application x:Class="DesktopApplication.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="WelcomeWindow.xaml">
+             StartupUri="/View/WelcomeWindow.xaml">
     <Application.Resources>
-        <Brush x:Key="BackGround1">#0E0E15</Brush>
-        <Brush x:Key="BackGround2">#1C1C2C</Brush>
-        <Brush x:Key="BackGround3">#272742</Brush>
+        <Brush x:Key="Background1">#0E0E15</Brush>
+        <Brush x:Key="Background2">#1C1C2C</Brush>
+        <Brush x:Key="Background3">#272742</Brush>
         <Brush x:Key="Primary1">#FC880B</Brush>
         <Brush x:Key="Primary2">#EE810C</Brush>
         <Brush x:Key="Secondary1">#F52A0A</Brush>
@@ -15,8 +15,8 @@
         
         <Style TargetType="Button" x:Key="WelcomeButtonStyle">
 	        <Setter Property="Foreground" Value="{StaticResource Text}"></Setter>
-	        <Setter Property="Background" Value="{StaticResource BackGround2}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BackGround2}"/>
+	        <Setter Property="Background" Value="{StaticResource Background2}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Background2}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Width" Value="150"/>
             <Setter Property="Height" Value="50"/>
@@ -44,7 +44,7 @@
 	    
 	    <Style x:Key="BottomSelectionRadioButtonStyle" TargetType="RadioButton">
 		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
-		    <Setter Property="Background" Value="{StaticResource BackGround2}"/>
+		    <Setter Property="Background" Value="{StaticResource Background2}"/>
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="FontWeight" Value="Normal"></Setter>
 		    
@@ -71,7 +71,7 @@
 						    </Trigger>
 						    
 						    <Trigger Property="IsMouseOver" Value="True">
-							    <Setter Property="Background" Value="{StaticResource BackGround3}"/>
+							    <Setter Property="Background" Value="{StaticResource Background3}"/>
 							    <Setter Property="Foreground" Value="{StaticResource Primary1}"/>
 						    </Trigger>
 					    </ControlTemplate.Triggers>
@@ -103,10 +103,10 @@
 						
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{StaticResource BackGround3}" />
+								<Setter TargetName="Border" Property="Background" Value="{StaticResource Background3}" />
 							</Trigger>
 							<Trigger Property="IsPressed" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{StaticResource BackGround3}" />
+								<Setter TargetName="Border" Property="Background" Value="{StaticResource Background3}" />
 							</Trigger>
 							<Trigger Property="IsEnabled" Value="False">
 								<Setter Property="Foreground" Value="Gray"></Setter>

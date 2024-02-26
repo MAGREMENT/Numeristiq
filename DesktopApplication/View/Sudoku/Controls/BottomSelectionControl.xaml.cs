@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace NewView.Sudoku.Controls;
+namespace DesktopApplication.View.Sudoku.Controls;
 
 public partial class BottomSelectionControl : UserControl
 {

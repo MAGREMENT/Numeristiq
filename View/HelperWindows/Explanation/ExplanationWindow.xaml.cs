@@ -12,7 +12,7 @@ using View.Utility;
 
 namespace View.HelperWindows.Explanation;
 
-public partial class ExplanationWindow : IExplanationShower
+public partial class ExplanationWindow : IExplanationHighlighter
 {
     public ExplanationWindow()
     {

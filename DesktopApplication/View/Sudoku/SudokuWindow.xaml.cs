@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using NewView.Sudoku.Pages;
+using DesktopApplication.View.Sudoku.Pages;
 
-namespace NewView.Sudoku;
+namespace DesktopApplication.View.Sudoku;
 
 public partial class SudokuWindow
 {

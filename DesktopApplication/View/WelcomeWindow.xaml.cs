@@ -3,9 +3,9 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using NewView.Sudoku;
+using DesktopApplication.View.Sudoku;
 
-namespace NewView;
+namespace DesktopApplication.View;
 
 /// <summary>
 /// Interaction logic for MainWindow.xaml

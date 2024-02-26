@@ -1,8 +1,7 @@
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace NewView.Controls;
+namespace DesktopApplication.View.Controls;
 
 public partial class TitleBarControl
 {

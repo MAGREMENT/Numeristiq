@@ -6,7 +6,7 @@ using Model.Sudoku.Player;
 using Model.Sudoku.Solver.Explanation;
 using Model.Utility;
 
-namespace NewView.Utility;
+namespace DesktopApplication.View.Utility;
 
 public static class ColorUtility
 {

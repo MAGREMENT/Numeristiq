@@ -1,5 +1,4 @@
-﻿using NewView;
-using NewView.Tectonic;
+﻿using DesktopApplication.View.Tectonic;
 
 namespace Tests;
 

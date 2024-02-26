@@ -1,8 +1,8 @@
 ﻿using System.Windows.Controls;
 
-namespace NewView.Sudoku.Pages;
+namespace DesktopApplication.View.Sudoku.Pages;
 
-public partial class SolvePage : Page
+public partial class SolvePage
 {
     public SolvePage()
     {

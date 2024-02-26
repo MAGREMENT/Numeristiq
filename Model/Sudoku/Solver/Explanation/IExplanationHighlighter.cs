@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.Explanation;
 
-public interface IExplanationShower
+public interface IExplanationHighlighter
 {
     void ShowCell(Cell c);
     void ShowCellPossibility(CellPossibility cp);

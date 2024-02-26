@@ -19,8 +19,8 @@ public class CellExplanationElement : ExplanationElement
     public override bool ShouldBeBold => true;
     public override ExplanationColor Color => ExplanationColor.Primary;
 
-    public override void Show(IExplanationShower shower)
+    public override void Show(IExplanationHighlighter highlighter)
     {
-        shower.ShowCell(_cell);
+        highlighter.ShowCell(_cell);
     }
 }

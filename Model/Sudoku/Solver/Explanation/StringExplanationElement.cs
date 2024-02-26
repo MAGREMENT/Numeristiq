@@ -17,7 +17,7 @@ public class StringExplanationElement : ExplanationElement
     public override bool ShouldBeBold => false;
     public override ExplanationColor Color => ExplanationColor.TextDefault;
 
-    public override void Show(IExplanationShower shower)
+    public override void Show(IExplanationHighlighter highlighter)
     {
         
     }

@@ -8,9 +8,9 @@ using System.Windows.Media;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
-using MathUtility = NewView.Utility.MathUtility;
+using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
-namespace NewView.Sudoku.Controls;
+namespace DesktopApplication.View.Sudoku.Controls;
 
 public class SudokuBoard : DrawingBoard
 {

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace NewView.Utility;
+namespace DesktopApplication.View.Utility;
 
 public static class MathUtility
 {

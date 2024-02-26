@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace NewView;
+namespace DesktopApplication.View;
 
 public abstract class DrawingBoard : FrameworkElement
 {

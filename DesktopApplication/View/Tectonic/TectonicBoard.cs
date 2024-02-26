@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace NewView.Tectonic;
+namespace DesktopApplication.View.Tectonic;
 
 public class TectonicBoard : DrawingBoard, IAddChild
 {

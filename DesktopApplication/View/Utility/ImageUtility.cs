@@ -2,7 +2,7 @@
 using System.Windows.Media.Imaging;
 using Model.Sudoku;
 
-namespace NewView.Utility;
+namespace DesktopApplication.View.Utility;
 
 public static class ImageUtility
 {

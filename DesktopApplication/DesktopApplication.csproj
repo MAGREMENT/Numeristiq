@@ -13,11 +13,18 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Resource Include="Images\appicon.png" />
       <None Remove="Images\SudokuImage.png" />
-      <Resource Include="Images\SudokuImage.png" />
       <None Remove="Images\TectonicImage.png" />
-      <Resource Include="Images\TectonicImage.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Resource Include="View\Images\appicon.png" />
+      <Resource Include="View\Images\SudokuImage.png" />
+      <Resource Include="View\Images\TectonicImage.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Controllers\" />
     </ItemGroup>
 
 </Project>
