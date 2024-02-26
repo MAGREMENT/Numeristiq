@@ -7,9 +7,9 @@
 /View/obj
 /View/.idea
 
-/NewView/bin
-/NewView/obj
-/NewView/.idea
+/DesktopApplication/bin
+/DesktopApplication/obj
+/DesktopApplication/.idea
 
 /RunTester/bin
 /RunTester/obj
