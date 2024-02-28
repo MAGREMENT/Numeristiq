@@ -7,7 +7,7 @@
       xmlns:controls="clr-namespace:View.Pages.Welcome.Controls"
       mc:Ignorable="d"
       Title="FirstPage">
-    <StackPanel Orientation="Horizontal" Background="{DynamicResource BackGround2}">
+    <StackPanel Orientation="Horizontal" Background="{DynamicResource Background2}">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="500"/>

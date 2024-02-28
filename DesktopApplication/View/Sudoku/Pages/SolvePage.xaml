@@ -6,7 +6,7 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudoku.Controls"
       mc:Ignorable="d"
       Title="SolvePage" Height="660" Width="1300">
-    <Grid Background="{StaticResource Background1}">
+  <Grid Background="{StaticResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition/>
@@ -38,6 +38,6 @@
             <Button Grid.Row="1" Grid.Column="3">Clear</Button>
         </Grid>
         
-        <controls:SudokuTextBoxControl Grid.Column="0" Grid.ColumnSpan="3"/>
+        <controls:SudokuTextBoxControl Grid.Column="0" Grid.ColumnSpan="3" DataContext="{Binding SudokuTextBoxController}"/>
     </Grid>
 </Page>
