@@ -59,16 +59,18 @@ public readonly struct CellNumber
 
 public class Zone : IEnumerable<Cell>
 {
-    private static readonly Zone _empty = new(Array.Empty<Cell>());
+    private static readonly Zone _empty = new(-1, Array.Empty<Cell>());
     public static Zone Empty() => _empty;
-    
 
+
+    private readonly int _id;
     private readonly Cell[] _cells;
 
     public int Count => _cells.Length;
 
-    public Zone(Cell[] cells)
+    public Zone(int id, Cell[] cells)
     {
+        _id = id;
         _cells = cells;
     }
 
@@ -95,5 +97,15 @@ public class Zone : IEnumerable<Cell>
         }
 
         return false;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Zone z && z._id == _id;
+    }
+
+    public override int GetHashCode()
+    {
+        return _id;
     }
 }

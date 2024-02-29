@@ -69,7 +69,8 @@ public static class TectonicTranslator
         int cursor = 0;
         foreach (var list in zones.Values)
         {
-            finalZones[cursor++] = new Zone(list.ToArray());
+            finalZones[cursor] = new Zone(cursor, list.ToArray());
+            cursor++;
         }
 
         ITectonic result = new ArrayTectonic(rowCount, colCount, finalZones);

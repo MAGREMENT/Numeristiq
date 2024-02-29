@@ -4,9 +4,11 @@ namespace DesktopApplication.View.Sudoku.Pages;
 
 public partial class SolvePage : ISolvePageView
 {
+    private readonly SolvePageController _controller;
+    
     public SolvePage()
     {
         InitializeComponent();
-        ControllerDistributor.Initialize(this);
+        _controller = ControllerDistributor.Initialize(this);
     }
 }

@@ -31,4 +31,12 @@ public static class Cells
             if (ok) yield return neighbor;
         }
     }
+    
+    public static IEnumerable<Cell> SharedNeighboringCells(IReadOnlyTectonic tectonic, Cell one, Cell two)
+    {
+        foreach (var neighbor in tectonic.GetNeighbors(one))
+        {
+            if (AreNeighbors(two, neighbor)) yield return neighbor;
+        }
+    }
 }
