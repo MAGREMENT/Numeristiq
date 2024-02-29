@@ -4,6 +4,8 @@ namespace Tests;
 
 public class SudokuTranslatorTests
 {
+    private readonly IBase32Translator[] _translators = { new RFC4648Base32Translator(), new AlphabeticalBase32Translator() };
+    
     [Test]
     public void Base32Test()
     {
@@ -22,17 +24,20 @@ public class SudokuTranslatorTests
             "|843    9843   <5>   |<6>    94     <1>   |9873   <2>    9843  |\n" +
             "+--------------------+--------------------+--------------------+\n";
 
-        Console.WriteLine(start);
-        var stateBefore = SudokuTranslator.TranslateGridFormat(start, false);
-        var asString = SudokuTranslator.TranslateBase32Format(stateBefore);
+        foreach (var translator in _translators)
+        {
+            Console.WriteLine(start);
+            var stateBefore = SudokuTranslator.TranslateGridFormat(start, false);
+            var asString = SudokuTranslator.TranslateBase32Format(stateBefore, translator);
 
-        Console.WriteLine(asString);
-        Assert.That(asString, Has.Length.EqualTo(162));
+            Console.WriteLine(asString);
+            Assert.That(asString, Has.Length.EqualTo(162));
 
-        var stateAfter = SudokuTranslator.TranslateBase32Format(asString);
-        asString = SudokuTranslator.TranslateGridFormat(stateAfter);
+            var stateAfter = SudokuTranslator.TranslateBase32Format(asString, translator);
+            asString = SudokuTranslator.TranslateGridFormat(stateAfter);
 
-        Console.WriteLine(asString);
-        Assert.That(stateBefore, Is.EqualTo(stateAfter));
+            Console.WriteLine(asString);
+            Assert.That(stateBefore, Is.EqualTo(stateAfter));
+        }
     }
 }

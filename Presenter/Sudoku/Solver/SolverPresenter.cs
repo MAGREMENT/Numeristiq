@@ -2,7 +2,6 @@
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;
-using Model.Sudoku.Solver;
 using Model.Utility;
 using Presenter.Sudoku.StepChooser;
 using Presenter.Sudoku.Translators;
@@ -196,7 +195,7 @@ public class SolverPresenter : IStepChooserCallback
 
     public void Copy()
     {
-        _view.ToClipboard(SudokuTranslator.TranslateGridFormat(_shownState));
+        _view.ToClipboard(SudokuTranslator.TranslateBase32Format(_shownState, new AlphabeticalBase32Translator()));
     }
 
     public void Paste(string s)
@@ -208,6 +207,9 @@ public class SolverPresenter : IStepChooserCallback
                 break;
             case SudokuStringFormat.Grid :
                 _solver.SetState(SudokuTranslator.TranslateGridFormat(s, Settings.TransformSoloPossibilityIntoGiven));
+                break;
+            case SudokuStringFormat.Base32 :
+                _solver.SetState(SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()));
                 break;
         }
         

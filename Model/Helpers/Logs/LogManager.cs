@@ -23,6 +23,7 @@ public class LogManager
     public void AddFromReport(ChangeReport report, IReadOnlyList<SolverProgress> changes, ICommitMaker maker, ISolvingState stateBefore)
     {
         Logs.Add(new ChangeReportLog(_idCount++, maker, changes, report, stateBefore));
+        TryCallLogsUpdatedEvent();
     }
 
     public void AddByHand(int possibility, int row, int col, ProgressType progressType, ISolvingState stateBefore)

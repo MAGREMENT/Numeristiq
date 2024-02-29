@@ -10,6 +10,11 @@ public class StrategyManager
     private readonly UniqueList<SudokuStrategy> _strategies = new();
     public IReadOnlyList<SudokuStrategy> Strategies => _strategies;
 
+    public void ClearStrategies()
+    {
+        _strategies.Clear();
+    }
+
     public void EnableAllStrategies(bool enabled)
     {
         foreach (var strategy in _strategies)
@@ -72,15 +77,6 @@ public class StrategyManager
         if (i == -1) return;
         
         _strategies[i].OnCommitBehavior = behavior;
-    }
-
-    public void ChangeStrategyBehaviorForAll(OnCommitBehavior behavior)
-    {
-        foreach (var strategy in _strategies)
-        {
-            strategy.OnCommitBehavior = behavior;
-        }
-
     }
 
     public void ChangeStrategyUsage(string name, bool yes)

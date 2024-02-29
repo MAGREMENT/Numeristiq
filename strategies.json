@@ -453,7 +453,7 @@
   },
   {
     "Name": "Brute Force",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "Behavior": 1,
     "Settings": {}

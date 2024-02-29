@@ -220,7 +220,7 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static ArraySolvingState TranslateBase32Format(string s)
+    public static ArraySolvingState TranslateBase32Format(string s, IBase32Translator translator)
     {
         var result = new ArraySolvingState();
 
@@ -229,16 +229,18 @@ public static class SudokuTranslator
             var row = i / 9;
             var col = i % 9;
 
-            var bits = CharToValue(s[i * 2]) << 5 | CharToValue(s[i * 2 + 1]);
+            var bits = translator.ToInt(s[i * 2]) << 5 | translator.ToInt(s[i * 2 + 1]);
+            var bitSet = ReadOnlyBitSet16.FromBits((ushort)(bits & ~1));
+            
             result.Set(row, col, (bits & 1) > 0 
-                ? new CellState(bits >> 1) 
-                : CellState.FromBits((ushort)bits));
+                ? new CellState(bitSet.FirstPossibility()) 
+                : CellState.FromBits(bitSet.Bits));
         }
 
         return result;
     }
 
-    public static string TranslateBase32Format(ITranslatable translatable)
+    public static string TranslateBase32Format(ITranslatable translatable, IBase32Translator translator)
     {
         var builder = new StringBuilder();
 
@@ -247,10 +249,10 @@ public static class SudokuTranslator
             for (int col = 0; col < 9; col++)
             {
                 var solved = translatable[row, col];
-                int bits = solved == 0 ? translatable.PossibilitiesAt(row, col).Bits : solved << 1 | 1;
+                int bits = solved == 0 ? translatable.PossibilitiesAt(row, col).Bits : (1 << solved) | 1;
 
-                builder.Append(ValueToChar((bits >> 5) & 0x1F));
-                builder.Append(ValueToChar(bits & 0x1F));
+                builder.Append(translator.ToChar((bits >> 5) & 0x1F));
+                builder.Append(translator.ToChar(bits & 0x1F));
             }
         }
 
@@ -278,10 +280,22 @@ public static class SudokuTranslator
 
         return s.Length == 162 ? SudokuStringFormat.Base32 : SudokuStringFormat.Line;
     }
-    
-    //Private-----------------------------------------------------------------------------------------------------------
-    
-    private static int CharToValue(char c)
+}
+
+public enum SudokuStringFormat
+{
+    None, Line, Grid, Base32
+}
+
+public interface IBase32Translator
+{
+    public int ToInt(char c);
+    public char ToChar(int n);
+}
+
+public class RFC4648Base32Translator : IBase32Translator
+{
+    public int ToInt(char c)
     {
         //65-90 == uppercase letters
         if (c < 91 && c > 64)
@@ -297,23 +311,32 @@ public static class SudokuTranslator
         return 0;
     }
 
-    private static char ValueToChar(int s)
+    public char ToChar(int n)
     {
-        if (s < 26)
+        return n switch
         {
-            return (char)(s + 'A');
-        }
-
-        if (s < 32)
-        {
-            return (char)(s + 24);
-        }
-
-        return 'A';
+            < 26 => (char)(n + 'A'),
+            < 32 => (char)(n + 24),
+            _ => 'A'
+        };
     }
 }
 
-public enum SudokuStringFormat
+public class AlphabeticalBase32Translator : IBase32Translator
 {
-    None, Line, Grid, Base32
+    public int ToInt(char c)
+    {
+        return c switch
+        {
+            >= '0' and <= '9' => c - '0',
+            >= 'a' and <= 'w' => c - 'a' + 10,
+            _ => '0'
+        };
+    }
+
+    public char ToChar(int n)
+    {
+        if (n < 10) return (char)(n + '0');
+        return (char)(n - 10 + 'a');
+    }
 }
