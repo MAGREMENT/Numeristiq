@@ -11,17 +11,17 @@ public class ChangeReportLog : ISolverLog
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity { get; }
-    public IReadOnlyList<SolverChange> Changes { get; }
+    public IReadOnlyList<SolverProgress> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
-    public SolverState StateBefore { get; }
-    public SolverState StateAfter { get; }
+    public ISolvingState StateBefore { get; }
+    public ISolvingState StateAfter { get; }
     public HighlightManager HighlightManager  { get; }
     public bool FromSolving => true;
 
 
-    public ChangeReportLog(int id, ICommitMaker maker, IReadOnlyList<SolverChange> changes, ChangeReport report,
-        SolverState stateBefore, SolverState stateAfter)
+    public ChangeReportLog(int id, ICommitMaker maker, IReadOnlyList<SolverProgress> changes, ChangeReport report,
+        ISolvingState stateBefore)
     {
         Id = id;
         Title = maker.Name;
@@ -29,7 +29,7 @@ public class ChangeReportLog : ISolverLog
         Changes = changes;
         Description = report.Description;
         StateBefore = stateBefore;
-        StateAfter = stateAfter;
+        StateAfter = stateBefore.Apply(changes);
         HighlightManager = report.HighlightManager;
         Explanation = report.Explanation;
     }

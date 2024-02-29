@@ -1,12 +1,12 @@
-﻿using Model.Helpers.Changes;
-using Model.Sudoku.Solver;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Presenter.Sudoku.Translators;
 
 namespace Presenter.Sudoku.StepChooser;
 
 public class StepChooserPresenter
 {
-    private readonly SolverState _state;
+    private readonly ISolvingState _state;
     private readonly BuiltChangeCommit[] _commits;
     private readonly IStepChooserView _view;
     private readonly IStepChooserCallback _callback;
@@ -15,7 +15,7 @@ public class StepChooserPresenter
 
     private int _currentlySelectedIndex = -1;
 
-    public StepChooserPresenter(SolverState state, BuiltChangeCommit[] commits, IStepChooserView view, IStepChooserCallback callback)
+    public StepChooserPresenter(ISolvingState state, BuiltChangeCommit[] commits, IStepChooserView view, IStepChooserCallback callback)
     {
         _commits = commits;
         _view = view;
@@ -37,10 +37,10 @@ public class StepChooserPresenter
         {
             for (int col = 0; col < 9; col++)
             {
-                var c = _state.Get(row, col);
-                if (c.IsPossibilities)
-                    _view.ShowPossibilities(row, col, c.AsPossibilities.ToArray(), _callback.GetCellColor(row, col));
-                else _view.ShowSolution(row, col, c.AsNumber, _callback.GetCellColor(row, col));
+                var solved = _state[row, col];
+                if (solved == 0) _view.ShowPossibilities(row, col,
+                    _state.PossibilitiesAt(row, col).ToArray(), _callback.GetCellColor(row, col));
+                else _view.ShowSolution(row, col, solved, _callback.GetCellColor(row, col));
             }
         }
         _view.Refresh();

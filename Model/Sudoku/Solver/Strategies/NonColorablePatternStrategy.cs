@@ -155,7 +155,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder
         _possibilities = possibilities;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

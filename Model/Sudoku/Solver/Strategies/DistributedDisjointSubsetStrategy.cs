@@ -144,7 +144,7 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder
         _possibilitiesCells = possibilitiesCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

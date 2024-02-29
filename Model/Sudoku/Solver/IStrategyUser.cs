@@ -9,7 +9,7 @@ namespace Model.Sudoku.Solver;
 
 public interface IStrategyUser : IPossibilitiesHolder, IPossibilitiesGiver
 { 
-    SolverState StartState { get; }
+    ISolvingState StartState { get; }
     
     bool LogsManaged { get; }
 

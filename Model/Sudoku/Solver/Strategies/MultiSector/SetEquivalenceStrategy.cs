@@ -133,7 +133,7 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder
         _equivalence = equivalence;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

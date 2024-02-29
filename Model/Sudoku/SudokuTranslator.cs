@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using Model.Helpers;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.BitSets;
 using Model.Utility;
@@ -154,10 +155,10 @@ public static class SudokuTranslator
         return builder.ToString();
     }
 
-    public static SolverState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
+    public static ArraySolvingState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
     {
         grid += ' ';
-        var result = new SolverState();
+        var result = new ArraySolvingState();
         
         try
         {
@@ -219,9 +220,9 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static SolverState TranslateBase32Format(string s)
+    public static ArraySolvingState TranslateBase32Format(string s)
     {
-        var result = new SolverState();
+        var result = new ArraySolvingState();
 
         for (int i = 0; i < s.Length / 2 && i < 81; i++)
         {
@@ -310,12 +311,6 @@ public static class SudokuTranslator
 
         return 'A';
     }
-}
-
-public interface ITranslatable
-{
-    int this[int row, int col] { get; }
-    ReadOnlyBitSet16 PossibilitiesAt(int row, int col);
 }
 
 public enum SudokuStringFormat

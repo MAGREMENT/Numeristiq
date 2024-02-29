@@ -208,7 +208,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder
         _cps = cps;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         var branchesHighlight = new Highlight[_branches.Length];
 

@@ -46,8 +46,8 @@ public partial class SettingsWindow
         {
             new("General", 
                 new MultiChoiceOptionCanvas("Action on keyboard :", "Defines the action to be executed when pushing a numpad key", 
-                    () => (int)settings.ActionOnCellChange, i => settings.ActionOnCellChange =
-                    (ChangeType) i, "Remove possibility", "Add solution"),
+                    () => (int)settings.ActionOnCellProgress, i => settings.ActionOnCellProgress =
+                    (ProgressType) i, "Remove possibility", "Add solution"),
                 new ComboBoxOptionCanvas("Translation type", "Sets the sudoku to text translation type", () => (int)settings.TranslationType,
                     i => settings.TranslationType = (SudokuTranslationType)i, "With shortcuts",
                     "With 0's", "With .'s"),

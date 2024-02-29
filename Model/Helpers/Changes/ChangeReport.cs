@@ -55,7 +55,7 @@ public class ChangeReport
         Explanation = null;
     }
 
-    public static ChangeReport Default(IReadOnlyList<SolverChange> changes)
+    public static ChangeReport Default(IReadOnlyList<SolverProgress> changes)
     {
         return new ChangeReport("",
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));

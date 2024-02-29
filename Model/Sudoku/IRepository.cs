@@ -41,7 +41,7 @@ public enum IconColor
 }
 
 public record SettingsDAO(StateShown StateShown, SudokuTranslationType TranslationType,
-    int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ChangeType ActionOnCellChange,
+    int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ProgressType ActionOnCellProgress,
     bool TransformSoloPossibilityIntoGiven, CellColor GivenColor, CellColor SolvingColor,
     LinkOffsetSidePriority SidePriority, bool ShowSameCellLinks, bool MultiColorHighlighting,
     int StartAngle, RotationDirection RotationDirection, int Theme);

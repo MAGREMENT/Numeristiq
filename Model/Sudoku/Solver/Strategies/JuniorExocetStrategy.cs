@@ -501,7 +501,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
         _je = je;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> sCells = _je.AllPossibleSCells();
 
@@ -559,7 +559,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
         _je2 = je2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> sCells = _je1.AllPossibleSCells();
 

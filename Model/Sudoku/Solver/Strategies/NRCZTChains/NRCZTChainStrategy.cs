@@ -148,7 +148,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder
         Chain = chain;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

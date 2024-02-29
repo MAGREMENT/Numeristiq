@@ -86,7 +86,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
         _change = change;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         var highlights = new Highlight[_colorings.Length];
         for (int i = 0; i < _colorings.Length; i++)

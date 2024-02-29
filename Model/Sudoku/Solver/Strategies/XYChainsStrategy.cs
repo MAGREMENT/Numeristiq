@@ -77,7 +77,7 @@ public class XYChainReportBuilder : IChangeReportBuilder
         _visited = visited.ToArray();
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

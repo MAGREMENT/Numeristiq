@@ -113,7 +113,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)
@@ -143,7 +143,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
         });
     }
 
-    private string Explanation(IReadOnlyList<SolverChange> changes)
+    private string Explanation(IReadOnlyList<SolverProgress> changes)
     {
         var first = changes[0];
         var miniGirdNumber = first.Row / 3 * 3 + first.Column / 3 + 1;

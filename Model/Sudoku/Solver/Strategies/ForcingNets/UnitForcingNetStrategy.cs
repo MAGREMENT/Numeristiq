@@ -138,7 +138,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         Highlight[] highlights = new Highlight[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];

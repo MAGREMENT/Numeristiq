@@ -120,7 +120,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IR
         _type = type;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(Explanation(),
             lighter =>
@@ -182,7 +182,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, I
         _chain = chain;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport(Explanation(),
             lighter =>

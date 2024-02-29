@@ -155,7 +155,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -188,7 +188,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

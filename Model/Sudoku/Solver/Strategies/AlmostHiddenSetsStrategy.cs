@@ -115,7 +115,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

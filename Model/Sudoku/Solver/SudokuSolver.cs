@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Logs;
@@ -13,7 +14,7 @@ namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ILogProducer, ISolveResult
+public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ISolveResult
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -28,8 +29,8 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public bool LogsManaged { get; private set; }
 
-    public SolverState CurrentState => new(this);
-    public SolverState StartState { get; private set; }
+    public ISolvingState CurrentState => new ArraySolvingState(this);
+    public ISolvingState StartState { get; private set; }
 
     public event OnLogsUpdate? LogsUpdated;
 
@@ -54,11 +55,11 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         CallOnNewSudokuForEachStrategy();
 
         InitPossibilities();
-        StartState = new SolverState(this);
+        StartState = new ArraySolvingState(this);
 
         PreComputer = new PreComputer(this);
         
-        LogManager = new LogManager(this);
+        LogManager = new LogManager();
         LogManager.LogsUpdated += () => LogsUpdated?.Invoke();
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
@@ -85,7 +86,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         CallOnNewSudokuForEachStrategy();
 
         ResetPossibilities();
-        StartState = new SolverState(this);
+        StartState = new ArraySolvingState(this);
 
         LogManager.Clear();
         PreComputer.Reset();
@@ -93,7 +94,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         _startedSolving = false;
     }
 
-    public void SetState(SolverState state)
+    public void SetState(ArraySolvingState state)
     {
         _sudoku = SudokuTranslator.TranslateTranslatable(state);
         CallOnNewSudokuForEachStrategy();
@@ -113,7 +114,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
                 }
             }
         }
-        StartState = new SolverState(this);
+        StartState = new ArraySolvingState(this);
         
         LogManager.Clear();
         PreComputer.Reset();
@@ -129,11 +130,11 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         {
             var stateBefore = CurrentState;
             if (!AddSolution(number, row, col, false)) return;
-            LogManager.AddByHand(number, row, col, ChangeType.Solution, stateBefore);
+            LogManager.AddByHand(number, row, col, ProgressType.SolutionAddition, stateBefore);
         }
         else if (!AddSolution(number, row, col, false)) return;
         
-        if(!_startedSolving) StartState = new SolverState(this);
+        if(!_startedSolving) StartState = new ArraySolvingState(this);
     }
 
     public void RemoveSolutionByHand(int row, int col)
@@ -141,7 +142,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         if (_startedSolving) return;
 
         RemoveSolution(row, col);
-        StartState = new SolverState(this);
+        StartState = new ArraySolvingState(this);
     }
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
@@ -150,11 +151,11 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         {
             var stateBefore = CurrentState;
             if (!RemovePossibility(possibility, row, col, false)) return;
-            LogManager.AddByHand(possibility, row, col, ChangeType.Possibility, stateBefore);
+            LogManager.AddByHand(possibility, row, col, ProgressType.PossibilityRemoval, stateBefore);
         }
         else if (!RemovePossibility(possibility, row, col, false)) return;
 
-        if (!_startedSolving) StartState = new SolverState(this);
+        if (!_startedSolving) StartState = new ArraySolvingState(this);
     }
     
     public void Solve(bool stopAtProgress = false)
@@ -350,11 +351,11 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         return Sudoku[cp.Row, cp.Column] == 0;
     }
 
-    public bool ExecuteChange(SolverChange change)
+    public bool ExecuteChange(SolverProgress progress)
     {
-        return change.ChangeType == ChangeType.Solution
-            ? AddSolution(change.Number, change.Row, change.Column)
-            : RemovePossibility(change.Number, change.Row, change.Column);
+        return progress.ProgressType == ProgressType.SolutionAddition
+            ? AddSolution(progress.Number, progress.Row, progress.Column)
+            : RemovePossibility(progress.Number, progress.Row, progress.Column);
     }
 
     public LogManager LogManager { get; }

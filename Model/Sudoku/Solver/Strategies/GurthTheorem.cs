@@ -265,7 +265,7 @@ public class Rotational270 : Symmetry
 
 public class GurthTheoremReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return ChangeReport.Default(changes);
     }

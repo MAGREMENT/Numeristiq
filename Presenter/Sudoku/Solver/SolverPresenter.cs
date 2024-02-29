@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
@@ -13,7 +14,7 @@ public class SolverPresenter : IStepChooserCallback
     private readonly ISolver _solver;
     private readonly ISolverView _view;
 
-    private SolverState _shownState;
+    private ISolvingState _shownState;
     private int _lastLogIndex = -1;
     private Cell? _currentlySelectedCell;
     private int _currentlySelectedLog = -1;
@@ -180,7 +181,7 @@ public class SolverPresenter : IStepChooserCallback
     {
         if (_currentlySelectedCell is null) return;
 
-        if (Settings.ActionOnCellChange == ChangeType.Possibility) _solver.RemovePossibilityByHand(number,
+        if (Settings.ActionOnCellProgress == ProgressType.PossibilityRemoval) _solver.RemovePossibilityByHand(number,
                 _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Column);
         else _solver.SetSolutionByHand(number, _currentlySelectedCell.Value.Row, _currentlySelectedCell.Value.Column);
         ChangeShownState(_solver.CurrentState);
@@ -243,7 +244,7 @@ public class SolverPresenter : IStepChooserCallback
 
     //Private-----------------------------------------------------------------------------------------------------------
 
-    private void ChangeShownState(SolverState state)
+    private void ChangeShownState(ISolvingState state)
     {
         _shownState = state;
        
@@ -252,9 +253,9 @@ public class SolverPresenter : IStepChooserCallback
         {
             for (int col = 0; col < 9; col++)
             {
-                var current = state.Get(row, col);
-                if (current.IsPossibilities) _view.ShowPossibilities(row, col, current.AsPossibilities.ToArray(), GetCellColor(row, col));
-                else _view.ShowSolution(row, col, current.AsNumber, GetCellColor(row, col));
+                if (_shownState[row, col] == 0) _view.ShowPossibilities(row, col,
+                    _shownState.PossibilitiesAt(row, col).ToArray(), GetCellColor(row, col));
+                else _view.ShowSolution(row, col, _shownState[row, col], GetCellColor(row, col));
             }
         }
         _view.Refresh();
@@ -269,9 +270,9 @@ public class SolverPresenter : IStepChooserCallback
         {
             for (int col = 0; col < 9; col++)
             {
-                var current = _shownState.Get(row, col);
-                if (current.IsPossibilities) _view.ShowPossibilities(row, col, current.AsPossibilities.ToArray(), GetCellColor(row, col));
-                else _view.ShowSolution(row, col, current.AsNumber, GetCellColor(row, col));
+                if (_shownState[row, col] == 0) _view.ShowPossibilities(row, col,
+                    _shownState.PossibilitiesAt(row, col).ToArray(), GetCellColor(row, col));
+                else _view.ShowSolution(row, col, _shownState[row, col], GetCellColor(row, col));
             }
         }
         

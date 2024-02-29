@@ -65,11 +65,11 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
         return _tectonic[cp.Row, cp.Column] == 0;
     }
 
-    public bool ExecuteChange(SolverChange change)
+    public bool ExecuteChange(SolverProgress progress)
     {
-        return change.ChangeType == ChangeType.Possibility 
-            ? RemovePossibility(change.Row, change.Column, change.Number) 
-            : AddSolution(change.Row, change.Column, change.Number);
+        return progress.ProgressType == ProgressType.PossibilityRemoval 
+            ? RemovePossibility(progress.Row, progress.Column, progress.Number) 
+            : AddSolution(progress.Row, progress.Column, progress.Number);
     }
 
     public void Solve()

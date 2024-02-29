@@ -241,7 +241,7 @@ public class FishReportBuilder : IChangeReportBuilder
         _fins = fins;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

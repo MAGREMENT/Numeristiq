@@ -113,7 +113,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
         _alternatives = alternatives;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         var cu = new CoveringUnits(_covers);
         

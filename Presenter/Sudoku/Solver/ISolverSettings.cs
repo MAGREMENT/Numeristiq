@@ -15,7 +15,7 @@ public interface ISolverSettings
     public int DelayBeforeTransition { get; set; }
     public int DelayAfterTransition { get; set; }
     public bool UniquenessAllowed { get; set; }
-    public ChangeType ActionOnCellChange { get; set; }
+    public ProgressType ActionOnCellProgress { get; set; }
     public bool TransformSoloPossibilityIntoGiven { get; set; }
     public CellColor GivenColor { get; set; }
     public CellColor SolvingColor { get; set; }

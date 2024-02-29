@@ -49,19 +49,19 @@ public interface IChangeBuffer
 
 public static class ChangeBufferHelper
 {
-    public static SolverChange[] EstablishChangeList(HashSet<CellPossibility> solutionsAdded, HashSet<CellPossibility> possibilitiesRemoved)
+    public static SolverProgress[] EstablishChangeList(HashSet<CellPossibility> solutionsAdded, HashSet<CellPossibility> possibilitiesRemoved)
     {
         var count = 0;
-        var changes = new SolverChange[solutionsAdded.Count + possibilitiesRemoved.Count];
+        var changes = new SolverProgress[solutionsAdded.Count + possibilitiesRemoved.Count];
         
         foreach (var solution in solutionsAdded)
         {
-            changes[count++] = new SolverChange(ChangeType.Solution, solution);
+            changes[count++] = new SolverProgress(ProgressType.SolutionAddition, solution);
         }
         
         foreach (var possibility in possibilitiesRemoved)
         {
-            changes[count++] = new SolverChange(ChangeType.Possibility, possibility);
+            changes[count++] = new SolverProgress(ProgressType.PossibilityRemoval, possibility);
         }
         
         solutionsAdded.Clear();
@@ -73,10 +73,10 @@ public static class ChangeBufferHelper
 
 public class ChangeCommit
 {
-    public SolverChange[] Changes { get; }
+    public SolverProgress[] Changes { get; }
     public IChangeReportBuilder Builder { get; }
 
-    public ChangeCommit(SolverChange[] changes, IChangeReportBuilder builder)
+    public ChangeCommit(SolverProgress[] changes, IChangeReportBuilder builder)
     {
         Changes = changes;
         Builder = builder;
@@ -85,7 +85,7 @@ public class ChangeCommit
 
 public class BuiltChangeCommit
 {
-    public BuiltChangeCommit(ICommitMaker maker, SolverChange[] changes, ChangeReport report)
+    public BuiltChangeCommit(ICommitMaker maker, SolverProgress[] changes, ChangeReport report)
     {
         Maker = maker;
         Changes = changes;
@@ -93,6 +93,6 @@ public class BuiltChangeCommit
     }
     
     public ICommitMaker Maker { get; }
-    public SolverChange[] Changes { get; }
+    public SolverProgress[] Changes { get; }
     public ChangeReport Report { get; }
 }

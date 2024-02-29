@@ -235,7 +235,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         List<Highlight> highlighters = new();
         switch (_cause)

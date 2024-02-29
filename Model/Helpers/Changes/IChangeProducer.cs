@@ -8,11 +8,12 @@ public interface IChangeProducer
 {
     public bool CanRemovePossibility(CellPossibility cp);
     public bool CanAddSolution(CellPossibility cp);
-    public bool ExecuteChange(SolverChange change);
+    public bool ExecuteChange(SolverProgress progress);
 }
 
 public interface ILogManagedChangeProducer : IChangeProducer
 {
     public LogManager LogManager { get; }
-    public IPossibilitiesHolder TakeSnapshot();
+    public IPossibilitiesHolder TakeSnapshot(); //TODO use current state for this
+    public ISolvingState CurrentState { get; }
 }

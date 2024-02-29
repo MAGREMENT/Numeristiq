@@ -41,12 +41,12 @@ public class FastChangeBuffer : IChangeBuffer
     {
         foreach (var solution in _solutionAddedBuffer)
         {
-            _producer.ExecuteChange(new SolverChange(ChangeType.Solution, solution));
+            _producer.ExecuteChange(new SolverProgress(ProgressType.SolutionAddition, solution));
         }
 
         foreach (var possibility in _possibilityRemovedBuffer)
         {
-            _producer.ExecuteChange(new SolverChange(ChangeType.Possibility, possibility));
+            _producer.ExecuteChange(new SolverProgress(ProgressType.PossibilityRemoval, possibility));
         }
         
         _solutionAddedBuffer.Clear();

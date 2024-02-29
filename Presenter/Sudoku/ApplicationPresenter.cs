@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Sudoku;
 using Model.Sudoku.Player;
@@ -88,11 +89,11 @@ public class ApplicationPresenter
 
 public class StepChooserPresenterBuilder
 {
-    private readonly SolverState _state;
+    private readonly ISolvingState _state;
     private readonly BuiltChangeCommit[] _commits;
     private readonly IStepChooserCallback _callback;
 
-    public StepChooserPresenterBuilder(SolverState state, BuiltChangeCommit[] commits, IStepChooserCallback callback)
+    public StepChooserPresenterBuilder(ISolvingState state, BuiltChangeCommit[] commits, IStepChooserCallback callback)
     {
         _commits = commits;
         _callback = callback;

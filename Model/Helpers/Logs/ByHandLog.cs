@@ -12,28 +12,27 @@ public class ByHandLog : ISolverLog
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity => Intensity.Six;
-    public IReadOnlyList<SolverChange> Changes => new[] { _change };
+    public IReadOnlyList<SolverProgress> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
-    public SolverState StateBefore { get; }
-    public SolverState StateAfter { get; }
+    public ISolvingState StateBefore { get; }
+    public ISolvingState StateAfter { get; }
     public HighlightManager HighlightManager => new(new DelegateHighlightable(HighLight));
     public bool FromSolving => false;
 
-    private readonly SolverChange _change;
+    private readonly SolverProgress _progress;
 
-    public ByHandLog(int id, int possibility, int row, int col, ChangeType changeType, SolverState stateBefore, SolverState stateAfter)
+    public ByHandLog(int id, int possibility, int row, int col, ProgressType progressType, ISolvingState stateBefore)
     {
         Id = id;
         StateBefore = stateBefore;
-        StateAfter = stateAfter;
-        switch (changeType)
+        switch (progressType)
         {
-            case ChangeType.Possibility :
+            case ProgressType.PossibilityRemoval :
                 Title = "Removed by hand";
                 Description = "This possibility was removed by hand";
                 break;
-            case ChangeType.Solution :
+            case ProgressType.SolutionAddition :
                 Title = "Added by hand";
                 Description = "This solution was added by hand";
                 break;
@@ -41,11 +40,12 @@ public class ByHandLog : ISolverLog
         }
         
         
-        _change = new SolverChange(changeType, possibility, row, col);
+        _progress = new SolverProgress(progressType, possibility, row, col);
+        StateAfter = stateBefore.Apply(_progress);
     }
 
     private void HighLight(IHighlighter highlighter)
     {
-        IChangeReportBuilder.HighlightChange(highlighter, _change);
+        IChangeReportBuilder.HighlightChange(highlighter, _progress);
     }
 }

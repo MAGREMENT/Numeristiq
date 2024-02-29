@@ -172,7 +172,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
         _additionalLink = additionalLink;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( _chain.ToString(), lighter =>
         {

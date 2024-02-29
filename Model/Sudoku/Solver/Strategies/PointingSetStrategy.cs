@@ -88,7 +88,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Explanation(changes), lighter =>
         {
@@ -101,7 +101,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         });
     }
 
-    private string Explanation(IReadOnlyList<SolverChange> changes)
+    private string Explanation(IReadOnlyList<SolverProgress> changes)
     {
         var firstChange = changes[0];
         var firstMini = _miniPos.First();

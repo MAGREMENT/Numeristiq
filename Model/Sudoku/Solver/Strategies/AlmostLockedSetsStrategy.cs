@@ -88,7 +88,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
         _restrictedCommons = restrictedCommons;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

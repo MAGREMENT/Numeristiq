@@ -11,11 +11,11 @@ public interface ISolverLog
     public int Id { get; }
     public string Title { get; }
     public Intensity Intensity { get; }
-    public IReadOnlyList<SolverChange> Changes { get; }
+    public IReadOnlyList<SolverProgress> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
-    public SolverState StateBefore { get; }
-    public SolverState StateAfter { get; }
+    public ISolvingState StateBefore { get; }
+    public ISolvingState StateAfter { get; }
     public HighlightManager HighlightManager { get; }
     public bool FromSolving { get; }
 }

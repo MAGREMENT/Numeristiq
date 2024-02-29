@@ -249,7 +249,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
         _centerCells = centerCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

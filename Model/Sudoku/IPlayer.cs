@@ -28,7 +28,7 @@ public interface IPlayer : IPlayerState
     public void MoveBack();
     public void MoveForward();
     public void Paste(Sudoku s);
-    public void Paste(SolverState ss);
+    public void Paste(ArraySolvingState ss);
 }
 
 public delegate void OnChange();

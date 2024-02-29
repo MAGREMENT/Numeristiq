@@ -40,7 +40,7 @@ public class CommonCellsStrategy : TectonicStrategy
 
 public class CommonCellsReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return ChangeReport.Default(changes);
     }

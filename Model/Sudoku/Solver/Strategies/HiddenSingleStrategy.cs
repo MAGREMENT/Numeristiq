@@ -64,20 +64,20 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), Explanation(changes));
     }
 
-    private static string Description(IReadOnlyList<SolverChange> changes)
+    private static string Description(IReadOnlyList<SolverProgress> changes)
     {
         if (changes.Count != 1) return "";
 
         return $"Hidden Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }
 
-    private ExplanationElement? Explanation(IReadOnlyList<SolverChange> changes)
+    private ExplanationElement? Explanation(IReadOnlyList<SolverProgress> changes)
     {
         if (changes.Count != 1) return null;
 

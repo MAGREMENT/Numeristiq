@@ -187,7 +187,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder
         _candidate = candidate;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

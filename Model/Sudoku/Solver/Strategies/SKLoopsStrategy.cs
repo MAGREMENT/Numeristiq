@@ -321,7 +321,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();

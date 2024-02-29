@@ -1,7 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using Model;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;
@@ -26,9 +25,9 @@ public partial class ExplanationWindow : IExplanationHighlighter
         {
             for (int col = 0; col < 9; col++)
             {
-                var current = log.StateBefore.Get(row, col);
-                if(current.IsPossibilities) Grid.SetCellTo(row, col, current.AsPossibilities.ToArray(), CellColor.Black);
-                else Grid.SetCellTo(row, col, current.AsNumber, CellColor.Black);
+                var solved = log.StateBefore[row, col];
+                if(solved == 0) Grid.SetCellTo(row, col, log.StateBefore.PossibilitiesAt(row, col).ToArray(), CellColor.Black);
+                else Grid.SetCellTo(row, col, solved, CellColor.Black);
             }
         }
         Grid.Refresh();

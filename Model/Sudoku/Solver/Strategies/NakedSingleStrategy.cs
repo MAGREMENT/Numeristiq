@@ -30,13 +30,13 @@ public class NakedSingleStrategy : SudokuStrategy
 
 public class NakedSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
     }
 
-    private static string Description(IReadOnlyList<SolverChange> changes)
+    private static string Description(IReadOnlyList<SolverProgress> changes)
     {
         return changes.Count != 1 ? "" : $"Naked Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }

@@ -80,15 +80,13 @@ public class LogManagedChangeBuffer : IChangeBuffer
 
     public void PushCommit(BuiltChangeCommit commit)
     {
-        _producer.LogManager.StartPush();
+        var state = _producer.CurrentState;
 
         foreach (var change in commit.Changes)
         {
             _producer.ExecuteChange(change);
         }
-        _producer.LogManager.AddFromReport(commit.Report, commit.Changes, commit.Maker);
-        
-        _producer.LogManager.StopPush();
+        _producer.LogManager.AddFromReport(commit.Report, commit.Changes, commit.Maker, state);
     }
 }
 
@@ -101,7 +99,7 @@ public class ReturnPushHandler : IPushHandler
 {
     public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
-        producer.LogManager.StartPush();
+        var state = producer.CurrentState;
         var snapshot = producer.TakeSnapshot();
 
         var commit = commits[0];
@@ -111,8 +109,7 @@ public class ReturnPushHandler : IPushHandler
             producer.ExecuteChange(change);
         }
 
-        producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot), commit.Changes, pusher);
-        producer.LogManager.StopPush();
+        producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot), commit.Changes, pusher, state);
     }
 }
 
@@ -120,12 +117,12 @@ public class WaitForAllPushHandler : IPushHandler
 {
     public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
-        producer.LogManager.StartPush();
+        var state = producer.CurrentState;
         var snapshot = producer.TakeSnapshot();
         
         foreach (var commit in commits)
         {
-            List<SolverChange> impactfulChanges = new();
+            List<SolverProgress> impactfulChanges = new();
             
             foreach (var change in commit.Changes)
             {
@@ -134,10 +131,8 @@ public class WaitForAllPushHandler : IPushHandler
 
             if (impactfulChanges.Count == 0) continue;
             
-            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, pusher);
+            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, pusher, state);
         }
-        
-        producer.LogManager.StopPush();
     }
 }
 
@@ -147,7 +142,7 @@ public class ChooseBestPushHandler : IPushHandler
     
     public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
-        producer.LogManager.StartPush();
+        var state = producer.CurrentState;
         var snapshot = producer.TakeSnapshot();
 
         var best = commits[0];
@@ -163,8 +158,7 @@ public class ChooseBestPushHandler : IPushHandler
             producer.ExecuteChange(change);
         }
 
-        producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, snapshot), best.Changes, pusher);
-        producer.LogManager.StopPush();
+        producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, snapshot), best.Changes, pusher, state);
     }
 }
 
@@ -193,12 +187,12 @@ public class DefaultCommitComparer : ICustomCommitComparer
 
         foreach (var change in first.Changes)
         {
-            score += change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
+            score += change.ProgressType == ProgressType.SolutionAddition ? SolutionAddedValue : PossibilityRemovedValue;
         }
 
         foreach (var change in second.Changes)
         {
-            score -= change.ChangeType == ChangeType.Solution ? SolutionAddedValue : PossibilityRemovedValue;
+            score -= change.ProgressType == ProgressType.SolutionAddition ? SolutionAddedValue : PossibilityRemovedValue;
         }
 
         return score;

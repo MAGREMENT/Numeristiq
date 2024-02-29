@@ -410,7 +410,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -443,7 +443,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
         _link = link;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -477,7 +477,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -514,7 +514,7 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
         _stronglyLinkedPossibility = stronglyLinkedPossibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

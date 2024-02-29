@@ -262,7 +262,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {
@@ -306,7 +306,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

@@ -162,7 +162,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {
@@ -212,7 +212,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
         _gn2 = gn2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         List<CellPossibility> cells = new(4);
         

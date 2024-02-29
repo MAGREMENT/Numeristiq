@@ -12,7 +12,7 @@ public class Settings : ISolverSettings, IPlayerSettings, IGlobalSettings
     private int _delayBeforeTransition = 350;
     private int _delayAfterTransition = 350;
     private bool _uniquenessAllowed = true;
-    private ChangeType _actionOnCellChange = ChangeType.Solution;
+    private ProgressType _actionOnCellProgress = ProgressType.SolutionAddition;
     private bool _transformSoloPossibilityIntoGiven = true;
     private CellColor _givenColor = CellColor.Black;
     private CellColor _solvingColor = CellColor.Black;
@@ -79,12 +79,12 @@ public class Settings : ISolverSettings, IPlayerSettings, IGlobalSettings
             AnySettingChanged?.Invoke();
         }
     }
-    public ChangeType ActionOnCellChange
+    public ProgressType ActionOnCellProgress
     {
-        get => _actionOnCellChange;
+        get => _actionOnCellProgress;
         set
         {
-            _actionOnCellChange = value;
+            _actionOnCellProgress = value;
             AnySettingChanged?.Invoke();
         }
     }
@@ -193,7 +193,7 @@ public class Settings : ISolverSettings, IPlayerSettings, IGlobalSettings
         DelayBeforeTransition = DAO.DelayBeforeTransition;
         DelayAfterTransition = DAO.DelayAfterTransition;
         UniquenessAllowed = DAO.UniquenessAllowed;
-        ActionOnCellChange = DAO.ActionOnCellChange;
+        ActionOnCellProgress = DAO.ActionOnCellProgress;
         TransformSoloPossibilityIntoGiven = DAO.TransformSoloPossibilityIntoGiven;
         GivenColor = DAO.GivenColor;
         SolvingColor = DAO.SolvingColor;
@@ -209,7 +209,7 @@ public class Settings : ISolverSettings, IPlayerSettings, IGlobalSettings
     {
         return new SettingsDAO(StateShown, TranslationType,
             DelayBeforeTransition, DelayAfterTransition, UniquenessAllowed,
-            ActionOnCellChange, TransformSoloPossibilityIntoGiven,
+            ActionOnCellProgress, TransformSoloPossibilityIntoGiven,
             GivenColor, SolvingColor, SidePriority, ShowSameCellLinks,
             MultiColorHighlighting, StartAngle, RotationDirection, Theme);
     }

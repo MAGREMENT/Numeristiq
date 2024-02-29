@@ -39,7 +39,7 @@ public class BruteForceStrategy : SudokuStrategy
 
 public class BruteForceReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return ChangeReport.Default(changes);
     }

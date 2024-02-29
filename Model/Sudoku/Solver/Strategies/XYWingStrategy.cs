@@ -123,7 +123,7 @@ public class XYWingReportBuilder : IChangeReportBuilder
         _col2 = col2;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverChange> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

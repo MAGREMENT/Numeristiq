@@ -371,7 +371,7 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         if(_historic.PushBufferIfDifferent()) Changed?.Invoke();
     }
 
-    public void Paste(SolverState ss)
+    public void Paste(ArraySolvingState ss)
     {
         _historic.CreateBuffer();
 
