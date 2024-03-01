@@ -24,6 +24,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
         _possCount = new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1, minPossCount, maxPossCount);
         _maxNotInPatternCell = new IntSetting("Max out of pattern cells", new SliderViewInterface(1, 5, 1),
             maxNotInPatternCell);
+        AddSetting(_possCount);
         AddSetting(_maxNotInPatternCell);
     }
 

@@ -196,6 +196,7 @@
     "Locked": false,
     "Behavior": 0,
     "Settings": {
+      "Possibility count": "3,3",
       "Max out of pattern cells": "3"
     }
   },
