@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using Model;
+using Model.Helpers.Settings;
 using Model.Sudoku;
-using Model.Sudoku.Solver.Settings;
 using View.Themes;
 using View.Utility;
 

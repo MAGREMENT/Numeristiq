@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using Model;
 using Model.Sudoku;
 
 namespace Repository;

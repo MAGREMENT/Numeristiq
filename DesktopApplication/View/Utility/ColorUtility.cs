@@ -1,4 +1,5 @@
 ﻿using System.Windows.Media;
+using Model;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;

@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Model;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;

@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
-using Model.Sudoku.Solver.Settings;
-using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -17,19 +16,15 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private int _minPossCount;
-    private int _maxPossCount;
-    private int _maxNotInPatternCell;
+    private readonly MinMaxSetting _possCount;
+    private readonly IntSetting _maxNotInPatternCell;
     
     public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
-        _minPossCount = minPossCount;
-        _maxPossCount = maxPossCount;
-        _maxNotInPatternCell = maxNotInPatternCell;
-        ModifiableSettings.Add(new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1,
-            () => _minPossCount, i => _minPossCount = i, () => _maxPossCount, i => _maxPossCount = i));
-        ModifiableSettings.Add(new IntSetting("Max out of pattern cells", () => _maxNotInPatternCell,
-            i => _maxNotInPatternCell = i, new SliderViewInterface(1, 5, 1)));
+        _possCount = new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1, minPossCount, maxPossCount);
+        _maxNotInPatternCell = new IntSetting("Max out of pattern cells", new SliderViewInterface(1, 5, 1),
+            maxNotInPatternCell);
+        ModifiableSettings.Add(_maxNotInPatternCell);
     }
 
     
@@ -39,7 +34,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
         List<Cell> notPerfect = new();
         var poss = new ReadOnlyBitSet16();
 
-        for (int possCount = _minPossCount; possCount <= _maxPossCount; possCount++)
+        for (int possCount = _possCount.Value.Min; possCount <= _possCount.Value.Max; possCount++)
         {
             foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3,
                          CombinationCalculator.NumbersSample))
@@ -75,7 +70,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     {
         List<CellPossibility> outPossibilities = new();
         foreach (var combination in
-                 CombinationCalculator.EveryCombinationWithMaxCount(_maxNotInPatternCell, notPerfect))
+                 CombinationCalculator.EveryCombinationWithMaxCount(_maxNotInPatternCell.Value, notPerfect))
         {
             foreach (var cell in combination)
             {

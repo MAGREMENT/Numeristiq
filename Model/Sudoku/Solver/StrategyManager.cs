@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.Settings;
+using Model.Helpers.Settings;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver;

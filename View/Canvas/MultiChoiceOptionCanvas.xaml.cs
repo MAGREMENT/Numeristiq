@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using Model.Sudoku.Solver.Settings;
+using Model.Helpers.Settings;
 using View.Themes;
 
 namespace View.Canvas;

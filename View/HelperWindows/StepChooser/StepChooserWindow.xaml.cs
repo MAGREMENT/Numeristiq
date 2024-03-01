@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Windows;
+using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;

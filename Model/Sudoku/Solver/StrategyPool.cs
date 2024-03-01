@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Model.Sudoku.Solver.Settings;
+using Model.Helpers.Settings;
 using Model.Sudoku.Solver.Strategies;
 using Model.Sudoku.Solver.Strategies.AlternatingInference;
 using Model.Sudoku.Solver.Strategies.AlternatingInference.Algorithms;

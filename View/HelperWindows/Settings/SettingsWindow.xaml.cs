@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku;
 using Presenter.Sudoku;

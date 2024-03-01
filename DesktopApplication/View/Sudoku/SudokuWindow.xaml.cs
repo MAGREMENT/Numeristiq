@@ -1,10 +1,17 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.View.Sudoku.Pages;
 
 namespace DesktopApplication.View.Sudoku;
 
 public partial class SudokuWindow
 {
+    private readonly SudokuApplicationPresenter _presenter;
+    private readonly Page[] _pages;
+
+    private int _currentPage;
+    
     public SudokuWindow()
     {
         InitializeComponent();
@@ -12,7 +19,10 @@ public partial class SudokuWindow
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        Frame.Content = new SolvePage();
+        _presenter = new SudokuApplicationPresenter();
+        _pages = new Page[] { new SolvePage(_presenter), new PlayPage(_presenter), new ManagePage(_presenter), new GeneratePage(_presenter) };
+
+        Frame.Content = _pages[_currentPage];
     }
     
     private void Minimize()
@@ -23,5 +33,11 @@ public partial class SudokuWindow
     private void ChangeSize()
     {
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+    }
+
+    private void SwapPage(int number)
+    {
+        _currentPage = number;
+        Frame.Content = _pages[_currentPage];
     }
 }

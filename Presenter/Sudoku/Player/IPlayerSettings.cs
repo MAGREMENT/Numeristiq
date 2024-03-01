@@ -1,4 +1,5 @@
-﻿using Model.Sudoku;
+﻿using Model;
+using Model.Sudoku;
 
 namespace Presenter.Sudoku.Player;
 

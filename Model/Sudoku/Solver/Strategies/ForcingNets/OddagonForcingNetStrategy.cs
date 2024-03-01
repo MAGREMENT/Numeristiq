@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.Settings;
-using Model.Sudoku.Solver.Settings.Types;
+using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -18,20 +18,20 @@ public class OddagonForcingNetStrategy : SudokuStrategy
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private int _maxNumberOfGuardians;
+    private readonly IntSetting _maxNumberOfGuardians;
     
     public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
-        _maxNumberOfGuardians = maxNumberOfGuardians;
-        ModifiableSettings.Add(new IntSetting("Maximum number of guardians", () => _maxNumberOfGuardians,
-            i => _maxNumberOfGuardians = i, new SliderViewInterface(1, 20, 1)));
+        _maxNumberOfGuardians = new IntSetting("Maximum number of guardians",
+            new SliderViewInterface(1, 20, 1), maxNumberOfGuardians);
+        ModifiableSettings.Add(_maxNumberOfGuardians);
     }
     
     public override void Apply(IStrategyUser strategyUser)
     {
         foreach (var oddagon in strategyUser.PreComputer.AlmostOddagons())
         {
-            if (oddagon.Guardians.Length > _maxNumberOfGuardians) continue;
+            if (oddagon.Guardians.Length > _maxNumberOfGuardians.Value) continue;
 
             var colorings = new ColoringDictionary<ISudokuElement>[oddagon.Guardians.Length];
             for (int i = 0; i < oddagon.Guardians.Length; i++)

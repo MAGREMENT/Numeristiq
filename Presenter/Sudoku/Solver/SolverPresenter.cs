@@ -1,4 +1,5 @@
-﻿using Model.Helpers;
+﻿using Model;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;

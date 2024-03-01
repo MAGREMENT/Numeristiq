@@ -1,7 +1,7 @@
 ﻿using System;
 using Model.Utility;
 
-namespace Model.Sudoku.Solver.Settings;
+namespace Model.Helpers.Settings;
 
 public abstract class SettingValue
 {

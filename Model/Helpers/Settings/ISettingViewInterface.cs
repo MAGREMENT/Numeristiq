@@ -1,4 +1,4 @@
-﻿namespace Model.Sudoku.Solver.Settings;
+﻿namespace Model.Helpers.Settings;
 
 public interface ISettingViewInterface
 {

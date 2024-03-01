@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.PossibilityPosition;
-using Model.Sudoku.Solver.Settings;
-using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -18,20 +17,19 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private int _minSharedSeenCells;
+    private readonly IntSetting _minSharedSeenCells;
     
     public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
-        _minSharedSeenCells = minSharedSeenCells;
-        ModifiableSettings.Add(new IntSetting("Minimum shared seen cells", () => _minSharedSeenCells,
-            i => _minSharedSeenCells = i, new SliderViewInterface(5, 12, 1)));
+        _minSharedSeenCells = new IntSetting("Minimum shared seen cells", new SliderViewInterface(5, 12, 1), minSharedSeenCells);
+        ModifiableSettings.Add(_minSharedSeenCells);
     }
 
     public override void Apply(IStrategyUser strategyUser)
     {
         for (int start1 = 0; start1 < 9; start1 += 3)
         {
-            if (_minSharedSeenCells > 12) continue;
+            if (_minSharedSeenCells.Value > 12) continue;
             
             //Aligned in unit & box => 12 ssc
             for (int start2 = 0; start2 < 9; start2 += 3)
@@ -54,7 +52,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                 }
             }
             
-            if (_minSharedSeenCells > 6) continue;
+            if (_minSharedSeenCells.Value > 6) continue;
             
             //2 aligned boxes & 2 in same unit => 6 ssc
             for (int u = 0; u < 2; u++)
@@ -119,7 +117,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                 }
             }
             
-            if (_minSharedSeenCells > 5) continue;
+            if (_minSharedSeenCells.Value > 5) continue;
 
             //2 aligned boxes & different units => 5 ssc
             for (int start2 = 0; start2 < 9; start2 += 3)

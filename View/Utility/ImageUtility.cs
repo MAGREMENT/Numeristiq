@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media.Imaging;
+using Model;
 using Model.Sudoku;
 
 namespace View.Utility;

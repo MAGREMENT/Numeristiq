@@ -15,10 +15,10 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
         
-            <RadioButton Grid.Column="0" Style="{StaticResource BottomSelectionRadioButtonStyle}">Solve</RadioButton>
-            <RadioButton Grid.Column="1" Style="{StaticResource BottomSelectionRadioButtonStyle}">Play</RadioButton>
-            <RadioButton Grid.Column="2" Style="{StaticResource BottomSelectionRadioButtonStyle}">Manage</RadioButton>
-            <RadioButton Grid.Column="3" Style="{StaticResource BottomSelectionRadioButtonStyle}">Generate</RadioButton>
+            <RadioButton Grid.Column="0" Style="{StaticResource BottomSelectionRadioButtonStyle}" IsChecked="True" Checked="SwapTo0">Solve</RadioButton>
+            <RadioButton Grid.Column="1" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo1">Play</RadioButton>
+            <RadioButton Grid.Column="2" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo2">Manage</RadioButton>
+            <RadioButton Grid.Column="3" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo3">Generate</RadioButton>
         </Grid>
     </Border>
 </UserControl>

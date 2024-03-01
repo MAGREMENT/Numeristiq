@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 using Model.Helpers.Changes;
+using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Settings;
-using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -18,11 +18,10 @@ public class FishStrategy : SudokuStrategy
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private int _minUnitCount;
-    private int _maxUnitCount;
-    private int _maxNumberOfExoFins;
-    private int _maxNumberOfEndoFins;
-    private bool _allowCannibalism;
+    private readonly MinMaxSetting _unitCount;
+    private readonly IntSetting _maxNumberOfExoFins;
+    private readonly IntSetting _maxNumberOfEndoFins;
+    private readonly BooleanSetting _allowCannibalism;
 
     private static readonly CoverHouse[] CoverHouses =
     {
@@ -58,20 +57,14 @@ public class FishStrategy : SudokuStrategy
     public FishStrategy(int minUnitCount, int maxUnitCount, int maxNumberOfExoFins, int maxNumberOfEndoFins,
         bool allowCannibalism) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
-        _minUnitCount = minUnitCount;
-        _maxUnitCount = maxUnitCount;
-        _maxNumberOfExoFins = maxNumberOfExoFins;
-        _maxNumberOfEndoFins = maxNumberOfEndoFins;
-        _allowCannibalism = allowCannibalism;
-        ModifiableSettings.Add(new MinMaxSetting("Unit count", 2, 4, 2, 5, 1,
-            () => _minUnitCount, i => _minUnitCount = i, () => _maxUnitCount,
-            i => _maxUnitCount = i));
-        ModifiableSettings.Add(new IntSetting("Max number of exo fins", () => _maxNumberOfExoFins,
-            i => _maxNumberOfExoFins = i, new SliderViewInterface(0, 5, 1)));
-        ModifiableSettings.Add(new IntSetting("Max number of endo fins", () => _maxNumberOfEndoFins,
-            i => _maxNumberOfEndoFins = i, new SliderViewInterface(0, 5, 1)));
-        ModifiableSettings.Add(new BooleanSetting("Allow cannibalism", () => _allowCannibalism,
-            b => _allowCannibalism = b));
+        _unitCount = new MinMaxSetting("Unit count", 2, 4, 2, 5, 1, minUnitCount, maxUnitCount);
+        _maxNumberOfExoFins = new IntSetting("Max number of exo fins", new SliderViewInterface(0, 5, 1), maxNumberOfExoFins);
+        _maxNumberOfEndoFins = new IntSetting("Max number of endo fins", new SliderViewInterface(0, 5, 1), maxNumberOfEndoFins);
+        _allowCannibalism = new BooleanSetting("Cannibalism allowed", allowCannibalism);
+        ModifiableSettings.Add(_unitCount);
+        ModifiableSettings.Add(_maxNumberOfExoFins);
+        ModifiableSettings.Add(_maxNumberOfEndoFins);
+        ModifiableSettings.Add(_allowCannibalism);
     }
     
     public override void Apply(IStrategyUser strategyUser)
@@ -87,7 +80,7 @@ public class FishStrategy : SudokuStrategy
                 if (UnitMethods.Get(current.Unit).Count(positions, current.Number) > MinUnitCount) possibleCoverHouses.Add(i);
             }
             
-            for (int unitCount = _minUnitCount; unitCount <= _maxUnitCount; unitCount++)
+            for (int unitCount = _unitCount.Value.Min; unitCount <= _unitCount.Value.Max; unitCount++)
             {
                 foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(unitCount, possibleCoverHouses))
                 {
@@ -116,12 +109,12 @@ public class FishStrategy : SudokuStrategy
 
             if (methods.Count(_toCover, house.Number) > 0)
             {
-                if (_maxNumberOfEndoFins == 0) return false;
+                if (_maxNumberOfEndoFins.Value == 0) return false;
 
                 foreach (var c in methods.EveryCell(_toCover, house.Number))
                 {
                     _endoFins.Add(c);
-                    if (_endoFins.Count > _maxNumberOfEndoFins) return false;
+                    if (_endoFins.Count > _maxNumberOfEndoFins.Value) return false;
                 }
             }
             
@@ -133,7 +126,7 @@ public class FishStrategy : SudokuStrategy
             _buffer.Void();
         }
 
-        if (_maxNumberOfExoFins == 0)
+        if (_maxNumberOfExoFins.Value == 0)
         {
             foreach (var coverSet in _toCover.PossibleCoverHouses(combination.Length, _baseSet, UnitMethods.All))
             {
@@ -185,7 +178,7 @@ public class FishStrategy : SudokuStrategy
             }
         }
 
-        if (_allowCannibalism) ProcessCannibalism(strategyUser, number, coverSet);
+        if (_allowCannibalism.Value) ProcessCannibalism(strategyUser, number, coverSet);
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new FishReportBuilder(new HashSet<CoverHouse>(_baseSet), coverSet, number,

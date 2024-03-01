@@ -1,5 +1,5 @@
+using Model.Helpers.Settings;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Settings;
 
 namespace Repository;
 

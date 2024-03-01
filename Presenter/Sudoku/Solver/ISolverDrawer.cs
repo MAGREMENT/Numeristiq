@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model;
+using Model.Helpers.Changes;
 using Model.Sudoku;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;

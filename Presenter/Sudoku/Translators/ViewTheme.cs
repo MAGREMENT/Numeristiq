@@ -1,4 +1,5 @@
-﻿using Model.Sudoku;
+﻿using Model;
+using Model.Sudoku;
 using Model.Utility;
 
 namespace Presenter.Sudoku.Translators;

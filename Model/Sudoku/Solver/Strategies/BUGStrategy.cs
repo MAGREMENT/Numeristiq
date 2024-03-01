@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Settings;
-using Model.Sudoku.Solver.Settings.Types;
+using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -14,19 +13,18 @@ public class BUGStrategy : SudokuStrategy
     
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private int _maxAdditionalCandidates;
+    private readonly IntSetting _maxAdditionalCandidates;
     
     public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
     {
-        _maxAdditionalCandidates = maxAdditionalCandidates;
+        _maxAdditionalCandidates = new IntSetting("Max additional candidates", new SliderViewInterface(1, 5, 1), maxAdditionalCandidates);
+        ModifiableSettings.Add(_maxAdditionalCandidates);
         UniquenessDependency = UniquenessDependency.FullyDependent;
-        ModifiableSettings.Add(new IntSetting("Max additional candidates", () => _maxAdditionalCandidates,
-            i => _maxAdditionalCandidates = i, new SliderViewInterface(1, 5, 1)));
     }
     
     public override void Apply(IStrategyUser strategyUser)
     {
-        List<CellPossibility> additionalCandidates = new(_maxAdditionalCandidates);
+        List<CellPossibility> additionalCandidates = new(_maxAdditionalCandidates.Value);
         for (int number = 1; number <= 9; number++)
         {
             var pos = strategyUser.PositionsFor(number);
@@ -41,7 +39,7 @@ public class BUGStrategy : SudokuStrategy
                 }
             }
 
-            if (copy.Count + additionalCandidates.Count > _maxAdditionalCandidates) return;
+            if (copy.Count + additionalCandidates.Count > _maxAdditionalCandidates.Value) return;
             foreach (var cell in copy)
             {
                 additionalCandidates.Add(new CellPossibility(cell, number));

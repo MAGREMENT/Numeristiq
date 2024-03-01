@@ -26,6 +26,6 @@
         
         <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Width="1300" Height="660" x:Name="Frame"/>
         
-        <controls1:BottomSelectionControl Grid.Row="2" Height="50"/>
+        <controls1:BottomSelectionControl PageSwapped="SwapPage" Grid.Row="2" Height="50"/>
     </Grid>
 </Window>

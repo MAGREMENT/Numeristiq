@@ -1,14 +1,15 @@
-﻿using DesktopApplication.Controllers;
+﻿using DesktopApplication.Presenter.Sudoku;
+using DesktopApplication.Presenter.Sudoku.Solve;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
-public partial class SolvePage : ISolvePageView
+public partial class SolvePage
 {
-    private readonly SolvePageController _controller;
+    private readonly SudokuSolvePresenter _presenter;
     
-    public SolvePage()
+    public SolvePage(SudokuApplicationPresenter appPresenter)
     {
         InitializeComponent();
-        _controller = ControllerDistributor.Initialize(this);
+        _presenter = appPresenter.SolvePresenter;
     }
 }

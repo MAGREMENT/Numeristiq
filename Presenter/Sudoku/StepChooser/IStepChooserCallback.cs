@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model;
+using Model.Helpers.Changes;
 using Model.Sudoku;
 using Presenter.Sudoku.Solver;
 

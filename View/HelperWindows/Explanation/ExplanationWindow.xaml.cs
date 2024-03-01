@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
+using Model;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;

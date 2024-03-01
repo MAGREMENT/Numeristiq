@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Model.Helpers.Changes;
-using Model.Sudoku.Solver;
+﻿using Model.Helpers.Changes;
+using Model.Sudoku;
 using Model.Utility;
 
-namespace Model.Sudoku;
+namespace Model;
 
 public interface IRepository<T> where T : class?
 {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.PossibilityPosition;
-using Model.Sudoku.Solver.Settings.Types;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -15,14 +15,13 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private bool _allowMissingCandidates;
+    private readonly BooleanSetting _allowMissingCandidates;
     
     public UniqueRectanglesStrategy(bool allowMissingCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
-        _allowMissingCandidates = allowMissingCandidates;
+        _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", allowMissingCandidates);
         UniquenessDependency = UniquenessDependency.FullyDependent;
-        ModifiableSettings.Add(new BooleanSetting("Missing candidates allowed", () => _allowMissingCandidates,
-            b => _allowMissingCandidates = b));
+        ModifiableSettings.Add(_allowMissingCandidates);
     }
     
     public override void Apply(IStrategyUser strategyUser)
@@ -315,7 +314,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     {
         if (!possibilities.Contains(biValue.One))
         {
-            if (_allowMissingCandidates && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.One))
+            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.One))
             {
                 possibilities += biValue.One;
             }
@@ -324,7 +323,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         
         if (!possibilities.Contains(biValue.Two))
         {
-            if (_allowMissingCandidates && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.Two))
+            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.Two))
             {
                 possibilities += biValue.Two;
             }
@@ -339,7 +338,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     {
         if (!possibilities.Contains(biValue.One))
         {
-            if (_allowMissingCandidates && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.One))
+            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.One))
             {
                 possibilities += biValue.One;
                 oneWasChanged = true;
@@ -349,7 +348,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         
         if (!possibilities.Contains(biValue.Two))
         {
-            if (_allowMissingCandidates && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.Two))
+            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.Two))
             {
                 possibilities += biValue.Two;
                 twoWasChanged = true;

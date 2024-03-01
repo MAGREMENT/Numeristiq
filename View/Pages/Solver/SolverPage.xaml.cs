@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Model;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
 using Model.Sudoku;

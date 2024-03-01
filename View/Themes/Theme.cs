@@ -1,4 +1,5 @@
 using System.Windows.Media;
+using Model;
 using Model.Sudoku;
 using Presenter.Sudoku.Translators;
 using View.Utility;
