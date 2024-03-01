@@ -20,6 +20,7 @@ public partial class SudokuWindow
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
         _presenter = new SudokuApplicationPresenter();
+        _presenter.InitializeApplication();
         _pages = new Page[] { new SolvePage(_presenter), new PlayPage(_presenter), new ManagePage(_presenter), new GeneratePage(_presenter) };
 
         Frame.Content = _pages[_currentPage];

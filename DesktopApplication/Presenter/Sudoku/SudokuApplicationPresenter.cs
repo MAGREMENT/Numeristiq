@@ -1,14 +1,46 @@
-﻿using DesktopApplication.Presenter.Sudoku.Generate;
+﻿using System.Collections.Generic;
+using DesktopApplication.Presenter.Sudoku.Generate;
 using DesktopApplication.Presenter.Sudoku.Manage;
 using DesktopApplication.Presenter.Sudoku.Play;
 using DesktopApplication.Presenter.Sudoku.Solve;
+using Model;
+using Model.Sudoku.Solver;
+using Repository;
 
 namespace DesktopApplication.Presenter.Sudoku;
 
 public class SudokuApplicationPresenter
 {
-    public SudokuSolvePresenter SolvePresenter { get; } = new();
-    public SudokuPlayPresenter PlayPresenter { get; } = new();
-    public SudokuManagePresenter ManagePresenter { get; } = new();
-    public SudokuGeneratePresenter GeneratePresenter { get; } = new();
+    private readonly SudokuSolver _solver = new();
+    private IRepository<IReadOnlyList<SudokuStrategy>>? _strategiesRepository;
+    
+    public SudokuSolvePresenter Initialize(ISudokuSolveView view)
+    {
+        return new SudokuSolvePresenter(view, _solver);
+    }
+
+    public SudokuPlayPresenter Initialize(ISudokuPlayView view)
+    {
+        return new SudokuPlayPresenter(view);
+    }
+    
+    public SudokuManagePresenter Initialize(ISudokuManageView view)
+    {
+        return new SudokuManagePresenter(view);
+    }
+    
+    public SudokuGeneratePresenter Initialize(ISudokuGenerateView view)
+    {
+        return new SudokuGeneratePresenter(view);
+    }
+
+    public void InitializeApplication()
+    {
+        _strategiesRepository = new SudokuStrategiesJSONRepository("strategies.json");
+        if (_strategiesRepository.Initialize(true))
+        {
+            _solver.StrategyManager.AddStrategies(_strategiesRepository.Download());
+        }
+        else _strategiesRepository = null;
+    }
 }

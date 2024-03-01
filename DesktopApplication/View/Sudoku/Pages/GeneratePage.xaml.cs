@@ -1,15 +1,14 @@
-﻿using System.Windows.Controls;
-using DesktopApplication.Presenter.Sudoku;
+﻿using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Generate;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
-public partial class GeneratePage : Page
+public partial class GeneratePage : ISudokuGenerateView
 {
     private readonly SudokuGeneratePresenter _presenter;
     public GeneratePage(SudokuApplicationPresenter appPresenter)
     {
         InitializeComponent();
-        _presenter = new SudokuGeneratePresenter();
+        _presenter = appPresenter.Initialize(this);
     }
 }

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Model;
+using Model.Helpers;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
@@ -171,11 +172,6 @@ public class SudokuBoard : DrawingBoard
         KeyDown += AnalyseKeyDown;
         KeyUp += AnalyseKeyUp;
     }
-    
-    public void ClearNumbers()
-    {
-        Layers[NumbersIndex].Clear();
-    }
 
     public void ClearHighlighting()
     {
@@ -189,19 +185,28 @@ public class SudokuBoard : DrawingBoard
     {
        Layers[CursorIndex].Clear();
     }
-    
-    public void ShowGridPossibility(int row, int col, int possibility)
-    {
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
-            _numberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
-                _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
-    }
 
-    public void ShowSolution(int row, int col, int possibility)
+    public void Show(ITranslatable translatable)
     {
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _cellSize / 4 * 3, _numberBrush,
-            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), ComponentHorizontalAlignment.Center,
-            ComponentVerticalAlignment.Center));
+        Layers[NumbersIndex].Clear();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var solved = translatable[row, col];
+                if (solved == 0)
+                {
+                    foreach (var p in translatable.PossibilitiesAt(row, col).EnumeratePossibilities())
+                    {
+                        ShowGridPossibility(row, col, p);
+                    }
+                }
+                else ShowSolution(row, col, solved);
+            }
+        }
+        
+        Refresh();
     }
 
     public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location)
@@ -674,5 +679,19 @@ public class SudokuBoard : DrawingBoard
 
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
         }
+    }
+    
+    private void ShowGridPossibility(int row, int col, int possibility)
+    {
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
+            _numberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
+                _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+    }
+
+    private void ShowSolution(int row, int col, int possibility)
+    {
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _cellSize / 4 * 3, _numberBrush,
+            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), ComponentHorizontalAlignment.Center,
+            ComponentVerticalAlignment.Center));
     }
 }

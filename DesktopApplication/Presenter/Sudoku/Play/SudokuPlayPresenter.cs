@@ -2,5 +2,10 @@
 
 public class SudokuPlayPresenter
 {
-    
+    private readonly ISudokuPlayView _view;
+
+    public SudokuPlayPresenter(ISudokuPlayView view)
+    {
+        _view = view;
+    }
 }
