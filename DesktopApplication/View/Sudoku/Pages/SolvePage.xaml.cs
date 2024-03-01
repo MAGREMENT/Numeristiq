@@ -1,4 +1,5 @@
-﻿using DesktopApplication.Presenter.Sudoku;
+﻿using System.Windows;
+using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using Model.Helpers;
 
@@ -23,7 +24,12 @@ public partial class SolvePage : ISudokuSolveView
 
     public void DisplaySudoku(ITranslatable translatable)
     {
-        Board.Show(translatable);
+        Board.Dispatcher.Invoke(() => Board.Show(translatable));
+    }
+
+    public void SetClues(ITranslatable translatable)
+    {
+        Board.SolutionsToSpecialBrush(translatable);
     }
 
     #endregion
@@ -37,5 +43,10 @@ public partial class SolvePage : ISudokuSolveView
     {
         
         _presenter.OnSudokuAsStringBoxShowed();
+    }
+
+    private void Solve(object sender, RoutedEventArgs e)
+    {
+        _presenter.FullSolve();
     }
 }

@@ -7,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Model;
 using Model.Helpers;
-using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Utility;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
@@ -36,10 +35,13 @@ public class SudokuBoard : DrawingBoard
     private double _size;
     
     private Brush _linkBrush = Brushes.Indigo;
-    private Brush _numberBrush = Brushes.Black;
+    private Brush _defaultNumberBrush = Brushes.Black;
+    private Brush _specialNumberBrush = Brushes.Orange;
     private Brush _backgroundBrush = Brushes.White;
     private Brush _lineBrush = Brushes.Black;
     private Brush _cursorBrush = Brushes.MediumPurple;
+
+    private readonly bool[,] _isSpecialNumberBrush = new bool[9, 9];
 
     public Brush LinkBrush
     {
@@ -51,12 +53,22 @@ public class SudokuBoard : DrawingBoard
         }
     }
 
-    public Brush NumberBrush
+    public Brush DefaultNumberBrush
     {
         set
         {
-            _numberBrush = value;
-            SetLayerBrush(NumbersIndex, value);
+            _defaultNumberBrush = value;
+            ReEvaluateNumberBrushes();
+            Refresh();
+        }
+    }
+
+    public Brush SpecialNumberBrush
+    {
+        set
+        {
+            _specialNumberBrush = value;
+            ReEvaluateNumberBrushes();
             Refresh();
         }
     }
@@ -209,6 +221,20 @@ public class SudokuBoard : DrawingBoard
         Refresh();
     }
 
+    public void SolutionsToSpecialBrush(ITranslatable translatable)
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                _isSpecialNumberBrush[row, col] = translatable[row, col] != 0;
+            }
+        }
+        
+        ReEvaluateNumberBrushes();
+        Refresh();
+    }
+
     public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location)
     {
         var builder = new StringBuilder();
@@ -229,7 +255,7 @@ public class SudokuBoard : DrawingBoard
             _ => 3
         };
 
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, _numberBrush,
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, _defaultNumberBrush,
             new Rect(GetLeft(col), GetTop(row, n), _cellSize, _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
@@ -509,9 +535,9 @@ public class SudokuBoard : DrawingBoard
                 break;
         }
     }
-    
-    //Private-----------------------------------------------------------------------------------------------------------
-    
+
+    #region Private
+
     private void AddShortenedLine(Point from, Point to, bool isWeak)
     {
         var shortening = _possibilitySize / 2;
@@ -684,14 +710,43 @@ public class SudokuBoard : DrawingBoard
     private void ShowGridPossibility(int row, int col, int possibility)
     {
         Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
-            _numberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
+            _defaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
                 _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
     }
 
     private void ShowSolution(int row, int col, int possibility)
     {
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _cellSize / 4 * 3, _numberBrush,
-            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), ComponentHorizontalAlignment.Center,
+        var brush = _isSpecialNumberBrush[row, col] ? _specialNumberBrush : _defaultNumberBrush;
+        Layers[NumbersIndex].Add(new SolutionComponent(possibility.ToString(), _cellSize / 4 * 3, brush,
+            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), row, col, ComponentHorizontalAlignment.Center,
             ComponentVerticalAlignment.Center));
+    }
+
+    private void ReEvaluateNumberBrushes()
+    {
+        foreach (var component in Layers[NumbersIndex])
+        {
+            if (component is not SolutionComponent s) continue;
+            
+            var brush = _isSpecialNumberBrush[s.Row, s.Column] ? _specialNumberBrush : _defaultNumberBrush;
+            component.SetBrush(brush);
+        }
+    }
+
+    #endregion
+    
+    
+}
+
+public class SolutionComponent : TextInRectangleComponent
+{
+    public int Row { get; }
+    public int Column { get; }
+    
+    public SolutionComponent(string text, double size, Brush foreground, Rect rect, int row, int col
+        , ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment) : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
+    {
+        Row = row;
+        Column = col;
     }
 }

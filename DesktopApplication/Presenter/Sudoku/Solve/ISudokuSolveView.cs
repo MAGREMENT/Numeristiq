@@ -6,4 +6,5 @@ public interface ISudokuSolveView
 {
     void SetSudokuAsString(string s);
     void DisplaySudoku(ITranslatable translatable);
+    void SetClues(ITranslatable translatable);
 }

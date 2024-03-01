@@ -8,15 +8,14 @@ public abstract class SudokuStrategy : ICommitMaker
 {
     private bool _enabled = true;
     private bool _locked;
+    private List<ISetting> _settings = new();
     
     public string Name { get; protected init; }
     public StrategyDifficulty Difficulty { get; protected init; }
     public UniquenessDependency UniquenessDependency { get; protected init; }
     public OnCommitBehavior OnCommitBehavior { get; set; }
     public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
-    public IReadOnlyList<ISetting> Settings => ModifiableSettings.ToArray();
-
-    protected List<ISetting> ModifiableSettings { get; } = new();
+    public IReadOnlyList<ISetting> Settings => _settings;
 
     public bool Enabled
     {
@@ -43,6 +42,11 @@ public abstract class SudokuStrategy : ICommitMaker
         Difficulty = difficulty;
         UniquenessDependency = UniquenessDependency.NotDependent;
         OnCommitBehavior = defaultBehavior;
+    }
+
+    protected void AddSetting(ISetting s)
+    {
+        _settings.Add(s);
     }
     
     public abstract void Apply(IStrategyUser strategyUser);

@@ -26,9 +26,9 @@ public abstract class DrawingBoard : FrameworkElement
             _layers[i] = new List<IDrawableComponent>();
         }
     }
-    
-    //DrawingNecessities------------------------------------------------------------------------------------------------
-    
+
+    #region DrawingNecessities
+
     // Provide a required override for the VisualChildrenCount property.
     protected override int VisualChildrenCount => 1;
 
@@ -49,8 +49,8 @@ public abstract class DrawingBoard : FrameworkElement
         RemoveLogicalChild(_visual);
         RemoveVisualChild(_visual);
     }
-    
-    //------------------------------------------------------------------------------------------------------------------
+
+    #endregion
     
     public void Refresh()
     {

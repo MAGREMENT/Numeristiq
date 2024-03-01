@@ -79,6 +79,38 @@
 			    </Setter.Value>
 		    </Setter>
 	    </Style>
+	    
+	    <Style x:Key="SolvePageButtonStyle" TargetType="Button">
+		    <Setter Property="Margin" Value="5"/>
+		    <Setter Property="Background" Value="{StaticResource Background2}"/>
+		    <Setter Property="BorderBrush" Value="{StaticResource Background3}" />
+		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="FontSize" Value="18"/>
+		    <Setter Property="Padding" Value="10"></Setter>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="Button">
+					    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
+					            Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}"
+					            Padding="{TemplateBinding Padding}">
+						    <ContentPresenter
+							    Margin="0"
+							    HorizontalAlignment="Center"
+							    VerticalAlignment="Center"
+							    RecognizesAccessKey="True"
+							    Content="{TemplateBinding Content}"/>
+					    </Border>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsMouseOver" Value="True">
+							    <Setter Property="Background" Value="{StaticResource Background3}"/>
+							    <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
+						    </Trigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
         
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
 			<Setter Property="Foreground" Value="{StaticResource Text}" />
@@ -87,7 +119,7 @@
 			<Setter Property="IsTabStop" Value="False" />
 			<Setter Property="Template">
 				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type Button}">
+					<ControlTemplate TargetType="Button">
 						<Border
 							x:Name="Border"
 							Background="Transparent"
@@ -124,7 +156,7 @@
 			<Setter Property="IsTabStop" Value="False" />
 			<Setter Property="Template">
 				<Setter.Value>
-					<ControlTemplate TargetType="{x:Type Button}">
+					<ControlTemplate TargetType="Button">
 						<Border
 							x:Name="Border"
 							Background="Transparent"

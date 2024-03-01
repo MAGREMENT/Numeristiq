@@ -61,10 +61,10 @@ public class FishStrategy : SudokuStrategy
         _maxNumberOfExoFins = new IntSetting("Max number of exo fins", new SliderViewInterface(0, 5, 1), maxNumberOfExoFins);
         _maxNumberOfEndoFins = new IntSetting("Max number of endo fins", new SliderViewInterface(0, 5, 1), maxNumberOfEndoFins);
         _allowCannibalism = new BooleanSetting("Cannibalism allowed", allowCannibalism);
-        ModifiableSettings.Add(_unitCount);
-        ModifiableSettings.Add(_maxNumberOfExoFins);
-        ModifiableSettings.Add(_maxNumberOfEndoFins);
-        ModifiableSettings.Add(_allowCannibalism);
+        AddSetting(_unitCount);
+        AddSetting(_maxNumberOfExoFins);
+        AddSetting(_maxNumberOfEndoFins);
+        AddSetting(_allowCannibalism);
     }
     
     public override void Apply(IStrategyUser strategyUser)

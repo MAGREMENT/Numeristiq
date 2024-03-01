@@ -21,7 +21,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     {
         _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", allowMissingCandidates);
         UniquenessDependency = UniquenessDependency.FullyDependent;
-        ModifiableSettings.Add(_allowMissingCandidates);
+        AddSetting(_allowMissingCandidates);
     }
     
     public override void Apply(IStrategyUser strategyUser)

@@ -5,6 +5,8 @@ namespace DesktopApplication.View.Sudoku.Controls;
 
 public partial class SudokuTextBoxControl
 {
+    private bool _callNewSudoku = true;
+    
     public event OnNewSudoku? NewSudoku;
     public event OnShow? Showed;
     
@@ -21,12 +23,14 @@ public partial class SudokuTextBoxControl
 
     public void SetText(string s)
     {
+        _callNewSudoku = false;
         TextBox.Text = s;
+        _callNewSudoku = true;
     }
 
     private void TextChanged(object sender, TextChangedEventArgs e)
     {
-        NewSudoku?.Invoke(TextBox.Text);
+        if(_callNewSudoku) NewSudoku?.Invoke(TextBox.Text);
     }
 }
 
