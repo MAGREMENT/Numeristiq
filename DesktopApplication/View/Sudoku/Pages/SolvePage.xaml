@@ -37,14 +37,14 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
-                
+            <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Height="460" x:Name="LogViewer">
+                <StackPanel MinHeight="460" x:Name="LogPanel"/>
             </ScrollViewer>
             
-            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Click="Solve">Solve</Button>
-            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}">Advance</Button>
-            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}">Choose Step</Button>
-            <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}">Clear</Button>
+            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Click="Solve" x:Name="SolveButton">Solve</Button>
+            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Click="Advance" x:Name="AdvanceButton">Advance</Button>
+            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
+            <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Click="Clear" x:Name="ClearButton">Clear</Button>
         </Grid>
         
         <controls:SudokuTextBoxControl Grid.Column="0" Grid.ColumnSpan="3" x:Name="SudokuAsString" Showed="SudokuTextBoxShowed" NewSudoku="SetNewSudoku"/>

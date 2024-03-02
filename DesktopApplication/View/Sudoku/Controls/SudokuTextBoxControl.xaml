@@ -14,16 +14,17 @@
         <Border Grid.Row="0" Background="{StaticResource Background2}" Padding="5" x:Name="UpperPart" Visibility="Collapsed">
             <TextBox x:Name="TextBox" Background="{StaticResource Background3}" FontSize="15"
                      BorderBrush="{StaticResource Text}" Foreground="{StaticResource Text}"
-                     TextChanged="TextChanged"/>
+                     TextChanged="OnTextChange"/>
         </Border>
         
-        <Button Grid.Row="1" HorizontalAlignment="Center" Background="{StaticResource Background2}" Click="Show">
+        <Button Grid.Row="1" HorizontalAlignment="Center" Template="{StaticResource LightUpButton}"
+                BorderBrush="{StaticResource Text}" Click="Show">
             <Path
                 Width="20"
                 Height="10"
-                Data="M 4,4 10, 8 16, 4"
                 Stroke="{StaticResource Text}"
-                StrokeThickness="1" />
+                StrokeThickness="1"
+                x:Name="Arrow"/>
         </Button>
     </Grid>
 </UserControl>

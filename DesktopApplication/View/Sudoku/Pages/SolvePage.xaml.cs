@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
+using DesktopApplication.View.Sudoku.Controls;
 using Model.Helpers;
+using Model.Helpers.Logs;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
@@ -32,6 +34,33 @@ public partial class SolvePage : ISudokuSolveView
         Board.SolutionsToSpecialBrush(translatable);
     }
 
+    public void DisableSolveActions()
+    {
+        SolveButton.IsEnabled = false;
+        AdvanceButton.IsEnabled = false;
+        ChooseStepButton.IsEnabled = false;
+        ClearButton.IsEnabled = false;
+    }
+
+    public void EnableSolveActions()
+    {
+        SolveButton.IsEnabled = true;
+        AdvanceButton.IsEnabled = true;
+        ChooseStepButton.IsEnabled = true;
+        ClearButton.IsEnabled = true;
+    }
+
+    public void AddLog(ISolverLog log)
+    {
+        LogPanel.Dispatcher.Invoke(() => LogPanel.Children.Add(new LogControl(log)));
+        LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
+    }
+
+    public void ClearLogs()
+    {
+        LogPanel.Children.Clear();
+    }
+
     #endregion
 
     private void SetNewSudoku(string s)
@@ -47,6 +76,21 @@ public partial class SolvePage : ISudokuSolveView
 
     private void Solve(object sender, RoutedEventArgs e)
     {
-        _presenter.FullSolve();
+        _presenter.Solve(false);
+    }
+
+    private void Advance(object sender, RoutedEventArgs e)
+    {
+        _presenter.Solve(true);
+    }
+
+    private void ChooseStep(object sender, RoutedEventArgs e)
+    {
+        
+    }
+
+    private void Clear(object sender, RoutedEventArgs e)
+    {
+        _presenter.Clear();
     }
 }

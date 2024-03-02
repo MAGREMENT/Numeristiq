@@ -80,38 +80,35 @@
 		    </Setter>
 	    </Style>
 	    
+	    <ControlTemplate TargetType="Button" x:Key="LightUpButton">
+		    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
+		            Background="{StaticResource Background2}" Margin="{TemplateBinding Margin}"
+		            Padding="{TemplateBinding Padding}" x:Name="Border">
+			    <ContentPresenter
+				    Margin="0"
+				    HorizontalAlignment="Center"
+				    VerticalAlignment="Center"
+				    RecognizesAccessKey="True"
+				    Content="{TemplateBinding Content}"/>
+		    </Border>
+					    
+		    <ControlTemplate.Triggers>
+			    <Trigger Property="IsMouseOver" Value="True">
+				    <Setter TargetName="Border" Property="Background" Value="{StaticResource Background3}"/>
+				    <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
+			    </Trigger>
+		    </ControlTemplate.Triggers>
+	    </ControlTemplate>
+	    
 	    <Style x:Key="SolvePageButtonStyle" TargetType="Button">
 		    <Setter Property="Margin" Value="5"/>
-		    <Setter Property="Background" Value="{StaticResource Background2}"/>
-		    <Setter Property="BorderBrush" Value="{StaticResource Background3}" />
 		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="Padding" Value="10"></Setter>
-		    <Setter Property="Template">
-			    <Setter.Value>
-				    <ControlTemplate TargetType="Button">
-					    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
-					            Background="{TemplateBinding Background}" Margin="{TemplateBinding Margin}"
-					            Padding="{TemplateBinding Padding}">
-						    <ContentPresenter
-							    Margin="0"
-							    HorizontalAlignment="Center"
-							    VerticalAlignment="Center"
-							    RecognizesAccessKey="True"
-							    Content="{TemplateBinding Content}"/>
-					    </Border>
-					    
-					    <ControlTemplate.Triggers>
-						    <Trigger Property="IsMouseOver" Value="True">
-							    <Setter Property="Background" Value="{StaticResource Background3}"/>
-							    <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
-						    </Trigger>
-					    </ControlTemplate.Triggers>
-				    </ControlTemplate>
-			    </Setter.Value>
-		    </Setter>
+		    <Setter Property="Template" Value="{StaticResource LightUpButton}"/>
+		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"></Setter>
 	    </Style>
-        
+	    
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
 			<Setter Property="Foreground" Value="{StaticResource Text}" />
 			<Setter Property="Padding" Value="0" />

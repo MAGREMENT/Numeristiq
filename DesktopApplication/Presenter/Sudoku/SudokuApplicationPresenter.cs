@@ -4,6 +4,7 @@ using DesktopApplication.Presenter.Sudoku.Manage;
 using DesktopApplication.Presenter.Sudoku.Play;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using Model;
+using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver;
 using Repository;
 
@@ -42,5 +43,7 @@ public class SudokuApplicationPresenter
             _solver.StrategyManager.AddStrategies(_strategiesRepository.Download());
         }
         else _strategiesRepository = null;
+
+        _solver.ChangeBuffer = new LogManagedChangeBuffer(_solver);
     }
 }
