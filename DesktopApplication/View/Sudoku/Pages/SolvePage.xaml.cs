@@ -2,7 +2,7 @@
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Sudoku.Controls;
-using Model.Helpers;
+using Model;
 using Model.Helpers.Logs;
 
 namespace DesktopApplication.View.Sudoku.Pages;
@@ -10,6 +10,8 @@ namespace DesktopApplication.View.Sudoku.Pages;
 public partial class SolvePage : ISudokuSolveView
 {
     private readonly SudokuSolvePresenter _presenter;
+
+    private int _logOpen = -1;
     
     public SolvePage(SudokuApplicationPresenter appPresenter)
     {
@@ -19,19 +21,11 @@ public partial class SolvePage : ISudokuSolveView
 
     #region ISudokuSolveView
 
+    public ISudokuDrawer Drawer => Board;
+
     public void SetSudokuAsString(string s)
     {
         SudokuAsString.SetText(s);
-    }
-
-    public void DisplaySudoku(ITranslatable translatable)
-    {
-        Board.Dispatcher.Invoke(() => Board.Show(translatable));
-    }
-
-    public void SetClues(ITranslatable translatable)
-    {
-        Board.SolutionsToSpecialBrush(translatable);
     }
 
     public void DisableSolveActions()
@@ -50,15 +44,58 @@ public partial class SolvePage : ISudokuSolveView
         ClearButton.IsEnabled = true;
     }
 
-    public void AddLog(ISolverLog log)
+    public void AddLog(ISolverLog log, StateShown stateShown)
     {
-        LogPanel.Dispatcher.Invoke(() => LogPanel.Children.Add(new LogControl(log)));
+        LogPanel.Dispatcher.Invoke(() =>
+        {
+            var lc = new LogControl(log, stateShown);
+            LogPanel.Children.Add(lc);
+            lc.OpenRequested += _presenter.RequestLogOpening;
+            lc.StateShownChanged += _presenter.RequestStateShownChange;
+            lc.HighlightShifted += _presenter.RequestHighlightShift;
+        });
         LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
     }
 
     public void ClearLogs()
     {
         LogPanel.Children.Clear();
+    }
+
+    public void OpenLog(int index)
+    {
+        if (index < 0 || index > LogPanel.Children.Count) return;
+        if (LogPanel.Children[index] is not LogControl lc) return;
+
+        _logOpen = index;
+        lc.Open();
+    }
+
+    public void CloseLogs()
+    {
+        if (_logOpen < 0 || _logOpen > LogPanel.Children.Count) return;
+        if (LogPanel.Children[_logOpen] is not LogControl lc) return;
+
+        _logOpen = -1;
+        lc.Close();
+    }
+
+    public void SetLogsStateShown(StateShown stateShown)
+    {
+        foreach (var child in LogPanel.Children)
+        {
+            if (child is not LogControl lc) continue;
+
+            lc.SetStateShown(stateShown);
+        }
+    }
+
+    public void SetCursorPosition(int index, string s)
+    {
+        if (_logOpen < 0 || _logOpen > LogPanel.Children.Count) return;
+        if (LogPanel.Children[_logOpen] is not LogControl lc) return;
+
+        lc.SetCursorPosition(s);
     }
 
     #endregion
@@ -94,3 +131,4 @@ public partial class SolvePage : ISudokuSolveView
         _presenter.Clear();
     }
 }
+

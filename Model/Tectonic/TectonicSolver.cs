@@ -12,7 +12,8 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;
 
-    private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(), new CommonCellsStrategy() };
+    private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
+        new CommonCellsStrategy(), new XChainsStrategy() };
 
     private int _possibilityRemovedBuffer;
     private int _solutionAddedBuffer;

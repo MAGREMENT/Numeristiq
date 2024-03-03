@@ -1,0 +1,19 @@
+﻿<Page x:Class="DesktopApplication.View.Tectonic.Pages.SolvePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:controls="clr-namespace:DesktopApplication.View.Tectonic.Controls"
+      mc:Ignorable="d"
+      Title="SolvePage" Height="660" Width="800">
+    <Grid Background="{StaticResource Background1}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="660"/>
+            <ColumnDefinition Width="140"/>
+        </Grid.ColumnDefinitions>
+        
+        <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640"/>
+        
+        <Button Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Height="50" Width="120">Solve</Button>
+    </Grid>
+</Page>

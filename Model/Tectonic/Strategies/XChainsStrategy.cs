@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Tectonic.Strategies;
 
-public class XChainsStrategy : TectonicStrategy
+public class XChainsStrategy : TectonicStrategy //TODO Correct this dumb shit
 {
     public XChainsStrategy() : base("X-Chains", StrategyDifficulty.Hard, OnCommitBehavior.ChooseBest)
     {

@@ -83,7 +83,8 @@
 	    <ControlTemplate TargetType="Button" x:Key="LightUpButton">
 		    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
 		            Background="{StaticResource Background2}" Margin="{TemplateBinding Margin}"
-		            Padding="{TemplateBinding Padding}" x:Name="Border">
+		            Padding="{TemplateBinding Padding}" x:Name="Border"
+		            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
 			    <ContentPresenter
 				    Margin="0"
 				    HorizontalAlignment="Center"
@@ -100,13 +101,19 @@
 		    </ControlTemplate.Triggers>
 	    </ControlTemplate>
 	    
+	    <Style x:Key="LogHighlightButton" TargetType="Button">
+		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="VerticalAlignment" Value="Center"/>
+		    <Setter Property="Template" Value="{StaticResource LightUpButton}"/>
+		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
+	    </Style>
+	    
 	    <Style x:Key="SolvePageButtonStyle" TargetType="Button">
-		    <Setter Property="Margin" Value="5"/>
 		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="Padding" Value="10"></Setter>
 		    <Setter Property="Template" Value="{StaticResource LightUpButton}"/>
-		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"></Setter>
+		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
 	    </Style>
 	    
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
@@ -145,6 +152,67 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+	    
+	    <Style x:Key="LogRadioButton" TargetType="RadioButton">
+		    <Setter Property="Background" Value="{StaticResource Background2}"/>
+		    <Setter Property="BorderBrush" Value="{StaticResource Background2}"/>
+		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="FontSize" Value="16"/>
+		    <Setter Property="Margin" Value="5"></Setter>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="RadioButton">
+					    <Border Padding="5" BorderBrush="{TemplateBinding BorderBrush}"
+					            Background="{TemplateBinding Background}" BorderThickness="0,0,0,2">
+						    <ContentPresenter
+							    Margin="0"
+							    HorizontalAlignment="Center"
+							    VerticalAlignment="Center"
+							    Focusable="False"
+							    RecognizesAccessKey="True" />
+					    </Border>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsMouseOver" Value="True">
+							    <Setter Property="Background" Value="{StaticResource Background3}"/>
+						    </Trigger>
+						    <Trigger Property="IsChecked" Value="True">
+							    <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
+						    </Trigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
+	    
+	    <Style x:Key="FullPrimaryButton" TargetType="Button">
+		    <Setter Property="Foreground" Value="White"/>
+		    <Setter Property="FontWeight" Value="SemiBold"/>
+		    <Setter Property="FontSize" Value="15"/>
+		    <Setter Property="Background" Value="{StaticResource Primary2}"/>
+		    <Setter Property="VerticalAlignment" Value="Center"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="Button">
+					    <Border Padding="3" BorderThickness="0" Background="{TemplateBinding Background}"
+					            CornerRadius="2">
+						    <ContentPresenter
+							    Margin="0"
+							    HorizontalAlignment="Center"
+							    VerticalAlignment="Center"
+							    Focusable="False"
+							    RecognizesAccessKey="True" />
+					    </Border>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+		    
+		    <Style.Triggers>
+			    <Trigger Property="IsMouseOver" Value="True">
+				    <Setter Property="Background" Value="{StaticResource Accent}"></Setter>
+			    </Trigger>
+		    </Style.Triggers>
+	    </Style>
 
 		<Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">
 			<Setter Property="Foreground" Value="{StaticResource Text}" />

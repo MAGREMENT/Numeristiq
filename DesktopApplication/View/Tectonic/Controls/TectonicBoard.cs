@@ -5,19 +5,58 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 
-namespace DesktopApplication.View.Tectonic;
+namespace DesktopApplication.View.Tectonic.Controls;
 
 public class TectonicBoard : DrawingBoard, IAddChild
 {
     private const int BackgroundIndex = 0;
-    private const int SmallLineIndex = 1;
-    private const int BigLineIndex = 2;
+    private const int SmallLinesIndex = 1;
+    private const int BigLinesIndex = 2;
+    private const int NumbersIndex = 3;
 
     private double _cellSize;
-    private double _rowCount;
-    private double _columnCount;
+    private int _rowCount;
+    private int _columnCount;
     private double _bigLineWidth;
     private double _smallLineWidth;
+
+    private Brush _defaultNumberBrush = Brushes.Black;
+    private Brush _backgroundBrush = Brushes.White;
+    private Brush _lineBrush = Brushes.Black;
+
+    public event OnDimensionCountChange? RowCountChanged;
+    public event OnDimensionCountChange? ColumnCountChanged;
+    
+    public Brush DefaultNumberBrush
+    {
+        set
+        {
+            _defaultNumberBrush = value;
+            SetLayerBrush(NumbersIndex, value);
+            Refresh();
+        }
+    }
+
+    public Brush BackgroundBrush
+    {
+        set
+        {
+            _backgroundBrush = value;
+            SetLayerBrush(BackgroundIndex, value);
+            Refresh();
+        }
+    }
+    
+    public Brush LineBrush
+    {
+        set
+        {
+            _lineBrush = value;
+            SetLayerBrush(SmallLinesIndex, value);
+            SetLayerBrush(BigLinesIndex, value);
+            Refresh();
+        }
+    }
 
     public double CellSize
     {
@@ -29,23 +68,29 @@ public class TectonicBoard : DrawingBoard, IAddChild
         }
     }
 
-    public double RowCount
+    public int RowCount
     {
         get => _rowCount;
         set
         {
+            var old = _rowCount;
             _rowCount = value;
             UpdateSize();
+
+            if (_rowCount != old) RowCountChanged?.Invoke(_rowCount);
         }
     }
 
-    public double ColumnCount
+    public int ColumnCount
     {
         get => _columnCount;
         set
         {
+            var old = _columnCount;
             _columnCount = value;
             UpdateSize();
+
+            if (_columnCount != old) ColumnCountChanged?.Invoke(_columnCount);
         }
     }
 
@@ -71,9 +116,9 @@ public class TectonicBoard : DrawingBoard, IAddChild
 
     public NotifyingList<NeighborBorder> Borders { get; } = new();
 
-    public TectonicBoard() : base(3)
+    public TectonicBoard() : base(4)
     {
-        Borders.ElementAdded += UpdateAndDrawLines;
+        Borders.CountChanged += UpdateAndDrawLines;
     }
     
     //Private-----------------------------------------------------------------------------------------------------------
@@ -97,13 +142,13 @@ public class TectonicBoard : DrawingBoard, IAddChild
     private void UpdateBackground()
     {
         Layers[BackgroundIndex].Add(new FilledRectangleComponent(
-            new Rect(0, 0, Width, Height), Brushes.White));
+            new Rect(0, 0, Width, Height), _backgroundBrush));
     }
 
     private void UpdateAndDrawLines()
     {
-        Layers[SmallLineIndex].Clear();
-        Layers[BigLineIndex].Clear();
+        Layers[SmallLinesIndex].Clear();
+        Layers[BigLinesIndex].Clear();
         UpdateLines();
         Refresh();
     }
@@ -112,19 +157,19 @@ public class TectonicBoard : DrawingBoard, IAddChild
     {
         var half = _bigLineWidth / 2;
         
-        Layers[BigLineIndex].Add(new OutlinedRectangleComponent(
-            new Rect(half, half, Width - half, Height - half), new Pen(Brushes.Black, _bigLineWidth)));
+        Layers[BigLinesIndex].Add(new OutlinedRectangleComponent(
+            new Rect(half, half, Width - half, Height - half), new Pen(_lineBrush, _bigLineWidth)));
 
         var diff = (_bigLineWidth - _smallLineWidth) / 2;
         var length = _cellSize + _bigLineWidth * 2;
 
         //Horizontal
-        double deltaX = 0;
-        double deltaY;
+        double deltaX;
+        double deltaY = _cellSize + _bigLineWidth;
         
         for (int row = 0; row < _rowCount - 1; row++)
         {
-            deltaY = _cellSize + _bigLineWidth;
+            deltaX = 0;
             
             for (int col = 0; col < _columnCount; col++)
             {
@@ -132,19 +177,19 @@ public class TectonicBoard : DrawingBoard, IAddChild
 
                 if (b is not null && b.IsThin)
                 {
-                    Layers[SmallLineIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX, deltaY + diff, length, _smallLineWidth), Brushes.Black));
+                    Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
+                        new Rect(deltaX, deltaY + diff, length, _smallLineWidth), _lineBrush));
                 }
                 else
                 {
-                    Layers[BigLineIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX, deltaY, length, _bigLineWidth), Brushes.Black));
+                    Layers[BigLinesIndex].Add(new FilledRectangleComponent(
+                        new Rect(deltaX, deltaY, length, _bigLineWidth), _lineBrush));
                 }
 
-                deltaY += _cellSize + _bigLineWidth;
+                deltaX += _cellSize + _bigLineWidth;
             }
 
-            deltaX += _cellSize + _bigLineWidth;
+            deltaY += _cellSize + _bigLineWidth;
         }
         
         //Vertical
@@ -160,13 +205,13 @@ public class TectonicBoard : DrawingBoard, IAddChild
 
                 if (b is not null && b.IsThin)
                 {
-                    Layers[SmallLineIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX + diff, deltaY, _smallLineWidth, length), Brushes.Black));
+                    Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
+                        new Rect(deltaX + diff, deltaY, _smallLineWidth, length), _lineBrush));
                 }
                 else
                 {
-                    Layers[BigLineIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX, deltaY, _bigLineWidth, length), Brushes.Black));
+                    Layers[BigLinesIndex].Add(new FilledRectangleComponent(
+                        new Rect(deltaX, deltaY, _bigLineWidth, length), _lineBrush));
                 }
 
                 deltaX += _cellSize + _bigLineWidth;
@@ -221,7 +266,7 @@ public class NotifyingList<T> : IList, IList<T>
     public bool IsFixedSize => false;
     public bool IsReadOnly => false;
     
-    public event OnElementAddition? ElementAdded;
+    public event OnCountChange? CountChanged;
     
     public int Add(object? value)
     {
@@ -230,7 +275,7 @@ public class NotifyingList<T> : IList, IList<T>
         GrowIfNecessary();
 
         _array[Count++] = item;
-        ElementAdded?.Invoke();
+        CountChanged?.Invoke();
         return Count - 1;
     }
 
@@ -239,12 +284,13 @@ public class NotifyingList<T> : IList, IList<T>
         GrowIfNecessary();
 
         _array[Count++] = item;
-        ElementAdded?.Invoke();
+        CountChanged?.Invoke();
     }
 
     public void Clear()
     {
         Count = 0;
+        CountChanged?.Invoke();
     }
 
     public bool Contains(T item)
@@ -357,6 +403,8 @@ public class NotifyingList<T> : IList, IList<T>
 
         Array.Copy(_array, index, _array, index + 1, Count - index);
         _array[index] = item;
+        Count++;
+        CountChanged?.Invoke();
     }
     
     public void Insert(int index, object? value)
@@ -372,6 +420,7 @@ public class NotifyingList<T> : IList, IList<T>
         
         Array.Copy(_array, index + 1, _array, index, Count - index - 1);
         Count--;
+        CountChanged?.Invoke();
     }
 
     T IList<T>.this[int index]
@@ -425,4 +474,5 @@ public class NotifyingList<T> : IList, IList<T>
     }
 }
 
-public delegate void OnElementAddition();
+public delegate void OnCountChange();
+public delegate void OnDimensionCountChange(int number);

@@ -32,7 +32,8 @@
                 
                 <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnSudokuMouseEnter"
                         Click="OnSudokuClick">Sudoku</Button>
-                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnTectonicMouseEnter">Tectonic</Button>
+                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnTectonicMouseEnter"
+                        Click="OnTectonicClick">Tectonic</Button>
             </StackPanel>
         
             <Border Margin="10" BorderThickness="5" BorderBrush="{StaticResource Background2}" Width="230" Height="230" Grid.Column="1">

@@ -5,15 +5,18 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using DesktopApplication.Presenter.Sudoku.Solve;
+using DesktopApplication.View.Utility;
 using Model;
-using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Sudoku.Player;
+using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
-public class SudokuBoard : DrawingBoard
+public class SudokuBoard : DrawingBoard, ISudokuDrawer
 {
     private const int BackgroundIndex = 0;
     private  const int CellsHighlightIndex = 1;
@@ -184,8 +187,38 @@ public class SudokuBoard : DrawingBoard
         KeyDown += AnalyseKeyDown;
         KeyUp += AnalyseKeyUp;
     }
+    
+    public void PutCursorOn(Cell cell)
+    {
+        ClearCursor();
+        
+        const double delta = CursorWidth / 2;
+        var left = GetLeft(cell.Column);
+        var top = GetTop(cell.Row);
+        var pen = new Pen(_cursorBrush, CursorWidth);
 
-    public void ClearHighlighting()
+        var list = Layers[CursorIndex];
+        list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
+            top + _cellSize), pen));
+        list.Add(new LineComponent(new Point(left, top + delta), new Point(left + _cellSize,
+            top + delta), pen));
+        list.Add(new LineComponent(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
+            top + _cellSize), pen));
+        list.Add(new LineComponent(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
+            top + _cellSize - delta), pen));
+    }
+    
+    public void ClearCursor()
+    {
+        Layers[CursorIndex].Clear();
+    }
+
+    public void ClearNumbers()
+    {
+        Layers[NumbersIndex].Clear();
+    }
+
+    public void ClearHighlightings()
     {
         Layers[CellsHighlightIndex].Clear();
         Layers[PossibilitiesHighlightIndex].Clear();
@@ -193,46 +226,214 @@ public class SudokuBoard : DrawingBoard
         Layers[LinksIndex].Clear();
     }
 
-    public void ClearCursor()
+    public void ShowSolution(int row, int col, int number)
     {
-       Layers[CursorIndex].Clear();
+        var brush = _isSpecialNumberBrush[row, col] ? _specialNumberBrush : _defaultNumberBrush;
+        Layers[NumbersIndex].Add(new SolutionComponent(number.ToString(), _cellSize / 4 * 3, brush,
+            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), row, col, ComponentHorizontalAlignment.Center,
+            ComponentVerticalAlignment.Center));
     }
 
-    public void Show(ITranslatable translatable)
+    public void ShowPossibilities(int row, int col, IEnumerable<int> possibilities)
     {
-        Layers[NumbersIndex].Clear();
-
-        for (int row = 0; row < 9; row++)
+        foreach (var possibility in possibilities)
         {
-            for (int col = 0; col < 9; col++)
+            Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
+                _defaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
+                    _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        }
+    }
+
+    public void SetClue(int row, int column, bool isClue)
+    {
+        _isSpecialNumberBrush[row, column] = isClue;
+    }
+
+    public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
+    {
+        Layers[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
+            _possibilitySize, _possibilitySize), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+    }
+
+    public void FillCell(int row, int col, ChangeColoration coloration)
+    {
+        Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
+            _cellSize, _cellSize), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+    }
+
+    public void EncirclePossibility(int row, int col, int possibility)
+    {
+        var delta = _smallLineWidth / 2;
+        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
+            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(_linkBrush, _bigLineWidth)));
+    }
+
+    public void EncircleCell(int row, int col)
+    {
+        var delta = _bigLineWidth / 2;
+        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
+            _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(_linkBrush, _bigLineWidth)));
+    }
+
+    public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
+        ChangeColoration coloration)
+    {
+        var delta = _smallLineWidth / 2;
+        
+        var xFrom = GetLeft(colFrom, possibilityFrom) - delta;
+        var yFrom = GetTop(rowFrom, possibilityFrom) - delta;
+        
+        var xTo = GetLeft(colTo, possibilityTo) - delta;
+        var yTo = GetTop(rowTo, possibilityTo) - delta;
+
+        double leftX, topY, rightX, bottomY;
+
+        if (xFrom < xTo)
+        {
+            leftX = xFrom;
+            rightX = xTo + _possibilitySize + _smallLineWidth;
+        }
+        else
+        {
+            leftX = xTo;
+            rightX =xFrom + _possibilitySize + _smallLineWidth;
+        }
+
+        if (yFrom < yTo)
+        {
+            topY = yFrom;
+            bottomY = yTo + _possibilitySize + _smallLineWidth;
+        }
+        else
+        {
+            topY = yTo;
+            bottomY = yFrom + _possibilitySize + _smallLineWidth;
+        }
+        
+        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
+            new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
+    }
+
+    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration coloration)
+    {
+        var delta = _bigLineWidth / 2;
+        
+        var xFrom = GetLeft(colFrom) - delta;
+        var yFrom = GetTop(rowFrom) - delta;
+        
+        var xTo = GetLeft(colTo) - delta;
+        var yTo = GetTop(rowTo) - delta;
+
+        double leftX, topY, rightX, bottomY;
+
+        if (xFrom < xTo)
+        {
+            leftX = xFrom;
+            rightX = xTo + _cellSize + _bigLineWidth;
+        }
+        else
+        {
+            leftX = xTo;
+            rightX = xFrom + _cellSize +  _bigLineWidth;
+        }
+
+        if (yFrom < yTo)
+        {
+            topY = yFrom;
+            bottomY = yTo + _cellSize + _bigLineWidth;
+        }
+        else
+        {
+            topY = yTo;
+            bottomY = yFrom + _cellSize +  _bigLineWidth;
+        }
+        
+        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
+            new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
+    }
+
+    public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
+    {
+        var delta = _bigLineWidth / 2;
+        var brush = new SolidColorBrush(ColorUtility.ToColor(coloration));
+        var pen = new Pen(brush, _bigLineWidth);
+
+        var list = Layers[EncirclesIndex];
+        foreach (var cell in cells)
+        {
+            var left = GetLeft(cell.Column);
+            var top = GetTop(cell.Row);
+
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
+                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            else
             {
-                var solved = translatable[row, col];
-                if (solved == 0)
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top, CursorWidth, CursorWidth), brush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), brush));
+            }
+            
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
+                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
+            }
+        }
+    }
+
+    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
+        LinkStrength strength, LinkOffsetSidePriority priority)
+    {
+        var from = Center(rowFrom, colFrom, possibilityFrom);
+        var to = Center(rowTo, colTo, possibilityTo);
+        var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
+
+        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, LinkOffset);
+
+        var validOffsets = new List<Point>();
+        for (int i = 0; i < 2; i++)
+        {
+            var p = offsets[i];
+            if(p.X > 0 && p.X < _size && p.Y > 0 && p.Y < _size) validOffsets.Add(p);
+        }
+
+        bool isWeak = strength == LinkStrength.Weak;
+        switch (validOffsets.Count)
+        {
+            case 0 : 
+                AddShortenedLine(from, to, isWeak);
+                break;
+            case 1 :
+                AddShortenedLine(from, validOffsets[0], to, isWeak);
+                break;
+            case 2 :
+                if(priority == LinkOffsetSidePriority.Any) AddShortenedLine(from, validOffsets[0], to, isWeak);
+                else
                 {
-                    foreach (var p in translatable.PossibilitiesAt(row, col).EnumeratePossibilities())
-                    {
-                        ShowGridPossibility(row, col, p);
-                    }
+                    var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
+                    AddShortenedLine(from, priority == LinkOffsetSidePriority.Left 
+                        ? validOffsets[left] 
+                        : validOffsets[(left + 1) % 2], to, isWeak);
                 }
-                else ShowSolution(row, col, solved);
-            }
+                break;
         }
-        
-        Refresh();
-    }
-
-    public void SolutionsToSpecialBrush(ITranslatable translatable)
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                _isSpecialNumberBrush[row, col] = translatable[row, col] != 0;
-            }
-        }
-        
-        ReEvaluateNumberBrushes();
-        Refresh();
     }
 
     public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location)
@@ -259,18 +460,13 @@ public class SudokuBoard : DrawingBoard
             new Rect(GetLeft(col), GetTop(row, n), _cellSize, _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
-    public void FillCell(int row, int col, Color color)
-    {
-        Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-                _cellSize, _cellSize), new SolidColorBrush(color)));
-    }
-    
     public void FillCell(int row, int col, double startAngle, int rotationFactor, params Color[] colors)
     {
         if (colors.Length == 0) return;
         if (colors.Length == 1)
         {
-            FillCell(row, col, colors[0]);
+            Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
+                _cellSize, _cellSize), new SolidColorBrush(colors[0])));
             return;
         }
         
@@ -288,47 +484,7 @@ public class SudokuBoard : DrawingBoard
             angle = next;
         }
     }
-
-    public void FillPossibility(int row, int col, int possibility, Color color)
-    {
-        Layers[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-            _possibilitySize, _possibilitySize), new SolidColorBrush(color)));
-    }
-
-    public void EncircleCell(int row, int col)
-    {
-        var delta = _bigLineWidth / 2;
-        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
-            _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(_linkBrush, _bigLineWidth)));
-    }
     
-    public void EncirclePossibility(int row, int col, int possibility)
-    {
-        var delta = _smallLineWidth / 2;
-        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
-            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(_linkBrush, _bigLineWidth)));
-    }
-
-    public void PutCursorOn(int row, int col)
-    {
-        ClearCursor();
-        
-        var delta = CursorWidth / 2;
-        var left = GetLeft(col);
-        var top = GetTop(row);
-        var pen = new Pen(_cursorBrush, CursorWidth);
-
-        var list = Layers[CursorIndex];
-        list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
-            top + _cellSize), pen));
-        list.Add(new LineComponent(new Point(left, top + delta), new Point(left + _cellSize,
-            top + delta), pen));
-        list.Add(new LineComponent(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
-            top + _cellSize), pen));
-        list.Add(new LineComponent(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
-            top + _cellSize - delta), pen));
-    }
-
     public void PutCursorOn(HashSet<Cell> cells)
     {
         ClearCursor();
@@ -373,166 +529,6 @@ public class SudokuBoard : DrawingBoard
                        new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
                     new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), _cursorBrush));
             }
-        }
-    }
-    
-    public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo,
-        int possibilityTo, Color color)
-    {
-        var delta = _smallLineWidth / 2;
-        
-        var xFrom = GetLeft(colFrom, possibilityFrom) - delta;
-        var yFrom = GetTop(rowFrom, possibilityFrom) - delta;
-        
-        var xTo = GetLeft(colTo, possibilityTo) - delta;
-        var yTo = GetTop(rowTo, possibilityTo) - delta;
-
-        double leftX, topY, rightX, bottomY;
-
-        if (xFrom < xTo)
-        {
-            leftX = xFrom;
-            rightX = xTo + _possibilitySize + _smallLineWidth;
-        }
-        else
-        {
-            leftX = xTo;
-            rightX =xFrom + _possibilitySize + _smallLineWidth;
-        }
-
-        if (yFrom < yTo)
-        {
-            topY = yFrom;
-            bottomY = yTo + _possibilitySize + _smallLineWidth;
-        }
-        else
-        {
-            topY = yTo;
-            bottomY = yFrom + _possibilitySize + _smallLineWidth;
-        }
-        
-        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(new SolidColorBrush(color), _bigLineWidth)));
-    }
-    
-    public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, Color color)
-    {
-        var delta = _bigLineWidth / 2;
-        
-        var xFrom = GetLeft(colFrom) - delta;
-        var yFrom = GetTop(rowFrom) - delta;
-        
-        var xTo = GetLeft(colTo) - delta;
-        var yTo = GetTop(rowTo) - delta;
-
-        double leftX, topY, rightX, bottomY;
-
-        if (xFrom < xTo)
-        {
-            leftX = xFrom;
-            rightX = xTo + _cellSize + _bigLineWidth;
-        }
-        else
-        {
-            leftX = xTo;
-            rightX = xFrom + _cellSize +  _bigLineWidth;
-        }
-
-        if (yFrom < yTo)
-        {
-            topY = yFrom;
-            bottomY = yTo + _cellSize + _bigLineWidth;
-        }
-        else
-        {
-            topY = yTo;
-            bottomY = yFrom + _cellSize +  _bigLineWidth;
-        }
-        
-        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(new SolidColorBrush(color), _bigLineWidth)));
-    }
-
-    public void EncircleCellPatch(Cell[] cells, Color color)
-    {
-        var delta = _bigLineWidth / 2;
-        var brush = new SolidColorBrush(color);
-        var pen = new Pen(brush, _bigLineWidth);
-
-        var list = Layers[EncirclesIndex];
-        foreach (var cell in cells)
-        {
-            var left = GetLeft(cell.Column);
-            var top = GetTop(cell.Row);
-
-            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
-                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
-            
-            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
-            else
-            {
-                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), brush));
-                
-                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), brush));
-            }
-            
-            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
-                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
-            
-            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
-            else
-            {
-                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
-                
-                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
-            }
-        }
-    }
-
-    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo, bool isWeak,
-        LinkOffsetSidePriority priority)
-    {
-        var from = Center(rowFrom, colFrom, possibilityFrom);
-        var to = Center(rowTo, colTo, possibilityTo);
-        var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
-
-        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, LinkOffset);
-
-        var validOffsets = new List<Point>();
-        for (int i = 0; i < 2; i++)
-        {
-            var p = offsets[i];
-            if(p.X > 0 && p.X < _size && p.Y > 0 && p.Y < _size) validOffsets.Add(p);
-        }
-
-        switch (validOffsets.Count)
-        {
-            case 0 : 
-                AddShortenedLine(from, to, isWeak);
-                break;
-            case 1 :
-                AddShortenedLine(from, validOffsets[0], to, isWeak);
-                break;
-            case 2 :
-                if(priority == LinkOffsetSidePriority.Any) AddShortenedLine(from, validOffsets[0], to, isWeak);
-                else
-                {
-                    var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
-                    AddShortenedLine(from, priority == LinkOffsetSidePriority.Left 
-                            ? validOffsets[left] 
-                            : validOffsets[(left + 1) % 2], to, isWeak);
-                }
-                break;
         }
     }
 
@@ -705,21 +701,6 @@ public class SudokuBoard : DrawingBoard
 
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
         }
-    }
-    
-    private void ShowGridPossibility(int row, int col, int possibility)
-    {
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
-            _defaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
-                _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
-    }
-
-    private void ShowSolution(int row, int col, int possibility)
-    {
-        var brush = _isSpecialNumberBrush[row, col] ? _specialNumberBrush : _defaultNumberBrush;
-        Layers[NumbersIndex].Add(new SolutionComponent(possibility.ToString(), _cellSize / 4 * 3, brush,
-            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), row, col, ComponentHorizontalAlignment.Center,
-            ComponentVerticalAlignment.Center));
     }
 
     private void ReEvaluateNumberBrushes()

@@ -39,7 +39,7 @@ public abstract class SettingValue
 
     protected static MinMax TranslateMinMax(string s)
     {
-        var split = s.Split();
+        var split = s.Split(',');
         if (split.Length != 2) return default;
 
         try

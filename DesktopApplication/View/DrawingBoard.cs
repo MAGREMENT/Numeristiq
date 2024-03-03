@@ -54,20 +54,23 @@ public abstract class DrawingBoard : FrameworkElement
     
     public void Refresh()
     {
-        if (!RefreshAllowed) return;
-        
-        var context = _visual.RenderOpen();
-
-        foreach (var list in _layers)
+        Dispatcher.Invoke(() =>
         {
-            foreach (var component in list)
+            if (!RefreshAllowed) return;
+
+            var context = _visual.RenderOpen();
+
+            foreach (var list in _layers)
             {
-                component.Draw(context);
+                foreach (var component in list)
+                {
+                    component.Draw(context);
+                }
             }
-        }
-        
-        context.Close();
-        InvalidateVisual();
+
+            context.Close();
+            InvalidateVisual();
+        });
     }
 
     public void Clear()
