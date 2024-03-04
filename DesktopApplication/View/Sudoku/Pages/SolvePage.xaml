@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudoku.Controls"
+      xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       mc:Ignorable="d"
       Title="SolvePage" Height="660" Width="1300">
     <Grid Background="{StaticResource Background1}">
@@ -47,6 +48,6 @@
             <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 2.5, 5, 5" Click="Clear" x:Name="ClearButton">Clear</Button>
         </Grid>
         
-        <controls:SudokuTextBoxControl Grid.Column="0" Grid.ColumnSpan="3" x:Name="SudokuAsString" Showed="SudokuTextBoxShowed" NewSudoku="SetNewSudoku"/>
+        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="SudokuAsString" Showed="SudokuTextBoxShowed" TextChanged="SetNewSudoku"/>
     </Grid>
 </Page>

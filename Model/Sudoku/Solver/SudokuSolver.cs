@@ -14,7 +14,7 @@ namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ISolveResult
+public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ISolveResult, ITranslatable
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -293,7 +293,9 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     }
     
     //PossibilityHolder-------------------------------------------------------------------------------------------------
-    
+
+    public int this[int row, int col] => _sudoku[row, col];
+
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
         return _possibilities[row, col];

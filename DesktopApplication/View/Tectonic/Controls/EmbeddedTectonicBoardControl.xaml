@@ -6,11 +6,16 @@
              xmlns:local="clr-namespace:DesktopApplication.View.Tectonic.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border Padding="10" Background="{StaticResource Background2}" x:Name="Border"> 
-        <local:TectonicBoard VerticalAlignment="Center" HorizontalAlignment="Center"
-                             BackgroundBrush="Transparent" LineBrush="{StaticResource Text}"
-                             DefaultNumberBrush="{StaticResource Text}" x:Name="Board"
-                             RowCount="4" ColumnCount="3" BigLineWidth="3" SmallLineWidth="1"
-                             CellSize="50" RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"/>
+    <Border Padding="10" Background="{StaticResource Background2}" x:Name="Border">
+        <Grid>
+            <local:TectonicBoard VerticalAlignment="Center" HorizontalAlignment="Center"
+                                 BackgroundBrush="Transparent" LineBrush="{StaticResource Text}"
+                                 DefaultNumberBrush="{StaticResource Text}" x:Name="Board"
+                                 BigLineWidth="5" SmallLineWidth="1" CellSize="50"
+                                 RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"/>
+            
+            <TextBlock Visibility="Collapsed" x:Name="None" FontSize="22" Foreground="{StaticResource Text}"
+                   FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center">Nothing to show...</TextBlock> 
+        </Grid>
     </Border>
 </UserControl>

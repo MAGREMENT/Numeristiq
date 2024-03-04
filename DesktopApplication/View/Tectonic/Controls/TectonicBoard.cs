@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
+using DesktopApplication.Presenter.Tectonic.Solve;
 
 namespace DesktopApplication.View.Tectonic.Controls;
 
-public class TectonicBoard : DrawingBoard, IAddChild
+public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 {
     private const int BackgroundIndex = 0;
     private const int SmallLinesIndex = 1;
@@ -121,7 +122,71 @@ public class TectonicBoard : DrawingBoard, IAddChild
         Borders.CountChanged += UpdateAndDrawLines;
     }
     
-    //Private-----------------------------------------------------------------------------------------------------------
+    public void AddChild(object value)
+    {
+        if (value is NeighborBorder border) Borders.Add(border);
+    }
+
+    public void AddText(string text)
+    {
+        
+    }
+
+    #region ITectonicDrawer
+
+    public void ClearNumbers()
+    {
+        Layers[NumbersIndex].Clear();
+    }
+
+    public void ShowSolution(int row, int column, int number)
+    {
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(number.ToString(), _cellSize * 3 / 4,
+            _defaultNumberBrush, new Rect(GetLeft(column), GetTop(row), _cellSize,
+                _cellSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+    }
+
+    public void ShowPossibilities(int row, int column, IEnumerable<int> possibilities, int zoneSize)
+    {
+        var posSize = _cellSize / zoneSize;
+        var textSize = posSize * 3 / 4;
+        var delta = (_cellSize - posSize) / 2;
+        
+        foreach (var possibility in possibilities)
+        {
+            Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), textSize,
+                _defaultNumberBrush, new Rect(GetLeft(column) + (possibility - 1) * posSize, GetTop(row) + delta, posSize,
+                    posSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        }
+    }
+
+    public void ClearBorderDefinitions()
+    {
+        RefreshAllowed = false;
+        Borders.Clear();
+        RefreshAllowed = true;
+    }
+
+    public void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin)
+    {
+        RefreshAllowed = false;
+        Borders.Add(new NeighborBorder(insideRow, insideColumn, direction, isThin));
+        RefreshAllowed = true;
+    }
+
+    #endregion
+
+    #region Private
+
+    private double GetLeft(int column)
+    {
+        return _cellSize * column + _bigLineWidth * (column + 1);
+    }
+
+    private double GetTop(int row)
+    {
+        return _cellSize * row + _bigLineWidth * (row + 1);
+    }
 
     private void UpdateSize()
     {
@@ -155,6 +220,8 @@ public class TectonicBoard : DrawingBoard, IAddChild
 
     private void UpdateLines()
     {
+        if (RowCount == 0 || ColumnCount == 0) return;
+        
         var half = _bigLineWidth / 2;
         
         Layers[BigLinesIndex].Add(new OutlinedRectangleComponent(
@@ -232,29 +299,10 @@ public class TectonicBoard : DrawingBoard, IAddChild
         return null;
     }
 
-    public void AddChild(object value)
-    {
-        if (value is NeighborBorder border) Borders.Add(border);
-    }
-
-    public void AddText(string text)
-    {
-        
-    }
+    #endregion
 }
 
-public class NeighborBorder
-{
-    public BorderDirection Direction { get; set; } = BorderDirection.Horizontal;
-    public int InsideRow { get; set; }
-    public int InsideColumn { get; set; }
-    public bool IsThin { get; set; }
-}
-
-public enum BorderDirection
-{
-    Horizontal, Vertical
-}
+public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin);
 
 public class NotifyingList<T> : IList, IList<T>
 {

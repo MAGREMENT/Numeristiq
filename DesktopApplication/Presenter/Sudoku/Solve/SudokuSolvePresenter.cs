@@ -37,7 +37,7 @@ public class SudokuSolvePresenter
     public void SetNewSudoku(string s)
     {
         _solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
-        SetShownState(_solver.CurrentState, true);
+        SetShownState(_solver, true);
         ClearLogs();
     }
 
@@ -62,7 +62,7 @@ public class SudokuSolvePresenter
 
     public void ShowCurrentState()
     {
-        SetShownState(_solver.CurrentState, false);
+        SetShownState(_solver, false);
     }
 
     public void UpdateLogs()
@@ -89,7 +89,7 @@ public class SudokuSolvePresenter
         if (_currentlyOpenedLog == index)
         {
             _currentlyOpenedLog = -1;
-            SetShownState(_solver.CurrentState, false);
+            SetShownState(_solver, false);
         }
         else
         {

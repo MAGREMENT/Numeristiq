@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:controls="clr-namespace:DesktopApplication.View.Tectonic.Controls"
+      xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       mc:Ignorable="d"
       Title="SolvePage" Height="660" Width="800">
     <Grid Background="{StaticResource Background1}">
@@ -12,8 +13,19 @@
             <ColumnDefinition Width="140"/>
         </Grid.ColumnDefinitions>
         
-        <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640"/>
+        <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer"/>
         
-        <Button Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Height="50" Width="120">Solve</Button>
+        <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="10"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <Button Grid.Row="0" Style="{StaticResource SolvePageButtonStyle}" Height="50" Width="120" Click="Solver">Solve</Button>
+            <Button Grid.Row="2" Style="{StaticResource SolvePageButtonStyle}" Height="50" Width="120" Click="Advance">Advance</Button>
+        </Grid>
+        
+        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="CreateNewTectonic"/>
     </Grid>
 </Page>

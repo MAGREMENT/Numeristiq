@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -7,18 +8,20 @@ using Model.Utility;
 
 namespace Model.Tectonic;
 
-public class TectonicSolver : IStrategyUser, IChangeProducer
+public class TectonicSolver : IStrategyUser, IChangeProducer, ITranslatable
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;
 
     private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
-        new CommonCellsStrategy(), new XChainsStrategy() };
+        new CommonCellsStrategy()/*, new XChainsStrategy()*/ };
 
     private int _possibilityRemovedBuffer;
     private int _solutionAddedBuffer;
 
     public IChangeBuffer ChangeBuffer { get; }
+
+    public event OnProgressMade? ProgressMade;
 
     public TectonicSolver()
     {
@@ -41,6 +44,13 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
     {
         return _possibilities[cell.Row, cell.Column];
     }
+    
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
+    {
+        return _possibilities[row, col];
+    }
+    
+    public int this[int row, int col] => _tectonic[row, col];
     
     public ReadOnlyBitSet16 ZonePositionsFor(int zone, int n)
     {
@@ -73,7 +83,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
             : AddSolution(progress.Row, progress.Column, progress.Number);
     }
 
-    public void Solve()
+    public void Solve(bool stopAtProgress = false)
     {
         for (int i = 0; i < _strategies.Length; i++)
         {
@@ -82,8 +92,11 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
 
             if (_solutionAddedBuffer == 0 && _possibilityRemovedBuffer == 0) continue;
 
+            ProgressMade?.Invoke();
             _solutionAddedBuffer = 0;
             _possibilityRemovedBuffer = 0;
+            if (stopAtProgress) return;
+            
             i = -1;
         }
     }
@@ -144,3 +157,5 @@ public class TectonicSolver : IStrategyUser, IChangeProducer
         return true;
     }
 }
+
+public delegate void OnProgressMade();

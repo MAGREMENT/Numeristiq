@@ -2,9 +2,9 @@
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace DesktopApplication.View.Sudoku.Controls;
+namespace DesktopApplication.View.Controls;
 
-public partial class SudokuTextBoxControl
+public partial class HideableTextBox
 {
     private bool _callNewSudoku = true;
     
@@ -26,10 +26,10 @@ public partial class SudokuTextBoxControl
         }, false)
     });
     
-    public event OnNewSudoku? NewSudoku;
+    public event OnTextChange? TextChanged;
     public event OnShow? Showed;
     
-    public SudokuTextBoxControl()
+    public HideableTextBox()
     {
         InitializeComponent();
         Arrow.Data = _downArrow;
@@ -60,9 +60,9 @@ public partial class SudokuTextBoxControl
 
     private void OnTextChange(object sender, TextChangedEventArgs e)
     {
-        if(_callNewSudoku) NewSudoku?.Invoke(TextBox.Text);
+        if(_callNewSudoku) TextChanged?.Invoke(TextBox.Text);
     }
 }
 
-public delegate void OnNewSudoku(string s);
+public delegate void OnTextChange(string s);
 public delegate void OnShow();
