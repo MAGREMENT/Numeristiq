@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -132,7 +132,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
         _presence = presence;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -144,7 +144,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
                     for (int o = 0; o < 9; o++)
                     {
                         var cell = _unit == Unit.Row ? new Cell(_mini * 3 + u, o) : new Cell(o, _mini * 3 + u);
-                        if (snapshot.Sudoku[cell.Row, cell.Column] == p) lighter.HighlightCell(cell, (ChangeColoration)color);
+                        if (snapshot[cell.Row, cell.Column] == p) lighter.HighlightCell(cell, (ChangeColoration)color);
                     }
                 }
                 

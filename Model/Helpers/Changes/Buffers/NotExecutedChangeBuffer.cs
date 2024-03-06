@@ -46,7 +46,7 @@ public class NotExecutedChangeBuffer : IChangeBuffer
 
     public void Push(ICommitMaker pusher)
     {
-        var snapshot = _producer.TakeSnapshot();
+        var snapshot = _producer.CurrentState;
         
         foreach (var commit in _commitsBuffer)
         {

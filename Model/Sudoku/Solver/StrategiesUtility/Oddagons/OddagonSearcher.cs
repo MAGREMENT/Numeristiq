@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.Oddagons.Algorithms;
 
@@ -16,7 +17,7 @@ public static class OddagonSearcher
         return Algorithm.Search(strategyUser, strategyUser.PreComputer.Graphs.SimpleLinkGraph);
     }
 
-    public static IEnumerable<CellPossibility> FindGuardians(IPossibilitiesHolder holder, CellPossibility one, CellPossibility two)
+    public static IEnumerable<CellPossibility> FindGuardians(ISudokuSolvingState holder, CellPossibility one, CellPossibility two)
     {
         if (one.Possibility == two.Possibility)
         {

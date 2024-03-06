@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -235,7 +235,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         List<Highlight> highlighters = new();
         switch (_cause)

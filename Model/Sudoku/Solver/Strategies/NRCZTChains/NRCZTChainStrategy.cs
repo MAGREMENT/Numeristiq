@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -148,7 +149,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder
         Chain = chain;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

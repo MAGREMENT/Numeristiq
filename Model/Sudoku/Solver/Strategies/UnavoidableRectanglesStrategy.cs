@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -155,7 +156,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -166,7 +167,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
 
             foreach (var roof in _roof)
             {
-                lighter.HighlightCell(roof, snapshot.Sudoku[roof.Row, roof.Column] == 0 ? ChangeColoration.CauseOffOne
+                lighter.HighlightCell(roof, snapshot[roof.Row, roof.Column] == 0 ? ChangeColoration.CauseOffOne
                     : ChangeColoration.CauseOffTwo);
             }
 
@@ -188,7 +189,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

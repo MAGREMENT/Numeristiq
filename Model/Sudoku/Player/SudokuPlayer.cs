@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.States;
 using Model.Utility;
 
 namespace Model.Sudoku.Player;
@@ -343,7 +345,7 @@ public class SudokuPlayer : IHistoryCreator
         }
     }
 
-    public void Paste(ArraySolvingState ss)
+    public void Paste(ISolvingState ss)
     {
         _historic.CreateBuffer();
 
@@ -352,17 +354,17 @@ public class SudokuPlayer : IHistoryCreator
             for (int col = 0; col < 9; col++)
             {
                 _cells[row, col].Empty();
-                var current = ss.Get(row, col);
-                if (current.IsPossibilities)
+                var number = ss[row, col];
+                if (number == 0)
                 {
-                    foreach (var p in current.AsPossibilities.EnumeratePossibilities())
+                    foreach (var p in ss.PossibilitiesAt(row, col).EnumeratePossibilities())
                     {
                         _cells[row, col].AddPossibility(p, PossibilitiesLocation.Middle);
                     }
                 }
                 else
                 {
-                    _cells[row, col].SetNumber(current.AsNumber);
+                    _cells[row, col].SetNumber(number);
                 }
             }
         }

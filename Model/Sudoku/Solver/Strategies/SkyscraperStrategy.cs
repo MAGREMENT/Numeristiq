@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 
@@ -115,7 +116,7 @@ public class SkyscraperReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

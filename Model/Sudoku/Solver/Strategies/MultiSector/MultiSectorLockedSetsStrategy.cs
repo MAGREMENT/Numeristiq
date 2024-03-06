@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.BitSets;
@@ -113,7 +114,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
         _alternatives = alternatives;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         var cu = new CoveringUnits(_covers);
         
@@ -164,7 +165,7 @@ public class CoveringUnits
         {
             foreach (var house in cover.CoverHouses)
             {
-                if (!_dictionary.TryGetValue(house, out var poss))
+                if (!_dictionary.ContainsKey(house))
                 {
                     _dictionary[house] = new ReadOnlyBitSet16();
                 }
@@ -174,7 +175,7 @@ public class CoveringUnits
         }
     }
 
-    public Highlight[] Highlight(IPossibilitiesHolder snapshot, GridPositions gp)
+    public Highlight[] Highlight(ISudokuSolvingState snapshot, GridPositions gp)
     {
         var n = (int)ChangeColoration.CauseOffOne;
         var i = 0;

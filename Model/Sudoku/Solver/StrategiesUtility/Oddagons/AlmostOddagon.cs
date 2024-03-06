@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Oddagons;
@@ -14,7 +15,7 @@ public class AlmostOddagon
         Guardians = guardians;
     }
 
-    public static AlmostOddagon FromBoard(IPossibilitiesHolder holder, LinkGraphLoop<CellPossibility> loop)
+    public static AlmostOddagon FromBoard(ISudokuSolvingState holder, LinkGraphLoop<CellPossibility> loop)
     {
         List<CellPossibility> guardians = new();
         loop.ForEachLink((one, two) => guardians.AddRange(

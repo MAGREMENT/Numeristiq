@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
@@ -285,7 +286,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         Highlight[] highlights = new Highlight[_patterns.Count];
 

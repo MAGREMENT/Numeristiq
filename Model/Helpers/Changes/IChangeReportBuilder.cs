@@ -38,7 +38,7 @@ public interface IChangeReportBuilder
         return builder.ToString()[..^2];
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot);
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot);
 }
 
 public enum ChangeColoration

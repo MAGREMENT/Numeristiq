@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
@@ -160,7 +160,7 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

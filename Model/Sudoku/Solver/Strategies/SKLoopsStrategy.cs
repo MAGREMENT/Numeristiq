@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -321,7 +321,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();
@@ -371,7 +371,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         });
     }
     
-    private IEnumerable<Cell> CrossRow(IPossibilitiesHolder snapshot, Cell cell)
+    private IEnumerable<Cell> CrossRow(ISudokuSolvingState snapshot, Cell cell)
     {
         int startCol = cell.Column / 3 * 3;
 
@@ -385,7 +385,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         }
     }
 
-    private IEnumerable<Cell> CrossCol(IPossibilitiesHolder snapshot, Cell cell)
+    private IEnumerable<Cell> CrossCol(ISudokuSolvingState snapshot, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
 

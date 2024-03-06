@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -144,7 +145,7 @@ public class XChainsStrategy : TectonicStrategy //TODO Correct this dumb shit
 
 public class XChainsReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return ChangeReport.Default(changes);
     }

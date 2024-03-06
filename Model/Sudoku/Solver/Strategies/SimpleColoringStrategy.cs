@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -106,7 +107,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         _isInvalidColoring = isInvalidColoring;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         Highlight[] highlights = new Highlight[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)

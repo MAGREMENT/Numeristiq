@@ -1,43 +1,50 @@
-﻿using Model.Sudoku.Solver.BitSets;
+﻿using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Changes;
+using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 
-namespace Model.Sudoku.Solver.Possibility;
+namespace Model.Sudoku.Solver.States;
 
-public class SolverSnapshot : IPossibilitiesHolder
+public class NearExhaustiveSolvingState : IUpdatableSudokuSolvingState
 {
     private readonly Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities;
     private readonly GridPositions[] _positions;
 
-    private SolverSnapshot(Sudoku sudoku, ReadOnlyBitSet16[,] possibilities, GridPositions[] positions)
-    {
-        _sudoku = sudoku;
-        _positions = positions;
-        _possibilities = possibilities;
-    }
-    
-    public static IPossibilitiesHolder TakeSnapshot(IPossibilitiesHolder holder)
+    public NearExhaustiveSolvingState(ISudokuSolvingState state)
     {
         var possibilities = new ReadOnlyBitSet16[9, 9];
         var positions = new GridPositions[9];
+        var sudoku = new Sudoku();
         
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                possibilities[row, col] = holder.PossibilitiesAt(row, col);
+                possibilities[row, col] = state.PossibilitiesAt(row, col);
+                sudoku[row, col] = state[row, col];
             }
         }
 
         for (int number = 1; number <= 9; number++)
         {
-            positions[number - 1] = holder.PositionsFor(number).Copy();
+            positions[number - 1] = state.PositionsFor(number).Copy();
         }
-
-        return new SolverSnapshot(holder.Sudoku.Copy(), possibilities, positions);
+        
+        _sudoku = sudoku;
+        _positions = positions;
+        _possibilities = possibilities;
     }
 
-    public IReadOnlySudoku Sudoku => _sudoku;
+    private NearExhaustiveSolvingState(Sudoku sudoku, ReadOnlyBitSet16[,] possibilities, GridPositions[] positions)
+    {
+        _sudoku = sudoku;
+        _positions = positions;
+        _possibilities = possibilities;
+    }
+
+    public int this[int row, int col] => _sudoku[row, col];
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
@@ -62,5 +69,15 @@ public class SolverSnapshot : IPossibilitiesHolder
     public IReadOnlyGridPositions PositionsFor(int number)
     {
         return _positions[number - 1];
+    }
+
+    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> progresses)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    public IUpdatableSolvingState Apply(SolverProgress progress)
+    {
+        throw new System.NotImplementedException();
     }
 }

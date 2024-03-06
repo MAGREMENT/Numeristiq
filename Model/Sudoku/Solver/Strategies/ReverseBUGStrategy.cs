@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -76,13 +77,13 @@ public class ReverseBugReportBuilder : IChangeReportBuilder
         _n1 = n1;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
             foreach (var cell in _gp)
             {
-                lighter.HighlightCell(cell.Row, cell.Column, snapshot.Sudoku[cell.Row, cell.Column] == _n1
+                lighter.HighlightCell(cell.Row, cell.Column, snapshot[cell.Row, cell.Column] == _n1
                         ? ChangeColoration.CauseOffOne
                         : ChangeColoration.CauseOffTwo);
             }

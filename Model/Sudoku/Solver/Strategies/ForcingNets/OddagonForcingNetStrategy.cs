@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Settings;
@@ -86,7 +87,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
         _change = change;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         var highlights = new Highlight[_colorings.Length];
         for (int i = 0; i < _colorings.Length; i++)

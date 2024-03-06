@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Position;
@@ -64,7 +65,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), Explanation(changes));

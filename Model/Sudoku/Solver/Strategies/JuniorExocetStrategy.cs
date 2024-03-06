@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -501,7 +502,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
         _je = je;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je.AllPossibleSCells();
 
@@ -517,7 +518,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
         List<Cell> sSolved = new();
         foreach (var cell in sCells)
         {
-            if (_je.BaseCandidates.Contains(snapshot.Sudoku[cell.Row, cell.Column])) sSolved.Add(cell);
+            if (_je.BaseCandidates.Contains(snapshot[cell.Row, cell.Column])) sSolved.Add(cell);
         }
 
         return new ChangeReport( "", lighter =>
@@ -559,7 +560,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
         _je2 = je2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je1.AllPossibleSCells();
 
@@ -575,7 +576,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
         List<Cell> sSolved = new();
         foreach (var cell in sCells)
         {
-            if (_je1.BaseCandidates.Contains(snapshot.Sudoku[cell.Row, cell.Column])) sSolved.Add(cell);
+            if (_je1.BaseCandidates.Contains(snapshot[cell.Row, cell.Column])) sSolved.Add(cell);
         }
         
         return new ChangeReport( "", lighter =>

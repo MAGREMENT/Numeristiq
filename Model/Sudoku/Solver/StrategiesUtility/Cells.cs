@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.SharedSeenCellSearchers;
 using Model.Utility;
@@ -110,14 +110,14 @@ public static class Cells
         return result;
     }
     
-    public static List<Cell> SeenEmptyCells(IPossibilitiesHolder holder, Cell cell)
+    public static List<Cell> SeenEmptyCells(ISudokuSolvingState holder, Cell cell)
     {
         List<Cell> result = new();
         
         for (int i = 0; i < 9; i++)
         {
-            if (i != cell.Row && holder.Sudoku[i, cell.Column] == 0) result.Add(new Cell(i, cell.Column));
-            if (i != cell.Column && holder.Sudoku[cell.Row, i] == 0) result.Add(new Cell(cell.Row, i));
+            if (i != cell.Row && holder[i, cell.Column] == 0) result.Add(new Cell(i, cell.Column));
+            if (i != cell.Column && holder[cell.Row, i] == 0) result.Add(new Cell(cell.Row, i));
         }
 
         var startRow = cell.Row / 3 * 3;
@@ -129,7 +129,7 @@ public static class Cells
                 var row = startRow + i;
                 var col = startCol + i;
 
-                if (row != cell.Row && col != cell.Column && holder.Sudoku[row, col] == 0) result.Add(new Cell(row, col));
+                if (row != cell.Row && col != cell.Column && holder[row, col] == 0) result.Add(new Cell(row, col));
             }
         }
 

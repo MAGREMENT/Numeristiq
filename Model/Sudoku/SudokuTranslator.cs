@@ -3,6 +3,7 @@ using System.Text;
 using Model.Helpers;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.States;
 using Model.Utility;
 
 namespace Model.Sudoku;
@@ -155,10 +156,10 @@ public static class SudokuTranslator
         return builder.ToString();
     }
 
-    public static ArraySolvingState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
+    public static StateArraySolvingState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
     {
         grid += ' ';
-        var result = new ArraySolvingState();
+        var result = new StateArraySolvingState();
         
         try
         {
@@ -220,9 +221,9 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static ArraySolvingState TranslateBase32Format(string s, IBase32Translator translator)
+    public static StateArraySolvingState TranslateBase32Format(string s, IBase32Translator translator)
     {
-        var result = new ArraySolvingState();
+        var result = new StateArraySolvingState();
 
         for (int i = 0; i < s.Length / 2 && i < 81; i++)
         {

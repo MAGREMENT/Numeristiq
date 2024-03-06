@@ -1,4 +1,5 @@
-﻿using Model.Sudoku.Solver.Position;
+﻿using Model.Helpers;
+using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.PossibilityPosition;
@@ -20,7 +21,7 @@ public static class RestrictedPossibilityAlgorithms
         return true;
     }
 
-    public static bool GridPositionsSearch(GridPositions first, GridPositions second, IPossibilitiesHolder holder, int possibility)
+    public static bool GridPositionsSearch(GridPositions first, GridPositions second, ISudokuSolvingState holder, int possibility)
     {
         _buffer.Void();
         _buffer.ApplyOr(first);

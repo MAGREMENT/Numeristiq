@@ -1,6 +1,5 @@
 ﻿using Model.Helpers;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
 namespace Model.Sudoku;

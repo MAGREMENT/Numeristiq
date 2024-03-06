@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Model.Helpers;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -12,21 +12,21 @@ namespace Model.Sudoku.Solver.PossibilityPosition;
 public class CAPPossibilitiesPositions : IPossibilitiesPositions
 {
     private readonly Cell[] _cells;
-    private readonly IPossibilitiesHolder _snapshot;
+    private readonly ISudokuSolvingState _snapshot;
     private GridPositions? _gp;
     
     public ReadOnlyBitSet16 Possibilities { get; }
     public int PossibilityCount => Possibilities.Count;
     public int PositionsCount => _cells.Length;
 
-    public CAPPossibilitiesPositions(Cell[] cells, ReadOnlyBitSet16 possibilities, IPossibilitiesHolder snapshot)
+    public CAPPossibilitiesPositions(Cell[] cells, ReadOnlyBitSet16 possibilities, ISudokuSolvingState snapshot)
     {
         _cells = cells;
         Possibilities = possibilities;
         _snapshot = snapshot;
     }
     
-    public CAPPossibilitiesPositions(Cell cell, ReadOnlyBitSet16 possibilities, IPossibilitiesHolder snapshot)
+    public CAPPossibilitiesPositions(Cell cell, ReadOnlyBitSet16 possibilities, ISudokuSolvingState snapshot)
     {
         _cells = new[] { cell };
         Possibilities = possibilities;

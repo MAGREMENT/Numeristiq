@@ -7,8 +7,10 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver;
 
-public interface IStrategyUser : IPossibilitiesHolder, IPossibilitiesGiver
+public interface IStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
 { 
+    IReadOnlySudoku Sudoku { get; }
+    
     IUpdatableSolvingState StartState { get; }
     
     bool LogsManaged { get; }
@@ -24,10 +26,8 @@ public interface IStrategyUser : IPossibilitiesHolder, IPossibilitiesGiver
     bool UniquenessDependantStrategiesAllowed { get; }
 
     public ReadOnlyBitSet16 RawPossibilitiesAt(int row, int col);
-    public ReadOnlyBitSet16 RawPossibilitiesAt(Cell cell)
-    {
-        return RawPossibilitiesAt(cell.Row, cell.Column);
-    }
+    
+    public ReadOnlyBitSet16 RawPossibilitiesAt(Cell cell) => RawPossibilitiesAt(cell.Row, cell.Column);
 }
 
 

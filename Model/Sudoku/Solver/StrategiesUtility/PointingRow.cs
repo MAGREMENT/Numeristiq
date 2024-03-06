@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
-using Model.Sudoku.Solver.Possibility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 

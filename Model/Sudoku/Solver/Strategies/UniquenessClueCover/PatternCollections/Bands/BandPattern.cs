@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;

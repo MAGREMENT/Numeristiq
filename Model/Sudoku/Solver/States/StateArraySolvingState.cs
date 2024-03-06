@@ -3,32 +3,33 @@ using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
+using Model.Sudoku.Solver.Position;
 
-namespace Model.Sudoku.Solver;
+namespace Model.Sudoku.Solver.States;
 
-public class ArraySolvingState : IUpdatableSolvingState
+public class StateArraySolvingState : IUpdatableSudokuSolvingState
 {
     private readonly CellState[,] _cellStates;
 
-    public ArraySolvingState(IPossibilitiesHolder solver)
+    public StateArraySolvingState(ISolvingState solver)
     {
         _cellStates = new CellState[9, 9];
         for (int row = 0; row < 9; row++)
         {
             for(int col = 0; col < 9; col++)
             {
-                if (solver.Sudoku[row, col] != 0) _cellStates[row, col] = new CellState(solver.Sudoku[row, col]);
+                if (solver[row, col] != 0) _cellStates[row, col] = new CellState(solver[row, col]);
                 else _cellStates[row, col] = CellState.FromBits(solver.PossibilitiesAt(row, col).Bits);
             }
         }
     }
 
-    public ArraySolvingState()
+    public StateArraySolvingState()
     {
         _cellStates = new CellState[9, 9];
     }
 
-    private ArraySolvingState(CellState[,] cellStates)
+    private StateArraySolvingState(CellState[,] cellStates)
     {
         _cellStates = cellStates;
     }
@@ -36,11 +37,6 @@ public class ArraySolvingState : IUpdatableSolvingState
     public void Set(int row, int col, CellState state)
     {
         _cellStates[row, col] = state;
-    }
-
-    public CellState Get(int row, int col)
-    {
-        return _cellStates[row, col];
     }
 
     public int this[int row, int col]
@@ -54,10 +50,10 @@ public class ArraySolvingState : IUpdatableSolvingState
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
-        return Get(row, col).AsPossibilities;
+        return _cellStates[row, col].AsPossibilities;
     }
 
-    public IUpdatableSolvingState Apply(IEnumerable<SolverProgress> changes)
+    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> changes)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);
@@ -67,7 +63,7 @@ public class ArraySolvingState : IUpdatableSolvingState
             ApplyProgressToBuffer(buffer, change);
         }
 
-        return new ArraySolvingState(buffer);
+        return new StateArraySolvingState(buffer);
     }
 
     public IUpdatableSolvingState Apply(SolverProgress progress)
@@ -77,12 +73,12 @@ public class ArraySolvingState : IUpdatableSolvingState
         
         ApplyProgressToBuffer(buffer, progress);
         
-        return new ArraySolvingState(buffer);
+        return new StateArraySolvingState(buffer);
     }
 
     public override bool Equals(object? obj)
     {
-        if (obj is not ArraySolvingState state) return false;
+        if (obj is not StateArraySolvingState state) return false;
 
         for (int row = 0; row < 9; row++)
         {
@@ -148,6 +144,58 @@ public class ArraySolvingState : IUpdatableSolvingState
                 }
             }
         }
+    }
+
+    public IReadOnlyLinePositions ColumnPositionsAt(int col, int number)
+    {
+        LinePositions result = new();
+        for (int row = 0; row < 9; row++)
+        {
+            if (_cellStates[row, col].AsPossibilities.Contains(number)) result.Add(row);
+        }
+
+        return result;
+    }
+
+    public IReadOnlyLinePositions RowPositionsAt(int row, int number)
+    {
+        LinePositions result = new();
+        for (int col = 0; col < 9; col++)
+        {
+            if (_cellStates[row, col].AsPossibilities.Contains(number)) result.Add(col);
+        }
+
+        return result;
+    }
+
+    public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
+    {
+        MiniGridPositions result = new(miniRow, miniCol);
+
+        for (int r = 0; r < 3; r++)
+        {
+            for (int c = 0; c < 3; c++)
+            {
+                if (_cellStates[miniRow * 3 + r, miniCol * 3 + c].AsPossibilities.Contains(number)) result.Add(r, c);
+            }
+        }
+
+        return result;
+    }
+
+    public IReadOnlyGridPositions PositionsFor(int number)
+    {
+        GridPositions result = new();
+
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (_cellStates[row, col].AsPossibilities.Contains(number)) result.Add(row, col);
+            }
+        }
+
+        return result;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
@@ -141,7 +142,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
@@ -179,7 +180,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
         _n2 = n2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray();
 

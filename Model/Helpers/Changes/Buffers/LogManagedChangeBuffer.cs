@@ -100,7 +100,6 @@ public class ReturnPushHandler : IPushHandler
     public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         var state = producer.CurrentState;
-        var snapshot = producer.TakeSnapshot();
 
         var commit = commits[0];
         
@@ -109,7 +108,7 @@ public class ReturnPushHandler : IPushHandler
             producer.ExecuteChange(change);
         }
 
-        producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, snapshot), commit.Changes, pusher, state);
+        producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, state), commit.Changes, pusher, state);
     }
 }
 
@@ -118,7 +117,6 @@ public class WaitForAllPushHandler : IPushHandler
     public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         var state = producer.CurrentState;
-        var snapshot = producer.TakeSnapshot();
         
         foreach (var commit in commits)
         {
@@ -131,7 +129,7 @@ public class WaitForAllPushHandler : IPushHandler
 
             if (impactfulChanges.Count == 0) continue;
             
-            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, snapshot), impactfulChanges, pusher, state);
+            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, state), impactfulChanges, pusher, state);
         }
     }
 }
@@ -143,7 +141,6 @@ public class ChooseBestPushHandler : IPushHandler
     public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
     {
         var state = producer.CurrentState;
-        var snapshot = producer.TakeSnapshot();
 
         var best = commits[0];
         var comparer = pusher as ICustomCommitComparer ?? _default;
@@ -158,7 +155,7 @@ public class ChooseBestPushHandler : IPushHandler
             producer.ExecuteChange(change);
         }
 
-        producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, snapshot), best.Changes, pusher, state);
+        producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, state), best.Changes, pusher, state);
     }
 }
 

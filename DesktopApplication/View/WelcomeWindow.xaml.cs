@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku;
 using DesktopApplication.View.Tectonic;
 
@@ -58,5 +59,11 @@ public partial class WelcomeWindow
         var window = new TectonicWindow();
         window.Show();
         Close();
+    }
+
+    private void ShowSettingWindow(object sender, MouseButtonEventArgs e)
+    {
+        var window = new SettingWindow();
+        window.Show();
     }
 }

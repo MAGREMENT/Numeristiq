@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Possibility;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
@@ -187,7 +187,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder
         _candidate = candidate;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -30,7 +31,7 @@ public class NakedSingleStrategy : SudokuStrategy
 
 public class NakedSingleReportBuilder : IChangeReportBuilder
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IPossibilitiesHolder snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( Description(changes),
             lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
