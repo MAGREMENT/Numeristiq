@@ -14,7 +14,7 @@ namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ISolveResult, ISolvingState
+public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer, ISolveResult, ISolvingState
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -31,8 +31,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     public IUpdatableSolvingState CurrentState => new ArraySolvingState(this);
     public IUpdatableSolvingState StartState { get; private set; }
-
-    public event OnLogsUpdate? LogsUpdated;
 
     private int _currentStrategy = -1;
     
@@ -60,7 +58,6 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
         PreComputer = new PreComputer(this);
         
         LogManager = new LogManager();
-        LogManager.LogsUpdated += () => LogsUpdated?.Invoke();
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);

@@ -57,7 +57,7 @@ public class ArraySolvingState : IUpdatableSolvingState
         return Get(row, col).AsPossibilities;
     }
 
-    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> changes)
+    public IUpdatableSolvingState Apply(IEnumerable<SolverProgress> changes)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);

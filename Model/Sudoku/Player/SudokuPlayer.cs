@@ -5,14 +5,13 @@ using Model.Utility;
 
 namespace Model.Sudoku.Player;
 
-public class SudokuPlayer : IPlayer, IHistoryCreator
+public class SudokuPlayer : IHistoryCreator
 {
     private readonly PlayerCell[,] _cells = new PlayerCell[9, 9];
     private readonly Dictionary<Cell, HighlightingCollection> _highlighting = new();
     private readonly Historic _historic;
 
     public bool MultiColorHighlighting { get; set; } = true;
-    public event OnChange? Changed;
     public event OnMoveAvailabilityChange? MoveAvailabilityChanged;
 
     public SudokuPlayer()
@@ -44,8 +43,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].SetNumber(number);
         }
-
-        if (yes) Changed?.Invoke();
     }
 
     public void RemoveNumber(int number, IEnumerable<Cell> cells)
@@ -62,8 +59,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].RemoveNumber(number);
         }
-        
-        if (yes) Changed?.Invoke();
     }
 
     public void RemoveNumber(IEnumerable<Cell> cells)
@@ -80,8 +75,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].RemoveNumber();
         }
-        
-        if (yes) Changed?.Invoke();
     }
 
     public void AddPossibility(int possibility, PossibilitiesLocation location, IEnumerable<Cell> cells)
@@ -98,8 +91,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].AddPossibility(possibility, location);
         }
-        
-        if (yes) Changed?.Invoke();
     }
     
     public void RemovePossibility(int possibility, PossibilitiesLocation location, IEnumerable<Cell> cells)
@@ -116,8 +107,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].RemovePossibility(possibility, location);
         }
-        
-        if (yes) Changed?.Invoke();
     }
 
     public void RemovePossibility(PossibilitiesLocation location, IEnumerable<Cell> cells)
@@ -134,8 +123,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].RemovePossibility(location);
         }
-        
-        if (yes) Changed?.Invoke();
     }
 
     public void ClearNumbers(IEnumerable<Cell> cells)
@@ -152,8 +139,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
             
             _cells[c.Row, c.Column].Empty();
         }
-        
-        if(yes) Changed?.Invoke();
     }
 
     public void ClearNumbers()
@@ -173,8 +158,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 _cells[row, col].Empty(); 
             }
         }
-
-        if(yes) Changed?.Invoke();
     }
     
     public void ComputeDefaultPossibilities()
@@ -216,8 +199,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 possibilities = ReadOnlyBitSet16.Filled(1, 9);
             }
         }
-        
-        if(yes) Changed?.Invoke();
     }
 
     public void ComputeDefaultPossibilities(IEnumerable<Cell> cells)
@@ -256,8 +237,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 
             possibilities = ReadOnlyBitSet16.Filled(1, 9);
         }
-        
-        if(yes) Changed?.Invoke();
     }
 
     public void Highlight(HighlightColor color, IEnumerable<Cell> cells)
@@ -314,8 +293,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 _highlighting[c] = highlight;
             }
         }
-        
-        if (yes) Changed?.Invoke();
     }
 
     public void ClearHighlights(IEnumerable<Cell> cells)
@@ -332,8 +309,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
 
             _highlighting.Remove(c);
         }
-        
-        if (yes) Changed?.Invoke();
     }
 
     public void ClearHighlights()
@@ -342,7 +317,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         
         if (yes) _historic.NewHistoricPoint();
         _highlighting.Clear();
-        if(yes) Changed?.Invoke();
     }
 
     public void MoveBack()
@@ -367,8 +341,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 if (s[row, col] != 0) _cells[row, col].SetNumber(s[row, col]);
             }
         }
-        
-        if(_historic.PushBufferIfDifferent()) Changed?.Invoke();
     }
 
     public void Paste(ArraySolvingState ss)
@@ -394,8 +366,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
                 }
             }
         }
-        
-        if(_historic.PushBufferIfDifferent()) Changed?.Invoke();
     }
 
     public void ShowHistoricPoint(HistoricPoint point)
@@ -413,8 +383,6 @@ public class SudokuPlayer : IPlayer, IHistoryCreator
         {
             _highlighting[ch.Cell] = ch.Highlighting;
         }
-        
-        Changed?.Invoke();
     }
 
     public PlayerCell this[int row, int column] => _cells[row, column];
