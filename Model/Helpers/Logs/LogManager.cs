@@ -20,13 +20,13 @@ public class LogManager
         TryCallLogsUpdatedEvent();
     }
 
-    public void AddFromReport(ChangeReport report, IReadOnlyList<SolverProgress> changes, ICommitMaker maker, ISolvingState stateBefore)
+    public void AddFromReport(ChangeReport report, IReadOnlyList<SolverProgress> changes, ICommitMaker maker, IUpdatableSolvingState stateBefore)
     {
         Logs.Add(new ChangeReportLog(_idCount++, maker, changes, report, stateBefore));
         TryCallLogsUpdatedEvent();
     }
 
-    public void AddByHand(int possibility, int row, int col, ProgressType progressType, ISolvingState stateBefore)
+    public void AddByHand(int possibility, int row, int col, ProgressType progressType, IUpdatableSolvingState stateBefore)
     {
         Logs.Add(new ByHandLog(_idCount++, possibility, row, col, progressType, stateBefore));
         TryCallLogsUpdatedEvent();

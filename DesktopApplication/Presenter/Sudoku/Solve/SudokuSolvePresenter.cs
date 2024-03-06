@@ -14,7 +14,7 @@ public class SudokuSolvePresenter
     private readonly HighlighterTranslator _translator;
 
     private readonly SudokuSolver _solver;
-    private ITranslatable? _currentlyDisplayedState;
+    private ISolvingState? _currentlyDisplayedState;
     private int _currentlyOpenedLog = -1;
     private SolveTracker? _solveTracker;
 
@@ -27,6 +27,8 @@ public class SudokuSolvePresenter
         _enabler = new SolveActionEnabler(_view);
         _translator = new HighlighterTranslator(_view.Drawer);
         _solver = solver;
+
+        _view.InitializeStrategies(_solver.StrategyManager.Strategies);
     }
 
     public void OnSudokuAsStringBoxShowed()
@@ -126,15 +128,22 @@ public class SudokuSolvePresenter
         _view.SetCursorPosition(_currentlyOpenedLog, log.HighlightManager.CursorPosition());
     }
 
+    public void EnableStrategy(int index, bool enabled)
+    {
+        if (index < 0 || index >= _solver.StrategyManager.Strategies.Count) return;
+
+        _solver.StrategyManager.Strategies[index].Enabled = enabled;
+    }
+
     private void ClearLogs()
     {
         _view.ClearLogs();
         _logCount = 0;
     }
 
-    private void SetShownState(ITranslatable translatable, bool solutionAsClues)
+    private void SetShownState(ISolvingState solvingState, bool solutionAsClues)
     {
-        _currentlyDisplayedState = translatable;
+        _currentlyDisplayedState = solvingState;
         var drawer = _view.Drawer;
         
         drawer.ClearNumbers();
@@ -143,11 +152,11 @@ public class SudokuSolvePresenter
         {
             for (int col = 0; col < 9; col++)
             {
-                var number = translatable[row, col];
+                var number = solvingState[row, col];
                 if (number == 0)
                 {
                     if(solutionAsClues) drawer.SetClue(row, col, false);
-                    drawer.ShowPossibilities(row, col, translatable.PossibilitiesAt(row, col).EnumeratePossibilities());
+                    drawer.ShowPossibilities(row, col, solvingState.PossibilitiesAt(row, col).EnumeratePossibilities());
                 }
                 else
                 {

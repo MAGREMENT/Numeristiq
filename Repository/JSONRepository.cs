@@ -15,8 +15,6 @@ public class JSONRepository<T> : IRepository<T> where T : class?
     {
         _fileName = fileName;
     }
-
-    public bool UploadAllowed { get; set; } = true;
     
     public bool Initialize(bool createNewOnNoneExistingFound)
     {
@@ -65,7 +63,7 @@ public class JSONRepository<T> : IRepository<T> where T : class?
 
     protected bool InternalUpload<TUpload>(TUpload DAO)
     {
-        if (!UploadAllowed || _path is null) return false;
+        if (_path is null) return false;
 
         try
         {

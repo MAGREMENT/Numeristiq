@@ -13,8 +13,8 @@ public interface ISolver
     public void SetState(ArraySolvingState state);
     public void Solve(bool stopAtProgress);
     public BuiltChangeCommit[] EveryPossibleNextStep();
-    public ISolvingState CurrentState { get; }
-    public ISolvingState StartState { get; }
+    public IUpdatableSolvingState CurrentState { get; }
+    public IUpdatableSolvingState StartState { get; }
     public IReadOnlyList<ISolverLog> Logs { get; }
     public void SetSolutionByHand(int number, int row, int col);
     public void RemoveSolutionByHand(int row, int col);

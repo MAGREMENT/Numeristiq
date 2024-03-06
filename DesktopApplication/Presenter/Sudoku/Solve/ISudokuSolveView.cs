@@ -1,5 +1,7 @@
-﻿using Model;
+﻿using System.Collections.Generic;
+using Model;
 using Model.Helpers.Logs;
+using Model.Sudoku.Solver;
 
 namespace DesktopApplication.Presenter.Sudoku.Solve;
 
@@ -16,4 +18,5 @@ public interface ISudokuSolveView
     void CloseLogs();
     void SetLogsStateShown(StateShown stateShown);
     void SetCursorPosition(int index, string s);
+    void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies);
 }

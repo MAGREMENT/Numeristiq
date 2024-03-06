@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,6 +20,7 @@ public partial class WelcomeWindow
         
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
         RenderOptions.SetBitmapScalingMode(GameImage, BitmapScalingMode.Fant);
+        if(TitleBar.InsideContent is Image image) RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
             
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);

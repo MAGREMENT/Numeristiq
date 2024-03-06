@@ -14,7 +14,7 @@ namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ISolveResult, ITranslatable
+public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, ISolveResult, ISolvingState
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -29,8 +29,8 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public bool LogsManaged { get; private set; }
 
-    public ISolvingState CurrentState => new ArraySolvingState(this);
-    public ISolvingState StartState { get; private set; }
+    public IUpdatableSolvingState CurrentState => new ArraySolvingState(this);
+    public IUpdatableSolvingState StartState { get; private set; }
 
     public event OnLogsUpdate? LogsUpdated;
 
@@ -96,7 +96,7 @@ public class SudokuSolver : ISolver, IStrategyUser, ILogManagedChangeProducer, I
 
     public void SetState(ArraySolvingState state)
     {
-        _sudoku = SudokuTranslator.TranslateTranslatable(state);
+        _sudoku = SudokuTranslator.TranslateSolvingState(state);
         CallOnNewSudokuForEachStrategy();
         
         ResetPossibilities();

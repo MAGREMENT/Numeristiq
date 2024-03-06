@@ -15,5 +15,5 @@ public interface ILogManagedChangeProducer : IChangeProducer
 {
     public LogManager LogManager { get; }
     public IPossibilitiesHolder TakeSnapshot(); //TODO use current state for this
-    public ISolvingState CurrentState { get; }
+    public IUpdatableSolvingState CurrentState { get; }
 }

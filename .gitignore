@@ -3,22 +3,12 @@
 /Model/bin
 /Model/obj
 
-/View/bin
-/View/obj
-/View/.idea
-
 /DesktopApplication/bin
 /DesktopApplication/obj
 /DesktopApplication/.idea
 
-/RunTester/bin
-/RunTester/obj
-
 /Tests/bin
 /Tests/obj
-
-/Presenter/bin
-/Presenter/obj
 
 /Repository/bin
 /Repository/obj

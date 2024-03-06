@@ -1,13 +1,7 @@
-﻿using Model.Helpers.Changes;
-using Model.Sudoku;
-using Model.Utility;
-
-namespace Model;
+﻿namespace Model;
 
 public interface IRepository<T> where T : class?
-{
-    public bool UploadAllowed { set; }
-    
+{ 
     public bool Initialize(bool createNewOnNoneExisting);
     public T? Download();
     public bool Upload(T DAO);
@@ -37,12 +31,3 @@ public enum IconColor
 {
     White, Black
 }
-
-public record SettingsDAO(StateShown StateShown, SudokuTranslationType TranslationType,
-    int DelayBeforeTransition, int DelayAfterTransition, bool UniquenessAllowed, ProgressType ActionOnCellProgress,
-    bool TransformSoloPossibilityIntoGiven, CellColor GivenColor, CellColor SolvingColor,
-    LinkOffsetSidePriority SidePriority, bool ShowSameCellLinks, bool MultiColorHighlighting,
-    int StartAngle, RotationDirection RotationDirection, int Theme);
-    
-public record ThemeDAO(RGB Background1, RGB Background2, RGB Background3, RGB Primary1, RGB Primary2,
-    RGB Secondary1, RGB Secondary2, RGB Accent, RGB Border, RGB Text, IconColor IconColor);

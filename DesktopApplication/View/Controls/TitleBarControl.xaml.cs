@@ -11,6 +11,12 @@ public partial class TitleBarControl
 
     private bool _allowResize = true;
 
+    public object InsideContent
+    {
+        set => ContentPresenter.Content = value;
+        get => ContentPresenter.Content;
+    }
+
     public bool AllowResize
     {
         set
@@ -26,12 +32,20 @@ public partial class TitleBarControl
 
     public ImageSource AppIcon
     {
-        set => Icon.Source = value;
+        set
+        {
+            Icon.Source = value;
+            Icon.Visibility = Visibility.Visible;
+        }
     }
 
     public string AppTitle
     {
-        set => Title.Text = value;
+        set
+        {
+            Title.Text = value;
+            Title.Visibility = Visibility.Visible;
+        } 
     }
     
     public TitleBarControl()

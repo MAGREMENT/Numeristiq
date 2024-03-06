@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.BitSets;
 
 namespace Model.Sudoku.Solver;
 
-public class ArraySolvingState : ISolvingState
+public class ArraySolvingState : IUpdatableSolvingState
 {
     private readonly CellState[,] _cellStates;
 
@@ -57,7 +57,7 @@ public class ArraySolvingState : ISolvingState
         return Get(row, col).AsPossibilities;
     }
 
-    public ISolvingState Apply(IReadOnlyList<SolverProgress> changes)
+    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> changes)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);
@@ -70,7 +70,7 @@ public class ArraySolvingState : ISolvingState
         return new ArraySolvingState(buffer);
     }
 
-    public ISolvingState Apply(SolverProgress progress)
+    public IUpdatableSolvingState Apply(SolverProgress progress)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);

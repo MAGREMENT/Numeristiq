@@ -21,7 +21,8 @@
 			Width="32"
 			Height="32"
 			Margin="4"
-			x:Name="Icon"/>
+			x:Name="Icon"
+			Visibility="Collapsed"/>
 		
 		<TextBlock
 			Grid.Column="1"
@@ -29,8 +30,11 @@
 			VerticalAlignment="Center"
 			FontSize="26"
 			Foreground="{StaticResource Text}"
-			x:Name="Title">
+			x:Name="Title"
+			Visibility="Collapsed">
 		</TextBlock>
+		
+		<ContentPresenter Grid.Column="2" x:Name="ContentPresenter"/>
 
 		<Button
 			Grid.Column="3"

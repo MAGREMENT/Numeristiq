@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Tectonic;
 
-public class TectonicSolver : IStrategyUser, IChangeProducer, ITranslatable
+public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;

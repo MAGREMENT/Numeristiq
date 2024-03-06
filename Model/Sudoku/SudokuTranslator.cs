@@ -14,7 +14,7 @@ public enum SudokuTranslationType
 
 public static class SudokuTranslator
 {
-    public static string TranslateLineFormat(ITranslatable translatable, SudokuTranslationType type)
+    public static string TranslateLineFormat(ISolvingState solvingState, SudokuTranslationType type)
     {
         string result = "";
         int voidCount = 0;
@@ -22,7 +22,7 @@ public static class SudokuTranslator
         {
             for (int j = 0; j < 9; j++)
             {
-                int current = translatable[i, j];
+                int current = solvingState[i, j];
                 if (current == 0)
                 {
                     switch (type)
@@ -104,14 +104,14 @@ public static class SudokuTranslator
         return s;
     }
     
-    public static string TranslateGridFormat(ITranslatable translatable)
+    public static string TranslateGridFormat(ISolvingState solvingState)
     {
         var maxWidth = 0;
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var width = translatable[row, col] == 0 ? translatable.PossibilitiesAt(row, col).Count : 3;
+                var width = solvingState[row, col] == 0 ? solvingState.PossibilitiesAt(row, col).Count : 3;
                 maxWidth = Math.Max(width, maxWidth);
             }
         }
@@ -135,9 +135,9 @@ public static class SudokuTranslator
             {
                 var first = col % 3 == 0 ? "|" : " ";
                 
-                var toPut = translatable[row, col] == 0
-                    ? translatable.PossibilitiesAt(row, col).ToValuesString()
-                    : $"<{translatable[row, col]}>";
+                var toPut = solvingState[row, col] == 0
+                    ? solvingState.PossibilitiesAt(row, col).ToValuesString()
+                    : $"<{solvingState[row, col]}>";
                 builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
             }
 
@@ -240,7 +240,7 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static string TranslateBase32Format(ITranslatable translatable, IBase32Translator translator)
+    public static string TranslateBase32Format(ISolvingState solvingState, IBase32Translator translator)
     {
         var builder = new StringBuilder();
 
@@ -248,8 +248,8 @@ public static class SudokuTranslator
         {
             for (int col = 0; col < 9; col++)
             {
-                var solved = translatable[row, col];
-                int bits = solved == 0 ? translatable.PossibilitiesAt(row, col).Bits : (1 << solved) | 1;
+                var solved = solvingState[row, col];
+                int bits = solved == 0 ? solvingState.PossibilitiesAt(row, col).Bits : (1 << solved) | 1;
 
                 builder.Append(translator.ToChar((bits >> 5) & 0x1F));
                 builder.Append(translator.ToChar(bits & 0x1F));
@@ -259,7 +259,7 @@ public static class SudokuTranslator
         return builder.ToString();
     }
     
-    public static Sudoku TranslateTranslatable(ITranslatable translatable)
+    public static Sudoku TranslateSolvingState(ISolvingState solvingState)
     {
         Sudoku result = new();
 
@@ -267,7 +267,7 @@ public static class SudokuTranslator
         {
             for (int col = 0; col < 9; col++)
             {
-                result[row, col] = translatable[row, col];
+                result[row, col] = solvingState[row, col];
             }
         }
 

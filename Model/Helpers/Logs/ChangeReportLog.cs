@@ -14,14 +14,14 @@ public class ChangeReportLog : ISolverLog
     public IReadOnlyList<SolverProgress> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
-    public ISolvingState StateBefore { get; }
-    public ISolvingState StateAfter { get; }
+    public IUpdatableSolvingState StateBefore { get; }
+    public IUpdatableSolvingState StateAfter { get; }
     public HighlightManager HighlightManager  { get; }
     public bool FromSolving => true;
 
 
     public ChangeReportLog(int id, ICommitMaker maker, IReadOnlyList<SolverProgress> changes, ChangeReport report,
-        ISolvingState stateBefore)
+        IUpdatableSolvingState stateBefore)
     {
         Id = id;
         Title = maker.Name;

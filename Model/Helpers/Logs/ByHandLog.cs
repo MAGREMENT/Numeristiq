@@ -15,14 +15,14 @@ public class ByHandLog : ISolverLog
     public IReadOnlyList<SolverProgress> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
-    public ISolvingState StateBefore { get; }
-    public ISolvingState StateAfter { get; }
+    public IUpdatableSolvingState StateBefore { get; }
+    public IUpdatableSolvingState StateAfter { get; }
     public HighlightManager HighlightManager => new(new DelegateHighlightable(HighLight));
     public bool FromSolving => false;
 
     private readonly SolverProgress _progress;
 
-    public ByHandLog(int id, int possibility, int row, int col, ProgressType progressType, ISolvingState stateBefore)
+    public ByHandLog(int id, int possibility, int row, int col, ProgressType progressType, IUpdatableSolvingState stateBefore)
     {
         Id = id;
         StateBefore = stateBefore;

@@ -93,6 +93,11 @@ public static class ColorUtility
         return new SolidColorBrush(Color.FromRgb(rgb.Red, rgb.Green, rgb.Blue));
     }
 
+    public static Color ToColor(RGB rgb)
+    {
+        return Color.FromRgb(rgb.Red, rgb.Green, rgb.Blue);
+    }
+
     public static Color[] ToColors(HighlightColor[] colors)
     {
         Color[] result = new Color[colors.Length];

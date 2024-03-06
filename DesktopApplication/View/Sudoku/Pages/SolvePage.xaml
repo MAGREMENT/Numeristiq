@@ -20,7 +20,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Left" 
                 Margin="5">
-            <controls:SudokuBoard  PossibilitySize="22" BigLineWidth="3" x:Name="Board"
+            <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
                                  SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{StaticResource Text}"
                                  LineBrush="{StaticResource Text}" CursorBrush="{StaticResource Primary1}"
                                  SpecialNumberBrush="{StaticResource Accent}"/>
@@ -38,14 +38,36 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Height="460" x:Name="LogViewer">
-                <StackPanel MinHeight="460" x:Name="LogPanel"/>
+            <ScrollViewer Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Height="460" x:Name="LogViewer" Style="{StaticResource TransparentBarScrollView}">
+                <StackPanel MinHeight="458" x:Name="LogPanel"/>
             </ScrollViewer>
             
             <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 2.5, 2.5" Click="Solve" x:Name="SolveButton">Solve</Button>
             <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 5, 5, 2.5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
             <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 2.5, 2.5, 5" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
             <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 2.5, 5, 5" Click="Clear" x:Name="ClearButton">Clear</Button>
+        </Grid>
+        
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <Grid Grid.Row="0" Height="40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+                <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
+                           Background="{StaticResource Background1}" Foreground="{StaticResource Text}">Strategies</TextBlock>
+            </Grid>
+            
+            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}" Height="620">
+                <StackPanel MinHeight="618" x:Name="StrategyPanel"/>
+            </ScrollViewer>
         </Grid>
         
         <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" x:Name="SudokuAsString" Showed="SudokuTextBoxShowed" TextChanged="SetNewSudoku"/>

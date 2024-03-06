@@ -1,34 +1,27 @@
 ﻿using Model;
-using Model.Sudoku;
 using Model.Utility;
 
 namespace Repository;
 
-public class HardCodedThemeRepository : IRepository<ThemeDAO[]>
+public class HardCodedThemeRepository : IRepository<ChosenTheme>
 {
-    public bool UploadAllowed { get; set; }
-
-    public bool Initialize(bool createNewOnNoneExistingFound)
+    public bool Initialize(bool createNewOnNoneExisting)
     {
         return true;
     }
 
-    public ThemeDAO[] Download()
+    public ChosenTheme? Download()
     {
-        return new ThemeDAO[]
+        return new ChosenTheme(new[]
         {
-            new(RGB.FromHex(0xFFFFFF), RGB.FromHex(0xF8F8F8), RGB.FromHex(0xF0F0F0), 
-                RGB.FromHex(0xFC880B), RGB.FromHex(0xEE810C), RGB.FromHex(0xF52A0A),
-                RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2), RGB.FromHex(0x858585),
-                RGB.FromHex(0x000000), IconColor.Black),
-            new (RGB.FromHex(0x282828), RGB.FromHex(0x2F2F2F), RGB.FromHex(0x373737), 
-                RGB.FromHex(0xFC880B), RGB.FromHex(0xEE810C), RGB.FromHex(0xF52A0A),
-                RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2), RGB.FromHex(0x858585),
-                RGB.FromHex(0xFFFFFF), IconColor.White)
-        };
+            new Theme(RGB.FromHex(0x0E0E15),RGB.FromHex(0x1C1C2C),RGB.FromHex(0x272742),
+                RGB.FromHex(0xFC880B),RGB.FromHex(0xEE810C),RGB.FromHex(0xF52A0A),
+                RGB.FromHex(0xE8280B),RGB.FromHex(0xF50EE2),RGB.FromHex(0xFFFFFF),
+                RGB.FromHex(0xFFFFFF))
+        }, 0);
     }
 
-    public bool Upload(ThemeDAO[] DAO)
+    public bool Upload(ChosenTheme DAO)
     {
         return false;
     }

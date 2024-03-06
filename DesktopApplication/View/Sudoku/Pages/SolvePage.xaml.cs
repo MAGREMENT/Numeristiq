@@ -1,9 +1,11 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Sudoku.Controls;
 using Model;
 using Model.Helpers.Logs;
+using Model.Sudoku.Solver;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
@@ -92,10 +94,21 @@ public partial class SolvePage : ISudokuSolveView
 
     public void SetCursorPosition(int index, string s)
     {
-        if (_logOpen < 0 || _logOpen > LogPanel.Children.Count) return;
-        if (LogPanel.Children[_logOpen] is not LogControl lc) return;
+        if (index < 0 || index > LogPanel.Children.Count) return;
+        if (LogPanel.Children[index] is not LogControl lc) return;
 
         lc.SetCursorPosition(s);
+    }
+
+    public void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies)
+    {
+        for (int i = 0; i < strategies.Count; i++)
+        {
+            var iForEvent = i;
+            var control = new StrategyControl(strategies[i]);
+            control.StrategyEnabled += b => _presenter.EnableStrategy(iForEvent, b);
+            StrategyPanel.Children.Add(control);
+        }
     }
 
     #endregion

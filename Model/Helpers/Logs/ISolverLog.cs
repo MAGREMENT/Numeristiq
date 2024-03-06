@@ -14,8 +14,8 @@ public interface ISolverLog
     public IReadOnlyList<SolverProgress> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
-    public ISolvingState StateBefore { get; }
-    public ISolvingState StateAfter { get; }
+    public IUpdatableSolvingState StateBefore { get; }
+    public IUpdatableSolvingState StateAfter { get; }
     public HighlightManager HighlightManager { get; }
     public bool FromSolving { get; }
 }

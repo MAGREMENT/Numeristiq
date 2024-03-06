@@ -12,6 +12,7 @@
         <Brush x:Key="Secondary2">#E8280B</Brush>
         <Brush x:Key="Accent">#F50EE2</Brush>
 	    <Brush x:Key="Text">#FFFFFF</Brush>
+	    <Color x:Key="ThumbColor">#FFFFFF</Color>
         
         <Style TargetType="Button" x:Key="WelcomeButtonStyle">
 	        <Setter Property="Foreground" Value="{StaticResource Text}"></Setter>
@@ -114,6 +115,81 @@
 		    <Setter Property="Padding" Value="10"></Setter>
 		    <Setter Property="Template" Value="{StaticResource LightUpButton}"/>
 		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
+	    </Style>
+	    
+	    <Style x:Key="TransparentThumb" TargetType="Thumb">
+		    <Setter Property="IsTabStop" Value="False"/>
+		    <Setter Property="SnapsToDevicePixels" Value="True"/>
+		    <Setter Property="Focusable" Value="False"/>
+		    <Setter Property="Background">
+			    <Setter.Value>
+				    <SolidColorBrush Color="{StaticResource ThumbColor}" Opacity="0.05"/>
+			    </Setter.Value>
+		    </Setter>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="Thumb">
+					    <Border CornerRadius="1"
+					            Background="{TemplateBinding Background}"
+					            BorderThickness="0"/>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsMouseOver" Value="True">
+							    <Setter Property="Background">
+								    <Setter.Value>
+									    <SolidColorBrush Color="{StaticResource ThumbColor}"/>
+								    </Setter.Value>
+							    </Setter>
+						    </Trigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
+	    
+	    <Style x:Key="TransparentBar" TargetType="ScrollBar">
+		    <Setter Property="SnapsToDevicePixels" Value="True"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="ScrollBar">
+					    <Track IsDirectionReversed="True"
+					           x:Name="PART_Track">
+						    <Track.Thumb>
+							    <Thumb Style="{StaticResource TransparentThumb}" Margin="1"/>
+						    </Track.Thumb>
+					    </Track>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
+	    
+	    <Style x:Key="TransparentBarScrollView" TargetType="ScrollViewer">
+		    <Setter Property="Background" Value="{StaticResource Background2}"/>
+		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="ScrollViewer">
+					    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+						    <Grid>
+							    <Grid.ColumnDefinitions>
+								    <ColumnDefinition/>
+								    <ColumnDefinition Width="Auto"/>
+							    </Grid.ColumnDefinitions>
+						    
+							    <ScrollContentPresenter Grid.Column="0" Grid.ColumnSpan="2" CanContentScroll="{TemplateBinding CanContentScroll}"/>
+						    
+							    <ScrollBar Grid.Column="1"
+							               Value="{TemplateBinding VerticalOffset}"
+							               Maximum="{TemplateBinding ScrollableHeight}"
+							               ViewportSize="{TemplateBinding ViewportHeight}"
+							               Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+							               x:Name="PART_VerticalScrollBar"
+							               Style="{StaticResource TransparentBar}"/>
+						    </Grid>
+					    </Border>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
 	    </Style>
 	    
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
