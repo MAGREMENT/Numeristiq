@@ -59,8 +59,8 @@ public class FishStrategy : SudokuStrategy
         bool allowCannibalism) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _unitCount = new MinMaxSetting("Unit count", 2, 4, 2, 5, 1, minUnitCount, maxUnitCount);
-        _maxNumberOfExoFins = new IntSetting("Max number of exo fins", new SliderViewInterface(0, 5, 1), maxNumberOfExoFins);
-        _maxNumberOfEndoFins = new IntSetting("Max number of endo fins", new SliderViewInterface(0, 5, 1), maxNumberOfEndoFins);
+        _maxNumberOfExoFins = new IntSetting("Max number of exo fins", new SliderInteractionInterface(0, 5, 1), maxNumberOfExoFins);
+        _maxNumberOfEndoFins = new IntSetting("Max number of endo fins", new SliderInteractionInterface(0, 5, 1), maxNumberOfEndoFins);
         _allowCannibalism = new BooleanSetting("Cannibalism allowed", allowCannibalism);
         AddSetting(_unitCount);
         AddSetting(_maxNumberOfExoFins);

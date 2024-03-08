@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku;
 using DesktopApplication.View.Tectonic;
@@ -15,9 +16,13 @@ namespace DesktopApplication.View;
 /// </summary>
 public partial class WelcomeWindow
 {
+    private readonly WelcomePresenter _presenter;
+    
     public WelcomeWindow()
     {
         InitializeComponent();
+
+        _presenter = GlobalApplicationPresenter.Instance.Initialize();
         
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
         RenderOptions.SetBitmapScalingMode(GameImage, BitmapScalingMode.Fant);
@@ -63,7 +68,7 @@ public partial class WelcomeWindow
 
     private void ShowSettingWindow(object sender, MouseButtonEventArgs e)
     {
-        var window = new SettingWindow();
+        var window = new SettingWindow(_presenter.Settings);
         window.Show();
     }
 }

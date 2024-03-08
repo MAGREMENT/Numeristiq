@@ -1,8 +1,11 @@
 using System.Windows;
+using System.Windows.Markup;
 using System.Windows.Media;
+using System.Windows.Shell;
 
 namespace DesktopApplication.View.Controls;
 
+[ContentProperty("InsideContent")]
 public partial class TitleBarControl
 {
     public event TitleBarAction? Minimize;
@@ -10,12 +13,16 @@ public partial class TitleBarControl
     public event TitleBarAction? Close;
 
     private bool _allowResize = true;
-
+    
     public object InsideContent
     {
-        set => ContentPresenter.Content = value;
-        get => ContentPresenter.Content;
+        get => GetValue(AdditionalContentProperty);
+        set => SetValue(AdditionalContentProperty, value);
     }
+    
+    public static readonly DependencyProperty AdditionalContentProperty =
+        DependencyProperty.Register("InsideContent", typeof(object), typeof(TitleBarControl),
+            new PropertyMetadata(null));
 
     public bool AllowResize
     {
@@ -53,6 +60,7 @@ public partial class TitleBarControl
         InitializeComponent();
         
         RenderOptions.SetBitmapScalingMode(Icon, BitmapScalingMode.Fant);
+        WindowChrome.SetIsHitTestVisibleInChrome(ContentControl, true);
     }
 
     private void OnMinimizeButtonClick(object sender, RoutedEventArgs e)

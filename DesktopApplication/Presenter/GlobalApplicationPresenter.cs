@@ -1,23 +1,60 @@
-﻿using Model;
+﻿using System;
+using Model;
 using Repository;
 
 namespace DesktopApplication.Presenter;
 
 public class GlobalApplicationPresenter
 {
-    private readonly IRepository<ChosenTheme> _themeRepository = new HardCodedThemeRepository();
+    private readonly Settings _settings;
     
     public Theme? Theme { get; private set; }
 
-    public void Initialize()
+    private GlobalApplicationPresenter(Settings settings, Theme? theme)
     {
-        if (_themeRepository.Initialize(true))
-        {
-            var download = _themeRepository.Download();
-            if (download is null || download.Themes.Length == 0 || download.ChosenOne < 0 
-                || download.ChosenOne >= download.Themes.Length) return;
+        _settings = settings;
+        Theme = theme;
+    }
 
-            Theme = download.Themes[download.ChosenOne];
+    public WelcomePresenter Initialize()
+    {
+        return new WelcomePresenter(_settings);
+    }
+    
+    private static GlobalApplicationPresenter? _instance;
+
+    public static GlobalApplicationPresenter Instance
+    {
+        get
+        {
+            _instance ??= InitializeInstance();
+            return _instance;
         }
+    }
+
+    private static GlobalApplicationPresenter InitializeInstance()
+    {
+        var themeRepository = new HardCodedThemeRepository();
+        if (!themeRepository.Initialize(true)) 
+            throw new Exception("Theme repository initialization went wrong");
+
+        var settingsRepository = new SettingsJSONRepository("settings.json");
+        if (!settingsRepository.Initialize(true))
+            throw new Exception("Setting repository initialization went wrong");
+
+        var themes = themeRepository.Download();
+        var settingsDic = settingsRepository.Download();
+        var settings = new Settings(themes, settingsRepository);
+        
+        if (settingsDic is not null)
+        {
+            foreach (var entry in settingsDic)
+            {
+                settings.TrySet(entry.Key, entry.Value);
+            }
+        }
+
+        var index = settings.Theme.Get().ToInt();
+        return new GlobalApplicationPresenter(settings, index < 0 || index >= themes.Length ? null : themes[index]);
     }
 }

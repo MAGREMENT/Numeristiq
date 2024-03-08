@@ -24,7 +24,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
     public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
     {
         _maxNumberOfGuardians = new IntSetting("Maximum number of guardians",
-            new SliderViewInterface(1, 20, 1), maxNumberOfGuardians);
+            new SliderInteractionInterface(1, 20, 1), maxNumberOfGuardians);
         AddSetting(_maxNumberOfGuardians);
     }
     

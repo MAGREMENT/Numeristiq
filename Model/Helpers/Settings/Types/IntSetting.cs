@@ -3,13 +3,13 @@
 public class IntSetting : ISetting
 {
     public string Name { get; }
-    public ISettingViewInterface Interface { get; }
+    public ISettingInteractionInterface InteractionInterface { get; }
     public int Value { get; set; }
 
-    public IntSetting(string name, ISettingViewInterface i, int defaultValue = 1)
+    public IntSetting(string name, ISettingInteractionInterface i, int defaultValue = 1)
     {
         Name = name;
-        Interface = i;
+        InteractionInterface = i;
         Value = defaultValue;
     }
 

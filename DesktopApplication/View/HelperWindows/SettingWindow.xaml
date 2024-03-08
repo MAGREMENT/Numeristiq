@@ -4,17 +4,36 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:local="clr-namespace:DesktopApplication.View.HelperWindows"
+        xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Title="SettingWindow" Height="450" Width="800">
-    <Grid Background="{StaticResource Background2}">
+        Title="SettingWindow" Height="450" Width="800"
+        WindowStyle="None"
+        ResizeMode="NoResize">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
+    
+    <Grid Background="{StaticResource Background1}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <ScrollViewer Grid.Column="0" Width="200" Height="450"
-                      Style="{StaticResource TransparentBarScrollView}">
+        <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="TitleBar" Minimize="Minimize"
+                                  ChangeSize="ChangeSize" Close="Close" AllowResize="False" AppTitle="Settings"/>
+        
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.RowSpan="2" Width="200" Height="450" Style="{StaticResource TransparentBarScrollView}">
             <StackPanel x:Name="TitlePanel" MinHeight="448"/>
+        </ScrollViewer>
+        
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Height="400" Style="{StaticResource TransparentBarScrollView}">
+            <StackPanel x:Name="SettingPanel" MinHeight="398"/>
         </ScrollViewer>
     </Grid>
 </Window>

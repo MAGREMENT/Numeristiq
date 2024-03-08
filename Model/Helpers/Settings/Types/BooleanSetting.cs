@@ -3,7 +3,7 @@
 public class BooleanSetting : ISetting
 {
     public string Name { get; }
-    public ISettingViewInterface Interface { get; } = new BooleanViewInterface();
+    public ISettingInteractionInterface InteractionInterface { get; } = new BooleanInteractionInterface();
     public bool Value { get; set; }
 
     public BooleanSetting(string name, bool defaultValue = false)

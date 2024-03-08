@@ -13,9 +13,8 @@ public partial class App
     {
         InitializeComponent();
 
-        var presenter = new GlobalApplicationPresenter();
-        presenter.Initialize();
-        if (presenter.Theme is not null) SetTheme(presenter.Theme);
+        var presenter = GlobalApplicationPresenter.Instance;
+        if(presenter.Theme is not null) SetTheme(presenter.Theme);
     }
 
     private void SetTheme(Theme t)
