@@ -9,8 +9,8 @@
     <Border Padding="10" Background="{DynamicResource Background2}" x:Name="Border">
         <Grid>
             <local:TectonicBoard VerticalAlignment="Center" HorizontalAlignment="Center"
-                                 BackgroundBrush="Transparent" LineBrush="{StaticResource Text}"
-                                 DefaultNumberBrush="{StaticResource Text}" x:Name="Board"
+                                 BackgroundBrush="Transparent" LineBrush="{DynamicResource Text}"
+                                 DefaultNumberBrush="{DynamicResource Text}" x:Name="Board"
                                  BigLineWidth="5" SmallLineWidth="1" CellSize="50"
                                  RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"/>
             

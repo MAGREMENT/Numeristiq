@@ -21,42 +21,53 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private double _bigLineWidth;
     private double _smallLineWidth;
 
-    private Brush _defaultNumberBrush = Brushes.Black;
-    private Brush _backgroundBrush = Brushes.White;
-    private Brush _lineBrush = Brushes.Black;
-
     public event OnDimensionCountChange? RowCountChanged;
     public event OnDimensionCountChange? ColumnCountChanged;
     
+    public static readonly DependencyProperty DefaultNumberBrushProperty =
+        DependencyProperty.Register(nameof(DefaultNumberBrush), typeof(Brush), typeof(TectonicBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if(obj is not TectonicBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(NumbersIndex, brush);
+                board.Refresh();
+            }));
+    
     public Brush DefaultNumberBrush
     {
-        set
-        {
-            _defaultNumberBrush = value;
-            SetLayerBrush(NumbersIndex, value);
-            Refresh();
-        }
+        set => SetValue(DefaultNumberBrushProperty, value);
+        get => (Brush)GetValue(DefaultNumberBrushProperty);
     }
+    
+    public static readonly DependencyProperty BackgroundBrushProperty =
+        DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(TectonicBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if(obj is not TectonicBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(BackgroundIndex, brush);
+                board.Refresh();
+            }));
 
     public Brush BackgroundBrush
     {
-        set
-        {
-            _backgroundBrush = value;
-            SetLayerBrush(BackgroundIndex, value);
-            Refresh();
-        }
+        set => SetValue(BackgroundBrushProperty, value);
+        get => (Brush)GetValue(BackgroundBrushProperty);
     }
+    
+    public static readonly DependencyProperty LineBrushProperty =
+        DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(TectonicBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if(obj is not TectonicBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(SmallLinesIndex, brush);
+                board.SetLayerBrush(BigLinesIndex, brush);
+                board.Refresh();
+            }));
     
     public Brush LineBrush
     {
-        set
-        {
-            _lineBrush = value;
-            SetLayerBrush(SmallLinesIndex, value);
-            SetLayerBrush(BigLinesIndex, value);
-            Refresh();
-        }
+        set => SetValue(LineBrushProperty, value);
+        get => (Brush)GetValue(LineBrushProperty);
     }
 
     public double CellSize
@@ -141,9 +152,12 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 
     public void ShowSolution(int row, int column, int number)
     {
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(number.ToString(), _cellSize * 3 / 4,
-            _defaultNumberBrush, new Rect(GetLeft(column), GetTop(row), _cellSize,
-                _cellSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        Dispatcher.Invoke(() =>
+        {
+            Layers[NumbersIndex].Add(new TextInRectangleComponent(number.ToString(), _cellSize * 3 / 4,
+                DefaultNumberBrush, new Rect(GetLeft(column), GetTop(row), _cellSize,
+                    _cellSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        });
     }
 
     public void ShowPossibilities(int row, int column, IEnumerable<int> possibilities, int zoneSize)
@@ -154,9 +168,12 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         
         foreach (var possibility in possibilities)
         {
-            Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), textSize,
-                _defaultNumberBrush, new Rect(GetLeft(column) + (possibility - 1) * posSize, GetTop(row) + delta, posSize,
-                    posSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+            Dispatcher.Invoke(() =>
+            {
+                Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), textSize,
+                    DefaultNumberBrush, new Rect(GetLeft(column) + (possibility - 1) * posSize, GetTop(row) + delta, posSize,
+                        posSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center)); 
+            });
         }
     }
 
@@ -207,7 +224,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private void UpdateBackground()
     {
         Layers[BackgroundIndex].Add(new FilledRectangleComponent(
-            new Rect(0, 0, Width, Height), _backgroundBrush));
+            new Rect(0, 0, Width, Height), BackgroundBrush));
     }
 
     private void UpdateAndDrawLines()
@@ -225,7 +242,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         var half = _bigLineWidth / 2;
         
         Layers[BigLinesIndex].Add(new OutlinedRectangleComponent(
-            new Rect(half, half, Width - half, Height - half), new Pen(_lineBrush, _bigLineWidth)));
+            new Rect(half, half, Width - half, Height - half), new Pen(LineBrush, _bigLineWidth)));
 
         var diff = (_bigLineWidth - _smallLineWidth) / 2;
         var length = _cellSize + _bigLineWidth * 2;
@@ -245,12 +262,12 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
                 if (b is not null && b.IsThin)
                 {
                     Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX, deltaY + diff, length, _smallLineWidth), _lineBrush));
+                        new Rect(deltaX, deltaY + diff, length, _smallLineWidth), LineBrush));
                 }
                 else
                 {
                     Layers[BigLinesIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX, deltaY, length, _bigLineWidth), _lineBrush));
+                        new Rect(deltaX, deltaY, length, _bigLineWidth), LineBrush));
                 }
 
                 deltaX += _cellSize + _bigLineWidth;
@@ -273,12 +290,12 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
                 if (b is not null && b.IsThin)
                 {
                     Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX + diff, deltaY, _smallLineWidth, length), _lineBrush));
+                        new Rect(deltaX + diff, deltaY, _smallLineWidth, length), LineBrush));
                 }
                 else
                 {
                     Layers[BigLinesIndex].Add(new FilledRectangleComponent(
-                        new Rect(deltaX, deltaY, _bigLineWidth, length), _lineBrush));
+                        new Rect(deltaX, deltaY, _bigLineWidth, length), LineBrush));
                 }
 
                 deltaX += _cellSize + _bigLineWidth;
