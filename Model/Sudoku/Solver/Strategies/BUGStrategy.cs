@@ -69,7 +69,7 @@ public class BUGStrategy : SudokuStrategy
     }
 }
 
-public class BUGStrategyReportBuilder : IChangeReportBuilder
+public class BUGStrategyReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly List<CellPossibility> _additionalCandidates;
 
@@ -78,7 +78,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder
         _additionalCandidates = additionalCandidates;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

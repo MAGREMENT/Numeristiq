@@ -15,7 +15,7 @@ public interface IStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
     
     bool LogsManaged { get; }
 
-    IChangeBuffer ChangeBuffer { get; }
+    IChangeBuffer<IUpdatableSudokuSolvingState> ChangeBuffer { get; }
     
     PreComputer PreComputer { get; }
     

@@ -194,7 +194,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
     }
 }
 
-public class FinnedGridFormationReportBuilder : IChangeReportBuilder
+public class FinnedGridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IReadOnlyLinePositions _mashed;
     private readonly IReadOnlyLinePositions _visited;
@@ -211,7 +211,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> normal = new();
         List<Cell> finned = new();

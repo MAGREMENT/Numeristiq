@@ -246,7 +246,7 @@ public class NakedSetStrategy : SudokuStrategy
     }
 }
 
-public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
+public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
@@ -262,7 +262,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {
@@ -295,7 +295,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
     }
 }
 
-public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
+public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;
@@ -306,7 +306,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

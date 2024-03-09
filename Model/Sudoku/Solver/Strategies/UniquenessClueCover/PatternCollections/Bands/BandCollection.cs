@@ -178,7 +178,7 @@ public class BandCollection : IPatternCollection
 public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[] LengthKey, int Mini,
     Unit Unit);
 
-public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder
+public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly BandPatternCandidate _candidate;
 
@@ -187,7 +187,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder
         _candidate = candidate;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

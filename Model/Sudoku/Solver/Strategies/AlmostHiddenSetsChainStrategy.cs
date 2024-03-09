@@ -152,7 +152,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     }
 }
 
-public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
+public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Chain<IPossibilitiesPositions, Cell> _chain;
     private readonly List<Link<CellPossibility>> _links;
@@ -172,7 +172,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
         _additionalLink = additionalLink;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( _chain.ToString(), lighter =>
         {

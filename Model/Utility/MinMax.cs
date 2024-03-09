@@ -15,4 +15,14 @@ public readonly struct MinMax
 
     public int Min { get; }
     public int Max { get; }
+
+    public static bool operator ==(MinMax left, MinMax right)
+    {
+        return left.Min == right.Min && left.Max == right.Max;
+    }
+
+    public static bool operator !=(MinMax left, MinMax right)
+    {
+        return left.Min != right.Min || left.Max != right.Max;
+    }
 }

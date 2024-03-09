@@ -263,9 +263,9 @@ public class Rotational270 : Symmetry
     }
 }
 
-public class GurthTheoremReportBuilder : IChangeReportBuilder
+public class GurthTheoremReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return ChangeReport.Default(changes);
     }

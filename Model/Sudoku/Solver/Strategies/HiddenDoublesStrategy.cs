@@ -125,7 +125,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
     }
 }
 
-public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
+public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _pos;
@@ -142,7 +142,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
@@ -167,7 +167,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
     }
 }
 
-public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
+public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IReadOnlyMiniGridPositions _pos;
     private readonly int _n1;
@@ -180,7 +180,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
         _n2 = n2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray();
 

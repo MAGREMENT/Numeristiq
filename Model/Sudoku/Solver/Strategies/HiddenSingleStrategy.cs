@@ -56,7 +56,7 @@ public class HiddenSingleStrategy : SudokuStrategy
     }
 }
 
-public class HiddenSingleReportBuilder : IChangeReportBuilder
+public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Unit _unit;
 
@@ -65,7 +65,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));

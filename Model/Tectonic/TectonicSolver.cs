@@ -19,7 +19,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
     private int _possibilityRemovedBuffer;
     private int _solutionAddedBuffer;
 
-    public IChangeBuffer ChangeBuffer { get; }
+    public IChangeBuffer<IUpdatableTectonicSolvingState> ChangeBuffer { get; }
 
     public event OnProgressMade? ProgressMade;
 
@@ -28,7 +28,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet16[0, 0];
 
-        ChangeBuffer = new FastChangeBuffer(this);
+        ChangeBuffer = new FastChangeBuffer<IUpdatableTectonicSolvingState>(this);
     }
 
     public void SetTectonic(ITectonic tectonic)

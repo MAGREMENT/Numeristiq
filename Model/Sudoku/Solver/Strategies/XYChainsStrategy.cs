@@ -69,7 +69,7 @@ public class XYChainsStrategy : SudokuStrategy
     }
 }
 
-public class XYChainReportBuilder : IChangeReportBuilder
+public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly CellPossibility[] _visited;
 
@@ -78,7 +78,7 @@ public class XYChainReportBuilder : IChangeReportBuilder
         _visited = visited.ToArray();
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

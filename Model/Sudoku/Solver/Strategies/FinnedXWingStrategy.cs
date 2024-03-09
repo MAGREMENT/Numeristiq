@@ -134,7 +134,7 @@ public class FinnedXWingStrategy : SudokuStrategy
     }
 }
 
-public class FinnedXWingReportBuilder : IChangeReportBuilder
+public class FinnedXWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IReadOnlyLinePositions _normal;
     private readonly int _normalUnit;
@@ -154,7 +154,7 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

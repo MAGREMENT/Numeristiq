@@ -28,9 +28,9 @@ public class HiddenSingleStrategy : TectonicStrategy
     }
 }
 
-public class HiddenSingleReportBuilder : IChangeReportBuilder
+public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
         return ChangeReport.Default(changes);
     }

@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       mc:Ignorable="d"
       Title="GeneratePage" Height="660" Width="1300">
-    <Grid Background="{StaticResource Background1}">
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource Text}">Coming Soon...</TextBlock>
+    <Grid Background="{DynamicResource Background1}">
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Text}">Coming Soon...</TextBlock>
     </Grid>
 </Page>

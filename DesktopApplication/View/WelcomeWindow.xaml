@@ -20,7 +20,7 @@
                        MouseLeftButtonDown="ShowSettingWindow"/>
         </controls:TitleBarControl>
         
-        <Grid Background="{StaticResource Background1}">
+        <Grid Background="{DynamicResource Background1}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="*"/>
@@ -30,7 +30,7 @@
                 <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 20" HorizontalAlignment="Center">
                     <Image Width="50" Height="50" VerticalAlignment="Center" x:Name="Image" Source="Images/appicon.png"/>
                     <TextBlock FontSize="25" FontWeight="Bold" Margin="10, 0, 0, 0"
-                               Foreground="{StaticResource Text}" VerticalAlignment="Center">NextLogic</TextBlock>
+                               Foreground="{DynamicResource Text}" VerticalAlignment="Center">NextLogic</TextBlock>
                 </StackPanel>
                 
                 <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnSudokuMouseEnter"
@@ -39,7 +39,7 @@
                         Click="OnTectonicClick">Tectonic</Button>
             </StackPanel>
         
-            <Border Margin="10" BorderThickness="5" BorderBrush="{StaticResource Background2}" Width="230" Height="230" Grid.Column="1">
+            <Border Margin="10" BorderThickness="5" BorderBrush="{DynamicResource Background2}" Width="230" Height="230" Grid.Column="1">
                 <Image Width="220" Height="220" x:Name="GameImage"/>
             </Border>
         </Grid>

@@ -4,9 +4,9 @@ using Model.Helpers.Highlighting;
 
 namespace Model.Helpers.Changes;
 
-public interface IChangeReportBuilder
+public interface IChangeReportBuilder<in TVerifier> where TVerifier : ISolvingState
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot);
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
 }
 
 public static class ChangeReportHelper

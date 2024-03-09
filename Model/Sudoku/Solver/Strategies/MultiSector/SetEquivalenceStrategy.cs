@@ -125,7 +125,7 @@ public class SetEquivalence
     public int SecondOrder { get; }
 }
 
-public class GeometricEquivalenceReportBuilder : IChangeReportBuilder
+public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly SetEquivalence _equivalence;
 
@@ -134,7 +134,7 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder
         _equivalence = equivalence;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

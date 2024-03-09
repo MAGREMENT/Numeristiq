@@ -106,7 +106,7 @@ public class XWingStrategy : SudokuStrategy
     }
 }
 
-public class XWingReportBuilder : IChangeReportBuilder
+public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IReadOnlyLinePositions _linePos;
     private readonly int _unit1;
@@ -123,7 +123,7 @@ public class XWingReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> cells = new();
         foreach (var other in _linePos)

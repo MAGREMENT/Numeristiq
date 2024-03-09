@@ -7,7 +7,7 @@
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       mc:Ignorable="d"
       Title="SolvePage" Height="660" Width="800">
-    <Grid Background="{StaticResource Background1}">
+    <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="660"/>
             <ColumnDefinition Width="140"/>

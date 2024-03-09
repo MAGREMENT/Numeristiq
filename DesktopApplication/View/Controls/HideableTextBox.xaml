@@ -11,18 +11,18 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         
-        <Border Grid.Row="0" Background="{StaticResource Background2}" Padding="5" x:Name="UpperPart" Visibility="Collapsed">
-            <TextBox x:Name="TextBox" Background="{StaticResource Background3}" FontSize="15"
-                     BorderBrush="{StaticResource Text}" Foreground="{StaticResource Text}"
+        <Border Grid.Row="0" Background="{DynamicResource Background2}" Padding="5" x:Name="UpperPart" Visibility="Collapsed">
+            <TextBox x:Name="TextBox" Background="{DynamicResource Background3}" FontSize="15"
+                     BorderBrush="{DynamicResource Text}" Foreground="{DynamicResource Text}"
                      TextChanged="OnTextChange"/>
         </Border>
         
         <Button Grid.Row="1" HorizontalAlignment="Center" Template="{StaticResource LightUpButton}"
-                BorderBrush="{StaticResource Text}" Click="Show">
+                BorderBrush="{DynamicResource Text}" Click="Show">
             <Path
                 Width="20"
                 Height="10"
-                Stroke="{StaticResource Text}"
+                Stroke="{DynamicResource Text}"
                 StrokeThickness="1"
                 x:Name="Arrow"/>
         </Button>

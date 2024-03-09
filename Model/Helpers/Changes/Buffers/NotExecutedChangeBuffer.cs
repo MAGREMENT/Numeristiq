@@ -3,18 +3,18 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Helpers.Changes.Buffers;
 
-public class NotExecutedChangeBuffer : IChangeBuffer
+public class NotExecutedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingState
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
         
-    private readonly List<ChangeCommit> _commitsBuffer = new();
+    private readonly List<ChangeCommit<T>> _commitsBuffer = new();
 
     private readonly List<BuiltChangeCommit> _commits = new();
 
-    private readonly ILogManagedChangeProducer<IUpdatableSudokuSolvingState> _producer;
+    private readonly ILogManagedChangeProducer<T> _producer;
 
-    public NotExecutedChangeBuffer(ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
+    public NotExecutedChangeBuffer(ILogManagedChangeProducer<T> producer)
     {
         _producer = producer;
     }
@@ -36,11 +36,11 @@ public class NotExecutedChangeBuffer : IChangeBuffer
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
     }
 
-    public bool Commit(IChangeReportBuilder builder)
+    public bool Commit(IChangeReportBuilder<T> builder)
     {
         if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
         
-        _commitsBuffer.Add(new ChangeCommit(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
+        _commitsBuffer.Add(new ChangeCommit<T>(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
         return true;
     }
 

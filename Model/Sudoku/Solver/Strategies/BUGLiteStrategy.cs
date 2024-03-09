@@ -372,7 +372,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
     }
 }
 
-public class BUGLiteReportBuilder : IChangeReportBuilder
+public class BUGLiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IEnumerable<BiCellPossibilities> _bcp;
 
@@ -381,7 +381,7 @@ public class BUGLiteReportBuilder : IChangeReportBuilder
         _bcp = bcp;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

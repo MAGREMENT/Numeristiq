@@ -119,7 +119,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
     }
 }
 
-public class MiniUniquenessReportBuilder : IChangeReportBuilder
+public class MiniUniquenessReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _mini;
     private readonly Unit _unit;
@@ -132,7 +132,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
         _presence = presence;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

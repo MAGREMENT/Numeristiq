@@ -222,7 +222,7 @@ public class CellForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class CellForcingNetBuilder : IChangeReportBuilder
+public class CellForcingNetBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly int _row;
@@ -243,7 +243,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder
     }
 
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         Highlight[] highlights = new Highlight[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];

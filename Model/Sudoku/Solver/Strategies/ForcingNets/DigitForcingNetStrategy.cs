@@ -102,7 +102,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class DigitForcingNetReportBuilder : IChangeReportBuilder
+public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ColoringDictionary<ISudokuElement> _on;
     private readonly ColoringDictionary<ISudokuElement> _off;
@@ -125,7 +125,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRootWithGuessedLinks(_onPos, _onColoring),
             _on, _graph, snapshot);

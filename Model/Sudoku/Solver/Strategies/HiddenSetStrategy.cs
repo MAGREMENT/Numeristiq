@@ -166,7 +166,7 @@ public class HiddenSetStrategy : SudokuStrategy
     }
 }
 
-public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
+public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
@@ -182,7 +182,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {
@@ -215,7 +215,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder
     }
 }
 
-public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
+public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;
@@ -226,7 +226,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

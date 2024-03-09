@@ -20,8 +20,13 @@ public class MinMaxSetting : ISetting
         return new MinMaxSettingValue(Value);
     }
 
-    public void Set(SettingValue s)
+    public void Set(SettingValue value)
     {
-        Value = s.ToMinMax();
+        var old = Value;
+        Value = value.ToMinMax();
+        
+        if(old != Value) Changed?.Invoke();
     }
+
+    public event OnSettingChange? Changed;
 }

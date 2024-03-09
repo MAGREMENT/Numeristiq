@@ -103,7 +103,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     }
 }
 
-public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
+public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IPossibilitiesPositions _one;
     private readonly IPossibilitiesPositions _two;
@@ -116,7 +116,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

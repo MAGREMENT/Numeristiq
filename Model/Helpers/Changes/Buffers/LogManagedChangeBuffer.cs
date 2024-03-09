@@ -4,21 +4,21 @@ using Model.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 
-public class LogManagedChangeBuffer : IChangeBuffer
+public class LogManagedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingState
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
         
-    private readonly List<ChangeCommit> _commits = new();
+    private readonly List<ChangeCommit<T>> _commits = new();
 
-    private readonly ILogManagedChangeProducer<IUpdatableSudokuSolvingState> _producer;
+    private readonly ILogManagedChangeProducer<T> _producer;
 
-    private readonly IPushHandler[] _pushHandlers =
+    private readonly IPushHandler<T>[] _pushHandlers =
     {
-        new ReturnPushHandler(), new WaitForAllPushHandler(), new ChooseBestPushHandler()
+        new ReturnPushHandler<T>(), new WaitForAllPushHandler<T>(), new ChooseBestPushHandler<T>()
     };
 
-    public LogManagedChangeBuffer(ILogManagedChangeProducer<IUpdatableSudokuSolvingState> changeProducer)
+    public LogManagedChangeBuffer(ILogManagedChangeProducer<T> changeProducer)
     {
         _producer = changeProducer;
     }
@@ -60,11 +60,11 @@ public class LogManagedChangeBuffer : IChangeBuffer
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
     }
     
-    public bool Commit(IChangeReportBuilder builder)
+    public bool Commit(IChangeReportBuilder<T> builder)
     {
         if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
         
-        _commits.Add(new ChangeCommit(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
+        _commits.Add(new ChangeCommit<T>(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
         return true;
     }
 
@@ -90,14 +90,14 @@ public class LogManagedChangeBuffer : IChangeBuffer
     }
 }
 
-public interface IPushHandler
+public interface IPushHandler<T> where T : IUpdatableSolvingState
 {
-    void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer);
+    void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer);
 }
 
-public class ReturnPushHandler : IPushHandler
+public class ReturnPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingState
 {
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer)
     {
         var state = producer.CurrentState;
 
@@ -112,9 +112,9 @@ public class ReturnPushHandler : IPushHandler
     }
 }
 
-public class WaitForAllPushHandler : IPushHandler
+public class WaitForAllPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingState
 {
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer)
     {
         var state = producer.CurrentState;
         
@@ -134,16 +134,16 @@ public class WaitForAllPushHandler : IPushHandler
     }
 }
 
-public class ChooseBestPushHandler : IPushHandler
+public class ChooseBestPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingState
 {
-    private readonly ICustomCommitComparer _default = new DefaultCommitComparer();
+    private readonly ICustomCommitComparer<T> _default = new DefaultCommitComparer<T>();
     
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer)
     {
         var state = producer.CurrentState;
 
         var best = commits[0];
-        var comparer = pusher as ICustomCommitComparer ?? _default;
+        var comparer = pusher as ICustomCommitComparer<T> ?? _default;
 
         for (int i = 1; i < commits.Count; i++)
         {
@@ -159,7 +159,7 @@ public class ChooseBestPushHandler : IPushHandler
     }
 }
 
-public interface ICustomCommitComparer
+public interface ICustomCommitComparer<T> where T : ISolvingState
 {
     /// <summary>
     /// Compare two commits
@@ -170,15 +170,15 @@ public interface ICustomCommitComparer
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
-    public int Compare(ChangeCommit first, ChangeCommit second);
+    public int Compare(ChangeCommit<T> first, ChangeCommit<T> second);
 }
 
-public class DefaultCommitComparer : ICustomCommitComparer
+public class DefaultCommitComparer<T> : ICustomCommitComparer<T> where T : ISolvingState
 {
     private const int SolutionAddedValue = 3;
     private const int PossibilityRemovedValue = 1;
     
-    public int Compare(ChangeCommit first, ChangeCommit second)
+    public int Compare(ChangeCommit<T> first, ChangeCommit<T> second)
     {
         int score = 0;
 

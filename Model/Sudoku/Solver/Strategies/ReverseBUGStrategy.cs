@@ -66,7 +66,7 @@ public class ReverseBUGStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBugReportBuilder : IChangeReportBuilder
+public class ReverseBugReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly GridPositions _gp;
     private readonly int _n1;
@@ -77,7 +77,7 @@ public class ReverseBugReportBuilder : IChangeReportBuilder
         _n1 = n1;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

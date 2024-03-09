@@ -101,7 +101,7 @@ public interface IMultiSectorCellsSearcher
     public IEnumerable<GridPositions> SearchGrids(IStrategyUser strategyUser);
 }
 
-public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
+public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly GridPositions _grid;
     private readonly IReadOnlyList<PossibilityCovers> _covers;
@@ -114,7 +114,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
         _alternatives = alternatives;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cu = new CoveringUnits(_covers);
         
@@ -175,7 +175,7 @@ public class CoveringUnits
         }
     }
 
-    public Highlight[] Highlight(ISudokuSolvingState snapshot, GridPositions gp)
+    public Highlight[] Highlight(IUpdatableSudokuSolvingState snapshot, GridPositions gp)
     {
         var n = (int)ChangeColoration.CauseOffOne;
         var i = 0;

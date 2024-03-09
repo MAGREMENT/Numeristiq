@@ -196,7 +196,7 @@ public class BlossomLoopStrategy : SudokuStrategy
     }
 }
 
-public class BlossomLoopReportBuilder : IChangeReportBuilder
+public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly LinkGraphLoop<ISudokuElement> _loop;
     private readonly BlossomLoopBranch[] _branches;
@@ -209,7 +209,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder
         _cps = cps;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var branchesHighlight = new Highlight[_branches.Length];
 

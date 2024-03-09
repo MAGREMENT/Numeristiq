@@ -145,7 +145,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
+public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -156,7 +156,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -176,7 +176,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
     }
 }
 
-public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder
+public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -189,7 +189,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

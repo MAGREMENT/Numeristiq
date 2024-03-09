@@ -261,7 +261,7 @@ public class WXYZWingStrategy : SudokuStrategy
     }
 }
 
-public class WXYZWingReportBuilder : IChangeReportBuilder
+public class WXYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly MiniGridPositions _mini;
     private readonly LinePositions _line;
@@ -277,7 +277,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder
         _unitNumber = unitNumber;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> cells = new();
 

@@ -235,7 +235,7 @@ public class SueDeCoqStrategy : SudokuStrategy
     }
 }
 
-public class SueDeCoqReportBuilder : IChangeReportBuilder
+public class SueDeCoqReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IPossibilitiesPositions _boxPP;
     private readonly IPossibilitiesPositions _unitPP;
@@ -249,7 +249,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
         _centerCells = centerCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

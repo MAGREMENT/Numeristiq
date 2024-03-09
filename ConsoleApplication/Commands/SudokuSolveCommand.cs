@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Sudoku;
 
@@ -28,8 +29,8 @@ public class SudokuSolveCommand : Command
         if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
         var oldBuffer = solver.ChangeBuffer;
-        if (report.IsUsed(PathIndex)) solver.ChangeBuffer = new LogManagedChangeBuffer(solver);
-        else solver.ChangeBuffer = new FastChangeBuffer(solver);
+        if (report.IsUsed(PathIndex)) solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState>(solver);
+        else solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState>(solver);
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetValue(StringIndex)!);
         

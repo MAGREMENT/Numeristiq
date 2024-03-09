@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Sudoku.Solver.BitSets;
 using Model.Utility;
 
@@ -13,5 +14,5 @@ public interface IStrategyUser
         return PossibilitiesAt(new Cell(row, column));
     }
     ReadOnlyBitSet16 ZonePositionsFor(int zone, int n);
-    IChangeBuffer ChangeBuffer { get; }
+    IChangeBuffer<IUpdatableTectonicSolvingState> ChangeBuffer { get; }
 }

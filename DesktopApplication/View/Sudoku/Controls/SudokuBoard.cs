@@ -16,7 +16,7 @@ using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
-public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency properties
+public class SudokuBoard : DrawingBoard, ISudokuDrawer
 {
     private const int BackgroundIndex = 0;
     private  const int CellsHighlightIndex = 1;
@@ -36,94 +36,98 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
     private double _smallLineWidth;
     private double _bigLineWidth;
     private double _size;
-    
-    private Brush _defaultNumberBrush = Brushes.Black;
-    private Brush _specialNumberBrush = Brushes.Orange;
-    private Brush _backgroundBrush = Brushes.White;
-    private Brush _lineBrush = Brushes.Black;
-    private Brush _cursorBrush = Brushes.MediumPurple;
 
     private readonly bool[,] _isSpecialNumberBrush = new bool[9, 9];
 
     public static readonly DependencyProperty LinkBrushProperty =
-        DependencyProperty.Register("LinkBrush", typeof(Brush), typeof(SudokuBoard));
+        DependencyProperty.Register(nameof(LinkBrush), typeof(Brush), typeof(SudokuBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if (obj is not SudokuBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(LinksIndex, brush);
+                board.Refresh();
+            }));
 
     public Brush LinkBrush
     {
-        set
-        {
-            SetValue(LinkBrushProperty, value);
-            SetLayerBrush(LinksIndex, value);
-            Refresh();
-        }
-
+        set => SetValue(LinkBrushProperty, value);
         get => (Brush)GetValue(LinkBrushProperty);
     }
     
     public static readonly DependencyProperty DefaultNumberBrushProperty =
-        DependencyProperty.Register("DefaultNumberBrush", typeof(Brush), typeof(SudokuBoard));
+        DependencyProperty.Register(nameof(DefaultNumberBrush), typeof(Brush), typeof(SudokuBoard),
+            new PropertyMetadata((obj, _) =>
+            {
+                if (obj is not SudokuBoard board) return;
+                board.ReEvaluateNumberBrushes();
+                board.Refresh();
+            }));
 
     public Brush DefaultNumberBrush
     {
-        set
-        {
-            _defaultNumberBrush = value;
-            ReEvaluateNumberBrushes();
-            Refresh();
-        }
+        set => SetValue(DefaultNumberBrushProperty, value);
+        get => (Brush)GetValue(DefaultNumberBrushProperty);
     }
     
     public static readonly DependencyProperty SpecialNumberBrushProperty =
-        DependencyProperty.Register("SpecialNumberBrush", typeof(Brush), typeof(SudokuBoard));
+        DependencyProperty.Register(nameof(SpecialNumberBrush), typeof(Brush), typeof(SudokuBoard),
+            new PropertyMetadata((obj, _) =>
+            {
+                if (obj is not SudokuBoard board) return;
+                board.ReEvaluateNumberBrushes();
+                board.Refresh();
+            }));
 
     public Brush SpecialNumberBrush
     {
-        set
-        {
-            _specialNumberBrush = value;
-            ReEvaluateNumberBrushes();
-            Refresh();
-        }
+        set => SetValue(SpecialNumberBrushProperty, value);
+        get => (Brush)GetValue(SpecialNumberBrushProperty);
     }
     
     public static readonly DependencyProperty BackgroundBrushProperty =
-        DependencyProperty.Register("BackgroundBrush", typeof(Brush), typeof(SudokuBoard));
+        DependencyProperty.Register(nameof(BackgroundBrush), typeof(Brush), typeof(SudokuBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if (obj is not SudokuBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(BackgroundIndex, brush);
+                board.Refresh();
+            }));
 
     public Brush BackgroundBrush
     {
-        set
-        {
-            _backgroundBrush = value;
-            SetLayerBrush(BackgroundIndex, value);
-            Refresh();
-        }
+        set => SetValue(BackgroundBrushProperty, value);
+        get => (Brush)GetValue(BackgroundBrushProperty);
     }
     
     public static readonly DependencyProperty LineBrushProperty =
-        DependencyProperty.Register("LineBrush", typeof(Brush), typeof(SudokuBoard));
+        DependencyProperty.Register(nameof(LineBrush), typeof(Brush), typeof(SudokuBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if (obj is not SudokuBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(SmallLinesIndex, brush);
+                board.SetLayerBrush(BigLinesIndex, brush);
+                board.Refresh();
+            }));
     
     public Brush LineBrush
     {
-        set
-        {
-            _lineBrush = value;
-            SetLayerBrush(SmallLinesIndex, value);
-            SetLayerBrush(BigLinesIndex, value);
-            Refresh();
-        }
+        set => SetValue(LineBrushProperty, value);
+        get => (Brush)GetValue(LineBrushProperty);
     }
     
     public static readonly DependencyProperty CursorBrushProperty =
-        DependencyProperty.Register("CursorBrush", typeof(Brush), typeof(SudokuBoard));
+        DependencyProperty.Register(nameof(CursorBrush), typeof(Brush), typeof(SudokuBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if (obj is not SudokuBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(CursorIndex, brush);
+                board.Refresh();
+            }));
     
     public Brush CursorBrush
     {
-        set
-        {
-            _cursorBrush = value;
-            SetLayerBrush(CursorIndex, value);
-            Refresh();
-        }
+        set => SetValue(CursorBrushProperty, value);
+        get => (Brush)GetValue(CursorBrushProperty);
     }
 
     public double PossibilitySize
@@ -214,7 +218,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
         const double delta = CursorWidth / 2;
         var left = GetLeft(cell.Column);
         var top = GetTop(cell.Row);
-        var pen = new Pen(_cursorBrush, CursorWidth);
+        var pen = new Pen(CursorBrush, CursorWidth);
 
         var list = Layers[CursorIndex];
         list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
@@ -247,19 +251,25 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
 
     public void ShowSolution(int row, int col, int number)
     {
-        var brush = _isSpecialNumberBrush[row, col] ? _specialNumberBrush : _defaultNumberBrush;
-        Layers[NumbersIndex].Add(new SolutionComponent(number.ToString(), _cellSize / 4 * 3, brush,
-            new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), row, col, ComponentHorizontalAlignment.Center,
-            ComponentVerticalAlignment.Center));
+        Dispatcher.Invoke(() =>
+        {
+            var brush = _isSpecialNumberBrush[row, col] ? SpecialNumberBrush : DefaultNumberBrush;
+            Layers[NumbersIndex].Add(new SolutionComponent(number.ToString(), _cellSize / 4 * 3, brush,
+                new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize), row, col, ComponentHorizontalAlignment.Center,
+                ComponentVerticalAlignment.Center));
+        });
     }
 
     public void ShowPossibilities(int row, int col, IEnumerable<int> possibilities)
     {
         foreach (var possibility in possibilities)
         {
-            Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
-                _defaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
-                    _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+            Dispatcher.Invoke(() =>
+            {
+                Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
+                    DefaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
+                        _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+            });
         }
     }
 
@@ -475,7 +485,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
             _ => 3
         };
 
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, _defaultNumberBrush,
+        Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, DefaultNumberBrush,
             new Rect(GetLeft(col), GetTop(row, n), _cellSize, _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
@@ -509,7 +519,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
         ClearCursor();
         
         var delta = CursorWidth / 2;
-        var pen = new Pen(_cursorBrush, CursorWidth);
+        var pen = new Pen(CursorBrush, CursorWidth);
 
         var list = Layers[CursorIndex];
         foreach (var cell in cells)
@@ -526,11 +536,11 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), _cursorBrush));
+                    new Rect(left, top, CursorWidth, CursorWidth), CursorBrush));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), _cursorBrush));
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), CursorBrush));
             }
             
             if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
@@ -542,12 +552,23 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
                        new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), _cursorBrush));
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
                        new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), _cursorBrush));
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
             }
+        }
+    }
+    
+    public void ReEvaluateNumberBrushes()
+    {
+        foreach (var component in Layers[NumbersIndex])
+        {
+            if (component is not SolutionComponent s) continue;
+            
+            var brush = _isSpecialNumberBrush[s.Row, s.Column] ? SpecialNumberBrush : DefaultNumberBrush;
+            component.SetBrush(brush);
         }
     }
 
@@ -694,7 +715,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
     private void UpdateBackground()
     {
         Layers[BackgroundIndex].Add(new FilledRectangleComponent(
-            new Rect(0, 0, _size, _size), _backgroundBrush));
+            new Rect(0, 0, _size, _size), BackgroundBrush));
     }
     
     private void UpdateLines()
@@ -703,9 +724,9 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
         for (int i = 0; i < 6; i++)
         {
             Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(0, delta, _size, _smallLineWidth), _lineBrush));
+                new Rect(0, delta, _size, _smallLineWidth), LineBrush));
             Layers[SmallLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(delta, 0, _smallLineWidth, _size), _lineBrush));
+                new Rect(delta, 0, _smallLineWidth, _size), LineBrush));
 
             delta += i % 2 == 0 ? _smallLineWidth + _cellSize : _smallLineWidth + _cellSize + _bigLineWidth + _cellSize;
         }
@@ -714,22 +735,11 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency propert
         for (int i = 0; i < 4; i++)
         {
             Layers[BigLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(0, delta, _size, _bigLineWidth), _lineBrush));
+                new Rect(0, delta, _size, _bigLineWidth), LineBrush));
             Layers[BigLinesIndex].Add(new FilledRectangleComponent(
-                new Rect(delta, 0, _bigLineWidth, _size), _lineBrush));
+                new Rect(delta, 0, _bigLineWidth, _size), LineBrush));
 
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
-        }
-    }
-
-    private void ReEvaluateNumberBrushes()
-    {
-        foreach (var component in Layers[NumbersIndex])
-        {
-            if (component is not SolutionComponent s) continue;
-            
-            var brush = _isSpecialNumberBrush[s.Row, s.Column] ? _specialNumberBrush : _defaultNumberBrush;
-            component.SetBrush(brush);
         }
     }
 

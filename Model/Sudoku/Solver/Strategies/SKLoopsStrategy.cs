@@ -310,7 +310,7 @@ public class PossibilitiesAndNumber
     public int Number { get; }
 }
 
-public class SKLoopsReportBuilder : IChangeReportBuilder
+public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell[] _cells;
     private readonly ReadOnlyBitSet16[] _links;
@@ -321,7 +321,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();
@@ -371,7 +371,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         });
     }
     
-    private IEnumerable<Cell> CrossRow(ISudokuSolvingState snapshot, Cell cell)
+    private IEnumerable<Cell> CrossRow(IUpdatableSudokuSolvingState snapshot, Cell cell)
     {
         int startCol = cell.Column / 3 * 3;
 
@@ -385,7 +385,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
         }
     }
 
-    private IEnumerable<Cell> CrossCol(ISudokuSolvingState snapshot, Cell cell)
+    private IEnumerable<Cell> CrossCol(IUpdatableSudokuSolvingState snapshot, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
 

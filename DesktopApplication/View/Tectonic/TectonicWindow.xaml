@@ -12,7 +12,7 @@
         <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>
     
-    <Grid Background="{StaticResource Background1}">
+    <Grid Background="{DynamicResource Background1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
             <RowDefinition Height="660"/>

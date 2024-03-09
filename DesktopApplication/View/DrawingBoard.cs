@@ -81,7 +81,7 @@ public abstract class DrawingBoard : FrameworkElement
         }
     }
     
-    protected void SetLayerBrush(int index, Brush brush)
+    public void SetLayerBrush(int index, Brush brush)
     {
         foreach (var comp in _layers[index])
         {

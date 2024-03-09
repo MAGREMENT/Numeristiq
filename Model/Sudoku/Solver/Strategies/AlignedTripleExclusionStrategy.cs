@@ -337,7 +337,7 @@ public readonly struct TriValue
     }
 }
 
-public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder
+public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell _c1;
     private readonly Cell _c2;
@@ -352,7 +352,7 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder
         _useful = useful;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

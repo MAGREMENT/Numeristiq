@@ -493,7 +493,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     
 }
 
-public class JuniorExocetReportBuilder : IChangeReportBuilder
+public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly JuniorExocet _je;
 
@@ -502,7 +502,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
         _je = je;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je.AllPossibleSCells();
 
@@ -549,7 +549,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
     }
 }
 
-public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
+public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly JuniorExocet _je1;
     private readonly JuniorExocet _je2;
@@ -560,7 +560,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
         _je2 = je2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je1.AllPossibleSCells();
 

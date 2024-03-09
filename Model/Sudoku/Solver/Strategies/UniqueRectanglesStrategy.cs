@@ -399,7 +399,7 @@ public readonly struct BiValue
     }
 }
 
-public class UniqueRectanglesReportBuilder : IChangeReportBuilder
+public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -410,7 +410,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -430,7 +430,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
     }
 }
 
-public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
+public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -443,7 +443,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
         _link = link;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -464,7 +464,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
     }
 }
 
-public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder
+public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -477,7 +477,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {
@@ -501,7 +501,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
     }
 }
 
-public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
+public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Cell _initial;
     private readonly Cell _opposite;
@@ -514,7 +514,7 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
         _stronglyLinkedPossibility = stronglyLinkedPossibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

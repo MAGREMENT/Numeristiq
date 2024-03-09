@@ -331,7 +331,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder
+public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IPossibilitiesPositions _als;
     private readonly IEnumerable<Cell> _correspondence;
@@ -344,7 +344,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder
         _centerCells = centerCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

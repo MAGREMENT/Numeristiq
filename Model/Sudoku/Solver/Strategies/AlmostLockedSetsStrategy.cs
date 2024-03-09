@@ -75,7 +75,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
+public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IPossibilitiesPositions _one;
     private readonly IPossibilitiesPositions _two;
@@ -88,7 +88,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
         _restrictedCommons = restrictedCommons;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

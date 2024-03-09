@@ -78,7 +78,7 @@ public class PointingSetStrategy : SudokuStrategy
     }
 }
 
-public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
+public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _number;
     private readonly IReadOnlyMiniGridPositions _miniPos;
@@ -89,7 +89,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(changes), lighter =>
         {

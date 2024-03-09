@@ -17,8 +17,13 @@ public class BooleanSetting : ISetting
         return new BoolSettingValue(Value);
     }
     
-    public void Set(SettingValue s)
+    public void Set(SettingValue value)
     {
-        Value = s.ToBool();
+        var old = Value;
+        Value = value.ToBool();
+        
+        if(old != Value) Changed?.Invoke();
     }
+
+    public event OnSettingChange? Changed;
 }

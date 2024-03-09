@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:DesktopApplication.View.Sudoku.Pages"
       mc:Ignorable="d"
       Title="PlayPage" Height="660" Width="1300">
-    <Grid Background="{StaticResource Background1}">
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{StaticResource Text}">Coming Soon...</TextBlock>
+    <Grid Background="{DynamicResource Background1}">
+        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Text}">Coming Soon...</TextBlock>
     </Grid>
 </Page>

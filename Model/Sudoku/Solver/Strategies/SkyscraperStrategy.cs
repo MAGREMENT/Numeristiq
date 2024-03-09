@@ -96,7 +96,7 @@ public class SkyscraperStrategy : SudokuStrategy
     }
 }
 
-public class SkyscraperReportBuilder : IChangeReportBuilder
+public class SkyscraperReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly Unit _unit;
     private readonly int _unit1;
@@ -116,7 +116,7 @@ public class SkyscraperReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

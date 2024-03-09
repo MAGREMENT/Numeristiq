@@ -29,9 +29,9 @@ public class NakedSingleStrategy : SudokuStrategy
     }
 }
 
-public class NakedSingleReportBuilder : IChangeReportBuilder
+public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes));

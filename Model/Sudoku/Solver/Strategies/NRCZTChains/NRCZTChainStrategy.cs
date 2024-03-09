@@ -9,7 +9,7 @@ using Model.Sudoku.Solver.StrategiesUtility.NRCZTChains;
 
 namespace Model.Sudoku.Solver.Strategies.NRCZTChains;
 
-public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer
+public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState>
 {
     public const string OfficialNameForDefault = "NRC-Chains";
     public const string OfficialNameForTCondition = "NRCT-Chains";
@@ -131,7 +131,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer
             new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    public int Compare(ChangeCommit first, ChangeCommit second)
+    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState> first, ChangeCommit<IUpdatableSudokuSolvingState> second)
     {
         if (first.Builder is not NRCChainReportBuilder r1 ||
             second.Builder is not NRCChainReportBuilder r2) return 0;
@@ -140,7 +140,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer
     }
 }
 
-public class NRCChainReportBuilder : IChangeReportBuilder
+public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     public BlockChain Chain { get; }
 
@@ -149,7 +149,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder
         Chain = chain;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

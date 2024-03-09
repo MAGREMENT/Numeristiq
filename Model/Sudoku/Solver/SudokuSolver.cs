@@ -47,7 +47,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     private int _possibilityRemovedBuffer;
     private bool _startedSolving;
 
-    private IChangeBuffer _changeBuffer;
+    private IChangeBuffer<IUpdatableSudokuSolvingState> _changeBuffer;
     private readonly TrackerManager _trackerManager;
     
     public SudokuSolver() : this(new Sudoku()) { }
@@ -55,7 +55,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     private SudokuSolver(Sudoku s)
     {
         StrategyManager = new StrategyManager();
-        _changeBuffer = new FastChangeBuffer(this);
+        _changeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState>(this);
         _trackerManager = new TrackerManager(this);
         
         _sudoku = s;
@@ -229,7 +229,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     public BuiltChangeCommit[] EveryPossibleNextStep()
     {
         var oldBuffer = ChangeBuffer;
-        ChangeBuffer = new NotExecutedChangeBuffer(this);
+        ChangeBuffer = new NotExecutedChangeBuffer<IUpdatableSudokuSolvingState>(this);
         
         for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
         {
@@ -251,7 +251,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         
         _currentStrategy = -1;
 
-        var result = ((NotExecutedChangeBuffer)ChangeBuffer).DumpCommits();
+        var result = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState>)ChangeBuffer).DumpCommits();
         ChangeBuffer = oldBuffer;
         return result;
     }
@@ -324,7 +324,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         return _positions[number - 1];
     }
 
-    public IChangeBuffer ChangeBuffer
+    public IChangeBuffer<IUpdatableSudokuSolvingState> ChangeBuffer
     {
         get => _changeBuffer;
         set

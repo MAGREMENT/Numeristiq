@@ -217,7 +217,7 @@ public class FishStrategy : SudokuStrategy
     }
 }
 
-public class FishReportBuilder : IChangeReportBuilder
+public class FishReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly HashSet<CoverHouse> _baseSet;
     private readonly CoverHouse[] _coveredSet;
@@ -235,7 +235,7 @@ public class FishReportBuilder : IChangeReportBuilder
         _fins = fins;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

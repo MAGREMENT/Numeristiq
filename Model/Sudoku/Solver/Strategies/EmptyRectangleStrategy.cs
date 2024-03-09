@@ -103,7 +103,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
     }
 }
 
-public class RectangleEliminationReportBuilder : IChangeReportBuilder
+public class RectangleEliminationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _possibility;
     private readonly Cell _hinge;
@@ -127,7 +127,7 @@ public class RectangleEliminationReportBuilder : IChangeReportBuilder
         _possibility = possibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

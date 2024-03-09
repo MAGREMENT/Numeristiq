@@ -7,13 +7,17 @@ namespace DesktopApplication.Presenter;
 public class GlobalApplicationPresenter
 {
     private readonly Settings _settings;
-    
-    public Theme? Theme { get; private set; }
+    private readonly IGlobalApplicationView _view;
+    private readonly Theme[] _themes;
 
-    private GlobalApplicationPresenter(Settings settings, Theme? theme)
+    private GlobalApplicationPresenter(IGlobalApplicationView view, Settings settings, Theme[] themes)
     {
+        _view = view;
         _settings = settings;
-        Theme = theme;
+        _themes = themes;
+        
+        TrySetTheme();
+        _settings.Theme.Changed += TrySetTheme;
     }
 
     public WelcomePresenter Initialize()
@@ -21,18 +25,28 @@ public class GlobalApplicationPresenter
         return new WelcomePresenter(_settings);
     }
     
+    private void TrySetTheme()
+    {
+        var index = _settings.Theme.Get().ToInt();
+        if(index < 0 || index >= _themes.Length) return;
+        
+        _view.SetTheme(_themes[index]);
+    }
+
+    #region Instance
+
     private static GlobalApplicationPresenter? _instance;
 
     public static GlobalApplicationPresenter Instance
     {
         get
         {
-            _instance ??= InitializeInstance();
+            if (_instance is null) throw new Exception("Not initialized");
             return _instance;
         }
     }
 
-    private static GlobalApplicationPresenter InitializeInstance()
+    public static GlobalApplicationPresenter InitializeInstance(IGlobalApplicationView view)
     {
         var themeRepository = new HardCodedThemeRepository();
         if (!themeRepository.Initialize(true)) 
@@ -53,8 +67,10 @@ public class GlobalApplicationPresenter
                 settings.TrySet(entry.Key, entry.Value);
             }
         }
-
-        var index = settings.Theme.Get().ToInt();
-        return new GlobalApplicationPresenter(settings, index < 0 || index >= themes.Length ? null : themes[index]);
+        
+        _instance = new GlobalApplicationPresenter(view, settings, themes);
+        return _instance;
     }
+
+    #endregion
 }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:DesktopApplication.View.Tectonic.Controls"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border Padding="10" Background="{StaticResource Background2}" x:Name="Border">
+    <Border Padding="10" Background="{DynamicResource Background2}" x:Name="Border">
         <Grid>
             <local:TectonicBoard VerticalAlignment="Center" HorizontalAlignment="Center"
                                  BackgroundBrush="Transparent" LineBrush="{StaticResource Text}"
@@ -14,7 +14,7 @@
                                  BigLineWidth="5" SmallLineWidth="1" CellSize="50"
                                  RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"/>
             
-            <TextBlock Visibility="Collapsed" x:Name="None" FontSize="22" Foreground="{StaticResource Text}"
+            <TextBlock Visibility="Collapsed" x:Name="None" FontSize="22" Foreground="{DynamicResource Text}"
                    FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center">Nothing to show...</TextBlock> 
         </Grid>
     </Border>

@@ -94,7 +94,7 @@ public class GridFormationStrategy : SudokuStrategy
     }
 }
 
-public class GridFormationReportBuilder : IChangeReportBuilder
+public class GridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly LinePositions _rows;
     private readonly LinePositions _cols;
@@ -107,7 +107,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder
         _number = number;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)

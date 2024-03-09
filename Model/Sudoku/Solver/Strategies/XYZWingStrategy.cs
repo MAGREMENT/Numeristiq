@@ -82,7 +82,7 @@ public class XYZWingStrategy : SudokuStrategy
     }
 }
 
-public class XYZWingReportBuilder : IChangeReportBuilder
+public class XYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _hingeRow;
     private readonly int _hingeCol;
@@ -101,7 +101,7 @@ public class XYZWingReportBuilder : IChangeReportBuilder
         _col2 = col2;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

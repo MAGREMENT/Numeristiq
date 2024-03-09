@@ -449,7 +449,7 @@ public enum ParityTransfer
     Same, Opposite
 }
 
-public class ThorsHammerReportBuilder : IChangeReportBuilder
+public class ThorsHammerReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly List<Cell> _cells;
     private readonly List<CellPossibility> _notInPattern;
@@ -460,7 +460,7 @@ public class ThorsHammerReportBuilder : IChangeReportBuilder
         _notInPattern = notInPattern;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

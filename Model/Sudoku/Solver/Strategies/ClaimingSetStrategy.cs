@@ -99,7 +99,7 @@ public class ClaimingSetStrategy : SudokuStrategy
     }
 }
 
-public class BoxLineReductionReportBuilder : IChangeReportBuilder
+public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _linePos;
@@ -114,7 +114,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)

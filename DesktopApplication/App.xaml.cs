@@ -7,17 +7,16 @@ namespace DesktopApplication;
 /// <summary>
 /// Interaction logic for App.xaml
 /// </summary>
-public partial class App
+public partial class App : IGlobalApplicationView
 {
     public App()
     {
         InitializeComponent();
 
-        var presenter = GlobalApplicationPresenter.Instance;
-        if(presenter.Theme is not null) SetTheme(presenter.Theme);
+        var presenter = GlobalApplicationPresenter.InitializeInstance(this);
     }
 
-    private void SetTheme(Theme t)
+    public void SetTheme(Theme t)
     {
         Resources["Background1"] = ColorUtility.ToBrush(t.Background1);
         Resources["Background2"] = ColorUtility.ToBrush(t.Background2);
@@ -28,6 +27,6 @@ public partial class App
         Resources["Secondary2"] = ColorUtility.ToBrush(t.Secondary2);
         Resources["Accent"] = ColorUtility.ToBrush(t.Accent);
         Resources["Text"] = ColorUtility.ToBrush(t.Text);
-        Resources["ThumbColor"] = ColorUtility.ToBrush(t.ThumbColor);
+        Resources["ThumbColor"] = ColorUtility.ToColor(t.ThumbColor);
     }
 }

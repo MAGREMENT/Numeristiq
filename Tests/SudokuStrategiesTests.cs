@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Helpers;
+using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
@@ -13,7 +14,7 @@ public class SudokuStrategiesTests
     [OneTimeSetUp]
     public void FirstSetUp()
     {
-        _solver.ChangeBuffer = new LogManagedChangeBuffer(_solver);
+        _solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState>(_solver);
     }
 
     [TearDown]

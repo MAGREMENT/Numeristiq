@@ -150,7 +150,7 @@ public class DeathBlossomStrategy : SudokuStrategy
     }
 }
 
-public class DeathBlossomReportBuilder : IChangeReportBuilder
+public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly List<Cell> _stems;
     private readonly Cell _target;
@@ -163,7 +163,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( Explanation(), lighter =>
         {

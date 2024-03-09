@@ -7,7 +7,7 @@
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       mc:Ignorable="d"
       Title="SolvePage" Height="660" Width="1300">
-    <Grid Background="{StaticResource Background1}">
+    <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="650"/>
             <ColumnDefinition Width="400"/>
@@ -15,14 +15,14 @@
         </Grid.ColumnDefinitions>
         
         <Border Grid.Column="0" 
-                Background="{StaticResource Background2}"
+                Background="{DynamicResource Background2}"
                 Padding="10"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center">
             <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
                                  SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{DynamicResource Text}"
-                                 LineBrush="{StaticResource Text}" CursorBrush="{StaticResource Primary1}"
-                                 SpecialNumberBrush="{StaticResource Accent}"/>
+                                 LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
+                                 SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"/>
         </Border>
         
         <Grid Grid.Column="1">
@@ -39,7 +39,7 @@
             </Grid.RowDefinitions>
             
             <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                       Background="{StaticResource Background1}" Foreground="{StaticResource Text}">Logs</TextBlock>
+                       Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Logs</TextBlock>
             
             <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="470" x:Name="LogViewer"
                           Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">
@@ -66,7 +66,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                           Background="{StaticResource Background1}" Foreground="{StaticResource Text}">Strategies</TextBlock>
+                           Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Strategies</TextBlock>
             </Grid>
             
             <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}" Height="620">

@@ -51,3 +51,13 @@ public interface IUpdatableSudokuSolvingState : ISudokuSolvingState, IUpdatableS
 {
     
 }
+
+public interface ITectonicSolvingState : ISolvingState
+{
+    
+}
+
+public interface IUpdatableTectonicSolvingState : ITectonicSolvingState, IUpdatableSolvingState
+{
+    
+}

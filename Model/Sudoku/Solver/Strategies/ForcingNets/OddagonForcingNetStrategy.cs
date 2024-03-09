@@ -70,7 +70,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class OddagonForcingNetReportBuilder : IChangeReportBuilder
+public class OddagonForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly Coloring _changeColoring;
@@ -87,7 +87,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
         _change = change;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var highlights = new Highlight[_colorings.Length];
         for (int i = 0; i < _colorings.Length; i++)

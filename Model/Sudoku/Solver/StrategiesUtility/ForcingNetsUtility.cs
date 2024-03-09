@@ -54,7 +54,7 @@ public static class ForcingNetsUtility
     }
 
     public static List<LinkGraphChain<ISudokuElement>> FindEveryNeededPaths(LinkGraphChain<ISudokuElement> basePath,
-        IColoringResult<ISudokuElement> result, ILinkGraph<ISudokuElement> graph, ISudokuSolvingState snapshot)
+        IColoringResult<ISudokuElement> result, ILinkGraph<ISudokuElement> graph, IUpdatableSudokuSolvingState snapshot)
     {
         var list = new List<LinkGraphChain<ISudokuElement>> {basePath};
         HashSet<ISudokuElement> allElements = new(basePath.Elements);
@@ -90,7 +90,7 @@ public static class ForcingNetsUtility
     }
 
     private static List<CellPossibility> FindOffCellsInJumpLinks(IColoringResult<ISudokuElement> result,
-        ISudokuSolvingState snapshot, CellPossibility from, CellPossibility to)
+        IUpdatableSudokuSolvingState snapshot, CellPossibility from, CellPossibility to)
     {
         List<CellPossibility>? best = null;
         

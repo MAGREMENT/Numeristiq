@@ -139,7 +139,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     }
 }
 
-public class NonColorablePatternReportBuilder : IChangeReportBuilder
+public class NonColorablePatternReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly IReadOnlyList<Cell> _perfect;
     private readonly IReadOnlyList<Cell> _notPerfect;
@@ -152,7 +152,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder
         _possibilities = possibilities;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

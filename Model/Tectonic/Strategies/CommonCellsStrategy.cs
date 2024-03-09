@@ -39,9 +39,9 @@ public class CommonCellsStrategy : TectonicStrategy
     }
 }
 
-public class CommonCellsReportBuilder : IChangeReportBuilder
+public class CommonCellsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
         return ChangeReport.Default(changes);
     }

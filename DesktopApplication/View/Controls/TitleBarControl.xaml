@@ -7,7 +7,7 @@
              d:DesignHeight="300" d:DesignWidth="300"
              x:Name="CustomTitleBar">
 	
-	<Grid Height="40" Background="{StaticResource Background2}">
+	<Grid Height="40" Background="{DynamicResource Background2}">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="Auto" />
 			<ColumnDefinition Width="Auto" />
@@ -30,7 +30,7 @@
 			Margin="4 0 0 0"
 			VerticalAlignment="Center"
 			FontSize="26"
-			Foreground="{StaticResource Text}"
+			Foreground="{DynamicResource Text}"
 			x:Name="Title"
 			Visibility="Collapsed">
 		</TextBlock>

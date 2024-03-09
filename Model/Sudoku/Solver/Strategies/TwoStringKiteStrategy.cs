@@ -63,7 +63,7 @@ public class TwoStringKiteStrategy : SudokuStrategy
     }
 }
 
-public class TwoStringKiteReportBuilder : IChangeReportBuilder
+public class TwoStringKiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly int _possibility;
     private readonly Cell _inCommon1;
@@ -80,7 +80,7 @@ public class TwoStringKiteReportBuilder : IChangeReportBuilder
         _other2 = other2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

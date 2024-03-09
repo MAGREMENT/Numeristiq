@@ -37,7 +37,7 @@ public class OddagonStrategy : SudokuStrategy
     }
 }
 
-public class OddagonReportBuilder : IChangeReportBuilder
+public class OddagonReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly AlmostOddagon _oddagon;
 
@@ -46,7 +46,7 @@ public class OddagonReportBuilder : IChangeReportBuilder
         _oddagon = oddagon;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport( "", lighter =>
         {

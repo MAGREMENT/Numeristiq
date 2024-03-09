@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -10,7 +9,7 @@ namespace Model.Helpers.Changes;
 /// important that no change are executed outside of the Push() method, which signals that a strategy has stopped
 /// searching.
 /// </summary>
-public interface IChangeBuffer
+public interface IChangeBuffer<out T> where T : IUpdatableSolvingState
 {
     public bool HandlesLog { get; }
     
@@ -40,7 +39,7 @@ public interface IChangeBuffer
 
     public bool NotEmpty();
 
-    public bool Commit(IChangeReportBuilder builder);
+    public bool Commit(IChangeReportBuilder<T> builder);
 
     public void Push(ICommitMaker pusher);
 
@@ -71,12 +70,12 @@ public static class ChangeBufferHelper
     }
 }
 
-public class ChangeCommit
+public class ChangeCommit<T> where T : ISolvingState
 {
     public SolverProgress[] Changes { get; }
-    public IChangeReportBuilder Builder { get; }
+    public IChangeReportBuilder<T> Builder { get; }
 
-    public ChangeCommit(SolverProgress[] changes, IChangeReportBuilder builder)
+    public ChangeCommit(SolverProgress[] changes, IChangeReportBuilder<T> builder)
     {
         Changes = changes;
         Builder = builder;

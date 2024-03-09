@@ -145,7 +145,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     }
 }
 
-public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
+public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly List<IPossibilitiesPositions> _als;
     private readonly int _row1;
@@ -162,7 +162,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
         _col2 = col2;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport("", lighter =>
         {

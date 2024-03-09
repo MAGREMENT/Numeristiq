@@ -124,7 +124,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class UnitForcingNetReportBuilder : IChangeReportBuilder
+public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;
@@ -139,7 +139,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         Highlight[] highlights = new Highlight[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];

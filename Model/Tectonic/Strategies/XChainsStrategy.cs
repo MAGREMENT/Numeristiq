@@ -143,9 +143,9 @@ public class XChainsStrategy : TectonicStrategy //TODO Correct this dumb shit
     }
 }
 
-public class XChainsReportBuilder : IChangeReportBuilder
+public class XChainsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
         return ChangeReport.Default(changes);
     }

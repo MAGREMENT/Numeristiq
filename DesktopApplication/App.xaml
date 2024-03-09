@@ -12,7 +12,7 @@
         <Brush x:Key="Secondary2">#E8280B</Brush>
         <Brush x:Key="Accent">#F50EE2</Brush>
 	    <Brush x:Key="Text">#FFFFFF</Brush>
-	    <Color x:Key="ThumbColor">#FFFFFF</Color>
+	    <Color x:Key="ThumbColor">#FFFFFF</Color> <!--TODO Make this not static (wtf wpf) -->
 	    
 	    <Style TargetType="RadioButton" x:Key="SettingTitleStyle">
 		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
@@ -150,7 +150,7 @@
 		    <Setter Property="Focusable" Value="False"/>
 		    <Setter Property="Background">
 			    <Setter.Value>
-				    <SolidColorBrush Color="{DynamicResource ThumbColor}" Opacity="0.05"/>
+				    <SolidColorBrush Color="{DynamicResource ThumbColor}" Opacity="0.1"/>
 			    </Setter.Value>
 		    </Setter>
 		    <Setter Property="Template">

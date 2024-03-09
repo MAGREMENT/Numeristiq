@@ -6,4 +6,8 @@ public interface ISetting
     public ISettingInteractionInterface InteractionInterface { get; }
     public SettingValue Get();
     public void Set(SettingValue s);
+
+    public event OnSettingChange? Changed;
 }
+
+public delegate void OnSettingChange();
