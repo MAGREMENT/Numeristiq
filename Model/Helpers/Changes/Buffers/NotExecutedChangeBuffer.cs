@@ -12,9 +12,9 @@ public class NotExecutedChangeBuffer : IChangeBuffer
 
     private readonly List<BuiltChangeCommit> _commits = new();
 
-    private readonly ILogManagedChangeProducer _producer;
+    private readonly ILogManagedChangeProducer<IUpdatableSudokuSolvingState> _producer;
 
-    public NotExecutedChangeBuffer(ILogManagedChangeProducer producer)
+    public NotExecutedChangeBuffer(ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
     {
         _producer = producer;
     }

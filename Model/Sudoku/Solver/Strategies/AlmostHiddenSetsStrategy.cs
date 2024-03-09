@@ -142,7 +142,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder
                 lighter.CreateLink(link.To, link.From, LinkStrength.Strong);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

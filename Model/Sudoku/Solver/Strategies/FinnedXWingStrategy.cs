@@ -176,7 +176,7 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder
                         _normal.Contains(finnedOther) ? ChangeColoration.CauseOffOne : ChangeColoration.CauseOffTwo);
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

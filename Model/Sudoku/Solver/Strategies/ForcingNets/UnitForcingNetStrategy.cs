@@ -155,7 +155,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder
                 ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], Coloring.On);
                 
                 if (paths[iForDelegate][0].Elements[0] is CellPossibility start) lighter.EncirclePossibility(start);
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             };
         }
         

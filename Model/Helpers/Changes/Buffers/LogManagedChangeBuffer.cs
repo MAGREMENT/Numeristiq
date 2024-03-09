@@ -11,14 +11,14 @@ public class LogManagedChangeBuffer : IChangeBuffer
         
     private readonly List<ChangeCommit> _commits = new();
 
-    private readonly ILogManagedChangeProducer _producer;
+    private readonly ILogManagedChangeProducer<IUpdatableSudokuSolvingState> _producer;
 
     private readonly IPushHandler[] _pushHandlers =
     {
         new ReturnPushHandler(), new WaitForAllPushHandler(), new ChooseBestPushHandler()
     };
 
-    public LogManagedChangeBuffer(ILogManagedChangeProducer changeProducer)
+    public LogManagedChangeBuffer(ILogManagedChangeProducer<IUpdatableSudokuSolvingState> changeProducer)
     {
         _producer = changeProducer;
     }
@@ -92,12 +92,12 @@ public class LogManagedChangeBuffer : IChangeBuffer
 
 public interface IPushHandler
 {
-    void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer);
+    void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer);
 }
 
 public class ReturnPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
     {
         var state = producer.CurrentState;
 
@@ -114,7 +114,7 @@ public class ReturnPushHandler : IPushHandler
 
 public class WaitForAllPushHandler : IPushHandler
 {
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
     {
         var state = producer.CurrentState;
         
@@ -138,7 +138,7 @@ public class ChooseBestPushHandler : IPushHandler
 {
     private readonly ICustomCommitComparer _default = new DefaultCommitComparer();
     
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer producer)
+    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit> commits, ILogManagedChangeProducer<IUpdatableSudokuSolvingState> producer)
     {
         var state = producer.CurrentState;
 

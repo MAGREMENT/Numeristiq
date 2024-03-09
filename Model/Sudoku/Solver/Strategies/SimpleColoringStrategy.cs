@@ -112,7 +112,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
         Highlight[] highlights = new Highlight[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
         {
-            highlights[0] = lighter => IChangeReportBuilder.HighlightChanges(lighter, changes);
+            highlights[0] = lighter => ChangeReportHelper.HighlightChanges(lighter, changes);
             highlights[1] = lighter =>
             {
                 _vertices.History!.ForeachLink((one, two)
@@ -146,7 +146,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder
                     lighter.HighlightPossibility(coord, ChangeColoration.CauseOffOne);
                 }
             
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             };
         }
 

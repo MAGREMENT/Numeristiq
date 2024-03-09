@@ -90,7 +90,7 @@ public class XYChainReportBuilder : IChangeReportBuilder
                 lighter.CreateLink(_visited[i], _visited[i + 1], i % 2 == 0 ? LinkStrength.Weak : LinkStrength.Strong);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

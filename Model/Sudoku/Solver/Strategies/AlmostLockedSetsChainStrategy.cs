@@ -172,7 +172,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder
             if(_possibleLastLink != -1) HighlightLink(lighter, _possibleLastLink,
                 _chain.Elements[^1], _chain.Elements[0]);
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

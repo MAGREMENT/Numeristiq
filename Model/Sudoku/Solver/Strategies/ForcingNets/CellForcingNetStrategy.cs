@@ -259,7 +259,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder
                 ForcingNetsUtility.HighlightAllPaths(lighter, paths[iForDelegate], Coloring.On);
                 
                 lighter.EncircleCell(_row, _col);
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             };
         }
         

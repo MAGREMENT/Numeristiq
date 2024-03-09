@@ -544,7 +544,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(cell, ChangeColoration.Neutral);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -608,7 +608,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(cell, ChangeColoration.Neutral);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

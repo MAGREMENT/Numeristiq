@@ -367,7 +367,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(cell, ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
     

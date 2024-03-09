@@ -130,7 +130,7 @@ public class SkyscraperReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

@@ -306,7 +306,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder
                     }
                 }
 
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             };
         }
 

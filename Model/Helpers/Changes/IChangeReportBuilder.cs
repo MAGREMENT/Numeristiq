@@ -1,13 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver;
 
 namespace Model.Helpers.Changes;
 
 public interface IChangeReportBuilder
 {
-    public static void HighlightChanges(IHighlighter highlightable, IReadOnlyList<SolverProgress> changes)
+    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot);
+}
+
+public static class ChangeReportHelper
+{
+    public static void HighlightChanges(IHighlighter highlightable, IReadOnlyList<SolverProgress> changes) //TODO to static class
     {
         foreach (var change in changes)
         {
@@ -37,8 +41,6 @@ public interface IChangeReportBuilder
 
         return builder.ToString()[..^2];
     }
-
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot);
 }
 
 public enum ChangeColoration

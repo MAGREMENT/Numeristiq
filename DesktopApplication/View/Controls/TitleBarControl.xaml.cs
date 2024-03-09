@@ -16,11 +16,11 @@ public partial class TitleBarControl
     
     public object InsideContent
     {
-        get => GetValue(AdditionalContentProperty);
-        set => SetValue(AdditionalContentProperty, value);
+        get => GetValue(InsideContentProperty);
+        set => SetValue(InsideContentProperty, value);
     }
     
-    public static readonly DependencyProperty AdditionalContentProperty =
+    public static readonly DependencyProperty InsideContentProperty =
         DependencyProperty.Register("InsideContent", typeof(object), typeof(TitleBarControl),
             new PropertyMetadata(null));
 

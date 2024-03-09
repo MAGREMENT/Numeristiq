@@ -252,7 +252,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder
                     lighter.HighlightPossibility(_number, coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
                 }
                 
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             });
     }
 }

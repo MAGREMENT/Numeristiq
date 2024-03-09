@@ -172,7 +172,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder
                 }
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

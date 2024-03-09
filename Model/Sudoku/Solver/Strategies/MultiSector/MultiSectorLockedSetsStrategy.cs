@@ -125,7 +125,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(cell, ChangeColoration.Neutral);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         }, cu.Highlight(snapshot, _grid));
     }
 

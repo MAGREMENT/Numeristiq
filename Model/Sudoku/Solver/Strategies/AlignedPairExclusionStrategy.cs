@@ -184,7 +184,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder
                 color++;
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

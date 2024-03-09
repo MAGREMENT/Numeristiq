@@ -160,7 +160,7 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder
                 color++;
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

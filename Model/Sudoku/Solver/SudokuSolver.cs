@@ -14,7 +14,7 @@ namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer, ISolveResult
+public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableSudokuSolvingState>, ISolveResult
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];

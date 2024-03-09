@@ -154,7 +154,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_n2, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 
@@ -192,7 +192,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_n2, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
     

@@ -182,7 +182,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder
                 } 
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 
@@ -230,7 +230,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(cell, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
     

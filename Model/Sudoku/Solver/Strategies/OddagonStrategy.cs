@@ -66,7 +66,7 @@ public class OddagonReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

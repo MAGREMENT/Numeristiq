@@ -188,7 +188,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder
                 start++;
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

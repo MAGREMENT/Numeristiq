@@ -47,7 +47,7 @@ public class SudokuSolveCommand : Command
             {
                 var explanation = log.Explanation is null ? "None" : log.Explanation.FullExplanation();
                 Console.WriteLine($"{log.Id}. {log.Title}\nDescription : {log.Description}\nChanges :" +
-                                  $" {IChangeReportBuilder.ChangesToString(log.Changes)}\nExplanation : {explanation}");
+                                  $" {ChangeReportHelper.ChangesToString(log.Changes)}\nExplanation : {explanation}");
             }
         }
         

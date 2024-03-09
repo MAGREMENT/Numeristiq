@@ -148,7 +148,7 @@ public class XWingReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_number, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

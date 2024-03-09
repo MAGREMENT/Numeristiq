@@ -152,7 +152,7 @@ public class RectangleEliminationReportBuilder : IChangeReportBuilder
                 }
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

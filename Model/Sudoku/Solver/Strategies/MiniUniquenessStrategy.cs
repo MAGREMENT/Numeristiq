@@ -151,7 +151,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder
                 color++;
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

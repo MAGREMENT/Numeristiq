@@ -88,7 +88,7 @@ public class ReverseBugReportBuilder : IChangeReportBuilder
                         : ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

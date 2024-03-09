@@ -489,7 +489,7 @@ public class FireworksReportBuilder : IChangeReportBuilder
                 FireworksHighlightUtils.Highlight(lighter, firework, snapshot, ref color);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -523,7 +523,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder
                 color++;
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -553,7 +553,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder
 
             lighter.CreateLink(_cells[0], _cells[1], LinkStrength.Strong);
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -581,7 +581,7 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder
             
             lighter.HighlightCell(_cell, ChangeColoration.CauseOnOne);
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

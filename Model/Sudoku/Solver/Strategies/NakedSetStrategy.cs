@@ -284,7 +284,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder
                 }
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 
@@ -319,7 +319,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder
                 }
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
     

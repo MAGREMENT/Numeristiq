@@ -89,7 +89,7 @@ public class TwoStringKiteReportBuilder : IChangeReportBuilder
             lighter.HighlightPossibility(_possibility, _other1.Row, _other1.Column, ChangeColoration.CauseOffOne);
             lighter.HighlightPossibility(_possibility, _other2.Row, _other2.Column, ChangeColoration.CauseOffOne);
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

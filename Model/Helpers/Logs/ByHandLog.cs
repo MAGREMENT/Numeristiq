@@ -46,6 +46,6 @@ public class ByHandLog : ISolverLog
 
     private void HighLight(IHighlighter highlighter)
     {
-        IChangeReportBuilder.HighlightChange(highlighter, _progress);
+        ChangeReportHelper.HighlightChange(highlighter, _progress);
     }
 }

@@ -141,7 +141,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder, IR
                 _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Strong), LinkStrength.Strong);
                 _loop.ForEachLink((one, two) => lighter.CreateLink(one, two, LinkStrength.Weak), LinkStrength.Weak);
                 
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             });
     }
 
@@ -205,7 +205,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder, I
                     lighter.CreateLink(_chain.Elements[i], _chain.Elements[i + 1], _chain.Links[i]);
                 }
                 
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             });
     }
 

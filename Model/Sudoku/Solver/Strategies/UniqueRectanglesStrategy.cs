@@ -425,7 +425,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder
                     ChangeColoration.CauseOffTwo : ChangeColoration.CauseOffOne);
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -459,7 +459,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder
 
             lighter.CreateLink(_link.From, _link.To, LinkStrength.Strong);
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -496,7 +496,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -529,7 +529,7 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder
             lighter.CreateLink(new CellPossibility(_opposite, _stronglyLinkedPossibility), new CellPossibility(
                 _initial.Row, _opposite.Column, _stronglyLinkedPossibility), LinkStrength.Strong);
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

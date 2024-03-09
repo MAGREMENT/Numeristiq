@@ -249,7 +249,7 @@ public class FishReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_possibility, cell.Row, cell.Column, ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

@@ -302,7 +302,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

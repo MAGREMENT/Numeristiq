@@ -148,7 +148,7 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

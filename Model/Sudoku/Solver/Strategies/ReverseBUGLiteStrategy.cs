@@ -176,7 +176,7 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder
                 else lighter.HighlightCell(o, _unit2, ChangeColoration.CauseOffOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

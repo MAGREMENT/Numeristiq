@@ -171,7 +171,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder
                     : ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
@@ -208,7 +208,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

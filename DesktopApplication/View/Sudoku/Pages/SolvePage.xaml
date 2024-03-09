@@ -20,7 +20,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center">
             <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
-                                 SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{StaticResource Text}"
+                                 SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{DynamicResource Text}"
                                  LineBrush="{StaticResource Text}" CursorBrush="{StaticResource Primary1}"
                                  SpecialNumberBrush="{StaticResource Accent}"/>
         </Border>

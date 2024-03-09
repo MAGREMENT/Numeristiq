@@ -139,13 +139,13 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder
             ForcingNetsUtility.HighlightAllPaths(lighter, onPaths, Coloring.On);
             lighter.EncirclePossibility(first);
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         }, lighter =>
         {
             ForcingNetsUtility.HighlightAllPaths(lighter, offPaths, Coloring.Off);
             lighter.EncirclePossibility(first);
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

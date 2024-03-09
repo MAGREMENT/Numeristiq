@@ -15,7 +15,7 @@
 	    <Color x:Key="ThumbColor">#FFFFFF</Color>
 	    
 	    <Style TargetType="RadioButton" x:Key="SettingTitleStyle">
-		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="Background" Value="Transparent"/>
 		    <Setter Property="Template">
@@ -30,10 +30,10 @@
 					    
 					    <ControlTemplate.Triggers>
 						    <Trigger Property="IsMouseOver" Value="True">
-							    <Setter Property="Background" Value="{StaticResource Primary1}"/>
+							    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
 						    </Trigger>
 						    <Trigger Property="IsChecked" Value="True">
-							    <Setter Property="FontWeight" Value="Bold"/>
+							    <Setter Property="FontWeight" Value="SemiBold"/>
 						    </Trigger>
 					    </ControlTemplate.Triggers>
 				    </ControlTemplate>
@@ -42,9 +42,9 @@
 	    </Style>
         
         <Style TargetType="Button" x:Key="WelcomeButtonStyle">
-	        <Setter Property="Foreground" Value="{StaticResource Text}"></Setter>
-	        <Setter Property="Background" Value="{StaticResource Background2}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource Background2}"/>
+	        <Setter Property="Foreground" Value="{DynamicResource Text}"></Setter>
+	        <Setter Property="Background" Value="{DynamicResource Background2}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
             <Setter Property="Cursor" Value="Hand"/>
             <Setter Property="Width" Value="150"/>
             <Setter Property="Height" Value="50"/>
@@ -62,7 +62,7 @@
             
 			            <ControlTemplate.Triggers>
 				            <Trigger Property="IsMouseOver" Value="True">
-					            <Setter Property="BorderBrush" Value="{StaticResource Primary1}"></Setter>
+					            <Setter Property="BorderBrush" Value="{DynamicResource Primary1}"></Setter>
 				            </Trigger>
 			            </ControlTemplate.Triggers>
 		            </ControlTemplate>
@@ -71,8 +71,8 @@
         </Style>
 	    
 	    <Style x:Key="BottomSelectionRadioButtonStyle" TargetType="RadioButton">
-		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
-		    <Setter Property="Background" Value="{StaticResource Background2}"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+		    <Setter Property="Background" Value="{DynamicResource Background2}"/>
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="FontWeight" Value="Normal"></Setter>
 		    
@@ -95,12 +95,12 @@
 					    
 					    <ControlTemplate.Triggers>
 						    <Trigger Property="IsChecked" Value="True">
-							    <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{StaticResource Secondary1}"/>
+							    <Setter TargetName="CheckBorder" Property="BorderBrush" Value="{DynamicResource Secondary1}"/>
 						    </Trigger>
 						    
 						    <Trigger Property="IsMouseOver" Value="True">
-							    <Setter Property="Background" Value="{StaticResource Background3}"/>
-							    <Setter Property="Foreground" Value="{StaticResource Primary1}"/>
+							    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+							    <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
 						    </Trigger>
 					    </ControlTemplate.Triggers>
 				    </ControlTemplate>
@@ -110,7 +110,7 @@
 	    
 	    <ControlTemplate TargetType="Button" x:Key="LightUpButton">
 		    <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" 
-		            Background="{StaticResource Background2}" Margin="{TemplateBinding Margin}"
+		            Background="{DynamicResource Background2}" Margin="{TemplateBinding Margin}"
 		            Padding="{TemplateBinding Padding}" x:Name="Border"
 		            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
 			    <ContentPresenter
@@ -123,25 +123,25 @@
 					    
 		    <ControlTemplate.Triggers>
 			    <Trigger Property="IsMouseOver" Value="True">
-				    <Setter TargetName="Border" Property="Background" Value="{StaticResource Background3}"/>
-				    <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
+				    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Background3}"/>
+				    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 			    </Trigger>
 		    </ControlTemplate.Triggers>
 	    </ControlTemplate>
 	    
 	    <Style x:Key="LogHighlightButton" TargetType="Button">
-		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="VerticalAlignment" Value="Center"/>
 		    <Setter Property="Template" Value="{StaticResource LightUpButton}"/>
-		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
+		    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
 	    </Style>
 	    
 	    <Style x:Key="SolvePageButtonStyle" TargetType="Button">
-		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="Padding" Value="10"></Setter>
 		    <Setter Property="Template" Value="{StaticResource LightUpButton}"/>
-		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
+		    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
 	    </Style>
 	    
 	    <Style x:Key="TransparentThumb" TargetType="Thumb">
@@ -150,7 +150,7 @@
 		    <Setter Property="Focusable" Value="False"/>
 		    <Setter Property="Background">
 			    <Setter.Value>
-				    <SolidColorBrush Color="{StaticResource ThumbColor}" Opacity="0.05"/>
+				    <SolidColorBrush Color="{DynamicResource ThumbColor}" Opacity="0.05"/>
 			    </Setter.Value>
 		    </Setter>
 		    <Setter Property="Template">
@@ -164,7 +164,7 @@
 						    <Trigger Property="IsMouseOver" Value="True">
 							    <Setter Property="Background">
 								    <Setter.Value>
-									    <SolidColorBrush Color="{StaticResource ThumbColor}"/>
+									    <SolidColorBrush Color="{DynamicResource ThumbColor}"/>
 								    </Setter.Value>
 							    </Setter>
 						    </Trigger>
@@ -191,8 +191,8 @@
 	    </Style>
 	    
 	    <Style x:Key="TransparentBarScrollView" TargetType="ScrollViewer">
-		    <Setter Property="Background" Value="{StaticResource Background2}"/>
-		    <Setter Property="BorderBrush" Value="{StaticResource Background3}"/>
+		    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+		    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
 		    <Setter Property="Template">
 			    <Setter.Value>
 				    <ControlTemplate TargetType="ScrollViewer">
@@ -220,7 +220,7 @@
 	    </Style>
 	    
         <Style x:Key="TitleBarButtonStyle" TargetType="Button">
-			<Setter Property="Foreground" Value="{StaticResource Text}" />
+			<Setter Property="Foreground" Value="{DynamicResource Text}" />
 			<Setter Property="Padding" Value="0" />
 			<Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
 			<Setter Property="IsTabStop" Value="False" />
@@ -242,10 +242,10 @@
 						
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{StaticResource Background3}" />
+								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Background3}" />
 							</Trigger>
 							<Trigger Property="IsPressed" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{StaticResource Background3}" />
+								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Background3}" />
 							</Trigger>
 							<Trigger Property="IsEnabled" Value="False">
 								<Setter Property="Foreground" Value="Gray"></Setter>
@@ -257,9 +257,9 @@
 		</Style>
 	    
 	    <Style x:Key="LogRadioButton" TargetType="RadioButton">
-		    <Setter Property="Background" Value="{StaticResource Background2}"/>
-		    <Setter Property="BorderBrush" Value="{StaticResource Background2}"/>
-		    <Setter Property="Foreground" Value="{StaticResource Text}"/>
+		    <Setter Property="Background" Value="{DynamicResource Background2}"/>
+		    <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="FontSize" Value="16"/>
 		    <Setter Property="Margin" Value="5"></Setter>
 		    <Setter Property="Template">
@@ -277,10 +277,10 @@
 					    
 					    <ControlTemplate.Triggers>
 						    <Trigger Property="IsMouseOver" Value="True">
-							    <Setter Property="Background" Value="{StaticResource Background3}"/>
+							    <Setter Property="Background" Value="{DynamicResource Background3}"/>
 						    </Trigger>
 						    <Trigger Property="IsChecked" Value="True">
-							    <Setter Property="BorderBrush" Value="{StaticResource Text}"/>
+							    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 						    </Trigger>
 					    </ControlTemplate.Triggers>
 				    </ControlTemplate>
@@ -292,7 +292,7 @@
 		    <Setter Property="Foreground" Value="White"/>
 		    <Setter Property="FontWeight" Value="SemiBold"/>
 		    <Setter Property="FontSize" Value="15"/>
-		    <Setter Property="Background" Value="{StaticResource Primary2}"/>
+		    <Setter Property="Background" Value="{DynamicResource Primary2}"/>
 		    <Setter Property="VerticalAlignment" Value="Center"/>
 		    <Setter Property="Template">
 			    <Setter.Value>
@@ -312,13 +312,13 @@
 		    
 		    <Style.Triggers>
 			    <Trigger Property="IsMouseOver" Value="True">
-				    <Setter Property="Background" Value="{StaticResource Accent}"></Setter>
+				    <Setter Property="Background" Value="{DynamicResource Accent}"></Setter>
 			    </Trigger>
 		    </Style.Triggers>
 	    </Style>
 
 		<Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">
-			<Setter Property="Foreground" Value="{StaticResource Text}" />
+			<Setter Property="Foreground" Value="{DynamicResource Text}" />
 			<Setter Property="Padding" Value="0" />
 			<Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
 			<Setter Property="IsTabStop" Value="False" />
@@ -340,10 +340,10 @@
 						
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{StaticResource Secondary1}"/>
+								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Secondary1}"/>
 							</Trigger>
 							<Trigger Property="IsPressed" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{StaticResource Secondary2}"/>
+								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Secondary2}"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>

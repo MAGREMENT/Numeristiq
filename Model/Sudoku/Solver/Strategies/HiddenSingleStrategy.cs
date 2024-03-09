@@ -68,7 +68,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( Description(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes), Explanation(changes));
+            lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
     }
 
     private static string Description(IReadOnlyList<SolverProgress> changes)

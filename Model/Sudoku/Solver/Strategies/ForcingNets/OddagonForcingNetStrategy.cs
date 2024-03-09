@@ -100,7 +100,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
 
                 ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.On);
                 lighter.EncirclePossibility(_oddagon.Guardians[iForDelegate]);
-                IChangeReportBuilder.HighlightChanges(lighter, changes);
+                ChangeReportHelper.HighlightChanges(lighter, changes);
             };
         }
 
@@ -122,7 +122,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(cp, ChangeColoration.CauseOnOne);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         }, highlights);
     }
 }

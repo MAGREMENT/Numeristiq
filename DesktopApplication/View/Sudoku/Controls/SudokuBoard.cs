@@ -16,7 +16,7 @@ using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
-public class SudokuBoard : DrawingBoard, ISudokuDrawer
+public class SudokuBoard : DrawingBoard, ISudokuDrawer //TODO dependency properties
 {
     private const int BackgroundIndex = 0;
     private  const int CellsHighlightIndex = 1;
@@ -37,7 +37,6 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
     private double _bigLineWidth;
     private double _size;
     
-    private Brush _linkBrush = Brushes.Indigo;
     private Brush _defaultNumberBrush = Brushes.Black;
     private Brush _specialNumberBrush = Brushes.Orange;
     private Brush _backgroundBrush = Brushes.White;
@@ -46,15 +45,23 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
 
     private readonly bool[,] _isSpecialNumberBrush = new bool[9, 9];
 
+    public static readonly DependencyProperty LinkBrushProperty =
+        DependencyProperty.Register("LinkBrush", typeof(Brush), typeof(SudokuBoard));
+
     public Brush LinkBrush
     {
         set
         {
-            _linkBrush = value;
+            SetValue(LinkBrushProperty, value);
             SetLayerBrush(LinksIndex, value);
             Refresh();
         }
+
+        get => (Brush)GetValue(LinkBrushProperty);
     }
+    
+    public static readonly DependencyProperty DefaultNumberBrushProperty =
+        DependencyProperty.Register("DefaultNumberBrush", typeof(Brush), typeof(SudokuBoard));
 
     public Brush DefaultNumberBrush
     {
@@ -65,6 +72,9 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
             Refresh();
         }
     }
+    
+    public static readonly DependencyProperty SpecialNumberBrushProperty =
+        DependencyProperty.Register("SpecialNumberBrush", typeof(Brush), typeof(SudokuBoard));
 
     public Brush SpecialNumberBrush
     {
@@ -75,6 +85,9 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
             Refresh();
         }
     }
+    
+    public static readonly DependencyProperty BackgroundBrushProperty =
+        DependencyProperty.Register("BackgroundBrush", typeof(Brush), typeof(SudokuBoard));
 
     public Brush BackgroundBrush
     {
@@ -86,6 +99,9 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
         }
     }
     
+    public static readonly DependencyProperty LineBrushProperty =
+        DependencyProperty.Register("LineBrush", typeof(Brush), typeof(SudokuBoard));
+    
     public Brush LineBrush
     {
         set
@@ -96,6 +112,9 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
             Refresh();
         }
     }
+    
+    public static readonly DependencyProperty CursorBrushProperty =
+        DependencyProperty.Register("CursorBrush", typeof(Brush), typeof(SudokuBoard));
     
     public Brush CursorBrush
     {
@@ -265,14 +284,14 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
     {
         var delta = _smallLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col, possibility) - delta, GetTop(row, possibility) - delta,
-            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(_linkBrush, _bigLineWidth)));
+            _possibilitySize + _smallLineWidth, _possibilitySize + _smallLineWidth), new Pen(LinkBrush, _bigLineWidth)));
     }
 
     public void EncircleCell(int row, int col)
     {
         var delta = _bigLineWidth / 2;
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) - delta, GetTop(row) - delta,
-            _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(_linkBrush, _bigLineWidth)));
+            _cellSize + _bigLineWidth, _cellSize + _bigLineWidth), new Pen(LinkBrush, _bigLineWidth)));
     }
 
     public void EncircleRectangle(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
@@ -567,7 +586,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
 
     private void AddLine(Point from, Point to, bool isWeak)
     {
-        Layers[LinksIndex].Add(new LineComponent(from, to, new Pen(_linkBrush, 2)
+        Layers[LinksIndex].Add(new LineComponent(from, to, new Pen(LinkBrush, 2)
         {
             DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
         }));

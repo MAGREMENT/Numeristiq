@@ -117,7 +117,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder
                 }
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

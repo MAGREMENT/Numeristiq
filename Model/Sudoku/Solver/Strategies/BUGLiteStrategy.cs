@@ -394,7 +394,7 @@ public class BUGLiteReportBuilder : IChangeReportBuilder
                 }
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

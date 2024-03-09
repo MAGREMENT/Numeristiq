@@ -204,7 +204,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder
                 }
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

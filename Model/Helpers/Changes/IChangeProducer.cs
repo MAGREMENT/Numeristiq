@@ -11,8 +11,8 @@ public interface IChangeProducer
     public bool ExecuteChange(SolverProgress progress);
 }
 
-public interface ILogManagedChangeProducer : IChangeProducer
+public interface ILogManagedChangeProducer<out TState> : IChangeProducer where TState : IUpdatableSolvingState
 {
     public LogManager LogManager { get; }
-    public IUpdatableSudokuSolvingState CurrentState { get; }
+    public TState CurrentState { get; }
 }

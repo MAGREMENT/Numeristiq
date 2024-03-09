@@ -58,6 +58,6 @@ public class ChangeReport
     public static ChangeReport Default(IReadOnlyList<SolverProgress> changes)
     {
         return new ChangeReport("",
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+            lighter => ChangeReportHelper.HighlightChanges(lighter, changes));
     }
 }

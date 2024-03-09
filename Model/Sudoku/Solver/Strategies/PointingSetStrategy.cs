@@ -98,7 +98,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder
                 lighter.HighlightPossibility(_number, pos.Row, pos.Column, ChangeColoration.CauseOffOne);
             }
             
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 

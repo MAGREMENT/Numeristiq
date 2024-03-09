@@ -34,7 +34,7 @@ public class NakedSingleReportBuilder : IChangeReportBuilder
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport( Description(changes),
-            lighter => IChangeReportBuilder.HighlightChanges(lighter, changes));
+            lighter => ChangeReportHelper.HighlightChanges(lighter, changes));
     }
 
     private static string Description(IReadOnlyList<SolverProgress> changes)

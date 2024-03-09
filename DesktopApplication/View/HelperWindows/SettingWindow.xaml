@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:DesktopApplication.View.HelperWindows"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
         Title="SettingWindow" Height="450" Width="800"
@@ -35,5 +34,16 @@
         <ScrollViewer Grid.Row="1" Grid.Column="1" Height="400" Style="{StaticResource TransparentBarScrollView}">
             <StackPanel x:Name="SettingPanel" MinHeight="398"/>
         </ScrollViewer>
+        
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="1" Width="50" Height="30" Margin="5,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save">Save</Button>
+            <Button Grid.Column="2" Width="50" Height="30" Margin="5, 0, 5, 0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="Cancel">Cancel</Button>
+        </Grid>
     </Grid>
 </Window>

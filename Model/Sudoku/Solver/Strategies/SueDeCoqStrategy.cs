@@ -277,7 +277,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

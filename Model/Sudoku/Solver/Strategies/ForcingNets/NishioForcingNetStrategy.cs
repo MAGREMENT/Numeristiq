@@ -255,7 +255,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                        ChangeReportHelper.HighlightChanges(lighter, changes);
                     });
                 }
                 break;
@@ -274,7 +274,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                        ChangeReportHelper.HighlightChanges(lighter, changes);
                     });
                 }
                 
@@ -294,7 +294,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                        ChangeReportHelper.HighlightChanges(lighter, changes);
                     });
                 }
                 
@@ -315,7 +315,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder
                         ForcingNetsUtility.HighlightAllPaths(lighter, paths, Coloring.Off);
                         
                         lighter.EncirclePossibility(_possibility, _row, _col);
-                        IChangeReportBuilder.HighlightChanges(lighter, changes);
+                        ChangeReportHelper.HighlightChanges(lighter, changes);
                     });
                 }
                 

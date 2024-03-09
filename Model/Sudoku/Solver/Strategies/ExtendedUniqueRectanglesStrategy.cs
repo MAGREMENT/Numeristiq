@@ -205,7 +205,7 @@ public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder
                     : ChangeColoration.CauseOffTwo);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

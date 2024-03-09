@@ -201,7 +201,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder
                 lighter.CreateLink(link.From, link.To, LinkStrength.Strong);
             }
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }

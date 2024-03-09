@@ -237,7 +237,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder
                         lighter.EncirclePossibility(cp);
                     }
                 
-                    IChangeReportBuilder.HighlightChanges(lighter, changes);
+                    ChangeReportHelper.HighlightChanges(lighter, changes);
                 }
             };
         }
@@ -266,7 +266,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder
                 lighter.EncirclePossibility(cp);
             }
                 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         }, branchesHighlight);
     }
 

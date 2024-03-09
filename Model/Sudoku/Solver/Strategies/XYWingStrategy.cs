@@ -131,7 +131,7 @@ public class XYWingReportBuilder : IChangeReportBuilder
             lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.CauseOffOne);
 
-            IChangeReportBuilder.HighlightChanges(lighter, changes);
+            ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 }
