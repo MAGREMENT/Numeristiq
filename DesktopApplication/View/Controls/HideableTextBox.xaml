@@ -17,8 +17,7 @@
                      TextChanged="OnTextChange"/>
         </Border>
         
-        <Button Grid.Row="1" HorizontalAlignment="Center" Template="{StaticResource LightUpButton}"
-                BorderBrush="{DynamicResource Text}" Click="Show">
+        <Button Grid.Row="1" HorizontalAlignment="Center" Style="{StaticResource HideableTextBoxButton}" Click="Show">
             <Path
                 Width="20"
                 Height="10"
