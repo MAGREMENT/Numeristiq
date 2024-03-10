@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Model;
+using Model.Helpers.Settings;
 using Repository;
 
 namespace DesktopApplication.Presenter;
@@ -52,7 +54,7 @@ public class GlobalApplicationPresenter
         if (!themeRepository.Initialize(true)) 
             throw new Exception("Theme repository initialization went wrong");
 
-        var settingsRepository = new SettingsJSONRepository("settings.json");
+        var settingsRepository = new JSONRepository<Dictionary<string, SettingValue>>("settings.json");
         if (!settingsRepository.Initialize(true))
             throw new Exception("Setting repository initialization went wrong");
 
