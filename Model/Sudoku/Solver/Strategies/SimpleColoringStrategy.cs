@@ -109,7 +109,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
 
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        Highlight[] highlights = new Highlight[_isInvalidColoring ? 2 : 1];
+        Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
         {
             highlights[0] = lighter => ChangeReportHelper.HighlightChanges(lighter, changes);

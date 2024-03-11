@@ -89,7 +89,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSud
 
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        var highlights = new Highlight[_colorings.Length];
+        var highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
         for (int i = 0; i < _colorings.Length; i++)
         {
             var iForDelegate = i;

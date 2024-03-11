@@ -288,7 +288,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudoku
 
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        Highlight[] highlights = new Highlight[_patterns.Count];
+        Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_patterns.Count];
 
         for (int i = 0; i < _patterns.Count; i++)
         {

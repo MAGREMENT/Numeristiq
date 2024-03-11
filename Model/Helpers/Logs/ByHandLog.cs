@@ -17,7 +17,7 @@ public class ByHandLog : ISolverLog
     public ExplanationElement? Explanation => null;
     public IUpdatableSolvingState StateBefore { get; }
     public IUpdatableSolvingState StateAfter { get; }
-    public HighlightManager<ISudokuHighlighter> HighlightManager => new(new DelegateHighlightable(HighLight));
+    public HighlightManager<ISudokuHighlighter> HighlightManager => new(new DelegateHighlightable<ISudokuHighlighter>(HighLight));
     public bool FromSolving => false;
 
     private readonly SolverProgress _progress;

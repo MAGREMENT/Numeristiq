@@ -211,7 +211,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
 
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        var branchesHighlight = new Highlight[_branches.Length];
+        var branchesHighlight = new Highlight<ISudokuHighlighter>[_branches.Length];
 
         for (int i = 0; i < _branches.Length; i++)
         {

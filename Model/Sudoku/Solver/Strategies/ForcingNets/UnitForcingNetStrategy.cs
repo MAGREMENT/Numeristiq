@@ -141,7 +141,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudoku
 
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        Highlight[] highlights = new Highlight[_colorings.Length];
+        var highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
 
         for (int i = 0; i < _colorings.Length; i++)

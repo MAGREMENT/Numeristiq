@@ -5,19 +5,19 @@ public interface IHighlightable<in THighlighter>
     void Highlight(THighlighter highlighter);
 }
 
-public class DelegateHighlightable : IHighlightable<ISudokuHighlighter>
+public class DelegateHighlightable<THighlighter> : IHighlightable<THighlighter>
 {
-    private readonly Highlight _d;
+    private readonly Highlight<THighlighter> _d;
 
-    public DelegateHighlightable(Highlight d)
+    public DelegateHighlightable(Highlight<THighlighter> d)
     {
         _d = d;
     }
 
-    public void Highlight(ISudokuHighlighter highlighter)
+    public void Highlight(THighlighter highlighter)
     {
         _d(highlighter);
     }
 }
 
-public delegate void Highlight(ISudokuHighlighter highlighter);
+public delegate void Highlight<in THighlighter>(THighlighter highlighter);

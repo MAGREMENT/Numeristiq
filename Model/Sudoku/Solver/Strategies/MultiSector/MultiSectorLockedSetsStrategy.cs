@@ -175,11 +175,11 @@ public class CoveringUnits
         }
     }
 
-    public Highlight[] Highlight(IUpdatableSudokuSolvingState snapshot, GridPositions gp)
+    public Highlight<ISudokuHighlighter>[] Highlight(IUpdatableSudokuSolvingState snapshot, GridPositions gp)
     {
         var n = (int)ChangeColoration.CauseOffOne;
         var i = 0;
-        List<Highlight> h = new();
+        List<Highlight<ISudokuHighlighter>> h = new();
 
         foreach (var entry in _dictionary)
         {

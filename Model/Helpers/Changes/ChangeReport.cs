@@ -10,21 +10,21 @@ public class ChangeReport
     public ExplanationElement? Explanation { get; }
     public HighlightManager<ISudokuHighlighter> HighlightManager { get; }
     
-    public ChangeReport(string description, Highlight highlighter)
+    public ChangeReport(string description, Highlight<ISudokuHighlighter> highlighter)
     {
         Description = description;
         HighlightManager = new HighlightManager<ISudokuHighlighter>(SudokuHighlightCompiler.GetInstance().Compile(highlighter));
         Explanation = null;
     }
     
-    public ChangeReport(string description, Highlight highlighter, ExplanationElement? explanation)
+    public ChangeReport(string description, Highlight<ISudokuHighlighter> highlighter, ExplanationElement? explanation)
     {
         Description = description;
         HighlightManager = new HighlightManager<ISudokuHighlighter>(SudokuHighlightCompiler.GetInstance().Compile(highlighter));
         Explanation = explanation;
     }
     
-    public ChangeReport(string description, params Highlight[] highlighters)
+    public ChangeReport(string description, params Highlight<ISudokuHighlighter>[] highlighters)
     {
         Description = description;
 
@@ -39,7 +39,7 @@ public class ChangeReport
         Explanation = null;
     }
     
-    public ChangeReport(string description, Highlight first, params Highlight[] highlighters)
+    public ChangeReport(string description, Highlight<ISudokuHighlighter> first, params Highlight<ISudokuHighlighter>[] highlighters)
     {
         Description = description;
 

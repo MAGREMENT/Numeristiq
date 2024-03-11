@@ -237,7 +237,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudo
 
     public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        List<Highlight> highlighters = new();
+        List<Highlight<ISudokuHighlighter>> highlighters = new();
         switch (_cause)
         {
             case ContradictionCause.Cell :
