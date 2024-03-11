@@ -1,11 +1,11 @@
 namespace Model.Helpers.Highlighting;
 
-public interface IHighlightable
+public interface IHighlightable<in THighlighter>
 {
-    void Highlight(IHighlighter highlighter);
+    void Highlight(THighlighter highlighter);
 }
 
-public class DelegateHighlightable : IHighlightable
+public class DelegateHighlightable : IHighlightable<ISudokuHighlighter>
 {
     private readonly Highlight _d;
 
@@ -14,10 +14,10 @@ public class DelegateHighlightable : IHighlightable
         _d = d;
     }
 
-    public void Highlight(IHighlighter highlighter)
+    public void Highlight(ISudokuHighlighter highlighter)
     {
         _d(highlighter);
     }
 }
 
-public delegate void Highlight(IHighlighter highlighter);
+public delegate void Highlight(ISudokuHighlighter highlighter);

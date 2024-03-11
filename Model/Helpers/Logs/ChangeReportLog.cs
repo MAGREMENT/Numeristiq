@@ -16,7 +16,7 @@ public class ChangeReportLog : ISolverLog
     public ExplanationElement? Explanation { get; }
     public IUpdatableSolvingState StateBefore { get; }
     public IUpdatableSolvingState StateAfter { get; }
-    public HighlightManager HighlightManager  { get; }
+    public HighlightManager<ISudokuHighlighter> HighlightManager  { get; }
     public bool FromSolving => true;
 
 

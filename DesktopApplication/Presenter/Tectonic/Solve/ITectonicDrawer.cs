@@ -10,7 +10,7 @@ public interface ITectonicDrawer
     void Refresh();
     void ClearNumbers();
     void ShowSolution(int row, int column, int number);
-    void ShowPossibilities(int row, int column, IEnumerable<int> possibilities, int zoneSize);
+    void ShowPossibilities(int row, int column, IEnumerable<int> possibilities);
     void ClearBorderDefinitions();
     void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin);
 }

@@ -4,9 +4,9 @@ using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.Strategies.MultiSector;
 

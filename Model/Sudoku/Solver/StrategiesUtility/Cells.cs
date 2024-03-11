@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Helpers;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.SharedSeenCellSearchers;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 

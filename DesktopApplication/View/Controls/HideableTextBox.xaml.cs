@@ -10,19 +10,19 @@ public partial class HideableTextBox
     
     private static readonly PathGeometry _upArrow = new(new []
     {
-        new PathFigure(new Point(4, 7), new []
+        new PathFigure(new Point(5, 7), new []
         {
-            new LineSegment(new Point(10, 3), true),
-            new LineSegment(new Point(16, 7), true)
+            new LineSegment(new Point(10, 4), true),
+            new LineSegment(new Point(15, 7), true)
         }, false)
     });
     
     private static readonly PathGeometry _downArrow = new(new []
     {
-        new PathFigure(new Point(4, 3), new []
+        new PathFigure(new Point(5, 3), new []
         {
-            new LineSegment(new Point(10, 7), true),
-            new LineSegment(new Point(16, 3), true)
+            new LineSegment(new Point(10, 6), true),
+            new LineSegment(new Point(15, 3), true)
         }, false)
     });
     

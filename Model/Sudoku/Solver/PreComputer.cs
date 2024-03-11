@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
@@ -8,6 +7,7 @@ using Model.Sudoku.Solver.StrategiesUtility.Exocet;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver;
 

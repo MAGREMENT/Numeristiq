@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.View.Sudoku.Pages;
 
@@ -19,7 +20,7 @@ public partial class SudokuWindow
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        _presenter = new SudokuApplicationPresenter();
+        _presenter = GlobalApplicationPresenter.Instance.InitializeSudokuApplicationPresenter();
         _presenter.InitializeApplication();
         _pages = new Page[] { new SolvePage(_presenter), new PlayPage(_presenter), new ManagePage(_presenter), new GeneratePage(_presenter) };
 

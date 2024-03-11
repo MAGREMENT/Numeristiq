@@ -5,6 +5,8 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonic.Solve;
+using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace DesktopApplication.View.Tectonic.Controls;
 
@@ -127,10 +129,42 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     }
 
     public NotifyingList<NeighborBorder> Borders { get; } = new();
+    private readonly Dictionary<Cell, InfiniteBitSet> _associatedCells = new();
 
     public TectonicBoard() : base(4)
     {
-        Borders.CountChanged += UpdateAndDrawLines;
+        Borders.Cleared += () =>
+        {
+            _associatedCells.Clear();
+            UpdateAndDrawLines();
+        };
+
+        Borders.ElementAdded += e =>
+        {
+            if (!e.IsThin) return;
+            
+            var cells = e.ComputeNeighboringCells();
+            var i1 = cells.Item1.Row * RowCount + cells.Item1.Column;
+            var i2 = cells.Item2.Row * RowCount + cells.Item2.Column;
+
+            if (!_associatedCells.TryGetValue(cells.Item1, out var set1))
+            {
+                set1 = new InfiniteBitSet();
+                set1.Set(i1);
+                _associatedCells[cells.Item1] = set1;
+            }
+            
+            if (!_associatedCells.TryGetValue(cells.Item2, out var set2))
+            {
+                set2 = new InfiniteBitSet();
+                set2.Set(i2);
+            }
+
+            set1.Or(set2);
+            _associatedCells[cells.Item2] = set1;
+            
+            UpdateAndDrawLines();
+        };
     }
     
     public void AddChild(object value)
@@ -160,14 +194,17 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         });
     }
 
-    public void ShowPossibilities(int row, int column, IEnumerable<int> possibilities, int zoneSize)
+    public void ShowPossibilities(int row, int column, IEnumerable<int> possibilities)
     {
+        var zoneSize = _associatedCells.TryGetValue(new Cell(row, column), out var set) ? set.Count : 1;
         var posSize = _cellSize / zoneSize;
         var textSize = posSize * 3 / 4;
         var delta = (_cellSize - posSize) / 2;
         
         foreach (var possibility in possibilities)
         {
+            if(possibility > zoneSize) continue;
+            
             Dispatcher.Invoke(() =>
             {
                 Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), textSize,
@@ -319,7 +356,15 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     #endregion
 }
 
-public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin);
+public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin)
+{
+    public (Cell, Cell) ComputeNeighboringCells()
+    {
+        return Direction == BorderDirection.Horizontal 
+            ? (new Cell(InsideRow, InsideColumn), new Cell(InsideRow + 1, InsideColumn)) 
+            : (new Cell(InsideRow, InsideColumn), new Cell(InsideRow, InsideColumn + 1));
+    }
+}
 
 public class NotifyingList<T> : IList, IList<T>
 {
@@ -331,16 +376,15 @@ public class NotifyingList<T> : IList, IList<T>
     public bool IsFixedSize => false;
     public bool IsReadOnly => false;
     
-    public event OnCountChange? CountChanged;
+    public event OnClear? Cleared;
+    public event OnElementAdded<T>? ElementAdded; 
     
     public int Add(object? value)
     {
         if (value is not T item) return -1;
 
-        GrowIfNecessary();
-
-        _array[Count++] = item;
-        CountChanged?.Invoke();
+        Add(item);
+        
         return Count - 1;
     }
 
@@ -349,13 +393,13 @@ public class NotifyingList<T> : IList, IList<T>
         GrowIfNecessary();
 
         _array[Count++] = item;
-        CountChanged?.Invoke();
+        ElementAdded?.Invoke(item);
     }
 
     public void Clear()
     {
         Count = 0;
-        CountChanged?.Invoke();
+        Cleared?.Invoke();
     }
 
     public bool Contains(T item)
@@ -469,7 +513,7 @@ public class NotifyingList<T> : IList, IList<T>
         Array.Copy(_array, index, _array, index + 1, Count - index);
         _array[index] = item;
         Count++;
-        CountChanged?.Invoke();
+        ElementAdded?.Invoke(item);
     }
     
     public void Insert(int index, object? value)
@@ -485,7 +529,6 @@ public class NotifyingList<T> : IList, IList<T>
         
         Array.Copy(_array, index + 1, _array, index, Count - index - 1);
         Count--;
-        CountChanged?.Invoke();
     }
 
     T IList<T>.this[int index]
@@ -539,5 +582,6 @@ public class NotifyingList<T> : IList, IList<T>
     }
 }
 
-public delegate void OnCountChange();
+public delegate void OnClear();
+public delegate void OnElementAdded<T>(T element);
 public delegate void OnDimensionCountChange(int number);

@@ -1,16 +1,16 @@
-using Model.Sudoku.Solver.BitSets;
+using Model.Utility.BitSets;
 
 namespace Tests;
 
 public class InfiniteBitSetTests
 {
     [Test]
-    public void InsertTest()
+    public void ShiftLeftTest()
     {
         var bs = new InfiniteBitSet();
         bs.Set(2);
         bs.Set(0);
-        bs.Insert(2);
+        bs.ShiftLeft(2);
         
         Assert.Multiple(() =>
         {
@@ -23,13 +23,13 @@ public class InfiniteBitSetTests
     }
 
     [Test]
-    public void DeleteTest()
+    public void ShiftRightTest()
     {
         var bs = new InfiniteBitSet();
         bs.Set(2);
         bs.Set(4);
         bs.Set(0);
-        bs.Delete(2);
+        bs.ShiftRight(2);
         
         Assert.Multiple(() =>
         {

@@ -13,7 +13,11 @@ public class Settings : UpdateCallback
 
     public Settings(Theme[] themes, IRepository<Dictionary<string, SettingValue>> repository)
     {
-        _settings = new ISetting[] { new IntSetting("Theme", new NameListInteractionInterface(themes), -1) };
+        _settings = new ISetting[]
+        {
+            new IntSetting("Theme", new NameListInteractionInterface(themes), -1),
+            new BooleanSetting("Show same cell links")
+        };
         _repository = repository;
         
         WelcomeWindowSettings = new SettingsSpan(new []{
@@ -48,6 +52,6 @@ public class Settings : UpdateCallback
     public SettingsSpan WelcomeWindowSettings { get; }
 
     public ISetting Theme => _settings[0];
-    
-    
+
+    public ISetting ShowSameCellLinks => _settings[1];
 }

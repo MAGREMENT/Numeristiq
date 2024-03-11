@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Tectonic;
 using DesktopApplication.View.Tectonic.Pages;
 
@@ -15,7 +16,7 @@ public partial class TectonicWindow
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        _presenter = new TectonicApplicationPresenter();
+        _presenter = GlobalApplicationPresenter.Instance.InitializeTectonicApplicationPresenter();
 
         Frame.Content = new SolvePage(_presenter);
     }

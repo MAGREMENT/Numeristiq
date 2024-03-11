@@ -15,10 +15,16 @@ public class SudokuApplicationPresenter
 {
     private readonly SudokuSolver _solver = new();
     private IRepository<IReadOnlyList<SudokuStrategy>>? _strategiesRepository;
-    
+    private readonly Settings _settings;
+
+    public SudokuApplicationPresenter(Settings settings)
+    {
+        _settings = settings;
+    }
+
     public SudokuSolvePresenter Initialize(ISudokuSolveView view)
     {
-        return new SudokuSolvePresenter(view, _solver);
+        return new SudokuSolvePresenter(view, _solver, _settings);
     }
 
     public SudokuPlayPresenter Initialize(ISudokuPlayView view)

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.States;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Player;
 

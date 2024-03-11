@@ -22,7 +22,7 @@ public partial class WelcomeWindow
     {
         InitializeComponent();
 
-        _presenter = GlobalApplicationPresenter.Instance.Initialize();
+        _presenter = GlobalApplicationPresenter.Instance.InitializeWelcomePresenter();
         
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
         RenderOptions.SetBitmapScalingMode(GameImage, BitmapScalingMode.Fant);

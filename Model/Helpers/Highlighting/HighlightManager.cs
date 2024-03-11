@@ -1,23 +1,23 @@
 namespace Model.Helpers.Highlighting;
 
-public class HighlightManager : IHighlightable
+public class HighlightManager<THighlighter> : IHighlightable<THighlighter>
 {
-    private readonly IHighlightable[] _highlights;
+    private readonly IHighlightable<THighlighter>[] _highlights;
     private int _cursor;
 
     public int Count => _highlights.Length;
 
-    public HighlightManager(IHighlightable highlight)
+    public HighlightManager(IHighlightable<THighlighter> highlight)
     {
         _highlights = new[] { highlight };
     }
 
-    public HighlightManager(params IHighlightable[] highlights)
+    public HighlightManager(params IHighlightable<THighlighter>[] highlights)
     {
         _highlights = highlights;
     }
 
-    public void Highlight(IHighlighter highlighter)
+    public void Highlight(THighlighter highlighter)
     {
         if (Count == 0) return;
         _highlights[_cursor].Highlight(highlighter);

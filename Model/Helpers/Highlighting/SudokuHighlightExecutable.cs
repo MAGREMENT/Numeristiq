@@ -11,18 +11,18 @@ namespace Model.Helpers.Highlighting;
 /// This class is made so not too many model class instances are kept in memory just for the logs.
 /// I have no idea if this is needed or useful but it has been on my mind for a long time and i wanna do it
 /// </summary>
-public class HighlightExecutable : IHighlightable
+public class SudokuHighlightExecutable : IHighlightable<ISudokuHighlighter>
 {
     private readonly HighlightInstruction[] _instructions;
     private readonly ISudokuElement[] _register;
 
-    public HighlightExecutable(HighlightInstruction[] instructions, ISudokuElement[] register)
+    public SudokuHighlightExecutable(HighlightInstruction[] instructions, ISudokuElement[] register)
     {
         _instructions = instructions;
         _register = register;
     }
 
-    public void Highlight(IHighlighter highlighter)
+    public void Highlight(ISudokuHighlighter highlighter)
     {
         foreach (var instruction in _instructions)
         {
@@ -88,7 +88,7 @@ public readonly struct HighlightInstruction
         _bits = (int)coloration << 28 | (int)type << 24 | number << 4 | (int)unit;
     }
     
-    public void Apply(IHighlighter highlighter, ISudokuElement[] registers)
+    public void Apply(ISudokuHighlighter highlighter, ISudokuElement[] registers)
     {
         switch ((InstructionType)((_bits >> 24) & 0xF))
         {
@@ -143,29 +143,29 @@ public enum InstructionType
     CircleRectangleFromCoverHouse = 8
 }
 
-public class HighlightCompiler : IHighlighter
+public class SudokuHighlightCompiler : ISudokuHighlighter
 {
     private readonly List<HighlightInstruction> _instructions = new();
     private readonly List<ISudokuElement> _registers = new();
 
     public bool Enabled { get; set; } = true;
 
-    private static HighlightCompiler? _instance;
+    private static SudokuHighlightCompiler? _instance;
 
-    public static HighlightCompiler GetInstance()
+    public static SudokuHighlightCompiler GetInstance()
     {
-        _instance ??= new HighlightCompiler();
+        _instance ??= new SudokuHighlightCompiler();
         return _instance;
     }
     
-    private HighlightCompiler() {}
+    private SudokuHighlightCompiler() {}
     
-    public IHighlightable Compile(Highlight d)
+    public IHighlightable<ISudokuHighlighter> Compile(Highlight d)
     {
         if (!Enabled) return new DelegateHighlightable(d);
         
         d(this);
-        var result = new HighlightExecutable(_instructions.ToArray(), _registers.ToArray());
+        var result = new SudokuHighlightExecutable(_instructions.ToArray(), _registers.ToArray());
         
         Clear();
         return result;

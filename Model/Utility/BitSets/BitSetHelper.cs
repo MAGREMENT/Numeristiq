@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Model.Utility;
 
-namespace Model.Sudoku.Solver.BitSets;
+namespace Model.Utility.BitSets;
 
 public static class BitSetHelper
 {

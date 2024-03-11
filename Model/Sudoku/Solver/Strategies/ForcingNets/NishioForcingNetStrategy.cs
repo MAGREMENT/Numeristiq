@@ -2,12 +2,12 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 

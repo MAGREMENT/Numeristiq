@@ -43,8 +43,7 @@ public class TectonicSolvePresenter
                 if (number == 0)
                 {
                     var zoneSize = _solver.Tectonic.GetZone(row, col).Count;
-                    drawer.ShowPossibilities(row, col, _solver.PossibilitiesAt(row, col).Enumerate(1, zoneSize),
-                        zoneSize);
+                    drawer.ShowPossibilities(row, col, _solver.PossibilitiesAt(row, col).Enumerate(1, zoneSize));
                 }
                 else drawer.ShowSolution(row, col, number);
             }

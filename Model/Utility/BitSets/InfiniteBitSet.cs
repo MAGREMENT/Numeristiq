@@ -1,26 +1,22 @@
 ﻿using System;
 using System.Text;
 
-namespace Model.Sudoku.Solver.BitSets;
+namespace Model.Utility.BitSets;
 
 public class InfiniteBitSet
 {
     private const int BitSize = 64;
     
     private ulong[] _bits = new ulong[1];
+    
+    public int Count { get; private set; }
 
     public void Set(int i)
     {
         if (i < 0) return;
-
-        var n = i / BitSize + 1;
-        if (n > _bits.Length)
-        {
-            var buffer = new ulong[n];
-            Array.Copy(_bits, 0, buffer, 0, _bits.Length);
-            _bits = buffer;
-        }
         
+        GrowIfNecessary(i / BitSize + 1);
+        if (!IsSet(i)) Count++;
         _bits[i / BitSize] |= 1ul << (i % BitSize);
     }
 
@@ -28,6 +24,7 @@ public class InfiniteBitSet
     {
         if (i < 0 || i > _bits.Length * BitSize) return;
 
+        if (IsSet(i)) Count--;
         _bits[i / BitSize] &= ~(1ul << (i % BitSize));
     }
 
@@ -41,13 +38,14 @@ public class InfiniteBitSet
     public void Clear()
     {
         _bits = new ulong[1];
+        Count = 0;
     }
 
-    public void Insert(int i)
+    public void ShiftLeft(int index)
     {
-        if (i < 0 || i >= _bits.Length * BitSize) return;
+        if (index < 0 || index >= _bits.Length * BitSize) return;
 
-        var n = i / BitSize;
+        var n = index / BitSize;
         var buffer = 0ul;
         for (int j = 0; j < _bits.Length; j++)
         {
@@ -58,7 +56,7 @@ public class InfiniteBitSet
             {
                 var x = _bits[j];
                 var y = x;
-                var l = i % BitSize;
+                var l = index % BitSize;
                 var mask = ~(ulong.MaxValue << l);
 
                 x &= mask;
@@ -81,11 +79,11 @@ public class InfiniteBitSet
         _bits = array;
     }
 
-    public void Delete(int i)
+    public void ShiftRight(int index)
     {
-        if (i < 0 || i >= _bits.Length * BitSize) return;
+        if (index < 0 || index >= _bits.Length * BitSize) return;
 
-        var n = i / BitSize;
+        var n = index / BitSize;
         for (int j = 0; j < _bits.Length; j++)
         {
             if (j < n) continue;
@@ -94,7 +92,7 @@ public class InfiniteBitSet
             {
                 var x = _bits[j];
                 var y = x;
-                var l = i % BitSize;
+                var l = index % BitSize;
                 var mask = ~(ulong.MaxValue << l);
 
                 x &= mask;
@@ -108,6 +106,20 @@ public class InfiniteBitSet
             }
             
         }
+    }
+
+    public void Or(InfiniteBitSet bitSet)
+    {
+        GrowIfNecessary(bitSet._bits.Length);
+
+        int count = 0;
+        for (int i = 0; i < _bits.Length; i++)
+        {
+            _bits[i] |= bitSet._bits[i];
+            count += System.Numerics.BitOperations.PopCount(_bits[i]);
+        }
+
+        Count = count;
     }
 
     public override string ToString()
@@ -125,5 +137,14 @@ public class InfiniteBitSet
         }
         
         return builder.ToString();
+    }
+
+    private void GrowIfNecessary(int arrayLength)
+    {
+        if (arrayLength <= _bits.Length) return;
+        
+        var buffer = new ulong[arrayLength];
+        Array.Copy(_bits, 0, buffer, 0, _bits.Length);
+        _bits = buffer;
     }
 }

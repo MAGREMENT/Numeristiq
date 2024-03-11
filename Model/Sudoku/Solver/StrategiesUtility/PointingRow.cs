@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using DesktopApplication.Presenter.Sudoku;
+using DesktopApplication.Presenter.Tectonic;
 using Model;
 using Model.Helpers.Settings;
 using Repository;
@@ -22,9 +24,19 @@ public class GlobalApplicationPresenter
         _settings.Theme.Changed += TrySetTheme;
     }
 
-    public WelcomePresenter Initialize()
+    public WelcomePresenter InitializeWelcomePresenter()
     {
         return new WelcomePresenter(_settings);
+    }
+
+    public SudokuApplicationPresenter InitializeSudokuApplicationPresenter()
+    {
+        return new SudokuApplicationPresenter(_settings);
+    }
+
+    public TectonicApplicationPresenter InitializeTectonicApplicationPresenter()
+    {
+        return new TectonicApplicationPresenter(_settings);
     }
     
     private void TrySetTheme()

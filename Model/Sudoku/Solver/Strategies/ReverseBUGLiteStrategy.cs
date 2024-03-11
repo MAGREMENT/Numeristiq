@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.Strategies;
 

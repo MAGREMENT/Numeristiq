@@ -10,7 +10,7 @@ public class NotifyingListTests
         var n = 0;
         
         var list = new NotifyingList<int>();
-        list.CountChanged += () => n++;
+        list.ElementAdded += _ => n++;
         
         list.Add(0);
         list.Add(1);

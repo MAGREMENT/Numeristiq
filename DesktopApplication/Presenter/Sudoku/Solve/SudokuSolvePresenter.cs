@@ -11,7 +11,7 @@ public class SudokuSolvePresenter
 {
     private readonly ISudokuSolveView _view;
     private readonly SolveActionEnabler _enabler;
-    private readonly HighlighterTranslator _translator;
+    private readonly SudokuHighlighterTranslator _translator;
 
     private readonly SudokuSolver _solver;
     private ISolvingState? _currentlyDisplayedState;
@@ -21,11 +21,11 @@ public class SudokuSolvePresenter
     private int _logCount;
     private StateShown _stateShown = StateShown.Before;
 
-    public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver)
+    public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings)
     {
         _view = view;
         _enabler = new SolveActionEnabler(_view);
-        _translator = new HighlighterTranslator(_view.Drawer);
+        _translator = new SudokuHighlighterTranslator(_view.Drawer, settings);
         _solver = solver;
 
         _view.InitializeStrategies(_solver.StrategyManager.Strategies);

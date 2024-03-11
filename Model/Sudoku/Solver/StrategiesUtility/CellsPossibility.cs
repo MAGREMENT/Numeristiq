@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 

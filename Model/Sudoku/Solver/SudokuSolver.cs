@@ -3,12 +3,12 @@ using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Logs;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.States;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Sudoku.Solver.Trackers;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver;
 

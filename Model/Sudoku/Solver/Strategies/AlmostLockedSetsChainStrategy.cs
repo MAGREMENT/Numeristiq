@@ -2,12 +2,12 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.BitSets;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.Strategies;
 
@@ -176,7 +176,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         });
     }
 
-    private void HighlightLink(IHighlighter lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
+    private void HighlightLink(ISudokuHighlighter lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
     {
         foreach (var cell in elementBefore.EachCell(link))
         {

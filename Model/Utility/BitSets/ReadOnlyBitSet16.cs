@@ -2,7 +2,7 @@
 using System.Text;
 using Model.Sudoku.Solver.Strategies;
 
-namespace Model.Sudoku.Solver.BitSets;
+namespace Model.Utility.BitSets;
 
 public readonly struct ReadOnlyBitSet16
 {

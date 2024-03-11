@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Helpers.Highlighting;
 
-public interface IHighlighter
+public interface ISudokuHighlighter
 {
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration);
 

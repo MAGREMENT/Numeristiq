@@ -10,7 +10,7 @@ namespace Model.Sudoku.Solver.StrategiesUtility;
 
 public static class ForcingNetsUtility
 {
-    public static void HighlightAllPaths(IHighlighter lighter, List<LinkGraphChain<ISudokuElement>> paths, Coloring startColoring)
+    public static void HighlightAllPaths(ISudokuHighlighter lighter, List<LinkGraphChain<ISudokuElement>> paths, Coloring startColoring)
     {
         HashSet<ISudokuElement> alreadyHighlighted = new();
 

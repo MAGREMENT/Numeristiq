@@ -1,5 +1,5 @@
-﻿using Model.Sudoku.Solver.BitSets;
-using Model.Sudoku.Solver.Position;
+﻿using Model.Sudoku.Solver.Position;
+using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 

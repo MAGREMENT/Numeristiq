@@ -11,7 +11,7 @@ public interface IChangeReportBuilder<in TVerifier> where TVerifier : ISolvingSt
 
 public static class ChangeReportHelper
 {
-    public static void HighlightChanges(IHighlighter highlightable, IReadOnlyList<SolverProgress> changes) //TODO to static class
+    public static void HighlightChanges(ISudokuHighlighter highlightable, IReadOnlyList<SolverProgress> changes) //TODO to static class
     {
         foreach (var change in changes)
         {
@@ -19,7 +19,7 @@ public static class ChangeReportHelper
         }
     }
     
-    public static void HighlightChange(IHighlighter highlightable, SolverProgress progress)
+    public static void HighlightChange(ISudokuHighlighter highlightable, SolverProgress progress)
     {
         if(progress.ProgressType == ProgressType.PossibilityRemoval)
             highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);
