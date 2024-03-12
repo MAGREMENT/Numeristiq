@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -63,7 +64,7 @@ public class TwoStringKiteStrategy : SudokuStrategy
     }
 }
 
-public class TwoStringKiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class TwoStringKiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _possibility;
     private readonly Cell _inCommon1;
@@ -80,9 +81,9 @@ public class TwoStringKiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuS
         _other2 = other2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightPossibility(_possibility, _inCommon1.Row, _inCommon1.Column, ChangeColoration.CauseOffOne);
             lighter.HighlightPossibility(_possibility, _inCommon2.Row, _inCommon2.Column, ChangeColoration.CauseOffOne);

@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.View.Utility;
 using Model;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
 
 namespace DesktopApplication.View.Sudoku.Controls;
@@ -17,7 +18,7 @@ public partial class LogControl
     public event OnStateShownChange? StateShownChanged;
     public event OnHighlightShift? HighlightShifted;
     
-    public LogControl(ISolverLog log, StateShown stateShown)
+    public LogControl(ISolverLog<ISudokuHighlighter> log, StateShown stateShown)
     {
         InitializeComponent();
 

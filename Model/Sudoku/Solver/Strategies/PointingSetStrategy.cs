@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -78,7 +79,7 @@ public class PointingSetStrategy : SudokuStrategy
     }
 }
 
-public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _number;
     private readonly IReadOnlyMiniGridPositions _miniPos;
@@ -89,9 +90,9 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(changes), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
         {
             foreach (var pos in _miniPos)
             {

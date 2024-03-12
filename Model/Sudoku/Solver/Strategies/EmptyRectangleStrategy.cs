@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -103,7 +104,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
     }
 }
 
-public class RectangleEliminationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class RectangleEliminationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _possibility;
     private readonly Cell _hinge;
@@ -127,9 +128,9 @@ public class RectangleEliminationReportBuilder : IChangeReportBuilder<IUpdatable
         _possibility = possibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightCell(_hinge, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_one, ChangeColoration.CauseOffTwo);

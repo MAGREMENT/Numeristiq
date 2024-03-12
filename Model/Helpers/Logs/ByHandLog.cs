@@ -7,7 +7,7 @@ using Model.Sudoku.Solver.Explanation;
 
 namespace Model.Helpers.Logs;
 
-public class ByHandLog : ISolverLog
+public class ByHandLog<THighlighter> : ISolverLog<THighlighter>
 {
     public int Id { get; }
     public string Title { get; }
@@ -17,7 +17,7 @@ public class ByHandLog : ISolverLog
     public ExplanationElement? Explanation => null;
     public IUpdatableSolvingState StateBefore { get; }
     public IUpdatableSolvingState StateAfter { get; }
-    public HighlightManager<ISudokuHighlighter> HighlightManager => new(new DelegateHighlightable<ISudokuHighlighter>(HighLight));
+    public HighlightManager<THighlighter> HighlightManager => new(new DelegateHighlightable<THighlighter>(HighLight));
     public bool FromSolving => false;
 
     private readonly SolverProgress _progress;
@@ -44,8 +44,8 @@ public class ByHandLog : ISolverLog
         StateAfter = stateBefore.Apply(_progress);
     }
 
-    private void HighLight(ISudokuHighlighter highlighter)
+    private void HighLight<TH>(TH highlighter)
     {
-        ChangeReportHelper.HighlightChange(highlighter, _progress);
+        //ChangeReportHelper.HighlightChange(highlighter, _progress); TODO
     }
 }

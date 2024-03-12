@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -331,7 +332,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _als;
     private readonly IEnumerable<Cell> _correspondence;
@@ -344,9 +345,9 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<IUpdatab
         _centerCells = centerCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _centerCells)
             {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility.BitSets;
 
@@ -104,7 +105,7 @@ public class XYWingStrategy : SudokuStrategy
     }
 }
 
-public class XYWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class XYWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _hingeRow;
     private readonly int _hingeCol;
@@ -123,9 +124,9 @@ public class XYWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingS
         _col2 = col2;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightCell(_hingeRow, _hingeCol, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_row1, _col1, ChangeColoration.CauseOffOne);

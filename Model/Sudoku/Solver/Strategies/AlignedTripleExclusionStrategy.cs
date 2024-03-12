@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.PossibilityPosition;
@@ -337,7 +338,7 @@ public readonly struct TriValue
     }
 }
 
-public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell _c1;
     private readonly Cell _c2;
@@ -352,9 +353,9 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<IUpdatab
         _useful = useful;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightCell(_c1, ChangeColoration.Neutral);
             lighter.HighlightCell(_c2, ChangeColoration.Neutral);

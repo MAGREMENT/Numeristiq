@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -310,7 +311,7 @@ public class PossibilitiesAndNumber
     public int Number { get; }
 }
 
-public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _cells;
     private readonly ReadOnlyBitSet16[] _links;
@@ -321,7 +322,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();
@@ -350,7 +351,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
             }
         }
 
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _cells)
             {

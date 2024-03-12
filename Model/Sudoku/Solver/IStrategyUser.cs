@@ -1,5 +1,6 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Utility;
@@ -15,7 +16,7 @@ public interface IStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
     
     bool LogsManaged { get; }
 
-    IChangeBuffer<IUpdatableSudokuSolvingState> ChangeBuffer { get; }
+    IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     
     PreComputer PreComputer { get; }
     

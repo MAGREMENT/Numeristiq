@@ -3,18 +3,18 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Helpers.Changes.Buffers;
 
-public class NotExecutedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingState
+public class NotExecutedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
         
-    private readonly List<ChangeCommit<T>> _commitsBuffer = new();
+    private readonly List<ChangeCommit<TVerifier, THighlighter>> _commitsBuffer = new();
 
-    private readonly List<BuiltChangeCommit> _commits = new();
+    private readonly List<BuiltChangeCommit<THighlighter>> _commits = new();
 
-    private readonly ILogManagedChangeProducer<T> _producer;
+    private readonly ILogManagedChangeProducer<TVerifier, THighlighter> _producer;
 
-    public NotExecutedChangeBuffer(ILogManagedChangeProducer<T> producer)
+    public NotExecutedChangeBuffer(ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
         _producer = producer;
     }
@@ -36,11 +36,11 @@ public class NotExecutedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableS
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
     }
 
-    public bool Commit(IChangeReportBuilder<T> builder)
+    public bool Commit(IChangeReportBuilder<TVerifier, THighlighter> builder)
     {
         if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
         
-        _commitsBuffer.Add(new ChangeCommit<T>(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
+        _commitsBuffer.Add(new ChangeCommit<TVerifier, THighlighter>(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
         return true;
     }
 
@@ -50,18 +50,18 @@ public class NotExecutedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableS
         
         foreach (var commit in _commitsBuffer)
         {
-            _commits.Add(new BuiltChangeCommit(pusher, commit.Changes, commit.Builder.Build(commit.Changes, snapshot)));
+            _commits.Add(new BuiltChangeCommit<THighlighter>(pusher, commit.Changes, commit.Builder.Build(commit.Changes, snapshot)));
         }
         
         _commitsBuffer.Clear();
     }
 
-    public void PushCommit(BuiltChangeCommit commit)
+    public void PushCommit(BuiltChangeCommit<THighlighter> commit)
     {
         
     }
 
-    public BuiltChangeCommit[] DumpCommits()
+    public BuiltChangeCommit<THighlighter>[] DumpCommits()
     {
         var result = _commits.ToArray();
         _commits.Clear();

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -106,7 +107,7 @@ public class XWingStrategy : SudokuStrategy
     }
 }
 
-public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _linePos;
     private readonly int _unit1;
@@ -123,7 +124,7 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> cells = new();
         foreach (var other in _linePos)
@@ -141,7 +142,7 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
             }
         }
         
-        return new ChangeReport( Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {

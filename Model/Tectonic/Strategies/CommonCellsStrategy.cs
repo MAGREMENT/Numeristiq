@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver;
 using Model.Utility;
 
@@ -39,10 +41,10 @@ public class CommonCellsStrategy : TectonicStrategy
     }
 }
 
-public class CommonCellsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState>
+public class CommonCellsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
-        return ChangeReport.Default(changes);
+        throw new NotImplementedException();
     }
 }

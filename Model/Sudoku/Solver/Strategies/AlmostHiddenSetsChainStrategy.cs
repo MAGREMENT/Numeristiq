@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -73,7 +74,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     {
         foreach (var ll in possibleLastLinks)
         {
-            if (ll.Equals(builder.FirstLink())) continue;
+            if (ll == builder.FirstLink()) continue;
             var chain = builder.ToChain();
 
             foreach (var pp in chain.Elements)
@@ -152,7 +153,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     }
 }
 
-public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Chain<IPossibilitiesPositions, Cell> _chain;
     private readonly List<Link<CellPossibility>> _links;
@@ -172,9 +173,9 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         _additionalLink = additionalLink;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( _chain.ToString(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var ahs in _chain.Elements)

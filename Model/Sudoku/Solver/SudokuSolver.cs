@@ -2,6 +2,7 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.States;
@@ -14,7 +15,7 @@ namespace Model.Sudoku.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableSudokuSolvingState>, ISolveResult
+public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableSudokuSolvingState, ISudokuHighlighter>, ISolveResult
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -24,7 +25,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
     
     public IReadOnlySudoku Sudoku => _sudoku;
-    public IReadOnlyList<ISolverLog> Logs => LogManager.Logs;
+    public IReadOnlyList<ISolverLog<ISudokuHighlighter>> Logs => LogManager.Logs;
 
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public bool LogsManaged { get; private set; }
@@ -47,7 +48,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     private int _possibilityRemovedBuffer;
     private bool _startedSolving;
 
-    private IChangeBuffer<IUpdatableSudokuSolvingState> _changeBuffer;
+    private IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> _changeBuffer;
     private readonly TrackerManager _trackerManager;
     
     public SudokuSolver() : this(new Sudoku()) { }
@@ -55,7 +56,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     private SudokuSolver(Sudoku s)
     {
         StrategyManager = new StrategyManager();
-        _changeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState>(this);
+        _changeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(this);
         _trackerManager = new TrackerManager(this);
         
         _sudoku = s;
@@ -66,7 +67,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
 
         PreComputer = new PreComputer(this);
         
-        LogManager = new LogManager();
+        LogManager = new LogManager<ISudokuHighlighter>();
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
@@ -226,10 +227,10 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _trackerManager.OnSolveDone(this);
     }
 
-    public BuiltChangeCommit[] EveryPossibleNextStep()
+    public BuiltChangeCommit<ISudokuHighlighter>[] EveryPossibleNextStep()
     {
         var oldBuffer = ChangeBuffer;
-        ChangeBuffer = new NotExecutedChangeBuffer<IUpdatableSudokuSolvingState>(this);
+        ChangeBuffer = new NotExecutedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(this);
         
         for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
         {
@@ -251,12 +252,12 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         
         _currentStrategy = -1;
 
-        var result = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState>)ChangeBuffer).DumpCommits();
+        var result = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>)ChangeBuffer).DumpCommits();
         ChangeBuffer = oldBuffer;
         return result;
     }
     
-    public void ApplyCommit(BuiltChangeCommit commit)
+    public void ApplyCommit(BuiltChangeCommit<ISudokuHighlighter> commit)
     {
         ChangeBuffer.PushCommit(commit);
     }
@@ -324,7 +325,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         return _positions[number - 1];
     }
 
-    public IChangeBuffer<IUpdatableSudokuSolvingState> ChangeBuffer
+    public IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer
     {
         get => _changeBuffer;
         set
@@ -362,7 +363,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             : RemovePossibility(progress.Number, progress.Row, progress.Column);
     }
 
-    public LogManager LogManager { get; }
+    public LogManager<ISudokuHighlighter> LogManager { get; }
 
     #endregion
 

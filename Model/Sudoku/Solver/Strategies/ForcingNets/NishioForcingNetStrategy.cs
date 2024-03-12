@@ -211,7 +211,7 @@ public enum ContradictionCause
     None, Row, Column, MiniGrid, Cell
 }
 
-public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement> _coloring;
     private readonly int _row;
@@ -235,7 +235,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Highlight<ISudokuHighlighter>> highlighters = new();
         switch (_cause)
@@ -322,7 +322,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudo
                 break;
         }
 
-        return new ChangeReport( Explanation(), highlighters.ToArray());
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), highlighters.ToArray());
     }
 
     private string Explanation()

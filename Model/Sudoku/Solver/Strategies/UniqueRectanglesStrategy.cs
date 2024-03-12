@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -399,7 +400,7 @@ public readonly struct BiValue
     }
 }
 
-public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -410,9 +411,9 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -430,7 +431,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudo
     }
 }
 
-public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -443,9 +444,9 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
         _link = link;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -464,7 +465,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
     }
 }
 
-public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -477,9 +478,9 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -501,7 +502,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
     }
 }
 
-public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell _initial;
     private readonly Cell _opposite;
@@ -514,9 +515,9 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatab
         _stronglyLinkedPossibility = stronglyLinkedPossibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightCell(_initial, ChangeColoration.CauseOffTwo);
 

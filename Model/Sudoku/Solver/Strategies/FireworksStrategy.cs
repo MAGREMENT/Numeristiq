@@ -469,7 +469,7 @@ public static class FireworksHighlightUtils
     }
 }
 
-public class FireworksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FireworksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks[] _fireworks;
 
@@ -478,9 +478,9 @@ public class FireworksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvi
         _fireworks = fireworks;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
 
@@ -494,7 +494,7 @@ public class FireworksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvi
     }
 }
 
-public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
     private readonly IPossibilitiesPositions[] _als;
@@ -505,9 +505,9 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<I
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
 
@@ -528,7 +528,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<I
     }
 }
 
-public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
     private readonly CellPossibility[] _cells;
@@ -539,9 +539,9 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdata
         _cells = cells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             FireworksHighlightUtils.Highlight(lighter, _fireworks, snapshot, ref color);
@@ -558,7 +558,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdata
     }
 }
 
-public class FireworksWithCellReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FireworksWithCellReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks[] _fireworks;
     private readonly Cell _cell;
@@ -569,9 +569,9 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder<IUpdatableSud
         _cell = cell;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             foreach (var f in _fireworks)

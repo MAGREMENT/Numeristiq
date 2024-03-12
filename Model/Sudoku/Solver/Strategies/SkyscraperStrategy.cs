@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -96,7 +97,7 @@ public class SkyscraperStrategy : SudokuStrategy
     }
 }
 
-public class SkyscraperReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class SkyscraperReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Unit _unit;
     private readonly int _unit1;
@@ -116,9 +117,9 @@ public class SkyscraperReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolv
         _possibility = possibility;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _pos1.ToCellArray(_unit, _unit1))
             {

@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.Explanation;
 
 namespace Model.Helpers.Logs;
 
-public interface ISolverLog
+public interface ISolverLog<THighlighter>
 {
     public int Id { get; }
     public string Title { get; }
@@ -16,7 +16,7 @@ public interface ISolverLog
     public ExplanationElement? Explanation { get; }
     public IUpdatableSolvingState StateBefore { get; }
     public IUpdatableSolvingState StateAfter { get; }
-    public HighlightManager<ISudokuHighlighter> HighlightManager { get; }
+    public HighlightManager<THighlighter> HighlightManager { get; }
     public bool FromSolving { get; }
 }
 

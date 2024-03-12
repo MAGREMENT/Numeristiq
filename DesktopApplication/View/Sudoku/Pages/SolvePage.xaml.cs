@@ -5,6 +5,7 @@ using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Sudoku.Controls;
 using Model;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
 
@@ -47,7 +48,7 @@ public partial class SolvePage : ISudokuSolveView
         ClearButton.IsEnabled = true;
     }
 
-    public void AddLog(ISolverLog log, StateShown stateShown)
+    public void AddLog(ISolverLog<ISudokuHighlighter> log, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {

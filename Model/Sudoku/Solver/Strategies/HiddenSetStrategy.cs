@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility.BitSets;
 
@@ -166,7 +167,7 @@ public class HiddenSetStrategy : SudokuStrategy
     }
 }
 
-public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
@@ -182,9 +183,9 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdata
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var possibility in _possibilities.EnumeratePossibilities())
             {
@@ -215,7 +216,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdata
     }
 }
 
-public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;
@@ -226,9 +227,9 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUp
         _miniPos = miniPos;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var possibility in _possibilities.EnumeratePossibilities())
             {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring;
 using Model.Sudoku.Solver.StrategiesUtility.CellColoring.ColoringResults;
@@ -102,7 +103,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement> _on;
     private readonly ColoringDictionary<ISudokuElement> _off;
@@ -125,7 +126,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudok
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRootWithGuessedLinks(_onPos, _onColoring),
             _on, _graph, snapshot);
@@ -134,7 +135,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudok
 
         var first = (CellPossibility)onPaths[0].Elements[0];
         
-        return new ChangeReport( Explanation(onPaths, offPaths, first), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(onPaths, offPaths, first), lighter =>
         {
             ForcingNetsUtility.HighlightAllPaths(lighter, onPaths, Coloring.On);
             lighter.EncirclePossibility(first);

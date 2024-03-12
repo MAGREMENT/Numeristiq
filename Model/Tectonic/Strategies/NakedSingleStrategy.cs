@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver;
 
 namespace Model.Tectonic.Strategies;
@@ -25,10 +27,10 @@ public class NakedSingleStrategy : TectonicStrategy
     }
 }
 
-public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState>
+public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
-        return ChangeReport.Default(changes);
+        throw new NotImplementedException();
     }
 }

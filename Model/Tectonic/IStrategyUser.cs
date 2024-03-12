@@ -1,5 +1,6 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -14,5 +15,5 @@ public interface IStrategyUser
         return PossibilitiesAt(new Cell(row, column));
     }
     ReadOnlyBitSet16 ZonePositionsFor(int zone, int n);
-    IChangeBuffer<IUpdatableTectonicSolvingState> ChangeBuffer { get; }
+    IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
 }

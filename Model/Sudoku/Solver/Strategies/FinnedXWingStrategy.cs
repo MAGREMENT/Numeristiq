@@ -2,6 +2,7 @@
 using System.Linq;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -134,7 +135,7 @@ public class FinnedXWingStrategy : SudokuStrategy
     }
 }
 
-public class FinnedXWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FinnedXWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _normal;
     private readonly int _normalUnit;
@@ -154,9 +155,9 @@ public class FinnedXWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var normalOther in _normal)
             {

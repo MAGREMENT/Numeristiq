@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -145,7 +146,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     }
 }
 
-public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<IPossibilitiesPositions> _als;
     private readonly int _row1;
@@ -162,9 +163,9 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<IUpdatable
         _col2 = col2;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport("", lighter =>
+        return new ChangeReport<ISudokuHighlighter>("", lighter =>
         {
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);

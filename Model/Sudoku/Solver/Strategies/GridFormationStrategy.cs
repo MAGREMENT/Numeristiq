@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -94,7 +95,7 @@ public class GridFormationStrategy : SudokuStrategy
     }
 }
 
-public class GridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class GridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly LinePositions _rows;
     private readonly LinePositions _cols;
@@ -107,7 +108,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuS
         _number = number;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)
@@ -117,7 +118,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuS
                 if (snapshot.PossibilitiesAt(row, col).Contains(_number)) coords.Add(new Cell(row, col));
             }
         }
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var coord in coords)
             {

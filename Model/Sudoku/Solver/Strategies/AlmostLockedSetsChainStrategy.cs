@@ -132,7 +132,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Chain<IPossibilitiesPositions, int> _chain;
     private readonly int _possibleLastLink;
@@ -149,9 +149,9 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         _possibleLastLink = lastLink;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( _chain.ToString(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var als in _chain.Elements)

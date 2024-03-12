@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState> where T : ISudokuElement
+public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState, ISudokuHighlighter> where T : ISudokuElement
 {
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
     
@@ -31,7 +32,8 @@ public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomComm
         _algorithm.Run(strategyUser, _type);
     }
 
-    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState> first, ChangeCommit<IUpdatableSudokuSolvingState> second)
+    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> first,
+        ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> second)
     {
         if (first.Builder is not IReportBuilderWithChain r1 ||
             second.Builder is not IReportBuilderWithChain r2) return 0;
@@ -110,7 +112,7 @@ public interface IReportBuilderWithChain
     public int Length();
 }
 
-public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUpdatableSudokuSolvingState>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphLoop<T> _loop;
     private readonly LoopType _type;
@@ -121,9 +123,9 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
         _type = type;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport(Explanation(),
+        return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
             {
                 var coloring = _loop.Links[0] == LinkStrength.Strong
@@ -174,7 +176,7 @@ public enum LoopType
     NiceLoop, WeakInference, StrongInference
 }
 
-public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IUpdatableSudokuSolvingState>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphChain<T> _chain;
 
@@ -183,9 +185,9 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
         _chain = chain;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport(Explanation(),
+        return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
             {
                 var coloring = _chain.Links[0] == LinkStrength.Strong

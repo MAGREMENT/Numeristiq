@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility.BitSets;
 
@@ -146,7 +147,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
 }
 
-public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _pos;
     private readonly int _unitNumber;
@@ -163,9 +164,9 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var possibility in _pos.EnumeratePossibilities())
             {
@@ -196,7 +197,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
     }
 }
 
-public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _pos;
     private readonly int _miniRow;
@@ -213,7 +214,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatable
         _gn2 = gn2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<CellPossibility> cells = new(4);
         
@@ -223,7 +224,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatable
             cells.Add(new CellPossibility(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3, possibility));
         }
         
-        return new ChangeReport( Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {

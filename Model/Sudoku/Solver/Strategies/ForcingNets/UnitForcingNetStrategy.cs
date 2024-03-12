@@ -124,7 +124,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;
@@ -139,7 +139,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         _graph = graph;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
@@ -159,6 +159,6 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudoku
             };
         }
         
-        return new ChangeReport( "", highlights);
+        return new ChangeReport<ISudokuHighlighter>( "", highlights);
     }
 }

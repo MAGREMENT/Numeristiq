@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Changes.Buffers;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -9,7 +10,7 @@ using Model.Sudoku.Solver.StrategiesUtility.NRCZTChains;
 
 namespace Model.Sudoku.Solver.Strategies.NRCZTChains;
 
-public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState>
+public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     public const string OfficialNameForDefault = "NRC-Chains";
     public const string OfficialNameForTCondition = "NRCT-Chains";
@@ -131,7 +132,8 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
             new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
-    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState> first, ChangeCommit<IUpdatableSudokuSolvingState> second)
+    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> first,
+        ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> second)
     {
         if (first.Builder is not NRCChainReportBuilder r1 ||
             second.Builder is not NRCChainReportBuilder r2) return 0;
@@ -140,7 +142,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
     }
 }
 
-public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     public BlockChain Chain { get; }
 
@@ -149,9 +151,9 @@ public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
         Chain = chain;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             for (int i = 0; i < Chain.Count; i++)
             {

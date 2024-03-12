@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -37,10 +38,10 @@ public class BruteForceStrategy : SudokuStrategy
     }
 }
 
-public class BruteForceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class BruteForceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return ChangeReport.Default(changes);
+        return ChangeReport<ISudokuHighlighter>.DefaultForSudoku(changes);
     }
 }

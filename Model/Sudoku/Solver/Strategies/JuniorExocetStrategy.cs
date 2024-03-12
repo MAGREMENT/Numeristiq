@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Exocet;
 using Model.Utility;
@@ -493,7 +494,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     
 }
 
-public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly JuniorExocet _je;
 
@@ -502,7 +503,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _je = je;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je.AllPossibleSCells();
 
@@ -521,7 +522,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
             if (_je.BaseCandidates.Contains(snapshot[cell.Row, cell.Column])) sSolved.Add(cell);
         }
 
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightCell(_je.Base1, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_je.Base2, ChangeColoration.CauseOffOne);
@@ -549,7 +550,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
     }
 }
 
-public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly JuniorExocet _je1;
     private readonly JuniorExocet _je2;
@@ -560,7 +561,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSu
         _je2 = je2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je1.AllPossibleSCells();
 
@@ -579,7 +580,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSu
             if (_je1.BaseCandidates.Contains(snapshot[cell.Row, cell.Column])) sSolved.Add(cell);
         }
         
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             lighter.HighlightCell(_je1.Base1, ChangeColoration.CauseOffOne);
             lighter.HighlightCell(_je1.Base2, ChangeColoration.CauseOffOne);

@@ -2,7 +2,7 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Explanation;
-using Model.Sudoku.Solver.Position;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -56,7 +56,7 @@ public class HiddenSingleStrategy : SudokuStrategy
     }
 }
 
-public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Unit _unit;
 
@@ -65,9 +65,9 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Description(changes),
+        return new ChangeReport<ISudokuHighlighter>( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
     }
 

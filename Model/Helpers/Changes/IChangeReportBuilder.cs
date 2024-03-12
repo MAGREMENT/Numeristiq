@@ -4,14 +4,14 @@ using Model.Helpers.Highlighting;
 
 namespace Model.Helpers.Changes;
 
-public interface IChangeReportBuilder<in TVerifier> where TVerifier : ISolvingState
+public interface IChangeReportBuilder<in TVerifier, THighlighter> where TVerifier : ISolvingState
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
+    public ChangeReport<THighlighter> Build(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
 }
 
 public static class ChangeReportHelper
 {
-    public static void HighlightChanges(ISudokuHighlighter highlightable, IReadOnlyList<SolverProgress> changes) //TODO to static class
+    public static void HighlightChanges(ISudokuHighlighter highlightable, IReadOnlyList<SolverProgress> changes)
     {
         foreach (var change in changes)
         {

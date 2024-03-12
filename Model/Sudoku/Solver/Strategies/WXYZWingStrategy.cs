@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -261,7 +262,7 @@ public class WXYZWingStrategy : SudokuStrategy
     }
 }
 
-public class WXYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class WXYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly MiniGridPositions _mini;
     private readonly LinePositions _line;
@@ -277,7 +278,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
         _unitNumber = unitNumber;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> cells = new();
 
@@ -295,7 +296,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
             });
         }
 
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in cells)
             {

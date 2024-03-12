@@ -4,60 +4,60 @@ using Model.Sudoku.Solver.Explanation;
 
 namespace Model.Helpers.Changes;
 
-public class ChangeReport
+public class ChangeReport<THighlighter>
 {
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
-    public HighlightManager<ISudokuHighlighter> HighlightManager { get; }
+    public HighlightManager<THighlighter> HighlightManager { get; }
     
-    public ChangeReport(string description, Highlight<ISudokuHighlighter> highlighter)
+    public ChangeReport(string description, Highlight<THighlighter> highlighter)
     {
         Description = description;
-        HighlightManager = new HighlightManager<ISudokuHighlighter>(HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighter));
+        HighlightManager = new HighlightManager<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
         Explanation = null;
     }
     
-    public ChangeReport(string description, Highlight<ISudokuHighlighter> highlighter, ExplanationElement? explanation)
+    public ChangeReport(string description, Highlight<THighlighter> highlighter, ExplanationElement? explanation)
     {
         Description = description;
-        HighlightManager = new HighlightManager<ISudokuHighlighter>(HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighter));
+        HighlightManager = new HighlightManager<THighlighter>(HighlightCompiler.For<THighlighter>().Compile(highlighter));
         Explanation = explanation;
     }
     
-    public ChangeReport(string description, params Highlight<ISudokuHighlighter>[] highlighters)
+    public ChangeReport(string description, params Highlight<THighlighter>[] highlighters)
     {
         Description = description;
 
-        IHighlightable<ISudokuHighlighter>[] compiled = new IHighlightable<ISudokuHighlighter>[highlighters.Length];
+        var compiled = new IHighlightable<THighlighter>[highlighters.Length];
 
         for (int i = 0; i < highlighters.Length; i++)
         {
-            compiled[i] = HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighters[i]);
+            compiled[i] = HighlightCompiler.For<THighlighter>().Compile(highlighters[i]);
         }
         
-        HighlightManager = new HighlightManager<ISudokuHighlighter>(compiled);
+        HighlightManager = new HighlightManager<THighlighter>(compiled);
         Explanation = null;
     }
     
-    public ChangeReport(string description, Highlight<ISudokuHighlighter> first, params Highlight<ISudokuHighlighter>[] highlighters)
+    public ChangeReport(string description, Highlight<THighlighter> first, params Highlight<THighlighter>[] highlighters)
     {
         Description = description;
 
-        var compiled = new IHighlightable<ISudokuHighlighter>[highlighters.Length + 1];
-        compiled[0] = HighlightCompiler.For<ISudokuHighlighter>().Compile(first);
+        var compiled = new IHighlightable<THighlighter>[highlighters.Length + 1];
+        compiled[0] = HighlightCompiler.For<THighlighter>().Compile(first);
 
         for (int i = 0; i < highlighters.Length; i++)
         {
-            compiled[i + 1] = HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighters[i]);
+            compiled[i + 1] = HighlightCompiler.For<THighlighter>().Compile(highlighters[i]);
         }
         
-        HighlightManager = new HighlightManager<ISudokuHighlighter>(compiled);
+        HighlightManager = new HighlightManager<THighlighter>(compiled);
         Explanation = null;
     }
 
-    public static ChangeReport Default(IReadOnlyList<SolverProgress> changes)
+    public static ChangeReport<ISudokuHighlighter> DefaultForSudoku(IReadOnlyList<SolverProgress> changes)
     {
-        return new ChangeReport("",
-            lighter => ChangeReportHelper.HighlightChanges(lighter, changes));
+        return new ChangeReport<ISudokuHighlighter>("",
+            lighter => ChangeReportHelper.HighlightChanges(lighter, changes)); //TODO generalize
     }
 }

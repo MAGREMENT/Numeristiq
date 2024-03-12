@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -143,10 +145,10 @@ public class XChainsStrategy : TectonicStrategy //TODO Correct this dumb shit
     }
 }
 
-public class XChainsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState>
+public class XChainsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
-        return ChangeReport.Default(changes);
+        throw new NotImplementedException();
     }
 }

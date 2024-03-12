@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -178,7 +179,7 @@ public class BandCollection : IPatternCollection
 public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[] LengthKey, int Mini,
     Unit Unit);
 
-public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly BandPatternCandidate _candidate;
 
@@ -187,9 +188,9 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdata
         _candidate = candidate;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             var boxes = _candidate.Pattern.PlacementsWithKey(_candidate.BoxKey);
 

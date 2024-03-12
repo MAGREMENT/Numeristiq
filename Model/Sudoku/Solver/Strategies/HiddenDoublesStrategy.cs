@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -125,7 +126,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
     }
 }
 
-public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _pos;
@@ -142,11 +143,11 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
-        return new ChangeReport( Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -167,7 +168,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
     }
 }
 
-public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyMiniGridPositions _pos;
     private readonly int _n1;
@@ -180,11 +181,11 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatabl
         _n2 = n2;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray();
 
-        return new ChangeReport( Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
@@ -183,7 +184,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _poss;
     private readonly Cell[] _cells;
@@ -194,9 +195,9 @@ public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdat
         _cells = cells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _cells)
             {

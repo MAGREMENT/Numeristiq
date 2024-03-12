@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -103,7 +104,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     }
 }
 
-public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _one;
     private readonly IPossibilitiesPositions _two;
@@ -116,9 +117,9 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<
         _links = links;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _one.EachCell())
             {

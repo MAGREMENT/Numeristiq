@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -372,7 +373,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
     }
 }
 
-public class BUGLiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class BUGLiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IEnumerable<BiCellPossibilities> _bcp;
 
@@ -381,9 +382,9 @@ public class BUGLiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _bcp = bcp;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var b in _bcp)
             {

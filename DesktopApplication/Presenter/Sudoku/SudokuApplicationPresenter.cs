@@ -6,6 +6,7 @@ using DesktopApplication.Presenter.Sudoku.Solve;
 using Model;
 using Model.Helpers;
 using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver;
 using Repository;
 
@@ -51,6 +52,6 @@ public class SudokuApplicationPresenter
         }
         else _strategiesRepository = null;
 
-        _solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState>(_solver);
+        _solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(_solver);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -75,7 +76,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _one;
     private readonly IPossibilitiesPositions _two;
@@ -88,9 +89,9 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _restrictedCommons = restrictedCommons;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var coord in _one.EachCell())
             {

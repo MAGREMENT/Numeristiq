@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -150,7 +151,7 @@ public class DeathBlossomStrategy : SudokuStrategy
     }
 }
 
-public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<Cell> _stems;
     private readonly Cell _target;
@@ -163,9 +164,9 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var stem in _stems)
             {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -263,10 +264,10 @@ public class Rotational270 : Symmetry
     }
 }
 
-public class GurthTheoremReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class GurthTheoremReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return ChangeReport.Default(changes);
+        throw new NotImplementedException();
     }
 }

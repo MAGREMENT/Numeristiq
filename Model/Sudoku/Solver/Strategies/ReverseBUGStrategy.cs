@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 
@@ -66,7 +67,7 @@ public class ReverseBUGStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBugReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class ReverseBugReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly GridPositions _gp;
     private readonly int _n1;
@@ -77,9 +78,9 @@ public class ReverseBugReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolv
         _n1 = n1;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _gp)
             {

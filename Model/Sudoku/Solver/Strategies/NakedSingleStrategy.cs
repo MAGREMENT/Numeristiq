@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Changes;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -29,11 +30,11 @@ public class NakedSingleStrategy : SudokuStrategy
     }
 }
 
-public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Description(changes),
+        return new ChangeReport<ISudokuHighlighter>( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes));
     }
 

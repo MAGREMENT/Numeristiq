@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.Position;
@@ -139,7 +140,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     }
 }
 
-public class NonColorablePatternReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class NonColorablePatternReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyList<Cell> _perfect;
     private readonly IReadOnlyList<Cell> _notPerfect;
@@ -152,9 +153,9 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder<IUpdatableS
         _possibilities = possibilities;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _perfect)
             {

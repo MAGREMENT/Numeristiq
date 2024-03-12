@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -99,7 +100,7 @@ public class ClaimingSetStrategy : SudokuStrategy
     }
 }
 
-public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _linePos;
@@ -114,7 +115,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _unit = unit;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)
@@ -133,7 +134,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
                 break;
         }
 
-        return new ChangeReport( Explanation(changes), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
         {
             foreach (var coord in causes)
             {

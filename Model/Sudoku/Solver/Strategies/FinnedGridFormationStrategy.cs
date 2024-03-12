@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 
@@ -194,7 +195,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
     }
 }
 
-public class FinnedGridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FinnedGridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _mashed;
     private readonly IReadOnlyLinePositions _visited;
@@ -211,7 +212,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder<IUpdatableS
         _number = number;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> normal = new();
         List<Cell> finned = new();
@@ -239,7 +240,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder<IUpdatableS
             }
         }
         
-        return new ChangeReport( "",
+        return new ChangeReport<ISudokuHighlighter>( "",
             lighter =>
             {
                 foreach (var coord in normal)

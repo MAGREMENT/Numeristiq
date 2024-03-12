@@ -96,7 +96,7 @@ public class SimpleColoringStrategy : SudokuStrategy
     }
 }
 
-public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringList<CellPossibility> _vertices;
     private readonly bool _isInvalidColoring;
@@ -107,7 +107,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         _isInvalidColoring = isInvalidColoring;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
@@ -150,6 +150,6 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
             };
         }
 
-        return new ChangeReport( "", highlights);
+        return new ChangeReport<ISudokuHighlighter>( "", highlights);
     }
 }

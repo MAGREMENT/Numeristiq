@@ -4,6 +4,7 @@ using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Settings;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -217,7 +218,7 @@ public class FishStrategy : SudokuStrategy
     }
 }
 
-public class FishReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class FishReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly HashSet<CoverHouse> _baseSet;
     private readonly CoverHouse[] _coveredSet;
@@ -235,9 +236,9 @@ public class FishReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSta
         _fins = fins;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var cell in _inCommon)
             {

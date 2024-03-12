@@ -196,7 +196,7 @@ public class BlossomLoopStrategy : SudokuStrategy
     }
 }
 
-public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly LinkGraphLoop<ISudokuElement> _loop;
     private readonly BlossomLoopBranch[] _branches;
@@ -209,7 +209,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         _cps = cps;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var branchesHighlight = new Highlight<ISudokuHighlighter>[_branches.Length];
 
@@ -242,7 +242,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
             };
         }
         
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             var coloring = _loop.Links[0] == LinkStrength.Strong
                 ? ChangeColoration.CauseOffOne

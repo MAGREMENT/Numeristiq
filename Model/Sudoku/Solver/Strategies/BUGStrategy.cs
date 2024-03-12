@@ -3,6 +3,7 @@ using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -69,7 +70,7 @@ public class BUGStrategy : SudokuStrategy
     }
 }
 
-public class BUGStrategyReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class BUGStrategyReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<CellPossibility> _additionalCandidates;
 
@@ -78,9 +79,9 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         _additionalCandidates = additionalCandidates;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cp in _additionalCandidates)
             {

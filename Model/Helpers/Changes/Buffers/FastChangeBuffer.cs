@@ -3,7 +3,7 @@ using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Helpers.Changes.Buffers;
 
-public class FastChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingState
+public class FastChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
@@ -32,7 +32,7 @@ public class FastChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingS
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
     }
 
-    public bool Commit(IChangeReportBuilder<T> builder)
+    public bool Commit(IChangeReportBuilder<TVerifier, THighlighter> builder)
     {
         return NotEmpty();
     }
@@ -53,7 +53,7 @@ public class FastChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingS
         _possibilityRemovedBuffer.Clear();
     }
 
-    public void PushCommit(BuiltChangeCommit commit)
+    public void PushCommit(BuiltChangeCommit<THighlighter> commit)
     {
         foreach (var change in commit.Changes)
         {

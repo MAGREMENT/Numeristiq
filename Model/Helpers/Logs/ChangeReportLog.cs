@@ -6,7 +6,7 @@ using Model.Sudoku.Solver.Explanation;
 
 namespace Model.Helpers.Logs;
 
-public class ChangeReportLog : ISolverLog
+public class ChangeReportLog<THighlighter> : ISolverLog<THighlighter>
 {
     public int Id { get; }
     public string Title { get; }
@@ -16,11 +16,11 @@ public class ChangeReportLog : ISolverLog
     public ExplanationElement? Explanation { get; }
     public IUpdatableSolvingState StateBefore { get; }
     public IUpdatableSolvingState StateAfter { get; }
-    public HighlightManager<ISudokuHighlighter> HighlightManager  { get; }
+    public HighlightManager<THighlighter> HighlightManager  { get; }
     public bool FromSolving => true;
 
 
-    public ChangeReportLog(int id, ICommitMaker maker, IReadOnlyList<SolverProgress> changes, ChangeReport report,
+    public ChangeReportLog(int id, ICommitMaker maker, IReadOnlyList<SolverProgress> changes, ChangeReport<THighlighter> report,
         IUpdatableSolvingState stateBefore)
     {
         Id = id;

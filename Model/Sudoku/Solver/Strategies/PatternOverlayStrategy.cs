@@ -275,7 +275,7 @@ public class PatternCombinationEnumerator : IEnumerator<GridPositions>
     }
 }
 
-public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<GridPositions> _patterns;
     private readonly int _number;
@@ -286,7 +286,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         _number = number;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_patterns.Count];
 
@@ -310,6 +310,6 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudoku
             };
         }
 
-        return new ChangeReport( "", highlights);
+        return new ChangeReport<ISudokuHighlighter>( "", highlights);
     }
 }

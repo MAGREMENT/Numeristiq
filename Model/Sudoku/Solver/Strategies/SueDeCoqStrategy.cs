@@ -2,6 +2,7 @@
 using System.Linq;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -235,7 +236,7 @@ public class SueDeCoqStrategy : SudokuStrategy
     }
 }
 
-public class SueDeCoqReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class SueDeCoqReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _boxPP;
     private readonly IPossibilitiesPositions _unitPP;
@@ -249,9 +250,9 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
         _centerCells = centerCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _centerCells)
             {

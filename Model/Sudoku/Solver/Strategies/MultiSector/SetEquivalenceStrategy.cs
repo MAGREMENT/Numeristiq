@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies.MultiSector;
@@ -125,7 +126,7 @@ public class SetEquivalence
     public int SecondOrder { get; }
 }
 
-public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly SetEquivalence _equivalence;
 
@@ -134,9 +135,9 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<IUpdatable
         _equivalence = equivalence;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _equivalence.FirstSet)
             {

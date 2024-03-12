@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -449,7 +450,7 @@ public enum ParityTransfer
     Same, Opposite
 }
 
-public class ThorsHammerReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class ThorsHammerReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<Cell> _cells;
     private readonly List<CellPossibility> _notInPattern;
@@ -460,9 +461,9 @@ public class ThorsHammerReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         _notInPattern = notInPattern;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var cell in _cells)
             {

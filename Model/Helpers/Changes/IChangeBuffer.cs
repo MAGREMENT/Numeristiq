@@ -9,7 +9,7 @@ namespace Model.Helpers.Changes;
 /// important that no change are executed outside of the Push() method, which signals that a strategy has stopped
 /// searching.
 /// </summary>
-public interface IChangeBuffer<out T> where T : IUpdatableSolvingState
+public interface IChangeBuffer<out TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
     public bool HandlesLog { get; }
     
@@ -39,11 +39,11 @@ public interface IChangeBuffer<out T> where T : IUpdatableSolvingState
 
     public bool NotEmpty();
 
-    public bool Commit(IChangeReportBuilder<T> builder);
+    public bool Commit(IChangeReportBuilder<TVerifier, THighlighter> builder);
 
     public void Push(ICommitMaker pusher);
 
-    public void PushCommit(BuiltChangeCommit commit);
+    public void PushCommit(BuiltChangeCommit<THighlighter> commit);
 }
 
 public static class ChangeBufferHelper
@@ -70,21 +70,21 @@ public static class ChangeBufferHelper
     }
 }
 
-public class ChangeCommit<T> where T : ISolvingState
+public class ChangeCommit<TVerifier, THighlighter> where TVerifier : ISolvingState
 {
     public SolverProgress[] Changes { get; }
-    public IChangeReportBuilder<T> Builder { get; }
+    public IChangeReportBuilder<TVerifier, THighlighter> Builder { get; }
 
-    public ChangeCommit(SolverProgress[] changes, IChangeReportBuilder<T> builder)
+    public ChangeCommit(SolverProgress[] changes, IChangeReportBuilder<TVerifier, THighlighter> builder)
     {
         Changes = changes;
         Builder = builder;
     }
 }
 
-public class BuiltChangeCommit
+public class BuiltChangeCommit<THighlighter>
 {
-    public BuiltChangeCommit(ICommitMaker maker, SolverProgress[] changes, ChangeReport report)
+    public BuiltChangeCommit(ICommitMaker maker, SolverProgress[] changes, ChangeReport<THighlighter> report)
     {
         Maker = maker;
         Changes = changes;
@@ -93,5 +93,5 @@ public class BuiltChangeCommit
     
     public ICommitMaker Maker { get; }
     public SolverProgress[] Changes { get; }
-    public ChangeReport Report { get; }
+    public ChangeReport<THighlighter> Report { get; }
 }

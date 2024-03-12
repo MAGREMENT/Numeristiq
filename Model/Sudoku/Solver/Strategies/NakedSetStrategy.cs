@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -246,7 +247,7 @@ public class NakedSetStrategy : SudokuStrategy
     }
 }
 
-public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
@@ -262,9 +263,9 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatab
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var other in _linePos)
             {
@@ -295,7 +296,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatab
     }
 }
 
-public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;
@@ -306,9 +307,9 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpd
         _miniPos = miniPos;
     }
     
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
             foreach (var pos in _miniPos)
             {

@@ -4,21 +4,21 @@ using Model.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 
-public class LogManagedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSolvingState
+public class LogManagedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
         
-    private readonly List<ChangeCommit<T>> _commits = new();
+    private readonly List<ChangeCommit<TVerifier, THighlighter>> _commits = new();
 
-    private readonly ILogManagedChangeProducer<T> _producer;
+    private readonly ILogManagedChangeProducer<TVerifier, THighlighter> _producer;
 
-    private readonly IPushHandler<T>[] _pushHandlers =
+    private readonly IPushHandler<TVerifier, THighlighter>[] _pushHandlers =
     {
-        new ReturnPushHandler<T>(), new WaitForAllPushHandler<T>(), new ChooseBestPushHandler<T>()
+        new ReturnPushHandler<TVerifier, THighlighter>(), new WaitForAllPushHandler<TVerifier, THighlighter>(), new ChooseBestPushHandler<TVerifier, THighlighter>()
     };
 
-    public LogManagedChangeBuffer(ILogManagedChangeProducer<T> changeProducer)
+    public LogManagedChangeBuffer(ILogManagedChangeProducer<TVerifier, THighlighter> changeProducer)
     {
         _producer = changeProducer;
     }
@@ -60,11 +60,11 @@ public class LogManagedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSo
         return _possibilityRemovedBuffer.Count > 0 || _solutionAddedBuffer.Count > 0;
     }
     
-    public bool Commit(IChangeReportBuilder<T> builder)
+    public bool Commit(IChangeReportBuilder<TVerifier, THighlighter> builder)
     {
         if (_possibilityRemovedBuffer.Count == 0 && _solutionAddedBuffer.Count == 0) return false;
         
-        _commits.Add(new ChangeCommit<T>(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
+        _commits.Add(new ChangeCommit<TVerifier, THighlighter>(ChangeBufferHelper.EstablishChangeList(_solutionAddedBuffer, _possibilityRemovedBuffer), builder));
         return true;
     }
 
@@ -73,12 +73,12 @@ public class LogManagedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSo
         if (_commits.Count == 0) return;
 
         var handler = _pushHandlers[(int)pusher.OnCommitBehavior];
-        handler.PushWithLogsManaged(pusher, _commits, _producer);
+        handler.Push(pusher, _commits, _producer);
         
         _commits.Clear();
     }
 
-    public void PushCommit(BuiltChangeCommit commit)
+    public void PushCommit(BuiltChangeCommit<THighlighter> commit)
     {
         var state = _producer.CurrentState;
 
@@ -90,14 +90,14 @@ public class LogManagedChangeBuffer<T> : IChangeBuffer<T> where T : IUpdatableSo
     }
 }
 
-public interface IPushHandler<T> where T : IUpdatableSolvingState
+public interface IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
-    void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer);
+    void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer);
 }
 
-public class ReturnPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingState
+public class ReturnPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer)
+    public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
         var state = producer.CurrentState;
 
@@ -112,9 +112,9 @@ public class ReturnPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingS
     }
 }
 
-public class WaitForAllPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingState
+public class WaitForAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer)
+    public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
         var state = producer.CurrentState;
         
@@ -134,16 +134,16 @@ public class WaitForAllPushHandler<T> : IPushHandler<T> where T : IUpdatableSolv
     }
 }
 
-public class ChooseBestPushHandler<T> : IPushHandler<T> where T : IUpdatableSolvingState
+public class ChooseBestPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
 {
-    private readonly ICustomCommitComparer<T> _default = new DefaultCommitComparer<T>();
+    private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
     
-    public void PushWithLogsManaged(ICommitMaker pusher, List<ChangeCommit<T>> commits, ILogManagedChangeProducer<T> producer)
+    public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
         var state = producer.CurrentState;
 
         var best = commits[0];
-        var comparer = pusher as ICustomCommitComparer<T> ?? _default;
+        var comparer = pusher as ICustomCommitComparer<TVerifier, THighlighter> ?? _default;
 
         for (int i = 1; i < commits.Count; i++)
         {
@@ -159,7 +159,7 @@ public class ChooseBestPushHandler<T> : IPushHandler<T> where T : IUpdatableSolv
     }
 }
 
-public interface ICustomCommitComparer<T> where T : ISolvingState
+public interface ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState
 {
     /// <summary>
     /// Compare two commits
@@ -170,15 +170,15 @@ public interface ICustomCommitComparer<T> where T : ISolvingState
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
-    public int Compare(ChangeCommit<T> first, ChangeCommit<T> second);
+    public int Compare(ChangeCommit<TVerifier, THighlighter> first, ChangeCommit<TVerifier, THighlighter> second);
 }
 
-public class DefaultCommitComparer<T> : ICustomCommitComparer<T> where T : ISolvingState
+public class DefaultCommitComparer<TVerifier, THighlighter> : ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState
 {
     private const int SolutionAddedValue = 3;
     private const int PossibilityRemovedValue = 1;
     
-    public int Compare(ChangeCommit<T> first, ChangeCommit<T> second)
+    public int Compare(ChangeCommit<TVerifier, THighlighter> first, ChangeCommit<TVerifier, THighlighter> second)
     {
         int score = 0;
 

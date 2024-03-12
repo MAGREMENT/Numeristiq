@@ -2,6 +2,7 @@
 using System.Linq;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
@@ -69,7 +70,7 @@ public class XYChainsStrategy : SudokuStrategy
     }
 }
 
-public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly CellPossibility[] _visited;
 
@@ -78,9 +79,9 @@ public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _visited = visited.ToArray();
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             for (int i = 0; i < _visited.Length; i++)
             {

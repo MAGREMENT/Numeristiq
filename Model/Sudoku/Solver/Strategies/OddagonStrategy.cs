@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.Oddagons;
@@ -37,7 +38,7 @@ public class OddagonStrategy : SudokuStrategy
     }
 }
 
-public class OddagonReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class OddagonReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly AlmostOddagon _oddagon;
 
@@ -46,9 +47,9 @@ public class OddagonReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _oddagon = oddagon;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var element in _oddagon.Loop.Elements)
             {

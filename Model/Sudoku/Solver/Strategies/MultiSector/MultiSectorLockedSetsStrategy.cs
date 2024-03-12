@@ -101,7 +101,7 @@ public interface IMultiSectorCellsSearcher
     public IEnumerable<GridPositions> SearchGrids(IStrategyUser strategyUser);
 }
 
-public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly GridPositions _grid;
     private readonly IReadOnlyList<PossibilityCovers> _covers;
@@ -114,11 +114,11 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatabl
         _alternatives = alternatives;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cu = new CoveringUnits(_covers);
         
-        return new ChangeReport( Explanation(cu), lighter =>
+        return new ChangeReport<ISudokuHighlighter>( Explanation(cu), lighter =>
         {
             foreach (var cell in _grid)
             {

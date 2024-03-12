@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -136,7 +137,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     }
 }
 
-public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Dictionary<int, List<Cell>> _possibilitiesCells;
 
@@ -145,9 +146,9 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<IUpda
         _possibilitiesCells = possibilitiesCells;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             foreach (var entry in _possibilitiesCells)

@@ -1,6 +1,7 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Highlighting;
 using Model.Sudoku;
 
 namespace ConsoleApplication.Commands;
@@ -29,8 +30,8 @@ public class SudokuSolveCommand : Command
         if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
         var oldBuffer = solver.ChangeBuffer;
-        if (report.IsUsed(PathIndex)) solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState>(solver);
-        else solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState>(solver);
+        if (report.IsUsed(PathIndex)) solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        else solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetValue(StringIndex)!);
         

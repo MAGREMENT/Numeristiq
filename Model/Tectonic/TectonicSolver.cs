@@ -1,6 +1,7 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Tectonic.Strategies;
 using Model.Utility;
@@ -19,7 +20,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
     private int _possibilityRemovedBuffer;
     private int _solutionAddedBuffer;
 
-    public IChangeBuffer<IUpdatableTectonicSolvingState> ChangeBuffer { get; }
+    public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
 
     public event OnProgressMade? ProgressMade;
 
@@ -28,7 +29,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet16[0, 0];
 
-        ChangeBuffer = new FastChangeBuffer<IUpdatableTectonicSolvingState>(this);
+        ChangeBuffer = new FastChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(this);
     }
 
     public void SetTectonic(ITectonic tectonic)

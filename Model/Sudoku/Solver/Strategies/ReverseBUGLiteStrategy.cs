@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility.BitSets;
 
@@ -143,7 +144,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBUGLiteChangeReport : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class ReverseBUGLiteChangeReport : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unit1;
     private readonly int _unit2;
@@ -160,9 +161,9 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder<IUpdatableSudokuS
         _unit = unit;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var o in _others1)
             {

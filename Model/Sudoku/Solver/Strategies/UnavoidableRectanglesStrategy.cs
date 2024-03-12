@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Model.Helpers;
+using Model.Helpers.Highlighting;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.PossibilityPosition;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -145,7 +146,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -156,9 +157,9 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableS
         _roof = roof;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var floor in _floor)
             {
@@ -176,7 +177,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableS
     }
 }
 
-public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -189,9 +190,9 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
         _als = als;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             foreach (var floor in _floor)
             {

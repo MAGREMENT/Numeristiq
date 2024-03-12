@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -119,7 +120,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
     }
 }
 
-public class MiniUniquenessReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState>
+public class MiniUniquenessReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _mini;
     private readonly Unit _unit;
@@ -132,9 +133,9 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         _presence = presence;
     }
 
-    public ChangeReport Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             foreach (var p in _presence.EnumeratePossibilities())
