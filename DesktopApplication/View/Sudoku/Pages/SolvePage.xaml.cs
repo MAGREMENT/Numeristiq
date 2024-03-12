@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Sudoku.Controls;
@@ -142,6 +143,59 @@ public partial class SolvePage : ISudokuSolveView
     private void Clear(object sender, RoutedEventArgs e)
     {
         _presenter.Clear();
+    }
+
+    private void SelectCell(int row, int col)
+    {
+        _presenter.SelectCell(row, col);
+    }
+
+    private void DoBoardInput(object sender, KeyEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case Key.D1 :
+            case Key.NumPad1 :
+                _presenter.SetCurrentCell(1);
+                break;
+            case Key.D2 :
+            case Key.NumPad2 :
+                _presenter.SetCurrentCell(2);
+                break;
+            case Key.D3 :
+            case Key.NumPad3 :
+                _presenter.SetCurrentCell(3);
+                break;
+            case Key.D4 :
+            case Key.NumPad4 :
+                _presenter.SetCurrentCell(4);
+                break;
+            case Key.D5 :
+            case Key.NumPad5 :
+                _presenter.SetCurrentCell(5);
+                break;
+            case Key.D6 :
+            case Key.NumPad6 :
+                _presenter.SetCurrentCell(6);
+                break;
+            case Key.D7 :
+            case Key.NumPad7 :
+                _presenter.SetCurrentCell(7);
+                break;
+            case Key.D8 :
+            case Key.NumPad8 :
+                _presenter.SetCurrentCell(8);
+                break;
+            case Key.D9 :
+            case Key.NumPad9 :
+                _presenter.SetCurrentCell(9);
+                break;
+            case Key.D0 :
+            case Key.NumPad0 :
+            case Key.Back :
+                _presenter.DeleteCurrentCell();
+                break;
+        }
     }
 }
 

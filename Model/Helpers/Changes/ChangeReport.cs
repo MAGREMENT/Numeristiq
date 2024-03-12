@@ -13,14 +13,14 @@ public class ChangeReport
     public ChangeReport(string description, Highlight<ISudokuHighlighter> highlighter)
     {
         Description = description;
-        HighlightManager = new HighlightManager<ISudokuHighlighter>(SudokuHighlightCompiler.GetInstance().Compile(highlighter));
+        HighlightManager = new HighlightManager<ISudokuHighlighter>(HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighter));
         Explanation = null;
     }
     
     public ChangeReport(string description, Highlight<ISudokuHighlighter> highlighter, ExplanationElement? explanation)
     {
         Description = description;
-        HighlightManager = new HighlightManager<ISudokuHighlighter>(SudokuHighlightCompiler.GetInstance().Compile(highlighter));
+        HighlightManager = new HighlightManager<ISudokuHighlighter>(HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighter));
         Explanation = explanation;
     }
     
@@ -32,7 +32,7 @@ public class ChangeReport
 
         for (int i = 0; i < highlighters.Length; i++)
         {
-            compiled[i] = SudokuHighlightCompiler.GetInstance().Compile(highlighters[i]);
+            compiled[i] = HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighters[i]);
         }
         
         HighlightManager = new HighlightManager<ISudokuHighlighter>(compiled);
@@ -43,12 +43,12 @@ public class ChangeReport
     {
         Description = description;
 
-        IHighlightable<ISudokuHighlighter>[] compiled = new IHighlightable<ISudokuHighlighter>[highlighters.Length + 1];
-        compiled[0] = SudokuHighlightCompiler.GetInstance().Compile(first);
+        var compiled = new IHighlightable<ISudokuHighlighter>[highlighters.Length + 1];
+        compiled[0] = HighlightCompiler.For<ISudokuHighlighter>().Compile(first);
 
         for (int i = 0; i < highlighters.Length; i++)
         {
-            compiled[i + 1] = SudokuHighlightCompiler.GetInstance().Compile(highlighters[i]);
+            compiled[i + 1] = HighlightCompiler.For<ISudokuHighlighter>().Compile(highlighters[i]);
         }
         
         HighlightManager = new HighlightManager<ISudokuHighlighter>(compiled);

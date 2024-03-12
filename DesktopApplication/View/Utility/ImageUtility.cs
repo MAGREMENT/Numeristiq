@@ -1,13 +1,12 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Model;
-using Model.Sudoku;
 
 namespace DesktopApplication.View.Utility;
 
 public static class ImageUtility
 {
-    public static BitmapSource SetIconColor(BitmapSource image, IconColor ic)
+    public static BitmapSource SetIconColor(BitmapSource image, Color color)
     {
         var wb = new WriteableBitmap(image);
         
@@ -15,8 +14,6 @@ public static class ImageUtility
         var height = wb.PixelHeight;
         var stride = wb.BackBufferStride;
         var bytesPerPixel = 4;
-
-        byte c = (byte)(ic == IconColor.Black ? 0x00 : 0xFF);
         
         try
         {
@@ -31,9 +28,9 @@ public static class ImageUtility
                     {
                         if (pBuff[row * stride + col * bytesPerPixel + 3] == 0) continue;
                         
-                        pBuff[row * stride + col * bytesPerPixel + 0] = c;
-                        pBuff[row * stride + col * bytesPerPixel + 1] = c;
-                        pBuff[row * stride + col * bytesPerPixel + 2] = c;
+                        pBuff[row * stride + col * bytesPerPixel + 0] = color.R;
+                        pBuff[row * stride + col * bytesPerPixel + 1] = color.G;
+                        pBuff[row * stride + col * bytesPerPixel + 2] = color.B;
                     }
                 }
 

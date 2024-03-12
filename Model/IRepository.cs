@@ -26,8 +26,3 @@ public enum LinkOffsetSidePriority
 {
     Any, Left, Right
 }
-
-public enum IconColor
-{
-    White, Black
-}

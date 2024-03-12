@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -7,11 +8,13 @@ namespace Model.Helpers.Highlighting;
 
 public static class HighlightCompiler
 {
+    private static readonly SudokuHighlightCompiler? _sudokuCompiler = new();
+    
     public static IHighlightCompiler<THighlighter> For<THighlighter>()
     {
-        if (SudokuHighlightCompiler.GetInstance() is IHighlightCompiler<THighlighter>)
+        if (_sudokuCompiler is IHighlightCompiler<THighlighter> compiler)
         {
-            return (IHighlightCompiler<THighlighter>)SudokuHighlightCompiler.GetInstance();
+            return compiler;
         }
         return DefaultCompiler<THighlighter>.Value;
     }
@@ -25,7 +28,7 @@ public static class HighlightCompiler
     }
 
     private static class DefaultCompiler<THighlighter>
-    {
+    { 
         internal static IHighlightCompiler<THighlighter> Value { get; } = new DefaultCompilerImplementation<THighlighter>();
     }
 }
@@ -40,16 +43,6 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
     private readonly List<HighlightInstruction> _instructions = new();
     private readonly List<ISudokuElement> _registers = new();
 
-    private static SudokuHighlightCompiler? _instance;
-
-    public static SudokuHighlightCompiler GetInstance()
-    {
-        _instance ??= new SudokuHighlightCompiler();
-        return _instance;
-    }
-    
-    private SudokuHighlightCompiler() {}
-    
     public IHighlightable<ISudokuHighlighter> Compile(Highlight<ISudokuHighlighter> d)
     {
         d(this);

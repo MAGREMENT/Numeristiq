@@ -4,6 +4,7 @@ using Model.Helpers;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Trackers;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudoku.Solve;
 
@@ -16,6 +17,7 @@ public class SudokuSolvePresenter
     private readonly SudokuSolver _solver;
     private ISolvingState? _currentlyDisplayedState;
     private int _currentlyOpenedLog = -1;
+    private Cell? _selectedCell;
     private SolveTracker? _solveTracker;
 
     private int _logCount;
@@ -133,6 +135,39 @@ public class SudokuSolvePresenter
         if (index < 0 || index >= _solver.StrategyManager.Strategies.Count) return;
 
         _solver.StrategyManager.Strategies[index].Enabled = enabled;
+    }
+
+    public void SelectCell(int row, int col)
+    {
+        var c = new Cell(row, col);
+        if (_selectedCell is null || _selectedCell.Value != c)
+        {
+            _selectedCell = c;
+            _view.Drawer.PutCursorOn(c);
+            _view.Drawer.Refresh();
+        }
+        else
+        {
+            _selectedCell = null;
+            _view.Drawer.ClearCursor();
+            _view.Drawer.Refresh();
+        }
+    }
+
+    public void SetCurrentCell(int n)
+    {
+        if (_selectedCell is null) return;
+        var c = _selectedCell.Value;
+        _solver.SetSolutionByHand(n, c.Row, c.Column);
+        SetShownState(_solver, true);
+    }
+
+    public void DeleteCurrentCell()
+    {
+        if (_selectedCell is null) return;
+        var c = _selectedCell.Value;
+        _solver.RemoveSolutionByHand(c.Row, c.Column);
+        SetShownState(_solver, true);
     }
 
     private void ClearLogs()

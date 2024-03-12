@@ -22,7 +22,8 @@
             <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
                                  SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{DynamicResource Text}"
                                  LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
-                                 SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"/>
+                                 SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"
+                                 CellSelected="SelectCell" KeyDown="DoBoardInput"/>
         </Border>
         
         <Grid Grid.Column="1">
