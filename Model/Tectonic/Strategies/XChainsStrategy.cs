@@ -91,7 +91,7 @@ public class XChainsStrategy : TectonicStrategy //TODO Correct this dumb shit
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(new XChainsReportBuilder()) && OnCommitBehavior == OnCommitBehavior.Return;
+        return strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance) && OnCommitBehavior == OnCommitBehavior.Return;
     }
 
     private ILinkGraph<CellPossibility> ConstructLinkGraph(IStrategyUser strategyUser)
@@ -142,13 +142,5 @@ public class XChainsStrategy : TectonicStrategy //TODO Correct this dumb shit
         }
 
         return result;
-    }
-}
-
-public class XChainsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
-{
-    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
-    {
-        throw new NotImplementedException();
     }
 }

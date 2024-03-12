@@ -24,16 +24,8 @@ public class HiddenSingleStrategy : TectonicStrategy
                 if (poss.Count != 1) continue;
 
                 strategyUser.ChangeBuffer.ProposeSolutionAddition(n, strategyUser.Tectonic.Zones[i][poss.First(0, strategyUser.Tectonic.Zones[i].Count)]);
-                strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder());
+                strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
             }
         }
-    }
-}
-
-public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState,ITectonicHighlighter>
-{
-    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
-    {
-        throw new NotImplementedException();
     }
 }

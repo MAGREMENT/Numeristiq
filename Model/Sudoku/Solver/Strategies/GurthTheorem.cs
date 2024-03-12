@@ -72,7 +72,7 @@ public abstract class Symmetry
         ApplyEveryTime(strategyUser);
 
         if (strategyUser.ChangeBuffer.NotEmpty())
-            strategyUser.ChangeBuffer.Commit(new GurthTheoremReportBuilder());
+            strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<ISudokuSolvingState, ISudokuHighlighter>.Instance);
     }
 
     public void Reset()
@@ -261,13 +261,5 @@ public class Rotational270 : Symmetry
     protected override Cell GetSymmetricalCell(int row, int col)
     {
         return new Cell(8 - col, row);
-    }
-}
-
-public class GurthTheoremReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
-{
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
-    {
-        throw new NotImplementedException();
     }
 }

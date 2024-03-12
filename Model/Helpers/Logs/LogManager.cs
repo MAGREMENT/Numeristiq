@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 
 namespace Model.Helpers.Logs;
 
-public class LogManager<THighlighter>
+public class LogManager<THighlighter> where THighlighter : ISolvingStateHighlighter
 {
     public List<ISolverLog<THighlighter>> Logs { get; } = new();
     private int _idCount = 1;

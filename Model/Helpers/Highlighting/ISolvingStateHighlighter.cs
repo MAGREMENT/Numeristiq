@@ -1,11 +1,11 @@
-using Model.Helpers.Changes;
+﻿using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 
 namespace Model.Helpers.Highlighting;
 
-public interface ISudokuHighlighter
+public interface ISolvingStateHighlighter
 {
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration);
 
@@ -14,18 +14,28 @@ public interface ISudokuHighlighter
         HighlightPossibility(coord.Possibility, coord.Row, coord.Column, coloration);
     }
 
-    public void EncirclePossibility(int possibility, int row, int col);
-
-    public void EncirclePossibility(CellPossibility coord)
+    public void HighlightPossibility(Cell cell, int possibility, ChangeColoration coloration)
     {
-        EncirclePossibility(coord.Possibility, coord.Row, coord.Column);
+        HighlightPossibility(possibility, cell.Row, cell.Column, coloration);
     }
-
+    
     public void HighlightCell(int row, int col, ChangeColoration coloration);
 
     public void HighlightCell(Cell coord, ChangeColoration coloration)
     {
         HighlightCell(coord.Row, coord.Column, coloration);
+    }
+    
+    public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength);
+}
+
+public interface ISudokuHighlighter : ISolvingStateHighlighter
+{
+    public void EncirclePossibility(int possibility, int row, int col);
+
+    public void EncirclePossibility(CellPossibility coord)
+    {
+        EncirclePossibility(coord.Possibility, coord.Row, coord.Column);
     }
 
     public void EncircleCell(int row, int col);
@@ -41,7 +51,10 @@ public interface ISudokuHighlighter
 
     public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration);
 
-    public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength);
-
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength);
+}
+
+public interface ITectonicHighlighter : ISolvingStateHighlighter
+{
+    
 }

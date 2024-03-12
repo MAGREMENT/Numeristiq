@@ -54,10 +54,4 @@ public class ChangeReport<THighlighter>
         HighlightManager = new HighlightManager<THighlighter>(compiled);
         Explanation = null;
     }
-
-    public static ChangeReport<ISudokuHighlighter> DefaultForSudoku(IReadOnlyList<SolverProgress> changes)
-    {
-        return new ChangeReport<ISudokuHighlighter>("",
-            lighter => ChangeReportHelper.HighlightChanges(lighter, changes)); //TODO generalize
-    }
 }

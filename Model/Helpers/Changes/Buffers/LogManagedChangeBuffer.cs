@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 
-public class LogManagedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public class LogManagedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     private readonly HashSet<CellPossibility> _possibilityRemovedBuffer = new();
     private readonly HashSet<CellPossibility> _solutionAddedBuffer = new();
@@ -90,12 +91,12 @@ public class LogManagedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
     }
 }
 
-public interface IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public interface IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer);
 }
 
-public class ReturnPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public class ReturnPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
@@ -112,7 +113,7 @@ public class ReturnPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier
     }
 }
 
-public class WaitForAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public class WaitForAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
@@ -134,7 +135,7 @@ public class WaitForAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVeri
     }
 }
 
-public class ChooseBestPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public class ChooseBestPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
     
@@ -159,7 +160,7 @@ public class ChooseBestPushHandler<TVerifier, THighlighter> : IPushHandler<TVeri
     }
 }
 
-public interface ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState
+public interface ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
     /// <summary>
     /// Compare two commits
@@ -173,7 +174,7 @@ public interface ICustomCommitComparer<TVerifier, THighlighter> where TVerifier 
     public int Compare(ChangeCommit<TVerifier, THighlighter> first, ChangeCommit<TVerifier, THighlighter> second);
 }
 
-public class DefaultCommitComparer<TVerifier, THighlighter> : ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState
+public class DefaultCommitComparer<TVerifier, THighlighter> : ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
     private const int SolutionAddedValue = 3;
     private const int PossibilityRemovedValue = 1;

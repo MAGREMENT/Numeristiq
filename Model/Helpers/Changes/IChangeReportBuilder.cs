@@ -4,14 +4,34 @@ using Model.Helpers.Highlighting;
 
 namespace Model.Helpers.Changes;
 
-public interface IChangeReportBuilder<in TVerifier, THighlighter> where TVerifier : ISolvingState
+public interface IChangeReportBuilder<in TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
     public ChangeReport<THighlighter> Build(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
 }
 
+public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReportBuilder<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
+{
+    private static DefaultChangeReportBuilder<TVerifier, THighlighter>? _instance;
+
+    public static DefaultChangeReportBuilder<TVerifier, THighlighter> Instance
+    {
+        get
+        {
+            _instance ??= new DefaultChangeReportBuilder<TVerifier, THighlighter>();
+            return _instance;
+        }
+    }
+    
+    public ChangeReport<THighlighter> Build(IReadOnlyList<SolverProgress> changes, TVerifier snapshot)
+    {
+        return new ChangeReport<THighlighter>("",
+            lighter => { ChangeReportHelper.HighlightChanges(lighter, changes);});
+    }
+}
+
 public static class ChangeReportHelper
 {
-    public static void HighlightChanges(ISudokuHighlighter highlightable, IReadOnlyList<SolverProgress> changes)
+    public static void HighlightChanges(ISolvingStateHighlighter highlightable, IReadOnlyList<SolverProgress> changes)
     {
         foreach (var change in changes)
         {
@@ -19,7 +39,7 @@ public static class ChangeReportHelper
         }
     }
     
-    public static void HighlightChange(ISudokuHighlighter highlightable, SolverProgress progress)
+    public static void HighlightChange(ISolvingStateHighlighter highlightable, SolverProgress progress)
     {
         if(progress.ProgressType == ProgressType.PossibilityRemoval)
             highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);

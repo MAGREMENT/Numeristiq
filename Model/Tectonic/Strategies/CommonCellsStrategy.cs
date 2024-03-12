@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
@@ -34,17 +33,9 @@ public class CommonCellsStrategy : TectonicStrategy
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
                 }
 
-                strategyUser.ChangeBuffer.Commit(new CommonCellsReportBuilder());
+                strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
                 buffer.Clear();
             }
         }
-    }
-}
-
-public class CommonCellsReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
-{
-    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
@@ -9,7 +10,7 @@ namespace Model.Helpers.Changes;
 /// important that no change are executed outside of the Push() method, which signals that a strategy has stopped
 /// searching.
 /// </summary>
-public interface IChangeBuffer<out TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public interface IChangeBuffer<out TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     public bool HandlesLog { get; }
     
@@ -70,7 +71,7 @@ public static class ChangeBufferHelper
     }
 }
 
-public class ChangeCommit<TVerifier, THighlighter> where TVerifier : ISolvingState
+public class ChangeCommit<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
     public SolverProgress[] Changes { get; }
     public IChangeReportBuilder<TVerifier, THighlighter> Builder { get; }

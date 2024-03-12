@@ -34,14 +34,6 @@ public class BruteForceStrategy : SudokuStrategy
             }
         }
 
-        strategyUser.ChangeBuffer.Commit(new BruteForceReportBuilder());
-    }
-}
-
-public class BruteForceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
-{
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
-    {
-        return ChangeReport<ISudokuHighlighter>.DefaultForSudoku(changes);
+        strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>.Instance);
     }
 }
