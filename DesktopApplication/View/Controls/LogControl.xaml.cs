@@ -7,7 +7,7 @@ using Model;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
 
-namespace DesktopApplication.View.Sudoku.Controls;
+namespace DesktopApplication.View.Controls;
 
 public partial class LogControl
 {
@@ -18,7 +18,7 @@ public partial class LogControl
     public event OnStateShownChange? StateShownChanged;
     public event OnHighlightShift? HighlightShifted;
     
-    public LogControl(ISolverLog<ISudokuHighlighter> log, StateShown stateShown)
+    public LogControl(ISolverLog log, StateShown stateShown)
     {
         InitializeComponent();
 
@@ -27,7 +27,7 @@ public partial class LogControl
         Title.Text = log.Title;
         Title.Foreground = new SolidColorBrush(ColorUtility.ToColor(log.Intensity));
         Number.Text = $"#{log.Id}";
-        HighlightCount.Text = log.HighlightManager.CursorPosition();
+        HighlightCount.Text = log.GetCursorPosition();
         SetStateShown(stateShown);
         TextOutput.Text = log.Description;
     }

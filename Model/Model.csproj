@@ -9,10 +9,6 @@
 
     </PropertyGroup>
 
-    <ItemGroup>
-      <Folder Include="Sudoku\Solver\Possibility\" />
-    </ItemGroup>
-
 
 
 

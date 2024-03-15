@@ -11,7 +11,7 @@
             <local:TectonicBoard VerticalAlignment="Center" HorizontalAlignment="Center"
                                  BackgroundBrush="Transparent" LineBrush="{DynamicResource Text}"
                                  DefaultNumberBrush="{DynamicResource Text}" x:Name="Board"
-                                 BigLineWidth="5" SmallLineWidth="1" CellSize="50"
+                                 BigLineWidth="5" SmallLineWidth="1" CellSize="50" LinkBrush="{DynamicResource Accent}"
                                  RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"/>
             
             <TextBlock Visibility="Collapsed" x:Name="None" FontSize="22" Foreground="{DynamicResource Text}"

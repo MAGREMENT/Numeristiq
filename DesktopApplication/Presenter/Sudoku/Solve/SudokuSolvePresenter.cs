@@ -125,7 +125,7 @@ public class SudokuSolvePresenter
         if(isLeft) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
         
-        _view.Drawer.ClearHighlightings();
+        _view.Drawer.ClearHighlights();
         _translator.Translate(log.HighlightManager);
         _view.SetCursorPosition(_currentlyOpenedLog, log.HighlightManager.CursorPosition());
     }
@@ -182,7 +182,7 @@ public class SudokuSolvePresenter
         var drawer = _view.Drawer;
         
         drawer.ClearNumbers();
-        drawer.ClearHighlightings();
+        drawer.ClearHighlights();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)

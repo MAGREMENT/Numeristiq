@@ -6,24 +6,40 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Tectonic.Controls"
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" Height="660" Width="800">
+      Title="SolvePage" Height="660" Width="1060">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="660"/>
-            <ColumnDefinition Width="140"/>
+            <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
         
         <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer"/>
         
-        <Grid Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+            
             <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="10"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <Button Grid.Row="0" Style="{StaticResource SolvePageButtonStyle}" Height="50" Width="120" Click="Solver">Solve</Button>
-            <Button Grid.Row="2" Style="{StaticResource SolvePageButtonStyle}" Height="50" Width="120" Click="Advance">Advance</Button>
+            <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
+                       Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Logs</TextBlock>
+            
+            <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="470" x:Name="LogViewer"
+                          Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">
+                <StackPanel MinHeight="468" x:Name="LogPanel"/>
+            </ScrollViewer>
+            
+            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 2.5, 2.5" Click="Solve" x:Name="SolveButton">Solve</Button>
+            <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 5, 5, 2.5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
+            <Button Grid.Row="3" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 2.5, 2.5, 10" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
+            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 2.5, 5, 10" Click="Clear" x:Name="ClearButton">Clear</Button>
         </Grid>
         
         <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="CreateNewTectonic"/>

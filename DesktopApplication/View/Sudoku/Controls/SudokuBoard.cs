@@ -241,7 +241,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
         Layers[NumbersIndex].Clear();
     }
 
-    public void ClearHighlightings()
+    public void ClearHighlights()
     {
         Layers[CellsHighlightIndex].Clear();
         Layers[PossibilitiesHighlightIndex].Clear();

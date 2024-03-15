@@ -11,7 +11,7 @@ public interface ISudokuDrawer
     void PutCursorOn(Cell cell);
     void ClearCursor();
     void ClearNumbers();
-    void ClearHighlightings();
+    void ClearHighlights();
     void ShowSolution(int row, int col, int number);
     void ShowPossibilities(int row, int col, IEnumerable<int> possibilities);
     void SetClue(int row, int column, bool isClue);

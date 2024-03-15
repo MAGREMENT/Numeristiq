@@ -139,6 +139,29 @@ public class InfiniteBitSet
         return builder.ToString();
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj is not InfiniteBitSet bitSet || bitSet._bits.Length != _bits.Length) return false;
+
+        for (int i = 0; i < _bits.Length; i++)
+        {
+            if (_bits[i] != bitSet._bits[i]) return false;
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = 0;
+        foreach (var b in _bits)
+        {
+            hash ^= (int)(b & 0xFFFFFFFF) ^ (int)((b >> 32) & 0xFFFFFFFF);
+        }
+
+        return hash;
+    }
+
     private void GrowIfNecessary(int arrayLength)
     {
         if (arrayLength <= _bits.Length) return;

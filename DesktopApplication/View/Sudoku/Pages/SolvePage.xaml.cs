@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Input;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
+using DesktopApplication.View.Controls;
 using DesktopApplication.View.Sudoku.Controls;
 using Model;
 using Model.Helpers.Highlighting;

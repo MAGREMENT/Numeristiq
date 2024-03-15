@@ -5,17 +5,27 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonic.Solve;
+using DesktopApplication.View.Utility;
+using Model;
+using Model.Helpers.Changes;
+using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
+using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Tectonic.Controls;
 
 public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 {
     private const int BackgroundIndex = 0;
-    private const int SmallLinesIndex = 1;
-    private const int BigLinesIndex = 2;
-    private const int NumbersIndex = 3;
+    private const int CellHighlightIndex = 1;
+    private const int PossibilityHighlightIndex = 2;
+    private const int SmallLinesIndex = 3;
+    private const int BigLinesIndex = 4;
+    private const int NumbersIndex = 5;
+    private const int LinksIndex = 6;
+    
+    private const double LinkOffset = 20;
 
     private double _cellSize;
     private int _rowCount;
@@ -70,6 +80,21 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     {
         set => SetValue(LineBrushProperty, value);
         get => (Brush)GetValue(LineBrushProperty);
+    }
+
+    public static readonly DependencyProperty LinkBrushProperty =
+        DependencyProperty.Register(nameof(LinkBrush), typeof(Brush), typeof(TectonicBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if(obj is not TectonicBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(LinksIndex, brush);
+                board.Refresh();
+            }));
+
+    public Brush LinkBrush
+    {
+        set => SetValue(LinkBrushProperty, value);
+        get => (Brush)GetValue(LinkBrushProperty);
     }
 
     public double CellSize
@@ -131,7 +156,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     public NotifyingList<NeighborBorder> Borders { get; } = new();
     private readonly Dictionary<Cell, InfiniteBitSet> _associatedCells = new();
 
-    public TectonicBoard() : base(4)
+    public TectonicBoard() : base(7)
     {
         Borders.Cleared += () =>
         {
@@ -228,6 +253,69 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         RefreshAllowed = true;
     }
 
+    public void ClearHighlights()
+    {
+        Layers[CellHighlightIndex].Clear();
+        Layers[PossibilityHighlightIndex].Clear();
+        Layers[LinksIndex].Clear();
+    }
+
+    public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
+    {
+        var size = GetPossibilitySize(row, col);
+        var delta = (_cellSize - size) / 2;
+        
+        Layers[PossibilityHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col) + (possibility - 1) * size, GetTop(row) + delta,
+            size, size), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+    }
+
+    public void FillCell(int row, int col, ChangeColoration coloration)
+    {
+        Layers[CellHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
+            _cellSize, _cellSize), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+    }
+    
+    public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
+        LinkStrength strength, LinkOffsetSidePriority priority)
+    {
+        var from = Center(rowFrom, colFrom, possibilityFrom);
+        var to = Center(rowTo, colTo, possibilityTo);
+        var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
+
+        var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, LinkOffset);
+
+        var validOffsets = new List<Point>();
+        for (int i = 0; i < 2; i++)
+        {
+            var p = offsets[i];
+            if(p.X > 0 && p.X < Width && p.Y > 0 && p.Y < Height) validOffsets.Add(p);
+        }
+
+        bool isWeak = strength == LinkStrength.Weak;
+        var fromSize = GetPossibilitySize(rowFrom, colFrom);
+        var toSize = GetPossibilitySize(rowTo, colTo);
+        switch (validOffsets.Count)
+        {
+            case 0 : 
+                AddShortenedLine(from, fromSize, to, toSize, isWeak);
+                break;
+            case 1 :
+                AddShortenedLine(from, fromSize, validOffsets[0], to, toSize, isWeak);
+                break;
+            case 2 :
+                if(priority == LinkOffsetSidePriority.Any) 
+                    AddShortenedLine(from, fromSize, validOffsets[0], to, toSize, isWeak);
+                else
+                {
+                    var left = MathUtility.IsLeft(from, to, validOffsets[0]) ? 0 : 1;
+                    AddShortenedLine(from, fromSize, priority == LinkOffsetSidePriority.Left 
+                        ? validOffsets[left] 
+                        : validOffsets[(left + 1) % 2], to, toSize, isWeak);
+                }
+                break;
+        }
+    }
+
     #endregion
 
     #region Private
@@ -240,6 +328,20 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private double GetTop(int row)
     {
         return _cellSize * row + _bigLineWidth * (row + 1);
+    }
+
+    private Point Center(int row, int col, int possibility)
+    {
+        var size = GetPossibilitySize(row, col);
+        var delta = (_cellSize - size) / 2;
+
+        return new Point(GetLeft(col) + size * (possibility -1) + size / 2, GetTop(row) + delta + size / 2);
+    }
+
+    private double GetPossibilitySize(int row, int col)
+    {
+        var zoneSize = _associatedCells.TryGetValue(new Cell(row, col), out var set) ? set.Count : 1;
+        return _cellSize / zoneSize;
     }
 
     private void UpdateSize()
@@ -351,6 +453,47 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         }
 
         return null;
+    }
+    
+    private void AddShortenedLine(Point from, double fromSize, Point to, double toSize, bool isWeak)
+    {
+        var fromShortening = fromSize / 2;
+        var toShortening = toSize / 2;
+
+        var dx = to.X - from.X;
+        var dy = to.Y - from.Y;
+        var mag = Math.Sqrt(dx * dx + dy * dy);
+        var newFrom = new Point(from.X + fromShortening * dx / mag, from.Y + fromShortening * dy / mag);
+        var newTo = new Point(to.X - toShortening * dx / mag, to.Y - toShortening * dy / mag);
+        
+        AddLine(newFrom, newTo, isWeak);
+    }
+    
+    private void AddShortenedLine(Point from, double fromSize, Point middle, Point to, double toSize, bool isWeak)
+    {
+        var fromShortening = fromSize / 2;
+        var toShortening = toSize / 2;
+        
+        var dxFrom = middle.X - from.X;
+        var dyFrom = middle.Y - from.Y;
+        var mag = Math.Sqrt(dxFrom * dxFrom + dyFrom * dyFrom);
+        var newFrom = new Point(from.X +fromShortening * dxFrom / mag, from.Y + fromShortening * dyFrom / mag);
+
+        var dxTo = to.X - middle.X;
+        var dyTo = to.Y - middle.Y;
+        mag = Math.Sqrt(dxTo * dxTo + dyTo * dyTo);
+        var newTo = new Point(to.X - toShortening * dxTo / mag, to.Y - toShortening * dyTo / mag);
+            
+        AddLine(newFrom, middle, isWeak);
+        AddLine(middle, newTo, isWeak);
+    }
+
+    private void AddLine(Point from, Point to, bool isWeak)
+    {
+        Layers[LinksIndex].Add(new LineComponent(from, to, new Pen(LinkBrush, 2)
+        {
+            DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
+        }));
     }
 
     #endregion

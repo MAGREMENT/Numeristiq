@@ -1,7 +1,9 @@
-﻿using Model.Helpers;
+﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
+using Model.Helpers.Logs;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Tectonic.Strategies;
 using Model.Utility;
@@ -9,18 +11,32 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonic;
 
-public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
+public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableTectonicSolvingState,
+    ITectonicHighlighter>, ISolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;
 
     private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
-        new CommonCellsStrategy()/*, new XChainsStrategy()*/ };
+        new CommonCellsStrategy(), new NeighboringZonesStrategy() };
 
     private int _possibilityRemovedBuffer;
     private int _solutionAddedBuffer;
+    private IUpdatableTectonicSolvingState? _currentState;
 
-    public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
+    public LogManager<ITectonicHighlighter> LogManager { get; } = new();
+
+    public IUpdatableTectonicSolvingState CurrentState
+    {
+        get
+        {
+            _currentState ??= new StateArraySolvingState(this);
+            return _currentState;
+        }
+    }
+
+    public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; set; }
+    public IReadOnlyList<ISolverLog<ITectonicHighlighter>> Logs => LogManager.Logs;
 
     public event OnProgressMade? ProgressMade;
 
@@ -126,7 +142,7 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
     {
         _possibilities[row, col] = new ReadOnlyBitSet16();
 
-        foreach (var neighbor in _tectonic.GetNeighbors(row, col))
+        foreach (var neighbor in Cells.GetNeighbors(row, col, _tectonic.RowCount, _tectonic.ColumnCount))
         {
             _possibilities[neighbor.Row, neighbor.Column] -= number;
         }
@@ -140,7 +156,8 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
     private bool RemovePossibility(int row, int col, int number)
     {
         if (!_possibilities[row, col].Contains(number)) return false;
-        
+
+        _currentState = null;
         _possibilities[row, col] -= number;
         _possibilityRemovedBuffer++;
 
@@ -150,8 +167,9 @@ public class TectonicSolver : IStrategyUser, IChangeProducer, ISolvingState
     private bool AddSolution(int row, int col, int number)
     {
         if (_tectonic[row, col] != 0) return false;
-        
-        _tectonic[row, col] = number;
+
+        _currentState = null;
+        _tectonic.Set(number, row, col);
         UpdatePossibilitiesAfterSolutionAdded(row, col, number);
         _solutionAddedBuffer++;
         

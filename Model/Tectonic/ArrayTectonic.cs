@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonic;
 
@@ -28,45 +28,16 @@ public class ArrayTectonic : ITectonic
     public int ColumnCount => _cells.GetLength(1);
     public IReadOnlyList<Zone> Zones => _zones;
 
-    public int this[int row, int col]
+    public int this[int row, int col] => _cells[row, col] is null ? 0 : _cells[row, col]!.Number;
+
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
-        get => _cells[row, col] is null ? 0 : _cells[row, col]!.Number;
-        set
-        {
-            if (_cells[row, col] is not null) _cells[row, col]!.Number = value;
-        }
+        return new ReadOnlyBitSet16();
     }
 
     public Zone GetZone(Cell cell)
     {
         return IsValid(cell) ? _zones[_cells[cell.Row, cell.Column]!.Zone] : Zone.Empty();
-    }
-
-    public IEnumerable<Cell> GetNeighbors(Cell cell)
-    {
-        var result = new Cell(cell.Row - 1, cell.Column);
-        if (IsValid(result)) yield return result;
-
-        result = new Cell(cell.Row - 1, cell.Column - 1);
-        if (IsValid(result)) yield return result;
-        
-        result = new Cell(cell.Row, cell.Column - 1);
-        if (IsValid(result)) yield return result;
-        
-        result = new Cell(cell.Row + 1, cell.Column - 1);
-        if (IsValid(result)) yield return result;
-        
-        result = new Cell(cell.Row + 1, cell.Column);
-        if (IsValid(result)) yield return result;
-        
-        result = new Cell(cell.Row + 1, cell.Column + 1);
-        if (IsValid(result)) yield return result;
-        
-        result = new Cell(cell.Row, cell.Column + 1);
-        if (IsValid(result)) yield return result;
-        
-        result = new Cell(cell.Row - 1, cell.Column + 1);
-        if (IsValid(result)) yield return result;
     }
 
     public bool ShareAZone(Cell c1, Cell c2)
@@ -138,8 +109,11 @@ public class ArrayTectonic : ITectonic
                             && cell.Column >= 0 && cell.Column < _cells.GetLength(1)
                             && _cells[cell.Row, cell.Column] != null;
     }
-    
-    
+
+    public void Set(int n, int row, int col)
+    {
+        if (_cells[row, col] is not null) _cells[row, col]!.Number = n;
+    }
 }
 
 public class TectonicCell

@@ -9,7 +9,7 @@ public class TectonicTranslatorTests
     {
         const string s = "5.4:2.0;.0;4.0;.0;.1;.1;.1;.1;.1;.2;.2;.2;.3;.4;5.4;.4;.3;3.3;.4;3.4;";
 
-        var t = TectonicTranslator.TranslateLineFormat(s);
+        var t = TectonicTranslator.TranslateCodeFormat(s);
         
         //TODO actual fucking test
 

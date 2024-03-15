@@ -4,6 +4,7 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonic.Strategies;
 
@@ -32,10 +33,44 @@ public class CommonCellsStrategy : TectonicStrategy
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
                 }
-
-                strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+                
                 buffer.Clear();
             }
+
+            strategyUser.ChangeBuffer.Commit(new CommonCellsReportBuilder(zone));
         }
+    }
+}
+
+public class CommonCellsReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>
+{
+    private readonly Zone _zone;
+
+    public CommonCellsReportBuilder(Zone zone)
+    {
+        _zone = zone;
+    }
+
+    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    {
+        return new ChangeReport<ITectonicHighlighter>("", lighter =>
+        {
+            var done = new ReadOnlyBitSet16();
+
+            foreach (var change in changes)
+            {
+                if(done.Contains(change.Number)) continue;
+
+                done += change.Number;
+
+                foreach (var cell in _zone)
+                {
+                    if(snapshot.PossibilitiesAt(cell).Contains(change.Number)) 
+                        lighter.HighlightPossibility(cell, change.Number, ChangeColoration.CauseOffOne);
+                }
+            }
+            
+            ChangeReportHelper.HighlightChanges(lighter, changes);
+        });
     }
 }

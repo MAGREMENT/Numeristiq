@@ -23,7 +23,7 @@ public class TectonicSolveCommand : Command
         
         if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
 
-        var tectonic = TectonicTranslator.TranslateLineFormat((string)report.GetValue(StringIndex)!);
+        var tectonic = TectonicTranslator.TranslateCodeFormat((string)report.GetValue(StringIndex)!);
         
         Console.WriteLine($"Before :\n{tectonic}");
 

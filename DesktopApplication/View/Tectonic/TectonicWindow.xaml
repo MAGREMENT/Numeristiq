@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Title="TectonicWindow" Height="700" Width="800"
+        Title="TectonicWindow" Height="700" Width="1060"
         WindowStyle="None"
         ResizeMode="NoResize">
     <WindowChrome.WindowChrome>
@@ -21,6 +21,6 @@
         <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                   AllowResize="False" AppIcon="../Images/appicon.png" AppTitle="NextLogic"/>
         
-        <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Width="800" Height="660" x:Name="Frame"/>
+        <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Width="1060" Height="660" x:Name="Frame"/>
     </Grid>
 </Window>

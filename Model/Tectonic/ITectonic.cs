@@ -1,22 +1,24 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonic;
 
 public interface ITectonic : IReadOnlyTectonic
-{ 
-    public int this[int row, int col] { set; get; }
+{
+    public void Set(int n, int row, int col);
 
     public int this[Cell cell]
     {
-        set => this[cell.Row, cell.Column] = value;
+        set => Set(value, cell.Row, cell.Column);
         get => this[cell.Row, cell.Column];
     }
 }
 
-public interface IReadOnlyTectonic
+public interface IReadOnlyTectonic : ISolvingState
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
@@ -28,12 +30,7 @@ public interface IReadOnlyTectonic
     {
         return GetZone(new Cell(row, col));
     }
-
-    public IEnumerable<Cell> GetNeighbors(Cell cell);
-    public IEnumerable<Cell> GetNeighbors(int row, int col)
-    {
-        return GetNeighbors(new Cell(row, col));
-    }
+    
     public bool ShareAZone(Cell c1, Cell c2);
 
     public IEnumerable<Cell> EachCell();
@@ -59,19 +56,25 @@ public readonly struct CellNumber
 
 public class Zone : IEnumerable<Cell>
 {
-    private static readonly Zone _empty = new(-1, Array.Empty<Cell>());
+    private static readonly Zone _empty = new(Array.Empty<Cell>(), 0);
     public static Zone Empty() => _empty;
 
-
-    private readonly int _id;
+    private readonly int _columnCount;
+    private readonly InfiniteBitSet _id;
     private readonly Cell[] _cells;
 
     public int Count => _cells.Length;
 
-    public Zone(int id, Cell[] cells)
+    public Zone(Cell[] cells, int columnCount)
     {
-        _id = id;
+        _id = new InfiniteBitSet();
         _cells = cells;
+        _columnCount = columnCount; 
+
+        foreach (var cell in _cells)
+        {
+            _id.Set(cell.Row * columnCount + cell.Column);
+        }
     }
 
     public IEnumerator<Cell> GetEnumerator()
@@ -91,21 +94,16 @@ public class Zone : IEnumerable<Cell>
 
     public bool Contains(Cell c)
     {
-        foreach (var cell in _cells)
-        {
-            if (c == cell) return true;
-        }
-
-        return false;
+        return _id.IsSet(c.Row * _columnCount + c.Column);
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is Zone z && z._id == _id;
+        return obj is Zone z && z._id.Equals(_id);
     }
 
     public override int GetHashCode()
     {
-        return _id;
+        return _id.GetHashCode();
     }
 }

@@ -5,14 +5,19 @@ using Model.Utility;
 namespace Model.Tectonic;
 
 /// <summary>
-/// Line format : X.X:X.X;X.X;X.X;...
+/// Code format : X.X:X.X;X.X;X.X;...
 /// X = number
 /// X.X: = dimensions (rows then columns)
 /// X.X = number + zone (number can be omitted => ;.X;)
+///
+/// RD format : X.X:XrdXrXrXXrd...
+/// X = number
+/// X.X: = dimensions (rows then columns)
+/// Xrd = number + r if same zone with number on the right + d if same zone with number down (r & d can be omitted)
 /// </summary>
 public static class TectonicTranslator
 {
-    public static ITectonic TranslateLineFormat(string line)
+    public static ITectonic TranslateCodeFormat(string line)
     {
         Dictionary<int, List<Cell>> zones = new();
         Dictionary<Cell, int> numbers = new();
@@ -24,8 +29,8 @@ public static class TectonicTranslator
         int separator = split[0].IndexOf('.');
         try
         {
-            rowCount = int.Parse(split[0].Substring(0, separator));
-            colCount = int.Parse(split[0].Substring(separator + 1));
+            rowCount = int.Parse(split[0][..separator]);
+            colCount = int.Parse(split[0][(separator + 1)..]);
 
             int row = 0, col = 0, buffer = 0;
             foreach (var c in split[1])
@@ -69,8 +74,7 @@ public static class TectonicTranslator
         int cursor = 0;
         foreach (var list in zones.Values)
         {
-            finalZones[cursor] = new Zone(cursor, list.ToArray());
-            cursor++;
+            finalZones[cursor++] = new Zone(list.ToArray(), colCount);
         }
 
         ITectonic result = new ArrayTectonic(rowCount, colCount, finalZones);
@@ -80,5 +84,18 @@ public static class TectonicTranslator
         }
 
         return result;
+    }
+
+    public static ITectonic TranslateRdFormat(string s)
+    {
+        var split = s.Split(':');
+        if (split.Length != 2) return new BlankTectonic();
+        
+        int separator = split[0].IndexOf('.');
+
+        if (!int.TryParse(split[0][..separator], out var rowCount)
+            || !int.TryParse(split[0][(separator + 1)..], out var colCount)) return new BlankTectonic();
+
+        return new BlankTectonic(); //TODO
     }
 }

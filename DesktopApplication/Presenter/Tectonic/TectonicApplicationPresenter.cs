@@ -1,4 +1,7 @@
 ﻿using DesktopApplication.Presenter.Tectonic.Solve;
+using Model.Helpers;
+using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Highlighting;
 using Model.Tectonic;
 
 namespace DesktopApplication.Presenter.Tectonic;
@@ -10,6 +13,8 @@ public class TectonicApplicationPresenter
 
     public TectonicApplicationPresenter(Settings settings)
     {
+        _solver.ChangeBuffer =
+            new LogManagedChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(_solver);
         _settings = settings;
     }
 
