@@ -101,4 +101,24 @@ public partial class SolvePage : ITectonicSolveView
     {
         
     }
+
+    private void EmbeddedDrawer_OnRowCountChanged(int number)
+    {
+        RowCount.SetDimension(number);
+    }
+
+    private void EmbeddedDrawer_OnColumnCountChanged(int number)
+    {
+        ColumnCount.SetDimension(number);
+    }
+
+    private void RowCount_OnDimensionChangeAsked(int diff)
+    {
+        _presenter.SetNewRowCount(diff);
+    }
+
+    private void ColumnCount_OnDimensionChangeAsked(int diff)
+    {
+        _presenter.SetNewColumnCount(diff);
+    }
 }

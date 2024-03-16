@@ -10,7 +10,6 @@ using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
-using Model.Utility.BitSets;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Tectonic.Controls;
@@ -154,13 +153,15 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     }
 
     public NotifyingList<NeighborBorder> Borders { get; } = new();
-    private readonly Dictionary<Cell, InfiniteBitSet> _associatedCells = new();
+    private readonly CellsAssociations _associatedCells;
 
     public TectonicBoard() : base(7)
     {
+        _associatedCells = new CellsAssociations(RowCount, ColumnCount);
+        
         Borders.Cleared += () =>
         {
-            _associatedCells.Clear();
+            _associatedCells.New(RowCount, ColumnCount);
             UpdateAndDrawLines();
         };
 
@@ -169,24 +170,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             if (!e.IsThin) return;
             
             var cells = e.ComputeNeighboringCells();
-            var i1 = cells.Item1.Row * RowCount + cells.Item1.Column;
-            var i2 = cells.Item2.Row * RowCount + cells.Item2.Column;
-
-            if (!_associatedCells.TryGetValue(cells.Item1, out var set1))
-            {
-                set1 = new InfiniteBitSet();
-                set1.Set(i1);
-                _associatedCells[cells.Item1] = set1;
-            }
-            
-            if (!_associatedCells.TryGetValue(cells.Item2, out var set2))
-            {
-                set2 = new InfiniteBitSet();
-                set2.Set(i2);
-            }
-
-            set1.Or(set2);
-            _associatedCells[cells.Item2] = set1;
+            _associatedCells.Merge(cells.Item1, cells.Item2);
             
             UpdateAndDrawLines();
         };
@@ -221,7 +205,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 
     public void ShowPossibilities(int row, int column, IEnumerable<int> possibilities)
     {
-        var zoneSize = _associatedCells.TryGetValue(new Cell(row, column), out var set) ? set.Count : 1;
+        var zoneSize = _associatedCells.CountAt(row, column);
         var posSize = _cellSize / zoneSize;
         var textSize = posSize * 3 / 4;
         var delta = (_cellSize - posSize) / 2;
@@ -340,7 +324,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 
     private double GetPossibilitySize(int row, int col)
     {
-        var zoneSize = _associatedCells.TryGetValue(new Cell(row, col), out var set) ? set.Count : 1;
+        var zoneSize = _associatedCells.CountAt(row, col);
         return _cellSize / zoneSize;
     }
 

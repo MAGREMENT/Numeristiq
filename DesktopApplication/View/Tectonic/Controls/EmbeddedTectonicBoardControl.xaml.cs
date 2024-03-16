@@ -3,10 +3,13 @@ using DesktopApplication.Presenter.Tectonic.Solve;
 
 namespace DesktopApplication.View.Tectonic.Controls;
 
-public partial class EmbeddedTectonicBoardControl
+public partial class EmbeddedTectonicBoardControl //TODO size change bug
 {
     private double _rowSize;
     private double _columnSize;
+    
+    public event OnDimensionCountChange? RowCountChanged;
+    public event OnDimensionCountChange? ColumnCountChanged;
 
     public ITectonicDrawer Drawer => Board;
     
@@ -23,12 +26,14 @@ public partial class EmbeddedTectonicBoardControl
     {
         _rowSize = ComputeSize(number);
         AdjustCellSize();
+        RowCountChanged?.Invoke(number);
     }
 
     private void OnColumnCountChange(int number)
     {
         _columnSize = ComputeSize(number);
         AdjustCellSize();
+        ColumnCountChanged?.Invoke(number);
     }
 
     private double ComputeSize(int number)

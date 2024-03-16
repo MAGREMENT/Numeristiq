@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonic;
 
@@ -70,11 +71,11 @@ public static class TectonicTranslator
             return new BlankTectonic();
         }
 
-        var finalZones = new Zone[zones.Count];
+        var finalZones = new IZone[zones.Count];
         int cursor = 0;
         foreach (var list in zones.Values)
         {
-            finalZones[cursor++] = new Zone(list.ToArray(), colCount);
+            finalZones[cursor++] = new MultiZone(list.ToArray(), colCount);
         }
 
         ITectonic result = new ArrayTectonic(rowCount, colCount, finalZones);
@@ -96,6 +97,110 @@ public static class TectonicTranslator
         if (!int.TryParse(split[0][..separator], out var rowCount)
             || !int.TryParse(split[0][(separator + 1)..], out var colCount)) return new BlankTectonic();
 
-        return new BlankTectonic(); //TODO
+        CellsAssociations associatedCells = new(rowCount, colCount);
+        Dictionary<Cell, int> numbers = new();
+        int row = 0;
+        int col = -1;
+        
+        foreach (var c in split[1])
+        {
+            var current = new Cell(row, col);
+            
+            switch (c)
+            {
+                case 'r' : 
+                    if(col >= colCount - 1) continue;
+                    associatedCells.Merge(current, new Cell(row, col + 1));
+                    
+                    break;
+                case 'd' :
+                    if (row >= rowCount - 1) continue;
+                    associatedCells.Merge(current, new Cell(row + 1, col));
+
+                    break;
+                default:
+                    if (!char.IsDigit(c)) return new BlankTectonic();
+
+                    var n = c - '0';
+                    
+                    col++;
+                    if (col == colCount)
+                    {
+                        col = 0;
+                        row++;
+                    }
+                    numbers.Add(new Cell(row, col), n);
+                    
+                    break;
+            }
+        }
+
+        List<IZone> zones = new();
+        List<Cell> buffer = new();
+        for (row = 0; row < rowCount; row++)
+        {
+            for (col = 0; col < colCount; col++)
+            {
+                var current = new Cell(row, col);
+                if (!associatedCells.IsCreatedAt(row, col))
+                {
+                    zones.Add(new MultiZone(current, colCount));
+                }
+                else
+                {
+                    var set = associatedCells.SetAt(row, col);
+                    if(Contains(zones, set, colCount)) continue;
+                    
+                    foreach (var n in set)
+                    {
+                        buffer.Add(new Cell(n / colCount, n % colCount));
+                    }
+
+                    zones.Add(new MultiZone(buffer.ToArray(), colCount));
+                    buffer.Clear();
+                }
+            }
+        }
+
+        var result = new ArrayTectonic(rowCount, colCount, zones);
+
+        foreach (var entry in numbers)
+        {
+            result.Set(entry.Value, entry.Key.Row, entry.Key.Column);
+        }
+
+        return result;
     }
+
+    private static bool Contains(IReadOnlyList<IZone> zones, InfiniteBitSet bitSet, int colCount)
+    {
+        foreach (var zone in zones)
+        {
+            if (zone.Count != bitSet.Count) continue;
+
+            var yes = true;
+            foreach (var cell in zone)
+            {
+                if (!bitSet.IsSet(cell.Row * colCount + cell.Column))
+                {
+                    yes = false;
+                    break;
+                }
+            }
+
+            if(yes) return true;
+        }
+        
+        return false;
+    }
+
+    public static TectonicStringFormat GuessFormat(string s)
+    {
+        return s.Contains(';') ? TectonicStringFormat.Code : TectonicStringFormat.Rd;
+    }
+}
+
+public enum TectonicStringFormat
+{
+    None, Code, Rd
 }

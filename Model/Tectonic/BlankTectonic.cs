@@ -9,7 +9,7 @@ public class BlankTectonic : ITectonic
 {
     public int RowCount => 0;
     public int ColumnCount => 0;
-    public IReadOnlyList<Zone> Zones => Array.Empty<Zone>();
+    public IReadOnlyList<IZone> Zones => Array.Empty<IZone>();
 
     public int this[int row, int col] => 0;
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
@@ -17,9 +17,9 @@ public class BlankTectonic : ITectonic
         return new ReadOnlyBitSet16();
     }
 
-    public Zone GetZone(Cell cell)
+    public IZone GetZone(Cell cell)
     {
-        return Zone.Empty();
+        return EmptyZone.Instance;
     }
 
     public bool ShareAZone(Cell c1, Cell c2)

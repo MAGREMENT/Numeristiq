@@ -10,7 +10,7 @@ namespace Model.Tectonic;
 public class StateArraySolvingState : IUpdatableTectonicSolvingState
 {
     private readonly ushort[,] _bits;
-    private readonly IReadOnlyList<Zone> _zones;
+    private readonly IReadOnlyList<IZone> _zones;
 
     public StateArraySolvingState(IStrategyUser solver)
     {
@@ -28,7 +28,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         _zones = solver.Tectonic.Zones;
     }
 
-    private StateArraySolvingState(ushort[,] buffer, IReadOnlyList<Zone> zones)
+    private StateArraySolvingState(ushort[,] buffer, IReadOnlyList<IZone> zones)
     {
         _bits = buffer;
         _zones = zones;
@@ -89,7 +89,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
                     buffer[neighbor.Row, neighbor.Column] &= (ushort)~(1 << progress.Number);
             }
 
-            Zone? zone = null;
+            IZone? zone = null;
             foreach (var z in _zones)
             {
                 if (z.Contains(new Cell(progress.Row, progress.Column)))

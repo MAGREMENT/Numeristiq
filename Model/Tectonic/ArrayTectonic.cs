@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -7,37 +9,49 @@ namespace Model.Tectonic;
 
 public class ArrayTectonic : ITectonic
 {
-    private readonly TectonicCell?[,] _cells;
-    private readonly Zone[] _zones;
-    
-    public ArrayTectonic(int rowCount, int colCount, Zone[] zones)
-    {
-        _cells = new TectonicCell?[rowCount, colCount];
-        _zones = zones;
+    private readonly ITectonicCell?[,] _cells;
 
-        for (int i = 0; i < zones.Length; i++)
+    public ArrayTectonic(int rowCount, int colCount, IReadOnlyList<IZone> zones)
+    {
+        _cells = new ITectonicCell?[rowCount, colCount];
+        Zones = zones;
+
+        for (int i = 0; i < zones.Count; i++)
         {
             foreach (var cell in zones[i])
             {
-                _cells[cell.Row, cell.Column] = new TectonicCell(i);
+                _cells[cell.Row, cell.Column] = new MultiZoneTectonicCell(i);
             }
         }
     }
 
+    public ArrayTectonic(int rowCount, int colCount)
+    {
+        _cells = new ITectonicCell?[rowCount, colCount];
+        Zones = Array.Empty<IZone>();
+    }
+
     public int RowCount => _cells.GetLength(0);
     public int ColumnCount => _cells.GetLength(1);
-    public IReadOnlyList<Zone> Zones => _zones;
+    public IReadOnlyList<IZone> Zones { get; }
 
-    public int this[int row, int col] => _cells[row, col] is null ? 0 : _cells[row, col]!.Number;
+    public int this[int row, int col] => _cells[row, col]?.Number ?? 0;
+    
+    public void Set(int n, int row, int col)
+    {
+        _cells[row, col] ??= new SelfZoneTectonicCell(new Cell(row, col));
+        _cells[row, col]!.Number = n;
+    }
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
         return new ReadOnlyBitSet16();
     }
 
-    public Zone GetZone(Cell cell)
+    public IZone GetZone(Cell cell)
     {
-        return IsValid(cell) ? _zones[_cells[cell.Row, cell.Column]!.Zone] : Zone.Empty();
+        _cells[cell.Row, cell.Column] ??= new SelfZoneTectonicCell(cell);
+        return _cells[cell.Row, cell.Column]!.GetZone(Zones);
     }
 
     public bool ShareAZone(Cell c1, Cell c2)
@@ -102,27 +116,70 @@ public class ArrayTectonic : ITectonic
 
         return builder.ToString();
     }
+}
 
-    private bool IsValid(Cell cell)
+public interface ITectonicCell
+{
+    int Number { get; set; }
+
+    IZone GetZone(IReadOnlyList<IZone> tectonicZones);
+}
+
+public class MultiZoneTectonicCell : ITectonicCell
+{
+    public int Number { get; set; }
+
+    private readonly int _zone;
+
+    public MultiZoneTectonicCell(int zone)
     {
-        return cell.Row >= 0 && cell.Row < _cells.GetLength(0)
-                            && cell.Column >= 0 && cell.Column < _cells.GetLength(1)
-                            && _cells[cell.Row, cell.Column] != null;
+        _zone = zone;
     }
-
-    public void Set(int n, int row, int col)
+    
+    public IZone GetZone(IReadOnlyList<IZone> tectonicZones)
     {
-        if (_cells[row, col] is not null) _cells[row, col]!.Number = n;
+        return tectonicZones[_zone];
     }
 }
 
-public class TectonicCell
+public class SelfZoneTectonicCell : ITectonicCell, IZone
 {
     public int Number { get; set; }
-    public int Zone { get; }
+    public int Count => 1;
 
-    public TectonicCell(int zone)
+    private readonly Cell _cell;
+
+    public SelfZoneTectonicCell(Cell cell)
     {
-        Zone = zone;
+        _cell = cell;
+    }
+
+    public IZone GetZone(IReadOnlyList<IZone> tectonicZones)
+    {
+        return this;
+    }
+
+    public IEnumerator<Cell> GetEnumerator()
+    {
+        yield return _cell;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public Cell this[int index] => _cell;
+
+    public bool Contains(Cell c) => c == _cell;
+
+    public override bool Equals(object? obj)
+    {
+        return obj is IZone { Count: 1 } z && z.Contains(_cell);
+    }
+
+    public override int GetHashCode()
+    {
+        return _cell.GetHashCode();
     }
 }

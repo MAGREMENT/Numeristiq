@@ -38,7 +38,7 @@ public class NeighboringZonesStrategy : TectonicStrategy //TODO correct this
         HashSet<Cell> on = new();
         Dictionary<Cell, Cell> off = new();
         Queue<Cell> queue = new();
-        List<Zone> zoneBuffer = new();
+        List<IZone> zoneBuffer = new();
         List<Cell> cellBuffer = new();
         
         on.Add(startOn);

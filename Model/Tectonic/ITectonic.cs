@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Utility;
-using Model.Utility.BitSets;
 
 namespace Model.Tectonic;
 
@@ -23,10 +20,10 @@ public interface IReadOnlyTectonic : ISolvingState
     public int RowCount { get; }
     public int ColumnCount { get; }
     
-    public IReadOnlyList<Zone> Zones { get; }
-    public Zone GetZone(Cell cell);
+    public IReadOnlyList<IZone> Zones { get; }
+    public IZone GetZone(Cell cell);
 
-    public Zone GetZone(int row, int col)
+    public IZone GetZone(int row, int col)
     {
         return GetZone(new Cell(row, col));
     }
@@ -54,56 +51,3 @@ public readonly struct CellNumber
     }
 }
 
-public class Zone : IEnumerable<Cell>
-{
-    private static readonly Zone _empty = new(Array.Empty<Cell>(), 0);
-    public static Zone Empty() => _empty;
-
-    private readonly int _columnCount;
-    private readonly InfiniteBitSet _id;
-    private readonly Cell[] _cells;
-
-    public int Count => _cells.Length;
-
-    public Zone(Cell[] cells, int columnCount)
-    {
-        _id = new InfiniteBitSet();
-        _cells = cells;
-        _columnCount = columnCount; 
-
-        foreach (var cell in _cells)
-        {
-            _id.Set(cell.Row * columnCount + cell.Column);
-        }
-    }
-
-    public IEnumerator<Cell> GetEnumerator()
-    {
-        foreach (var cell in _cells)
-        {
-            yield return cell;
-        }
-    }
-
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
-
-    public Cell this[int index] => _cells[index];
-
-    public bool Contains(Cell c)
-    {
-        return _id.IsSet(c.Row * _columnCount + c.Column);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is Zone z && z._id.Equals(_id);
-    }
-
-    public override int GetHashCode()
-    {
-        return _id.GetHashCode();
-    }
-}

@@ -6,16 +6,24 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Tectonic.Controls"
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" Height="660" Width="1060">
+      Title="SolvePage" Height="660" Width="1210">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="660"/>
+            <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
         
-        <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer"/>
+        <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer"
+                                               RowCountChanged="EmbeddedDrawer_OnRowCountChanged"
+                                               ColumnCountChanged="EmbeddedDrawer_OnColumnCountChanged"/>
         
-        <Grid Grid.Column="1">
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0, 20, 0, 0">
+            <controls:DimensionChooser TitleText="Row Count" x:Name="RowCount" DimensionChangeAsked="RowCount_OnDimensionChangeAsked"/>
+            <controls:DimensionChooser TitleText="Column Count" x:Name="ColumnCount" DimensionChangeAsked="ColumnCount_OnDimensionChangeAsked"/>
+        </StackPanel>
+        
+        <Grid Grid.Column="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="200"/>
@@ -42,6 +50,6 @@
             <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 2.5, 5, 10" Click="Clear" x:Name="ClearButton">Clear</Button>
         </Grid>
         
-        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="CreateNewTectonic"/>
+        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" TextChanged="CreateNewTectonic"/>
     </Grid>
 </Page>

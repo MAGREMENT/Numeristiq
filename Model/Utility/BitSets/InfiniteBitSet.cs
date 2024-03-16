@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Model.Utility.BitSets;
 
-public class InfiniteBitSet
+public class InfiniteBitSet : IEnumerable<int>
 {
     private const int BitSize = 64;
     
@@ -137,6 +139,25 @@ public class InfiniteBitSet
         }
         
         return builder.ToString();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+
+    public IEnumerator<int> GetEnumerator()
+    {
+        for (int i = 0; i < _bits.Length; i++)
+        {
+            if (_bits[i] == 0) continue;
+
+            for (int j = 0; j < BitSize; j++)
+            {
+                if (((_bits[i] >> j) & 1) > 0) yield return i * BitSize + j;
+            }
+        }
     }
 
     public override bool Equals(object? obj)

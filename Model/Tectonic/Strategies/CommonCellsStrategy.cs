@@ -44,9 +44,9 @@ public class CommonCellsStrategy : TectonicStrategy
 
 public class CommonCellsReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>
 {
-    private readonly Zone _zone;
+    private readonly IZone _zone;
 
-    public CommonCellsReportBuilder(Zone zone)
+    public CommonCellsReportBuilder(IZone zone)
     {
         _zone = zone;
     }

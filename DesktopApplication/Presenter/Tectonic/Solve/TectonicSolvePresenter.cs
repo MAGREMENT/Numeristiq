@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Model;
 using Model.Helpers;
 using Model.Tectonic;
@@ -26,11 +27,28 @@ public class TectonicSolvePresenter
 
     public void SetNewTectonic(string asString)
     {
-        _solver.SetTectonic(TectonicTranslator.TranslateCodeFormat(asString));
-        _view.Drawer.ClearHighlights();
-        SetUpNewTectonic();
-        SetShownState(_solver);
-        ClearLogs();
+        ITectonic tectonic;
+        switch (TectonicTranslator.GuessFormat(asString))
+        {
+            case TectonicStringFormat.Code : tectonic = TectonicTranslator.TranslateCodeFormat(asString);
+                break;
+            case TectonicStringFormat.Rd : tectonic = TectonicTranslator.TranslateRdFormat(asString);
+                break;
+            case TectonicStringFormat.None:
+            default: return;
+        }
+
+        SetNewTectonic(tectonic);
+    }
+
+    public void SetNewRowCount(int diff)
+    {
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount));
+    }
+
+    public void SetNewColumnCount(int diff)
+    {
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff));
     }
 
     public async void Solve(bool stopAtProgress)
@@ -109,6 +127,8 @@ public class TectonicSolvePresenter
         _view.SetCursorPosition(_currentlyOpenedLog, log.HighlightManager.CursorPosition());
     }
 
+    #region Private
+
     private void ClearLogs()
     {
         _view.ClearLogs();
@@ -136,6 +156,15 @@ public class TectonicSolvePresenter
         }
         
         drawer.Refresh();
+    }
+
+    private void SetNewTectonic(ITectonic tectonic)
+    {
+        _solver.SetTectonic(tectonic);
+        _view.Drawer.ClearHighlights();
+        SetUpNewTectonic();
+        SetShownState(_solver);
+        ClearLogs();
     }
 
     private void SetUpNewTectonic()
@@ -166,4 +195,8 @@ public class TectonicSolvePresenter
         
         drawer.Refresh();
     }
+
+    #endregion
+
+    
 }
