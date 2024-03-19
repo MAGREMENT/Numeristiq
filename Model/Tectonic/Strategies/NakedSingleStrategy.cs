@@ -13,14 +13,19 @@ public class NakedSingleStrategy : TectonicStrategy
     
     public override void Apply(IStrategyUser strategyUser)
     {
-        foreach (var cell in strategyUser.Tectonic.EachCell())
+        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
         {
-            var p = strategyUser.PossibilitiesAt(cell);
-            if (p.Count != 1) continue;
+            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            {
+                var p = strategyUser.PossibilitiesAt(row, col);
+                if (p.Count != 1) continue;
             
-            strategyUser.ChangeBuffer.ProposeSolutionAddition(
-                p.First(1, strategyUser.Tectonic.GetZone(cell).Count), cell);
-            strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(
+                    p.First(1, strategyUser.Tectonic.GetZone(row, col).Count), row, col);
+                strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+            }
         }
+        
+        
     }
 }

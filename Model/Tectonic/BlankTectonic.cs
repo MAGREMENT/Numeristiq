@@ -22,23 +22,27 @@ public class BlankTectonic : ITectonic
         return EmptyZone.Instance;
     }
 
-    public bool ShareAZone(Cell c1, Cell c2)
+    public bool IsFromSameZone(Cell c1, Cell c2)
     {
         return false;
     }
 
-    public IEnumerable<Cell> EachCell()
-    {
-        yield break;
-    }
-
-    public IEnumerable<CellNumber> EachCellNumber()
-    {
-        yield break;
-    }
-
-
     public void Set(int n, int row, int col)
+    {
+        
+    }
+
+    public void MergeZones(Cell c1, Cell c2)
+    {
+        
+    }
+
+    public void AddZone(IReadOnlyList<Cell> cells)
+    {
+        
+    }
+
+    public void AddZoneUnchecked(IReadOnlyList<Cell> cells)
     {
         
     }

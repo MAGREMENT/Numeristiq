@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Tectonic.Strategies;
 
-public class NeighboringZonesStrategy : TectonicStrategy //TODO correct this
+public class NeighboringZonesStrategy : TectonicStrategy
 {
     public NeighboringZonesStrategy() : base("Neighboring Zones", StrategyDifficulty.Hard, OnCommitBehavior.ChooseBest)
     {

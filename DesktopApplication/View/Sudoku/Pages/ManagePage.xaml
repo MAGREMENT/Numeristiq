@@ -3,10 +3,15 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-      xmlns:local="clr-namespace:DesktopApplication.View.Sudoku.Pages"
+      xmlns:control="clr-namespace:DesktopApplication.View.Sudoku.Controls"
       mc:Ignorable="d"
       Title="ManagePage" Height="660" Width="1300">
     <Grid Background="{DynamicResource Background1}">
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Text}">Coming Soon...</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <control:SearchControl Grid.Column="0" Width="300" x:Name="Search" Searched="OnSearch"/>
     </Grid>
 </Page>

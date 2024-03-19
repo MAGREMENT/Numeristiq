@@ -11,4 +11,19 @@ public partial class ManagePage : ISudokuManageView
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
     }
+
+    public void ClearSearchResults()
+    {
+        Search.ClearResult();
+    }
+
+    public void AddSearchResult(string s)
+    {
+        Search.AddResult(s);
+    }
+
+    private void OnSearch(string s)
+    {
+        _presenter.OnSearch(s);
+    }
 }

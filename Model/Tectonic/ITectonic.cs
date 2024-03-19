@@ -13,6 +13,12 @@ public interface ITectonic : IReadOnlyTectonic
         set => Set(value, cell.Row, cell.Column);
         get => this[cell.Row, cell.Column];
     }
+
+    public void MergeZones(Cell c1, Cell c2);
+    //public void SplitZone(Cell c1, Cell c2); TODO
+
+    public void AddZone(IReadOnlyList<Cell> cells);
+    public void AddZoneUnchecked(IReadOnlyList<Cell> cells);
 }
 
 public interface IReadOnlyTectonic : ISolvingState
@@ -28,26 +34,6 @@ public interface IReadOnlyTectonic : ISolvingState
         return GetZone(new Cell(row, col));
     }
     
-    public bool ShareAZone(Cell c1, Cell c2);
-
-    public IEnumerable<Cell> EachCell();
-    public IEnumerable<CellNumber> EachCellNumber();
-}
-
-public readonly struct CellNumber 
-{
-    public CellNumber(Cell cell, int number)
-    {
-        Cell = cell;
-        Number = number;
-    }
-
-    public Cell Cell { get; }
-    public int Number { get; }
-
-    public bool IsSet()
-    {
-        return Number != 0;
-    }
+    public bool IsFromSameZone(Cell c1, Cell c2);
 }
 

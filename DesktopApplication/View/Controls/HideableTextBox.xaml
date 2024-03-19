@@ -14,7 +14,7 @@
         <Border Grid.Row="0" Background="{DynamicResource Background2}" Padding="5" x:Name="UpperPart" Visibility="Collapsed">
             <TextBox x:Name="TextBox" Background="{DynamicResource Background3}" FontSize="15"
                      BorderBrush="{DynamicResource Text}" Foreground="{DynamicResource Text}"
-                     TextChanged="OnTextChange"/>
+                     TextChanged="OnTextChange" LostFocus="Hide"/>
         </Border>
         
         <Button Grid.Row="1" HorizontalAlignment="Center" Style="{StaticResource HideableTextBoxButton}" Click="Show">

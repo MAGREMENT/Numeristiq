@@ -25,6 +25,11 @@ public class TectonicSolvePresenter
         _translator = new TectonicHighlightTranslator(_view.Drawer);
     }
 
+    public void SetTectonicString()
+    {
+        _view.SetTectonicString(TectonicTranslator.TranslateRdFormat(_solver.Tectonic));
+    }
+
     public void SetNewTectonic(string asString)
     {
         ITectonic tectonic;
@@ -43,12 +48,12 @@ public class TectonicSolvePresenter
 
     public void SetNewRowCount(int diff)
     {
-        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount));
+        SetNewTectonic(new Model.Tectonic.ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount));
     }
 
     public void SetNewColumnCount(int diff)
     {
-        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff));
+        SetNewTectonic(new Model.Tectonic.ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff));
     }
 
     public async void Solve(bool stopAtProgress)

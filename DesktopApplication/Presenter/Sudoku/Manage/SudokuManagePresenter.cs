@@ -1,4 +1,6 @@
-﻿namespace DesktopApplication.Presenter.Sudoku.Manage;
+﻿using Model.Sudoku.Solver;
+
+namespace DesktopApplication.Presenter.Sudoku.Manage;
 
 public class SudokuManagePresenter
 {
@@ -7,5 +9,15 @@ public class SudokuManagePresenter
     public SudokuManagePresenter(ISudokuManageView view)
     {
         _view = view;
+    }
+
+    public void OnSearch(string s)
+    {
+        _view.ClearSearchResults();
+
+        foreach (var result in StrategyPool.FindStrategies(s))
+        {
+            _view.AddSearchResult(result);
+        }
     }
 }

@@ -4,10 +4,7 @@ using DesktopApplication.Presenter.Tectonic.Solve;
 namespace DesktopApplication.View.Tectonic.Controls;
 
 public partial class EmbeddedTectonicBoardControl //TODO size change bug
-{
-    private double _rowSize;
-    private double _columnSize;
-    
+{ 
     public event OnDimensionCountChange? RowCountChanged;
     public event OnDimensionCountChange? ColumnCountChanged;
 
@@ -16,29 +13,20 @@ public partial class EmbeddedTectonicBoardControl //TODO size change bug
     public EmbeddedTectonicBoardControl()
     {
         InitializeComponent();
-
-        _rowSize = ComputeSize(Board.RowCount);
-        _columnSize = ComputeSize(Board.ColumnCount);
+        
         AdjustCellSize();
     }
 
     private void OnRowCountChange(int number)
     {
-        _rowSize = ComputeSize(number);
         AdjustCellSize();
         RowCountChanged?.Invoke(number);
     }
 
     private void OnColumnCountChange(int number)
     {
-        _columnSize = ComputeSize(number);
         AdjustCellSize();
         ColumnCountChanged?.Invoke(number);
-    }
-
-    private double ComputeSize(int number)
-    {
-        return Board.CellSize * number + Board.BigLineWidth * (number + 1);
     }
 
     private void AdjustCellSize()
@@ -54,13 +42,21 @@ public partial class EmbeddedTectonicBoardControl //TODO size change bug
         
         None.Visibility = Visibility.Collapsed;
         Board.Visibility = Visibility.Visible;
+
+        var rowSize = ComputeSize(Board.RowCount);
+        var columnSize = ComputeSize(Board.ColumnCount);
         
         var availableWidth = Width - Border.Padding.Left - Border.Padding.Right;
         var availableHeight = Height - Border.Padding.Top - Border.Padding.Bottom;
 
-        Board.CellSize = availableHeight - _rowSize < availableWidth - _columnSize 
+        Board.CellSize = availableHeight - rowSize < availableWidth - columnSize 
             ? ComputeOptimalCellSize(availableHeight, Board.RowCount) 
             : ComputeOptimalCellSize(availableWidth, Board.ColumnCount);
+    }
+    
+    private double ComputeSize(int number)
+    {
+        return Board.CellSize * number + Board.BigLineWidth * (number + 1);
     }
 
     private int ComputeOptimalCellSize(double space, int number)

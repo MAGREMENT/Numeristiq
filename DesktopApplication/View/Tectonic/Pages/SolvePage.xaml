@@ -50,6 +50,6 @@
             <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 2.5, 5, 10" Click="Clear" x:Name="ClearButton">Clear</Button>
         </Grid>
         
-        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" TextChanged="CreateNewTectonic"/>
+        <global:HideableTextBox Grid.Column="0" Grid.ColumnSpan="3" TextChanged="CreateNewTectonic" Showed="OnHideableTextboxShowed" x:Name="TextBox"/>
     </Grid>
 </Page>

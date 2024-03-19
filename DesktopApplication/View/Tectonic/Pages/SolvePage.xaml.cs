@@ -22,7 +22,12 @@ public partial class SolvePage : ITectonicSolveView
     }
 
     public ITectonicDrawer Drawer => EmbeddedDrawer.Drawer;
-    
+
+    public void SetTectonicString(string s)
+    {
+        TextBox.SetText(s);
+    }
+
     public void AddLog(ISolverLog<ITectonicHighlighter> log, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
@@ -120,5 +125,10 @@ public partial class SolvePage : ITectonicSolveView
     private void ColumnCount_OnDimensionChangeAsked(int diff)
     {
         _presenter.SetNewColumnCount(diff);
+    }
+
+    private void OnHideableTextboxShowed()
+    {
+        _presenter.SetTectonicString();
     }
 }

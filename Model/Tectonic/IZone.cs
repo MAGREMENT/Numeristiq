@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -39,11 +40,11 @@ public class MultiZone : IZone
 {
     private readonly int _columnCount;
     private readonly InfiniteBitSet _id;
-    private readonly Cell[] _cells;
+    private readonly IReadOnlyList<Cell> _cells;
 
-    public int Count => _cells.Length;
+    public int Count => _cells.Count;
 
-    public MultiZone(Cell[] cells, int columnCount)
+    public MultiZone(IReadOnlyList<Cell> cells, int columnCount)
     {
         _id = new InfiniteBitSet();
         _cells = cells;
@@ -106,4 +107,35 @@ public class MultiZone : IZone
     {
         return _id.GetHashCode();
     }
+}
+
+public class SoloZone : IZone
+{
+    private readonly Cell _cell;
+
+    public SoloZone(Cell cell)
+    {
+        _cell = cell;
+    }
+
+    public SoloZone(int row, int col)
+    {
+        _cell = new Cell(row, col);
+    }
+
+    public IEnumerator<Cell> GetEnumerator()
+    {
+        yield return _cell;
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+
+    public int Count => 1;
+
+    public Cell this[int index] => _cell;
+
+    public bool Contains(Cell c) => c == _cell;
 }

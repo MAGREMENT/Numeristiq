@@ -53,6 +53,8 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         _tectonic = tectonic;
         _possibilities = new ReadOnlyBitSet16[_tectonic.RowCount, _tectonic.ColumnCount];
         InitCandidates();
+        
+        LogManager.Clear();
     }
 
     public IReadOnlyTectonic Tectonic => _tectonic;
@@ -117,24 +119,26 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
             i = -1;
         }
     }
-    
-    //Private-----------------------------------------------------------------------------------------------------------
-    
+
+    #region Private
+
     private void InitCandidates()
     {
-        foreach (var zone in _tectonic.Zones)
+        for (int row = 0; row < _tectonic.RowCount; row++)
         {
-            foreach (var cell in zone)
+            for (int col = 0; col < _tectonic.ColumnCount; col++)
             {
-                _possibilities[cell.Row, cell.Column] = ReadOnlyBitSet16.Filled(1, zone.Count);
+                _possibilities[row, col] = ReadOnlyBitSet16.Filled(1, _tectonic.GetZone(row, col).Count);
             }
         }
-
-        foreach (var cellNumber in _tectonic.EachCellNumber())
+        
+        for (int row = 0; row < _tectonic.RowCount; row++)
         {
-            if (!cellNumber.IsSet()) continue;
-
-            UpdatePossibilitiesAfterSolutionAdded(cellNumber.Cell.Row, cellNumber.Cell.Column, cellNumber.Number);
+            for (int col = 0; col < _tectonic.ColumnCount; col++)
+            {
+                var n = _tectonic[row, col];
+                if(n != 0) UpdatePossibilitiesAfterSolutionAdded(row, col, n);
+            }
         }
     }
 
@@ -175,6 +179,8 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         
         return true;
     }
+
+    #endregion
 }
 
 public delegate void OnProgressMade();

@@ -62,6 +62,12 @@ public partial class HideableTextBox
     {
         if(_callNewSudoku) TextChanged?.Invoke(TextBox.Text);
     }
+
+    private void Hide(object sender, RoutedEventArgs e)
+    {
+        UpperPart.Visibility = Visibility.Collapsed;
+        Arrow.Data = _downArrow;
+    }
 }
 
 public delegate void OnTextChange(string s);
