@@ -3,7 +3,7 @@
 public class BooleanSetting : ISetting
 {
     public string Name { get; }
-    public ISettingInteractionInterface InteractionInterface { get; } = new BooleanInteractionInterface();
+    public ISettingInteractionInterface InteractionInterface { get; } = new CheckBoxInteractionInterface();
     public bool Value { get; set; }
 
     public BooleanSetting(string name, bool defaultValue = false)
@@ -19,11 +19,6 @@ public class BooleanSetting : ISetting
     
     public void Set(SettingValue value)
     {
-        var old = Value;
         Value = value.ToBool();
-        
-        if(old != Value) Changed?.Invoke();
     }
-
-    public event OnSettingChange? Changed;
 }

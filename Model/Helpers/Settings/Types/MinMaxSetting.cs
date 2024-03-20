@@ -22,11 +22,6 @@ public class MinMaxSetting : ISetting
 
     public void Set(SettingValue value)
     {
-        var old = Value;
         Value = value.ToMinMax();
-        
-        if(old != Value) Changed?.Invoke();
     }
-
-    public event OnSettingChange? Changed;
 }

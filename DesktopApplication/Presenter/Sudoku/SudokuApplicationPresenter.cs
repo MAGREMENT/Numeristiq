@@ -35,7 +35,7 @@ public class SudokuApplicationPresenter
     
     public SudokuManagePresenter Initialize(ISudokuManageView view)
     {
-        return new SudokuManagePresenter(view);
+        return new SudokuManagePresenter(view, _solver.StrategyManager);
     }
     
     public SudokuGeneratePresenter Initialize(ISudokuGenerateView view)

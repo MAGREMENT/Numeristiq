@@ -24,6 +24,8 @@
       <Resource Include="View\Images\TectonicImage.png" />
       <None Remove="View\Images\setting.png" />
       <Resource Include="View\Images\setting.png" />
+      <None Remove="View\Images\bin.png" />
+      <Resource Include="View\Images\bin.png" />
 
     </ItemGroup>
 

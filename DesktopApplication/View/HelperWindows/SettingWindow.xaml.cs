@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using DesktopApplication.Presenter;
-using DesktopApplication.View.Controls;
+using DesktopApplication.View.Settings;
 using Model.Helpers.Settings;
 using Model.Utility;
 
@@ -9,17 +9,17 @@ namespace DesktopApplication.View.HelperWindows;
 
 public partial class SettingWindow
 {
-    private readonly SettingsSpan _span;
+    private readonly SettingsPresenter _presenter;
     
-    public SettingWindow(SettingsSpan span)
+    public SettingWindow(SettingsPresenter presenter)
     {
         InitializeComponent();
 
-        _span = span;
+        _presenter = presenter;
 
         var style = ((App)Application.Current).Resources["SettingTitleStyle"] as Style;
         int count = 0;
-        foreach (var list in span)
+        foreach (var list in presenter)
         {
             var rb = new RadioButton
             {
@@ -38,14 +38,9 @@ public partial class SettingWindow
 
     private void ShowSettings(NamedListSpan<ISetting> settings)
     {
-        foreach (var setting in settings)
+        foreach (var settingAndIndex in settings.EnumerateWithIndex())
         {
-            SettingControl? control = setting.InteractionInterface switch
-            {
-                NameListInteractionInterface => new NameListControl(setting),
-                _ => null
-            };
-
+            var control = SettingTranslator.Translate(_presenter, settingAndIndex.Item1, settingAndIndex.Item2);
             if (control is not null) SettingPanel.Children.Add(control);
         }
     }
@@ -68,25 +63,12 @@ public partial class SettingWindow
             sc.Set();
         }
 
-        _span.Update();
+        _presenter.Update();
         Close();
     }
 
     private void Cancel(object sender, RoutedEventArgs e)
     {
         Close();
-    }
-}
-
-public abstract class SettingControl : UserControl
-{
-    public bool AutoSet { get; set; }
-    public abstract void Set();
-    
-    protected ISetting Setting { get; }
-
-    protected SettingControl(ISetting setting)
-    {
-        Setting = setting;
     }
 }

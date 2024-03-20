@@ -14,6 +14,14 @@ public class ListSpan<T> : IEnumerable<T>
         _indexes = indexes;
     }
 
+    public IEnumerable<(T, int)> EnumerateWithIndex()
+    {
+        for (int i = 0; i < _indexes.Length; i++)
+        {
+            yield return (_list[_indexes[i]], _indexes[i]);
+        }
+    }
+
     public IEnumerator<T> GetEnumerator()
     {
         foreach (var i in _indexes)
@@ -26,6 +34,10 @@ public class ListSpan<T> : IEnumerable<T>
     {
         return GetEnumerator();
     }
+
+    public T this[int index] => _list[_indexes[index]];
+
+    public int Count => _indexes.Length;
 }
 
 public class NamedListSpan<T> : ListSpan<T>, INamed

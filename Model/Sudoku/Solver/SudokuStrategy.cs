@@ -4,11 +4,11 @@ using Model.Helpers.Settings;
 
 namespace Model.Sudoku.Solver;
 
-public abstract class SudokuStrategy : ICommitMaker
+public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
 {
     private bool _enabled = true;
     private bool _locked;
-    private List<ISetting> _settings = new();
+    private readonly List<ISetting> _settings = new();
     
     public string Name { get; protected init; }
     public StrategyDifficulty Difficulty { get; protected init; }
@@ -59,6 +59,11 @@ public abstract class SudokuStrategy : ICommitMaker
 
             arg.Set(value);
         }
+    }
+
+    public void Set(int index, SettingValue value)
+    {
+        _settings[index].Set(value);
     }
 }
 

@@ -23,6 +23,24 @@ public class SliderInteractionInterface : ISettingInteractionInterface
     public int TickFrequency { get; }
 }
 
+public class MinMaxSliderInteractionInterface : ISettingInteractionInterface
+{
+    public MinMaxSliderInteractionInterface(int minMin, int minMax, int maxMin, int maxMax, int tickFrequency)
+    {
+        MinMin = minMin;
+        MinMax = minMax;
+        MaxMin = maxMin;
+        MaxMax = maxMax;
+        TickFrequency = tickFrequency;
+    }
+
+    public int MinMin { get; }
+    public int MinMax { get; }
+    public int MaxMin { get; }
+    public int MaxMax { get; }
+    public int TickFrequency { get; }
+}
+
 public class NameListInteractionInterface : ISettingInteractionInterface, IEnumerable<string>
 {
     private readonly IReadOnlyList<INamed> _names;
@@ -46,27 +64,7 @@ public class NameListInteractionInterface : ISettingInteractionInterface, IEnume
     }
 }
 
-public class MinMaxSliderInteractionInterface : ISettingInteractionInterface
-{
-    public MinMaxSliderInteractionInterface(int minMin, int minMax, int maxMin, int maxMax, int tickFrequency)
-    {
-        MinMin = minMin;
-        MinMax = minMax;
-        MaxMin = maxMin;
-        MaxMax = maxMax;
-        TickFrequency = tickFrequency;
-    }
-
-    public int MinMin { get; }
-    public int MinMax { get; }
-    public int MaxMin { get; }
-    public int MaxMax { get; }
-    public int TickFrequency { get; }
-}
-
-
-
-public class BooleanInteractionInterface : ISettingInteractionInterface
+public class CheckBoxInteractionInterface : ISettingInteractionInterface
 {
     
 }

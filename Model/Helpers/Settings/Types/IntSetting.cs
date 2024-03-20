@@ -20,11 +20,6 @@ public class IntSetting : ISetting
 
     public void Set(SettingValue value)
     {
-        var old = Value;
         Value = value.ToInt();
-        
-        if(old != Value) Changed?.Invoke();
     }
-
-    public event OnSettingChange? Changed;
 }

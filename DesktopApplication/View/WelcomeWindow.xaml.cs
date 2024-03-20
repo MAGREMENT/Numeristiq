@@ -68,7 +68,7 @@ public partial class WelcomeWindow
 
     private void ShowSettingWindow(object sender, MouseButtonEventArgs e)
     {
-        var window = new SettingWindow(_presenter.Settings);
+        var window = new SettingWindow(_presenter.SettingsPresenter);
         window.Show();
     }
 }

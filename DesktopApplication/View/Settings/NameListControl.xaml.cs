@@ -1,13 +1,16 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using DesktopApplication.Presenter;
 using Model.Helpers.Settings;
 
-namespace DesktopApplication.View.Controls;
+namespace DesktopApplication.View.Settings;
 
 public partial class NameListControl
 {
-    public NameListControl(ISetting setting) : base(setting)
+    private readonly bool _raiseEvent;
+    
+    public NameListControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
     {
         InitializeComponent();
 
@@ -23,11 +26,18 @@ public partial class NameListControl
             });
         }
 
+        _raiseEvent = false;
         ComboBox.SelectedIndex = setting.Get().ToInt();
+        _raiseEvent = true;
     }
 
     public override void Set()
     {
-        Setting.Set(new IntSettingValue(ComboBox.SelectedIndex));
+        Set(new IntSettingValue(ComboBox.SelectedIndex));
+    }
+
+    private void OnSelectionChange(object sender, SelectionChangedEventArgs e)
+    {
+        if(AutoSet && _raiseEvent) Set();
     }
 }

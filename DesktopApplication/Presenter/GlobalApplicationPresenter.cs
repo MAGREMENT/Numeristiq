@@ -21,7 +21,7 @@ public class GlobalApplicationPresenter
         _themes = themes;
         
         TrySetTheme();
-        _settings.Theme.Changed += TrySetTheme;
+        _settings.AddEvent(SpecificSettings.Theme, _ => TrySetTheme());
     }
 
     public WelcomePresenter InitializeWelcomePresenter()
@@ -41,7 +41,7 @@ public class GlobalApplicationPresenter
     
     private void TrySetTheme()
     {
-        var index = _settings.Theme.Get().ToInt();
+        var index = _settings.GetSetting(SpecificSettings.Theme).Get().ToInt();
         if(index < 0 || index >= _themes.Length) return;
         
         _view.SetTheme(_themes[index]);

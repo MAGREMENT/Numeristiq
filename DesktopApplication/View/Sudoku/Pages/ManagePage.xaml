@@ -9,9 +9,47 @@
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
         <control:SearchControl Grid.Column="0" Width="300" x:Name="Search" Searched="OnSearch"/>
+        
+        <Grid Grid.Column="1" Margin="10, 0, 0, 0" Width="300">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+        
+            <Grid Grid.Row="0" Height="40">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="40"/>
+                </Grid.ColumnDefinitions>
+            
+                <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
+                           Foreground="{DynamicResource Text}">Strategies</TextBlock>
+                <Image Grid.Column="1" Source="../../Images/bin.png" Width="30" Height="30" x:Name="Bin"/>
+            </Grid>
+    
+            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}">
+                <StackPanel x:Name="StrategyPanel"/>
+            </ScrollViewer>
+        </Grid>
+        
+        <Border Grid.Column="2" Width="670" Height="640" VerticalAlignment="Center" HorizontalAlignment="Center"
+                Background="{DynamicResource Background2}">
+            <Border Margin="10" Padding="5" BorderBrush="{DynamicResource Text}" BorderThickness="1">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Foreground="{DynamicResource Text}" HorizontalAlignment="Center"
+                               Margin="0, 5, 0, 5" FontSize="20" FontWeight="Normal">No Strategy Selected</TextBlock>
+                </Grid>
+            </Border>
+        </Border>
     </Grid>
 </Page>
