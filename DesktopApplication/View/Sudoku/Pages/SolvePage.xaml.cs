@@ -4,6 +4,7 @@ using System.Windows.Input;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Controls;
+using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku.Controls;
 using Model;
 using Model.Helpers.Highlighting;
@@ -114,6 +115,24 @@ public partial class SolvePage : ISudokuSolveView
         }
     }
 
+    public void HighlightStrategy(int index)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            if(index < 0 || index >= StrategyPanel.Children.Count) return;
+            ((StrategyControl)StrategyPanel.Children[index]).SetHighlight(true);
+        });
+    }
+
+    public void UnHighlightStrategy(int index)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            if(index < 0 || index >= StrategyPanel.Children.Count) return;
+            ((StrategyControl)StrategyPanel.Children[index]).SetHighlight(false);
+        });
+    }
+
     #endregion
 
     private void SetNewSudoku(string s)
@@ -137,9 +156,12 @@ public partial class SolvePage : ISudokuSolveView
         _presenter.Solve(true);
     }
 
-    private void ChooseStep(object sender, RoutedEventArgs e)
+    private async void ChooseStep(object sender, RoutedEventArgs e)
     {
-        
+        var p = await _presenter.ChooseStep();
+        var window = new ChooseStepWindow(p);
+        window.Closed += (_, _) => _presenter.OnStoppedChoosingStep();
+        window.Show();
     }
 
     private void Clear(object sender, RoutedEventArgs e)

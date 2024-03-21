@@ -20,6 +20,12 @@ public partial class StrategyControl
         else EnableStrategy(strategy.Enabled);
     }
 
+    public void SetHighlight(bool highlighted)
+    {
+        var app = (App)Application.Current;
+        TextBlock.Foreground = (Brush)(highlighted ? app.Resources["Primary1"] : app.Resources["Text"])!;
+    }
+
     public void EnableStrategy(bool enabled)
     {
         if (enabled)

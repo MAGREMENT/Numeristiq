@@ -1,6 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Model;
 using Model.Helpers;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Trackers;
@@ -13,6 +16,7 @@ public class SudokuSolvePresenter
     private readonly ISudokuSolveView _view;
     private readonly SolveActionEnabler _enabler;
     private readonly SudokuHighlighterTranslator _translator;
+    private readonly Settings _settings;
 
     private readonly SudokuSolver _solver;
     private ISolvingState? _currentlyDisplayedState;
@@ -29,6 +33,7 @@ public class SudokuSolvePresenter
         _enabler = new SolveActionEnabler(_view);
         _translator = new SudokuHighlighterTranslator(_view.Drawer, settings);
         _solver = solver;
+        _settings = settings;
 
         _view.InitializeStrategies(_solver.StrategyManager.Strategies);
     }
@@ -49,12 +54,30 @@ public class SudokuSolvePresenter
     {
         _enabler.DisableActions(1);
         
-        _solveTracker ??= new SolveTracker(this);
+        _solveTracker ??= new SolveTracker(this, true);
+        _solveTracker.UpdateLogs = true;
         _solver.AddTracker(_solveTracker);
         await Task.Run(() => _solver.Solve(stopAtProgress));
         _solver.RemoveTracker(_solveTracker);
 
         _enabler.EnableActions(1);
+    }
+
+    public async Task<ChooseStepPresenterBuilder> ChooseStep()
+    {
+        _enabler.DisableActions(2);
+        
+        _solveTracker ??= new SolveTracker(this, false);
+        _solveTracker.UpdateLogs = false;
+        var commits = await Task.Run(() => _solver.EveryPossibleNextStep());
+        _solver.RemoveTracker(_solveTracker);
+
+        return new ChooseStepPresenterBuilder(commits, _settings, _solver);
+    }
+
+    public void OnStoppedChoosingStep()
+    {
+        _enabler.EnableActions(2);
     }
 
     public void Clear()
@@ -170,6 +193,16 @@ public class SudokuSolvePresenter
         SetShownState(_solver, true);
     }
 
+    public void HighlightStrategy(int index)
+    {
+        _view.HighlightStrategy(index);
+    }
+
+    public void UnHighlightStrategy(int index)
+    {
+        _view.UnHighlightStrategy(index);
+    }
+
     private void ClearLogs()
     {
         _view.ClearLogs();
@@ -208,18 +241,47 @@ public class SudokuSolvePresenter
 public class SolveTracker : Tracker
 {
     private readonly SudokuSolvePresenter _presenter;
+    
+    public bool UpdateLogs { get; set; }
 
-    public SolveTracker(SudokuSolvePresenter presenter)
+    public SolveTracker(SudokuSolvePresenter presenter, bool updateLogs)
     {
         _presenter = presenter;
+        UpdateLogs = updateLogs;
+    }
+
+    public override void OnStrategyStart(SudokuStrategy strategy, int index)
+    {
+        _presenter.HighlightStrategy(index);
     }
 
     public override void OnStrategyEnd(SudokuStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
-        if (solutionAdded + possibilitiesRemoved > 0)
+        _presenter.UnHighlightStrategy(index);
+        if (UpdateLogs && solutionAdded + possibilitiesRemoved > 0)
         {
             _presenter.ShowCurrentState();
             _presenter.UpdateLogs();
         }
+    }
+}
+
+public class ChooseStepPresenterBuilder
+{
+    private readonly IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> _commits;
+    private readonly ISolvingState _currentState;
+    private readonly Settings _settings;
+
+    public ChooseStepPresenterBuilder(IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> commits, Settings settings,
+        ISolvingState currentState)
+    {
+        _commits = commits;
+        _settings = settings;
+        _currentState = currentState;
+    }
+
+    public ChooseStepPresenter Build(IChooseStepView view)
+    {
+        return new ChooseStepPresenter(view, _currentState, _commits, _settings);
     }
 }

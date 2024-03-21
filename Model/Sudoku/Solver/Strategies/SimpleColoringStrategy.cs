@@ -109,13 +109,13 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
 
     public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_isInvalidColoring ? 2 : 1];
+        var highlights = new Highlight<ISudokuHighlighter>[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
         {
             highlights[0] = lighter => ChangeReportHelper.HighlightChanges(lighter, changes);
             highlights[1] = lighter =>
             {
-                _vertices.History!.ForeachLink((one, two)
+                _vertices.History?.ForeachLink((one, two)
                     => lighter.CreateLink(one, two, LinkStrength.Strong));
 
                 foreach (var coord in _vertices.On)
@@ -133,7 +133,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         {
             highlights[0] = lighter =>
             {
-                _vertices.History!.ForeachLink((one, two)
+                _vertices.History?.ForeachLink((one, two)
                     => lighter.CreateLink(one, two, LinkStrength.Strong));
 
                 foreach (var coord in _vertices.On)

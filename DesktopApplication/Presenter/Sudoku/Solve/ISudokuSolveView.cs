@@ -20,4 +20,6 @@ public interface ISudokuSolveView
     void SetLogsStateShown(StateShown stateShown);
     void SetCursorPosition(int index, string s);
     void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies);
+    void HighlightStrategy(int index);
+    void UnHighlightStrategy(int index);
 }
