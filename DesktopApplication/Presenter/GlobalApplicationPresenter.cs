@@ -41,7 +41,7 @@ public class GlobalApplicationPresenter
     
     private void TrySetTheme()
     {
-        var index = _settings.GetSetting(SpecificSettings.Theme).Get().ToInt();
+        var index = _settings.Theme;
         if(index < 0 || index >= _themes.Length) return;
         
         _view.SetTheme(_themes[index]);

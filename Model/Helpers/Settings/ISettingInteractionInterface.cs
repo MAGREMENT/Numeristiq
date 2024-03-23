@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Model.Utility;
 
 namespace Model.Helpers.Settings;
@@ -56,6 +58,27 @@ public class NameListInteractionInterface : ISettingInteractionInterface, IEnume
         {
             yield return n.Name;
         }
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
+}
+
+public class EnumListInteractionInterface<TEnum> : ISettingInteractionInterface, IEnumerable<string> where TEnum : struct, Enum
+{
+    private readonly IEnumerable<string> _enumerable;
+
+    public EnumListInteractionInterface(IStringConverter? converter)
+    {
+        var buffer = Enum.GetNames<TEnum>();
+        _enumerable = converter is null ? buffer : buffer.Select(converter.Convert);
+    }
+    
+    public IEnumerator<string> GetEnumerator()
+    {
+        return _enumerable.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()

@@ -12,7 +12,7 @@ using Repository;
 
 namespace DesktopApplication.Presenter.Sudoku;
 
-public class SudokuApplicationPresenter
+public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
 {
     private readonly SudokuSolver _solver = new();
     private IRepository<IReadOnlyList<SudokuStrategy>>? _strategiesRepository;
@@ -25,7 +25,7 @@ public class SudokuApplicationPresenter
 
     public SudokuSolvePresenter Initialize(ISudokuSolveView view)
     {
-        return new SudokuSolvePresenter(view, _solver, _settings);
+        return new SudokuSolvePresenter(view, _solver, _settings, this);
     }
 
     public SudokuPlayPresenter Initialize(ISudokuPlayView view)
@@ -35,7 +35,7 @@ public class SudokuApplicationPresenter
     
     public SudokuManagePresenter Initialize(ISudokuManageView view)
     {
-        return new SudokuManagePresenter(view, _solver.StrategyManager);
+        return new SudokuManagePresenter(view, _solver.StrategyManager, this);
     }
     
     public SudokuGeneratePresenter Initialize(ISudokuGenerateView view)
@@ -54,4 +54,14 @@ public class SudokuApplicationPresenter
 
         _solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(_solver);
     }
+
+    public void Update()
+    {
+        _strategiesRepository?.Upload(_solver.StrategyManager.Strategies);
+    }
+}
+
+public interface IStrategyRepositoryUpdater
+{
+    public void Update();
 }

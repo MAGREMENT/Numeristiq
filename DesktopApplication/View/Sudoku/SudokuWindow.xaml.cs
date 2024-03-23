@@ -41,5 +41,6 @@ public partial class SudokuWindow
     {
         _currentPage = number;
         Frame.Content = _pages[_currentPage];
+        //TODO update page on show
     }
 }

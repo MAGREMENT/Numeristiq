@@ -91,6 +91,36 @@ public class ArrayTectonic : ITectonic
         return GetZone(c1).Contains(c2);
     }
 
+    public bool IsCorrect()
+    {
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var n = this[row, col];
+                if (n == 0) return false;
+
+                foreach (var cell in Cells.GetNeighbors(row, col, RowCount, ColumnCount))
+                {
+                    if (this[cell.Row, cell.Column] == n) return false;
+                }
+            }
+        }
+
+        foreach (var zone in _zones)
+        {
+            var toCheck = ReadOnlyBitSet16.Filled(1, zone.Count);
+            foreach (var cell in zone)
+            {
+                toCheck -= this[cell.Row, cell.Column];
+            }
+
+            if (toCheck.Count != 0) return false;
+        }
+
+        return true;
+    }
+
     public override string ToString()
     {
         StringBuilder builder = new();

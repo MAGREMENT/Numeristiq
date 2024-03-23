@@ -74,6 +74,16 @@
             </ScrollViewer>
         </Grid>
         
-        <Grid Grid.Row="1" Grid.Column="2" Width="260"></Grid>
+        <Grid Grid.Row="1" Grid.Column="2" Width="260" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <Button Grid.Row="0" Style="{StaticResource SolvePageButtonStyle}" Width="160" 
+                    Margin="0, 0, 0, 10" IsEnabled="False" x:Name="SelectButton" Click="OnSelection">Select</Button>
+            <Button Grid.Row="1" Style="{StaticResource SolvePageButtonStyle}" Width="160"
+                    Click="OnCancel">Cancel</Button>
+        </Grid>
     </Grid>
 </Window>

@@ -35,5 +35,7 @@ public interface IReadOnlyTectonic : ISolvingState
     }
     
     public bool IsFromSameZone(Cell c1, Cell c2);
+
+    public bool IsCorrect();
 }
 

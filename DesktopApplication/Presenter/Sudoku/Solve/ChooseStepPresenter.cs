@@ -13,16 +13,18 @@ public class ChooseStepPresenter
     private readonly IChooseStepView _view;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly ISolvingState _currentState;
+    private readonly ICommitApplier _applier;
 
     private int _currentPage;
     private int _shownStep = -1;
     
     public ChooseStepPresenter(IChooseStepView view, ISolvingState currentState,
-        IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> commits, Settings settings)
+        IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> commits, ICommitApplier applier, Settings settings)
     {
         _view = view;
         _currentState = currentState;
         _commits = commits;
+        _applier = applier;
         _translator = new SudokuHighlighterTranslator(_view.Drawer, settings);
     }
 
@@ -68,15 +70,24 @@ public class ChooseStepPresenter
     {
         var drawer = _view.Drawer;
         drawer.ClearHighlights();
+        if(_shownStep != -1) _view.UnselectStep(_shownStep % PageCount);
 
         if (_shownStep != index)
         {
             _shownStep = index;
             _translator.Translate(_commits[index].Report.HighlightManager);
+            _view.SelectStep(index % PageCount);
         }
         else _shownStep = -1;
-        
+
+        _view.EnableSelection(_shownStep != -1);
         drawer.Refresh();
+    }
+
+    public void SelectCurrent()
+    {
+        if (_shownStep == -1) return;
+        _applier.Apply(_commits[_shownStep]);
     }
 
     private void SetSteps()

@@ -73,6 +73,27 @@ public partial class ChooseStepWindow : IChooseStepView
         CurrentPage.Text = n.ToString();
     }
 
+    public void SelectStep(int index)
+    {
+        if (index < 0 || index >= StepsPanel.Children.Count || StepsPanel.Children[index] is not TextBlock tb) return;
+
+        tb.FontSize = 25;
+        tb.FontWeight = FontWeights.SemiBold;
+    }
+
+    public void UnselectStep(int index)
+    {
+        if (index < 0 || index >= StepsPanel.Children.Count || StepsPanel.Children[index] is not TextBlock tb) return;
+
+        tb.FontSize = 16;
+        tb.FontWeight = FontWeights.Normal;
+    }
+
+    public void EnableSelection(bool isEnabled)
+    {
+        SelectButton.IsEnabled = isEnabled;
+    }
+
     private void PreviousPage(object sender, RoutedEventArgs e)
     {
         _presenter.ChangePage(-1);
@@ -81,5 +102,16 @@ public partial class ChooseStepWindow : IChooseStepView
     private void NextPage(object sender, RoutedEventArgs e)
     {
         _presenter.ChangePage(1);
+    }
+
+    private void OnSelection(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectCurrent();
+        Close();
+    }
+
+    private void OnCancel(object sender, RoutedEventArgs e)
+    {
+        Close();
     }
 }

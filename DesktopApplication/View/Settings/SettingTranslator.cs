@@ -5,7 +5,7 @@ namespace DesktopApplication.View.Settings;
 
 public static class SettingTranslator
 {
-    public static SettingControl? Translate(SettingsPresenter presenter, IReadOnlySetting setting, int index)
+    public static SettingControl? Translate(ISettingCollection presenter, IReadOnlySetting setting, int index)
     {
         return setting.InteractionInterface switch
         {

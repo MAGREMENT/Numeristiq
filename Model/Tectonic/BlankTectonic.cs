@@ -27,6 +27,11 @@ public class BlankTectonic : ITectonic
         return false;
     }
 
+    public bool IsCorrect()
+    {
+        return false;
+    }
+
     public void Set(int n, int row, int col)
     {
         

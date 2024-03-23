@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Manage;
+using DesktopApplication.View.Settings;
 using DesktopApplication.View.Utility;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
@@ -36,15 +37,40 @@ public partial class ManagePage : ISudokuManageView
     public void SetStrategyList(IReadOnlyList<SudokuStrategy> list)
     {
         StrategyPanel.Children.Clear();
-        foreach (var strategy in list)
+        for (int i = 0; i < list.Count; i++)
         {
-            StrategyPanel.Children.Add(new TextBlock
+            var strategy = list[i];
+            var tb = new TextBlock
             {
                 Text = strategy.Name,
                 Foreground = new SolidColorBrush(ColorUtility.ToColor((Intensity)strategy.Difficulty)),
                 Padding = new Thickness(5, 5, 0, 5),
                 FontSize = 15
-            });
+            };
+            var iForEvent = i;
+            tb.MouseLeftButtonDown += (_, _) => _presenter.OnActiveStrategySelection(iForEvent);
+            
+            StrategyPanel.Children.Add(tb);
+        }
+    }
+
+    public void SetSelectedStrategyName(string name)
+    {
+        StrategyName.Text = name;
+    }
+
+    public void SetManageableSettings(StrategySettingsPresenter presenter)
+    {
+        InfoPanel.Children.Clear();
+        foreach (var s in presenter)
+        {
+            var control = SettingTranslator.Translate(presenter, s.Item1, s.Item2);
+            if (control is not null)
+            {
+                control.AutoSet = true;
+                control.Margin = new Thickness(5, 5, 0, 5);
+                InfoPanel.Children.Add(control);
+            }
         }
     }
 

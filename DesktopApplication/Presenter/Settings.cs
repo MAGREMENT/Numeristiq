@@ -18,7 +18,8 @@ public class Settings
         _settings = new ISetting[]
         {
             new IntSetting("Theme", new NameListInteractionInterface(themes), -1),
-            new BooleanSetting("Show same cell links")
+            new BooleanSetting("Show same cell links"),
+            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null)
         };
         _collections = new[]
         {
@@ -26,16 +27,17 @@ public class Settings
         };
         _repository = repository;
     }
-
-    public void AddEvent(SpecificSettings specific, OnSettingChange del)
+    
+    public void Update()
     {
-        if (!_events.TryGetValue((int)specific, out var list))
-        {
-            list = new List<OnSettingChange>();
-            _events[(int)specific] = list;
-        }
+        Dictionary<string, SettingValue> toUpload = new();
 
-        list.Add(del);
+        foreach (var setting in _settings)
+        {
+            toUpload.Add(setting.Name, setting.Get());
+        }
+        
+        _repository.Upload(toUpload);
     }
 
     public void Set(int index, SettingValue value)
@@ -58,22 +60,27 @@ public class Settings
         }
     }
     
-    public void Update()
+    public void AddEvent(SpecificSettings specific, OnSettingChange del)
     {
-        Dictionary<string, SettingValue> toUpload = new();
-
-        foreach (var setting in _settings)
+        if (!_events.TryGetValue((int)specific, out var list))
         {
-            toUpload.Add(setting.Name, setting.Get());
+            list = new List<OnSettingChange>();
+            _events[(int)specific] = list;
         }
-        
-        _repository.Upload(toUpload);
+
+        list.Add(del);
     }
 
     public IReadOnlyList<NamedListSpan<ISetting>> GetCollection(SettingCollections collection) =>
         _collections[(int)collection];
 
     public ISetting GetSetting(SpecificSettings specific) => _settings[(int)specific];
+    
+    public int Theme => _settings[0].Get().ToInt();
+    public bool ShowSameCellLinks => _settings[1].Get().ToBool();
+    public LinkOffsetSidePriority LinkOffsetSidePriority => ((EnumSetting<LinkOffsetSidePriority>)_settings[2]).Value;
+    
+    #region Private
 
     private void FirePossibleEvents(int index)
     {
@@ -82,6 +89,8 @@ public class Settings
             foreach (var e in list) e(_settings[index].Get());
         }
     }
+
+    #endregion
 }
 
 public enum SettingCollections
@@ -92,7 +101,6 @@ public enum SettingCollections
 public enum SpecificSettings
 {
     Theme = 0,
-    ShowSameCellLinks = 1
 }
 
 public delegate void OnSettingChange(SettingValue setting);

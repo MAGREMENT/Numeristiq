@@ -12,4 +12,7 @@ public interface IChooseStepView
     public void SetNextPageExistence(bool exists);
     public void SetTotalPage(int n);
     public void SetCurrentPage(int n);
+    public void SelectStep(int index);
+    public void UnselectStep(int index);
+    public void EnableSelection(bool isEnabled);
 }
