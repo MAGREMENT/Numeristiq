@@ -69,7 +69,7 @@
                     <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Margin="0, 0, 10, 0"
                                Foreground="{DynamicResource Text}" FontSize="20">Text Output</TextBlock>
                     <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource FullPrimaryButton}"
-                            Width="100" Height="30" HorizontalAlignment="Left">Details</Button>
+                            Width="100" Height="30" HorizontalAlignment="Left" Click="OnExplanationAsked">Details</Button>
                     <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="TextOutput" FontSize="14"
                                Foreground="{DynamicResource Text}" TextWrapping="Wrap"/>
                 </Grid>

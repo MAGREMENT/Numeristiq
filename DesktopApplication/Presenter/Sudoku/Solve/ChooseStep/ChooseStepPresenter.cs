@@ -3,7 +3,7 @@ using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 
-namespace DesktopApplication.Presenter.Sudoku.Solve;
+namespace DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
 
 public class ChooseStepPresenter
 {

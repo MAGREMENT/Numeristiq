@@ -1,6 +1,6 @@
 ﻿using Model.Helpers.Changes;
 
-namespace DesktopApplication.Presenter.Sudoku.Solve;
+namespace DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
 
 public interface IChooseStepView
 {

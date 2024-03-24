@@ -1,4 +1,5 @@
-﻿using Model.Sudoku.Solver.StrategiesUtility;
+﻿using System;
+using Model.Sudoku.Solver.StrategiesUtility;
 
 namespace Model.Sudoku.Solver.Explanation;
 
@@ -17,7 +18,8 @@ public class CoverHouseExplanationElement : ExplanationElement
         {
             Unit.Row => "row ",
             Unit.Column => "column ",
-            Unit.MiniGrid => "box "
+            Unit.MiniGrid => "box ",
+            _ => throw new ArgumentOutOfRangeException()
         };
 
         return s + (_coverHouse.Number + 1);

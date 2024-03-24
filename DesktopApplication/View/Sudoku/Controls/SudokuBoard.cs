@@ -10,13 +10,15 @@ using DesktopApplication.View.Utility;
 using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku.Player;
+using Model.Sudoku.Solver.Explanation;
+using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
-public class SudokuBoard : DrawingBoard, ISudokuDrawer
+public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
 {
     private const int BackgroundIndex = 0;
     private  const int CellsHighlightIndex = 1;
@@ -571,6 +573,27 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
             component.SetBrush(brush);
         }
     }
+    
+    #region IExplanationHighlighter
+
+    public void ShowCell(Cell c)
+    {
+        FillCell(c.Row, c.Column, ChangeColoration.CauseOffTwo);
+    }
+
+    public void ShowCellPossibility(CellPossibility cp)
+    {
+        FillPossibility(cp.Row, cp.Column, cp.Possibility, ChangeColoration.CauseOffTwo);
+    }
+
+    public void ShowCoverHouse(CoverHouse ch)
+    {
+        var extremities = ch.GetExtremities();
+        EncircleRectangle(extremities.Item1.Row, extremities.Item1.Column,
+            extremities.Item2.Row, extremities.Item2.Column, ChangeColoration.CauseOffTwo);
+    }
+
+    #endregion
 
     #region Private
 
@@ -744,8 +767,6 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer
     }
 
     #endregion
-    
-    
 }
 
 public class SolutionComponent : TextInRectangleComponent

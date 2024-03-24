@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
+using DesktopApplication.Presenter.Sudoku.Solve.Explanation;
 using Model;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
+using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Trackers;
 using Model.Utility;
 
@@ -111,7 +114,7 @@ public class SudokuSolvePresenter : ICommitApplier
     public void RequestLogOpening(int id)
     {
         var index = id - 1;
-        if (index < 0 || index > _solver.Logs.Count) return;
+        if (index < 0 || index >= _solver.Logs.Count) return;
         
         _view.CloseLogs();
 
@@ -135,7 +138,7 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _stateShown = ss;
         _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.Logs.Count) return;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return;
         
         var log = _solver.Logs[_currentlyOpenedLog];
         SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
@@ -144,7 +147,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void RequestHighlightShift(bool isLeft)
     {
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.Logs.Count) return;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return;
         
         var log = _solver.Logs[_currentlyOpenedLog];
         if(isLeft) log.HighlightManager.ShiftLeft();
@@ -153,6 +156,13 @@ public class SudokuSolvePresenter : ICommitApplier
         _view.Drawer.ClearHighlights();
         _translator.Translate(log.HighlightManager);
         _view.SetCursorPosition(_currentlyOpenedLog, log.HighlightManager.CursorPosition());
+    }
+    
+    public StepExplanationPresenterBuilder? RequestExplanation()
+    {
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return null;
+        
+        return new StepExplanationPresenterBuilder(_solver.Logs[_currentlyOpenedLog].Explanation, _solver);
     }
 
     public void EnableStrategy(int index, bool enabled)
@@ -294,6 +304,23 @@ public class ChooseStepPresenterBuilder
     public ChooseStepPresenter Build(IChooseStepView view)
     {
         return new ChooseStepPresenter(view, _currentState, _commits, _applier, _settings);
+    }
+}
+
+public class StepExplanationPresenterBuilder
+{
+    private readonly ExplanationElement? _start;
+    private readonly ISolvingState _state;
+
+    public StepExplanationPresenterBuilder(ExplanationElement? start, ISolvingState state)
+    {
+        _start = start;
+        _state = state;
+    }
+
+    public StepExplanationPresenter Build(IStepExplanationView view)
+    {
+        return new StepExplanationPresenter(view, _state, _start);
     }
 }
 

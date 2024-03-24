@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace DesktopApplication.View.Utility;
 
-public static class ColorUtility
+public static class ColorUtility //To singleton + theme
 {
     private static readonly Brush[] CellBrushes =
     {
@@ -81,7 +81,7 @@ public static class ColorUtility
     {
         return color switch
         {
-            ExplanationColor.TextDefault => Brushes.Black,
+            ExplanationColor.TextDefault => Brushes.White,
             ExplanationColor.Primary => Brushes.Orange,
             ExplanationColor.Secondary => Brushes.Purple,
             _ => Brushes.Black

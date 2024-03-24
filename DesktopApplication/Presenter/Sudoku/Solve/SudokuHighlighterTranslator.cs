@@ -53,27 +53,9 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
 
     public void EncircleRectangle(CoverHouse house, ChangeColoration coloration)
     {
-        Cell min = default;
-        Cell max = default;
-        switch (house.Unit)
-        {
-            case Unit.Row :
-                min = new Cell(house.Number, 0);
-                max = new Cell(house.Number, 8); 
-                break;
-            case Unit.Column :
-                min = new Cell(0, house.Number);
-                max = new Cell(8, house.Number);
-                break;
-            case Unit.MiniGrid :
-                var sRow = house.Number / 3 * 3;
-                var sCol = house.Number % 3 * 3;
-                min = new Cell(sRow, sCol);
-                max = new Cell(sRow + 2, sCol + 2);
-                break;
-        }
-
-        _drawer.EncircleRectangle(min.Row, min.Column, max.Row, max.Column, coloration);
+        var extremities = house.GetExtremities();
+        _drawer.EncircleRectangle(extremities.Item1.Row, extremities.Item1.Column,
+            extremities.Item2.Row, extremities.Item2.Column, coloration);
     }
 
     public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration)

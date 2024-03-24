@@ -4,7 +4,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.View.Utility;
 using Model;
-using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
 
 namespace DesktopApplication.View.Controls;
@@ -17,6 +16,7 @@ public partial class LogControl
     public event OnOpenRequest? OpenRequested;
     public event OnStateShownChange? StateShownChanged;
     public event OnHighlightShift? HighlightShifted;
+    public event OnExplanationAsked? ExplanationAsked;
     
     public LogControl(ISolverLog log, StateShown stateShown)
     {
@@ -94,8 +94,14 @@ public partial class LogControl
     {
         HighlightShifted?.Invoke(false);
     }
+
+    private void OnExplanationAsked(object sender, RoutedEventArgs e)
+    {
+        ExplanationAsked?.Invoke();
+    }
 }
 
 public delegate void OnOpenRequest(int id);
 public delegate void OnStateShownChange(StateShown stateShown);
 public delegate void OnHighlightShift(bool isLeft);
+public delegate void OnExplanationAsked();

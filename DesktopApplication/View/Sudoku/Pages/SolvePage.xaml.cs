@@ -59,6 +59,14 @@ public partial class SolvePage : ISudokuSolveView
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
             lc.HighlightShifted += _presenter.RequestHighlightShift;
+            lc.ExplanationAsked += () =>
+            {
+                var builder = _presenter.RequestExplanation();
+                if (builder is null) return;
+
+                var window = new StepExplanationWindow(builder);
+                window.Show();
+            };
         });
         LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
     }

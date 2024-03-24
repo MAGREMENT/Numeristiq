@@ -79,6 +79,23 @@ public readonly struct CoverHouse
 
         return false;
     }
+
+    public (Cell, Cell) GetExtremities()
+    {
+        switch (Unit)
+        {
+            case Unit.Row : 
+                return (new Cell(Number, 0), new Cell(Number, 8));
+            case Unit.Column :
+                return (new Cell(0, Number), new Cell(8, Number));
+            case Unit.MiniGrid :
+                var sRow = Number / 3 * 3;
+                var sCol = Number % 3 * 3;
+                return (new Cell(sRow, sCol), new Cell(sRow + 2, sCol + 2));
+            default:
+                return (new Cell(), new Cell());
+        }
+    }
 }
 
 public record PossibilityCovers(int Possibility, CoverHouse[] CoverHouses);
