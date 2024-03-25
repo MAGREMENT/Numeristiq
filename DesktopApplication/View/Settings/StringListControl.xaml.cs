@@ -6,16 +6,16 @@ using Model.Helpers.Settings;
 
 namespace DesktopApplication.View.Settings;
 
-public partial class NameListControl
+public partial class StringListControl
 {
     private readonly bool _raiseEvent;
     
-    public NameListControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
+    public StringListControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
     {
         InitializeComponent();
 
         SettingName.Text = setting.Name;
-        foreach (var s in setting.InteractionInterface as NameListInteractionInterface ?? Enumerable.Empty<string>())
+        foreach (var s in setting.InteractionInterface as IStringListInteractionInterface ?? Enumerable.Empty<string>())
         {
             ComboBox.Items.Add(new ComboBoxItem
             {

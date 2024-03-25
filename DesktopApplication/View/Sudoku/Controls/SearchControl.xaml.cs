@@ -3,7 +3,7 @@ using System.Windows.Controls;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
-public partial class SearchControl : UserControl
+public partial class SearchControl
 {
     private bool _hasBoxContent;
     private bool _raiseEvent = true;
@@ -51,12 +51,18 @@ public partial class SearchControl : UserControl
 
     public void AddResult(string s)
     {
-        ResultPanel.Children.Add(new TextBlock
+        var tb = new TextBlock
         {
             Text = s,
             Style = (Style)((App)Application.Current).Resources["SearchResult"]!
-        });
+        };
+        tb.MouseLeftButtonDown +=
+            (_, _) => DragDrop.DoDragDrop(tb, new StrategyDragDropData(s, -1), DragDropEffects.Move);
+        
+        ResultPanel.Children.Add(tb);
     }
 }
 
 public delegate void OnSearch(string s);
+
+public record StrategyDragDropData(string Name, int Index);

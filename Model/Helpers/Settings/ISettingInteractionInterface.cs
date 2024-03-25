@@ -11,6 +11,11 @@ public interface ISettingInteractionInterface
     
 }
 
+public interface IStringListInteractionInterface : ISettingInteractionInterface, IEnumerable<string>
+{
+    
+}
+
 public class SliderInteractionInterface : ISettingInteractionInterface
 {
     public SliderInteractionInterface(int min, int max, int tickFrequency)
@@ -43,7 +48,7 @@ public class MinMaxSliderInteractionInterface : ISettingInteractionInterface
     public int TickFrequency { get; }
 }
 
-public class NameListInteractionInterface : ISettingInteractionInterface, IEnumerable<string>
+public class NameListInteractionInterface : IStringListInteractionInterface
 {
     private readonly IReadOnlyList<INamed> _names;
     
@@ -66,7 +71,7 @@ public class NameListInteractionInterface : ISettingInteractionInterface, IEnume
     }
 }
 
-public class EnumListInteractionInterface<TEnum> : ISettingInteractionInterface, IEnumerable<string> where TEnum : struct, Enum
+public class EnumListInteractionInterface<TEnum> : IStringListInteractionInterface where TEnum : struct, Enum
 {
     private readonly IEnumerable<string> _enumerable;
 

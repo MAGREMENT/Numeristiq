@@ -13,7 +13,7 @@
         </Grid.ColumnDefinitions>
         
         <Path Grid.Column="0" Width="25" Height="25" Stroke="ForestGreen" StrokeThickness="3"
-              Data="M 7,7 12.5,16 18,7" x:Name="CheckMark"/>
+              Data="M 7,7 12.5,18 M 12.5,18 18,7" x:Name="CheckMark"/>
         
         <TextBlock Grid.Column="1" FontSize="14" Foreground="{DynamicResource Text}"
                    VerticalAlignment="Center" x:Name="TextBlock">Strategy</TextBlock>

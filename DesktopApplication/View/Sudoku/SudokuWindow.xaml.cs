@@ -1,17 +1,14 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using DesktopApplication.Presenter;
-using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.View.Sudoku.Pages;
 
 namespace DesktopApplication.View.Sudoku;
 
 public partial class SudokuWindow
 {
-    private readonly SudokuApplicationPresenter _presenter;
-    private readonly Page[] _pages;
+    private readonly SudokuPage[] _pages;
 
-    private int _currentPage;
+    private int _currentPage = -1;
     
     public SudokuWindow()
     {
@@ -20,11 +17,14 @@ public partial class SudokuWindow
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        _presenter = GlobalApplicationPresenter.Instance.InitializeSudokuApplicationPresenter();
-        _presenter.InitializeApplication();
-        _pages = new Page[] { new SolvePage(_presenter), new PlayPage(_presenter), new ManagePage(_presenter), new GeneratePage(_presenter) };
+        var presenter = GlobalApplicationPresenter.Instance.InitializeSudokuApplicationPresenter();
+        presenter.InitializeApplication();
+        _pages = new SudokuPage[]
+        {
+            new SolvePage(presenter), new PlayPage(presenter), new ManagePage(presenter), new GeneratePage(presenter)
+        };
 
-        Frame.Content = _pages[_currentPage];
+        SwapPage(0);
     }
     
     private void Minimize()
@@ -39,8 +39,13 @@ public partial class SudokuWindow
 
     private void SwapPage(int number)
     {
+        if(_currentPage != -1) _pages[_currentPage].OnClose();
+        
         _currentPage = number;
-        Frame.Content = _pages[_currentPage];
-        //TODO update page on show
+        var newOne = _pages[_currentPage];
+
+        TitleBar.InsideContent = newOne.TitleBarContent();
+        newOne.OnShow();
+        Frame.Content = newOne;
     }
 }

@@ -22,4 +22,5 @@ public interface ISudokuSolveView
     void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies);
     void HighlightStrategy(int index);
     void UnHighlightStrategy(int index);
+    void CopyToClipBoard(string s);
 }

@@ -200,6 +200,41 @@ public static class Cells
                (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
     }
 
+    public static List<CellPossibility> SeenExistingPossibilities(IStrategyUser strategyUser, CellPossibility cp)
+    {
+        var result = new List<CellPossibility>();
+
+        foreach (var poss in strategyUser.PossibilitiesAt(cp.Row, cp.Column).EnumeratePossibilities())
+        {
+            if (poss == cp.Possibility) continue;
+            
+            result.Add(new CellPossibility(cp.Row, cp.Column, poss));
+        }
+
+        foreach (var col in strategyUser.RowPositionsAt(cp.Row, cp.Possibility))
+        {
+            if (col == cp.Column) continue;
+
+            result.Add(new CellPossibility(cp.Row, col, cp.Possibility));
+        }
+        
+        foreach (var row in strategyUser.ColumnPositionsAt(cp.Column, cp.Possibility))
+        {
+            if (row == cp.Row) continue;
+
+            result.Add(new CellPossibility(row, cp.Column, cp.Possibility));
+        }
+        
+        foreach (var pos in strategyUser.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility))
+        {
+            if (pos == cp.ToCell()) continue;
+
+            result.Add(new CellPossibility(pos, cp.Possibility));
+        }
+
+        return result;
+    }
+
     public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, CellPossibility first,
         CellPossibility second)
     {
@@ -211,7 +246,7 @@ public static class Cells
         IReadOnlyList<CellPossibility> list) //TODO USE THIS
     {
         if (list.Count == 0) return new List<CellPossibility>();
-        if (list.Count == 1) return new List<CellPossibility>(); //TODO
+        if (list.Count == 1) return SeenExistingPossibilities(strategyUser, list[0]);
 
         var result = new List<CellPossibility>();
         foreach (var cp in SharedSeenExistingPossibilities(strategyUser, list[0], list[1]))
@@ -237,7 +272,7 @@ public static class Cells
     {
         if (count > list.Count) return new List<CellPossibility>();
         if (count == 0) return new List<CellPossibility>();
-        if (count == 1) return new List<CellPossibility>(); //TODO
+        if (count == 1) return SeenExistingPossibilities(strategyUser, list[0]);
 
         var result = new List<CellPossibility>();
         foreach (var cp in SharedSeenExistingPossibilities(strategyUser, list[0], list[1]))

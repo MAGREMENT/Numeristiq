@@ -114,6 +114,7 @@ public partial class SolvePage : ISudokuSolveView
 
     public void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies)
     {
+        StrategyPanel.Children.Clear();
         for (int i = 0; i < strategies.Count; i++)
         {
             var iForEvent = i;
@@ -139,6 +140,11 @@ public partial class SolvePage : ISudokuSolveView
             if(index < 0 || index >= StrategyPanel.Children.Count) return;
             ((StrategyControl)StrategyPanel.Children[index]).SetHighlight(false);
         });
+    }
+
+    public void CopyToClipBoard(string s)
+    {
+        Clipboard.SetText(s);
     }
 
     #endregion
@@ -184,6 +190,21 @@ public partial class SolvePage : ISudokuSolveView
 
     private void DoBoardInput(object sender, KeyEventArgs e)
     {
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+        {
+            switch (e.Key)
+            {
+                case Key.C :
+                    _presenter.Copy();
+                    break;
+                case Key.V :
+                    _presenter.Paste(Clipboard.GetText());
+                    break;
+            }
+
+            return;
+        }
+        
         switch (e.Key)
         {
             case Key.D1 :
@@ -228,6 +249,28 @@ public partial class SolvePage : ISudokuSolveView
                 _presenter.DeleteCurrentCell();
                 break;
         }
+    }
+
+    public override void OnShow()
+    {
+        _presenter.OnShow();
+    }
+
+    public override void OnClose()
+    {
+        
+    }
+
+    public override object TitleBarContent()
+    {
+        var settings = new SettingsButton();
+        settings.Clicked += () =>
+        {
+            var window = new SettingWindow(_presenter.SettingsPresenter);
+            window.Show();
+        };
+
+        return settings;
     }
 }
 

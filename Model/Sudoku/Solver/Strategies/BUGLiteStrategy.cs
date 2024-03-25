@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
 using Model.Sudoku.Solver.Position;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -10,19 +12,22 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-public class BUGLiteStrategy : SudokuStrategy //TODO improve detection (problem with structureDone)
+public class BUGLiteStrategy : SudokuStrategy
 {
     public const string OfficialName = "BUG-Lite";
     private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
 
     public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
-    private readonly int _maxStructSize;
+    private readonly IntSetting _maxStructSize;
     
     public BUGLiteStrategy(int maxStructSize) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
     {
-        _maxStructSize = maxStructSize;
+        _maxStructSize = new IntSetting("Maximum cell count",
+            new SliderInteractionInterface(4, 20, 1), maxStructSize);
         UniquenessDependency = UniquenessDependency.FullyDependent;
+
+        AddSetting(_maxStructSize);
     }
     
     public override void Apply(IStrategyUser strategyUser)
@@ -128,7 +133,7 @@ public class BUGLiteStrategy : SudokuStrategy //TODO improve detection (problem 
             {
                 if (Process(strategyUser, bcp)) return true;
             }
-            else if (structure.Count < _maxStructSize &&
+            else if (structure.Count < _maxStructSize.Value &&
                       Search(strategyUser, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
             
             structure.Remove(match.BiCellPossibilities.One);

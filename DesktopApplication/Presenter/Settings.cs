@@ -23,7 +23,12 @@ public class Settings
         };
         _collections = new[]
         {
-            new[] {new NamedListSpan<ISetting>("Themes", _settings, 0)}
+            new[] {new NamedListSpan<ISetting>("Themes", _settings, 0)},
+            new[]
+            {
+                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Board", _settings, 1, 2)
+            }
         };
         _repository = repository;
     }
@@ -95,7 +100,8 @@ public class Settings
 
 public enum SettingCollections
 {
-    WelcomeWindow
+    WelcomeWindow,
+    SudokuSolvePage
 }
 
 public enum SpecificSettings

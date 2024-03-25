@@ -5,23 +5,27 @@ using System.Windows.Media;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Manage;
 using DesktopApplication.View.Settings;
+using DesktopApplication.View.Sudoku.Controls;
 using DesktopApplication.View.Utility;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
-public partial class ManagePage : ISudokuManageView
+public partial class ManagePage : ISudokuManageView //TODO visuals for drag & drop
 {
+    private const int ToleranceForDragScroll = 80;
+    private const int DragScrollOffset = 60;
+    
     private readonly SudokuManagePresenter _presenter;
+    
     public ManagePage(SudokuApplicationPresenter appPresenter)
     {
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
+        _presenter.InitStrategies();
         
         RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
-        
-        _presenter.InitStrategies();
     }
 
     public void ClearSearchResults()
@@ -40,15 +44,31 @@ public partial class ManagePage : ISudokuManageView
         for (int i = 0; i < list.Count; i++)
         {
             var strategy = list[i];
+            
             var tb = new TextBlock
             {
                 Text = strategy.Name,
                 Foreground = new SolidColorBrush(ColorUtility.ToColor((Intensity)strategy.Difficulty)),
                 Padding = new Thickness(5, 5, 0, 5),
-                FontSize = 15
+                FontSize = 15,
+                AllowDrop = true
             };
             var iForEvent = i;
-            tb.MouseLeftButtonDown += (_, _) => _presenter.OnActiveStrategySelection(iForEvent);
+            tb.MouseLeftButtonDown += (_, _) =>
+            {
+                _presenter.OnActiveStrategySelection(iForEvent);
+                DragDrop.DoDragDrop(tb, new StrategyDragDropData(strategy.Name, iForEvent), DragDropEffects.Move);
+            };
+            tb.Drop += (_, args) =>
+            {
+                if (args.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data) return;
+            
+                var relativePosition = tb.IsUnderHalfHeight(args) ? iForEvent + 1 : iForEvent;
+                if (data.Index == -1) _presenter.AddStrategy(data.Name, relativePosition);
+                else _presenter.InterchangeStrategies(data.Index, relativePosition);
+                
+                args.Handled = true;
+            };
             
             StrategyPanel.Children.Add(tb);
         }
@@ -73,9 +93,43 @@ public partial class ManagePage : ISudokuManageView
             }
         }
     }
+    
+    public override void OnShow()
+    {
+        
+    }
+
+    public override void OnClose()
+    {
+       
+    }
+
+    public override object? TitleBarContent()
+    {
+        return null;
+    }
 
     private void OnSearch(string s)
     {
         _presenter.OnSearch(s);
+    }
+
+    private void DropInBin(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data) return;
+
+        if (data.Index != -1) _presenter.RemoveStrategy(data.Index);
+    }
+    
+    private void ScrollOnDrag(object sender, DragEventArgs e)
+    {
+        var pos = e.GetPosition(StrategyScrollViewer).Y;
+
+        if (pos < ToleranceForDragScroll) StrategyScrollViewer.ScrollToVerticalOffset(
+            StrategyScrollViewer.VerticalOffset - DragScrollOffset * (ToleranceForDragScroll - pos) / ToleranceForDragScroll);
+        else if (pos > StrategyScrollViewer.ActualHeight - ToleranceForDragScroll) StrategyScrollViewer
+            .ScrollToVerticalOffset(StrategyScrollViewer.VerticalOffset + DragScrollOffset * (pos - 
+                StrategyScrollViewer.ActualHeight + ToleranceForDragScroll) / ToleranceForDragScroll);     
+        
     }
 }

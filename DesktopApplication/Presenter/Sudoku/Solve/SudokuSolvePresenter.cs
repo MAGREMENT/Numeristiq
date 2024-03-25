@@ -30,6 +30,8 @@ public class SudokuSolvePresenter : ICommitApplier
 
     private int _logCount;
     private StateShown _stateShown = StateShown.Before;
+    
+    public SettingsPresenter SettingsPresenter { get; }
 
     public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings, IStrategyRepositoryUpdater updater)
     {
@@ -40,7 +42,7 @@ public class SudokuSolvePresenter : ICommitApplier
         _settings = settings;
         _updater = updater;
 
-        _view.InitializeStrategies(_solver.StrategyManager.Strategies);
+        SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuSolvePage);
     }
 
     public void OnSudokuAsStringBoxShowed()
@@ -161,8 +163,9 @@ public class SudokuSolvePresenter : ICommitApplier
     public StepExplanationPresenterBuilder? RequestExplanation()
     {
         if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return null;
-        
-        return new StepExplanationPresenterBuilder(_solver.Logs[_currentlyOpenedLog].Explanation, _solver);
+
+        var log = _solver.Logs[_currentlyOpenedLog];
+        return new StepExplanationPresenterBuilder(log.Explanation, log.StateBefore);
     }
 
     public void EnableStrategy(int index, bool enabled)
@@ -215,11 +218,29 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _view.UnHighlightStrategy(index);
     }
+
+    public void Copy()
+    {
+        //TODO dialog
+        if(_currentlyDisplayedState is not null) _view.CopyToClipBoard(SudokuTranslator.TranslateBase32Format
+            (_currentlyDisplayedState, new AlphabeticalBase32Translator()));
+    }
+
+    public void Paste(string s)
+    {
+        //TODO dialog
+        SetNewState(SudokuTranslator.TranslateGridFormat(s, true));
+    }
     
     public void Apply(BuiltChangeCommit<ISudokuHighlighter> commit)
     {
         _solver.ApplyCommit(commit);
         UpdateLogs();
+    }
+
+    public void OnShow()
+    {
+        _view.InitializeStrategies(_solver.StrategyManager.Strategies);
     }
 
     private void ClearLogs()
@@ -254,6 +275,13 @@ public class SudokuSolvePresenter : ICommitApplier
         }
         
         drawer.Refresh();
+    }
+
+    private void SetNewState(ISolvingState solvingState)
+    {
+        _solver.SetState(solvingState);
+        SetShownState(_solver, true);
+        ClearLogs();
     }
 }
 

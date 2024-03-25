@@ -27,7 +27,7 @@
 		
 		<TextBlock
 			Grid.Column="1"
-			Margin="4 0 0 0"
+			Margin="4 0 10 0"
 			VerticalAlignment="Center"
 			FontSize="26"
 			Foreground="{DynamicResource Text}"

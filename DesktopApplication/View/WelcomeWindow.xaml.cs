@@ -26,7 +26,6 @@ public partial class WelcomeWindow
         
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
         RenderOptions.SetBitmapScalingMode(GameImage, BitmapScalingMode.Fant);
-        if(TitleBar.InsideContent is Image image) RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.Fant);
             
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -66,7 +65,7 @@ public partial class WelcomeWindow
         Close();
     }
 
-    private void ShowSettingWindow(object sender, MouseButtonEventArgs e)
+    private void ShowSettingWindow()
     {
         var window = new SettingWindow(_presenter.SettingsPresenter);
         window.Show();

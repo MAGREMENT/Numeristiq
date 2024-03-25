@@ -3,7 +3,7 @@ using DesktopApplication.Presenter.Tectonic.Solve;
 
 namespace DesktopApplication.View.Tectonic.Controls;
 
-public partial class EmbeddedTectonicBoardControl //TODO size change bug
+public partial class EmbeddedTectonicBoardControl
 { 
     public event OnDimensionCountChange? RowCountChanged;
     public event OnDimensionCountChange? ColumnCountChanged;

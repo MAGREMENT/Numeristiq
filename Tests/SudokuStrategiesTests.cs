@@ -63,6 +63,51 @@ public class SudokuStrategiesTests
             new SolverProgress(ProgressType.PossibilityRemoval, 6, 7, 3));
     }
 
+    [Test]
+    public void BugLiteTest()
+    {
+        TestSudokuStrategyInstance(new BUGLiteStrategy(16),
+            "41p0h021h494090h03820h2118588254g11405hahal00h12218150g2i2410hh409143481o8o80hh42114035c54112805810341gg28ggi205h252812ggg5009i841h81c1c2g8103gg0h1a811a58g1541421",
+            new SolverProgress(ProgressType.PossibilityRemoval, 9, 6, 0),
+            new SolverProgress(ProgressType.PossibilityRemoval, 9, 7, 0));
+    }
+
+    [Test]
+    public void BugLiteTest2()
+    {
+        TestSudokuStrategyInstance(new BUGLiteStrategy(16),
+            "41gg211103098gog050igq058121gg4111go11go8141gg050o0321092141g105118i8g0ig105110h81032868488g8g03210941g105112141g80311gg050o8105110h09418122i0g28282g805gg21114o4o",
+            new SolverProgress(ProgressType.PossibilityRemoval, 1, 1, 1),
+            new SolverProgress(ProgressType.PossibilityRemoval, 4, 1, 1));
+    }
+
+    [Test]
+    public void BugLiteTest3()
+    {
+        TestSudokuStrategyInstance(new BUGLiteStrategy(16),
+            "g121810k410k09110350090h810330g105605003053009g10h60810a84g14k8k4m2188110h413009o0308403g40a843030o40641o80h05h003k02188900h4881h009030k4k1460m4210h41g4118803o0gc",
+            new SolverProgress(ProgressType.PossibilityRemoval, 6, 7, 8),
+            new SolverProgress(ProgressType.PossibilityRemoval, 7, 7, 8));
+    }
+
+    [Test]
+    public void BugLiteTest4()
+    {
+        TestSudokuStrategyInstance(new BUGLiteStrategy(16),
+            "0309054g4g811121g1810h112109g1054242g16060051103810h0941222218810hg11c1409810hl0k4540350210511g14803210oc8cg2gg14a816k542o1e1m2g0582hiig0941929i1142ca4i6k442og18m",
+            new SolverProgress(ProgressType.PossibilityRemoval, 1, 8, 2),
+            new SolverProgress(ProgressType.PossibilityRemoval, 7, 8, 2));
+    }
+
+    [Test]
+    public void BugLiteTest5()
+    {
+        TestSudokuStrategyInstance(new BUGLiteStrategy(18),
+            "900h21g10984034114g105410h11038128289003092184410h14g109h00350218g05o04g05218103k0go11g84g41h00h1884oc28qaaa2181144803g8k00h140i48g1054g1168aaaa0i481481kg21k8140a",
+            new SolverProgress(ProgressType.PossibilityRemoval, 2, 5, 5),
+            new SolverProgress(ProgressType.PossibilityRemoval, 8, 5, 5));
+    }
+
     private void TestSudokuStrategyInstance(SudokuStrategy strategy, string stateBefore32, params SolverProgress[] expected)
     {
         strategy.OnCommitBehavior = OnCommitBehavior.WaitForAll;

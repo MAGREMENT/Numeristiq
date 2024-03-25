@@ -11,4 +11,19 @@ public partial class PlayPage : ISudokuPlayView
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
     }
+
+    public override void OnShow()
+    {
+        
+    }
+
+    public override void OnClose()
+    {
+       
+    }
+
+    public override object? TitleBarContent()
+    {
+        return null;
+    }
 }

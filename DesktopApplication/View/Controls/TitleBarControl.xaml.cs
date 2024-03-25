@@ -14,15 +14,14 @@ public partial class TitleBarControl
 
     private bool _allowResize = true;
     
-    public object InsideContent
+    public object? InsideContent
     {
         get => GetValue(InsideContentProperty);
         set => SetValue(InsideContentProperty, value);
     }
     
     public static readonly DependencyProperty InsideContentProperty =
-        DependencyProperty.Register("InsideContent", typeof(object), typeof(TitleBarControl),
-            new PropertyMetadata(null));
+        DependencyProperty.Register("InsideContent", typeof(object), typeof(TitleBarControl));
 
     public bool AllowResize
     {

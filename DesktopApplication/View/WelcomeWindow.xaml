@@ -16,8 +16,7 @@
     <DockPanel>
         <controls:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                AllowResize="False">
-            <Image Width="26" Height="26" Source="Images/setting.png" Margin="7" HorizontalAlignment="Left"
-                       MouseLeftButtonDown="ShowSettingWindow"/>
+            <controls:SettingsButton Clicked="ShowSettingWindow"></controls:SettingsButton>
         </controls:TitleBarControl>
         
         <Grid Background="{DynamicResource Background1}">

@@ -38,6 +38,7 @@ public partial class SettingWindow
 
     private void ShowSettings(NamedListSpan<ISetting> settings)
     {
+        SettingPanel.Children.Clear();
         foreach (var settingAndIndex in settings.EnumerateWithIndex())
         {
             var control = SettingTranslator.Translate(_presenter, settingAndIndex.Item1, settingAndIndex.Item2);

@@ -1,11 +1,12 @@
-﻿<Page x:Class="DesktopApplication.View.Sudoku.Pages.GeneratePage"
+﻿<pages:SudokuPage x:Class="DesktopApplication.View.Sudoku.Pages.GeneratePage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:pages="clr-namespace:DesktopApplication.View.Sudoku.Pages"
       mc:Ignorable="d"
       Title="GeneratePage" Height="660" Width="1300">
     <Grid Background="{DynamicResource Background1}">
         <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Text}">Coming Soon...</TextBlock>
     </Grid>
-</Page>
+</pages:SudokuPage>

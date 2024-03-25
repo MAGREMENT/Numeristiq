@@ -277,7 +277,9 @@
     "Enabled": false,
     "Locked": false,
     "Behavior": 0,
-    "Settings": {}
+    "Settings": {
+      "Maximum cell count": "16"
+    }
   },
   {
     "Name": "XY-Chains",
