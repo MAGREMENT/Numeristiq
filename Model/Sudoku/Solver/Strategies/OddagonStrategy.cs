@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class OddagonStrategy : SudokuStrategy
 {
     public const string OfficialName = "Oddagon";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public OddagonStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public OddagonStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
     
@@ -33,7 +31,7 @@ public class OddagonStrategy : SudokuStrategy
             }
 
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                    new OddagonReportBuilder(ao)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                    new OddagonReportBuilder(ao)) && StopOnFirstPush) return;
         }
     }
 }

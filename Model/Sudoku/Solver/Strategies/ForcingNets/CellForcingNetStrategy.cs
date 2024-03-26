@@ -13,13 +13,11 @@ namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 public class CellForcingNetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Cell Forcing Net";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
     private readonly int _max;
 
-    public CellForcingNetStrategy(int maxPossibilities) : base(OfficialName,  StrategyDifficulty.Extreme, DefaultBehavior)
+    public CellForcingNetStrategy(int maxPossibilities) : base(OfficialName,  StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _max = maxPossibilities;
     }
@@ -71,19 +69,19 @@ public class CellForcingNetStrategy : SudokuStrategy
                     view.ChangeBuffer.ProposeSolutionAddition(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.On,
-                                view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(cell.Possibility, cell.Row, cell.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new CellForcingNetBuilder(colorings, current.Row, current.Column, cell, Coloring.Off,
-                                view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
                 }
             }
         }
         
-        //Not yet proven useful so bye bye for now, if implemented, do not forget to add the OnCommitBehavior
+        //Not yet proven useful so bye bye for now, if implemented, do not forget to add the OnInstanceHandling
         /*HashSet<int> count = new HashSet<int>(colorings.Length);
 
         for (int row = 0; row < 9; row++)

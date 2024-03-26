@@ -15,13 +15,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class ThorsHammerStrategy : SudokuStrategy
 {
     public const string OfficialName = "Thor's Hammer";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly IBoxLoopFinder _finder;
     
-    public ThorsHammerStrategy(IBoxLoopFinder finder) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public ThorsHammerStrategy(IBoxLoopFinder finder) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _finder = finder;
     }
@@ -173,7 +171,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         }
 
         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                new ThorsHammerReportBuilder(cells, notInPattern)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                new ThorsHammerReportBuilder(cells, notInPattern)) && StopOnFirstPush) return true;
 
         return false;
     }

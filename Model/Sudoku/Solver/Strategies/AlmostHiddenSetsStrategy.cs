@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class AlmostHiddenSetsStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Hidden Sets";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-
-    public AlmostHiddenSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public AlmostHiddenSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
     
@@ -65,7 +63,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, new List<Link<CellPossibility>>()))
-                                                       && OnCommitBehavior == OnCommitBehavior.Return;
+                                                       && StopOnFirstPush;
     }
 
     private bool Process1CommonCell(IStrategyUser strategyUser, IPossibilitiesPositions one,
@@ -100,7 +98,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links)) &&
-                        OnCommitBehavior == OnCommitBehavior.Return;
+                        StopOnFirstPush;
     }
 }
 

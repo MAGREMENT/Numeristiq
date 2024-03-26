@@ -14,13 +14,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class SueDeCoqStrategy : SudokuStrategy
 {
     public const string OfficialName = "Sue-De-Coq";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.BestOnly;
 
     private readonly int _maxNotDrawnCandidates;
     
-    public SueDeCoqStrategy(int maxNotDrawnCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public SueDeCoqStrategy(int maxNotDrawnCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         _maxNotDrawnCandidates = maxNotDrawnCandidates;
     }
@@ -121,7 +119,7 @@ public class SueDeCoqStrategy : SudokuStrategy
                 Process(strategyUser, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                        new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        new SueDeCoqReportBuilder(boxPP, unitPP, cells)) && StopOnFirstPush) return true;
             }
         }
 

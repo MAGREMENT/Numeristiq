@@ -10,11 +10,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class XYWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "XY-Wing";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public XYWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior) {}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public XYWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling) {}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -101,7 +99,7 @@ public class XYWingStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.Commit(
             new XYWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 }
 

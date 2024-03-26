@@ -37,15 +37,15 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
                         case (Coloring.On, Coloring.Off) :
                         case (Coloring.Off, Coloring.On) :
                             if (type.ProcessFullLoop(strategyUser, loop) &&
-                                type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                                type.Strategy!.StopOnFirstPush) return;
                             break;
                         case(Coloring.On, Coloring.On) :
                             if (type.ProcessStrongInferenceLoop(strategyUser, entry.Key, loop) &&
-                                type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                                type.Strategy!.StopOnFirstPush) return;
                             break;
                         case (Coloring.Off, Coloring.Off) :
                             if (type.ProcessWeakInferenceLoop(strategyUser, entry.Key, loop) &&
-                                type.Strategy!.OnCommitBehavior == OnCommitBehavior.Return) return;
+                                type.Strategy!.StopOnFirstPush) return;
                             break;
                     }
                 }

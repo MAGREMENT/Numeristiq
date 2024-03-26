@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class DistributedDisjointSubsetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Distributed Disjoint Subset";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public DistributedDisjointSubsetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public DistributedDisjointSubsetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
     
@@ -104,7 +102,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new DistributedDisjointSubsetReportBuilder(PossibilitiesCellsDeepCopy(possibilitiesCells))) &&
-               OnCommitBehavior == OnCommitBehavior.Return;
+               StopOnFirstPush;
     }
 
     private Dictionary<int, List<Cell>> PossibilitiesCellsDeepCopy(Dictionary<int, List<Cell>> original)

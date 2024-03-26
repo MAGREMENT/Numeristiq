@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class ReverseBUGLiteStrategy : SudokuStrategy
 {
     public const string OfficialName = "Reverse BUG-Lite";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public ReverseBUGLiteStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    public ReverseBUGLiteStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -78,7 +76,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(row1, row2, cols1, cols2, Unit.Row)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
             }
         }
         
@@ -138,7 +136,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(col1, col2, rows1, rows2, Unit.Column)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
             }
         }
     }

@@ -147,7 +147,7 @@ public class BandCollection : IPatternCollection
         }
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.OnCommitBehavior == OnCommitBehavior.Return;
+            new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstPush;
     }
     
     private bool GetClues(IStrategyUser strategyUser, int mini, Unit unit, int maxClueCount, int maxDifferentClueCount)

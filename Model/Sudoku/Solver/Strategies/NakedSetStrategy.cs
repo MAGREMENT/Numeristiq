@@ -14,13 +14,11 @@ public class NakedSetStrategy : SudokuStrategy
     public const string OfficialNameForType2 = "Naked Double";
     public const string OfficialNameForType3 = "Naked Triple";
     public const string OfficialNameForType4 = "Naked Quad";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
 
-    public NakedSetStrategy(int type) : base("", StrategyDifficulty.None, DefaultBehavior)
+    public NakedSetStrategy(int type) : base("", StrategyDifficulty.None, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
@@ -119,7 +117,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove,
-            except, row, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
+            except, row, Unit.Row)) && StopOnFirstPush;
     }
     
     private LinePositions EveryColumnCellWithLessPossibilities(IStrategyUser strategyUser, int col, int than)
@@ -174,7 +172,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove, except,
-            col, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
+            col, Unit.Column)) && StopOnFirstPush;
     }
     
     private MiniGridPositions EveryMiniGridCellWithLessPossibilities(IStrategyUser strategyUser, int miniRow, int miniCol, int than)
@@ -243,7 +241,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.Commit( new MiniGridNakedPossibilitiesReportBuilder(toRemove,
-            except)) && OnCommitBehavior == OnCommitBehavior.Return;
+            except)) && StopOnFirstPush;
     }
 }
 

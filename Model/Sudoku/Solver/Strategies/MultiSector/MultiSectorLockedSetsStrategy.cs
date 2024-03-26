@@ -13,14 +13,12 @@ namespace Model.Sudoku.Solver.Strategies.MultiSector;
 public class MultiSectorLockedSetsStrategy : SudokuStrategy
 {
     public const string OfficialName = "Multi-Sector Locked Sets";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IMultiSectorCellsSearcher[] _cellsSearchers;
     
     public MultiSectorLockedSetsStrategy(params IMultiSectorCellsSearcher[] searchers) : base(OfficialName,
-        StrategyDifficulty.Extreme, DefaultBehavior)
+        StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _cellsSearchers = searchers;
     }
@@ -80,7 +78,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && StopOnFirstPush;
     }
 
     private bool IsSameCoverHouses(CoverHouse[] one, CoverHouse[] two)

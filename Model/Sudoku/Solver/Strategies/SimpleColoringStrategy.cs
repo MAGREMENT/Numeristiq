@@ -12,11 +12,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class SimpleColoringStrategy : SudokuStrategy
 {
     public const string OfficialName = "Simple Coloring";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling){}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -33,7 +31,7 @@ public class SimpleColoringStrategy : SudokuStrategy
             {
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new SimpleColoringReportBuilder(coloredVertices, true)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
                 
                 continue;
             }
@@ -41,7 +39,7 @@ public class SimpleColoringStrategy : SudokuStrategy
             SearchForTwoColorsElsewhere(strategyUser, coloredVertices);
             
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                    new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                    new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstPush) return;
         }
     }
 

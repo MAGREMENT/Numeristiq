@@ -35,11 +35,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class XWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "X-Wing";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling){}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -87,7 +85,7 @@ public class XWingStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.Commit( new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 
     private bool RemoveFromRows(IStrategyUser strategyUser, IReadOnlyLinePositions rows, int col1, int col2, int number)
@@ -103,7 +101,7 @@ public class XWingStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.Commit( new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 }
 

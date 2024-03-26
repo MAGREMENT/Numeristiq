@@ -12,11 +12,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class JuniorExocetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Junior Exocet";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public JuniorExocetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
@@ -144,7 +142,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit( new DoubleJuniorExocetReportBuilder(je1, je2))
-               && OnCommitBehavior == OnCommitBehavior.Return;
+               && StopOnFirstPush;
     }
 
     private static Cell FindFirstTargetNotIn(JuniorExocet je1, JuniorExocet je2, HashSet<Cell> total)
@@ -456,7 +454,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit( new JuniorExocetReportBuilder(je))
-               && OnCommitBehavior == OnCommitBehavior.Return;
+               && StopOnFirstPush;
     }
 
     private void RemoveAll(IStrategyUser strategyUser, Cell cell, ReadOnlyBitSet16 except)

@@ -16,7 +16,8 @@ public class LogManagedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
 
     private readonly IPushHandler<TVerifier, THighlighter>[] _pushHandlers =
     {
-        new ReturnPushHandler<TVerifier, THighlighter>(), new WaitForAllPushHandler<TVerifier, THighlighter>(), new ChooseBestPushHandler<TVerifier, THighlighter>()
+        new FirstOnlyPushHandler<TVerifier, THighlighter>(), new UnorderedAllPushHandler<TVerifier, THighlighter>(),
+        new BestOnlyPushHandler<TVerifier, THighlighter>()
     };
 
     public LogManagedChangeBuffer(ILogManagedChangeProducer<TVerifier, THighlighter> changeProducer)
@@ -73,7 +74,7 @@ public class LogManagedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
     {
         if (_commits.Count == 0) return;
 
-        var handler = _pushHandlers[(int)pusher.OnCommitBehavior];
+        var handler = _pushHandlers[(int)pusher.InstanceHandling];
         handler.Push(pusher, _commits, _producer);
         
         _commits.Clear();
@@ -96,7 +97,7 @@ public interface IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdata
     void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer);
 }
 
-public class ReturnPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+public class FirstOnlyPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
@@ -113,7 +114,7 @@ public class ReturnPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier
     }
 }
 
-public class WaitForAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+public class UnorderedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
     {
@@ -135,7 +136,7 @@ public class WaitForAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVeri
     }
 }
 
-public class ChooseBestPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+public class BestOnlyPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
     
@@ -157,6 +158,35 @@ public class ChooseBestPushHandler<TVerifier, THighlighter> : IPushHandler<TVeri
         }
 
         producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, state), best.Changes, pusher, state);
+    }
+}
+
+public class SortedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter>
+    where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+{
+    private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
+    
+    public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, ILogManagedChangeProducer<TVerifier, THighlighter> producer)
+    {
+        var state = producer.CurrentState;
+        
+        var comparer = pusher as ICustomCommitComparer<TVerifier, THighlighter> ?? _default;
+        
+        commits.Sort((c1, c2) => comparer.Compare(c1, c2));
+
+        foreach (var commit in commits)
+        {
+            List<SolverProgress> impactfulChanges = new();
+            
+            foreach (var change in commit.Changes)
+            {
+                if (producer.ExecuteChange(change)) impactfulChanges.Add(change);
+            }
+
+            if (impactfulChanges.Count == 0) continue;
+            
+            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, state), impactfulChanges, pusher, state);
+        }
     }
 }
 

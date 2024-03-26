@@ -10,11 +10,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class TwoStringKiteStrategy : SudokuStrategy
 {
     public const string OfficialName = "Two-String Kite";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public TwoStringKiteStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public TwoStringKiteStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
     }
 
@@ -55,7 +53,7 @@ public class TwoStringKiteStrategy : SudokuStrategy
 
                             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                     new TwoStringKiteReportBuilder(number, rCommon, cCommon, rOther,
-                                        cOther)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                                        cOther)) && StopOnFirstPush) return;
                         }
                     }
                 }

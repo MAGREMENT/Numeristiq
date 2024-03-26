@@ -11,15 +11,13 @@ namespace Model.Sudoku.Solver.Strategies.AlternatingInference;
 
 public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState, ISudokuHighlighter> where T : ISudokuElement
 {
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.BestOnly;
+
     private readonly IAlternatingInferenceType<T> _type;
     private readonly IAlternatingInferenceAlgorithm<T> _algorithm;
 
     public AlternatingInferenceGeneralization(IAlternatingInferenceType<T> type, IAlternatingInferenceAlgorithm<T> algo)
-        : base("", type.Difficulty, DefaultBehavior)
+        : base("", type.Difficulty, DefaultInstanceHandling)
     {
         Name = algo.Type == AlgorithmType.Loop ? type.LoopName : type.ChainName;
         _type = type;
@@ -73,7 +71,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<CellPossibility>(chain)) &&
-                            strategy.OnCommitBehavior == OnCommitBehavior.Return;
+                            strategy.StopOnFirstPush;
     }
     
     static bool ProcessChainWithComplexGraph(IStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain,
@@ -91,7 +89,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
-                            strategy.OnCommitBehavior == OnCommitBehavior.Return;
+                            strategy.StopOnFirstPush;
     }
 }
 

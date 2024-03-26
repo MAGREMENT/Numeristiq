@@ -12,11 +12,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Extended Unique Rectangles";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public ExtendedUniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public ExtendedUniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -141,7 +139,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
             
             return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                        new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
-                   OnCommitBehavior == OnCommitBehavior.Return;
+                   StopOnFirstPush;
         }
         
         
@@ -180,7 +178,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                    new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
-                        OnCommitBehavior == OnCommitBehavior.Return;
+                        StopOnFirstPush;
     }
 }
 

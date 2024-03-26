@@ -43,7 +43,7 @@ public class SudokuSolveBatchCommand : Command
             var s = commentStart == -1 ? line : line[..commentStart];
             
             solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
-            if (report.IsUsed(WaitForAllIndex)) solver.Solve(OnCommitBehavior.WaitForAll);
+            if (report.IsUsed(WaitForAllIndex)) solver.Solve(InstanceHandling.UnorderedAll);
             else solver.Solve();
         }
 

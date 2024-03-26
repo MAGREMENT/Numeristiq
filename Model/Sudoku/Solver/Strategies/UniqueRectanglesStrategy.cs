@@ -14,12 +14,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class UniqueRectanglesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Unique Rectangles";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly BooleanSetting _allowMissingCandidates;
     
-    public UniqueRectanglesStrategy(bool allowMissingCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public UniqueRectanglesStrategy(bool allowMissingCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", allowMissingCandidates);
         UniquenessDependency = UniquenessDependency.FullyDependent;
@@ -98,7 +97,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
 
         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    StopOnFirstPush) return true;
         
         //Type 2
         if (roofOnePossibilities.Count == 3 && roofTwoPossibilities.Count == 3 &&
@@ -117,7 +116,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         
         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    StopOnFirstPush) return true;
         
         //Type 3
         var notBiValuePossibilities = roofOnePossibilities | roofTwoPossibilities;
@@ -132,7 +131,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
             ProcessUrWithAls(strategyUser, roof, als);
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new UniqueRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
-                        OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        StopOnFirstPush) return true;
         }
 
         //Type 4 & 5
@@ -200,7 +199,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         
         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    StopOnFirstPush) return true;
         
         //Type 6 (aka hidden type 2)
         if (roof[0].Row == roof[1].Row || roof[0].Column == roof[1].Column)
@@ -223,7 +222,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
                         if (strategyUser.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr1, cpf1)))
-                                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                    && StopOnFirstPush) return true;
                     }
                 
                     if (graph.AreNeighbors(cpr2, cpf2, LinkStrength.Strong))
@@ -231,7 +230,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
                         if (strategyUser.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr2, cpf2)))
-                                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                    && StopOnFirstPush) return true;
                     }
                 }
             }
@@ -296,7 +295,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
                     if (strategyUser.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
-                            cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            cell, opposite, values.One)) && StopOnFirstPush) return true;
                 }
                 
                 if (!twoWasChangedCopy && strategyUser.RowPositionsAt(row, values.Two).Count == 2 &&
@@ -304,7 +303,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
                     if (strategyUser.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
-                            cell, opposite, values.One)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            cell, opposite, values.One)) && StopOnFirstPush) return true;
                 }
             }
         }

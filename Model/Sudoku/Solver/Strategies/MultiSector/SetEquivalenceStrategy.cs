@@ -10,14 +10,12 @@ namespace Model.Sudoku.Solver.Strategies.MultiSector;
 public class SetEquivalenceStrategy : SudokuStrategy
 {
     public const string OfficialName = "Set Equivalence";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly ISetEquivalenceSearcher[] _searchers;
     
     public SetEquivalenceStrategy(params ISetEquivalenceSearcher[] searchers)
-        : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+        : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _searchers = searchers;
     }
@@ -103,7 +101,7 @@ public class SetEquivalenceStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new GeometricEquivalenceReportBuilder(equivalence)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
             }
         }
     }

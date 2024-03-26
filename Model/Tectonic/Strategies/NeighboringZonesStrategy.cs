@@ -11,7 +11,7 @@ namespace Model.Tectonic.Strategies;
 
 public class NeighboringZonesStrategy : TectonicStrategy
 {
-    public NeighboringZonesStrategy() : base("Neighboring Zones", StrategyDifficulty.Hard, OnCommitBehavior.ChooseBest)
+    public NeighboringZonesStrategy() : base("Neighboring Zones", StrategyDifficulty.Hard, InstanceHandling.BestOnly)
     {
     }
 
@@ -48,7 +48,7 @@ public class NeighboringZonesStrategy : TectonicStrategy
         {
             var current = queue.Dequeue();
 
-            foreach (var neighbor in Cells.GetNeighbors(current.Row, current.Column,
+            foreach (var neighbor in TectonicCellUtility.GetNeighbors(current.Row, current.Column,
                          strategyUser.Tectonic.RowCount, strategyUser.Tectonic.ColumnCount))
             {
                 if (!strategyUser.PossibilitiesAt(neighbor).Contains(possibility)) continue;
@@ -70,14 +70,14 @@ public class NeighboringZonesStrategy : TectonicStrategy
                 {
                     queue.Enqueue(cellBuffer[0]);
 
-                    foreach (var cell in Cells.SharedSeenCells(strategyUser.Tectonic, startOff, cellBuffer[0]))
+                    foreach (var cell in TectonicCellUtility.SharedSeenCells(strategyUser.Tectonic, startOff, cellBuffer[0]))
                     {
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                     }
 
                     if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
                             .Commit(new NeighboringZonesReportBuilder(possibility, on, off, startOff)) 
-                                                             && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                                             && StopOnFirstPush) return true;
                 }
                 
                 cellBuffer.Clear();

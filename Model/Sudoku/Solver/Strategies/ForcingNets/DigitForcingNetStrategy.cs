@@ -12,11 +12,9 @@ namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 public class DigitForcingNetStrategy : SudokuStrategy
 { 
     public const string OfficialName = "Digit Forcing Net";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public DigitForcingNetStrategy() : base(OfficialName,  StrategyDifficulty.Extreme, DefaultBehavior)
+    public DigitForcingNetStrategy() : base(OfficialName,  StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         
     }
@@ -61,7 +59,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
 
                 if (view.ChangeBuffer.NotEmpty() &&view.ChangeBuffer.Commit(
                         new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value, 
-                            possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                            possOn, other, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
             }
 
             if (on.Value != Coloring.On) continue;
@@ -74,7 +72,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
                     RemoveAll(view, possOn.Row, possOn.Column, possOn.Possibility, possOff.Possibility);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
                 }
                 else if (possOff.Possibility == possOn.Possibility && possOn.ShareAUnit(possOff))
                 {
@@ -85,7 +83,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
                     
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new DigitForcingNetReportBuilder(onColoring, offColoring, possOn, on.Value,
-                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                possOff, off.Value, view.PreComputer.Graphs.ComplexLinkGraph)) && StopOnFirstPush) return true;
                 }
             }
         }

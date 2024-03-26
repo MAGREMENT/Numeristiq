@@ -4,11 +4,76 @@ using Model.Utility;
 
 namespace Model.Tectonic;
 
-public static class Cells
+public static class TectonicCellUtility
 {
     public static bool AreNeighbors(Cell c1, Cell c2)
+        => c1 != c2 && Math.Abs(c1.Row - c2.Row) <= 1 && Math.Abs(c1.Column - c2.Column) <= 1;
+
+    public static bool AreAdjacent(Cell c1, Cell c2)
     {
-        return c1 != c2 && Math.Abs(c1.Row - c2.Row) <= 1 && Math.Abs(c1.Column - c2.Column) <= 1;
+        if (c1 == c2) return false;
+        var rowDiff = Math.Abs(c1.Row - c2.Row);
+        var colDiff = Math.Abs(c1.Column - c2.Column);
+        
+        return (rowDiff == 1 && colDiff == 0) || (rowDiff == 0 && colDiff == 1);
+    }
+
+    public static bool AreAdjacent(IZone z1, IZone z2)
+    {
+        foreach (var c1 in z1)
+        {
+            if (AreAdjacent(z2, c1)) return true;
+        }
+
+        return false;
+    }
+
+    public static bool AreAdjacent(IZone zone, Cell cell)
+    {
+        foreach (var c in zone)
+        {
+            if (AreAdjacent(c, cell)) return true;
+        }
+
+        return false;
+    }
+
+    public static bool AreAdjacent(IReadOnlyList<Cell> cells, Cell cell)
+    {
+        foreach (var c in cells)
+        {
+            if (AreAdjacent(c, cell)) return true;
+        }
+
+        return false;
+    }
+
+    public static IEnumerable<Cell[]> DivideInAdjacentCells(List<Cell> cells)
+    {
+        List<Cell> current = new();
+
+        while (cells.Count > 0)
+        {
+            current.Add(cells[^1]);
+            cells.RemoveAt(cells.Count - 1);
+            var added = true;
+            
+            while (added)
+            {
+                added = false;
+                for (int i = cells.Count - 1; i >= 0; i--)
+                {
+                    if (!AreAdjacent(current, cells[i])) continue;
+
+                    current.Add(cells[i]);
+                    cells.RemoveAt(i);
+                    added = true;
+                }
+            }
+
+            yield return current.ToArray();
+            current.Clear();
+        }
     }
 
     public static IEnumerable<Cell> GetNeighbors(Cell cell, int rowCount, int colCount)

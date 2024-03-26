@@ -13,8 +13,7 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
     public string Name { get; protected init; }
     public StrategyDifficulty Difficulty { get; protected init; }
     public UniquenessDependency UniquenessDependency { get; protected init; }
-    public OnCommitBehavior OnCommitBehavior { get; set; }
-    public abstract OnCommitBehavior DefaultOnCommitBehavior { get; }
+    public InstanceHandling InstanceHandling { get; set; }
     public IReadOnlyList<ISetting> Settings => _settings;
 
     public bool Enabled
@@ -36,12 +35,14 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
         }
     }
 
-    protected SudokuStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
+    public bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
+
+    protected SudokuStrategy(string name, StrategyDifficulty difficulty, InstanceHandling defaultHandling)
     {
         Name = name;
         Difficulty = difficulty;
         UniquenessDependency = UniquenessDependency.NotDependent;
-        OnCommitBehavior = defaultBehavior;
+        InstanceHandling = defaultHandling;
     }
 
     protected void AddSetting(ISetting s)
@@ -77,7 +78,7 @@ public enum UniquenessDependency
     NotDependent, PartiallyDependent, FullyDependent
 }
 
-public enum OnCommitBehavior
+public enum InstanceHandling
 {
-    Return, WaitForAll, ChooseBest
+    FirstOnly, UnorderedAll, BestOnly, SortedAll
 }

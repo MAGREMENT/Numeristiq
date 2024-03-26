@@ -14,13 +14,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class AlmostLockedSetsChainStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Locked Sets Chain";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly bool _checkLength2;
 
-    public AlmostLockedSetsChainStrategy(bool checkLength2) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public AlmostLockedSetsChainStrategy(bool checkLength2) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _checkLength2 = checkLength2;
     }
@@ -98,7 +96,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             }
 
             return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                new AlmostLockedSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
+                new AlmostLockedSetsChainReportBuilder(chain, ll)) && StopOnFirstPush;
         }
         
         return false;
@@ -128,7 +126,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new AlmostLockedSetsChainReportBuilder(chain.ToChain())) && OnCommitBehavior == OnCommitBehavior.Return;
+            new AlmostLockedSetsChainReportBuilder(chain.ToChain())) && StopOnFirstPush;
     }
 }
 

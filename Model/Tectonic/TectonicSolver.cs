@@ -146,7 +146,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     {
         _possibilities[row, col] = new ReadOnlyBitSet16();
 
-        foreach (var neighbor in Cells.GetNeighbors(row, col, _tectonic.RowCount, _tectonic.ColumnCount))
+        foreach (var neighbor in TectonicCellUtility.GetNeighbors(row, col, _tectonic.RowCount, _tectonic.ColumnCount))
         {
             _possibilities[neighbor.Row, neighbor.Column] -= number;
         }

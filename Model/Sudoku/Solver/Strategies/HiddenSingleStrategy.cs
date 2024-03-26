@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class HiddenSingleStrategy : SudokuStrategy
 {
     public const string OfficialName = "Hidden Single";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultInstanceHandling){}
     
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -32,7 +30,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     {
                         strategyUser.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
                         strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.Row));
-                        if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                        if (StopOnFirstPush) return;
                     }
                     
                     var cp = strategyUser.ColumnPositionsAt(u, number);
@@ -40,7 +38,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     {
                         strategyUser.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
                         strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.Column));
-                        if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                        if (StopOnFirstPush) return;
                     }
                     
                     var mp = strategyUser.MiniGridPositionsAt(i, j, number);
@@ -49,7 +47,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     var pos = mp.First();
                     strategyUser.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
                     strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.MiniGrid));
-                    if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                    if (StopOnFirstPush) return;
                 }
             }
         }

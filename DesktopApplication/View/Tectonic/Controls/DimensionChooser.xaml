@@ -18,7 +18,7 @@
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="15"
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="18"
                    VerticalAlignment="Center" HorizontalAlignment="Center"
                    Foreground="{DynamicResource Text}" x:Name="Title"/>
         

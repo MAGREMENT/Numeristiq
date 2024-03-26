@@ -17,13 +17,11 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
     public const string OfficialNameForZCondition = "NRCZ-Chains";
     public const string OfficialNameForZAndTCondition = "NRCZT-Chains";
     
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.ChooseBest;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.BestOnly;
 
     private readonly INRCZTCondition[] _conditions;
     
-    public NRCZTChainStrategy(params INRCZTCondition[] conditions) : base("", StrategyDifficulty.None, DefaultBehavior)
+    public NRCZTChainStrategy(params INRCZTCondition[] conditions) : base("", StrategyDifficulty.None, DefaultInstanceHandling)
     {
         _conditions = conditions;
 
@@ -129,7 +127,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
         }
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new NRCChainReportBuilder(chain.Copy())) && OnCommitBehavior == OnCommitBehavior.Return;
+            new NRCChainReportBuilder(chain.Copy())) && StopOnFirstPush;
     }
 
     public int Compare(ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> first,

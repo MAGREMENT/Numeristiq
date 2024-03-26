@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Model.Helpers;
 using Model.Utility;
 
@@ -14,8 +15,9 @@ public interface ITectonic : IReadOnlyTectonic
         get => this[cell.Row, cell.Column];
     }
 
-    public void MergeZones(Cell c1, Cell c2);
-    //public void SplitZone(Cell c1, Cell c2); TODO
+    public bool MergeZones(Cell c1, Cell c2);
+    public bool MergeZones(IZone z1, IZone z2);
+    public bool SplitZone(IEnumerable<Cell> cells);
 
     public void AddZone(IReadOnlyList<Cell> cells);
     public void AddZoneUnchecked(IReadOnlyList<Cell> cells);
@@ -37,5 +39,7 @@ public interface IReadOnlyTectonic : ISolvingState
     public bool IsFromSameZone(Cell c1, Cell c2);
 
     public bool IsCorrect();
+
+    public ITectonic Copy();
 }
 

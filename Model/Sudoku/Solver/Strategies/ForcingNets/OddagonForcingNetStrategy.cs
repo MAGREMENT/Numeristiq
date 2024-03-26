@@ -15,13 +15,11 @@ namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 public class OddagonForcingNetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Oddagon Forcing Net";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IntSetting _maxNumberOfGuardians;
     
-    public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public OddagonForcingNetStrategy(int maxNumberOfGuardians) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _maxNumberOfGuardians = new IntSetting("Maximum number of guardians",
             new SliderInteractionInterface(1, 20, 1), maxNumberOfGuardians);
@@ -63,7 +61,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
 
                     if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
                             new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
-                                strategyUser.PreComputer.Graphs.ComplexLinkGraph, cp)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                                strategyUser.PreComputer.Graphs.ComplexLinkGraph, cp)) && StopOnFirstPush) return;
                 }
             }
         }

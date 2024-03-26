@@ -12,11 +12,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class AlmostLockedSetsStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Locked Sets";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlmostLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public AlmostLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
 
@@ -71,7 +69,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
             }
 
             if(strategyUser.ChangeBuffer.Commit( new AlmostLockedSetsReportBuilder(one,
-                   two, restrictedCommons)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                   two, restrictedCommons)) && StopOnFirstPush) return;
         }
     }
 }

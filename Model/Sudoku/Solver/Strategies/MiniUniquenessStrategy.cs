@@ -15,11 +15,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class MiniUniquenessStrategy : SudokuStrategy
 {
     public const string OfficialName = "Mini-Uniqueness";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public MiniUniquenessStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    public MiniUniquenessStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -70,7 +68,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
             }
 
             presence = new ReadOnlyBitSet16();
@@ -114,7 +112,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return) return;
+                    StopOnFirstPush) return;
             }
         }
     }

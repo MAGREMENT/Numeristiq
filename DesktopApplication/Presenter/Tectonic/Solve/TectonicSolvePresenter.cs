@@ -1,8 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Model;
 using Model.Helpers;
 using Model.Tectonic;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Tectonic.Solve;
 
@@ -16,6 +17,9 @@ public class TectonicSolvePresenter
     private int _logCount;
     private int _currentlyOpenedLog = -1;
     private StateShown _stateShown = StateShown.Before;
+    private readonly List<Cell> _selectedCells = new();
+    private IZone? _selectedZone;
+    private SelectionMode _selectionMode = SelectionMode.Default;
 
     public TectonicSolvePresenter(TectonicSolver solver, ITectonicSolveView view)
     {
@@ -48,12 +52,12 @@ public class TectonicSolvePresenter
 
     public void SetNewRowCount(int diff)
     {
-        SetNewTectonic(new Model.Tectonic.ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount));
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount));
     }
 
     public void SetNewColumnCount(int diff)
     {
-        SetNewTectonic(new Model.Tectonic.ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff));
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff));
     }
 
     public async void Solve(bool stopAtProgress)
@@ -132,6 +136,76 @@ public class TectonicSolvePresenter
         _view.SetCursorPosition(_currentlyOpenedLog, log.HighlightManager.CursorPosition());
     }
 
+    public void SelectCell(Cell c)
+    {
+        switch (_selectionMode)
+        {
+            case SelectionMode.Default :
+                if (_selectedCells.Count == 1 && c == _selectedCells[0])
+                {
+                    _selectedCells.Clear();
+                    _view.Drawer.ClearCursor();
+                }
+                else
+                {
+                    _selectedCells.Clear();
+                    _selectedCells.Add(c);
+                    _view.Drawer.PutCursorOn(c);
+                }
+
+                break;
+            case SelectionMode.Merge :
+                if (_selectedZone is null)
+                {
+                    _selectedZone = _solver.Tectonic.GetZone(c);
+                    _view.Drawer.PutCursorOn(_selectedZone);
+                }
+                else if(_selectedZone.Contains(c))
+                {
+                    _selectedZone = null;
+                    _view.Drawer.ClearCursor();
+                }
+                else
+                {
+                    var tectonic = _solver.Tectonic.Copy();
+                    if (tectonic.MergeZones(_selectedZone, _solver.Tectonic.GetZone(c))) SetNewTectonic(tectonic);
+                    
+                    _view.Drawer.ClearCursor();
+                    _selectedZone = null;
+                }
+                break;
+            case SelectionMode.Split :
+                if (!_selectedCells.Contains(c)) _selectedCells.Add(c);
+                _view.Drawer.PutCursorOn(_selectedCells);
+                
+                break;
+        }
+        
+        _view.Drawer.Refresh();
+    }
+
+    public void EndCellSelection()
+    {
+        if (_selectionMode == SelectionMode.Split)
+        {
+            var tectonic = _solver.Tectonic.Copy();
+            if (tectonic.SplitZone(_selectedCells.ToArray())) SetNewTectonic(tectonic);
+            _selectedCells.Clear();
+            
+            _view.Drawer.ClearCursor();
+            _view.Drawer.Refresh();
+        }
+    }
+
+    public void SetSelectionMode(SelectionMode mode)
+    {
+        _selectionMode = mode;
+        _selectedCells.Clear();
+        _selectedZone = null;
+        _view.Drawer.ClearCursor();
+        _view.Drawer.Refresh();
+    }
+
     #region Private
 
     private void ClearLogs()
@@ -202,6 +276,9 @@ public class TectonicSolvePresenter
     }
 
     #endregion
+}
 
-    
+public enum SelectionMode
+{
+    Default, Merge, Split
 }

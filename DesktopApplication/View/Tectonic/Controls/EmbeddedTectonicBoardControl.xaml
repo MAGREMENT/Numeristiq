@@ -12,7 +12,9 @@
                                  BackgroundBrush="Transparent" LineBrush="{DynamicResource Text}"
                                  DefaultNumberBrush="{DynamicResource Text}" x:Name="Board"
                                  BigLineWidth="5" SmallLineWidth="1" CellSize="50" LinkBrush="{DynamicResource Accent}"
-                                 RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"/>
+                                 CursorBrush="{DynamicResource Secondary1}" CellSelected="OnCellSelection"
+                                 RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"
+                                 CellAddedToSelection="OnCellAddedToSelection" SelectionEnded="OnSelectionEnd"/>
             
             <TextBlock Visibility="Collapsed" x:Name="None" FontSize="22" Foreground="{DynamicResource Text}"
                    FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center">Nothing to show...</TextBlock> 

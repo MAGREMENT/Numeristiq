@@ -3,140 +3,140 @@
     "Name": "Naked Single",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Hidden Single",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Naked Doubles",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Hidden Doubles",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Pointing Set",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Claiming Set",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Hidden Triple",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Naked Triple",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Naked Quad",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Hidden Quad",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Gurth\u0027s Theorem",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Uniqueness Clue Cover",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "X-Wing",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "XY-Wing",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "XYZ-Wing",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Swordfish",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Jellyfish",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Simple Coloring",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Mini-Uniqueness",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "BUG",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {
       "Max additional candidates": "5"
     }
@@ -145,56 +145,56 @@
     "Name": "Reverse BUG",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Reverse BUG-Lite",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Empty Rectangle",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Almost Locked Pair",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Almost Locked Triple",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Junior Exocet",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Thor\u0027s Hammer",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Non-Colorable Pattern",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {
       "Possibility count": "3,3",
       "Max out of pattern cells": "3"
@@ -204,56 +204,56 @@
     "Name": "Skyscraper",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Two-String Kite",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Finned X-Wing",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Finned Swordfish",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Finned Jellyfish",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Fireworks",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "SK-Loops",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Unique Rectangles",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {
       "Missing candidates allowed": "True"
     }
@@ -262,21 +262,21 @@
     "Name": "Unavoidable Rectangles",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Extended Unique Rectangles",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "BUG-Lite",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {
       "Maximum cell count": "16"
     }
@@ -285,42 +285,42 @@
     "Name": "XY-Chains",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "3D Medusa",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Sue-De-Coq",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "WXYZ-Wing",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Aligned Pair Exclusion",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Aligned Triple Exclusion",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {
       "Minimum shared seen cells": "5"
     }
@@ -329,119 +329,119 @@
     "Name": "Subsets X-Cycles",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 2,
+    "InstanceHandling": 2,
     "Settings": {}
   },
   {
     "Name": "Oddagon",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Almost Hidden Sets",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Almost Locked Sets",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Almost Hidden Sets Chain",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Almost Locked Sets Chain",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Death Blossom",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Subsets Alternating Inference Loops",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 2,
+    "InstanceHandling": 2,
     "Settings": {}
   },
   {
     "Name": "Distributed Disjoint Subset",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Multi-Sector Locked Sets",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Cell Blossom Loop",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Unit Blossom Loop",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Pattern Overlay",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Digit Forcing Net",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Cell Forcing Net",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Unit Forcing Net",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Oddagon Forcing Net",
     "Enabled": false,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {
       "Maximum number of guardians": "3"
     }
@@ -450,14 +450,14 @@
     "Name": "Nishio Forcing Net",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 0,
+    "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "Brute Force",
     "Enabled": true,
     "Locked": false,
-    "Behavior": 1,
+    "InstanceHandling": 1,
     "Settings": {}
   }
 ]

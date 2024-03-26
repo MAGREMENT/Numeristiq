@@ -21,14 +21,14 @@ namespace DesktopApplication.View.Sudoku.Controls;
 public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
 {
     private const int BackgroundIndex = 0;
-    private  const int CellsHighlightIndex = 1;
-    private  const int PossibilitiesHighlightIndex = 2;
-    private  const int CursorIndex = 3;
-    private  const int SmallLinesIndex = 4;
-    private  const int BigLinesIndex = 5;
-    private  const int NumbersIndex = 6;
-    private  const int EncirclesIndex = 7;
-    private  const int LinksIndex = 8;
+    private const int CellsHighlightIndex = 1;
+    private const int PossibilitiesHighlightIndex = 2;
+    private const int CursorIndex = 3;
+    private const int SmallLinesIndex = 4;
+    private const int BigLinesIndex = 5;
+    private const int NumbersIndex = 6;
+    private const int EncirclesIndex = 7;
+    private const int LinksIndex = 8;
     
     private const double LinkOffset = 20;
     private const double CursorWidth = 3;
@@ -179,8 +179,6 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
 
     public event OnCellSelection? CellSelected;
     public event OnCellSelection? CellAddedToSelection;
-
-    public delegate void OnCellSelection(int row, int col);
     
     public SudokuBoard() : base(9)
     {

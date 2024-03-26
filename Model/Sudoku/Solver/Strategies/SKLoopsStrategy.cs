@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class SKLoopsStrategy : SudokuStrategy
 {
     public const string OfficialName = "SK-Loops";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) { }
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) { }
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -246,7 +244,7 @@ public class SKLoopsStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new SKLoopsReportBuilder(cells, links)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new SKLoopsReportBuilder(cells, links)) && StopOnFirstPush;
     }
 
     private PossibilitiesAndNumber CrossRowPossibilities(IStrategyUser strategyUser, Cell cell)

@@ -11,13 +11,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class BUGStrategy : SudokuStrategy
 {
     public const string OfficialName = "BUG";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IntSetting _maxAdditionalCandidates;
     
-    public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    public BUGStrategy(int maxAdditionalCandidates) : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
     {
         _maxAdditionalCandidates = new IntSetting("Max additional candidates", new SliderInteractionInterface(1, 5, 1), maxAdditionalCandidates);
         AddSetting(_maxAdditionalCandidates);

@@ -9,10 +9,11 @@ public class EnumSetting<TEnum> : ISetting where TEnum : struct, Enum
     public ISettingInteractionInterface InteractionInterface { get; }
     public TEnum Value { get; set; }
 
-    public EnumSetting(string name, IStringConverter? converter)
+    public EnumSetting(string name, IStringConverter? converter, TEnum defaultValue)
     {
         Name = name;
         InteractionInterface = new EnumListInteractionInterface<TEnum>(converter);
+        Value = defaultValue;
     }
     
     public SettingValue Get()

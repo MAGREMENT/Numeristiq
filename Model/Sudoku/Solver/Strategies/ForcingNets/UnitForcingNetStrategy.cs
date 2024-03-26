@@ -12,13 +12,11 @@ namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 public class UnitForcingNetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Unit Forcing Net";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
     private readonly int _max;
 
-    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _max = maxPossibilities;
     }
@@ -108,14 +106,14 @@ public class UnitForcingNetStrategy : SudokuStrategy
                     view.ChangeBuffer.ProposeSolutionAddition(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.On, view.PreComputer.Graphs.ComplexLinkGraph)) &&
-                                OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                StopOnFirstPush) return true;
                 }
                 else
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(current.Possibility, current.Row, current.Column);
                     if (view.ChangeBuffer.NotEmpty() && view.ChangeBuffer.Commit(
                             new UnitForcingNetReportBuilder(colorings, current, Coloring.Off, view.PreComputer.Graphs.ComplexLinkGraph)) &&
-                                OnCommitBehavior == OnCommitBehavior.Return) return true;
+                                StopOnFirstPush) return true;
                 }
             }
         }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonic.Solve;
@@ -9,6 +11,7 @@ using DesktopApplication.View.Utility;
 using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Tectonic;
 using Model.Utility;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
@@ -19,12 +22,14 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private const int BackgroundIndex = 0;
     private const int CellHighlightIndex = 1;
     private const int PossibilityHighlightIndex = 2;
-    private const int SmallLinesIndex = 3;
-    private const int BigLinesIndex = 4;
-    private const int NumbersIndex = 5;
-    private const int LinksIndex = 6;
+    private const int CursorIndex = 3;
+    private const int SmallLinesIndex = 4;
+    private const int BigLinesIndex = 5;
+    private const int NumbersIndex = 6;
+    private const int LinksIndex = 7;
     
     private const double LinkOffset = 20;
+    private const double CursorWidth = 3;
 
     private double _cellSize;
     private int _rowCount;
@@ -95,6 +100,21 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         set => SetValue(LinkBrushProperty, value);
         get => (Brush)GetValue(LinkBrushProperty);
     }
+    
+    public static readonly DependencyProperty CursorBrushProperty =
+        DependencyProperty.Register(nameof(CursorBrush), typeof(Brush), typeof(TectonicBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if(obj is not TectonicBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(CursorIndex, brush);
+                board.Refresh();
+            }));
+
+    public Brush CursorBrush
+    {
+        set => SetValue(CursorBrushProperty, value);
+        get => (Brush)GetValue(CursorBrushProperty);
+    }
 
     public double CellSize
     {
@@ -152,11 +172,19 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         }
     }
 
+    public event OnCellSelection? CellSelected;
+    public event OnCellSelection? CellAddedToSelection;
+    public event OnSelectionEnd? SelectionEnded;
+    
     public NotifyingList<NeighborBorder> Borders { get; } = new();
+    
     private readonly CellsAssociations _associatedCells;
+    private bool _isSelecting;
 
-    public TectonicBoard() : base(7)
+    public TectonicBoard() : base(8)
     {
+        Focusable = true;
+        
         _associatedCells = new CellsAssociations(RowCount, ColumnCount);
         
         Borders.Cleared += () =>
@@ -174,6 +202,26 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             
             UpdateAndDrawLines();
         };
+
+        MouseLeftButtonDown += (_, args) =>
+        {
+            Focus();
+            
+            _isSelecting = true;
+            var pos = ComputeSelectedCell(args.GetPosition(this));
+            if (pos is not null) CellSelected?.Invoke(pos[0], pos[1]);
+        };
+
+        MouseMove += (_, args) =>
+        {
+            if (!_isSelecting) return;
+
+            var pos = ComputeSelectedCell(args.GetPosition(this));
+            if (pos is not null) CellAddedToSelection?.Invoke(pos[0], pos[1]);
+        };
+
+        MouseLeftButtonUp += StopSelection;
+        MouseLeave += StopSelection;
     }
     
     public void AddChild(object value)
@@ -235,6 +283,125 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         RefreshAllowed = false;
         Borders.Add(new NeighborBorder(insideRow, insideColumn, direction, isThin));
         RefreshAllowed = true;
+    }
+
+    public void PutCursorOn(Cell cell)
+    {
+        ClearCursor();
+        
+        const double delta = CursorWidth / 2;
+        var left = GetLeft(cell.Column);
+        var top = GetTop(cell.Row);
+        var pen = new Pen(CursorBrush, CursorWidth);
+
+        var list = Layers[CursorIndex];
+        list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
+            top + _cellSize), pen));
+        list.Add(new LineComponent(new Point(left, top + delta), new Point(left + _cellSize,
+            top + delta), pen));
+        list.Add(new LineComponent(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
+            top + _cellSize), pen));
+        list.Add(new LineComponent(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
+            top + _cellSize - delta), pen));
+    }
+    
+    public void PutCursorOn(IZone cells)
+    {
+        ClearCursor();
+        
+        var delta = CursorWidth / 2;
+        var pen = new Pen(CursorBrush, CursorWidth);
+
+        var list = Layers[CursorIndex];
+        foreach (var cell in cells)
+        {
+            var left = GetLeft(cell.Column);
+            var top = GetTop(cell.Row);
+
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
+                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top, CursorWidth, CursorWidth), CursorBrush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), CursorBrush));
+            }
+            
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
+                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
+            }
+        }
+    }
+    
+    public void PutCursorOn(IReadOnlyList<Cell> cells)
+    {
+        ClearCursor();
+        
+        var delta = CursorWidth / 2;
+        var pen = new Pen(CursorBrush, CursorWidth);
+
+        var list = Layers[CursorIndex];
+        foreach (var cell in cells)
+        {
+            var left = GetLeft(cell.Column);
+            var top = GetTop(cell.Row);
+
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
+                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top, CursorWidth, CursorWidth), CursorBrush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), CursorBrush));
+            }
+            
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
+                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
+                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            else
+            {
+                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
+                
+                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
+                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
+            }
+        }
+    }
+
+    public void ClearCursor()
+    {
+        Layers[CursorIndex].Clear();
     }
 
     public void ClearHighlights()
@@ -365,7 +532,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         var half = _bigLineWidth / 2;
         
         Layers[BigLinesIndex].Add(new OutlinedRectangleComponent(
-            new Rect(half, half, Width - half, Height - half), new Pen(LineBrush, _bigLineWidth)));
+            new Rect(half, half, Width - _bigLineWidth, Height - _bigLineWidth), new Pen(LineBrush, _bigLineWidth)));
 
         var diff = (_bigLineWidth - _smallLineWidth) / 2;
         var length = _cellSize + _bigLineWidth * 2;
@@ -478,6 +645,41 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         {
             DashStyle = isWeak ? DashStyles.DashDot : DashStyles.Solid
         }));
+    }
+    
+    private int[]? ComputeSelectedCell(Point point)
+    {
+        var row = 0;
+        var col = 0;
+
+        var y = point.Y;
+        var x = point.X;
+
+        for (; row < RowCount; row++)
+        {
+            if (y < _bigLineWidth) return null;
+            y -= _bigLineWidth;
+            if (y < _cellSize) break;
+            y -= _cellSize;
+        }
+
+        for (; col < ColumnCount; col++)
+        {
+            if (x < _bigLineWidth) return null;
+            x -= _bigLineWidth;
+            if (x < _cellSize) break;
+            x -= _cellSize;
+        }
+
+        return row == RowCount || col == ColumnCount ? null : new[] { row, col };
+    }
+
+    private void StopSelection(object sender, MouseEventArgs args)
+    {
+        if (!_isSelecting) return;
+
+        _isSelecting = false;
+        SelectionEnded?.Invoke();
     }
 
     #endregion
@@ -710,5 +912,5 @@ public class NotifyingList<T> : IList, IList<T>
 }
 
 public delegate void OnClear();
-public delegate void OnElementAdded<T>(T element);
+public delegate void OnElementAdded<in T>(T element);
 public delegate void OnDimensionCountChange(int number);

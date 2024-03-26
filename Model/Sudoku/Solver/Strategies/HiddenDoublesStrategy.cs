@@ -10,11 +10,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class HiddenDoublesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Hidden Doubles";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
     
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -89,7 +87,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit(
-            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && StopOnFirstPush;
     }
 
     private bool ProcessColumn(IStrategyUser strategyUser, IReadOnlyLinePositions positions, int col,
@@ -106,7 +104,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit(
-            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && StopOnFirstPush;
     }
 
     private bool ProcessMiniGrid(IStrategyUser strategyUser, IReadOnlyMiniGridPositions positions, int n1, int n2)
@@ -122,7 +120,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit(
-            new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && StopOnFirstPush;
     }
 }
 

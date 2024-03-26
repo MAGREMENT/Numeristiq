@@ -34,11 +34,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class PointingSetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Pointing Set";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -59,7 +57,7 @@ public class PointingSetStrategy : SudokuStrategy
                         
                         if(strategyUser.ChangeBuffer.Commit(
                             new PointingPossibilitiesReportBuilder(number, ppimg)) &&
-                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                                StopOnFirstPush) return;
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
@@ -71,7 +69,7 @@ public class PointingSetStrategy : SudokuStrategy
 
                         if (strategyUser.ChangeBuffer.Commit(
                                 new PointingPossibilitiesReportBuilder(number, ppimg)) &&
-                                    OnCommitBehavior == OnCommitBehavior.Return) return;
+                                    StopOnFirstPush) return;
                     }
                 }
             }

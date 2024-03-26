@@ -16,13 +16,11 @@ public class GridFormationStrategy : SudokuStrategy
     public const string OfficialNameForType2 = "X-Wing";
     public const string OfficialNameForType3 = "Swordfish";
     public const string OfficialNameForType4 = "Jellyfish";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
 
-    public GridFormationStrategy(int type) : base("", StrategyDifficulty.None, DefaultBehavior)
+    public GridFormationStrategy(int type) : base("", StrategyDifficulty.None, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
@@ -91,7 +89,7 @@ public class GridFormationStrategy : SudokuStrategy
         return strategyUser.ChangeBuffer.Commit( unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number)) 
-               && OnCommitBehavior == OnCommitBehavior.Return;
+               && StopOnFirstPush;
     }
 }
 

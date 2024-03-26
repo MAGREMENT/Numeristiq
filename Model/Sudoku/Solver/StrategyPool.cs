@@ -124,7 +124,7 @@ public static class StrategyPool
         return result;
     }
 
-    public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, OnCommitBehavior behavior,
+    public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, InstanceHandling handling,
         Dictionary<string, SettingValue> settings)
     {
         if (!Pool.TryGetValue(name, out var giver)) return null;
@@ -132,7 +132,7 @@ public static class StrategyPool
         var result = giver();
         result.Enabled = enabled;
         result.Locked = locked;
-        result.OnCommitBehavior = behavior;
+        result.InstanceHandling = handling;
 
         foreach (var entry in settings)
         {
@@ -142,14 +142,14 @@ public static class StrategyPool
         return result;
     }
     
-    public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, OnCommitBehavior behavior)
+    public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, InstanceHandling handling)
     {
         if (!Pool.TryGetValue(name, out var giver)) return null;
 
         var result = giver();
         result.Enabled = enabled;
         result.Locked = locked;
-        result.OnCommitBehavior = behavior;
+        result.InstanceHandling = handling;
 
         return result;
     }

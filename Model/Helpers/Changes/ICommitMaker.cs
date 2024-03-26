@@ -6,5 +6,5 @@ public interface ICommitMaker
 {
     public string Name { get; }
     public StrategyDifficulty Difficulty { get; }
-    public OnCommitBehavior OnCommitBehavior { get; set; }
+    public InstanceHandling InstanceHandling { get; }
 }

@@ -10,7 +10,7 @@ namespace Model.Tectonic.Strategies;
 
 public class CommonCellsStrategy : TectonicStrategy
 {
-    public CommonCellsStrategy() : base("Common Cells", StrategyDifficulty.Easy, OnCommitBehavior.WaitForAll)
+    public CommonCellsStrategy() : base("Common Cells", StrategyDifficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
     
@@ -29,7 +29,7 @@ public class CommonCellsStrategy : TectonicStrategy
 
                 if (buffer.Count == 0) continue;
 
-                foreach (var neighbor in Cells.SharedNeighboringCells(strategyUser.Tectonic, buffer))
+                foreach (var neighbor in TectonicCellUtility.SharedNeighboringCells(strategyUser.Tectonic, buffer))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
                 }

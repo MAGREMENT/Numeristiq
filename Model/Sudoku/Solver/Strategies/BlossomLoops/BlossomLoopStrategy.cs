@@ -14,16 +14,14 @@ public class BlossomLoopStrategy : SudokuStrategy
 {
     public const string OfficialNameForCell = "Cell Blossom Loop";
     public const string OfficialNameForUnit = "Unit Blossom Loop";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IBlossomLoopType _type;
     private readonly IBlossomLoopLoopFinder _loopFinder;
     private readonly IBlossomLoopBranchFinder _branchFinder;
     
     public BlossomLoopStrategy(IBlossomLoopLoopFinder loopFinder, IBlossomLoopBranchFinder branchFinder, IBlossomLoopType type)
-        : base("", StrategyDifficulty.Extreme, DefaultBehavior)
+        : base("", StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _loopFinder = loopFinder;
         _branchFinder = branchFinder;
@@ -61,7 +59,7 @@ public class BlossomLoopStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                         new BlossomLoopReportBuilder(loop, branches, cps)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
             }
         }
     }

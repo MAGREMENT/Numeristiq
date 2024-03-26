@@ -110,7 +110,7 @@ public class SudokuStrategiesTests
 
     private void TestSudokuStrategyInstance(SudokuStrategy strategy, string stateBefore32, params SolverProgress[] expected)
     {
-        strategy.OnCommitBehavior = OnCommitBehavior.WaitForAll;
+        strategy.InstanceHandling = InstanceHandling.UnorderedAll;
         _solver.StrategyManager.AddStrategy(strategy);
         _solver.SetState(SudokuTranslator.TranslateBase32Format(stateBefore32, new AlphabeticalBase32Translator()));
         _solver.Solve(true);

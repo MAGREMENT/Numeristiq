@@ -95,8 +95,6 @@ public abstract class DrawingBoard : FrameworkElement
         rtb.Render(_visual);
         return BitmapFrame.Create(rtb);
     }
-    
-    
 }
 
 public interface IDrawableComponent
@@ -256,6 +254,8 @@ public class TextInRectangleComponent : IDrawableComponent
 }
 
 public delegate void OnCellSelection(int row, int col);
+
+public delegate void OnSelectionEnd();
 
 public enum ComponentVerticalAlignment
 {

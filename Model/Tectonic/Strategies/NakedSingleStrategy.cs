@@ -7,7 +7,7 @@ namespace Model.Tectonic.Strategies;
 
 public class NakedSingleStrategy : TectonicStrategy
 {
-    public NakedSingleStrategy() : base("Naked Single", StrategyDifficulty.Basic, OnCommitBehavior.WaitForAll)
+    public NakedSingleStrategy() : base("Naked Single", StrategyDifficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
     

@@ -30,7 +30,7 @@
             
                 <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                            Foreground="{DynamicResource Text}">Strategies</TextBlock>
-                <Border Grid.Column="1" Width="40" Height="40" Background="{DynamicResource Background2}"
+                <Border Grid.Column="1" Width="40" Height="40" Background="{DynamicResource Background1}"
                         AllowDrop="True" Drop="DropInBin">
                     <Image VerticalAlignment="Center" HorizontalAlignment="Center"
                            Source="../../Images/bin.png" Width="30" Height="30" x:Name="Bin"/>

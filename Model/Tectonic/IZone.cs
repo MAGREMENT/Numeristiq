@@ -111,21 +111,21 @@ public class MultiZone : IZone
 
 public class SoloZone : IZone
 {
-    private readonly Cell _cell;
+    public Cell Cell { get; }
 
     public SoloZone(Cell cell)
     {
-        _cell = cell;
+        Cell = cell;
     }
 
     public SoloZone(int row, int col)
     {
-        _cell = new Cell(row, col);
+        Cell = new Cell(row, col);
     }
 
     public IEnumerator<Cell> GetEnumerator()
     {
-        yield return _cell;
+        yield return Cell;
     }
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -135,7 +135,7 @@ public class SoloZone : IZone
 
     public int Count => 1;
 
-    public Cell this[int index] => _cell;
+    public Cell this[int index] => Cell;
 
-    public bool Contains(Cell c) => c == _cell;
+    public bool Contains(Cell c) => c == Cell;
 }

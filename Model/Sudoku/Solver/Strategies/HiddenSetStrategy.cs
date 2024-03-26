@@ -13,13 +13,11 @@ public class HiddenSetStrategy : SudokuStrategy
     public const string OfficialNameForType2 = "Hidden Double";
     public const string OfficialNameForType3 = "Hidden Triple";
     public const string OfficialNameForType4 = "Hidden Quad";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
 
-    public HiddenSetStrategy(int type) : base("", StrategyDifficulty.None, DefaultBehavior)
+    public HiddenSetStrategy(int type) : base("", StrategyDifficulty.None, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
@@ -82,7 +80,7 @@ public class HiddenSetStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.Commit(
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row))
-                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    && StopOnFirstPush) return true;
             }
             else if (newVisited.Count < _type &&
                      RecursiveRowMashing(strategyUser, i + 1, newMashed, newVisited, row)) return true;
@@ -114,7 +112,7 @@ public class HiddenSetStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.Commit(
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column))
-                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    && StopOnFirstPush) return true;
             }
             else if (newVisited.Count < _type &&
                      RecursiveColumnMashing(strategyUser, i + 1, newMashed, newVisited, col)) return true;
@@ -146,7 +144,7 @@ public class HiddenSetStrategy : SudokuStrategy
 
                 if (strategyUser.ChangeBuffer.Commit(
                         new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed))
-                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    && StopOnFirstPush) return true;
             }
             else if (newVisited.Count < _type && RecursiveMiniGridMashing(strategyUser, i + 1, newMashed,
                          newVisited, miniRow, miniCol)) return true;

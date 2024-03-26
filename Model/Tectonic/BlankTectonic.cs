@@ -32,15 +32,20 @@ public class BlankTectonic : ITectonic
         return false;
     }
 
+    public ITectonic Copy()
+    {
+        return new BlankTectonic();
+    }
+
     public void Set(int n, int row, int col)
     {
         
     }
 
-    public void MergeZones(Cell c1, Cell c2)
-    {
-        
-    }
+    public bool MergeZones(Cell c1, Cell c2) => false;
+    public bool MergeZones(IZone z1, IZone z2) => false;
+
+    public bool SplitZone(IEnumerable<Cell> cells) => false;
 
     public void AddZone(IReadOnlyList<Cell> cells)
     {

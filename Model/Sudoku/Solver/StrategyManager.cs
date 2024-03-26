@@ -70,28 +70,4 @@ public class StrategyManager
         var newPosTwo = positionTwo > positionOne ? positionTwo - 1 : positionTwo;
         AddStrategy(buffer, newPosTwo);
     }
-
-    public void ChangeStrategyBehavior(string name, OnCommitBehavior behavior)
-    {
-        var i = _strategies.Find(s => s.Name.Equals(name));
-        if (i == -1) return;
-        
-        _strategies[i].OnCommitBehavior = behavior;
-    }
-
-    public void ChangeStrategyUsage(string name, bool yes)
-    {
-        var i = _strategies.Find(s => s.Name.Equals(name));
-        if (i == -1) return;
-
-        if (yes) _strategies[i].Enabled = yes;
-    }
-    
-    public void ChangeArgument(string strategyName, string argumentName, SettingValue value)
-    {
-        var i = _strategies.Find(s => s.Name.Equals(strategyName));
-        if (i == -1) return;
-
-        _strategies[i].TrySetSetting(argumentName, value);
-    }
 }

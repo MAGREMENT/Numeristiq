@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -20,7 +19,7 @@ public class ArrayTectonic : ITectonic
         _cells = new TectonicCell[rowCount, colCount];
         _zones = new List<IZone>();
     }
-
+    
     public void AddZone(IReadOnlyList<Cell> cells)
     {
         InfiniteBitSet bitSet = new();
@@ -53,20 +52,23 @@ public class ArrayTectonic : ITectonic
         _cells[row, col].Number = n;
     }
 
-    public void MergeZones(Cell c1, Cell c2)
+    public bool MergeZones(Cell c1, Cell c2)
     {
-        var z1 = _cells[c1.Row, c1.Column].Zone;
-        var z2 = _cells[c2.Row, c2.Column].Zone;
-        if (z1 is not null && z2 is not null && z1.Equals(z2)) return;
+        return MergeZones(GetZone(c1), GetZone(c2));
+    }
 
+    public bool MergeZones(IZone z1, IZone z2)
+    {
+        if (!TectonicCellUtility.AreAdjacent(z1, z2)) return false;
+        
         List<Cell> total = new();
-        if (z1 is null) total.Add(c1);
+        if (z1 is SoloZone sz1) total.Add(sz1.Cell);
         else
         {
             total.AddRange(z1);
             _zones.Remove(z1);
         }
-        if (z2 is null) total.Add(c2);
+        if (z2 is SoloZone sz2) total.Add(sz2.Cell);
         else
         {
             total.AddRange(z2);
@@ -74,6 +76,39 @@ public class ArrayTectonic : ITectonic
         }
 
         AddZoneUnchecked(total);
+        return true;
+    }
+
+    public bool SplitZone(IEnumerable<Cell> cells)
+    {
+        IZone? zone = null;
+        List<Cell> first = new();
+        
+        foreach (var cell in cells)
+        {
+            if (zone is null) zone = GetZone(cell);
+            else if (!zone.Contains(cell)) return false;
+
+            first.Add(cell);
+        }
+
+        if (zone is null) return false;
+
+        List<Cell> second = new();
+        foreach (var cell in zone)
+        {
+            if (!first.Contains(cell)) second.Add(cell);
+        }
+
+        RemoveZone(zone);
+        AddZoneUnchecked(first);
+
+        foreach (var otherZone in TectonicCellUtility.DivideInAdjacentCells(second))
+        {
+            AddZoneUnchecked(otherZone);
+        }
+
+        return true;
     }
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
@@ -100,7 +135,7 @@ public class ArrayTectonic : ITectonic
                 var n = this[row, col];
                 if (n == 0) return false;
 
-                foreach (var cell in Cells.GetNeighbors(row, col, RowCount, ColumnCount))
+                foreach (var cell in TectonicCellUtility.GetNeighbors(row, col, RowCount, ColumnCount))
                 {
                     if (this[cell.Row, cell.Column] == n) return false;
                 }
@@ -119,6 +154,17 @@ public class ArrayTectonic : ITectonic
         }
 
         return true;
+    }
+
+    public ITectonic Copy()
+    {
+        var result = new ArrayTectonic(RowCount, ColumnCount);
+        foreach (var zone in _zones)
+        {
+            result.AddZone(zone);
+        }
+
+        return result;
     }
 
     public override string ToString()
@@ -154,6 +200,25 @@ public class ArrayTectonic : ITectonic
         builder.Append(StringUtility.Repeat("+---", ColumnCount) + "+\n");
 
         return builder.ToString();
+    }
+
+    private void AddZone(IZone zone)
+    {
+        _zones.Add(zone);
+        foreach (var cell in zone)
+        {
+            _cells[cell.Row, cell.Column].Zone = zone;
+        }
+    }
+
+    private void RemoveZone(IZone zone)
+    {
+        if (!_zones.Remove(zone)) return;
+        
+        foreach (var cell in zone)
+        {
+            _cells[cell.Row, cell.Column].Zone = null;
+        }
     }
 }
 

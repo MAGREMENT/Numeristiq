@@ -19,7 +19,7 @@ public class Settings
         {
             new IntSetting("Theme", new NameListInteractionInterface(themes), -1),
             new BooleanSetting("Show same cell links"),
-            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null)
+            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null, LinkOffsetSidePriority.Any)
         };
         _collections = new[]
         {

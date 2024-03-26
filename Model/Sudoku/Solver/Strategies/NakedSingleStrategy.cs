@@ -8,11 +8,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class NakedSingleStrategy : SudokuStrategy
 {
     public const string OfficialName = "Naked Single";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultBehavior) {}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultInstanceHandling) {}
     
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -24,7 +22,7 @@ public class NakedSingleStrategy : SudokuStrategy
                 
                 strategyUser.ChangeBuffer.ProposeSolutionAddition(strategyUser.PossibilitiesAt(row, col).FirstPossibility(), row, col);
                 strategyUser.ChangeBuffer.Commit( new NakedSingleReportBuilder());
-                if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                if (StopOnFirstPush) return;
             }
         }
     }

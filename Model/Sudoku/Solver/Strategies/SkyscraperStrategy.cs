@@ -9,11 +9,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class SkyscraperStrategy : SudokuStrategy
 {
     public const string OfficialName = "Skyscraper";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public SkyscraperStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public SkyscraperStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
     }
 
@@ -54,7 +52,7 @@ public class SkyscraperStrategy : SudokuStrategy
 
                     if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                             new SkyscraperReportBuilder(Unit.Row, row1, row2, pos1, pos2, number))
-                                && OnCommitBehavior == OnCommitBehavior.Return) return;
+                                && StopOnFirstPush) return;
                 }
             }
             
@@ -90,7 +88,7 @@ public class SkyscraperStrategy : SudokuStrategy
 
                     if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                             new SkyscraperReportBuilder(Unit.Column, col1, col2, pos1, pos2, number)) &&
-                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                                StopOnFirstPush) return;
                 }
             }
         }

@@ -2,6 +2,8 @@
 using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Tectonic;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Tectonic.Solve;
 
@@ -16,6 +18,10 @@ public interface ITectonicDrawer
     void ShowPossibilities(int row, int column, IEnumerable<int> possibilities);
     void ClearBorderDefinitions();
     void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin);
+    void PutCursorOn(Cell cell);
+    void PutCursorOn(IZone cells);
+    void PutCursorOn(IReadOnlyList<Cell> cells);
+    void ClearCursor();
     void ClearHighlights();
     void FillPossibility(int row, int col, int possibility, ChangeColoration coloration);
     void FillCell(int row, int col, ChangeColoration coloration);

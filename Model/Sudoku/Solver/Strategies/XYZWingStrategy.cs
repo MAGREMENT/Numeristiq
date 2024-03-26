@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class XYZWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "XYZ-Wing";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior) {}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public XYZWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling) {}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -74,7 +72,7 @@ public class XYZWingStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit(
-            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && StopOnFirstPush;
     }
     
     private static bool Only2Possibilities(ReadOnlyBitSet16 possibilities)

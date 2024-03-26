@@ -12,15 +12,13 @@ namespace Model.Sudoku.Solver.Strategies;
 public class PatternOverlayStrategy : SudokuStrategy
 {
     public const string OfficialName = "Pattern Overlay";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly int _maxCombinationSize;
     private readonly int _maxPatternNumber;
 
     public PatternOverlayStrategy(int maxCombinationSize, int maxPatternNumber)
-        : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+        : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _maxCombinationSize = maxCombinationSize;
         _maxPatternNumber = maxPatternNumber;
@@ -115,7 +113,7 @@ public class PatternOverlayStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.Commit( new PatternOverlayReportBuilder(patterns, number))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 
     private List<GridPositions>[] GetPatterns(IStrategyUser strategyUser)

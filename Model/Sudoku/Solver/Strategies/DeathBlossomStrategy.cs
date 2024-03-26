@@ -13,11 +13,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class DeathBlossomStrategy : SudokuStrategy
 {
     public const string OfficialName = "Death Blossom";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public DeathBlossomStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public DeathBlossomStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
 
@@ -107,7 +105,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                                 
                                 Process(strategyUser, current, seenCell, eliminationsCauses[seenCell],
                                     possibility);
-                                if (OnCommitBehavior == OnCommitBehavior.Return) return;
+                                if (StopOnFirstPush) return;
                             }
                             
                             buffer.Clear();

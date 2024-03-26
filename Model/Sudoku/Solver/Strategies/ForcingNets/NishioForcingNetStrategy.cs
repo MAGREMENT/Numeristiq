@@ -14,11 +14,9 @@ namespace Model.Sudoku.Solver.Strategies.ForcingNets;
 public class NishioForcingNetStrategy : SudokuStrategy
 { 
     public const string OfficialName = "Nishio Forcing Net";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     { }
 
     public override void Apply(IStrategyUser strategyUser)
@@ -44,7 +42,7 @@ public class NishioForcingNetStrategy : SudokuStrategy
                                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
                                         .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
                                             cs.Cause, cell, Coloring.Off, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
-                                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                                                StopOnFirstPush) return;
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
@@ -53,7 +51,7 @@ public class NishioForcingNetStrategy : SudokuStrategy
                                 if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
                                         .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
                                             cs.Cause, cell, Coloring.On, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
-                                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                                                StopOnFirstPush) return;
                                 break;
                         }
                     }

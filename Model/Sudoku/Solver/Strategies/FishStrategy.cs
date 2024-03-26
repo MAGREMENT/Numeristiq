@@ -15,10 +15,8 @@ namespace Model.Sudoku.Solver.Strategies;
 public class FishStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fish";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
     private const int MinUnitCount = 0;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
 
     private readonly MinMaxSetting _unitCount;
     private readonly IntSetting _maxNumberOfExoFins;
@@ -57,7 +55,7 @@ public class FishStrategy : SudokuStrategy
     };
     
     public FishStrategy(int minUnitCount, int maxUnitCount, int maxNumberOfExoFins, int maxNumberOfEndoFins,
-        bool allowCannibalism) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+        bool allowCannibalism) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _unitCount = new MinMaxSetting("Unit count", 2, 4, 2, 5, 1, minUnitCount, maxUnitCount);
         _maxNumberOfExoFins = new IntSetting("Max number of exo fins", new SliderInteractionInterface(0, 5, 1), maxNumberOfExoFins);
@@ -184,7 +182,7 @@ public class FishStrategy : SudokuStrategy
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new FishReportBuilder(new HashSet<CoverHouse>(_baseSet), coverSet, number,
-                    _toCover.Copy(), new List<Cell>(_fins))) && OnCommitBehavior == OnCommitBehavior.Return;
+                    _toCover.Copy(), new List<Cell>(_fins))) && StopOnFirstPush;
     }
 
     private void ProcessCannibalism(IStrategyUser strategyUser, int number, CoverHouse[] coverSet)

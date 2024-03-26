@@ -7,13 +7,15 @@ public abstract class TectonicStrategy : ICommitMaker
 {
     public string Name { get; }
     public StrategyDifficulty Difficulty { get; }
-    public OnCommitBehavior OnCommitBehavior { get; set; }
+    public InstanceHandling InstanceHandling { get; set; }
+    
+    protected bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
 
-    protected TectonicStrategy(string name, StrategyDifficulty difficulty, OnCommitBehavior defaultBehavior)
+    protected TectonicStrategy(string name, StrategyDifficulty difficulty, InstanceHandling defaultHandling)
     {
         Name = name;
         Difficulty = difficulty;
-        OnCommitBehavior = defaultBehavior;
+        InstanceHandling = defaultHandling;
     }
     
     public abstract void Apply(IStrategyUser strategyUser);

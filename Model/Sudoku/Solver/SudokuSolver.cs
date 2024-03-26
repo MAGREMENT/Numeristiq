@@ -192,7 +192,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _trackerManager.OnSolveDone(this);
     }
     
-    public void Solve(OnCommitBehavior behavior)
+    public void Solve(InstanceHandling handling)
     {
         _startedSolving = true;
         
@@ -201,15 +201,15 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             var current = StrategyManager.Strategies[_currentStrategy];
             if (!current.Enabled) continue;
             
-            var old = current.OnCommitBehavior;
-            current.OnCommitBehavior = behavior;
+            var old = current.InstanceHandling;
+            current.InstanceHandling = handling;
 
             _trackerManager.OnStrategyStart(current, _currentStrategy);
             current.Apply(this);
             ChangeBuffer.Push(current);
             _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
-            current.OnCommitBehavior = old;
+            current.InstanceHandling = old;
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
 
@@ -237,15 +237,15 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             var current = StrategyManager.Strategies[_currentStrategy];
             if (!current.Enabled) continue;
 
-            var behavior = current.OnCommitBehavior;
-            current.OnCommitBehavior = OnCommitBehavior.WaitForAll;
+            var handling = current.InstanceHandling;
+            current.InstanceHandling = InstanceHandling.UnorderedAll;
             
             _trackerManager.OnStrategyStart(current, _currentStrategy);
             current.Apply(this);
             ChangeBuffer.Push(current);
             _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
-            current.OnCommitBehavior = behavior;
+            current.InstanceHandling = handling;
             _solutionAddedBuffer = 0;
             _possibilityRemovedBuffer = 0;
         }

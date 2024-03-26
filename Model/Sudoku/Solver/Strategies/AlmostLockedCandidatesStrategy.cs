@@ -14,13 +14,11 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
 {
     public const string OfficialNameForType2 = "Almost Locked Pair";
     public const string OfficialNameForType3 = "Almost Locked Triple";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
     
-    public AlmostLockedCandidatesStrategy(int type) : base("", StrategyDifficulty.Medium, DefaultBehavior)
+    public AlmostLockedCandidatesStrategy(int type) : base("", StrategyDifficulty.Medium, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
@@ -78,7 +76,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
 
                         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, rowCenterCells)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
                     }
 
                     foreach (var als in SearchColumnForAls(strategyUser, miniCol * 3 + u, miniRow))
@@ -94,7 +92,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         
                         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, colCenterCells)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
                     }
 
                     foreach (var als in SearchMiniGridForAls(strategyUser, miniRow, miniCol,
@@ -114,7 +112,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         
                         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, cells, rowCenterCells)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
                     }
                     
                     foreach (var als in SearchMiniGridForAls(strategyUser, miniRow, miniCol,
@@ -134,7 +132,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                         
                         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, cells, colCenterCells)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
                     }
                 }
             }

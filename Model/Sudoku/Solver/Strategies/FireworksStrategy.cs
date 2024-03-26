@@ -15,15 +15,13 @@ namespace Model.Sudoku.Solver.Strategies;
 public class FireworksStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fireworks";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
     
-    public FireworksStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public FireworksStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
     }
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    
+
     public override void Apply(IStrategyUser strategyUser)
     {
         GridPositions[] limitations = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
@@ -137,7 +135,7 @@ public class FireworksStrategy : SudokuStrategy
                                     var poss = new ReadOnlyBitSet16(i + 1, j + 1, k + 1);
                                     
                                     if(ProcessTripleFireworks(strategyUser, new Fireworks(or2, poss)) &&
-                                       OnCommitBehavior == OnCommitBehavior.Return) return;
+                                       StopOnFirstPush) return;
                                 }
                             }
                         }
@@ -215,7 +213,7 @@ public class FireworksStrategy : SudokuStrategy
                 }
 
                 if (user.ChangeBuffer.Commit( new FireworksReportBuilder(one, two)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return) return;
+                    StopOnFirstPush) return;
             }
         }
         
@@ -280,7 +278,7 @@ public class FireworksStrategy : SudokuStrategy
 
                     if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                             new FireworksWithAlmostLockedSetsReportBuilder(df, one, two))
-                                                        && OnCommitBehavior == OnCommitBehavior.Return) return;
+                                                        && StopOnFirstPush) return;
                 }
             }
             
@@ -303,7 +301,7 @@ public class FireworksStrategy : SudokuStrategy
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.RowWing.Row, df.RowWing.Column);
                     if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
-                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                                StopOnFirstPush) return;
                     break;
                 }
             }
@@ -320,7 +318,7 @@ public class FireworksStrategy : SudokuStrategy
                     user.ChangeBuffer.ProposePossibilityRemoval(possibility, df.ColumnWing.Row, df.ColumnWing.Column);
                     if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                             new FireworksWithStrongLinkReportBuilder(df, current, friend)) && 
-                                OnCommitBehavior == OnCommitBehavior.Return) return;
+                                StopOnFirstPush) return;
                     break;
                 }
             }
@@ -338,7 +336,7 @@ public class FireworksStrategy : SudokuStrategy
                 }
 
                 if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
-                        new FireworksReportBuilder(df)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                        new FireworksReportBuilder(df)) && StopOnFirstPush) return;
             }
         }
         
@@ -388,7 +386,7 @@ public class FireworksStrategy : SudokuStrategy
 
                 if (user.ChangeBuffer.NotEmpty() && user.ChangeBuffer.Commit(
                         new FireworksWithCellReportBuilder(center, one, two)) &&
-                            OnCommitBehavior == OnCommitBehavior.Return) return;
+                            StopOnFirstPush) return;
             }
         }
     }

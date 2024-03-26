@@ -326,7 +326,7 @@ public class GridPositions : IReadOnlyGridPositions
         return result;
     }
 
-    public bool CanBeCoverByAUnit()
+    public bool CanBeCoveredByAUnit()
     {
         if (Count == 0) return true;
 

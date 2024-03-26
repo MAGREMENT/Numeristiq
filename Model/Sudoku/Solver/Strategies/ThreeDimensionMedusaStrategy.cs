@@ -10,11 +10,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class ThreeDimensionMedusaStrategy : SudokuStrategy
 {
     public const string OfficialName = "3D Medusa";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) {}
     
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -35,14 +33,14 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
             {
                 if(strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                        new SimpleColoringReportBuilder(coloredVertices, true)) && 
-                        OnCommitBehavior == OnCommitBehavior.Return) return;
+                        StopOnFirstPush) return;
                 
                 continue;
             }
             
             SearchMix(strategyUser, coloredVertices.On, coloredVertices.Off, inGraph);
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                new SimpleColoringReportBuilder(coloredVertices)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstPush) return;
         }
     }
 

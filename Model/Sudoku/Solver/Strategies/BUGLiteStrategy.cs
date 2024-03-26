@@ -15,13 +15,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class BUGLiteStrategy : SudokuStrategy
 {
     public const string OfficialName = "BUG-Lite";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IntSetting _maxStructSize;
     
-    public BUGLiteStrategy(int maxStructSize) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public BUGLiteStrategy(int maxStructSize) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         _maxStructSize = new IntSetting("Maximum cell count",
             new SliderInteractionInterface(4, 20, 1), maxStructSize);
@@ -215,7 +213,7 @@ public class BUGLiteStrategy : SudokuStrategy
         }
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new BUGLiteReportBuilder(bcp)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new BUGLiteReportBuilder(bcp)) && StopOnFirstPush;
     }
 
     private static ReadOnlyBitSet16 FindStructurePossibilitiesFor(Cell cell, IEnumerable<BiCellPossibilities> bcp)

@@ -12,11 +12,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class AlignedPairExclusionStrategy : SudokuStrategy
 {
     public const string OfficialName = "Aligned Pair Exclusion";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlignedPairExclusionStrategy() : base(OfficialName,  StrategyDifficulty.Hard, DefaultBehavior) { }
+    public AlignedPairExclusionStrategy() : base(OfficialName,  StrategyDifficulty.Hard, DefaultInstanceHandling) { }
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -122,7 +120,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
             new AlignedPairExclusionReportBuilder(usefulAls, row1, col1, row2, col2))
-                && OnCommitBehavior == OnCommitBehavior.Return;
+                && StopOnFirstPush;
     }
 
     private void SearchForElimination(IStrategyUser strategyUser, ReadOnlyBitSet16 poss1,

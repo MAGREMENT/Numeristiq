@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class UnavoidableRectanglesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Unavoidable Rectangles";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public UnavoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public UnavoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
@@ -68,7 +66,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 {
                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
                    return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                              new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return;
+                              new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
                 }
 
                 return false;
@@ -77,7 +75,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
                     return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                        new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return;
+                        new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
                 }
                 
                 return false;
@@ -102,7 +100,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         }
 
         if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                new AvoidableRectanglesReportBuilder(floor, roof)) && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush) return true;
 
         var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
         notBiValuePossibilities -= values.One;
@@ -115,7 +113,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             ProcessArWithAls(strategyUser, roof, als);
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new AvoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
-                        OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        StopOnFirstPush) return true;
         }
 
         return false;

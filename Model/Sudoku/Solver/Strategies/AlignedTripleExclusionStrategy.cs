@@ -15,13 +15,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class AlignedTripleExclusionStrategy : SudokuStrategy
 {
     public const string OfficialName = "Aligned Triple Exclusion";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IntSetting _minSharedSeenCells;
     
-    public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+    public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         _minSharedSeenCells = new IntSetting("Minimum shared seen cells", new SliderInteractionInterface(5, 12, 1), minSharedSeenCells);
         AddSetting(_minSharedSeenCells);
@@ -262,7 +260,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         SearchForElimination(strategyUser, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
-            new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && StopOnFirstPush;
     }
 
     private void SearchForElimination(IStrategyUser strategyUser, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,

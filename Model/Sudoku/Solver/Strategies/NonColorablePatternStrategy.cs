@@ -14,14 +14,12 @@ namespace Model.Sudoku.Solver.Strategies;
 public class NonColorablePatternStrategy : SudokuStrategy
 {
     public const string OfficialName = "Non-Colorable Pattern";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly MinMaxSetting _possCount;
     private readonly IntSetting _maxNotInPatternCell;
     
-    public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _possCount = new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1, minPossCount, maxPossCount);
         _maxNotInPatternCell = new IntSetting("Max out of pattern cells", new SliderInteractionInterface(1, 5, 1),
@@ -100,7 +98,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss)) &&
-                        OnCommitBehavior == OnCommitBehavior.Return) return true;
+                        StopOnFirstPush) return true;
         }
         
         return false;

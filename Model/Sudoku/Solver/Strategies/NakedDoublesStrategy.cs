@@ -10,11 +10,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class NakedDoublesStrategy : SudokuStrategy
 {
     public const string OfficialName = "Naked Doubles";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public NakedDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public NakedDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -100,7 +98,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 
     private bool ProcessColumn(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int col,
@@ -118,7 +116,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 
     private bool ProcessMiniGrid(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
@@ -142,7 +140,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.Commit(
             new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 
 }

@@ -9,11 +9,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class BruteForceStrategy : SudokuStrategy
 {
     public const string OfficialName = "Brute Force";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultBehavior) { }
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultInstanceHandling) { }
 
     public override void Apply(IStrategyUser strategyUser)
     {

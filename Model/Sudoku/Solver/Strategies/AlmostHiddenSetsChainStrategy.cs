@@ -14,13 +14,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 {
     public const string OfficialName = "Almost Hidden Sets Chain";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
     private readonly bool _checkLength2;
     
-    public AlmostHiddenSetsChainStrategy(bool checkLength2) : base(OfficialName, StrategyDifficulty.Extreme, DefaultBehavior)
+    public AlmostHiddenSetsChainStrategy(bool checkLength2) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _checkLength2 = checkLength2;
     }
@@ -90,7 +88,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
             }
 
             return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                new AlmostHiddenSetsChainReportBuilder(chain, ll)) && OnCommitBehavior == OnCommitBehavior.Return;
+                new AlmostHiddenSetsChainReportBuilder(chain, ll)) && StopOnFirstPush;
         }
 
         return false;
@@ -149,7 +147,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new AlmostHiddenSetsChainReportBuilder(chain.ToChain(), links)) && OnCommitBehavior == OnCommitBehavior.Return;
+            new AlmostHiddenSetsChainReportBuilder(chain.ToChain(), links)) && StopOnFirstPush;
     }
 }
 

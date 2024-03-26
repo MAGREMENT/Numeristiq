@@ -11,13 +11,11 @@ namespace Model.Sudoku.Solver.Strategies;
 public class GurthTheorem : SudokuStrategy
 {
     public const string OfficialName = "Gurth's Theorem";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly List<Symmetry> _symmetries;
 
-    public GurthTheorem() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    public GurthTheorem() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _symmetries = new List<Symmetry>

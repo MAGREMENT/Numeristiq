@@ -3,15 +3,13 @@
 public class UniquenessClueCoverStrategy : SudokuStrategy
 {
     public const string OfficialName = "Uniqueness Clue Cover";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IPatternCollection[] _collections;
     private bool _needFilter = true;
     
     public UniquenessClueCoverStrategy(params IPatternCollection[] collections)
-        : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior)
+        : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _collections = collections;

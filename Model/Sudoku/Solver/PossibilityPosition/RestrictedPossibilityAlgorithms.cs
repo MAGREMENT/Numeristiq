@@ -28,6 +28,6 @@ public static class RestrictedPossibilityAlgorithms
         _buffer.ApplyOr(second);
         _buffer.ApplyAnd(holder.PositionsFor(possibility));
 
-        return _buffer.CanBeCoverByAUnit();
+        return _buffer.CanBeCoveredByAUnit();
     }
 }

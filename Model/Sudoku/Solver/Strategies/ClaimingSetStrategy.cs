@@ -34,11 +34,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class ClaimingSetStrategy : SudokuStrategy
 {
     public const string OfficialName = "Claiming Set";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public ClaimingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public ClaimingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -66,7 +64,7 @@ public class ClaimingSetStrategy : SudokuStrategy
                     }
 
                     if (strategyUser.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(row,
-                            ppir, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                            ppir, number, Unit.Row)) && StopOnFirstPush) return;
                 }
             }
 
@@ -93,7 +91,7 @@ public class ClaimingSetStrategy : SudokuStrategy
                     }
 
                     if(strategyUser.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(col,
-                           ppic, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return) return;
+                           ppic, number, Unit.Column)) && StopOnFirstPush) return;
                 }
             }
         }

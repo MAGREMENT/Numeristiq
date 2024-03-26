@@ -12,13 +12,11 @@ public class FinnedGridFormationStrategy : SudokuStrategy
 {
     public const string OfficialNameForType3 = "Finned Swordfish";
     public const string OfficialNameForType4 = "Finned Jellyfish";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
 
-    public FinnedGridFormationStrategy(int type) : base("", StrategyDifficulty.Hard, DefaultBehavior)
+    public FinnedGridFormationStrategy(int type) : base("", StrategyDifficulty.Hard, DefaultInstanceHandling)
     {
         _type = type;
         Name = type switch
@@ -118,7 +116,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
 
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row)) &&
-                    OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    StopOnFirstPush) return true;
         }
 
         return false;
@@ -188,7 +186,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
 
             if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                     new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column))
-                    && OnCommitBehavior == OnCommitBehavior.Return) return true;
+                    && StopOnFirstPush) return true;
         }
 
         return false;

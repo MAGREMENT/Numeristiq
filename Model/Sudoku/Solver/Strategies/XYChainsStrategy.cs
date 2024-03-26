@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class XYChainsStrategy : SudokuStrategy
 {
     public const string OfficialName = "XY-Chains";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.Return;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public XYChainsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior) {}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
+
+    public XYChainsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) {}
 
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -66,7 +64,7 @@ public class XYChainsStrategy : SudokuStrategy
         }
         
         return strategyUser.ChangeBuffer.Commit( new XYChainReportBuilder(visited))
-            && OnCommitBehavior == OnCommitBehavior.Return;
+            && StopOnFirstPush;
     }
 }
 

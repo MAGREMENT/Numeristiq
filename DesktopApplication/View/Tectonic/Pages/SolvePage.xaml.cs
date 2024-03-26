@@ -5,6 +5,7 @@ using DesktopApplication.View.Controls;
 using Model;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
+using Model.Utility;
 
 namespace DesktopApplication.View.Tectonic.Pages;
 
@@ -19,6 +20,7 @@ public partial class SolvePage : ITectonicSolveView
         InitializeComponent();
 
         _presenter = appPresenter.Initialize(this);
+        DefaultMode.IsChecked = true;
     }
 
     public ITectonicDrawer Drawer => EmbeddedDrawer.Drawer;
@@ -107,22 +109,22 @@ public partial class SolvePage : ITectonicSolveView
         
     }
 
-    private void EmbeddedDrawer_OnRowCountChanged(int number)
+    private void OnRowCountChanged(int number)
     {
         RowCount.SetDimension(number);
     }
 
-    private void EmbeddedDrawer_OnColumnCountChanged(int number)
+    private void OnColumnCountChanged(int number)
     {
         ColumnCount.SetDimension(number);
     }
 
-    private void RowCount_OnDimensionChangeAsked(int diff)
+    private void OnRowDimensionChangeAsked(int diff)
     {
         _presenter.SetNewRowCount(diff);
     }
 
-    private void ColumnCount_OnDimensionChangeAsked(int diff)
+    private void OnColumnDimensionChangeAsked(int diff)
     {
         _presenter.SetNewColumnCount(diff);
     }
@@ -130,5 +132,35 @@ public partial class SolvePage : ITectonicSolveView
     private void OnHideableTextboxShowed()
     {
         _presenter.SetTectonicString();
+    }
+
+    private void OnCellSelection(int row, int col)
+    {
+        _presenter.SelectCell(new Cell(row, col));
+    }
+
+    private void OnCellAddedToSelection(int row, int col)
+    {
+        _presenter.SelectCell(new Cell(row, col));
+    }
+
+    private void OnSelectionEnd()
+    {
+        _presenter.EndCellSelection();
+    }
+
+    private void ModeToDefault(object sender, RoutedEventArgs e)
+    {
+        _presenter.SetSelectionMode(SelectionMode.Default);
+    }
+    
+    private void ModeToMerge(object sender, RoutedEventArgs e)
+    {
+        _presenter.SetSelectionMode(SelectionMode.Merge);
+    }
+    
+    private void ModeToSplit(object sender, RoutedEventArgs e)
+    {
+        _presenter.SetSelectionMode(SelectionMode.Split);
     }
 }

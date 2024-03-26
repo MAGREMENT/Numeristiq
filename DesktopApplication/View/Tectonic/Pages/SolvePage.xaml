@@ -15,12 +15,35 @@
         </Grid.ColumnDefinitions>
         
         <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer"
-                                               RowCountChanged="EmbeddedDrawer_OnRowCountChanged"
-                                               ColumnCountChanged="EmbeddedDrawer_OnColumnCountChanged"/>
+                                               RowCountChanged="OnRowCountChanged"
+                                               ColumnCountChanged="OnColumnCountChanged"
+                                               CellSelected="OnCellSelection"
+                                               CellAddedToSelection="OnCellAddedToSelection"
+                                               SelectionEnded="OnSelectionEnd"/>
         
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0, 20, 0, 0">
-            <controls:DimensionChooser TitleText="Row Count" x:Name="RowCount" DimensionChangeAsked="RowCount_OnDimensionChangeAsked"/>
-            <controls:DimensionChooser TitleText="Column Count" x:Name="ColumnCount" DimensionChangeAsked="ColumnCount_OnDimensionChangeAsked"/>
+            <controls:DimensionChooser TitleText="Rows" x:Name="RowCount" DimensionChangeAsked="OnRowDimensionChangeAsked"
+                                       HorizontalAlignment="Center"/>
+            <controls:DimensionChooser TitleText="Columns" x:Name="ColumnCount" DimensionChangeAsked="OnColumnDimensionChangeAsked"
+                                       HorizontalAlignment="Center"/>
+            <TextBlock FontSize="16" Margin="0, 10, 0, 0" Foreground="{DynamicResource Text}">
+                Selection Mode
+            </TextBlock>
+            
+            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
+                         x:Name="DefaultMode" Checked="ModeToDefault">
+                Default
+            </RadioButton>
+            
+            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                         Checked="ModeToMerge">
+                Merge
+            </RadioButton>
+            
+            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                         Checked="ModeToSplit">
+                Split
+            </RadioButton>
         </StackPanel>
         
         <Grid Grid.Column="2">

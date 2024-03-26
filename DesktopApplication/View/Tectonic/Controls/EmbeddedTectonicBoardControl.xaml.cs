@@ -7,6 +7,9 @@ public partial class EmbeddedTectonicBoardControl
 { 
     public event OnDimensionCountChange? RowCountChanged;
     public event OnDimensionCountChange? ColumnCountChanged;
+    public event OnCellSelection? CellSelected;
+    public event OnCellSelection? CellAddedToSelection;
+    public event OnSelectionEnd? SelectionEnded;
 
     public ITectonicDrawer Drawer => Board;
     
@@ -62,5 +65,20 @@ public partial class EmbeddedTectonicBoardControl
     private int ComputeOptimalCellSize(double space, int number)
     {
         return (int) ((space - Board.BigLineWidth * (number + 1)) / number);
+    }
+
+    private void OnCellSelection(int row, int col)
+    {
+        CellSelected?.Invoke(row, col);
+    }
+
+    private void OnCellAddedToSelection(int row, int col)
+    {
+        CellAddedToSelection?.Invoke(row, col);
+    }
+
+    private void OnSelectionEnd()
+    {
+        SelectionEnded?.Invoke();
     }
 }

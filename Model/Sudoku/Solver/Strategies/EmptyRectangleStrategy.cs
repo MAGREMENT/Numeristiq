@@ -11,11 +11,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class EmptyRectangleStrategy : SudokuStrategy
 {
     public const string OfficialName = "Empty Rectangle";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public EmptyRectangleStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultBehavior)
+    public EmptyRectangleStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
     {
     }
 
@@ -100,7 +98,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new RectangleEliminationReportBuilder(hinge, one, two, isOneLinkStrong, isTwoLinkStrong,
-                miniRow, miniCol, possibility)) && OnCommitBehavior == OnCommitBehavior.Return;
+                miniRow, miniCol, possibility)) && StopOnFirstPush;
     }
 }
 

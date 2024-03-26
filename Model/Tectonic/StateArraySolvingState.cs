@@ -82,7 +82,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         {
             buffer[progress.Row, progress.Column] = (ushort)((progress.Number << 1) | 1);
 
-            foreach (var neighbor in Cells.GetNeighbors(progress.Row, progress.Column,
+            foreach (var neighbor in TectonicCellUtility.GetNeighbors(progress.Row, progress.Column,
                          buffer.GetLength(0), buffer.GetLength(1)))
             {
                 if((buffer[neighbor.Row, neighbor.Column] & 1) == 0) 

@@ -36,7 +36,7 @@ public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<Sudok
     }
 }
 
-public record StrategyDAO(string Name, bool Enabled, bool Locked, OnCommitBehavior Behavior,
+public record StrategyDAO(string Name, bool Enabled, bool Locked, InstanceHandling InstanceHandling,
     Dictionary<string, string>? Settings)
 {
     public static StrategyDAO From(SudokuStrategy strategy)
@@ -48,12 +48,12 @@ public record StrategyDAO(string Name, bool Enabled, bool Locked, OnCommitBehavi
             settings.Add(s.Name, s.Get().ToString()!);
         }
 
-        return new StrategyDAO(strategy.Name, strategy.Enabled, strategy.Locked, strategy.OnCommitBehavior, settings);
+        return new StrategyDAO(strategy.Name, strategy.Enabled, strategy.Locked, strategy.InstanceHandling, settings);
     }
 
     public SudokuStrategy? To()
     {
-        var result = StrategyPool.CreateFrom(Name, Enabled, Locked, Behavior);
+        var result = StrategyPool.CreateFrom(Name, Enabled, Locked, InstanceHandling);
         if (result is null) return null;
 
         if (Settings is null) return result;

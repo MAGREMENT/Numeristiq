@@ -10,11 +10,9 @@ namespace Model.Sudoku.Solver.Strategies;
 public class FinnedXWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "Finned X-Wing";
-    private const OnCommitBehavior DefaultBehavior = OnCommitBehavior.WaitForAll;
-    
-    public override OnCommitBehavior DefaultOnCommitBehavior => DefaultBehavior;
-    
-    public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultBehavior){}
+    private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
+
+    public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling){}
     
     public override void Apply(IStrategyUser strategyUser)
     {
@@ -69,7 +67,7 @@ public class FinnedXWingStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new FinnedXWingReportBuilder(normalPos, normalRow, finnedPos,
-                finnedRow, number, Unit.Row)) && OnCommitBehavior == OnCommitBehavior.Return;
+                finnedRow, number, Unit.Row)) && StopOnFirstPush;
     }
 
     private bool ExamineColumn(IStrategyUser strategyUser, int normalCol, int finnedCol,
@@ -85,7 +83,7 @@ public class FinnedXWingStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
                 new FinnedXWingReportBuilder(normalPos, normalCol,
-                    finnedPos, finnedCol, number, Unit.Column)) && OnCommitBehavior == OnCommitBehavior.Return;
+                    finnedPos, finnedCol, number, Unit.Column)) && StopOnFirstPush;
     }
 
     private bool HasSameMiniCol(IReadOnlyLinePositions toExamine, int col, int except)
