@@ -561,17 +561,6 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
         }
     }
     
-    public void ReEvaluateNumberBrushes()
-    {
-        foreach (var component in Layers[NumbersIndex])
-        {
-            if (component is not SolutionComponent s) continue;
-            
-            var brush = _isSpecialNumberBrush[s.Row, s.Column] ? SpecialNumberBrush : DefaultNumberBrush;
-            component.SetBrush(brush);
-        }
-    }
-    
     #region IExplanationHighlighter
 
     public void ShowCell(Cell c)
@@ -763,19 +752,17 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
             delta += _cellSize * 3 + _smallLineWidth * 2 + _bigLineWidth;
         }
     }
+    
+    private void ReEvaluateNumberBrushes()
+    {
+        foreach (var component in Layers[NumbersIndex])
+        {
+            if (component is not SolutionComponent s) continue;
+            
+            var brush = _isSpecialNumberBrush[s.Row, s.Column] ? SpecialNumberBrush : DefaultNumberBrush;
+            component.SetBrush(brush);
+        }
+    }
 
     #endregion
-}
-
-public class SolutionComponent : TextInRectangleComponent
-{
-    public int Row { get; }
-    public int Column { get; }
-    
-    public SolutionComponent(string text, double size, Brush foreground, Rect rect, int row, int col
-        , ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment) : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
-    {
-        Row = row;
-        Column = col;
-    }
 }

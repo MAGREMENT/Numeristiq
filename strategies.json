@@ -267,7 +267,7 @@
   },
   {
     "Name": "Extended Unique Rectangles",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}

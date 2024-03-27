@@ -253,6 +253,20 @@ public class TextInRectangleComponent : IDrawableComponent
     }
 }
 
+public class SolutionComponent : TextInRectangleComponent
+{
+    public int Row { get; }
+    public int Column { get; }
+    
+    public SolutionComponent(string text, double size, Brush foreground, Rect rect, int row, int col
+        , ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment)
+        : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
+    {
+        Row = row;
+        Column = col;
+    }
+}
+
 public delegate void OnCellSelection(int row, int col);
 
 public delegate void OnSelectionEnd();

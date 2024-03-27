@@ -59,5 +59,11 @@ public class SudokuManagePresenter
     {
         _manager.RemoveStrategy(index);
         _view.SetStrategyList(_manager.Strategies);
+        _view.ClearSelectedStrategy();
+    }
+
+    public void OnShow()
+    {
+        _view.ClearSelectedStrategy();
     }
 }

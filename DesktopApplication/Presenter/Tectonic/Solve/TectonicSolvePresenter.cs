@@ -69,24 +69,9 @@ public class TectonicSolvePresenter
         _solver.ProgressMade -= OnProgressMade;
     }
 
-    private void OnProgressMade()
+    public void Clear()
     {
-        SetShownState(_solver);
-        UpdateLogs();
-    }
-    
-    private void UpdateLogs()
-    {
-        if (_solver.Logs.Count < _logCount)
-        {
-            ClearLogs();
-            return;
-        }
-
-        for (;_logCount < _solver.Logs.Count; _logCount++)
-        {
-            _view.AddLog(_solver.Logs[_logCount], _stateShown);
-        }
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount));
     }
     
     public void RequestLogOpening(int id)
@@ -99,7 +84,7 @@ public class TectonicSolvePresenter
         if (_currentlyOpenedLog == index)
         {
             _currentlyOpenedLog = -1;
-            SetShownState(_solver);
+            SetShownState(_solver, false);
         }
         else
         {
@@ -107,7 +92,7 @@ public class TectonicSolvePresenter
             _currentlyOpenedLog = index;
 
             var log = _solver.Logs[index];
-            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter); 
+            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
             _translator.Translate(log.HighlightManager); 
         }
     }
@@ -119,7 +104,7 @@ public class TectonicSolvePresenter
         if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.Logs.Count) return;
         
         var log = _solver.Logs[_currentlyOpenedLog];
-        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter); 
+        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
         _translator.Translate(log.HighlightManager);
     }
 
@@ -205,6 +190,26 @@ public class TectonicSolvePresenter
         _view.Drawer.ClearCursor();
         _view.Drawer.Refresh();
     }
+    
+    public void SetCurrentCell(int n)
+    {
+        if (_selectedCells.Count != 1) return;
+
+        var c = _selectedCells[0];
+        _solver.SetSolutionByHand(n, c.Row, c.Column);
+        SetShownState(_solver, !_solver.StartedSolving);
+        UpdateLogs();
+    }
+
+    public void DeleteCurrentCell()
+    {
+        if (_selectedCells.Count != 1) return;
+        
+        var c = _selectedCells[0];
+        _solver.RemoveSolutionByHand(c.Row, c.Column);
+        SetShownState(_solver, !_solver.StartedSolving);
+        UpdateLogs();
+    }
 
     #region Private
 
@@ -213,8 +218,17 @@ public class TectonicSolvePresenter
         _view.ClearLogs();
         _logCount = 0;
     }
+    
+    private void SetNewTectonic(ITectonic tectonic)
+    {
+        _solver.SetTectonic(tectonic);
+        _view.Drawer.ClearHighlights();
+        SetUpNewTectonic();
+        SetShownState(_solver, true);
+        ClearLogs();
+    }
 
-    private void SetShownState(ISolvingState state)
+    private void SetShownState(ISolvingState state, bool asClue)
     {
         var drawer = _view.Drawer;
 
@@ -225,6 +239,7 @@ public class TectonicSolvePresenter
             for (int col = 0; col < _solver.Tectonic.ColumnCount; col++)
             {
                 var number = state[row, col];
+                if (asClue) drawer.SetClue(row, col, number != 0);
                 if (number == 0)
                 {
                     var zoneSize = _solver.Tectonic.GetZone(row, col).Count;
@@ -235,15 +250,6 @@ public class TectonicSolvePresenter
         }
         
         drawer.Refresh();
-    }
-
-    private void SetNewTectonic(ITectonic tectonic)
-    {
-        _solver.SetTectonic(tectonic);
-        _view.Drawer.ClearHighlights();
-        SetUpNewTectonic();
-        SetShownState(_solver);
-        ClearLogs();
     }
 
     private void SetUpNewTectonic()
@@ -273,6 +279,26 @@ public class TectonicSolvePresenter
         }
         
         drawer.Refresh();
+    }
+    
+    private void OnProgressMade()
+    {
+        SetShownState(_solver, false);
+        UpdateLogs();
+    }
+    
+    private void UpdateLogs()
+    {
+        if (_solver.Logs.Count < _logCount)
+        {
+            ClearLogs();
+            return;
+        }
+
+        for (;_logCount < _solver.Logs.Count; _logCount++)
+        {
+            _view.AddLog(_solver.Logs[_logCount], _stateShown);
+        }
     }
 
     #endregion

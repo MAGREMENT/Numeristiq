@@ -23,4 +23,6 @@ public interface ISudokuSolveView
     void HighlightStrategy(int index);
     void UnHighlightStrategy(int index);
     void CopyToClipBoard(string s);
+    void EnableStrategy(int index, bool enabled);
+    void LockStrategy(int index);
 }

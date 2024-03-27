@@ -29,49 +29,55 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <RadioButton VerticalAlignment="Center" x:Name="BeforeButton" Style="{StaticResource LogRadioButton}" Checked="BeforeChecked">Before</RadioButton>
-                    <RadioButton VerticalAlignment="Center" x:Name="AfterButton" Style="{StaticResource LogRadioButton}" Checked="AfterChecked">After</RadioButton>
-                    <Button Style="{StaticResource LogHighlightButton}" Click="ShiftLeft">
-                        <Path
-                            Width="26"
-                            Height="26"
-                            Data="M 17,6 8,13 17,20"
-                            Stroke="{Binding Path=Foreground,
-								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                            StrokeThickness="1" />
-                    </Button>
-                    <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource Text}" 
-                               x:Name="HighlightCount" Margin="2.5, 0, 2.5, 0" TextAlignment="Center">1 / 1</TextBlock>
-                    <Button Style="{StaticResource LogHighlightButton}" Click="ShiftRight">
-                        <Path
-                            Width="26"
-                            Height="26"
-                            Data="M 9,6 18,13 9,20"
-                            Stroke="{Binding Path=Foreground,
-								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                            StrokeThickness="1" />
-                    </Button>
-                </StackPanel>
-                
-                <Grid Grid.Row="1">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition Height="10"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    
+                <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Grid.Row="0" Grid.Column="0" FontWeight="SemiBold" Margin="0, 0, 10, 0"
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="20, 0, 0, 0">
+                        <RadioButton VerticalAlignment="Center" x:Name="BeforeButton" Style="{StaticResource LogRadioButton}" Checked="BeforeChecked">Before</RadioButton>
+                        <RadioButton VerticalAlignment="Center" x:Name="AfterButton" Style="{StaticResource LogRadioButton}" Checked="AfterChecked">After</RadioButton>
+                    </StackPanel>
+                    
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" Margin="0, 0, 20, 0">
+                        <Button Style="{StaticResource LogHighlightButton}" Click="ShiftLeft">
+                            <Path
+                                Width="26"
+                                Height="26"
+                                Data="M 17,6 8,13 17,20"
+                                Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                StrokeThickness="1" />
+                        </Button>
+                        <TextBlock VerticalAlignment="Center" FontSize="16" Foreground="{DynamicResource Text}" 
+                                   x:Name="HighlightCount" Margin="2.5, 0, 2.5, 0" TextAlignment="Center">1 / 1</TextBlock>
+                        <Button Style="{StaticResource LogHighlightButton}" Click="ShiftRight">
+                            <Path
+                                Width="26"
+                                Height="26"
+                                Data="M 9,6 18,13 9,20"
+                                Stroke="{Binding Path=Foreground,
+								 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                StrokeThickness="1" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                
+                <Grid Grid.Row="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <TextBlock Grid.Row="0" FontWeight="SemiBold" Margin="0, 0, 0, 10" HorizontalAlignment="Center"
                                Foreground="{DynamicResource Text}" FontSize="20">Text Output</TextBlock>
-                    <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource FullPrimaryButton}"
-                            Width="100" Height="30" HorizontalAlignment="Left" Click="OnExplanationAsked">Details</Button>
-                    <TextBlock Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" x:Name="TextOutput" FontSize="14"
+                    <TextBlock Grid.Row="1" x:Name="TextOutput" FontSize="14" HorizontalAlignment="Left"
                                Foreground="{DynamicResource Text}" TextWrapping="Wrap"/>
+                    <Button Grid.Row="2" Style="{StaticResource FullPrimaryButton}" Margin="10" 
+                            Height="36" FontSize="18" HorizontalAlignment="Stretch" Click="OnExplanationAsked">Details</Button>
                 </Grid>
             </Grid>
         </Grid>

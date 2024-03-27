@@ -18,11 +18,13 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     private ReadOnlyBitSet16[,] _possibilities;
 
     private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
-        new CommonCellsStrategy(), new NeighboringZonesStrategy() };
+        new CommonCellsStrategy(), new XChainStrategy() };
 
     private int _possibilityRemovedBuffer;
     private int _solutionAddedBuffer;
     private IUpdatableTectonicSolvingState? _currentState;
+    
+    public bool StartedSolving { get; private set; }
 
     public LogManager<ITectonicHighlighter> LogManager { get; } = new();
 
@@ -37,6 +39,8 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
 
     public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; set; }
     public IReadOnlyList<ISolverLog<ITectonicHighlighter>> Logs => LogManager.Logs;
+    
+    public IReadOnlyTectonic Tectonic => _tectonic;
 
     public event OnProgressMade? ProgressMade;
 
@@ -55,10 +59,45 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         InitCandidates();
         
         LogManager.Clear();
+        StartedSolving = false;
     }
 
-    public IReadOnlyTectonic Tectonic => _tectonic;
+    public void SetSolutionByHand(int number, int row, int col)
+    {
+        if (_tectonic[row, col] != 0) RemoveSolution(row, col);
 
+        var before = CurrentState;
+        if (!AddSolution(row, col, number, false)) return;
+        
+        if(StartedSolving && ChangeBuffer.HandlesLog)
+            LogManager.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
+    }
+
+    public void RemoveSolutionByHand(int row, int col)
+    {
+        if (StartedSolving) return;
+
+        RemoveSolution(row, col);
+    }
+
+    public void Solve(bool stopAtProgress = false)
+    {
+        for (int i = 0; i < _strategies.Length; i++)
+        {
+            _strategies[i].Apply(this);
+            ChangeBuffer.Push(_strategies[i]);
+
+            if (_solutionAddedBuffer == 0 && _possibilityRemovedBuffer == 0) continue;
+
+            ProgressMade?.Invoke();
+            _solutionAddedBuffer = 0;
+            _possibilityRemovedBuffer = 0;
+            if (stopAtProgress) return;
+            
+            i = -1;
+        }
+    }
+    
     public ReadOnlyBitSet16 PossibilitiesAt(Cell cell)
     {
         return _possibilities[cell.Row, cell.Column];
@@ -99,25 +138,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     {
         return progress.ProgressType == ProgressType.PossibilityRemoval 
             ? RemovePossibility(progress.Row, progress.Column, progress.Number) 
-            : AddSolution(progress.Row, progress.Column, progress.Number);
-    }
-
-    public void Solve(bool stopAtProgress = false)
-    {
-        for (int i = 0; i < _strategies.Length; i++)
-        {
-            _strategies[i].Apply(this);
-            ChangeBuffer.Push(_strategies[i]);
-
-            if (_solutionAddedBuffer == 0 && _possibilityRemovedBuffer == 0) continue;
-
-            ProgressMade?.Invoke();
-            _solutionAddedBuffer = 0;
-            _possibilityRemovedBuffer = 0;
-            if (stopAtProgress) return;
-            
-            i = -1;
-        }
+            : AddSolution(progress.Row, progress.Column, progress.Number, true);
     }
 
     #region Private
@@ -168,16 +189,26 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         return true;
     }
 
-    private bool AddSolution(int row, int col, int number)
+    private bool AddSolution(int row, int col, int number, bool fromSolving)
     {
         if (_tectonic[row, col] != 0) return false;
 
         _currentState = null;
         _tectonic.Set(number, row, col);
         UpdatePossibilitiesAfterSolutionAdded(row, col, number);
-        _solutionAddedBuffer++;
+        
+        if(fromSolving) _solutionAddedBuffer++;
         
         return true;
+    }
+
+    private void RemoveSolution(int row, int col)
+    {
+        if (_tectonic[row, col] == 0) return;
+
+        _currentState = null;
+        _tectonic.Set(0, row, col);
+        InitCandidates();
     }
 
     #endregion

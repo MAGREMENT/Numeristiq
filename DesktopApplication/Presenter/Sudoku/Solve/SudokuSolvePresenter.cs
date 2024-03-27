@@ -6,6 +6,7 @@ using Model;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Helpers.Settings;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Explanation;
@@ -42,6 +43,10 @@ public class SudokuSolvePresenter : ICommitApplier
         _settings = settings;
         _updater = updater;
 
+        _settings.AddEvent(SpecificSettings.LinkOffsetSidePriority, _ => RedrawBoard());
+        _settings.AddEvent(SpecificSettings.ShowSameCellLinks, _ => RedrawBoard());
+        _settings.AddEvent(SpecificSettings.AllowUniqueness, AllowUniqueness);
+        
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuSolvePage);
     }
 
@@ -196,17 +201,21 @@ public class SudokuSolvePresenter : ICommitApplier
     public void SetCurrentCell(int n)
     {
         if (_selectedCell is null) return;
+        
         var c = _selectedCell.Value;
         _solver.SetSolutionByHand(n, c.Row, c.Column);
-        SetShownState(_solver, true);
+        SetShownState(_solver, !_solver.StartedSolving);
+        UpdateLogs();
     }
 
     public void DeleteCurrentCell()
     {
         if (_selectedCell is null) return;
+        
         var c = _selectedCell.Value;
         _solver.RemoveSolutionByHand(c.Row, c.Column);
-        SetShownState(_solver, true);
+        SetShownState(_solver, !_solver.StartedSolving);
+        UpdateLogs();
     }
 
     public void HighlightStrategy(int index)
@@ -282,6 +291,60 @@ public class SudokuSolvePresenter : ICommitApplier
         _solver.SetState(solvingState);
         SetShownState(_solver, true);
         ClearLogs();
+    }
+
+    private void RedrawBoard()
+    {
+        if (_currentlyDisplayedState is null) return;
+        
+        var drawer = _view.Drawer;
+        drawer.ClearNumbers();
+        drawer.ClearHighlights();
+        
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                var number = _currentlyDisplayedState[row, col];
+                if (number == 0) drawer.ShowPossibilities(row, col, _currentlyDisplayedState
+                    .PossibilitiesAt(row, col).EnumeratePossibilities());
+                else drawer.ShowSolution(row, col, number);
+            }
+        }
+
+        if (_currentlyOpenedLog != -1)
+        {
+            _translator.Translate(_solver.Logs[_currentlyOpenedLog].HighlightManager);
+        }
+        
+        drawer.Refresh();
+    }
+
+    private void AllowUniqueness(SettingValue value)
+    {
+        var yes = value.ToBool();
+
+        for (int i = 0; i < _solver.StrategyManager.Strategies.Count; i++)
+        {
+            var s = _solver.StrategyManager.Strategies[i];
+            if (s.UniquenessDependency != UniquenessDependency.FullyDependent) continue;
+            
+            if (yes)
+            {
+                s.Locked = false;
+                s.Enabled = true;
+                _view.EnableStrategy(i, s.Enabled);
+            }
+            else
+            {
+                s.Enabled = false;
+                s.Locked = true;
+                _view.EnableStrategy(i, s.Enabled);
+                _view.LockStrategy(i);
+            }
+        }
+        
+        _updater.Update();
     }
 }
 

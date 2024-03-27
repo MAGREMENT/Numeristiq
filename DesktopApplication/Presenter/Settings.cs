@@ -19,7 +19,8 @@ public class Settings
         {
             new IntSetting("Theme", new NameListInteractionInterface(themes), -1),
             new BooleanSetting("Show same cell links"),
-            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null, LinkOffsetSidePriority.Any)
+            new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null, LinkOffsetSidePriority.Any),
+            new BooleanSetting("Unique solution", true)
         };
         _collections = new[]
         {
@@ -27,7 +28,8 @@ public class Settings
             new[]
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
-                new NamedListSpan<ISetting>("Board", _settings, 1, 2)
+                new NamedListSpan<ISetting>("Board", _settings, 1, 2),
+                new NamedListSpan<ISetting>("Solver", _settings, 3)
             }
         };
         _repository = repository;
@@ -107,6 +109,9 @@ public enum SettingCollections
 public enum SpecificSettings
 {
     Theme = 0,
+    ShowSameCellLinks = 1,
+    LinkOffsetSidePriority = 2,
+    AllowUniqueness = 3
 }
 
 public delegate void OnSettingChange(SettingValue setting);

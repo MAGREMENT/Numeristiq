@@ -16,6 +16,7 @@ public interface ITectonicDrawer
     void ClearNumbers();
     void ShowSolution(int row, int column, int number);
     void ShowPossibilities(int row, int column, IEnumerable<int> possibilities);
+    void SetClue(int row, int column, bool isClue);
     void ClearBorderDefinitions();
     void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin);
     void PutCursorOn(Cell cell);

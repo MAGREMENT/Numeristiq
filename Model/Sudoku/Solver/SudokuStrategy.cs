@@ -7,7 +7,6 @@ namespace Model.Sudoku.Solver;
 public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
 {
     private bool _enabled = true;
-    private bool _locked;
     private readonly List<ISetting> _settings = new();
     
     public string Name { get; protected init; }
@@ -21,19 +20,11 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
         get => _enabled;
         set
         {
-            if (!_locked) _enabled = value;
+            if (!Locked) _enabled = value;
         }
     }
 
-    public bool Locked
-    {
-        get => _locked;
-        set
-        {
-            _locked = value;
-            if (_locked) _enabled = false;
-        }
-    }
+    public bool Locked { get; set; }
 
     public bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
 
@@ -65,6 +56,16 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
     public void Set(int index, SettingValue value)
     {
         _settings[index].Set(value);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SudokuStrategy ss && ss.Name.Equals(Name);
+    }
+
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode();
     }
 }
 

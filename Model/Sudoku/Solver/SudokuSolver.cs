@@ -46,7 +46,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     
     private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
-    private bool _startedSolving;
+    public bool StartedSolving { get; private set; }
 
     private IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> _changeBuffer;
     private readonly TrackerManager _trackerManager;
@@ -96,7 +96,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         LogManager.Clear();
         PreComputer.Reset();
 
-        _startedSolving = false;
+        StartedSolving = false;
     }
 
     public void SetState(ISolvingState state)
@@ -123,27 +123,23 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         LogManager.Clear();
         PreComputer.Reset();
 
-        _startedSolving = false;
+        StartedSolving = false;
     }
     
     public void SetSolutionByHand(int number, int row, int col)
     {
         if (_sudoku[row, col] != 0) RemoveSolution(row, col);
 
-        if (_startedSolving && LogsManaged)
-        {
-            var stateBefore = CurrentState;
-            if (!AddSolution(number, row, col, false)) return;
-            LogManager.AddByHand(number, row, col, ProgressType.SolutionAddition, stateBefore);
-        }
-        else if (!AddSolution(number, row, col, false)) return;
+        var before = CurrentState;
+        if (!AddSolution(number, row, col, false)) return;
         
-        if(!_startedSolving) StartState = new StateArraySolvingState(this);
+        if(!StartedSolving) StartState = new StateArraySolvingState(this);
+        else if (LogsManaged) LogManager.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
     }
 
     public void RemoveSolutionByHand(int row, int col)
     {
-        if (_startedSolving) return;
+        if (StartedSolving) return;
 
         RemoveSolution(row, col);
         StartState = new StateArraySolvingState(this);
@@ -151,7 +147,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
-        if (_startedSolving && LogsManaged)
+        if (StartedSolving && LogsManaged)
         {
             var stateBefore = CurrentState;
             if (!RemovePossibility(possibility, row, col, false)) return;
@@ -159,12 +155,12 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         }
         else if (!RemovePossibility(possibility, row, col, false)) return;
 
-        if (!_startedSolving) StartState = new StateArraySolvingState(this);
+        if (!StartedSolving) StartState = new StateArraySolvingState(this);
     }
     
     public void Solve(bool stopAtProgress = false)
     {
-        _startedSolving = true;
+        StartedSolving = true;
         
         for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
         {
@@ -194,7 +190,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     
     public void Solve(InstanceHandling handling)
     {
-        _startedSolving = true;
+        StartedSolving = true;
         
         for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
         {
@@ -259,6 +255,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     
     public void ApplyCommit(BuiltChangeCommit<ISudokuHighlighter> commit)
     {
+        StartedSolving = true;
         ChangeBuffer.PushCommit(commit);
     }
 

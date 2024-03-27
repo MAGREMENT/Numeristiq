@@ -37,15 +37,17 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private double _bigLineWidth;
     private double _smallLineWidth;
 
+    private bool[,] _isSpecialNumberBrush = new bool[0, 0];
+
     public event OnDimensionCountChange? RowCountChanged;
     public event OnDimensionCountChange? ColumnCountChanged;
     
     public static readonly DependencyProperty DefaultNumberBrushProperty =
         DependencyProperty.Register(nameof(DefaultNumberBrush), typeof(Brush), typeof(TectonicBoard),
-            new PropertyMetadata((obj, args) =>
+            new PropertyMetadata((obj, _) =>
             {
-                if(obj is not TectonicBoard board || args.NewValue is not Brush brush) return;
-                board.SetLayerBrush(NumbersIndex, brush);
+                if(obj is not TectonicBoard board) return;
+                board.ReEvaluateNumberBrushes();
                 board.Refresh();
             }));
     
@@ -53,6 +55,21 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     {
         set => SetValue(DefaultNumberBrushProperty, value);
         get => (Brush)GetValue(DefaultNumberBrushProperty);
+    }
+
+    public static readonly DependencyProperty SpecialNumberBrushProperty =
+        DependencyProperty.Register(nameof(SpecialNumberBrush), typeof(Brush), typeof(TectonicBoard),
+            new PropertyMetadata((obj, _) =>
+            {
+                if(obj is not TectonicBoard board) return;
+                board.ReEvaluateNumberBrushes();
+                board.Refresh();
+            }));
+
+    public Brush SpecialNumberBrush
+    {
+        get => (Brush)GetValue(SpecialNumberBrushProperty);
+        set => SetValue(SpecialNumberBrushProperty, value);
     }
     
     public static readonly DependencyProperty BackgroundBrushProperty =
@@ -134,6 +151,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             var old = _rowCount;
             _rowCount = value;
             UpdateSize();
+            AdaptSpecialBrushArray();
 
             if (_rowCount != old) RowCountChanged?.Invoke(_rowCount);
         }
@@ -147,6 +165,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             var old = _columnCount;
             _columnCount = value;
             UpdateSize();
+            AdaptSpecialBrushArray();
 
             if (_columnCount != old) ColumnCountChanged?.Invoke(_columnCount);
         }
@@ -234,6 +253,23 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         
     }
 
+    private void ReEvaluateNumberBrushes()
+    {
+        foreach (var component in Layers[NumbersIndex])
+        {
+            if (component is not SolutionComponent s) continue;
+            
+            var brush = _isSpecialNumberBrush[s.Row, s.Column] ? SpecialNumberBrush : DefaultNumberBrush;
+            component.SetBrush(brush);
+        }
+    }
+
+    private void AdaptSpecialBrushArray()
+    {
+        if (RowCount == 0 || ColumnCount == 0) _isSpecialNumberBrush = new bool[0, 0];
+        else _isSpecialNumberBrush = new bool[RowCount, ColumnCount];
+    }
+
     #region ITectonicDrawer
 
     public void ClearNumbers()
@@ -245,9 +281,10 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     {
         Dispatcher.Invoke(() =>
         {
-            Layers[NumbersIndex].Add(new TextInRectangleComponent(number.ToString(), _cellSize * 3 / 4,
-                DefaultNumberBrush, new Rect(GetLeft(column), GetTop(row), _cellSize,
-                    _cellSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+            Layers[NumbersIndex].Add(new SolutionComponent(number.ToString(), _cellSize * 3 / 4,
+                _isSpecialNumberBrush[row, column] ? SpecialNumberBrush : DefaultNumberBrush, new Rect(GetLeft(column),
+                    GetTop(row), _cellSize, _cellSize), row, column,
+                        ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
         });
     }
 
@@ -269,6 +306,11 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
                         posSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center)); 
             });
         }
+    }
+
+    public void SetClue(int row, int column, bool isClue)
+    {
+        _isSpecialNumberBrush[row, column] = isClue;
     }
 
     public void ClearBorderDefinitions()

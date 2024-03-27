@@ -166,7 +166,5 @@ public static class TectonicCellUtility
                 if (cell != two && AreNeighbors(cell, one)) yield return cell;
             }
         }
-
-        
     }
 }

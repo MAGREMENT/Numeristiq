@@ -51,10 +51,7 @@ public partial class StrategyControl
     public void LockStrategy()
     {
         CheckMark.Stroke = Brushes.Gray;
-        CheckMark.Visibility = Visibility.Visible;
         CrossMark.Stroke = Brushes.Gray;
-        CrossMark.Visibility = Visibility.Visible;
-        TextBlock.HorizontalAlignment = HorizontalAlignment.Center;
 
         _state = -1;
     }

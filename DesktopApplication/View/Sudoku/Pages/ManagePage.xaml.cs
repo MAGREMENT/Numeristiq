@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Manage;
@@ -57,7 +58,14 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
             tb.MouseLeftButtonDown += (_, _) =>
             {
                 _presenter.OnActiveStrategySelection(iForEvent);
-                DragDrop.DoDragDrop(tb, new StrategyDragDropData(strategy.Name, iForEvent), DragDropEffects.Move);
+            };
+            tb.MouseMove += (_, args) =>
+            {
+                if (args.LeftButton == MouseButtonState.Pressed)
+                {
+                    StrategyPanel.Children.RemoveAt(iForEvent);
+                    DragDrop.DoDragDrop(tb, new StrategyDragDropData(strategy.Name, iForEvent), DragDropEffects.Move);
+                }
             };
             tb.Drop += (_, args) =>
             {
@@ -93,10 +101,16 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
             }
         }
     }
-    
+
+    public void ClearSelectedStrategy()
+    {
+        StrategyName.Text = "No Strategy Selected";
+        InfoPanel.Children.Clear();
+    }
+
     public override void OnShow()
     {
-        
+        _presenter.OnShow();
     }
 
     public override void OnClose()

@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
@@ -56,8 +57,11 @@ public partial class SearchControl
             Text = s,
             Style = (Style)((App)Application.Current).Resources["SearchResult"]!
         };
-        tb.MouseLeftButtonDown +=
-            (_, _) => DragDrop.DoDragDrop(tb, new StrategyDragDropData(s, -1), DragDropEffects.Move);
+        tb.MouseMove += (_, args) =>
+        {
+            if(args.LeftButton == MouseButtonState.Pressed)
+                DragDrop.DoDragDrop(tb, new StrategyDragDropData(s, -1), DragDropEffects.Move);
+        };
         
         ResultPanel.Children.Add(tb);
     }

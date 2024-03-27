@@ -9,9 +9,9 @@ using Model.Utility;
 
 namespace Model.Tectonic.Strategies;
 
-public class NeighboringZonesStrategy : TectonicStrategy
+public class XChainStrategy : TectonicStrategy
 {
-    public NeighboringZonesStrategy() : base("Neighboring Zones", StrategyDifficulty.Hard, InstanceHandling.BestOnly)
+    public XChainStrategy() : base("X-Chains", StrategyDifficulty.Hard, InstanceHandling.BestOnly)
     {
     }
 

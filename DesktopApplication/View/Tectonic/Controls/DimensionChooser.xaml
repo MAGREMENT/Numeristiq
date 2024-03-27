@@ -23,7 +23,7 @@
                    Foreground="{DynamicResource Text}" x:Name="Title"/>
         
         <Border Grid.Row="1" Grid.Column="0" BorderThickness="1" BorderBrush="{StaticResource Background3}" MouseLeftButtonDown="RemoveFromDimension"
-                CornerRadius="5, 0, 0, 5" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource DimensionChooserButton}">
+               HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource DimensionChooserButton}">
             <Path Width="30" Height="30" Data="M 8,15 H 22" Stroke="{DynamicResource Text}"/>
         </Border>
         <Border Grid.Row="1" Grid.Column="1" BorderBrush="{DynamicResource Background3}" BorderThickness="0, 1, 0, 1"
@@ -32,7 +32,7 @@
                        Foreground="{DynamicResource Text}">0</TextBlock>
         </Border>
         <Border Grid.Row="1" Grid.Column="2" BorderThickness="1" BorderBrush="{StaticResource Background3}" MouseLeftButtonDown="AddToDimension"
-                CornerRadius="0, 5, 5, 0" HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource DimensionChooserButton}">
+                HorizontalAlignment="Left" VerticalAlignment="Top" Style="{StaticResource DimensionChooserButton}">
             <Path Width="30" Height="30" Data="M 8,15 H 22 M 15,8 V 22" Stroke="{DynamicResource Text}"/>
         </Border>
     </Grid>

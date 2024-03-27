@@ -147,6 +147,22 @@ public partial class SolvePage : ISudokuSolveView
         Clipboard.SetText(s);
     }
 
+    public void EnableStrategy(int index, bool enabled)
+    {
+        if (index < 0 || index >= StrategyPanel.Children.Count ||
+            StrategyPanel.Children[index] is not StrategyControl sc) return;
+
+        sc.EnableStrategy(enabled);
+    }
+
+    public void LockStrategy(int index)
+    {
+        if (index < 0 || index >= StrategyPanel.Children.Count ||
+            StrategyPanel.Children[index] is not StrategyControl sc) return;
+
+        sc.LockStrategy();
+    }
+
     #endregion
 
     private void SetNewSudoku(string s)
