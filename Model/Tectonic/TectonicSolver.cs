@@ -194,7 +194,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         if (_tectonic[row, col] != 0) return false;
 
         _currentState = null;
-        _tectonic.Set(number, row, col);
+        _tectonic[row, col] = number;
         UpdatePossibilitiesAfterSolutionAdded(row, col, number);
         
         if(fromSolving) _solutionAddedBuffer++;
@@ -207,7 +207,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         if (_tectonic[row, col] == 0) return;
 
         _currentState = null;
-        _tectonic.Set(0, row, col);
+        _tectonic[row, col] = 0;
         InitCandidates();
     }
 

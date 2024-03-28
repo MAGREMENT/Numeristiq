@@ -37,7 +37,7 @@ public static class TectonicTranslator
                 switch (c)
                 {
                     case '.' :
-                        if (buffer != 0) result.Set(buffer, row, col);
+                        if (buffer != 0) result[row, col] = buffer;
                         buffer = 0;
                         break;
                     case ';' :
@@ -130,8 +130,7 @@ public static class TectonicTranslator
                             row++;
                         }
 
-                        result.Set(c - '0', row, col);
-
+                        result[row, col] = c - '0';
                         break;
                 }
             }

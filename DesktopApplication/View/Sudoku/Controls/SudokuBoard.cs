@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -381,48 +380,50 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
             new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
     }
 
-    public void EncircleCellPatch(Cell[] cells, ChangeColoration coloration)
+    public void EncirclePossibilityPatch(CellPossibility[] cps, ChangeColoration coloration) //TODO FIX
     {
-        var delta = _bigLineWidth / 2;
+        var w = _possibilitySize / 6;
+        var delta = w / 2;
         var brush = new SolidColorBrush(ColorUtility.ToColor(coloration));
-        var pen = new Pen(brush, _bigLineWidth);
+        var pen = new Pen(brush, w);
 
-        var list = Layers[EncirclesIndex];
-        foreach (var cell in cells)
+        var list = Layers[PossibilitiesHighlightIndex];
+        foreach (var cp in cps)
         {
-            var left = GetLeft(cell.Column);
-            var top = GetTop(cell.Row);
+            var left = GetLeft(cp.Column, cp.Possibility);
+            var top = GetTop(cp.Row, cp.Possibility);
 
-            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
-                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            if(!cps.ContainsAdjacent(cp, 0, -1)) list.Add(new LineComponent(
+                new Point(left + delta, top), new Point(left + delta, top + _possibilitySize), pen));
             
-            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            if(!cps.ContainsAdjacent(cp, -1, 0)) list.Add(new LineComponent(
+                new Point(left, top + delta), new Point(left + _possibilitySize, top + delta), pen));
             else
             {
-                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), brush));
+                if(cps.ContainsAdjacent(cp, 0, -1) && !cps.ContainsAdjacent(cp, -1, -1)) list.Add(
+                    new FilledRectangleComponent(new Rect(left, top, w, w), brush));
                 
-                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), brush));
+                if(cps.ContainsAdjacent(cp, 0, 1) && !cps.ContainsAdjacent(cp, -1, 1)) list.Add(
+                    new FilledRectangleComponent(new Rect(left + _possibilitySize - w, top,
+                        w, w), brush));
             }
             
-            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
-                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            if(!cps.ContainsAdjacent(cp, 0, 1)) list.Add(new LineComponent(
+                new Point(left + _possibilitySize - delta, top), new Point(left + _possibilitySize - delta,
+                    top + _possibilitySize), pen));
             
-            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            if(!cps.ContainsAdjacent(cp, 1, 0)) list.Add(new LineComponent(
+                new Point(left, top + _possibilitySize - delta), new Point(left + _possibilitySize,
+                    top + _possibilitySize - delta), pen));
             else
             {
-                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
+                if(cps.ContainsAdjacent(cp, 0, -1) && !cps.ContainsAdjacent(cp, 1, -1)) list.Add(
+                    new FilledRectangleComponent(new Rect(left, top + _possibilitySize - w,
+                        w, w), brush));
                 
-                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), brush));
+                if(cps.ContainsAdjacent(cp, 0, 1) && !cps.ContainsAdjacent(cp, 1, 1)) list.Add(
+                    new FilledRectangleComponent(new Rect(left + _possibilitySize - w,
+                        top + _possibilitySize - w, w, w), brush));
             }
         }
     }

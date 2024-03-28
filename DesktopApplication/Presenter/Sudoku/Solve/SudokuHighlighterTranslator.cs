@@ -1,10 +1,8 @@
 ﻿using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
-using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudoku.Solve;
 
@@ -100,7 +98,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                     pc.Column, pc.Possibility, coloration);
                 break;
             case NakedSet ans :
-                _drawer.EncircleCellPatch(ans.EveryCell(), coloration);
+                _drawer.EncirclePossibilityPatch(ans.EveryCellPossibility(), coloration);
                 break;
         }
     }

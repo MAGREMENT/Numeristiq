@@ -45,11 +45,10 @@ public class ArrayTectonic : ITectonic
         }
     }
 
-    public int this[int row, int col] => _cells[row, col].Number;
-    
-    public void Set(int n, int row, int col)
+    public int this[int row, int col]
     {
-        _cells[row, col].Number = n;
+        get => _cells[row, col].Number;
+        set => _cells[row, col].Number = value;
     }
 
     public bool MergeZones(Cell c1, Cell c2)
@@ -102,10 +101,12 @@ public class ArrayTectonic : ITectonic
 
         RemoveZone(zone);
         AddZoneUnchecked(first);
+        CheckZoneIntegrity(_zones.Count - 1);
 
         foreach (var otherZone in TectonicCellUtility.DivideInAdjacentCells(second))
         {
             AddZoneUnchecked(otherZone);
+            CheckZoneIntegrity(_zones.Count - 1);
         }
 
         return true;
@@ -164,6 +165,15 @@ public class ArrayTectonic : ITectonic
             result.AddZone(zone);
         }
 
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var number = _cells[row, col].Number;
+                if (number != 0) _cells[row, col].Number = number;
+            }
+        }
+
         return result;
     }
 
@@ -218,6 +228,15 @@ public class ArrayTectonic : ITectonic
         foreach (var cell in zone)
         {
             _cells[cell.Row, cell.Column].Zone = null;
+        }
+    }
+
+    private void CheckZoneIntegrity(int zoneIndex)
+    {
+        var zone = _zones[zoneIndex];
+        foreach (var cell in zone)
+        {
+            if(_cells[cell.Row, cell.Column].Number > zone.Count) _cells[cell.Row, cell.Column].Number = 0;
         }
     }
 }

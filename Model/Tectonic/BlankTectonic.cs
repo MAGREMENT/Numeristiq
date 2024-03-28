@@ -11,7 +11,12 @@ public class BlankTectonic : ITectonic
     public int ColumnCount => 0;
     public IReadOnlyList<IZone> Zones => Array.Empty<IZone>();
 
-    public int this[int row, int col] => 0;
+    public int this[int row, int col]
+    {
+        get => 0;
+        set {}
+    }
+
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
     {
         return new ReadOnlyBitSet16();

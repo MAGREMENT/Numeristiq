@@ -1,19 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Utility;
 
 namespace Model.Tectonic;
 
 public interface ITectonic : IReadOnlyTectonic
-{
-    public void Set(int n, int row, int col);
-
+{ 
     public int this[Cell cell]
     {
-        set => Set(value, cell.Row, cell.Column);
+        set => this[cell.Row, cell.Column] = value;
         get => this[cell.Row, cell.Column];
     }
+    
+    public new int this[int row, int col] { get; set; }
 
     public bool MergeZones(Cell c1, Cell c2);
     public bool MergeZones(IZone z1, IZone z2);

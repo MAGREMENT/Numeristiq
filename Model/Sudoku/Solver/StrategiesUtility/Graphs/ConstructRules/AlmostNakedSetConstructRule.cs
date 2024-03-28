@@ -47,14 +47,13 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 {
                     linkGraph.Add(new CellPossibility(notIn[0], p), nakedSet,
                         LinkStrength.Strong, LinkType.MonoDirectional);
-                    
                 }
                 else
                 {
                     ISudokuElement element;
                     if (soloRow && rowBuffer != -1) element = new PointingRow(p, notIn);
                     else if (soloCol && colBuffer != -1) element = new PointingColumn(p, notIn);
-                    else element = new CellsPossibility(p, notIn.ToArray());
+                    else element = new CellsPossibility(p, notIn.ToArray()); //TODO useless ?
 
                     linkGraph.Add(element, nakedSet, LinkStrength.Strong, LinkType.MonoDirectional);
 
@@ -68,7 +67,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 foreach (var possibility in als.Possibilities.EnumeratePossibilities())
                 {
                     if (possibility == p) continue;
-                    List<Cell> cells = new List<Cell>(als.EachCell(possibility));
+                    List<Cell> cells = new List<Cell>(als.EachCell(possibility)); //TODO skip
 
                     foreach (var ssc in Cells.SharedSeenCells(cells))
                     {
