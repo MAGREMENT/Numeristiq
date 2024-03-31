@@ -21,17 +21,18 @@
         
         <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Stretch" BorderThickness="0, 0, 1, 0"
                 BorderBrush="{DynamicResource Text}">
-            <TextBlock VerticalAlignment="Center" x:Name="Name" Foreground="{DynamicResource Text}"/>
+            <TextBlock VerticalAlignment="Center" x:Name="Name" Foreground="{DynamicResource Text}" FontSize="15"/>
         </Border>
         
         <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}"
-                   Margin="0, 0, 0, 5">Minimum</TextBlock>
+                   Margin="0, 0, 0, 5" FontSize="15">Minimum</TextBlock>
         <Slider Grid.Row="0" Grid.Column="2" Width="100" IsSnapToTickEnabled="True" x:Name="MinSlider" 
                 VerticalAlignment="Center" Margin="0, 0, 0, 5" ValueChanged="MinChanged"/>
         <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=MinSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                  TextAlignment="Right" Width="25" VerticalAlignment="Center" Foreground="{DynamicResource Text}" Margin="0, 0, 0, 5"/>
         
-        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}">Minimum</TextBlock>
+        <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}"
+                   FontSize="15" >Minimum</TextBlock>
         <Slider Grid.Row="1" Grid.Column="2" Width="100" IsSnapToTickEnabled="True" x:Name="MaxSlider" 
                 VerticalAlignment="Center" ValueChanged="MaxChanged"/>
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ElementName=MaxSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"

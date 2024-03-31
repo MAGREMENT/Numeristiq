@@ -16,8 +16,6 @@ namespace DesktopApplication.View.Sudoku.Pages;
 public partial class SolvePage : ISudokuSolveView
 {
     private readonly SudokuSolvePresenter _presenter;
-
-    private int _logOpen = -1;
     
     public SolvePage(SudokuApplicationPresenter appPresenter)
     {
@@ -27,7 +25,7 @@ public partial class SolvePage : ISudokuSolveView
 
     #region ISudokuSolveView
 
-    public ISudokuDrawer Drawer => Board;
+    public ISudokuSolverDrawer Drawer => Board;
 
     public void SetSudokuAsString(string s)
     {
@@ -80,17 +78,15 @@ public partial class SolvePage : ISudokuSolveView
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
         if (LogPanel.Children[index] is not LogControl lc) return;
-
-        _logOpen = index;
+        
         lc.Open();
     }
 
-    public void CloseLogs()
+    public void CloseLog(int index)
     {
-        if (_logOpen < 0 || _logOpen > LogPanel.Children.Count) return;
-        if (LogPanel.Children[_logOpen] is not LogControl lc) return;
-
-        _logOpen = -1;
+        if (index < 0 || index > LogPanel.Children.Count) return;
+        if (LogPanel.Children[index] is not LogControl lc) return;
+        
         lc.Close();
     }
 

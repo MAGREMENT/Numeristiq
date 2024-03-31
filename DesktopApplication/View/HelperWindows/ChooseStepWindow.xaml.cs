@@ -34,7 +34,7 @@ public partial class ChooseStepWindow : IChooseStepView
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    public ISudokuDrawer Drawer => Board;
+    public ISudokuSolverDrawer Drawer => Board;
     
     public void ClearCommits()
     {
@@ -47,7 +47,7 @@ public partial class ChooseStepWindow : IChooseStepView
         {
             Text = maker.Name,
             Foreground = new SolidColorBrush(ColorUtility.ToColor((Intensity)maker.Difficulty)),
-            Style = (Style)((App)Application.Current).Resources["SearchResult"]!
+            Style = (Style)FindResource("SearchResult")
         };
         tb.MouseLeftButtonDown += (_, _) => _presenter.ShowStep(index);
         

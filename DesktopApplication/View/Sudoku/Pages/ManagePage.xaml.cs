@@ -24,7 +24,7 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
     {
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
-        _presenter.InitStrategies();
+        _presenter.Initialize();
         
         RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
     }
@@ -67,15 +67,18 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
                     DragDrop.DoDragDrop(tb, new StrategyDragDropData(strategy.Name, iForEvent), DragDropEffects.Move);
                 }
             };
-            tb.Drop += (_, args) =>
+            tb.Drop += (_, args) => DropOn(tb, iForEvent, args);
+            tb.DragOver += (_, args) =>
             {
-                if (args.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data) return;
-            
-                var relativePosition = tb.IsUnderHalfHeight(args) ? iForEvent + 1 : iForEvent;
-                if (data.Index == -1) _presenter.AddStrategy(data.Name, relativePosition);
-                else _presenter.InterchangeStrategies(data.Index, relativePosition);
-                
-                args.Handled = true;
+                if (args.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData) return;
+
+                tb.Padding = tb.IsUnderHalfHeight(args) 
+                    ? new Thickness(5, 5, 0, 20) 
+                    : new Thickness(5, 20, 0, 5);
+            };
+            tb.DragLeave += (_, _) =>
+            {
+                tb.Padding = new Thickness(5, 5, 0, 5);
             };
             
             StrategyPanel.Children.Add(tb);
@@ -96,7 +99,7 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
             if (control is not null)
             {
                 control.AutoSet = true;
-                control.Margin = new Thickness(5, 5, 0, 5);
+                control.Margin = new Thickness(10, 10, 0, 5);
                 InfoPanel.Children.Add(control);
             }
         }
@@ -145,5 +148,16 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
             .ScrollToVerticalOffset(StrategyScrollViewer.VerticalOffset + DragScrollOffset * (pos - 
                 StrategyScrollViewer.ActualHeight + ToleranceForDragScroll) / ToleranceForDragScroll);     
         
+    }
+
+    private void DropOn(TextBlock tb, int index, DragEventArgs args)
+    {
+        if (args.Data.GetData(typeof(StrategyDragDropData)) is not StrategyDragDropData data) return;
+        
+        if (tb.IsUnderHalfHeight(args)) index++;
+        if (data.Index == -1) _presenter.AddStrategy(data.Name, index);
+        else _presenter.InterchangeStrategies(data.Index, index);
+
+        args.Handled = true;
     }
 }

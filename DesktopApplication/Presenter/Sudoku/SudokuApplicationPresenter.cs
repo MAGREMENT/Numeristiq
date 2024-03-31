@@ -30,7 +30,7 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
 
     public SudokuPlayPresenter Initialize(ISudokuPlayView view)
     {
-        return new SudokuPlayPresenter(view);
+        return new SudokuPlayPresenter(view, _settings);
     }
     
     public SudokuManagePresenter Initialize(ISudokuManageView view)

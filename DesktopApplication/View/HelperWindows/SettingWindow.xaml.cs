@@ -17,7 +17,7 @@ public partial class SettingWindow
 
         _presenter = presenter;
 
-        var style = ((App)Application.Current).Resources["SettingTitleStyle"] as Style;
+        var style = (Style)FindResource("SettingTitleStyle");
         int count = 0;
         foreach (var list in presenter)
         {
@@ -42,7 +42,11 @@ public partial class SettingWindow
         foreach (var settingAndIndex in settings.EnumerateWithIndex())
         {
             var control = SettingTranslator.Translate(_presenter, settingAndIndex.Item1, settingAndIndex.Item2);
-            if (control is not null) SettingPanel.Children.Add(control);
+            if (control is not null)
+            {
+                control.Margin = new Thickness(10, 10, 0, 0);
+                SettingPanel.Children.Add(control);
+            }
         }
     }
 

@@ -29,6 +29,7 @@
 		    <Setter Property="FontSize" Value="18"/>
 		    <Setter Property="Foreground" Value="DarkGray"/>
 		    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
+		    <Setter Property="CaretBrush" Value="{DynamicResource Text}"/>
 		    <Setter Property="Height" Value="30"/>
 		    <Setter Property="Template">
 			    <Setter.Value>

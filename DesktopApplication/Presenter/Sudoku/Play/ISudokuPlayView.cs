@@ -2,5 +2,5 @@
 
 public interface ISudokuPlayView
 {
-    
+    ISudokuPlayerDrawer Drawer { get; }
 }

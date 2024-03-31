@@ -202,6 +202,8 @@ public static class MathUtility
 
         return angle;
     }
+
+    public static double ToRadians(double degrees) => degrees / 360 * Math.PI * 2;
 }
 
 public enum CellZone

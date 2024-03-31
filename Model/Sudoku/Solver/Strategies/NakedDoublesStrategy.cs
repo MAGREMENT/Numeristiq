@@ -190,7 +190,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         string cells = _unit == Unit.Row
             ? $"[{_unitNumber}, {_other1}], [{_unitNumber}, {_other2}]"
             : $"[{_other1}, {_unitNumber}], [{_other2}, {_unitNumber}]";
-        return $"The cells {cells} only contains the possibilities ({_pos})." +
+        return $"The cells {cells} only contains the possibilities ({_pos.ToValuesString()})." +
                $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
     }
 }

@@ -111,18 +111,17 @@ public static class StrategyPool
         {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)}
     };
     
-    public static List<string> FindStrategies(string filter)
+    public static IEnumerable<string> EnumerateStrategies(string filter)
     {
-        List<string> result = new();
         var lFilter = filter.ToLower();
 
         foreach (var name in Pool.Keys)
         {
-            if (name.ToLower().Contains(lFilter)) result.Add(name);
+            if (name.ToLower().Contains(lFilter)) yield return name;
         }
-
-        return result;
     }
+
+    public static IEnumerable<string> EnumerateStrategies() => Pool.Keys;
 
     public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, InstanceHandling handling,
         Dictionary<string, SettingValue> settings)

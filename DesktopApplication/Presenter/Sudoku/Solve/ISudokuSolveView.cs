@@ -8,7 +8,7 @@ namespace DesktopApplication.Presenter.Sudoku.Solve;
 
 public interface ISudokuSolveView
 {
-    ISudokuDrawer Drawer { get; }
+    ISudokuSolverDrawer Drawer { get; }
     
     void SetSudokuAsString(string s);
     void DisableSolveActions();
@@ -16,7 +16,7 @@ public interface ISudokuSolveView
     void AddLog(ISolverLog<ISudokuHighlighter> log, StateShown _shown);
     void ClearLogs();
     void OpenLog(int index);
-    void CloseLogs();
+    void CloseLog(int index);
     void SetLogsStateShown(StateShown stateShown);
     void SetCursorPosition(int index, string s);
     void InitializeStrategies(IReadOnlyList<SudokuStrategy> strategies);
@@ -26,3 +26,4 @@ public interface ISudokuSolveView
     void EnableStrategy(int index, bool enabled);
     void LockStrategy(int index);
 }
+

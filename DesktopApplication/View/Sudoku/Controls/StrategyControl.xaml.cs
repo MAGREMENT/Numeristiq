@@ -22,8 +22,7 @@ public partial class StrategyControl
 
     public void SetHighlight(bool highlighted)
     {
-        var app = (App)Application.Current;
-        TextBlock.Foreground = (Brush)(highlighted ? app.Resources["Primary1"] : app.Resources["Text"])!;
+        TextBlock.SetResourceReference(ForegroundProperty, highlighted ? "Primary1" : "Text");
     }
 
     public void EnableStrategy(bool enabled)

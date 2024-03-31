@@ -15,22 +15,27 @@ public class SudokuManagePresenter
         _manager = manager;
         _updater = updater;
     }
-
-    public void OnSearch(string s)
+    
+    public void Initialize()
     {
-        _view.ClearSearchResults();
+        _view.SetStrategyList(_manager.Strategies);
 
-        foreach (var result in StrategyPool.FindStrategies(s))
+        foreach (var result in StrategyPool.EnumerateStrategies())
         {
             _view.AddSearchResult(result);
         }
     }
 
-    public void InitStrategies()
+    public void OnSearch(string s)
     {
-        _view.SetStrategyList(_manager.Strategies);
-    }
+        _view.ClearSearchResults();
 
+        foreach (var result in StrategyPool.EnumerateStrategies(s))
+        {
+            _view.AddSearchResult(result);
+        }
+    }
+    
     public void OnActiveStrategySelection(int index)
     {
         if (index < 0 || index >= _manager.Strategies.Count) return;

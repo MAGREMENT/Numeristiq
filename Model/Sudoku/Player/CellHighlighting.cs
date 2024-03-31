@@ -137,5 +137,5 @@ public class MultiHighlighting : HighlightingCollection
 
 public enum HighlightColor
 {
-    None, Red, Green, Blue, Purple, Orange, Yellow, Cyan
+    First, Second, Third, Fourth, Fifth, Sixth, Seventh
 }

@@ -66,13 +66,13 @@ public static class ColorUtility //To singleton + theme
     {
         return color switch
         {
-            HighlightColor.Red => Colors.Red,
-            HighlightColor.Blue => Colors.RoyalBlue,
-            HighlightColor.Green => Colors.Green,
-            HighlightColor.Orange => Colors.Orange,
-            HighlightColor.Purple => Colors.Purple,
-            HighlightColor.Cyan => Colors.Cyan,
-            HighlightColor.Yellow => Colors.Yellow,
+            HighlightColor.First => Colors.Red,
+            HighlightColor.Third => Colors.RoyalBlue,
+            HighlightColor.Second => Colors.Green,
+            HighlightColor.Fifth => Colors.Orange,
+            HighlightColor.Fourth => Colors.Purple,
+            HighlightColor.Seventh => Colors.Cyan,
+            HighlightColor.Sixth => Colors.Yellow,
             _ => Colors.Transparent
         };
     }

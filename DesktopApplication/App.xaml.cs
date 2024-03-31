@@ -13,7 +13,7 @@ public partial class App : IGlobalApplicationView
     {
         InitializeComponent();
 
-        var presenter = GlobalApplicationPresenter.InitializeInstance(this);
+        GlobalApplicationPresenter.InitializeInstance(this);
     }
 
     public void SetTheme(Theme t)
@@ -29,4 +29,6 @@ public partial class App : IGlobalApplicationView
         Resources["Text"] = ColorUtility.ToBrush(t.Text);
         Resources["ThumbColor"] = ColorUtility.ToColor(t.ThumbColor);
     }
+    
+    
 }

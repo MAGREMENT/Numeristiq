@@ -429,26 +429,20 @@ public class JuniorExocetStrategy : SudokuStrategy
                 }
             }
 
-            foreach (var cell in je.AllPossibleSCells())
+            var n = 0;
+            revisedBaseCandidates.Next(ref n);
+            var allSCells = je.SCells[n];
+            revisedBaseCandidates.Next(ref n);
+            allSCells.ApplyOr(je.SCells[n]);
+
+            if (allSCells.Count == 4)
             {
-                if (strategyUser.Sudoku[cell.Row, cell.Column] != 0) continue;
-
-                var count = 0;
-                foreach (var poss in revisedBaseCandidates.EnumeratePossibilities())
+                foreach (var cell in allSCells)
                 {
-                    if (je.SCells[poss].Contains(cell))
+                    foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
                     {
-                        count++;
+                        if(!revisedBaseCandidates.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                     }
-                }
-
-                if (count < 2) continue;
-
-                foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
-                {
-                    if (revisedBaseCandidates.Contains(p)) continue;
-
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
         }

@@ -30,6 +30,14 @@ public class SudokuSolveBatchCommand : Command
         
         if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
+        if (report.IsUsed(WaitForAllIndex))
+        {
+            foreach (var s in solver.StrategyManager.Strategies)
+            {
+                s.InstanceHandling = InstanceHandling.UnorderedAll;
+            }
+        }
+        
         var statistics = new StatisticsTracker();
         solver.AddTracker(statistics);
 
@@ -43,11 +51,9 @@ public class SudokuSolveBatchCommand : Command
             var s = commentStart == -1 ? line : line[..commentStart];
             
             solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
-            if (report.IsUsed(WaitForAllIndex)) solver.Solve(InstanceHandling.UnorderedAll);
-            else solver.Solve();
+            solver.Solve();
         }
 
         Console.WriteLine(statistics);
-        solver.RemoveTracker(statistics);
     }
 }

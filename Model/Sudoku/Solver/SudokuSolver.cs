@@ -187,41 +187,6 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _currentStrategy = -1;
         _trackerManager.OnSolveDone(this);
     }
-    
-    public void Solve(InstanceHandling handling)
-    {
-        StartedSolving = true;
-        
-        for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
-        {
-            var current = StrategyManager.Strategies[_currentStrategy];
-            if (!current.Enabled) continue;
-            
-            var old = current.InstanceHandling;
-            current.InstanceHandling = handling;
-
-            _trackerManager.OnStrategyStart(current, _currentStrategy);
-            current.Apply(this);
-            ChangeBuffer.Push(current);
-            _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
-
-            current.InstanceHandling = old;
-
-            if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
-
-            _solutionAddedBuffer = 0;
-            _possibilityRemovedBuffer = 0;
-            
-            _currentStrategy = -1;
-
-            PreComputer.Reset();
-
-            if (_sudoku.IsComplete()) break;
-        }
-
-        _currentStrategy = -1;
-        _trackerManager.OnSolveDone(this);
-    }
 
     public BuiltChangeCommit<ISudokuHighlighter>[] EveryPossibleNextStep()
     {

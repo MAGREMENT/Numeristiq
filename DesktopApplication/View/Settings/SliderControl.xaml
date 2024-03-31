@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         
         <TextBlock Grid.Column="0" Margin="0, 0, 5, 0" x:Name="Name" VerticalAlignment="Center" 
-                   Foreground="{DynamicResource Text}"/>
+                   Foreground="{DynamicResource Text}" FontSize="15"/>
         <Slider Grid.Column="1" Width="100" IsSnapToTickEnabled="True" x:Name="Slider" ValueChanged="OnValueChanged"
                 VerticalAlignment="Center"/>
         <TextBox Grid.Column="2" Text="{Binding ElementName=Slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"

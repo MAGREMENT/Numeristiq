@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DesktopApplication.Presenter.Sudoku.Manage;
 using Model;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
@@ -20,7 +21,9 @@ public class Settings
             new IntSetting("Theme", new NameListInteractionInterface(themes), -1),
             new BooleanSetting("Show same cell links"),
             new EnumSetting<LinkOffsetSidePriority>("Link offset side priority",null, LinkOffsetSidePriority.Any),
-            new BooleanSetting("Unique solution", true)
+            new BooleanSetting("Unique solution", true),
+            new IntSetting("Start angle", new SliderInteractionInterface(0, 360, 10), 0),
+            new EnumSetting<RotationDirection>("Rotation direction", new SpaceConverter(), RotationDirection.ClockWise)
         };
         _collections = new[]
         {
@@ -30,6 +33,11 @@ public class Settings
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
                 new NamedListSpan<ISetting>("Board", _settings, 1, 2),
                 new NamedListSpan<ISetting>("Solver", _settings, 3)
+            },
+            new[]
+            {
+                new NamedListSpan<ISetting>("Themes", _settings, 0),
+                new NamedListSpan<ISetting>("Highlighting", _settings, 4, 5)
             }
         };
         _repository = repository;
@@ -103,7 +111,8 @@ public class Settings
 public enum SettingCollections
 {
     WelcomeWindow,
-    SudokuSolvePage
+    SudokuSolvePage,
+    SudokuPlayPage
 }
 
 public enum SpecificSettings

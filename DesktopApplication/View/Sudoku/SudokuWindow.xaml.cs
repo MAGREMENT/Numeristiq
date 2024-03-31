@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Navigation;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.Sudoku.Pages;
 
@@ -9,6 +10,7 @@ public partial class SudokuWindow
     private readonly SudokuPage[] _pages;
 
     private int _currentPage = -1;
+    private bool _cancelNavigation = true;
     
     public SudokuWindow()
     {
@@ -39,6 +41,7 @@ public partial class SudokuWindow
 
     private void SwapPage(int number)
     {
+        _cancelNavigation = false;
         if(_currentPage != -1) _pages[_currentPage].OnClose();
         
         _currentPage = number;
@@ -47,5 +50,12 @@ public partial class SudokuWindow
         TitleBar.InsideContent = newOne.TitleBarContent();
         newOne.OnShow();
         Frame.Content = newOne;
+
+        _cancelNavigation = true;
+    }
+
+    private void CancelNavigation(object sender, NavigatingCancelEventArgs e)
+    {
+        if(_cancelNavigation) e.Cancel = true;
     }
 }

@@ -4,9 +4,25 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:DesktopApplication.View.Sudoku.Pages"
+      xmlns:controls="clr-namespace:DesktopApplication.View.Sudoku.Controls"
       mc:Ignorable="d"
       Title="PlayPage" Height="660" Width="1300">
     <Grid Background="{DynamicResource Background1}">
-        <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="22" Foreground="{DynamicResource Text}">Coming Soon...</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <Border Grid.Column="0" 
+                Background="{DynamicResource Background2}"
+                Padding="10"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
+                                  SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{DynamicResource Text}"
+                                  LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
+                                  SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"
+                                  CellSelected="SelectCell" CellAddedToSelection="AddCellToSelection" KeyDown="DoBoardInput"/>
+        </Border>
     </Grid>
 </local:SudokuPage>

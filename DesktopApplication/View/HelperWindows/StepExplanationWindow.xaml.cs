@@ -31,7 +31,7 @@ public partial class StepExplanationWindow : IStepExplanationView
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    public ISudokuDrawer Drawer => Board;
+    public ISudokuSolverDrawer Drawer => Board;
     
     public void ShowExplanation(ExplanationElement? start)
     {
@@ -40,8 +40,9 @@ public partial class StepExplanationWindow : IStepExplanationView
             FontSize = 15,
             Padding = new Thickness(5),
             TextWrapping = TextWrapping.Wrap,
-            Foreground = (Brush)((App)Application.Current).Resources["Text"]!
         };
+        
+        tb.SetResourceReference(ForegroundProperty, "Text");
 
         if (start is null) tb.Text = "No explanation available for this step";
         else

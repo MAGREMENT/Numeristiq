@@ -55,7 +55,7 @@ public partial class SearchControl
         var tb = new TextBlock
         {
             Text = s,
-            Style = (Style)((App)Application.Current).Resources["SearchResult"]!
+            Style = (Style)FindResource("SearchResult")
         };
         tb.MouseMove += (_, args) =>
         {

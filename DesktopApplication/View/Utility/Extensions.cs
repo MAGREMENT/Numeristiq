@@ -20,10 +20,10 @@ public static class Extensions
 
     public static bool ContainsAdjacent(this CellPossibility[] cps, CellPossibility cp, int hShift, int vShift)
     {
-        if (hShift == -1 && cp.Possibility is 1 or 4 or 7) return false;
-        if (hShift == 1 && cp.Possibility is 3 or 6 or 9) return false;
-        if (vShift == -1 && (cp.Possibility - 1) / 3 == 0) return false;
-        if (vShift == 1 && (cp.Possibility - 1) / 3 == 2) return false;
+        if (hShift < 0 && cp.Possibility is 1 or 4 or 7) return false;
+        if (hShift > 0 && cp.Possibility is 3 or 6 or 9) return false;
+        if (vShift < 0 && (cp.Possibility - 1) / 3 == 0) return false;
+        if (vShift > 0 && (cp.Possibility - 1) / 3 == 2) return false;
 
         var newPossibility = cp.Possibility + vShift * 3 + hShift;
         return cps.Contains(new CellPossibility(cp.Row, cp.Column, newPossibility));

@@ -101,7 +101,7 @@
     "Name": "XYZ-Wing",
     "Enabled": true,
     "Locked": false,
-    "InstanceHandling": 0,
+    "InstanceHandling": 1,
     "Settings": {}
   },
   {

@@ -36,14 +36,14 @@ public partial class LogControl
     {
         if (sender is not Border b) return;
 
-        b.BorderBrush = (Brush)Application.Current.Resources["Primary1"]!;
+        b.SetResourceReference(BorderBrushProperty, "Primary1");
     }
 
     private void OnMouseLeave(object sender, MouseEventArgs e)
     {
         if (sender is not Border b) return;
 
-        b.BorderBrush = (Brush)Application.Current.Resources["Background2"]!;
+        b.SetResourceReference(BorderBrushProperty, "Background2");
     }
 
     public void Open()

@@ -4,9 +4,9 @@ using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using DesktopApplication.Presenter.Sudoku.Play;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Utility;
-using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku.Player;
 using Model.Sudoku.Solver.Explanation;
@@ -17,7 +17,7 @@ using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Sudoku.Controls;
 
-public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
+public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighlighter, ISudokuPlayerDrawer
 {
     private const int BackgroundIndex = 0;
     private const int CellsHighlightIndex = 1;
@@ -209,7 +209,9 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
         KeyDown += AnalyseKeyDown;
         KeyUp += AnalyseKeyUp;
     }
-    
+
+    #region ISudokuDrawer
+
     public void PutCursorOn(Cell cell)
     {
         ClearCursor();
@@ -258,6 +260,10 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
                 ComponentVerticalAlignment.Center));
         });
     }
+
+    #endregion
+
+    #region ISudokuSolverDrawer
 
     public void ShowPossibilities(int row, int col, IEnumerable<int> possibilities)
     {
@@ -380,12 +386,10 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
             new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
     }
 
-    public void EncirclePossibilityPatch(CellPossibility[] cps, ChangeColoration coloration) //TODO FIX
+    public void DrawPossibilityPatch(CellPossibility[] cps, ChangeColoration coloration)
     {
         var w = _possibilitySize / 6;
-        var delta = w / 2;
         var brush = new SolidColorBrush(ColorUtility.ToColor(coloration));
-        var pen = new Pen(brush, w);
 
         var list = Layers[PossibilitiesHighlightIndex];
         foreach (var cp in cps)
@@ -393,33 +397,30 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
             var left = GetLeft(cp.Column, cp.Possibility);
             var top = GetTop(cp.Row, cp.Possibility);
 
-            if(!cps.ContainsAdjacent(cp, 0, -1)) list.Add(new LineComponent(
-                new Point(left + delta, top), new Point(left + delta, top + _possibilitySize), pen));
+            if(!cps.ContainsAdjacent(cp, 0, -1)) list.Add(new FilledRectangleComponent(
+                new Rect(left, top, _possibilitySize, w), brush));
             
-            if(!cps.ContainsAdjacent(cp, -1, 0)) list.Add(new LineComponent(
-                new Point(left, top + delta), new Point(left + _possibilitySize, top + delta), pen));
+            if(!cps.ContainsAdjacent(cp, -1, 0)) list.Add(new FilledRectangleComponent(
+                new Rect(left, top, w, _possibilitySize), brush));
             else
             {
                 if(cps.ContainsAdjacent(cp, 0, -1) && !cps.ContainsAdjacent(cp, -1, -1)) list.Add(
                     new FilledRectangleComponent(new Rect(left, top, w, w), brush));
                 
                 if(cps.ContainsAdjacent(cp, 0, 1) && !cps.ContainsAdjacent(cp, -1, 1)) list.Add(
-                    new FilledRectangleComponent(new Rect(left + _possibilitySize - w, top,
+                    new FilledRectangleComponent(new Rect(left, top + _possibilitySize - w,
                         w, w), brush));
             }
             
-            if(!cps.ContainsAdjacent(cp, 0, 1)) list.Add(new LineComponent(
-                new Point(left + _possibilitySize - delta, top), new Point(left + _possibilitySize - delta,
-                    top + _possibilitySize), pen));
+            if(!cps.ContainsAdjacent(cp, 0, 1)) list.Add(new FilledRectangleComponent(
+                new Rect(left, top + _possibilitySize - w, _possibilitySize, w), brush));
             
-            if(!cps.ContainsAdjacent(cp, 1, 0)) list.Add(new LineComponent(
-                new Point(left, top + _possibilitySize - delta), new Point(left + _possibilitySize,
-                    top + _possibilitySize - delta), pen));
+            if(!cps.ContainsAdjacent(cp, 1, 0)) list.Add(new FilledRectangleComponent(
+                new Rect(left + _possibilitySize - w, top, w, _possibilitySize), brush));
             else
             {
                 if(cps.ContainsAdjacent(cp, 0, -1) && !cps.ContainsAdjacent(cp, 1, -1)) list.Add(
-                    new FilledRectangleComponent(new Rect(left, top + _possibilitySize - w,
-                        w, w), brush));
+                    new FilledRectangleComponent(new Rect(left + _possibilitySize - w, top, w, w), brush));
                 
                 if(cps.ContainsAdjacent(cp, 0, 1) && !cps.ContainsAdjacent(cp, 1, 1)) list.Add(
                     new FilledRectangleComponent(new Rect(left + _possibilitySize - w,
@@ -466,7 +467,11 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
         }
     }
 
-    public void ShowLinePossibilities(int row, int col, int[] possibilities, PossibilitiesLocation location)
+    #endregion 
+
+    #region ISudokuPlayerDrawer
+
+    public void ShowLinePossibilities(int row, int col, IEnumerable<int> possibilities, PossibilitiesLocation location)
     {
         var builder = new StringBuilder();
         foreach (var p in possibilities) builder.Append(p);
@@ -490,13 +495,13 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
             new Rect(GetLeft(col), GetTop(row, n), _cellSize, _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
-    public void FillCell(int row, int col, double startAngle, int rotationFactor, params Color[] colors)
+    public void FillCell(int row, int col, double startAngle, int rotationFactor, params CellColor[] colors)
     {
         if (colors.Length == 0) return;
         if (colors.Length == 1)
         {
             Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-                _cellSize, _cellSize), new SolidColorBrush(colors[0])));
+                _cellSize, _cellSize), ColorUtility.ToBrush(colors[0])));
             return;
         }
         
@@ -508,7 +513,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
         foreach (var color in colors)
         {
             var next = angle + rotationFactor * angleDelta;
-            list.Add(new FilledPolygonComponent(new SolidColorBrush(color),
+            list.Add(new FilledPolygonComponent(ColorUtility.ToBrush(color),
                 MathUtility.GetMultiColorHighlightingPolygon(center, _cellSize, 
                     _cellSize, angle, next, rotationFactor)));
             angle = next;
@@ -561,6 +566,7 @@ public class SudokuBoard : DrawingBoard, ISudokuDrawer, IExplanationHighlighter
             }
         }
     }
+    #endregion
     
     #region IExplanationHighlighter
 

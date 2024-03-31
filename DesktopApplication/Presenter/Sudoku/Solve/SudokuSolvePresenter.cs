@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
 using DesktopApplication.Presenter.Sudoku.Solve.Explanation;
-using Model;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
@@ -123,7 +122,7 @@ public class SudokuSolvePresenter : ICommitApplier
         var index = id - 1;
         if (index < 0 || index >= _solver.Logs.Count) return;
         
-        _view.CloseLogs();
+        if(_currentlyOpenedLog != -1) _view.CloseLog(_currentlyOpenedLog);
 
         if (_currentlyOpenedLog == index)
         {

@@ -51,9 +51,8 @@ public class XChainStrategy : TectonicStrategy
             foreach (var neighbor in TectonicCellUtility.GetNeighbors(current.Row, current.Column,
                          strategyUser.Tectonic.RowCount, strategyUser.Tectonic.ColumnCount))
             {
-                if (!strategyUser.PossibilitiesAt(neighbor).Contains(possibility)) continue;
-
-                if (!off.TryAdd(neighbor, current) || neighbor == startOff) continue;
+                if (!strategyUser.PossibilitiesAt(neighbor).Contains(possibility) 
+                    || neighbor == startOff || !off.TryAdd(neighbor, current)) continue;
                 
                 var zone = strategyUser.Tectonic.GetZone(neighbor);
                 if (!zoneBuffer.Contains(zone)) zoneBuffer.Add(zone);

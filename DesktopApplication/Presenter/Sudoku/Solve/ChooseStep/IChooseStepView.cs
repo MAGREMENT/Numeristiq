@@ -4,7 +4,7 @@ namespace DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
 
 public interface IChooseStepView
 {
-    public ISudokuDrawer Drawer { get; }
+    public ISudokuSolverDrawer Drawer { get; }
     
     public void ClearCommits();
     public void AddCommit(ICommitMaker maker, int index);

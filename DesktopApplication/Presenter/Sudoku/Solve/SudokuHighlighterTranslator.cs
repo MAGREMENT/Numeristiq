@@ -8,10 +8,10 @@ namespace DesktopApplication.Presenter.Sudoku.Solve;
 
 public class SudokuHighlighterTranslator : ISudokuHighlighter
 {
-    private readonly ISudokuDrawer _drawer;
+    private readonly ISudokuSolverDrawer _drawer;
     private readonly Settings _settings;
 
-    public SudokuHighlighterTranslator(ISudokuDrawer drawer, Settings settings)
+    public SudokuHighlighterTranslator(ISudokuSolverDrawer drawer, Settings settings)
     {
         _drawer = drawer;
         _settings = settings;
@@ -98,7 +98,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                     pc.Column, pc.Possibility, coloration);
                 break;
             case NakedSet ans :
-                _drawer.EncirclePossibilityPatch(ans.EveryCellPossibility(), coloration);
+                _drawer.DrawPossibilityPatch(ans.EveryCellPossibility(), coloration);
                 break;
         }
     }
