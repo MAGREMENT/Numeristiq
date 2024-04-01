@@ -22,7 +22,7 @@ public class ArrayTectonic : ITectonic
     
     public void AddZone(IReadOnlyList<Cell> cells)
     {
-        if (cells.Count > 0) return;
+        if (cells.Count > 9) return;
         InfiniteBitSet bitSet = new();
         foreach (var cell in cells)
         {
