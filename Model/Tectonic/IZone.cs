@@ -6,13 +6,11 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonic;
 
-public interface IZone : IEnumerable<Cell>
+public interface IZone : IContainingEnumerable<Cell>
 {
     int Count { get; }
     
     Cell this[int index] { get; }
-
-    bool Contains(Cell c);
 }
 
 public class EmptyZone : IZone

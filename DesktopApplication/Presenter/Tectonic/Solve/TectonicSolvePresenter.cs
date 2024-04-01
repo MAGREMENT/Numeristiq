@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Model;
+﻿using System.Threading.Tasks;
 using Model.Helpers;
 using Model.Tectonic;
 using Model.Utility;
@@ -17,7 +15,7 @@ public class TectonicSolvePresenter
     private int _logCount;
     private int _currentlyOpenedLog = -1;
     private StateShown _stateShown = StateShown.Before;
-    private readonly List<Cell> _selectedCells = new();
+    private readonly ContainingList<Cell> _selectedCells = new();
     private IZone? _selectedZone;
     private SelectionMode _selectionMode = SelectionMode.Default;
 

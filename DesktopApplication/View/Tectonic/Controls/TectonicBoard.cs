@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonic.Solve;
 using DesktopApplication.View.Utility;
-using Model;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
-using Model.Tectonic;
 using Model.Utility;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
@@ -331,112 +327,84 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     {
         ClearCursor();
         
-        const double delta = CursorWidth / 2;
         var left = GetLeft(cell.Column);
         var top = GetTop(cell.Row);
-        var pen = new Pen(CursorBrush, CursorWidth);
 
         var list = Layers[CursorIndex];
-        list.Add(new LineComponent(new Point(left + delta, top), new Point(left + delta,
-            top + _cellSize), pen));
-        list.Add(new LineComponent(new Point(left, top + delta), new Point(left + _cellSize,
-            top + delta), pen));
-        list.Add(new LineComponent(new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta,
-            top + _cellSize), pen));
-        list.Add(new LineComponent(new Point(left, top + _cellSize - delta), new Point(left + _cellSize,
-            top + _cellSize - delta), pen));
+        list.Add(new FilledRectangleComponent(new Rect(left, top, _cellSize, CursorWidth), CursorBrush));
+        list.Add(new FilledRectangleComponent(new Rect(left, top, CursorWidth, _cellSize), CursorBrush));
+        list.Add(new FilledRectangleComponent(new Rect(left, top + _cellSize - CursorWidth, _cellSize, CursorWidth), CursorBrush));
+        list.Add(new FilledRectangleComponent(new Rect(left + _cellSize - CursorWidth, top, CursorWidth, _cellSize), CursorBrush));
     }
     
-    public void PutCursorOn(IZone cells)
+    public void PutCursorOn(IContainingEnumerable<Cell> cells)
     {
         ClearCursor();
-        
-        var delta = CursorWidth / 2;
-        var pen = new Pen(CursorBrush, CursorWidth);
 
         var list = Layers[CursorIndex];
         foreach (var cell in cells)
         {
             var left = GetLeft(cell.Column);
             var top = GetTop(cell.Row);
+            var fullLeft = GetFullLeft(cell.Column);
+            var fullTop = GetFullTop(cell.Row);
+            var fullSize = GetFullCellSize();
+            var delta = _bigLineWidth / 2 - _smallLineWidth / 2;
 
-            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
-                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
+            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new FilledRectangleComponent(
+                new Rect(left, fullTop, CursorWidth, fullSize), CursorBrush));
             
-            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
+            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new FilledRectangleComponent(
+                new Rect(fullLeft, top, fullSize, CursorWidth), CursorBrush));
             else
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), CursorBrush));
+                       new Cell(cell.Row - 1, cell.Column - 1)))
+                {
+                    //Top left
+                    list.Add(new FilledRectangleComponent(new Rect(fullLeft, top, CursorWidth + delta,
+                        CursorWidth), CursorBrush));
+                    list.Add(new FilledRectangleComponent(new Rect(left, fullTop, CursorWidth,
+                        CursorWidth + delta), CursorBrush));
+                }
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), CursorBrush));
+                       new Cell(cell.Row - 1, cell.Column + 1)))
+                {
+                    //Top right
+                    list.Add(new FilledRectangleComponent(new Rect(left + _cellSize - CursorWidth, top,
+                        CursorWidth + delta, CursorWidth), CursorBrush));
+                    list.Add(new FilledRectangleComponent(new Rect(left + _cellSize - CursorWidth, fullTop,
+                        CursorWidth, CursorWidth + delta), CursorBrush));
+                }
             }
             
-            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
-                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
+            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new FilledRectangleComponent(
+                new Rect(left + _cellSize - CursorWidth, fullTop, CursorWidth, fullSize), CursorBrush));
             
-            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
+            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new FilledRectangleComponent(
+                new Rect(fullLeft, top + _cellSize - CursorWidth, fullSize, CursorWidth), CursorBrush));
             else
             {
                 if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
+                       new Cell(cell.Row + 1, cell.Column - 1)))
+                {
+                    //Bottom left
+                    list.Add(new FilledRectangleComponent(new Rect(fullLeft, top + _cellSize - CursorWidth,
+                        CursorWidth + delta, CursorWidth), CursorBrush));
+                    list.Add(new FilledRectangleComponent(new Rect(left, top + _cellSize - CursorWidth,
+                        CursorWidth, CursorWidth + delta), CursorBrush));
+                }
                 
                 if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
-            }
-        }
-    }
-    
-    public void PutCursorOn(IReadOnlyList<Cell> cells)
-    {
-        ClearCursor();
-        
-        var delta = CursorWidth / 2;
-        var pen = new Pen(CursorBrush, CursorWidth);
-
-        var list = Layers[CursorIndex];
-        foreach (var cell in cells)
-        {
-            var left = GetLeft(cell.Column);
-            var top = GetTop(cell.Row);
-
-            if(!cells.Contains(new Cell(cell.Row, cell.Column - 1))) list.Add(new LineComponent(
-                new Point(left + delta, top), new Point(left + delta, top + _cellSize), pen));
-            
-            if(!cells.Contains(new Cell(cell.Row - 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + delta), new Point(left + _cellSize, top + delta), pen));
-            else
-            {
-                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top, CursorWidth, CursorWidth), CursorBrush));
-                
-                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row - 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top, CursorWidth, CursorWidth), CursorBrush));
-            }
-            
-            if(!cells.Contains(new Cell(cell.Row, cell.Column + 1))) list.Add(new LineComponent(
-                new Point(left + _cellSize - delta, top), new Point(left + _cellSize - delta, top + _cellSize), pen));
-            
-            if(!cells.Contains(new Cell(cell.Row + 1, cell.Column))) list.Add(new LineComponent(
-                new Point(left, top + _cellSize - delta), new Point(left + _cellSize, top + _cellSize - delta), pen));
-            else
-            {
-                if(cells.Contains(new Cell(cell.Row, cell.Column - 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column - 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
-                
-                if(cells.Contains(new Cell(cell.Row, cell.Column + 1)) && !cells.Contains(
-                       new Cell(cell.Row + 1, cell.Column + 1))) list.Add(new FilledRectangleComponent(
-                    new Rect(left + _cellSize - CursorWidth, top + _cellSize - CursorWidth, CursorWidth, CursorWidth), CursorBrush));
+                       new Cell(cell.Row + 1, cell.Column + 1)))
+                {
+                    //Bottom right
+                    list.Add(new FilledRectangleComponent(new Rect(left + _cellSize - CursorWidth,
+                        top + _cellSize - CursorWidth, CursorWidth + delta, CursorWidth), CursorBrush));
+                    list.Add(new FilledRectangleComponent(new Rect(left + _cellSize - CursorWidth,
+                        top + _cellSize - CursorWidth, CursorWidth, CursorWidth + delta), CursorBrush));
+                }
             }
         }
     }
@@ -521,6 +489,21 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private double GetTop(int row)
     {
         return _cellSize * row + _bigLineWidth * (row + 1);
+    }
+
+    private double GetFullLeft(int column)
+    {
+        return (_cellSize + _bigLineWidth) * column + _bigLineWidth / 2 + _smallLineWidth / 2;
+    }
+    
+    private double GetFullTop(int row)
+    {
+        return (_cellSize + _bigLineWidth) * row + _bigLineWidth / 2 + _smallLineWidth / 2;
+    }
+
+    private double GetFullCellSize()
+    {
+        return _cellSize + _bigLineWidth - _smallLineWidth;
     }
 
     private Point Center(int row, int col, int possibility)
@@ -737,222 +720,4 @@ public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Di
     }
 }
 
-public class NotifyingList<T> : IList, IList<T>
-{
-    private T[] _array = Array.Empty<T>();
-    
-    public int Count { get; private set; }
-    public bool IsSynchronized => false;
-    public object SyncRoot => null!;
-    public bool IsFixedSize => false;
-    public bool IsReadOnly => false;
-    
-    public event OnClear? Cleared;
-    public event OnElementAdded<T>? ElementAdded; 
-    
-    public int Add(object? value)
-    {
-        if (value is not T item) return -1;
-
-        Add(item);
-        
-        return Count - 1;
-    }
-
-    public void Add(T item)
-    {
-        GrowIfNecessary();
-
-        _array[Count++] = item;
-        ElementAdded?.Invoke(item);
-    }
-
-    public void Clear()
-    {
-        Count = 0;
-        Cleared?.Invoke();
-    }
-
-    public bool Contains(T item)
-    {
-        for(int i = 0; i < Count; i++)
-        {
-            var o = _array[i];
-            if (o is not null && o.Equals(item)) return true;
-        }
-
-        return false;
-    }
-    
-    public bool Contains(object? value)
-    {
-        for(int i = 0; i < Count; i++)
-        {
-            var o = _array[i];
-            if (o is null)
-            {
-                if (value is null) return true;
-            }else if (o.Equals(value)) return true;
-        }
-
-        return false;
-    }
-    
-    public void CopyTo(Array array, int index)
-    {
-        Array.Copy(_array, 0, array, index, Count);
-    }
-
-    public void CopyTo(T[] array, int arrayIndex)
-    {
-        Array.Copy(_array, 0, array, arrayIndex, Count);
-    }
-
-    public int IndexOf(object? value)
-    {
-        for(int i = 0; i < Count; i++)
-        {
-            var o = _array[i];
-            if (o is null)
-            {
-                if (value is null) return i;
-            }else if (o.Equals(value)) return i;
-        }
-
-        return -1;
-    }
-    
-    public int IndexOf(T item)
-    {
-        for(int i = 0; i < Count; i++)
-        {
-            var o = _array[i];
-            if (o is not null && o.Equals(item)) return i;
-        }
-
-        return -1;
-    }
-
-    public void Remove(object? value)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            var o = _array[i];
-            if (o is null)
-            {
-                if (value is null)
-                {
-                    RemoveAt(i);
-                    return;
-                }
-            }
-            else if (o.Equals(value))
-            {
-                RemoveAt(i);
-                return;
-            }
-        }
-    }
-    
-    public bool Remove(T item)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            var o = _array[i];
-            if (o is not null && o.Equals(item))
-            {
-                RemoveAt(i);
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void Insert(int index, T item)
-    {
-        if (index < 0 || index > Count) return;
-        
-        GrowIfNecessary();
-        
-        if (index == Count)
-        {
-            Add(item);
-            return;
-        }
-
-        Array.Copy(_array, index, _array, index + 1, Count - index);
-        _array[index] = item;
-        Count++;
-        ElementAdded?.Invoke(item);
-    }
-    
-    public void Insert(int index, object? value)
-    {
-        if (value is not T item) return;
-
-        Insert(index, item);
-    }
-
-    public void RemoveAt(int index)
-    {
-        if (index < 0 || index >= Count) return;
-        
-        Array.Copy(_array, index + 1, _array, index, Count - index - 1);
-        Count--;
-    }
-
-    T IList<T>.this[int index]
-    {
-        get => _array[index];
-        set => _array[index] = value;
-    }
-
-    public object? this[int index]
-    {
-        get => _array[index];
-        set
-        {
-            if(value is T item) _array[index] = item;
-        } 
-    }
-    
-    IEnumerator<T> IEnumerable<T>.GetEnumerator()
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            yield return _array[i];
-        }
-    }
-
-    public IEnumerator GetEnumerator()
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            yield return _array[i];
-        }
-    }
-    
-    //Private-----------------------------------------------------------------------------------------------------------
-
-    private void GrowIfNecessary()
-    {
-        if (_array.Length <= Count)
-        {
-            if (_array.Length == 0)
-            {
-                _array = new T[4];
-            }
-            else
-            {
-                var buffer = new T[_array.Length * 2];
-                Array.Copy(_array, 0, buffer, 0, _array.Length);
-                _array = buffer;
-            }
-        }
-    }
-}
-
-public delegate void OnClear();
-public delegate void OnElementAdded<in T>(T element);
 public delegate void OnDimensionCountChange(int number);

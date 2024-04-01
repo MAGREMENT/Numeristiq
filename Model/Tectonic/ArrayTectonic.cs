@@ -22,6 +22,7 @@ public class ArrayTectonic : ITectonic
     
     public void AddZone(IReadOnlyList<Cell> cells)
     {
+        if (cells.Count > 0) return;
         InfiniteBitSet bitSet = new();
         foreach (var cell in cells)
         {
@@ -58,7 +59,8 @@ public class ArrayTectonic : ITectonic
 
     public bool MergeZones(IZone z1, IZone z2)
     {
-        if (!TectonicCellUtility.AreAdjacent(z1, z2)) return false;
+        if (!TectonicCellUtility.AreAdjacent(z1, z2) ||
+            z1.Count + z2.Count > 9) return false;
         
         List<Cell> total = new();
         if (z1 is SoloZone sz1) total.Add(sz1.Cell);

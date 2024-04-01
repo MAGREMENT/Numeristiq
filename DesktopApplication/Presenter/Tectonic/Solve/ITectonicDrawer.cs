@@ -20,8 +20,7 @@ public interface ITectonicDrawer
     void ClearBorderDefinitions();
     void AddBorderDefinition(int insideRow, int insideColumn, BorderDirection direction, bool isThin);
     void PutCursorOn(Cell cell);
-    void PutCursorOn(IZone cells);
-    void PutCursorOn(IReadOnlyList<Cell> cells);
+    void PutCursorOn(IContainingEnumerable<Cell> cells);
     void ClearCursor();
     void ClearHighlights();
     void FillPossibility(int row, int col, int possibility, ChangeColoration coloration);

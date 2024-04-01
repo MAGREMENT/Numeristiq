@@ -1,4 +1,4 @@
-﻿using DesktopApplication.View.Tectonic.Controls;
+﻿using Model.Utility;
 
 namespace Tests;
 
