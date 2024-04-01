@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using DesktopApplication.Presenter;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Controls;
@@ -157,6 +158,12 @@ public partial class SolvePage : ISudokuSolveView
             StrategyPanel.Children[index] is not StrategyControl sc) return;
 
         sc.LockStrategy();
+    }
+
+    public void OpenOptionDialog(string name, OptionChosen callback, params string[] options)
+    {
+        var dialog = new OptionChooserDialog(name, callback, options);
+        dialog.Show();
     }
 
     #endregion

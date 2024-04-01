@@ -4,5 +4,11 @@
   "Link offset side priority": "0",
   "Unique solution": "True",
   "Start angle": "0",
-  "Rotation direction": "1"
+  "Rotation direction": "1",
+  "Copy default format": "1",
+  "Open copy dialog": "True",
+  "Past default format": "2",
+  "Open paste dialog": "True",
+  "Line format empty cell representation": "0",
+  "Convert solo candidate to given for grid format": "False"
 }

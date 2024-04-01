@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Model.Utility;
 
-public class EnumConverter
+public static class EnumConverter
 {
     public static int ToInt<TEnum>(TEnum value) where TEnum : struct, Enum
     {
@@ -13,6 +13,19 @@ public class EnumConverter
     public static TEnum ToEnum<TEnum>(int value) where TEnum : struct, Enum
     {
         return StaticGenericCache<TEnum>.ToEnumFunction(value);
+    }
+
+    public static string[] ToStringArray<TEnum>(IStringConverter converter) where TEnum : struct, Enum
+    {
+        var values = Enum.GetValues<TEnum>();
+        var result = new string[values.Length];
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            result[i] = converter.Convert(values[i].ToString());
+        }
+
+        return result;
     }
     
     private static class StaticGenericCache<T>

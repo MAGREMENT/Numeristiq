@@ -58,7 +58,7 @@ public class StatisticsTracker : Tracker
         else
         {
             Console.Write(wasWrong ? "Solver failed" : "Solver did not find solution");
-            Console.WriteLine($" => '{SudokuTranslator.TranslateLineFormat(result.Sudoku, SudokuTranslationType.Points)}'");
+            Console.WriteLine($" => '{SudokuTranslator.TranslateLineFormat(result.Sudoku, SudokuLineFormatEmptyCellRepresentation.Points)}'");
         }
     }
     

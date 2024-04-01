@@ -51,7 +51,7 @@ public class SudokuGenerateBatchCommand : Command
             {
                 solver.SetSudoku(s.Copy());
                 solver.Solve();
-                result.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(s, SudokuTranslationType.Points),
+                result.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
                     ratings?.Rating ?? 0, hardest?.Hardest));
             
                 ratings?.Clear();
@@ -66,7 +66,7 @@ public class SudokuGenerateBatchCommand : Command
         {
             foreach (var s in generated)
             {
-                result.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(s, SudokuTranslationType.Points),
+                result.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
                     0, null));
             }
         }

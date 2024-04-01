@@ -1,0 +1,24 @@
+﻿<local:DialogWindow x:Class="DesktopApplication.View.HelperWindows.OptionChooserDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:DesktopApplication.View.HelperWindows"
+        mc:Ignorable="d"
+        Title="OptionChooserDialog"
+        SizeToContent="WidthAndHeight">
+    <Grid Background="{DynamicResource Background1}" Width="300" MinHeight="100">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <Border Grid.Row="0" HorizontalAlignment="Stretch" Height="50" Background="{DynamicResource Background2}"
+                BorderBrush="{DynamicResource Background3}" BorderThickness="0, 0, 0, 1">
+            <TextBlock FontSize="30" Foreground="{DynamicResource Text}" VerticalAlignment="Center"
+                       HorizontalAlignment="Center" x:Name="OptionName">Name</TextBlock>
+        </Border>
+        
+        <StackPanel Grid.Row="1" x:Name="Panel" Margin="20, 0, 0, 0"/>
+    </Grid>
+</local:DialogWindow>

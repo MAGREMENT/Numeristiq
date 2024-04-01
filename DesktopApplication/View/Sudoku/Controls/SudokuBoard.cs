@@ -174,7 +174,6 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     }
     
     private bool _isSelecting;
-    private bool _overrideSelection = true;
 
     public event OnCellSelection? CellSelected;
     public event OnCellSelection? CellAddedToSelection;
@@ -189,8 +188,8 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if (cell is not null)
             {
-                if(_overrideSelection) CellSelected?.Invoke(cell[0], cell[1]);
-                else CellAddedToSelection?.Invoke(cell[0], cell[1]);
+                if(Keyboard.Modifiers == ModifierKeys.Control) CellAddedToSelection?.Invoke(cell[0], cell[1]);
+                else CellSelected?.Invoke(cell[0], cell[1]);
             }
 
             _isSelecting = true;
@@ -205,9 +204,6 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if(cell is not null) CellAddedToSelection?.Invoke(cell[0], cell[1]);
         };
-
-        KeyDown += AnalyseKeyDown;
-        KeyUp += AnalyseKeyUp;
     }
 
     #region ISudokuDrawer
@@ -702,16 +698,6 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         }
 
         return row == -1 || col == -1 ? null : new[] { row, col };
-    }
-
-    private void AnalyseKeyDown(object sender, KeyEventArgs args)
-    {
-        if (args.Key == Key.LeftCtrl) _overrideSelection = false;
-    }
-    
-    private void AnalyseKeyUp(object sender, KeyEventArgs args)
-    {
-        if (args.Key == Key.LeftCtrl) _overrideSelection = true;
     }
     
     private void UpdateSize()

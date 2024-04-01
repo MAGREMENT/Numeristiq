@@ -32,7 +32,7 @@ public class SudokuPuzzleGenerator
         {
             foreach (var p in puzzles)
             {
-                Console.Write(SudokuTranslator.TranslateLineFormat(p, SudokuTranslationType.Points));
+                Console.Write(SudokuTranslator.TranslateLineFormat(p, SudokuLineFormatEmptyCellRepresentation.Points));
                 solver.SetSudoku(p);
                 finder.Clear();
                 solver.Solve();

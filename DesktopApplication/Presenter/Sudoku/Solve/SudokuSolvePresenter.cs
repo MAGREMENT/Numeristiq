@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
 using DesktopApplication.Presenter.Sudoku.Solve.Explanation;
@@ -51,14 +52,12 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void OnSudokuAsStringBoxShowed()
     {
-        _view.SetSudokuAsString(SudokuTranslator.TranslateLineFormat(_solver.Sudoku, SudokuTranslationType.Shortcuts));
+        _view.SetSudokuAsString(SudokuTranslator.TranslateLineFormat(_solver.Sudoku, SudokuLineFormatEmptyCellRepresentation.Shortcuts));
     }
 
     public void SetNewSudoku(string s)
     {
-        _solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
-        SetShownState(_solver, true);
-        ClearLogs();
+        SetNewSudoku(SudokuTranslator.TranslateLineFormat(s));
     }
 
     public async void Solve(bool stopAtProgress)
@@ -229,15 +228,22 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void Copy()
     {
-        //TODO dialog
-        if(_currentlyDisplayedState is not null) _view.CopyToClipBoard(SudokuTranslator.TranslateBase32Format
-            (_currentlyDisplayedState, new AlphabeticalBase32Translator()));
+        if (_currentlyDisplayedState is null) return;
+        
+        if(!_settings.OpenCopyDialog) Copy(_currentlyDisplayedState, _settings.DefaultCopyFormat);
+        else _view.OpenOptionDialog("Copy", i =>
+        {
+            Copy(_currentlyDisplayedState, EnumConverter.ToEnum<SudokuStringFormat>(i));
+        }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
     }
 
     public void Paste(string s)
     {
-        //TODO dialog
-        SetNewState(SudokuTranslator.TranslateGridFormat(s, true));
+        if(!_settings.OpenPastDialog) Paste(s, _settings.DefaultCopyFormat);
+        else _view.OpenOptionDialog("Paste", i =>
+        {
+            Paste(s, EnumConverter.ToEnum<SudokuStringFormat>(i));
+        }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
     }
     
     public void Apply(BuiltChangeCommit<ISudokuHighlighter> commit)
@@ -249,6 +255,33 @@ public class SudokuSolvePresenter : ICommitApplier
     public void OnShow()
     {
         _view.InitializeStrategies(_solver.StrategyManager.Strategies);
+    }
+
+    private void Copy(ISolvingState state, SudokuStringFormat format)
+    {
+        _view.CopyToClipBoard(format switch
+        {
+            SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(state, _settings.EmptyCellRepresentation),
+            SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(state),
+            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(state, new AlphabeticalBase32Translator()),
+            _ => throw new Exception()
+        });
+    }
+
+    private void Paste(string s, SudokuStringFormat format)
+    {
+        switch (format)
+        {
+            case SudokuStringFormat.Line :
+                SetNewSudoku(SudokuTranslator.TranslateLineFormat(s));
+                break;
+            case SudokuStringFormat.Grid :
+                SetNewState(SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven));
+                break;
+            case SudokuStringFormat.Base32 :
+                SetNewState(SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()));
+                break;
+        }
     }
 
     private void ClearLogs()
@@ -283,6 +316,13 @@ public class SudokuSolvePresenter : ICommitApplier
         }
         
         drawer.Refresh();
+    }
+
+    private void SetNewSudoku(Model.Sudoku.Sudoku sudoku)
+    {
+        _solver.SetSudoku(sudoku);
+        SetShownState(_solver, true);
+        ClearLogs();
     }
 
     private void SetNewState(ISolvingState solvingState)

@@ -8,14 +8,19 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudoku;
 
-public enum SudokuTranslationType
+public enum SudokuStringFormat
+{
+    Line, Grid, Base32
+}
+
+public enum SudokuLineFormatEmptyCellRepresentation
 {
     Shortcuts, Zeros, Points
 }
 
 public static class SudokuTranslator
 {
-    public static string TranslateLineFormat(ISolvingState solvingState, SudokuTranslationType type)
+    public static string TranslateLineFormat(ISolvingState solvingState, SudokuLineFormatEmptyCellRepresentation type)
     {
         string result = "";
         int voidCount = 0;
@@ -28,13 +33,13 @@ public static class SudokuTranslator
                 {
                     switch (type)
                     {
-                        case SudokuTranslationType.Shortcuts :
+                        case SudokuLineFormatEmptyCellRepresentation.Shortcuts :
                             voidCount++;
                             break;
-                        case SudokuTranslationType.Zeros :
+                        case SudokuLineFormatEmptyCellRepresentation.Zeros :
                             result += "0";
                             break;
-                        case SudokuTranslationType.Points :
+                        case SudokuLineFormatEmptyCellRepresentation.Points :
                             result += ".";
                             break;
                     }
@@ -281,11 +286,6 @@ public static class SudokuTranslator
 
         return s.Length == 162 ? SudokuStringFormat.Base32 : SudokuStringFormat.Line;
     }
-}
-
-public enum SudokuStringFormat
-{
-    None, Line, Grid, Base32
 }
 
 public interface IBase32Translator

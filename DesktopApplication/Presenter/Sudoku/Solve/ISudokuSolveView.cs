@@ -25,5 +25,8 @@ public interface ISudokuSolveView
     void CopyToClipBoard(string s);
     void EnableStrategy(int index, bool enabled);
     void LockStrategy(int index);
+    void OpenOptionDialog(string name, OptionChosen callback, params string[] options);
 }
+
+public delegate void OptionChosen(int n);
 
