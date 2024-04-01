@@ -14,6 +14,53 @@
 	    <Brush x:Key="Text">#FFFFFF</Brush>
 	    <Color x:Key="ThumbColor">#FFFFFF</Color>
 	    
+	    <Style TargetType="CheckBox" x:Key="OnOffCheckBox">
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+		    <Setter Property="FontSize" Value="16"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="CheckBox">
+					    <Grid>
+						    <Grid.RowDefinitions>
+							    <RowDefinition Height="Auto"/>
+							    <RowDefinition Height="Auto"/>
+						    </Grid.RowDefinitions>
+						    
+						    <ContentPresenter Grid.Row="0"
+							    Margin="0, 0, 0, 10"
+							    HorizontalAlignment="Center"
+							    VerticalAlignment="Center"
+							    Focusable="False"/>
+						    
+						    <Grid Grid.Row="1" Background="{DynamicResource Background2}" Width="80">
+							    <Border BorderBrush="{DynamicResource Text}" BorderThickness="1"
+							            x:Name="Border" Width="30" Height="30" Background="{DynamicResource Background3}">
+								    <TextBlock x:Name="Block" Foreground="{DynamicResource Text}"
+								               VerticalAlignment="Center" HorizontalAlignment="Center"/>
+							    </Border>
+						    </Grid>
+					    </Grid>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsChecked" Value="True">
+							    <Setter TargetName="Border" Property="HorizontalAlignment" Value="Left"/>
+							    <Setter TargetName="Block" Property="Text" Value="On"/>
+							    <Setter TargetName="Block" Property="Foreground" Value="ForestGreen"></Setter>
+						    </Trigger>
+						    <Trigger Property="IsChecked" Value="False">
+							    <Setter TargetName="Border" Property="HorizontalAlignment" Value="Right"/>
+							    <Setter TargetName="Block" Property="Text" Value="Off"/>
+							    <Setter TargetName="Block" Property="Foreground" Value="Red"/>
+						    </Trigger>
+						    <Trigger SourceName="Border" Property="IsMouseOver" Value="True">
+							    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Primary1}"/>
+						    </Trigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
+	    
 	    <Style TargetType="TextBlock" x:Key="SearchResult">
 		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="FontSize" Value="16"/>
@@ -76,8 +123,7 @@
 							    Margin="0"
 							    HorizontalAlignment="Center"
 							    VerticalAlignment="Center"
-							    Focusable="False"
-							    RecognizesAccessKey="True" />
+							    Focusable="False"/>
 					    </Border>
 					    
 					    <ControlTemplate.Triggers>

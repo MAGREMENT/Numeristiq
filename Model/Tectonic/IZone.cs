@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Tectonic;
 

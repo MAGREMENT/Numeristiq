@@ -6,6 +6,7 @@ using DesktopApplication.Presenter.Sudoku.Solve.Explanation;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Helpers.Logs;
 using Model.Helpers.Settings;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
@@ -167,8 +168,7 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return null;
 
-        var log = _solver.Logs[_currentlyOpenedLog];
-        return new StepExplanationPresenterBuilder(log.Explanation, log.StateBefore);
+        return new StepExplanationPresenterBuilder(_solver.Logs[_currentlyOpenedLog], _settings);
     }
 
     public void EnableStrategy(int index, bool enabled)
@@ -439,18 +439,18 @@ public class ChooseStepPresenterBuilder
 
 public class StepExplanationPresenterBuilder
 {
-    private readonly ExplanationElement? _start;
-    private readonly ISolvingState _state;
+    private readonly ISolverLog<ISudokuHighlighter> _log;
+    private readonly Settings _settings;
 
-    public StepExplanationPresenterBuilder(ExplanationElement? start, ISolvingState state)
+    public StepExplanationPresenterBuilder(ISolverLog<ISudokuHighlighter> log, Settings settings)
     {
-        _start = start;
-        _state = state;
+        _log = log;
+        _settings = settings;
     }
 
     public StepExplanationPresenter Build(IStepExplanationView view)
     {
-        return new StepExplanationPresenter(view, _state, _start);
+        return new StepExplanationPresenter(view, _log, _settings);
     }
 }
 

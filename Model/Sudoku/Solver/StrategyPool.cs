@@ -110,6 +110,12 @@ public static class StrategyPool
         {ExtendedUniqueRectanglesStrategy.OfficialName, () => new ExtendedUniqueRectanglesStrategy()},
         {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)}
     };
+
+    private static readonly Dictionary<string, string> Descriptions = new()
+    {
+        {NakedSingleStrategy.OfficialName, NakedSingleDescription},
+        {JuniorExocetStrategy.OfficialName, JuniorExocetDescription}
+    };
     
     public static IEnumerable<string> EnumerateStrategies(string filter)
     {
@@ -153,13 +159,23 @@ public static class StrategyPool
         return result;
     }
 
-    
     public static SudokuStrategy? CreateFrom(string name)
     {
-        if (!Pool.TryGetValue(name, out var giver)) return null;
-
-        return giver();
+        return !Pool.TryGetValue(name, out var giver) ? null : giver();
     }
+
+    public static string GetDescription(string name) => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
+
+    private const string NoDescription = "No description found";
+
+    private const string NakedSingleDescription = "One of the basic strategies for solving Sudoku's. When a cell has only one possibility, then it must be the solution for that cell";
+
+    private const string JuniorExocetDescription = "This is a very complex strategy. For a Junior Exocet to exist, there is multiple requirements :\n" +
+                                                   "1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells" +
+                                                   "need to be in the same mini-line, meaning a line restricted to a box, and have a total of" +
+                                                   "candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box" +
+                                                   "than the base cells and the other target. These targets must each hold atleast one base candidate" +
+                                                   "2) TODO";
 }
 
 public delegate SudokuStrategy GiveStrategy();

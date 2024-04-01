@@ -21,4 +21,6 @@ public class StringExplanationElement : ExplanationElement
     {
         
     }
+
+    public override bool DoesShowSomething => false;
 }

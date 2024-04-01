@@ -13,7 +13,7 @@ using Model.Sudoku.Solver;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
-public partial class ManagePage : ISudokuManageView //TODO visuals for drag & drop
+public partial class ManagePage : ISudokuManageView
 {
     private const int ToleranceForDragScroll = 80;
     private const int DragScrollOffset = 60;
@@ -105,6 +105,23 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
         }
     }
 
+    public void SetStrategyDescription(string description)
+    {
+        InfoPanel.Children.Clear();
+        var tb = new TextBlock
+        {
+            FontSize = 14,
+            Text = description,
+            TextWrapping = TextWrapping.Wrap,
+            TextAlignment = TextAlignment.Center,
+            Margin = new Thickness(10)
+        };
+        
+        tb.SetResourceReference(ForegroundProperty, "Text");
+
+        InfoPanel.Children.Add(tb);
+    }
+
     public void ClearSelectedStrategy()
     {
         StrategyName.Text = "No Strategy Selected";
@@ -159,5 +176,10 @@ public partial class ManagePage : ISudokuManageView //TODO visuals for drag & dr
         else _presenter.InterchangeStrategies(data.Index, index);
 
         args.Handled = true;
+    }
+
+    private void OnElementSelection(string s)
+    {
+        _presenter.OnSearchResultSelection(s);
     }
 }

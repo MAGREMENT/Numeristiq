@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Model.Utility;
+namespace Model.Utility.Collections;
 
 public class NotifyingList<T> : IList, IList<T>
 {

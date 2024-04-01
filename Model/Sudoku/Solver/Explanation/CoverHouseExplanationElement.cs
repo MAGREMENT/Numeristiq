@@ -32,4 +32,6 @@ public class CoverHouseExplanationElement : ExplanationElement
     {
         highlighter.ShowCoverHouse(_coverHouse);
     }
+
+    public override bool DoesShowSomething => true;
 }

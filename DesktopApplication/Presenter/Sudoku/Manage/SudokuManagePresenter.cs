@@ -35,6 +35,12 @@ public class SudokuManagePresenter
             _view.AddSearchResult(result);
         }
     }
+
+    public void OnSearchResultSelection(string s)
+    {
+        _view.SetSelectedStrategyName(s);
+        _view.SetStrategyDescription(StrategyPool.GetDescription(s));
+    }
     
     public void OnActiveStrategySelection(int index)
     {

@@ -2,6 +2,8 @@
 using Model.Helpers;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Changes;
+using Model.Sudoku.Solver.Explanation;
+using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
@@ -32,12 +34,23 @@ public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
 {
     public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Description(changes),
-            lighter => ChangeReportHelper.HighlightChanges(lighter, changes));
+        return new ChangeReport<ISudokuHighlighter>(Description(changes),
+            lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
     }
 
     private static string Description(IReadOnlyList<SolverProgress> changes)
     {
         return changes.Count != 1 ? "" : $"Naked Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
+    }
+
+    private static ExplanationElement? Explanation(IReadOnlyList<SolverProgress> changes)
+    {
+        if (changes.Count != 1) return null;
+
+        var change = changes[0];
+        var start = new StringExplanationElement($"{change.Number} is the only possibility for ");
+        _ = start + new Cell(change.Row, change.Column) + ". It is therefor the solution for that cell.";
+
+        return start;
     }
 }

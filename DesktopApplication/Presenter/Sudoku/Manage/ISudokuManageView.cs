@@ -10,5 +10,6 @@ public interface ISudokuManageView
     public void SetStrategyList(IReadOnlyList<SudokuStrategy> list);
     public void SetSelectedStrategyName(string name);
     public void SetManageableSettings(StrategySettingsPresenter presenter);
+    public void SetStrategyDescription(string description);
     public void ClearSelectedStrategy();
 }

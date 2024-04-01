@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Model.Utility;
+namespace Model.Utility.Collections;
 
 public class UniqueList<T> : IReadOnlyList<T> where T : notnull
 {

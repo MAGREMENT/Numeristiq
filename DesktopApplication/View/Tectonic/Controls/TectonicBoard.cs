@@ -9,6 +9,7 @@ using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
+using Model.Utility.Collections;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Tectonic.Controls;

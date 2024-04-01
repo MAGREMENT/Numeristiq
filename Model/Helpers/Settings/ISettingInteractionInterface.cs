@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Helpers.Settings;
 

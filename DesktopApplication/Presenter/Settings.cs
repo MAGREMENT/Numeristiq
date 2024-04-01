@@ -5,6 +5,7 @@ using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudoku;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter;
 

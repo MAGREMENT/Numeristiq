@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.Presenter.Sudoku.Solve.Explanation;
 using DesktopApplication.View.Utility;
@@ -10,12 +9,16 @@ using Model.Sudoku.Solver.Explanation;
 namespace DesktopApplication.View.HelperWindows;
 
 public partial class StepExplanationWindow : IStepExplanationView
-{ 
+{
+    private readonly StepExplanationPresenter _presenter;
+    private readonly bool _initialized;
+    
     public StepExplanationWindow(StepExplanationPresenterBuilder builder)
     {
         InitializeComponent();
-        var presenter = builder.Build(this);
-        presenter.Initialize();
+        _presenter = builder.Build(this);
+        _presenter.Initialize();
+        _initialized = true;
         
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -32,7 +35,8 @@ public partial class StepExplanationWindow : IStepExplanationView
     }
 
     public ISudokuSolverDrawer Drawer => Board;
-    
+    public IExplanationHighlighter ExplanationHighlighter => Board;
+
     public void ShowExplanation(ExplanationElement? start)
     {
         var tb = new TextBlock
@@ -56,17 +60,12 @@ public partial class StepExplanationWindow : IStepExplanationView
                 };
                 if (start.ShouldBeBold) run.FontWeight = FontWeights.Bold;
 
-                var currentForEvent = start;
-                run.MouseEnter += (_, _) =>
+                if (start.DoesShowSomething)
                 {
-                    currentForEvent.Show(Board);
-                    Board.Refresh();
-                };
-                run.MouseLeave += (_, _) =>
-                {
-                    Board.ClearHighlights();
-                    Board.Refresh();
-                };
+                    var currentForEvent = start;
+                    run.MouseEnter += (_, _) => _presenter.ShowExplanationElement(currentForEvent);
+                    run.MouseLeave += (_, _) => _presenter.StopShowingExplanationElement();
+                }
 
                 tb.Inlines.Add(run);
                 
@@ -80,5 +79,15 @@ public partial class StepExplanationWindow : IStepExplanationView
     private void OnFinished(object sender, RoutedEventArgs e)
     {
         Close();
+    }
+
+    private void HighlightOn(object sender, RoutedEventArgs e)
+    {
+        if(_initialized) _presenter.TurnOnHighlight();
+    }
+    
+    private void HighlightOff(object sender, RoutedEventArgs e)
+    {
+        if(_initialized) _presenter.TurnOffHighlight();
     }
 }

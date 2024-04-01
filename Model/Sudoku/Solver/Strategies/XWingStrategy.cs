@@ -1,37 +1,15 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Position;
+using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
 namespace Model.Sudoku.Solver.Strategies;
 
-/// <summary>
-/// A X-wing is when 2 row/column have the same possibility in only 2 of their cells and in the same column/row, forming
-/// an X or a square. When that happens, the cells in the columns or rows that aren't in the X-wing cannot contain that
-/// 
-///
-/// Example :
-///
-/// +-------+-------+-------+
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// | . . x | . x x | . . . |
-/// +-------+-------+-------+
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// | . . . | . . . | . . . |
-/// +-------+-------+-------+
-/// | x . x | . . x | . . . |
-/// | . . . | . . . | x . . |
-/// | . . . | . . . | . . . |
-/// +-------+-------+-------+
-///
-/// If we consider the x-marked cells to be the same possibility, the wing pattern is in column 3 & 6. We can remove the
-/// x-marked cells in row 3 & 7 that arent in the X, so [3, 4] & [7, 1].
-/// 
-/// </summary>
 public class XWingStrategy : SudokuStrategy
 {
     public const string OfficialName = "X-Wing";
@@ -124,42 +102,70 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
     
     public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        List<Cell> cells = new();
-        foreach (var other in _linePos)
+        return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
-            switch (_unit)
+            foreach (var other in _linePos)
             {
-                case Unit.Row :
-                    cells.Add(new Cell(_unit1, other));
-                    cells.Add(new Cell(_unit2, other));
-                    break;
-                case Unit.Column :
-                    cells.Add(new Cell(other, _unit1));
-                    cells.Add(new Cell(other, _unit2));
-                    break;
-            }
-        }
-        
-        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
-        {
-            foreach (var cell in cells)
-            {
-                lighter.HighlightPossibility(_number, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                switch (_unit)
+                {
+                    case Unit.Row :
+                        lighter.HighlightPossibility(_number, _unit1, other, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(_number, _unit2, other, ChangeColoration.CauseOffOne);
+                        break;
+                    case Unit.Column :
+                        lighter.HighlightPossibility(_number, other, _unit1, ChangeColoration.CauseOffOne);
+                        lighter.HighlightPossibility(_number, other, _unit2, ChangeColoration.CauseOffOne);
+                        break;
+                }
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        });
+        }, Explanation());
     }
 
-    private string Explanation(List<Cell> cells)
+    private string Description()
     {
-        var otherUnit = _unit == Unit.Row ? "column" : "row";
-        int cursor = -1;
-        var other1 = _linePos.Next(ref cursor);
-        var other2 = _linePos.Next(ref cursor);
-        return $"The cells ({cells[0]}, {cells[1]}, {cells[2]} & {cells[3]}) form an X-wing. It means that whichever" +
-               $" cell is the solution for {_number} in {_unit.ToString().ToLower()}s {_unit1 + 1} & {_unit2 + 1}, {_number} will" +
-               $" be in those cells for the {otherUnit}s {other1 + 1} & {other2 + 1}. Therefor, any cells in those {otherUnit}s" +
-               $" not in the x-wing cannot contain {_number}";
+        return $"XWing in {GetLineAsString(_unit, _unit1, _linePos)}, {GetLineAsString(_unit, _unit2, _linePos)} for {_number}";
+    }
+
+    private string GetLineAsString(Unit unit, int number, IReadOnlyLinePositions linePos)
+    {
+        var builder = new StringBuilder();
+        if (unit == Unit.Row)
+        {
+            builder.Append($"r{number + 1}c");
+            foreach (var col in linePos) builder.Append(col + 1);
+        }
+        else
+        {
+            builder.Append('r');
+            foreach (var row in linePos) builder.Append(row + 1);
+            builder.Append($"c{number + 1}");
+        }
+
+        return builder.ToString();
+    }
+
+    private ExplanationElement Explanation()
+    {
+        var start = new StringExplanationElement("In ");
+        var c = start + new CoverHouse(_unit, _unit1) + " and " + new CoverHouse(_unit, _unit2) +
+                $", {_number} is only present in ";
+        var u = _unit == Unit.Row ? Unit.Column : Unit.Row;
+        var i = -1;
+        _linePos.Next(ref i);
+        var u1 = i;
+        _linePos.Next(ref i);
+        var u2 = i;
+
+        var ch1 = new CoverHouse(u, u1);
+        var ch2 = new CoverHouse(u, u2);
+
+        _ = c + ch1 + " and " + ch2 + ". This means that if " + new Cell(_unit1, u1) + $" hold {_number}, "
+            + new Cell(_unit2, u2) + $" must also hold {_number}. The same can be said for " +
+            new Cell(_unit1, u2) + " and " + new Cell(_unit2, u1) + $". We can then remove every {_number} in "
+            + ch1 + " and " + ch2 + " that is not part of the X-Wing.";
+
+        return start;
     }
 }

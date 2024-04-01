@@ -12,6 +12,7 @@ public abstract class ExplanationElement
     public abstract ExplanationColor Color { get; }
 
     public abstract void Show(IExplanationHighlighter highlighter);
+    public abstract bool DoesShowSomething { get; }
 
     public string FullExplanation()
     {

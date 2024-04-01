@@ -14,7 +14,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <control:SearchControl Grid.Column="0" Width="300" x:Name="Search" Searched="OnSearch"/>
+        <control:SearchControl Grid.Column="0" Width="300" x:Name="Search" Searched="OnSearch" ElementSelected="OnElementSelection"/>
         
         <Grid Grid.Column="1" Margin="10, 0, 0, 0" Width="300">
             <Grid.RowDefinitions>

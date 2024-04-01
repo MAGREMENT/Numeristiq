@@ -10,6 +10,8 @@ public partial class SearchControl
     private bool _raiseEvent = true;
 
     public event OnSearch? Searched;
+
+    public event OnSelection? ElementSelected;
     
     public SearchControl()
     {
@@ -57,6 +59,7 @@ public partial class SearchControl
             Text = s,
             Style = (Style)FindResource("SearchResult")
         };
+        tb.MouseLeftButtonDown += (_, _) => ElementSelected?.Invoke(s);
         tb.MouseMove += (_, args) =>
         {
             if(args.LeftButton == MouseButtonState.Pressed)
@@ -68,5 +71,6 @@ public partial class SearchControl
 }
 
 public delegate void OnSearch(string s);
+public delegate void OnSelection(string s);
 
 public record StrategyDragDropData(string Name, int Index);

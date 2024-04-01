@@ -2,6 +2,7 @@
 using Model.Helpers;
 using Model.Tectonic;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Tectonic.Solve;
 

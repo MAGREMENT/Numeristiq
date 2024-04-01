@@ -23,4 +23,6 @@ public class CellPossibilityExplanationElement : ExplanationElement
     {
         highlighter.ShowCellPossibility(_cellPossibility);
     }
+
+    public override bool DoesShowSomething => true;
 }
