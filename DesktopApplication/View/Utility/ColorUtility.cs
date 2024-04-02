@@ -11,20 +11,6 @@ namespace DesktopApplication.View.Utility;
 
 public static class ColorUtility //To singleton + theme
 {
-    private static readonly Brush[] CellBrushes =
-    {
-        Brushes.Black,
-        Brushes.Gray,
-        Brushes.Red,
-        Brushes.Green,
-        Brushes.Blue
-    };
-    
-    public static Brush GetCellBrush(CellColor cc)
-    {
-        return CellBrushes[(int)cc];
-    }
-
     public static Color ToColor(ChangeColoration coloration)
     {
         return coloration switch
@@ -62,19 +48,19 @@ public static class ColorUtility //To singleton + theme
         };
     }
     
-    public static Color ToColor(HighlightColor color)
+    public static Brush ToBrush(HighlightColor color)
     {
-        return color switch
+        return new SolidColorBrush(color switch
         {
             HighlightColor.First => Colors.Red,
-            HighlightColor.Third => Colors.RoyalBlue,
             HighlightColor.Second => Colors.Green,
-            HighlightColor.Fifth => Colors.Orange,
+            HighlightColor.Third => Colors.RoyalBlue,
             HighlightColor.Fourth => Colors.Purple,
-            HighlightColor.Seventh => Colors.Cyan,
+            HighlightColor.Fifth => Colors.Orange,
             HighlightColor.Sixth => Colors.Yellow,
+            HighlightColor.Seventh => Colors.Cyan,
             _ => Colors.Transparent
-        };
+        });
     }
 
     public static Brush ToBrush(ExplanationColor color)
@@ -96,21 +82,5 @@ public static class ColorUtility //To singleton + theme
     public static Color ToColor(RGB rgb)
     {
         return Color.FromRgb(rgb.Red, rgb.Green, rgb.Blue);
-    }
-
-    public static Color[] ToColors(HighlightColor[] colors)
-    {
-        Color[] result = new Color[colors.Length];
-        for (int i = 0; i < result.Length; i++)
-        {
-            result[i] = ToColor(colors[i]);
-        }
-
-        return result;
-    }
-
-    public static Brush ToBrush(CellColor cc)
-    {
-        return CellBrushes[(int)cc];
     }
 }

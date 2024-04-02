@@ -3,11 +3,11 @@
   "Show same cell links": "False",
   "Link offset side priority": "0",
   "Unique solution": "True",
-  "Start angle": "0",
+  "Start angle": "140",
   "Rotation direction": "1",
   "Copy default format": "1",
   "Open copy dialog": "True",
-  "Past default format": "2",
+  "Paste default format": "2",
   "Open paste dialog": "True",
   "Line format empty cell representation": "0",
   "Convert solo candidate to given for grid format": "False"

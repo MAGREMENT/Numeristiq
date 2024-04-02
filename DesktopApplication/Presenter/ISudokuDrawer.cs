@@ -9,5 +9,6 @@ public interface ISudokuDrawer
     void ClearNumbers();
     void ClearHighlights();
     void ShowSolution(int row, int col, int number);
+    void SetClue(int row, int col, bool isClue);
     void Refresh();
 }

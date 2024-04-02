@@ -9,7 +9,7 @@ public struct PlayerCell
      * 27-31 number
      */
     private int _bits;
-    public bool Editable { get; }
+    public bool Editable { get; set; }
 
     public PlayerCell(bool editable)
     {

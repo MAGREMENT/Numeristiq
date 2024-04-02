@@ -17,19 +17,19 @@ public class EventCollection : IHistoricEvent
         Count++;
     }
     
-    public void Do(IPlayerCellSetter setter)
+    public void Do(IPlayerData data)
     {
         for(int i = 0; i < Count; i++)
         {
-            _events[i].Do(setter);
+            _events[i].Do(data);
         }
     }
 
-    public void Reverse(IPlayerCellSetter setter)
+    public void Reverse(IPlayerData data)
     {
         for(int i = 0; i < Count; i++)
         {
-            _events[i].Reverse(setter);
+            _events[i].Reverse(data);
         }
     }
 

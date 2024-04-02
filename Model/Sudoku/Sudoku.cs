@@ -145,7 +145,7 @@ public class Sudoku : IReadOnlySudoku
             }
 
             result += "\n";
-            if ((i + 1) % 3 == 0 && i != 8) result += StringUtility.Repeat("-", 19) + "\n";
+            if ((i + 1) % 3 == 0 && i != 8) result += '-'.Repeat(19) + "\n";
         }
 
         return result;

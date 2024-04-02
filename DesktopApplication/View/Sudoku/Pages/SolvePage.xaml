@@ -48,10 +48,10 @@
                 <StackPanel MinHeight="468" x:Name="LogPanel"/>
             </ScrollViewer>
             
-            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 2.5, 2.5" Click="Solve" x:Name="SolveButton">Solve</Button>
-            <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 5, 5, 2.5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
-            <Button Grid.Row="3" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 2.5, 2.5, 10" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
-            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="2.5, 2.5, 5, 10" Click="Clear" x:Name="ClearButton">Clear</Button>
+            <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Solve" x:Name="SolveButton">Solve</Button>
+            <Button Grid.Row="2" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
+            <Button Grid.Row="3" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
+            <Button Grid.Row="3" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Clear" x:Name="ClearButton">Clear</Button>
         </Grid>
         
         <Grid Grid.Column="2">

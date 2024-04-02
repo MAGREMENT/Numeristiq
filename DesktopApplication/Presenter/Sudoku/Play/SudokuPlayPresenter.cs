@@ -23,8 +23,15 @@ public class SudokuPlayPresenter
         _view = view;
         _settings = settings;
         _player = new SudokuPlayer();
+        
+        _view.SetChangeLevelOptions(EnumConverter.ToStringArray<ChangeLevel>(new SpaceConverter()), (int)_changeLevel);
+        
+        _settings.AddEvent(SpecificSettings.StartAngle, _ => RefreshHighlights());
+        _settings.AddEvent(SpecificSettings.RotationDirection, _ => RefreshHighlights());
 
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuPlayPage);
+
+        _player.Timer.TimeElapsed += _view.SetTimeElapsed;
     }
 
     public void SelectCell(Cell cell)
@@ -46,10 +53,10 @@ public class SudokuPlayPresenter
     {
         if (_selectedCells.Count == 0) return;
 
-        var action = _changeLevel switch
+        IPlayerAction action = _changeLevel switch
         {
-            ChangeLevel.Solution => new SolutionSetAction(n),
-            _ => throw new Exception()
+            ChangeLevel.Solution => new SolutionChangeAction(n),
+            _ => new PossibilityChangeAction(n, ToLocation(_changeLevel))
         };
         
         if(_player.Execute(action, _selectedCells)) RefreshNumbers();
@@ -59,15 +66,55 @@ public class SudokuPlayPresenter
     {
         if (_selectedCells.Count == 0) return;
 
-        var action = _changeLevel switch
+        IPlayerAction action = _changeLevel switch
         {
-            ChangeLevel.Solution => new SolutionSetAction(0),
-            _ => throw new Exception()
+            ChangeLevel.Solution => new SolutionChangeAction(0),
+            _ => new PossibilityRemovalAction(ToLocation(_changeLevel))
         };
         
         if(_player.Execute(action, _selectedCells)) RefreshNumbers();
     }
 
+    public void HighlightCurrentCells(HighlightColor color)
+    {
+        if (_selectedCells.Count == 0) return;
+        
+        if(_player.Execute(new HighlightChangeAction(color), _selectedCells)) RefreshHighlights();
+    }
+
+    public void ClearHighlightsFromCurrentCells()
+    {
+        if (_selectedCells.Count == 0) return;
+        
+        if(_player.Execute(new HighlightClearAction(), _selectedCells)) RefreshHighlights();
+    }
+
+    public void SetChangeLevel(int index)
+    {
+        _changeLevel = (ChangeLevel)index;
+    }
+
+    public void Start()
+    {
+        _player.StartTimer();
+        RefreshNumbers();
+        _view.SetIsPlaying(_player.Timer.IsPlaying);
+    }
+
+    public void PlayOrPause()
+    {
+        if(_player.Timer.IsPlaying) _player.PauseTimer();
+        else if(_player.PlayTimer()) RefreshNumbers();
+        _view.SetIsPlaying(_player.Timer.IsPlaying);
+    }
+
+    public void Stop()
+    {
+        _player.StopTimer();
+        RefreshNumbers();
+        _view.SetIsPlaying(_player.Timer.IsPlaying);
+    }
+    
     private void RefreshCursor()
     {
         var drawer = _view.Drawer;
@@ -94,6 +141,7 @@ public class SudokuPlayPresenter
             for (int col = 0; col < 9; col++)
             {
                 var pc = _player[row, col];
+                drawer.SetClue(row, col, !pc.Editable);
                 if(pc.IsNumber()) drawer.ShowSolution(row, col, pc.Number());
                 else
                 {
@@ -110,6 +158,31 @@ public class SudokuPlayPresenter
         }
         
         drawer.Refresh();
+    }
+
+    private void RefreshHighlights()
+    {
+        var drawer = _view.Drawer;
+        drawer.ClearHighlights();
+
+        foreach (var entry in _player.EnumerateHighlights())
+        {
+            drawer.FillCell(entry.Key.Row, entry.Key.Column, View.Utility.MathUtility.ToRadians(
+                _settings.StartAngle), (int)_settings.RotationDirection, entry.Value.ToColorArray());
+        }
+        
+        drawer.Refresh();
+    }
+
+    private static PossibilitiesLocation ToLocation(ChangeLevel level)
+    {
+        return level switch
+        {
+            ChangeLevel.PossibilitiesBottom => PossibilitiesLocation.Bottom,
+            ChangeLevel.PossibilitiesMiddle => PossibilitiesLocation.Middle,
+            ChangeLevel.PossibilitiesTop => PossibilitiesLocation.Top,
+            _ => throw new Exception()
+        };
     }
 }
 

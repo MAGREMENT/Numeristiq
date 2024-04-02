@@ -28,7 +28,7 @@ public class Settings
             new EnumSetting<RotationDirection>("Rotation direction", SpaceConverter.Instance, RotationDirection.ClockWise),
             new EnumSetting<SudokuStringFormat>("Copy default format", SpaceConverter.Instance, SudokuStringFormat.Grid),
             new BooleanSetting("Open copy dialog"),
-            new EnumSetting<SudokuStringFormat>("Past default format", SpaceConverter.Instance, SudokuStringFormat.Base32),
+            new EnumSetting<SudokuStringFormat>("Paste default format", SpaceConverter.Instance, SudokuStringFormat.Base32),
             new BooleanSetting("Open paste dialog"),
             new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation", SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
             new BooleanSetting("Convert solo candidate to given for grid format")
@@ -103,10 +103,12 @@ public class Settings
     public int Theme => _settings[0].Get().ToInt();
     public bool ShowSameCellLinks => _settings[1].Get().ToBool();
     public LinkOffsetSidePriority LinkOffsetSidePriority => ((EnumSetting<LinkOffsetSidePriority>)_settings[2]).Value;
-    public bool OpenCopyDialog => _settings[7].Get().ToBool();
-    public bool OpenPastDialog => _settings[9].Get().ToBool();
+    public int StartAngle => _settings[4].Get().ToInt();
+    public RotationDirection RotationDirection => ((EnumSetting<RotationDirection>)_settings[5]).Value;
     public SudokuStringFormat DefaultCopyFormat => ((EnumSetting<SudokuStringFormat>)_settings[6]).Value;
-    public SudokuStringFormat DefaultPastFormat => ((EnumSetting<SudokuStringFormat>)_settings[8]).Value;
+    public bool OpenCopyDialog => _settings[7].Get().ToBool();
+    public bool OpenPasteDialog => _settings[9].Get().ToBool();
+    public SudokuStringFormat DefaultPasteFormat => ((EnumSetting<SudokuStringFormat>)_settings[8]).Value;
     public SudokuLineFormatEmptyCellRepresentation EmptyCellRepresentation =>
         ((EnumSetting<SudokuLineFormatEmptyCellRepresentation>)_settings[10]).Value;
     public bool SoloToGiven => _settings[11].Get().ToBool();
@@ -136,7 +138,9 @@ public enum SpecificSettings
     Theme = 0,
     ShowSameCellLinks = 1,
     LinkOffsetSidePriority = 2,
-    AllowUniqueness = 3
+    AllowUniqueness = 3,
+    StartAngle = 4,
+    RotationDirection = 5
 }
 
 public delegate void OnSettingChange(SettingValue setting);

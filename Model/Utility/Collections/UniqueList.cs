@@ -56,6 +56,17 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
         Count++;
     }
 
+    public void AddRange(IEnumerable<T> objs)
+    {
+        foreach(var obj in objs) Add(obj);
+    }
+
+    public void Remove(T obj)
+    {
+        var i = IndexOf(obj);
+        if (i != -1) RemoveAt(i);
+    }
+
     public void RemoveAt(int index)
     {
         if (index < 0 || index >= Count) return;

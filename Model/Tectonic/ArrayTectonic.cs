@@ -185,7 +185,7 @@ public class ArrayTectonic : ITectonic
 
         for (int row = 0; row < RowCount; row++)
         {
-            if (row == 0) builder.Append(StringUtility.Repeat("+---", ColumnCount) + "+\n");
+            if (row == 0) builder.Append("+---".Repeat(ColumnCount) + "+\n");
             else
             {
                 for (int col = 0; col < ColumnCount; col++)
@@ -209,7 +209,7 @@ public class ArrayTectonic : ITectonic
             builder.Append("|\n");
         }
         
-        builder.Append(StringUtility.Repeat("+---", ColumnCount) + "+\n");
+        builder.Append("+---".Repeat(ColumnCount) + "+\n");
 
         return builder.ToString();
     }

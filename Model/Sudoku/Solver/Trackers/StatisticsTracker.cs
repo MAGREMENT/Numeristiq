@@ -95,36 +95,36 @@ public class StatisticsTracker : Tracker
             totalWidth += width;
         }
 
-        var result = new StringBuilder(StringUtility.FillEvenlyWith("Result", '-', totalWidth) + "\n\n");
+        var result = new StringBuilder("Result".FillEvenlyWith('-', totalWidth) + "\n\n");
 
         result.Append($"Completion rate : {_success} / {_count}\n");
         result.Append($"Solver fails : {_solverFails}\n\n");
 
-        result.Append(StringUtility.FillEvenlyWith(columnTitles[0], ' ', widthCap[0]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[1], ' ', widthCap[1]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[2], ' ', widthCap[2]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[3], ' ', widthCap[3]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[4], ' ', widthCap[4]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[5], ' ', widthCap[5]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[6], ' ', widthCap[6]) + "|"
-            + StringUtility.FillEvenlyWith(columnTitles[7], ' ', widthCap[7]) + "\n");
+        result.Append(columnTitles[0].FillEvenlyWith(' ', widthCap[0]) + "|"
+                                                                       + columnTitles[1].FillEvenlyWith(' ', widthCap[1]) + "|"
+                                                                       + columnTitles[2].FillEvenlyWith(' ', widthCap[2]) + "|"
+                                                                       + columnTitles[3].FillEvenlyWith(' ', widthCap[3]) + "|"
+                                                                       + columnTitles[4].FillEvenlyWith(' ', widthCap[4]) + "|"
+                                                                       + columnTitles[5].FillEvenlyWith(' ', widthCap[5]) + "|"
+                                                                       + columnTitles[6].FillEvenlyWith(' ', widthCap[6]) + "|"
+                                                                       + columnTitles[7].FillEvenlyWith(' ', widthCap[7]) + "\n");
         result.Append(CrossRow(widthCap));
         
         var totalStrategyTime = 0L;
 
         foreach (var report in _statistics)
         {
-            result.Append(StringUtility.FillEvenlyWith(report.Name, ' ', widthCap[0]) + "|"
-                + StringUtility.FillEvenlyWith(report.Usage.ToString(), ' ', widthCap[1]) + "|"
-                + StringUtility.FillEvenlyWith(report.Score.ToString(), ' ', widthCap[2]) + "|"
-                + StringUtility.FillEvenlyWith(report.SolutionsAdded.ToString(), ' ', widthCap[3]) + "|"
-                + StringUtility.FillEvenlyWith(report.PossibilitiesRemoved.ToString(), ' ', widthCap[4]) + "|"
-                + StringUtility.FillEvenlyWith(report.ScorePercentage()
-                    .ToString(CultureInfo.InvariantCulture) + "%", ' ', widthCap[5]) + "|"
-                + StringUtility.FillEvenlyWith(report.TotalTimeInSecond()
-                    .ToString(CultureInfo.InvariantCulture) + "s", ' ', widthCap[6]) + "|"
-                + StringUtility.FillEvenlyWith(report.AverageTime()
-                    .ToString(CultureInfo.InvariantCulture) + "ms", ' ', widthCap[7]) + "\n");
+            result.Append(report.Name.FillEvenlyWith(' ', widthCap[0]) + "|"
+                                                                       + report.Usage.ToString().FillEvenlyWith(' ', widthCap[1]) + "|"
+                                                                       + report.Score.ToString().FillEvenlyWith(' ', widthCap[2]) + "|"
+                                                                       + report.SolutionsAdded.ToString().FillEvenlyWith(' ', widthCap[3]) + "|"
+                                                                       + report.PossibilitiesRemoved.ToString().FillEvenlyWith(' ', widthCap[4]) + "|"
+                                                                       + (report.ScorePercentage()
+                                                                           .ToString(CultureInfo.InvariantCulture) + "%").FillEvenlyWith(' ', widthCap[5]) + "|"
+                                                                       + (report.TotalTimeInSecond()
+                                                                           .ToString(CultureInfo.InvariantCulture) + "s").FillEvenlyWith(' ', widthCap[6]) + "|"
+                                                                       + (report.AverageTime()
+                                                                           .ToString(CultureInfo.InvariantCulture) + "ms").FillEvenlyWith(' ', widthCap[7]) + "\n");
             result.Append(CrossRow(widthCap));
             
             totalStrategyTime += report.TotalTime;
@@ -137,10 +137,10 @@ public class StatisticsTracker : Tracker
 
     private static string CrossRow(int[] widthCap)
     {
-        return StringUtility.Repeat('-', widthCap[0]) + "+" + StringUtility.Repeat('-', widthCap[1]) + "+"
-               + StringUtility.Repeat('-', widthCap[2]) + "+" + StringUtility.Repeat('-', widthCap[3]) + "+"
-               + StringUtility.Repeat('-', widthCap[4]) + "+" + StringUtility.Repeat('-', widthCap[5]) + "+"
-               + StringUtility.Repeat('-', widthCap[6]) + "+" + StringUtility.Repeat('-', widthCap[7]) + "\n";
+        return '-'.Repeat(widthCap[0]) + "+" + '-'.Repeat(widthCap[1]) + "+"
+               + '-'.Repeat(widthCap[2]) + "+" + '-'.Repeat(widthCap[3]) + "+"
+               + '-'.Repeat(widthCap[4]) + "+" + '-'.Repeat(widthCap[5]) + "+"
+               + '-'.Repeat(widthCap[6]) + "+" + '-'.Repeat(widthCap[7]) + "\n";
     }
 
     private StrategyStatistics? Get(int initialIndex)

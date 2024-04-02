@@ -31,6 +31,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     
     private const double LinkOffset = 20;
     private const double CursorWidth = 3;
+    private const double PossibilityPadding = 3;
     
     private double _possibilitySize;
     private double _cellSize;
@@ -181,10 +182,10 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     public SudokuBoard() : base(9)
     {
         Focusable = true;
-        
+
+        MouseEnter += (_, _) => Focus();
         MouseLeftButtonDown += (_, args) =>
         {
-            Focus();
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if (cell is not null)
             {
@@ -471,27 +472,40 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     {
         var builder = new StringBuilder();
         foreach (var p in possibilities) builder.Append(p);
-       
-        var ha = location switch
+
+        var left = GetLeft(col);
+        var width = _cellSize;
+        ComponentHorizontalAlignment ha;
+        int n;
+
+        switch (location)
         {
-            PossibilitiesLocation.Bottom => ComponentHorizontalAlignment.Right,
-            PossibilitiesLocation.Middle => ComponentHorizontalAlignment.Center,
-            PossibilitiesLocation.Top => ComponentHorizontalAlignment.Left,
-            _ => ComponentHorizontalAlignment.Center
-        };
-        var n = location switch
-        {
-            PossibilitiesLocation.Bottom => 7,
-            PossibilitiesLocation.Middle => 4,
-            PossibilitiesLocation.Top => 1,
-            _ => 3
-        };
+            case PossibilitiesLocation.Bottom :
+                ha = ComponentHorizontalAlignment.Right;
+                n = 7;
+                width -= PossibilityPadding;
+                break;
+            case PossibilitiesLocation.Middle :
+                ha = ComponentHorizontalAlignment.Center;
+                n = 4;
+                break;
+            case PossibilitiesLocation.Top :
+                ha = ComponentHorizontalAlignment.Left;
+                n = 1;
+                width -= PossibilityPadding;
+                left += PossibilityPadding;
+                break;
+            default:
+                ha = ComponentHorizontalAlignment.Center;
+                n = 3;
+                break;
+        }
 
         Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, DefaultNumberBrush,
-            new Rect(GetLeft(col), GetTop(row, n), _cellSize, _possibilitySize), ha, ComponentVerticalAlignment.Center));
+            new Rect(left, GetTop(row, n), width, _possibilitySize), ha, ComponentVerticalAlignment.Center));
     }
     
-    public void FillCell(int row, int col, double startAngle, int rotationFactor, params CellColor[] colors)
+    public void FillCell(int row, int col, double startAngle, int rotationFactor, params HighlightColor[] colors)
     {
         if (colors.Length == 0) return;
         if (colors.Length == 1)

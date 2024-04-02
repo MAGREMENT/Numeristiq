@@ -1,24 +1,48 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Play;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
+using DesktopApplication.View.Utility;
+using Model.Sudoku.Player;
 using Model.Utility;
 
 namespace DesktopApplication.View.Sudoku.Pages;
 
 public partial class PlayPage : ISudokuPlayView
 {
+    private static readonly Geometry PauseGeometry = Geometry.Parse("M 17.5,5 H 22.5 V 25 H 17.5 Z M 27.5,5 H 32.5 V 25 H 27.5 Z");
+    private static readonly Geometry PlayGeometry = Geometry.Parse("M 17,5 33,15 17,25 Z");
+    
     private readonly SudokuPlayPresenter _presenter;
     public PlayPage(SudokuApplicationPresenter appPresenter)
     {
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
+        
+        InitializeHighlightColorBoxes();
     }
 
     #region ISudokuPlayView
 
     public ISudokuPlayerDrawer Drawer => Board;
+    public void SetChangeLevelOptions(string[] options, int value)
+    {
+        ChangeLevelSelector.SetOptions(options, value);
+    }
+
+    public void SetIsPlaying(bool isPlaying)
+    {
+        TimerMiddleButtonPath.Data = isPlaying ? PauseGeometry : PlayGeometry;
+    }
+
+    public void SetTimeElapsed(TimeQuantity quantity)
+    {
+        TimerTime.Dispatcher.Invoke(() => TimerTime.Text = quantity.ToString());
+    }
 
     #endregion
 
@@ -100,5 +124,59 @@ public partial class PlayPage : ISudokuPlayView
                 _presenter.RemoveCurrentCells();
                 break;
         }
+    }
+
+    private void SetChangeLevel(int index)
+    {
+        _presenter.SetChangeLevel(index);
+    }
+
+    private void Start(object sender, RoutedEventArgs e)
+    {
+        _presenter.Start();
+    }
+
+    private void PlayOrPause(object sender, RoutedEventArgs e)
+    {
+        _presenter.PlayOrPause();
+    }
+
+    private void Stop(object sender, RoutedEventArgs e)
+    {
+        _presenter.Stop();
+    }
+
+    private void InitializeHighlightColorBoxes()
+    {
+        for (int row = 0; row < 2; row++)
+        {
+            for (int col = 0; col < 4; col++)
+            {
+                if (row + col == 0) continue;
+
+                var color = (HighlightColor)(row * 4 + col - 1);
+
+                var border = new Border
+                {
+                    Margin = new Thickness(10),
+                    BorderThickness = new Thickness(1),
+                    Width = 30,
+                    Height = 30,
+                    Background = ColorUtility.ToBrush(color)
+                };
+
+                border.SetResourceReference(Border.BorderBrushProperty, "Background3");
+                Grid.SetRow(border, row);
+                Grid.SetColumn(border, col);
+
+                border.MouseLeftButtonDown += (_, _) => _presenter.HighlightCurrentCells(color);
+                ColorGrid.Children.Add(border);
+            }
+        }
+    }
+
+    private void ClearHighlights(object sender, MouseButtonEventArgs e)
+    {
+        _presenter.ClearHighlightsFromCurrentCells();
     }
 }

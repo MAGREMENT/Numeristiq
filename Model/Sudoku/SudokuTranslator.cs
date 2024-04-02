@@ -48,7 +48,7 @@ public static class SudokuTranslator
                 {
                     if (voidCount != 0)
                     {
-                        result += voidCount > 3 ? "s" + voidCount + "s" : StringUtility.Repeat(" ", voidCount);
+                        result += voidCount > 3 ? "s" + voidCount + "s" : StringExtensions.Repeat(" ", voidCount);
                         voidCount = 0;
                     }
 
@@ -131,7 +131,7 @@ public static class SudokuTranslator
                 for (int i = 0; i < 9; i++)
                 {
                     var first = i % 3 == 0 ? "+" : "-";
-                    builder.Append(first + StringUtility.Repeat('-', maxWidth));
+                    builder.Append(first + StringExtensions.Repeat('-', maxWidth));
                 }
 
                 builder.Append("+\n");
@@ -144,7 +144,7 @@ public static class SudokuTranslator
                 var toPut = solvingState[row, col] == 0
                     ? solvingState.PossibilitiesAt(row, col).ToValuesString()
                     : $"<{solvingState[row, col]}>";
-                builder.Append(first + StringUtility.FillWith(toPut, ' ', maxWidth));
+                builder.Append(first + StringExtensions.FillRightWith(toPut, ' ', maxWidth));
             }
 
             builder.Append("|\n");
@@ -153,7 +153,7 @@ public static class SudokuTranslator
         for (int i = 0; i < 9; i++)
         {
             var first = i % 3 == 0 ? "+" : "-";
-            builder.Append(first + StringUtility.Repeat('-', maxWidth));
+            builder.Append(first + StringExtensions.Repeat('-', maxWidth));
         }
 
         builder.Append("+\n");

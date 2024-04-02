@@ -10,7 +10,6 @@ using Model.Helpers.Logs;
 using Model.Helpers.Settings;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Explanation;
 using Model.Sudoku.Solver.Trackers;
 using Model.Utility;
 
@@ -239,7 +238,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void Paste(string s)
     {
-        if(!_settings.OpenPastDialog) Paste(s, _settings.DefaultCopyFormat);
+        if(!_settings.OpenPasteDialog) Paste(s, _settings.DefaultPasteFormat);
         else _view.OpenOptionDialog("Paste", i =>
         {
             Paste(s, EnumConverter.ToEnum<SudokuStringFormat>(i));

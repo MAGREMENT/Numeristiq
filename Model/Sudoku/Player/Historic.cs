@@ -6,10 +6,15 @@ public class Historic
     {
         //TODO
     }
+
+    public void Clear()
+    {
+        //TODO
+    }
 }
 
 public interface IHistoricEvent
 {
-    void Do(IPlayerCellSetter setter);
-    void Reverse(IPlayerCellSetter setter);
+    void Do(IPlayerData data);
+    void Reverse(IPlayerData data);
 }
