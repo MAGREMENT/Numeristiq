@@ -2,6 +2,7 @@
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Play;
 using DesktopApplication.View.Controls;
@@ -42,6 +43,17 @@ public partial class PlayPage : ISudokuPlayView
     public void SetTimeElapsed(TimeQuantity quantity)
     {
         TimerTime.Dispatcher.Invoke(() => TimerTime.Text = quantity.ToString());
+    }
+
+    public void SetHistoricAvailability(bool canMoveBack, bool canMoveForward)
+    {
+        BackButton.IsEnabled = canMoveBack;
+        if (canMoveBack) BackArrow.SetResourceReference(Shape.StrokeProperty, "Text");
+        else BackArrow.Stroke = Brushes.Gray;
+
+        ForwardButton.IsEnabled = canMoveForward;
+        if(canMoveForward) ForwardArrow.SetResourceReference(Shape.StrokeProperty, "Text");
+        else ForwardArrow.Stroke = Brushes.Gray;
     }
 
     #endregion
@@ -168,7 +180,7 @@ public partial class PlayPage : ISudokuPlayView
                 border.SetResourceReference(Border.BorderBrushProperty, "Background3");
                 Grid.SetRow(border, row);
                 Grid.SetColumn(border, col);
-
+                
                 border.MouseLeftButtonDown += (_, _) => _presenter.HighlightCurrentCells(color);
                 ColorGrid.Children.Add(border);
             }
@@ -178,5 +190,15 @@ public partial class PlayPage : ISudokuPlayView
     private void ClearHighlights(object sender, MouseButtonEventArgs e)
     {
         _presenter.ClearHighlightsFromCurrentCells();
+    }
+
+    private void MoveBack(object sender, RoutedEventArgs e)
+    {
+        _presenter.MoveBack();
+    }
+
+    private void MoveForward(object sender, RoutedEventArgs e)
+    {
+        _presenter.MoveForward();
     }
 }

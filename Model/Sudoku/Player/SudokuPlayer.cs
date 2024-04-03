@@ -89,6 +89,20 @@ public class SudokuPlayer : IPlayerData
         }
     }
 
+    public bool CanMoveBack() => _historic.CanMoveBack();
+
+    public bool CanMoveForward() => _historic.CanMoveForward();
+
+    public void MoveBack()
+    {
+        _historic.MoveBack()?.Reverse(this);
+    }
+
+    public void MoveForward()
+    {
+        _historic.MoveForward()?.Do(this);
+    }
+
     public PlayerCell this[int row, int col]
     {
         get => _cells[row, col];

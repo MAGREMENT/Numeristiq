@@ -1,13 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
-using DesktopApplication.Presenter;
+using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku.Controls;
-using Model;
+using Microsoft.Win32;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
@@ -219,6 +220,9 @@ public partial class SolvePage : ISudokuSolveView
                 case Key.V :
                     _presenter.Paste(Clipboard.GetText());
                     break;
+                case Key.S :
+                    TakeScreenShot();
+                    break;
             }
 
             return;
@@ -267,6 +271,32 @@ public partial class SolvePage : ISudokuSolveView
             case Key.Back :
                 _presenter.DeleteCurrentCell();
                 break;
+        }
+    }
+
+    private void TakeScreenShot()
+    {
+        var dialog = new SaveFileDialog
+        {
+            AddExtension = true,
+            DefaultExt = "png",
+            RestoreDirectory = true,
+            Filter = "PNG Image (*.png)|*.png"
+        };
+        var result = dialog.ShowDialog();
+
+        if (result != true) return;
+        
+        using var stream = dialog.OpenFile();
+        try
+        {
+            var png = new PngBitmapEncoder();
+            png.Frames.Add(Board.AsImage());
+            png.Save(stream);
+        }
+        catch (Exception)
+        {
+            // ignored
         }
     }
 

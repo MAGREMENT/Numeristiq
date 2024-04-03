@@ -58,8 +58,12 @@ public class SudokuPlayPresenter
             ChangeLevel.Solution => new SolutionChangeAction(n),
             _ => new PossibilityChangeAction(n, ToLocation(_changeLevel))
         };
-        
-        if(_player.Execute(action, _selectedCells)) RefreshNumbers();
+
+        if (_player.Execute(action, _selectedCells))
+        {
+            RefreshNumbers();
+            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        }
     }
 
     public void RemoveCurrentCells()
@@ -71,22 +75,34 @@ public class SudokuPlayPresenter
             ChangeLevel.Solution => new SolutionChangeAction(0),
             _ => new PossibilityRemovalAction(ToLocation(_changeLevel))
         };
-        
-        if(_player.Execute(action, _selectedCells)) RefreshNumbers();
+
+        if (_player.Execute(action, _selectedCells))
+        {
+            RefreshNumbers();
+            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        }
     }
 
     public void HighlightCurrentCells(HighlightColor color)
     {
         if (_selectedCells.Count == 0) return;
-        
-        if(_player.Execute(new HighlightChangeAction(color), _selectedCells)) RefreshHighlights();
+
+        if (_player.Execute(new HighlightChangeAction(color), _selectedCells))
+        {
+            RefreshHighlights();
+            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        }
     }
 
     public void ClearHighlightsFromCurrentCells()
     {
         if (_selectedCells.Count == 0) return;
-        
-        if(_player.Execute(new HighlightClearAction(), _selectedCells)) RefreshHighlights();
+
+        if (_player.Execute(new HighlightClearAction(), _selectedCells))
+        {
+            RefreshHighlights();
+            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        }
     }
 
     public void SetChangeLevel(int index)
@@ -98,13 +114,18 @@ public class SudokuPlayPresenter
     {
         _player.StartTimer();
         RefreshNumbers();
+        _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
         _view.SetIsPlaying(_player.Timer.IsPlaying);
     }
 
     public void PlayOrPause()
     {
         if(_player.Timer.IsPlaying) _player.PauseTimer();
-        else if(_player.PlayTimer()) RefreshNumbers();
+        else if (_player.PlayTimer())
+        {
+            RefreshNumbers();
+            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        }
         _view.SetIsPlaying(_player.Timer.IsPlaying);
     }
 
@@ -113,6 +134,22 @@ public class SudokuPlayPresenter
         _player.StopTimer();
         RefreshNumbers();
         _view.SetIsPlaying(_player.Timer.IsPlaying);
+    }
+
+    public void MoveBack()
+    {
+        _player.MoveBack();
+        RefreshNumbers();
+        RefreshHighlights();
+        _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+    }
+
+    public void MoveForward()
+    {
+        _player.MoveForward();
+        RefreshNumbers();
+        RefreshHighlights();
+        _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
     }
     
     private void RefreshCursor()

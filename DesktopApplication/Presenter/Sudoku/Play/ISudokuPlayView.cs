@@ -9,4 +9,5 @@ public interface ISudokuPlayView
     void SetChangeLevelOptions(string[] options, int value);
     void SetIsPlaying(bool isPlaying);
     void SetTimeElapsed(TimeQuantity quantity);
+    void SetHistoricAvailability(bool canMoveBack, bool canMoveForward);
 }
