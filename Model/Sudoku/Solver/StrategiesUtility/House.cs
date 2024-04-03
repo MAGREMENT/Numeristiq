@@ -3,9 +3,9 @@ using Model.Utility;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 
-public readonly struct CoverHouse
+public readonly struct House
 {
-    public CoverHouse(Unit unit, int number)
+    public House(Unit unit, int number)
     {
         Unit = unit;
         Number = number;
@@ -16,7 +16,7 @@ public readonly struct CoverHouse
 
     public override bool Equals(object? obj)
     {
-        return obj is CoverHouse ch && ch == this;
+        return obj is House ch && ch == this;
     }
 
     public override int GetHashCode()
@@ -36,12 +36,12 @@ public readonly struct CoverHouse
         return $"{s}{Number + 1}";
     }
 
-    public static bool operator ==(CoverHouse left, CoverHouse right)
+    public static bool operator ==(House left, House right)
     {
         return left.Unit == right.Unit && left.Number == right.Number;
     }
 
-    public static bool operator !=(CoverHouse left, CoverHouse right)
+    public static bool operator !=(House left, House right)
     {
         return !(left == right);
     }
@@ -57,7 +57,7 @@ public readonly struct CoverHouse
         };
     }
 
-    public bool Overlaps(CoverHouse house)
+    public bool Overlaps(House house)
     {
         switch (Unit, house.Unit)
         {
@@ -98,36 +98,4 @@ public readonly struct CoverHouse
     }
 }
 
-public record PossibilityCovers(int Possibility, CoverHouse[] CoverHouses);
-
-public readonly struct PossibilityCoverHouse
-{
-    public int Possibility { get; }
-    public CoverHouse CoverHouse { get; }
-    
-    public PossibilityCoverHouse(int possibility, CoverHouse coverHouse)
-    {
-        Possibility = possibility;
-        CoverHouse = coverHouse;
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Possibility, CoverHouse.GetHashCode());
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return obj is PossibilityCoverHouse pch && pch == this;
-    }
-
-    public static bool operator ==(PossibilityCoverHouse left, PossibilityCoverHouse right)
-    {
-        return left.Possibility == right.Possibility && left.CoverHouse == right.CoverHouse;
-    }
-
-    public static bool operator !=(PossibilityCoverHouse left, PossibilityCoverHouse right)
-    {
-        return !(left == right);
-    }
-}
+public record PossibilityCovers(int Possibility, House[] CoverHouses);

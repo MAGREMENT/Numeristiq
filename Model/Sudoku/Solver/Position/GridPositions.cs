@@ -358,9 +358,9 @@ public class GridPositions : IReadOnlyGridPositions
         return false;
     }
 
-    public List<CoverHouse> BestCoverHouses(params IUnitMethods[] methods)
+    public List<House> BestCoverHouses(params IUnitMethods[] methods)
     {
-        List<CoverHouse> result = new();
+        List<House> result = new();
         var copy = Copy();
 
         while (copy.Count > 0)
@@ -402,18 +402,18 @@ public class GridPositions : IReadOnlyGridPositions
         return result;
     }
 
-    public List<CoverHouse[]> PossibleCoverHouses(int count, HashSet<CoverHouse> forbidden, params IUnitMethods[] methods)
+    public List<House[]> PossibleCoverHouses(int count, HashSet<House> forbidden, params IUnitMethods[] methods)
     {
-        var result = new List<CoverHouse[]>();
+        var result = new List<House[]>();
 
         PossibleCoverHouses(count, methods, this, result,
-            new List<CoverHouse>(), forbidden, new HashSet<int>());
+            new List<House>(), forbidden, new HashSet<int>());
         
         return result;
     }
     
     private void PossibleCoverHouses(int max, IUnitMethods[] methods, GridPositions gp,
-        List<CoverHouse[]> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden,
+        List<House[]> result, List<House> current, HashSet<House> forbidden,
         HashSet<int> done)
     {
         var first = gp.First();
@@ -441,19 +441,19 @@ public class GridPositions : IReadOnlyGridPositions
         }
     }
 
-    public List<CoveredGrid> PossibleCoveredGrids(int count, int maxRemaining, HashSet<CoverHouse> forbidden,
+    public List<CoveredGrid> PossibleCoveredGrids(int count, int maxRemaining, HashSet<House> forbidden,
         params IUnitMethods[] methods)
     {
         var result = new List<CoveredGrid>();
 
         PossibleCoveredGrids(count, maxRemaining, ToArray(), 0, methods, this, result,
-            new List<CoverHouse>(), forbidden, new HashSet<int>());
+            new List<House>(), forbidden, new HashSet<int>());
 
         return result;
     }
 
     private void PossibleCoveredGrids(int max, int maxRemaining, Cell[] cells, int start, IUnitMethods[] methods,
-        GridPositions gp, List<CoveredGrid> result, List<CoverHouse> current, HashSet<CoverHouse> forbidden,
+        GridPositions gp, List<CoveredGrid> result, List<House> current, HashSet<House> forbidden,
         HashSet<int> done)
     {
         for (int i = start; i < cells.Length; i++)
@@ -551,11 +551,11 @@ public class GridPositions : IReadOnlyGridPositions
     }
 }
 
-public record CoveredGrid(GridPositions Remaining, CoverHouse[] CoverHouses);
+public record CoveredGrid(GridPositions Remaining, House[] CoverHouses);
 
 public static class CoverHouseHelper
 {
-    public static int ToHash(IReadOnlyList<CoverHouse> houses)
+    public static int ToHash(IReadOnlyList<House> houses)
     {
         int hash = 0;
         foreach (var house in houses)

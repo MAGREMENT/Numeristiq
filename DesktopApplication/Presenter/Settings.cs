@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using DesktopApplication.Presenter.Sudoku.Manage;
 using Model;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudoku;
+using Model.Sudoku.Player;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -31,22 +31,28 @@ public class Settings
             new EnumSetting<SudokuStringFormat>("Paste default format", SpaceConverter.Instance, SudokuStringFormat.Base32),
             new BooleanSetting("Open paste dialog"),
             new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation", SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
-            new BooleanSetting("Convert solo candidate to given for grid format")
+            new BooleanSetting("Convert solo candidate to given for grid format"),
+            new EnumSetting<PossibilitiesLocation>("Main possibilities location", SpaceConverter.Instance, PossibilitiesLocation.Middle)
         };
         _collections = new[]
         {
-            new[] {new NamedListSpan<ISetting>("Themes", _settings, 0)},
-            new[]
+            new[] //WelcomeView
+            {
+                new NamedListSpan<ISetting>("Themes", _settings, 0)
+            },
+            new[] //SudokuSolverView
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
                 new NamedListSpan<ISetting>("Board", _settings, 1, 2),
                 new NamedListSpan<ISetting>("Solver", _settings, 3),
                 new NamedListSpan<ISetting>("Editing", _settings, 6, 7, 8, 9, 10, 11)
             },
-            new[]
+            new[] //SudokuPlayerView
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
-                new NamedListSpan<ISetting>("Highlighting", _settings, 4, 5)
+                new NamedListSpan<ISetting>("Highlighting", _settings, 4, 5),
+                new NamedListSpan<ISetting>("Player", _settings, 12),
+                new NamedListSpan<ISetting>("Editing", _settings, 8, 9, 11)
             }
         };
         _repository = repository;
@@ -107,11 +113,12 @@ public class Settings
     public RotationDirection RotationDirection => ((EnumSetting<RotationDirection>)_settings[5]).Value;
     public SudokuStringFormat DefaultCopyFormat => ((EnumSetting<SudokuStringFormat>)_settings[6]).Value;
     public bool OpenCopyDialog => _settings[7].Get().ToBool();
-    public bool OpenPasteDialog => _settings[9].Get().ToBool();
     public SudokuStringFormat DefaultPasteFormat => ((EnumSetting<SudokuStringFormat>)_settings[8]).Value;
+    public bool OpenPasteDialog => _settings[9].Get().ToBool();
     public SudokuLineFormatEmptyCellRepresentation EmptyCellRepresentation =>
         ((EnumSetting<SudokuLineFormatEmptyCellRepresentation>)_settings[10]).Value;
     public bool SoloToGiven => _settings[11].Get().ToBool();
+    public PossibilitiesLocation MainLocation => ((EnumSetting<PossibilitiesLocation>)_settings[12]).Value;
     
     #region Private
 
@@ -140,7 +147,8 @@ public enum SpecificSettings
     LinkOffsetSidePriority = 2,
     AllowUniqueness = 3,
     StartAngle = 4,
-    RotationDirection = 5
+    RotationDirection = 5,
+    MainLocation = 12
 }
 
 public delegate void OnSettingChange(SettingValue setting);

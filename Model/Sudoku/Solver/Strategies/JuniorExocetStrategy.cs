@@ -158,7 +158,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     {
         ReadOnlyBitSet16[] removedBaseCandidates = { new(), new() };
 
-        var coverHouses = new Dictionary<int, List<CoverHouse>>();
+        var coverHouses = new Dictionary<int, List<House>>();
         
         //Elimination 1
         foreach (var possibility in je.BaseCandidates.EnumeratePossibilities())
@@ -462,7 +462,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     }
 
     private void RemoveAllNonSCells(IStrategyUser strategyUser, JuniorExocet je,
-        Dictionary<int, List<CoverHouse>> coverHouses)
+        Dictionary<int, List<House>> coverHouses)
     {
         foreach (var entry in je.SCells)
         {

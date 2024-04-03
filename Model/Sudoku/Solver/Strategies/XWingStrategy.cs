@@ -149,7 +149,7 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
     private ExplanationElement Explanation()
     {
         var start = new StringExplanationElement("In ");
-        var c = start + new CoverHouse(_unit, _unit1) + " and " + new CoverHouse(_unit, _unit2) +
+        var c = start + new House(_unit, _unit1) + " and " + new House(_unit, _unit2) +
                 $", {_number} is only present in ";
         var u = _unit == Unit.Row ? Unit.Column : Unit.Row;
         var i = -1;
@@ -158,8 +158,8 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
         _linePos.Next(ref i);
         var u2 = i;
 
-        var ch1 = new CoverHouse(u, u1);
-        var ch2 = new CoverHouse(u, u2);
+        var ch1 = new House(u, u1);
+        var ch2 = new House(u, u2);
 
         _ = c + ch1 + " and " + ch2 + ". This means that if " + new Cell(_unit1, u1) + $" hold {_number}, "
             + new Cell(_unit2, u2) + $" must also hold {_number}. The same can be said for " +

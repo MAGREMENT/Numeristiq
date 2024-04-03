@@ -132,7 +132,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
                 
                 foreach (var element in _loop)
                 {
-                    lighter.HighlightLinkGraphElement(element, coloring);
+                    lighter.HighlightSudokuElement(element, coloring);
                     coloring = coloring == ChangeColoration.CauseOnOne
                         ? ChangeColoration.CauseOffOne
                         : ChangeColoration.CauseOnOne;
@@ -194,7 +194,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
                 
                 foreach (var element in _chain)
                 {
-                    lighter.HighlightLinkGraphElement(element, coloring);
+                    lighter.HighlightSudokuElement(element, coloring);
                     coloring = coloring == ChangeColoration.CauseOnOne
                         ? ChangeColoration.CauseOffOne
                         : ChangeColoration.CauseOnOne;

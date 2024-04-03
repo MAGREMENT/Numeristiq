@@ -215,7 +215,7 @@ public class SudokuStrategiesTests
         _solver.Solve(true);
 
         List<SolverProgress> progresses = new();
-        foreach (var log in _solver.Logs)
+        foreach (var log in _solver.LogManager.Logs)
         {
             progresses.AddRange(log.Changes);
         }

@@ -1,4 +1,7 @@
-﻿namespace Model.Sudoku.Player;
+﻿using System.Collections.Generic;
+using Model.Utility.BitSets;
+
+namespace Model.Sudoku.Player;
 
 public struct PlayerCell
 {
@@ -48,17 +51,19 @@ public struct PlayerCell
         _bits = 0;
     }
 
-    public int[] Possibilities(PossibilitiesLocation location)
+    public IEnumerable<int> Possibilities(PossibilitiesLocation location)
     {
         var buffer = (_bits >> (int)location) & 0x1FF;
-        var result = new int[System.Numerics.BitOperations.PopCount((uint)buffer)];
-        var cursor = 0;
-        for (int i = 0; i <= 8 && cursor < result.Length; i++)
+        for (int i = 0; i < 9; i++)
         {
-            if (Peek(buffer, i)) result[cursor++] = i + 1;
+            if (Peek(buffer, i)) yield return i + 1;
         }
+    }
 
-        return result;
+    public ReadOnlyBitSet16 PossibilitiesAsBitSet(PossibilitiesLocation location)
+    {
+        var buffer = (_bits >> (int)location) & 0x1FF;
+        return ReadOnlyBitSet16.FromBits((ushort) (buffer << 1));
     }
 
     public void AddPossibility(int possibility, PossibilitiesLocation location)
@@ -100,6 +105,15 @@ public struct PlayerCell
             UnSet((int)location + i);
             break;
         }
+    }
+
+    public void SetPossibilities(ReadOnlyBitSet16 bitSet, PossibilitiesLocation location)
+    {
+        if (!Editable) return;
+
+        var buffer = (bitSet.Bits >> 1) << (int)location;
+        _bits &= 0x1FF << (int)location;
+        _bits |= buffer;
     }
 
     public bool IsEmpty()

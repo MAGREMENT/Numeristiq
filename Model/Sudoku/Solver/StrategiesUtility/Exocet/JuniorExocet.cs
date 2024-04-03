@@ -177,9 +177,9 @@ public class JuniorExocet
         return false;
     }
 
-    public Dictionary<int, List<CoverHouse>> ComputeAllCoverHouses()
+    public Dictionary<int, List<House>> ComputeAllCoverHouses()
     {
-        var result = new Dictionary<int, List<CoverHouse>>();
+        var result = new Dictionary<int, List<House>>();
 
         foreach (var possibility in BaseCandidates.EnumeratePossibilities())
         {
@@ -189,9 +189,9 @@ public class JuniorExocet
         return result;
     }
 
-    public List<CoverHouse> ComputeCoverHouses(int possibility)
+    public List<House> ComputeCoverHouses(int possibility)
     {
-        if (!BaseCandidates.Contains(possibility)) return new List<CoverHouse>();
+        if (!BaseCandidates.Contains(possibility)) return new List<House>();
 
         return SCells[possibility].BestCoverHouses(MethodsInPriorityOrder());
     }

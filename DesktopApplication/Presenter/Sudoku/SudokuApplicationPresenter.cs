@@ -14,7 +14,7 @@ namespace DesktopApplication.Presenter.Sudoku;
 
 public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
 {
-    private readonly SudokuSolver _solver = new();
+    private readonly StrategyManager _strategyManager = new();
     private IRepository<IReadOnlyList<SudokuStrategy>>? _strategiesRepository;
     private readonly Settings _settings;
 
@@ -25,17 +25,29 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
 
     public SudokuSolvePresenter Initialize(ISudokuSolveView view)
     {
-        return new SudokuSolvePresenter(view, _solver, _settings, this);
+        var solver = new SudokuSolver
+        {
+            StrategyManager = _strategyManager
+        };
+        solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        
+        return new SudokuSolvePresenter(view, solver, _settings, this);
     }
 
     public SudokuPlayPresenter Initialize(ISudokuPlayView view)
     {
-        return new SudokuPlayPresenter(view, _settings);
+        var solver = new SudokuSolver
+        {
+            StrategyManager = _strategyManager
+        };
+        solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        
+        return new SudokuPlayPresenter(view, solver, _settings);
     }
     
     public SudokuManagePresenter Initialize(ISudokuManageView view)
     {
-        return new SudokuManagePresenter(view, _solver.StrategyManager, this);
+        return new SudokuManagePresenter(view, _strategyManager, this);
     }
     
     public SudokuGeneratePresenter Initialize(ISudokuGenerateView view)
@@ -48,16 +60,14 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
         _strategiesRepository = new SudokuStrategiesJSONRepository("strategies.json");
         if (_strategiesRepository.Initialize(true))
         {
-            _solver.StrategyManager.AddStrategies(_strategiesRepository.Download());
+            _strategyManager.AddStrategies(_strategiesRepository.Download());
         }
         else _strategiesRepository = null;
-
-        _solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(_solver);
     }
 
     public void Update()
     {
-        _strategiesRepository?.Upload(_solver.StrategyManager.Strategies);
+        _strategiesRepository?.Upload(_strategyManager.Strategies);
     }
 }
 

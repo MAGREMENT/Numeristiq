@@ -18,7 +18,7 @@ public class RandomPossibilitiesGiver : IPossibilitiesGiver
     
     public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col)
     {
-        List<int> list = new List<int>(9) { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        var list = new List<int>(9) { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         while (list.Count > 0)
         {

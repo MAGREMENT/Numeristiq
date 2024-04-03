@@ -223,10 +223,10 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
                     var color = current.Branch.Links[j] == LinkStrength.Weak
                         ? ChangeColoration.CauseOnOne
                         : ChangeColoration.CauseOffOne;
-                    lighter.HighlightLinkGraphElement(current.Branch.Elements[j], color);
+                    lighter.HighlightSudokuElement(current.Branch.Elements[j], color);
                     if (j == current.Branch.Links.Length - 1)
                     {
-                        lighter.HighlightLinkGraphElement(current.Branch.Elements[j + 1], color == ChangeColoration.CauseOnOne ?
+                        lighter.HighlightSudokuElement(current.Branch.Elements[j + 1], color == ChangeColoration.CauseOnOne ?
                             ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
                     }
                     
@@ -248,7 +248,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
                 
             foreach (var element in _loop)
             {
-                lighter.HighlightLinkGraphElement(element, coloring);
+                lighter.HighlightSudokuElement(element, coloring);
                 coloring = coloring == ChangeColoration.CauseOnOne
                     ? ChangeColoration.CauseOffOne
                     : ChangeColoration.CauseOnOne;

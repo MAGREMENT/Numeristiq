@@ -45,7 +45,7 @@ public class SudokuSolveCommand : Command
         if (report.IsUsed(PathIndex))
         {
             Console.WriteLine("\nPath :");
-            foreach (var log in solver.Logs)
+            foreach (var log in solver.LogManager.Logs)
             {
                 var explanation = log.Explanation is null ? "None" : log.Explanation.FullExplanation();
                 Console.WriteLine($"{log.Id}. {log.Title}\nDescription : {log.Description}\nChanges :" +

@@ -69,7 +69,7 @@ public class RowsAndColumnsSearcher : ISetEquivalenceSearcher, IMultiSectorCells
         }
     }
 
-    private static readonly CoverHouse[] Rows =
+    private static readonly House[] Rows =
     {
         new(Unit.Row, 0),
         new(Unit.Row, 1),
@@ -82,7 +82,7 @@ public class RowsAndColumnsSearcher : ISetEquivalenceSearcher, IMultiSectorCells
         new(Unit.Row, 8),
     };
     
-    private static readonly CoverHouse[] Columns =
+    private static readonly House[] Columns =
     {
         new(Unit.Column, 0),
         new(Unit.Column, 1),

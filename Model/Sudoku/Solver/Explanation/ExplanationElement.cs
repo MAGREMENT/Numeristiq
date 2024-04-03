@@ -36,7 +36,7 @@ public abstract class ExplanationElement
 
     public ExplanationElement Append(string s) => Append(new StringExplanationElement(s));
 
-    public ExplanationElement Append(CoverHouse ch) => Append(new CoverHouseExplanationElement(ch));
+    public ExplanationElement Append(House ch) => Append(new CoverHouseExplanationElement(ch));
 
     public ExplanationElement Append(CellPossibility cp) => Append(new CellPossibilityExplanationElement(cp));
 
@@ -45,7 +45,7 @@ public abstract class ExplanationElement
     public static ExplanationElement operator +(ExplanationElement element, ExplanationElement s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, Cell s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, CellPossibility s) => element.Append(s);
-    public static ExplanationElement operator +(ExplanationElement element, CoverHouse s) => element.Append(s);
+    public static ExplanationElement operator +(ExplanationElement element, House s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, string s) => element.Append(s);
 }
 

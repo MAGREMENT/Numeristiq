@@ -24,7 +24,7 @@ public static class ForcingNetsUtility
 
                 if (alreadyHighlighted.Contains(to)) break;
                 
-                lighter.HighlightLinkGraphElement(to, link == LinkStrength.Strong ? ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
+                lighter.HighlightSudokuElement(to, link == LinkStrength.Strong ? ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
                 lighter.CreateLink(from, to, link);
                 alreadyHighlighted.Add(to);
             }
@@ -33,7 +33,7 @@ public static class ForcingNetsUtility
 
             if (!alreadyHighlighted.Contains(first))
             {
-                lighter.HighlightLinkGraphElement(first, startColoring == Coloring.On ?
+                lighter.HighlightSudokuElement(first, startColoring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
                 alreadyHighlighted.Add(first);
             }

@@ -1,8 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Model.Helpers;
+using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Sudoku.Player.Actions;
+using Model.Sudoku.Solver;
+using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudoku.Play;
@@ -10,6 +15,7 @@ namespace DesktopApplication.Presenter.Sudoku.Play;
 public class SudokuPlayPresenter
 {
     private readonly ISudokuPlayView _view;
+    private readonly SudokuSolver _solver;
     private readonly Settings _settings;
     private readonly SudokuPlayer _player;
 
@@ -18,16 +24,20 @@ public class SudokuPlayPresenter
     
     public SettingsPresenter SettingsPresenter { get; }
 
-    public SudokuPlayPresenter(ISudokuPlayView view, Settings settings)
+    public SudokuPlayPresenter(ISudokuPlayView view, SudokuSolver solver, Settings settings)
     {
         _view = view;
+        _solver = solver;
         _settings = settings;
         _player = new SudokuPlayer();
         
         _view.SetChangeLevelOptions(EnumConverter.ToStringArray<ChangeLevel>(new SpaceConverter()), (int)_changeLevel);
         
+        _player.MainLocation = _settings.MainLocation;
+        
         _settings.AddEvent(SpecificSettings.StartAngle, _ => RefreshHighlights());
         _settings.AddEvent(SpecificSettings.RotationDirection, _ => RefreshHighlights());
+        _settings.AddEvent(SpecificSettings.MainLocation, v => _player.MainLocation = (PossibilitiesLocation)v.ToInt());
 
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuPlayPage);
 
@@ -151,6 +161,47 @@ public class SudokuPlayPresenter
         RefreshHighlights();
         _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
     }
+
+    public async void GetClue()
+    {
+        var sudoku = SudokuTranslator.TranslateSolvingState(_player);
+        var list = await Task.Run(() => BackTracking.Fill(sudoku, _player, 1));
+        if (list.Length == 0)
+        {
+            _view.ShowClue(new SudokuClue("The current sudoku has no solution"));
+            return;
+        }
+
+        _solver.SetState(_player);
+        var clue = await Task.Run(() => _solver.NextClue());
+        _view.ShowClue(clue);
+    }
+    
+    public void Paste(string s)
+    {
+        if(!_settings.OpenPasteDialog) Paste(s, _settings.DefaultPasteFormat);
+        else _view.OpenOptionDialog("Paste", i =>
+        {
+            Paste(s, (SudokuStringFormat)i);
+        }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
+    }
+    
+    private void Paste(string s, SudokuStringFormat format)
+    {
+        ISolvingState state = format switch
+        {
+            SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
+            SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven),
+            SudokuStringFormat.Base32 => SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator()),
+            _ => throw new Exception()
+        };
+
+        if (_player.Execute(new PasteAction(state, _player.MainLocation)))
+        {
+            RefreshNumbers();
+            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        }
+    }
     
     private void RefreshCursor()
     {
@@ -177,7 +228,7 @@ public class SudokuPlayPresenter
         {
             for (int col = 0; col < 9; col++)
             {
-                var pc = _player[row, col];
+                var pc = _player.GetCellDataFor(row, col);
                 drawer.SetClue(row, col, !pc.Editable);
                 if(pc.IsNumber()) drawer.ShowSolution(row, col, pc.Number());
                 else
@@ -215,9 +266,9 @@ public class SudokuPlayPresenter
     {
         return level switch
         {
-            ChangeLevel.PossibilitiesBottom => PossibilitiesLocation.Bottom,
-            ChangeLevel.PossibilitiesMiddle => PossibilitiesLocation.Middle,
-            ChangeLevel.PossibilitiesTop => PossibilitiesLocation.Top,
+            ChangeLevel.BottomPossibilities => PossibilitiesLocation.Bottom,
+            ChangeLevel.MiddlePossibilities => PossibilitiesLocation.Middle,
+            ChangeLevel.TopPossibilities => PossibilitiesLocation.Top,
             _ => throw new Exception()
         };
     }
@@ -225,5 +276,5 @@ public class SudokuPlayPresenter
 
 public enum ChangeLevel
 {
-    Solution, PossibilitiesTop, PossibilitiesMiddle, PossibilitiesBottom
+    Solution, TopPossibilities, MiddlePossibilities, BottomPossibilities
 }

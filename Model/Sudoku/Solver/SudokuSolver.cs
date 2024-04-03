@@ -25,7 +25,6 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
     
     public IReadOnlySudoku Sudoku => _sudoku;
-    public IReadOnlyList<ISolverLog<ISudokuHighlighter>> Logs => LogManager.Logs;
 
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public bool LogsManaged { get; private set; }
@@ -41,8 +40,6 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         }
     }
     public IUpdatableSolvingState StartState { get; private set; }
-
-    private int _currentStrategy = -1;
     
     private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
@@ -83,7 +80,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _trackerManager.RemoveTracker(tracker);
     }
 
-    public StrategyManager StrategyManager { get; }
+    public StrategyManager StrategyManager { get; init; }
 
     public void SetSudoku(Sudoku s)
     {
@@ -162,29 +159,27 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     {
         StartedSolving = true;
         
-        for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
+        for (int i = 0; i < StrategyManager.Strategies.Count; i++)
         {
-            var current = StrategyManager.Strategies[_currentStrategy];
+            var current = StrategyManager.Strategies[i];
             if (!current.Enabled) continue;
 
-            _trackerManager.OnStrategyStart(current, _currentStrategy);
+            _trackerManager.OnStrategyStart(current, i);
             current.Apply(this);
             ChangeBuffer.Push(current);
-            _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
+            _trackerManager.OnStrategyEnd(current, i, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
             if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
 
             _solutionAddedBuffer = 0;
             _possibilityRemovedBuffer = 0;
             
-            _currentStrategy = -1;
-
+            i = -1;
             PreComputer.Reset();
 
             if (stopAtProgress || _sudoku.IsComplete()) break;
         }
 
-        _currentStrategy = -1;
         _trackerManager.OnSolveDone(this);
     }
 
@@ -193,29 +188,58 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         var oldBuffer = ChangeBuffer;
         ChangeBuffer = new NotExecutedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(this);
         
-        for (_currentStrategy = 0; _currentStrategy < StrategyManager.Strategies.Count; _currentStrategy++)
+        for (int i = 0; i < StrategyManager.Strategies.Count; i++)
         {
-            var current = StrategyManager.Strategies[_currentStrategy];
+            var current = StrategyManager.Strategies[i];
             if (!current.Enabled) continue;
 
             var handling = current.InstanceHandling;
             current.InstanceHandling = InstanceHandling.UnorderedAll;
             
-            _trackerManager.OnStrategyStart(current, _currentStrategy);
+            _trackerManager.OnStrategyStart(current, i);
             current.Apply(this);
             ChangeBuffer.Push(current);
-            _trackerManager.OnStrategyEnd(current, _currentStrategy, _solutionAddedBuffer, _possibilityRemovedBuffer);
+            _trackerManager.OnStrategyEnd(current, i, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
             current.InstanceHandling = handling;
             _solutionAddedBuffer = 0;
             _possibilityRemovedBuffer = 0;
         }
         
-        _currentStrategy = -1;
-
-        var result = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>)ChangeBuffer).DumpCommits();
+        var result = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState,
+            ISudokuHighlighter>)ChangeBuffer).DumpCommits();
         ChangeBuffer = oldBuffer;
         return result;
+    }
+
+    public SudokuClue? NextClue()
+    {
+        var oldBuffer = ChangeBuffer;
+        ChangeBuffer = new NotExecutedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(this);
+
+        int i = 0;
+        for (; i < StrategyManager.Strategies.Count; i++)
+        {
+            var current = StrategyManager.Strategies[i];
+            if (!current.Enabled) continue;
+
+            _trackerManager.OnStrategyStart(current, i);
+            current.Apply(this);
+            ChangeBuffer.Push(current);
+            _trackerManager.OnStrategyEnd(current, i, _solutionAddedBuffer, _possibilityRemovedBuffer);
+
+            if(_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
+            
+            _solutionAddedBuffer = 0;
+            _possibilityRemovedBuffer = 0;
+            break;
+        }
+
+        var commits = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState,
+            ISudokuHighlighter>)ChangeBuffer).DumpCommits();
+        ChangeBuffer = oldBuffer;
+
+        return commits.Length == 0 ? null : StrategyManager.Strategies[i].TransformIntoClue(commits[0]);
     }
     
     public void ApplyCommit(BuiltChangeCommit<ISudokuHighlighter> commit)

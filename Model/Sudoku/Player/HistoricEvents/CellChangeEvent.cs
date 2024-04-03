@@ -17,11 +17,11 @@ public class CellChangeEvent : IHistoricEvent
     
     public void Do(IPlayerData data)
     {
-        data[_cell] = _to;
+        data.SetCellDataFor(_cell, _to);
     }
 
     public void Reverse(IPlayerData data)
     {
-        data[_cell] = _from;
+        data.SetCellDataFor(_cell, _from);
     }
 }

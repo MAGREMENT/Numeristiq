@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Model.Helpers;
+﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
@@ -38,7 +37,6 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     }
 
     public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; set; }
-    public IReadOnlyList<ISolverLog<ITectonicHighlighter>> Logs => LogManager.Logs;
     
     public IReadOnlyTectonic Tectonic => _tectonic;
 

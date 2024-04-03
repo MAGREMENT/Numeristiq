@@ -29,9 +29,15 @@
 					    </Border>
 					    
 					    <ControlTemplate.Triggers>
-						    <Trigger Property="IsMouseOver" Value="True">
-							    <Setter Property="Background" Value="{DynamicResource Background3}"/>
-						    </Trigger>
+						    <MultiTrigger>
+							    <MultiTrigger.Conditions>
+								    <Condition Property="IsMouseOver" Value="True"/>
+								    <Condition Property="IsEnabled" Value="True"/>
+							    </MultiTrigger.Conditions>
+							    <MultiTrigger.Setters>
+								    <Setter Property="Background" Value="{DynamicResource Background3}"/>
+							    </MultiTrigger.Setters>
+						    </MultiTrigger>
 					    </ControlTemplate.Triggers>
 				    </ControlTemplate>
 			    </Setter.Value>

@@ -7,5 +7,5 @@ public interface IExplanationHighlighter
 {
     void ShowCell(Cell c);
     void ShowCellPossibility(CellPossibility cp);
-    void ShowCoverHouse(CoverHouse ch);
+    void ShowCoverHouse(House ch);
 }

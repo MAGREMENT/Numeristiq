@@ -14,16 +14,16 @@ public class SolutionChangeAction : IPlayerAction
 
     public bool CanExecute(IReadOnlyPlayerData data, Cell cell)
     {
-        var pc = data[cell];
-        return data[cell].Editable && (pc.Number() != 0 || _number != 0);
+        var pc =  data.GetCellDataFor(cell);
+        return pc.Editable && (pc.Number() != 0 || _number != 0);
     }
 
-    public IHistoricEvent? Execute(IPlayerData data, Cell cell)
+    public IHistoricEvent Execute(IPlayerData data, Cell cell)
     {
-        var pc = data[cell];
+        var pc =  data.GetCellDataFor(cell);
         var old = pc;
         pc.SetNumber(old.Number() == _number ? 0 : _number);
-        data[cell] = pc;
+        data.SetCellDataFor(cell, pc);
 
         return new CellChangeEvent(old, pc, cell);
     }

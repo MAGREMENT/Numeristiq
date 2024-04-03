@@ -5,16 +5,16 @@ namespace Model.Sudoku.Solver.Explanation;
 
 public class CoverHouseExplanationElement : ExplanationElement
 {
-    private readonly CoverHouse _coverHouse;
+    private readonly House _house;
 
-    public CoverHouseExplanationElement(CoverHouse coverHouse)
+    public CoverHouseExplanationElement(House house)
     {
-        _coverHouse = coverHouse;
+        _house = house;
     }
 
     public override string ToString()
     {
-        var s = _coverHouse.Unit switch
+        var s = _house.Unit switch
         {
             Unit.Row => "row ",
             Unit.Column => "column ",
@@ -22,7 +22,7 @@ public class CoverHouseExplanationElement : ExplanationElement
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return s + (_coverHouse.Number + 1);
+        return s + (_house.Number + 1);
     }
     
     public override bool ShouldBeBold => true;
@@ -30,7 +30,7 @@ public class CoverHouseExplanationElement : ExplanationElement
 
     public override void Show(IExplanationHighlighter highlighter)
     {
-        highlighter.ShowCoverHouse(_coverHouse);
+        highlighter.ShowCoverHouse(_house);
     }
 
     public override bool DoesShowSomething => true;

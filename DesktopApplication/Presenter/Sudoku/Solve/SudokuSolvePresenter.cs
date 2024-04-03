@@ -104,22 +104,22 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void UpdateLogs()
     {
-        if (_solver.Logs.Count < _logCount)
+        if (_solver.LogManager.Logs.Count < _logCount)
         {
             ClearLogs();
             return;
         }
 
-        for (;_logCount < _solver.Logs.Count; _logCount++)
+        for (;_logCount < _solver.LogManager.Logs.Count; _logCount++)
         {
-            _view.AddLog(_solver.Logs[_logCount], _stateShown);
+            _view.AddLog(_solver.LogManager.Logs[_logCount], _stateShown);
         }
     }
 
     public void RequestLogOpening(int id)
     {
         var index = id - 1;
-        if (index < 0 || index >= _solver.Logs.Count) return;
+        if (index < 0 || index >= _solver.LogManager.Logs.Count) return;
         
         if(_currentlyOpenedLog != -1) _view.CloseLog(_currentlyOpenedLog);
 
@@ -133,7 +133,7 @@ public class SudokuSolvePresenter : ICommitApplier
             _view.OpenLog(index);
             _currentlyOpenedLog = index;
 
-            var log = _solver.Logs[index];
+            var log = _solver.LogManager.Logs[index];
             SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
             _translator.Translate(log.HighlightManager); 
         }
@@ -143,18 +143,18 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _stateShown = ss;
         _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.LogManager.Logs.Count) return;
         
-        var log = _solver.Logs[_currentlyOpenedLog];
+        var log = _solver.LogManager.Logs[_currentlyOpenedLog];
         SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
         _translator.Translate(log.HighlightManager);
     }
 
     public void RequestHighlightShift(bool isLeft)
     {
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.LogManager.Logs.Count) return;
         
-        var log = _solver.Logs[_currentlyOpenedLog];
+        var log = _solver.LogManager.Logs[_currentlyOpenedLog];
         if(isLeft) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
         
@@ -165,9 +165,9 @@ public class SudokuSolvePresenter : ICommitApplier
     
     public StepExplanationPresenterBuilder? RequestExplanation()
     {
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.Logs.Count) return null;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.LogManager.Logs.Count) return null;
 
-        return new StepExplanationPresenterBuilder(_solver.Logs[_currentlyOpenedLog], _settings);
+        return new StepExplanationPresenterBuilder(_solver.LogManager.Logs[_currentlyOpenedLog], _settings);
     }
 
     public void EnableStrategy(int index, bool enabled)
@@ -232,7 +232,7 @@ public class SudokuSolvePresenter : ICommitApplier
         if(!_settings.OpenCopyDialog) Copy(_currentlyDisplayedState, _settings.DefaultCopyFormat);
         else _view.OpenOptionDialog("Copy", i =>
         {
-            Copy(_currentlyDisplayedState, EnumConverter.ToEnum<SudokuStringFormat>(i));
+            Copy(_currentlyDisplayedState, (SudokuStringFormat)i);
         }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
     }
 
@@ -241,7 +241,7 @@ public class SudokuSolvePresenter : ICommitApplier
         if(!_settings.OpenPasteDialog) Paste(s, _settings.DefaultPasteFormat);
         else _view.OpenOptionDialog("Paste", i =>
         {
-            Paste(s, EnumConverter.ToEnum<SudokuStringFormat>(i));
+            Paste(s, (SudokuStringFormat)i);
         }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
     }
     
@@ -352,7 +352,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
         if (_currentlyOpenedLog != -1)
         {
-            _translator.Translate(_solver.Logs[_currentlyOpenedLog].HighlightManager);
+            _translator.Translate(_solver.LogManager.Logs[_currentlyOpenedLog].HighlightManager);
         }
         
         drawer.Refresh();

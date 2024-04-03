@@ -23,7 +23,7 @@ public class FishStrategy : SudokuStrategy
     private readonly IntSetting _maxNumberOfEndoFins;
     private readonly BooleanSetting _allowCannibalism;
 
-    private static readonly CoverHouse[] CoverHouses =
+    private static readonly House[] CoverHouses =
     {
         new(Unit.Row, 0),
         new(Unit.Row, 1),
@@ -91,7 +91,7 @@ public class FishStrategy : SudokuStrategy
     }
 
     private readonly GridPositions _toCover = new();
-    private readonly HashSet<CoverHouse> _baseSet = new();
+    private readonly HashSet<House> _baseSet = new();
     private readonly GridPositions _buffer = new();
     private readonly HashSet<Cell> _endoFins = new();
     
@@ -147,7 +147,7 @@ public class FishStrategy : SudokuStrategy
 
     private readonly List<Cell> _fins = new();
 
-    private bool Process(IStrategyUser strategyUser, int number, CoverHouse[] coverSet, IReadOnlyGridPositions exoFins)
+    private bool Process(IStrategyUser strategyUser, int number, House[] coverSet, IReadOnlyGridPositions exoFins)
     {
         _fins.Clear();
         var gpOfCoverSet = new GridPositions();
@@ -181,11 +181,11 @@ public class FishStrategy : SudokuStrategy
         if (_allowCannibalism.Value) ProcessCannibalism(strategyUser, number, coverSet);
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-                new FishReportBuilder(new HashSet<CoverHouse>(_baseSet), coverSet, number,
+                new FishReportBuilder(new HashSet<House>(_baseSet), coverSet, number,
                     _toCover.Copy(), new List<Cell>(_fins))) && StopOnFirstPush;
     }
 
-    private void ProcessCannibalism(IStrategyUser strategyUser, int number, CoverHouse[] coverSet)
+    private void ProcessCannibalism(IStrategyUser strategyUser, int number, House[] coverSet)
     {
         foreach (var cell in _toCover)
         {
@@ -218,13 +218,13 @@ public class FishStrategy : SudokuStrategy
 
 public class FishReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly HashSet<CoverHouse> _baseSet;
-    private readonly CoverHouse[] _coveredSet;
+    private readonly HashSet<House> _baseSet;
+    private readonly House[] _coveredSet;
     private readonly int _possibility;
     private readonly GridPositions _inCommon;
     private readonly List<Cell> _fins;
 
-    public FishReportBuilder(HashSet<CoverHouse> baseSet, CoverHouse[] coveredSet, int possibility,
+    public FishReportBuilder(HashSet<House> baseSet, House[] coveredSet, int possibility,
         GridPositions inCommon, List<Cell> fins)
     {
         _baseSet = baseSet;

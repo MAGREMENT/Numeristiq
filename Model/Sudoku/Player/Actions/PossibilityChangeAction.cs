@@ -16,16 +16,16 @@ public class PossibilityChangeAction : IPlayerAction
 
     public bool CanExecute(IReadOnlyPlayerData data, Cell cell)
     {
-        return data[cell].Editable;
+        return data.GetCellDataFor(cell).Editable;
     }
 
     public IHistoricEvent? Execute(IPlayerData data, Cell cell)
     {
-        var pc = data[cell];
+        var pc =  data.GetCellDataFor(cell);
         var old = pc;
         if(pc.PeekPossibility(_number, _location)) pc.RemovePossibility(_number, _location);
         else pc.AddPossibility(_number, _location);
-        data[cell] = pc;
+        data.SetCellDataFor(cell, pc);
         
         return new CellChangeEvent(old, pc, cell);
     }

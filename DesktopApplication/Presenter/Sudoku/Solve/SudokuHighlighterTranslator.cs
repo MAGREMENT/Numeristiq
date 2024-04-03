@@ -43,20 +43,14 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         _drawer.EncircleCell(row, col);
     }
 
-    public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
-    {
-        _drawer.EncircleRectangle(from.Row, from.Column, from.Possibility, to.Row,
-            to.Column, to.Possibility, coloration);
-    }
-
-    public void EncircleRectangle(CoverHouse house, ChangeColoration coloration)
+    public void EncircleHouse(House house, ChangeColoration coloration)
     {
         var extremities = house.GetExtremities();
         _drawer.EncircleRectangle(extremities.Item1.Row, extremities.Item1.Column,
             extremities.Item2.Row, extremities.Item2.Column, coloration);
     }
 
-    public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration)
+    public void HighlightSudokuElement(ISudokuElement element, ChangeColoration coloration)
     {
         if (ChangeColorationUtility.IsOff(coloration) && element is PointingRow or PointingColumn or CellsPossibility)
         {
@@ -98,7 +92,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                     pc.Column, pc.Possibility, coloration);
                 break;
             case NakedSet ans :
-                _drawer.DrawPossibilityPatch(ans.EveryCellPossibility(), coloration);
+                _drawer.DelimitPossibilityPatch(ans.EveryCellPossibility(), coloration);
                 break;
         }
     }

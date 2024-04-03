@@ -5,10 +5,12 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Play;
+using DesktopApplication.Presenter.Sudoku.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Utility;
 using Model.Sudoku.Player;
+using Model.Sudoku.Solver;
 using Model.Utility;
 
 namespace DesktopApplication.View.Sudoku.Pages;
@@ -56,6 +58,17 @@ public partial class PlayPage : ISudokuPlayView
         else ForwardArrow.Stroke = Brushes.Gray;
     }
 
+    public void ShowClue(SudokuClue? clue)
+    {
+        //TODO (use dispatcher)
+    }
+    
+    public void OpenOptionDialog(string name, OptionChosen callback, params string[] options)
+    {
+        var dialog = new OptionChooserDialog(name, callback, options);
+        dialog.Show();
+    }
+
     #endregion
 
     public override void OnShow()
@@ -92,6 +105,18 @@ public partial class PlayPage : ISudokuPlayView
     
     private void DoBoardInput(object sender, KeyEventArgs e)
     {
+        if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
+        {
+            switch (e.Key)
+            {
+                case Key.V :
+                    _presenter.Paste(Clipboard.GetText());
+                    break;
+            }
+
+            return;
+        }
+        
         switch (e.Key)
         {
             case Key.D1 :

@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
+using Model.Helpers.Logs;
 using Model.Helpers.Settings;
 
 namespace Model.Sudoku.Solver;
@@ -43,6 +45,7 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
     
     public abstract void Apply(IStrategyUser strategyUser);
     public virtual void OnNewSudoku(IReadOnlySudoku s) { }
+    public virtual SudokuClue? TransformIntoClue(BuiltChangeCommit<ISudokuHighlighter> log) => null;
     public void TrySetSetting(string name, SettingValue value)
     {
         foreach (var arg in Settings)

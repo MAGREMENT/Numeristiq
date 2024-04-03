@@ -16,3 +16,18 @@ public interface IPlayerAction
     /// <returns>An event if a significant change was made, null if not</returns>
     IHistoricEvent? Execute(IPlayerData data, Cell cell);
 }
+
+public interface IPlayerGlobalAction
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>True if the action can be executed</returns>
+    bool CanExecute(IReadOnlyPlayerData data);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns>An event if a significant change was made, null if not</returns>
+    IHistoricEvent? Execute(IPlayerData data);
+}

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
@@ -8,7 +7,9 @@ namespace Model.Helpers.Highlighting;
 
 public static class HighlightCompiler
 {
-    private static readonly SudokuHighlightCompiler? _sudokuCompiler = new();
+    private static readonly SudokuHighlightCompiler _sudokuCompiler = new();
+
+    public static IHighlightCompiler<ISudokuHighlighter> ForSudoku => _sudokuCompiler;
     
     public static IHighlightCompiler<THighlighter> For<THighlighter>()
     {
@@ -59,7 +60,7 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
 
     public void EncirclePossibility(int possibility, int row, int col)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.CirclePossibility, possibility, row, col));
+        _instructions.Add(new HighlightInstruction(InstructionType.EncirclePossibility, possibility, row, col));
     }
 
     public void HighlightCell(int row, int col, ChangeColoration coloration)
@@ -69,31 +70,25 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
 
     public void EncircleCell(int row, int col)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.CircleCell, row, col, ChangeColoration.None));
+        _instructions.Add(new HighlightInstruction(InstructionType.EncircleCell, row, col, ChangeColoration.None));
     }
-
-    public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration)
+    
+    public void EncircleHouse(House house, ChangeColoration coloration)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.CircleRectangle, from.Possibility, from.Row,
-            from.Column, to.Possibility, to.Row, to.Column, coloration));
-    }
-
-    public void EncircleRectangle(CoverHouse house, ChangeColoration coloration)
-    {
-        _instructions.Add(new HighlightInstruction(InstructionType.CircleRectangleFromCoverHouse,
+        _instructions.Add(new HighlightInstruction(InstructionType.EncircleHouse,
             house.Unit, house.Number, coloration));
     }
 
-    public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration)
+    public void HighlightSudokuElement(ISudokuElement element, ChangeColoration coloration)
     {
         _registers.Add(element);
-        _instructions.Add(new HighlightInstruction(InstructionType.HighlightLinkGraphElement,
+        _instructions.Add(new HighlightInstruction(InstructionType.HighlightSudokuElement,
             _registers.Count - 1, coloration));
     }
 
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength)
     {
-        _instructions.Add(new HighlightInstruction(InstructionType.CreateSimpleLink,
+        _instructions.Add(new HighlightInstruction(InstructionType.CreateLink,
             from.Possibility, from.Row, from.Column, to.Possibility, to.Row, to.Column, linkStrength));
     }
 
@@ -101,7 +96,7 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
     {
         _registers.Add(from);
         _registers.Add(to);
-        _instructions.Add(new HighlightInstruction(InstructionType.CreateGroupLink,
+        _instructions.Add(new HighlightInstruction(InstructionType.CreateSudokuElementLink,
             _registers.Count - 2, _registers.Count - 1, linkStrength));
     }
 

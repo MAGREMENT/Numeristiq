@@ -52,7 +52,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
     private bool Process(IStrategyUser strategyUser, GridPositions grid, List<PossibilityCovers> covers)
     {
         List<PossibilityCovers> alternativesTotal = new();
-        HashSet<CoverHouse> emptyForbidden = new();
+        HashSet<House> emptyForbidden = new();
         
         foreach (var cover in covers)
         {
@@ -81,7 +81,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
             new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && StopOnFirstPush;
     }
 
-    private bool IsSameCoverHouses(CoverHouse[] one, CoverHouse[] two)
+    private bool IsSameCoverHouses(House[] one, House[] two)
     {
         if (one.Length != two.Length) return false;
         
@@ -155,7 +155,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatabl
 
 public class CoveringUnits
 {
-    private readonly Dictionary<CoverHouse, ReadOnlyBitSet16> _dictionary = new();
+    private readonly Dictionary<House, ReadOnlyBitSet16> _dictionary = new();
 
     public CoveringUnits(IReadOnlyList<PossibilityCovers> list)
     {
@@ -190,7 +190,7 @@ public class CoveringUnits
                     lighter.HighlightCell(cell, ChangeColoration.Neutral);
                 }
                 
-                lighter.EncircleRectangle(entry.Key, color);
+                lighter.EncircleHouse(entry.Key, color);
                 foreach (var cell in UnitMethods.Get(entry.Key.Unit).EveryCell(entry.Key.Number))
                 {
                     if (!gp.Contains(cell)) continue;

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Sudoku;
 using Model.Sudoku.Solver.StrategiesUtility;
@@ -75,13 +74,6 @@ public readonly struct HighlightInstruction
         _bits = (int)strength << 28 | (int)type << 24 | possibility1 << 20 | row1 << 16
                 | col1 << 12 | possibility2 << 8 | row2 << 4 | col2;
     }
-    
-    public HighlightInstruction(InstructionType type, int possibility1, int row1, int col1, int possibility2, int row2,
-        int col2, ChangeColoration coloration)
-    {
-        _bits = (int)coloration << 28 | (int)type << 24 | possibility1 << 20 | row1 << 16
-                | col1 << 12 | possibility2 << 8 | row2 << 4 | col2;
-    }
 
     public HighlightInstruction(InstructionType type, Unit unit, int number, ChangeColoration coloration)
     {
@@ -100,34 +92,29 @@ public readonly struct HighlightInstruction
                 highlighter.HighlightCell((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF, (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
-            case InstructionType.CirclePossibility :
+            case InstructionType.EncirclePossibility :
                 highlighter.EncirclePossibility((_bits >> 20) & 0xF, (_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF);
                 break;
-            case InstructionType.CircleCell :
+            case InstructionType.EncircleCell :
                 highlighter.EncircleCell((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF);
                 break;
-            case InstructionType.HighlightLinkGraphElement :
-                highlighter.HighlightLinkGraphElement(registers[(_bits >> 12) & 0xFFF],
+            case InstructionType.HighlightSudokuElement :
+                highlighter.HighlightSudokuElement(registers[(_bits >> 12) & 0xFFF],
                     (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
-            case InstructionType.CreateSimpleLink :
+            case InstructionType.CreateLink :
                 highlighter.CreateLink(new CellPossibility((_bits >> 16) & 0xF,
                     (_bits >> 12) & 0xF, (_bits >> 20) & 0xF), new CellPossibility((_bits >> 4) & 0xF,
                     _bits & 0xF, (_bits >> 8) & 0xF), (LinkStrength)((_bits >> 28) & 0xF));
                 break;
-            case InstructionType.CreateGroupLink :
+            case InstructionType.CreateSudokuElementLink :
                 highlighter.CreateLink(registers[(_bits >> 12) & 0xFFF], registers[_bits & 0xFFF],
                     (LinkStrength)((_bits >> 28) & 0xF));
                 break;
-            case InstructionType.CircleRectangle:
-                highlighter.EncircleRectangle(new CellPossibility((_bits >> 16) & 0xF,
-                    (_bits >> 12) & 0xF, (_bits >> 20) & 0xF), new CellPossibility((_bits >> 4) & 0xF,
-                    _bits & 0xF, (_bits >> 8) & 0xF), (ChangeColoration)((_bits >> 28) & 0xF));
-                break;
-            case InstructionType.CircleRectangleFromCoverHouse:
-                highlighter.EncircleRectangle(new CoverHouse((Unit)(_bits & 0xF), (_bits >> 4) & 0xF),
+            case InstructionType.EncircleHouse:
+                highlighter.EncircleHouse(new House((Unit)(_bits & 0xF), (_bits >> 4) & 0xF),
                     (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             default:
@@ -138,9 +125,8 @@ public readonly struct HighlightInstruction
 
 public enum InstructionType
 {
-    HighlightPossibility = 0, HighlightCell = 1, CirclePossibility = 2, CircleCell = 3, 
-    HighlightLinkGraphElement = 4, CreateSimpleLink = 5, CreateGroupLink = 6, CircleRectangle = 7,
-    CircleRectangleFromCoverHouse = 8
+    HighlightPossibility = 0, HighlightCell = 1, EncirclePossibility = 2, EncircleCell = 3, 
+    HighlightSudokuElement = 4, CreateLink = 5, CreateSudokuElementLink = 6, EncircleHouse = 7,
 }
 
 

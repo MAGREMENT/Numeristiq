@@ -383,7 +383,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
     }
 
-    public void DrawPossibilityPatch(CellPossibility[] cps, ChangeColoration coloration)
+    public void DelimitPossibilityPatch(CellPossibility[] cps, ChangeColoration coloration)
     {
         var w = _possibilitySize / 6;
         var brush = new SolidColorBrush(ColorUtility.ToColor(coloration));
@@ -590,7 +590,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         FillPossibility(cp.Row, cp.Column, cp.Possibility, ChangeColoration.CauseOffTwo);
     }
 
-    public void ShowCoverHouse(CoverHouse ch)
+    public void ShowCoverHouse(House ch)
     {
         var extremities = ch.GetExtremities();
         EncircleRectangle(extremities.Item1.Row, extremities.Item1.Column,

@@ -36,7 +36,7 @@ public interface IUnitMethods
 
     bool Contains(Cell cell, int unitNumber);
 
-    CoverHouse ToCoverHouse(Cell cell);
+    House ToCoverHouse(Cell cell);
 }
 
 public class RowMethods : IUnitMethods
@@ -101,9 +101,9 @@ public class RowMethods : IUnitMethods
         return cell.Row == unitNumber;
     }
 
-    public CoverHouse ToCoverHouse(Cell cell)
+    public House ToCoverHouse(Cell cell)
     {
-        return new CoverHouse(Unit.Row, cell.Row);
+        return new House(Unit.Row, cell.Row);
     }
 }
 
@@ -169,9 +169,9 @@ public class ColumnMethods : IUnitMethods
         return cell.Column == unitNumber;
     }
 
-    public CoverHouse ToCoverHouse(Cell cell)
+    public House ToCoverHouse(Cell cell)
     {
-        return new CoverHouse(Unit.Column, cell.Column);
+        return new House(Unit.Column, cell.Column);
     }
 }
 
@@ -255,8 +255,8 @@ public class BoxMethods : IUnitMethods
         return cell.Row / 3 * 3 + cell.Column / 3 == unitNumber;
     }
 
-    public CoverHouse ToCoverHouse(Cell cell)
+    public House ToCoverHouse(Cell cell)
     {
-        return new CoverHouse(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Column / 3);
+        return new House(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Column / 3);
     }
 }

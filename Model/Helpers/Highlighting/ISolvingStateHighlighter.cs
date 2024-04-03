@@ -44,12 +44,10 @@ public interface ISudokuHighlighter : ISolvingStateHighlighter
     {
         EncircleCell(coord.Row, coord.Column);
     }
-    
-    public void EncircleRectangle(CellPossibility from, CellPossibility to, ChangeColoration coloration);
 
-    public void EncircleRectangle(CoverHouse house, ChangeColoration coloration);
+    public void EncircleHouse(House house, ChangeColoration coloration);
 
-    public void HighlightLinkGraphElement(ISudokuElement element, ChangeColoration coloration);
+    public void HighlightSudokuElement(ISudokuElement element, ChangeColoration coloration);
 
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength);
 }

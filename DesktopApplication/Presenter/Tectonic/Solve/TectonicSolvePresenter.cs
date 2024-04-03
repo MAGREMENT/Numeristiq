@@ -76,7 +76,7 @@ public class TectonicSolvePresenter
     public void RequestLogOpening(int id)
     {
         var index = id - 1;
-        if (index < 0 || index > _solver.Logs.Count) return;
+        if (index < 0 || index > _solver.LogManager.Logs.Count) return;
         
         _view.CloseLogs();
 
@@ -90,7 +90,7 @@ public class TectonicSolvePresenter
             _view.OpenLog(index);
             _currentlyOpenedLog = index;
 
-            var log = _solver.Logs[index];
+            var log = _solver.LogManager.Logs[index];
             SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
             _translator.Translate(log.HighlightManager); 
         }
@@ -100,18 +100,18 @@ public class TectonicSolvePresenter
     {
         _stateShown = ss;
         _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.Logs.Count) return;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.LogManager.Logs.Count) return;
         
-        var log = _solver.Logs[_currentlyOpenedLog];
+        var log = _solver.LogManager.Logs[_currentlyOpenedLog];
         SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
         _translator.Translate(log.HighlightManager);
     }
 
     public void RequestHighlightShift(bool isLeft)
     {
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.Logs.Count) return;
+        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.LogManager.Logs.Count) return;
         
-        var log = _solver.Logs[_currentlyOpenedLog];
+        var log = _solver.LogManager.Logs[_currentlyOpenedLog];
         if(isLeft) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
         
@@ -288,15 +288,15 @@ public class TectonicSolvePresenter
     
     private void UpdateLogs()
     {
-        if (_solver.Logs.Count < _logCount)
+        if (_solver.LogManager.Logs.Count < _logCount)
         {
             ClearLogs();
             return;
         }
 
-        for (;_logCount < _solver.Logs.Count; _logCount++)
+        for (;_logCount < _solver.LogManager.Logs.Count; _logCount++)
         {
-            _view.AddLog(_solver.Logs[_logCount], _stateShown);
+            _view.AddLog(_solver.LogManager.Logs[_logCount], _stateShown);
         }
     }
 
