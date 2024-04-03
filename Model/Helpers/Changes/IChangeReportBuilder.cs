@@ -7,6 +7,7 @@ namespace Model.Helpers.Changes;
 public interface IChangeReportBuilder<in TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
     public ChangeReport<THighlighter> Build(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
+    //TODO add clue building
 }
 
 public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReportBuilder<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter

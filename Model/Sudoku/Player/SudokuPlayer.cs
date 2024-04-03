@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Helpers;
+using Model.Sudoku.Generator;
 using Model.Sudoku.Player.HistoricEvents;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Utility;
@@ -159,8 +160,13 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
     }
 
     public int this[int row, int col] => _cells[row, col].Number();
-    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col) => _cells[row, col].PossibilitiesAsBitSet(MainLocation);
-    public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col) => _cells[row, col].Possibilities(MainLocation);
+
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col) => _cells[row, col].PossibilitiesCount(MainLocation) > 0
+        ? _cells[row, col].PossibilitiesAsBitSet(MainLocation)
+        : ReadOnlyBitSet16.Filled(1, 9);
+    public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col) => _cells[row, col].PossibilitiesCount(MainLocation) > 0
+        ? _cells[row, col].Possibilities(MainLocation)
+        : ConstantPossibilitiesGiver.Instance.EnumeratePossibilitiesAt(row, col);
 }
 
 public interface IPlayerData : IReadOnlyPlayerData

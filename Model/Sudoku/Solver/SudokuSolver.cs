@@ -239,7 +239,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             ISudokuHighlighter>)ChangeBuffer).DumpCommits();
         ChangeBuffer = oldBuffer;
 
-        return commits.Length == 0 ? null : StrategyManager.Strategies[i].TransformIntoClue(commits[0]);
+        return null; //TODO
     }
     
     public void ApplyCommit(BuiltChangeCommit<ISudokuHighlighter> commit)

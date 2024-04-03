@@ -35,7 +35,7 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 
             var n = filled[row, col];
             filled[row, col] = 0;
-            if (BackTracking.Fill(filled.Copy(), new ConstantPossibilitiesGiver(), 2).Length != 1)
+            if (BackTracking.Fill(filled.Copy(), ConstantPossibilitiesGiver.Instance, 2).Length != 1)
             {
                 filled[row, col] = n;
             }
@@ -61,7 +61,14 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 
 public class ConstantPossibilitiesGiver : IPossibilitiesGiver
 {
-    private readonly IEnumerable<int> _enumerable = Create();
+    private static readonly IEnumerable<int> _enumerable = Create();
+
+    public static ConstantPossibilitiesGiver Instance { get; } = new();
+
+    private ConstantPossibilitiesGiver()
+    {
+        
+    }
     
     public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col)
     {

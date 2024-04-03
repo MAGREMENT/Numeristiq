@@ -2,7 +2,6 @@
 using Model.Helpers;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Changes;
-using Model.Helpers.Logs;
 using Model.Sudoku.Solver.Explanation;
 using Model.Utility;
 
@@ -28,17 +27,6 @@ public class NakedSingleStrategy : SudokuStrategy
                 if (StopOnFirstPush) return;
             }
         }
-    }
-
-    public override SudokuClue? TransformIntoClue(BuiltChangeCommit<ISudokuHighlighter> commit)
-    {
-        if (commit.Changes.Length != 1) return null;
-        
-        var change = commit.Changes[0];
-        return new SudokuClue(lighter =>
-        {
-            lighter.EncircleCell(change.Row, change.Column);
-        }, $"Look at the possibilities in r{change.Row + 1}c{change.Column + 1}");
     }
 }
 
