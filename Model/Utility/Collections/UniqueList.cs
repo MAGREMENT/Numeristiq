@@ -26,7 +26,7 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
     {
         for (int i = 0; i < Count; i++)
         {
-            if (_array[i].Equals(obj)) return true;
+            if (_array[i].Equals(obj)) return true; //TODO fix boxing issue
         }
 
         return false;

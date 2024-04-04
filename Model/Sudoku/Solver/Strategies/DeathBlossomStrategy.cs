@@ -162,7 +162,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _als = als;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -202,5 +202,10 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         }
 
         return builder.ToString();
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

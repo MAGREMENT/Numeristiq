@@ -149,7 +149,7 @@ public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
         Chain = chain;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -174,5 +174,10 @@ public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
     private string Explanation()
     {
         return Chain.ToString();
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -320,7 +320,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _links = links;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();
@@ -396,5 +396,10 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
             var current = new Cell(crossRow, cell.Column);
             if (snapshot.PossibilitiesAt(current).Count > 0) yield return current;
         }
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

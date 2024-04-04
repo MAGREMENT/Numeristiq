@@ -121,7 +121,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
         _type = type;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
@@ -167,6 +167,11 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
     {
         return _loop.Count;
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public enum LoopType
@@ -183,7 +188,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
         _chain = chain;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
@@ -222,6 +227,11 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
     public int Length()
     {
         return _chain.Count;
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }
 

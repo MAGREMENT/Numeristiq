@@ -85,7 +85,7 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSud
         _change = change;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
         for (int i = 0; i < _colorings.Length; i++)
@@ -122,5 +122,10 @@ public class OddagonForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSud
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         }, highlights);
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

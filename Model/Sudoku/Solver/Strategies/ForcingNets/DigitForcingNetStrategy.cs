@@ -124,7 +124,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudok
         _graph = graph;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRootWithGuessedLinks(_onPos, _onColoring),
             _on, _graph, snapshot);
@@ -153,5 +153,10 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudok
     {
         return $"If {first} is on : \n{ForcingNetsUtility.AllPathsToString(onPaths)}\n" +
                $"If {first} is off : \n{ForcingNetsUtility.AllPathsToString(offPaths)}";
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -233,7 +233,7 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _graph = graph;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Highlight<ISudokuHighlighter>> highlighters = new();
         switch (_cause)
@@ -339,5 +339,10 @@ public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudo
         };
 
         return result;
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -194,7 +194,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             if (!current.Enabled) continue;
 
             var handling = current.InstanceHandling;
-            current.InstanceHandling = InstanceHandling.UnorderedAll;
+            current.InstanceHandling = InstanceHandling.UnorderedAll; //TODO to track manager
             
             _trackerManager.OnStrategyStart(current, i);
             current.Apply(this);
@@ -212,13 +212,12 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         return result;
     }
 
-    public SudokuClue? NextClue()
+    public Clue<ISudokuHighlighter>? NextClue()
     {
         var oldBuffer = ChangeBuffer;
-        ChangeBuffer = new NotExecutedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(this);
-
-        int i = 0;
-        for (; i < StrategyManager.Strategies.Count; i++)
+        ChangeBuffer = new ClueGetterChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(this);
+        
+        for (int i = 0; i < StrategyManager.Strategies.Count; i++)
         {
             var current = StrategyManager.Strategies[i];
             if (!current.Enabled) continue;
@@ -235,11 +234,10 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             break;
         }
 
-        var commits = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState,
-            ISudokuHighlighter>)ChangeBuffer).DumpCommits();
+        var result = ((ClueGetterChangeBuffer<IUpdatableSudokuSolvingState,
+            ISudokuHighlighter>)ChangeBuffer).CurrentClue;
         ChangeBuffer = oldBuffer;
-
-        return null; //TODO
+        return result;
     }
     
     public void ApplyCommit(BuiltChangeCommit<ISudokuHighlighter> commit)
@@ -347,6 +345,11 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         return progress.ProgressType == ProgressType.SolutionAddition
             ? AddSolution(progress.Number, progress.Row, progress.Column)
             : RemovePossibility(progress.Number, progress.Row, progress.Column);
+    }
+
+    public void FakeChange()
+    {
+        _possibilityRemovedBuffer++;
     }
 
     public LogManager<ISudokuHighlighter> LogManager { get; }

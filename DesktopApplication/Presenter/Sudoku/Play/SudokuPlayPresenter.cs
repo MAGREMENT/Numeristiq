@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DesktopApplication.Presenter.Sudoku.Solve;
 using Model.Helpers;
+using Model.Helpers.Changes;
+using Model.Helpers.Highlighting;
 using Model.Sudoku;
 using Model.Sudoku.Player;
 using Model.Sudoku.Player.Actions;
@@ -18,9 +21,12 @@ public class SudokuPlayPresenter
     private readonly SudokuSolver _solver;
     private readonly Settings _settings;
     private readonly SudokuPlayer _player;
+    private readonly SudokuHighlighterTranslator _translator;
 
     private readonly HashSet<Cell> _selectedCells = new();
     private ChangeLevel _changeLevel = ChangeLevel.Solution;
+    private bool _isClueShowing;
+    private Clue<ISudokuHighlighter>? _clueBuffer;
     
     public SettingsPresenter SettingsPresenter { get; }
 
@@ -30,6 +36,7 @@ public class SudokuPlayPresenter
         _solver = solver;
         _settings = settings;
         _player = new SudokuPlayer();
+        _translator = new SudokuHighlighterTranslator(_view.ClueShower, _settings);
         
         _view.SetChangeLevelOptions(EnumConverter.ToStringArray<ChangeLevel>(new SpaceConverter()), (int)_changeLevel);
         
@@ -69,11 +76,7 @@ public class SudokuPlayPresenter
             _ => new PossibilityChangeAction(n, ToLocation(_changeLevel))
         };
 
-        if (_player.Execute(action, _selectedCells))
-        {
-            RefreshNumbers();
-            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
-        }
+        if (_player.Execute(action, _selectedCells)) OnCellDataChange();
     }
 
     public void RemoveCurrentCells()
@@ -86,11 +89,7 @@ public class SudokuPlayPresenter
             _ => new PossibilityRemovalAction(ToLocation(_changeLevel))
         };
 
-        if (_player.Execute(action, _selectedCells))
-        {
-            RefreshNumbers();
-            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
-        }
+        if (_player.Execute(action, _selectedCells)) OnCellDataChange();
     }
 
     public void HighlightCurrentCells(HighlightColor color)
@@ -118,6 +117,7 @@ public class SudokuPlayPresenter
     public void SetChangeLevel(int index)
     {
         _changeLevel = (ChangeLevel)index;
+        _view.FocusDrawer();
     }
 
     public void Start()
@@ -149,32 +149,15 @@ public class SudokuPlayPresenter
     public void MoveBack()
     {
         _player.MoveBack();
-        RefreshNumbers();
         RefreshHighlights();
-        _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        OnCellDataChange();
     }
 
     public void MoveForward()
     {
         _player.MoveForward();
-        RefreshNumbers();
         RefreshHighlights();
-        _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
-    }
-
-    public async void GetClue()
-    {
-        var sudoku = SudokuTranslator.TranslateSolvingState(_player);
-        var list = await Task.Run(() => BackTracking.Fill(sudoku, _player, 1));
-        if (list.Length == 0)
-        {
-            _view.ShowClue(new SudokuClue("The current sudoku has no solution"));
-            return;
-        }
-
-        _solver.SetState(_player);
-        var clue = await Task.Run(() => _solver.NextClue());
-        _view.ShowClue(clue);
+        OnCellDataChange();
     }
     
     public void Paste(string s)
@@ -184,6 +167,12 @@ public class SudokuPlayPresenter
         {
             Paste(s, (SudokuStringFormat)i);
         }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
+    }
+
+    public void ChangeClueState()
+    {
+        if (_isClueShowing) HideClue(false);
+        else ShowClue();
     }
     
     private void Paste(string s, SudokuStringFormat format)
@@ -196,11 +185,57 @@ public class SudokuPlayPresenter
             _ => throw new Exception()
         };
 
-        if (_player.Execute(new PasteAction(state, _player.MainLocation)))
+        if (_player.Execute(new PasteAction(state, _player.MainLocation))) OnCellDataChange();
+    }
+
+    private void OnCellDataChange()
+    {
+        RefreshNumbers();
+        _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+        HideClue(true);
+    }
+    
+    private async Task<Clue<ISudokuHighlighter>?> GetClue()
+    {
+        var sudoku = SudokuTranslator.TranslateSolvingState(_player);
+        if (sudoku.NumberCount() < 17) return new Clue<ISudokuHighlighter>("Not enough numbers in the Sudoku");
+        
+        var list = await Task.Run(() => BackTracking.Fill(sudoku, _player, 1));
+        if (list.Length == 0) return new Clue<ISudokuHighlighter>("The current sudoku has no solution");
+        
+        _solver.SetState(_player);
+        return await Task.Run(() => _solver.NextClue());
+    }
+
+    private async void ShowClue()
+    {
+        if (_isClueShowing) return;
+
+        _isClueShowing = true;
+        _clueBuffer ??= await GetClue();
+
+        if (_clueBuffer is null)
         {
-            RefreshNumbers();
-            _view.SetHistoricAvailability(_player.CanMoveBack(), _player.CanMoveForward());
+            _view.ShowClueText("No clue found");
         }
+        else
+        {
+            _view.ShowClueText(_clueBuffer.Text);
+            _translator.Translate(_clueBuffer);
+        }
+        
+        _view.ShowClueState(_isClueShowing);
+    }
+
+    private void HideClue(bool removeBuffer)
+    {
+        if (removeBuffer) _clueBuffer = null;
+        if (!_isClueShowing) return;
+        
+        _isClueShowing = false;
+        _view.ShowClueText("");
+        RefreshHighlights();
+        _view.ShowClueState(_isClueShowing);
     }
     
     private void RefreshCursor()

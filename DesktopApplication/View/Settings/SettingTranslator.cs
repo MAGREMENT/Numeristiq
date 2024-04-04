@@ -8,7 +8,7 @@ public static class SettingTranslator
     {
         return setting.InteractionInterface switch
         {
-            IStringListInteractionInterface => new StringListControl(presenter, setting, index),
+            IStringListInteractionInterface i => new StringListControl(presenter, setting, index, i.IndexTranslator),
             SliderInteractionInterface => new SliderControl(presenter, setting, index),
             MinMaxSliderInteractionInterface => new MinMaxSliderControl(presenter, setting, index),
             CheckBoxInteractionInterface => new CheckBoxControl(presenter, setting, index),

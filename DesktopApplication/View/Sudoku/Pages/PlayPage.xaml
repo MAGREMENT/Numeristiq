@@ -103,6 +103,33 @@
                           Data="M 5,15 H 25 M 25,15 16,7 M 25,15 16,23"/>
                 </Button>
             </Grid>
+            
+            <Border Margin="0, 10, 0, 0" Background="{DynamicResource Background2}" BorderThickness="1"
+                    BorderBrush="{DynamicResource Text}" HorizontalAlignment="Center" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource SimpleHoverButton}" HorizontalAlignment="Right"
+                            FontSize="16" Foreground="{DynamicResource Text}" Margin="0, 0, 7, 0"
+                            x:Name="ClueButton" Click="ChangeClueState">Show</Button>
+                    <TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" Foreground="{DynamicResource Text}"
+                               VerticalAlignment="Center" HorizontalAlignment="Left">Clue</TextBlock>
+                    
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="{DynamicResource Background3}"
+                            Margin="0, 10, 0, 0" Padding="5">
+                        <TextBlock Width="250" Height="100" FontSize="14" Foreground="{DynamicResource Text}"
+                                   x:Name="ClueText" TextWrapping="Wrap"></TextBlock>
+                    </Border>
+                </Grid>
+            </Border>
         </StackPanel>
     </Grid>
 </local:SudokuPage>

@@ -32,7 +32,7 @@ public class NakedSingleStrategy : SudokuStrategy
 
 public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
@@ -52,5 +52,14 @@ public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         _ = start + new Cell(change.Row, change.Column) + ". It is therefor the solution for that cell.";
 
         return start;
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        if(changes.Count == 0) return Clue<ISudokuHighlighter>.Default();
+        return new Clue<ISudokuHighlighter>(lighter =>
+            {
+                lighter.EncircleCell(changes[0].Row, changes[0].Column);
+            }, "Look at the possibilities for that cell");
     }
 }

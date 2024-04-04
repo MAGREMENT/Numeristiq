@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Sudoku.Solver.Explanation;
@@ -63,7 +64,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
@@ -87,5 +88,24 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _ = start + cell + " in " + ch + ". It is therefor the solution for this cell.";
 
         return start;
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        if(changes.Count == 0) return Clue<ISudokuHighlighter>.Default();
+
+        var change = changes[0];
+        var house = _unit switch
+        {
+            Unit.Row => new House(_unit, change.Row),
+            Unit.Column => new House(_unit, change.Column),
+            Unit.MiniGrid => new House(_unit, change.Row * 3 + change.Column),
+            _ => throw new ArgumentOutOfRangeException(nameof(_unit))
+        };
+
+        return new Clue<ISudokuHighlighter>(lighter =>
+        {
+            lighter.EncircleHouse(house, ChangeColoration.CauseOffOne);
+        }, "Look at the possibilities in that house");
     }
 }

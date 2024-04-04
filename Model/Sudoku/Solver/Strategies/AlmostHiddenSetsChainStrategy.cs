@@ -171,7 +171,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         _additionalLink = additionalLink;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
         {
@@ -202,5 +202,10 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -284,7 +284,7 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         _number = number;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_patterns.Count];
 
@@ -309,5 +309,10 @@ public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         }
 
         return new ChangeReport<ISudokuHighlighter>( "", highlights);
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -119,6 +119,20 @@ public class Sudoku : IReadOnlySudoku
         return result;
     }
 
+    public int NumberCount()
+    {
+        int result = 0;
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (this[row, col] != 0) result++;
+            }
+        }
+
+        return result;
+    }
+
     public Sudoku Copy()
     {
         Sudoku result = new Sudoku();

@@ -159,7 +159,7 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder<IUpdatableSudokuS
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -177,5 +177,10 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder<IUpdatableSudokuS
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

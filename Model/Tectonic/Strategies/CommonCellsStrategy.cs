@@ -51,7 +51,7 @@ public class CommonCellsReportBuilder : IChangeReportBuilder<ITectonicSolvingSta
         _zone = zone;
     }
 
-    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
     {
         return new ChangeReport<ITectonicHighlighter>("", lighter =>
         {
@@ -72,5 +72,10 @@ public class CommonCellsReportBuilder : IChangeReportBuilder<ITectonicSolvingSta
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+
+    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    {
+        return Clue<ITectonicHighlighter>.Default();
     }
 }

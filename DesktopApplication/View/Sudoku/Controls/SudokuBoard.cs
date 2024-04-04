@@ -182,10 +182,10 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     public SudokuBoard() : base(9)
     {
         Focusable = true;
-
-        MouseEnter += (_, _) => Focus();
+        
         MouseLeftButtonDown += (_, args) =>
         {
+            Focus();
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if (cell is not null)
             {

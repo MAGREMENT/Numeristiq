@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using DesktopApplication.Presenter;
 using Model.Helpers.Settings;
 
 namespace DesktopApplication.View.Settings;
@@ -9,8 +8,9 @@ namespace DesktopApplication.View.Settings;
 public partial class StringListControl
 {
     private readonly bool _raiseEvent;
+    private readonly int[]? _indexTranslator;
     
-    public StringListControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
+    public StringListControl(ISettingCollection presenter, IReadOnlySetting setting, int index, int[]? indexTranslator) : base(presenter, setting, index)
     {
         InitializeComponent();
 
@@ -29,11 +29,14 @@ public partial class StringListControl
         _raiseEvent = false;
         ComboBox.SelectedIndex = setting.Get().ToInt();
         _raiseEvent = true;
+        
+        _indexTranslator = indexTranslator;
     }
 
     public override void Set()
     {
-        Set(new IntSettingValue(ComboBox.SelectedIndex));
+        var n = _indexTranslator is null ? ComboBox.SelectedIndex : _indexTranslator[ComboBox.SelectedIndex];
+        Set(new IntSettingValue(n));
     }
 
     private void OnSelectionChange(object sender, SelectionChangedEventArgs e)

@@ -14,7 +14,7 @@ public interface ISettingInteractionInterface
 
 public interface IStringListInteractionInterface : ISettingInteractionInterface, IEnumerable<string>
 {
-    
+    public int[]? IndexTranslator { get; }
 }
 
 public class SliderInteractionInterface : ISettingInteractionInterface
@@ -70,16 +70,21 @@ public class NameListInteractionInterface : IStringListInteractionInterface
     {
         return GetEnumerator();
     }
+
+    public int[]? IndexTranslator => null;
 }
 
 public class EnumListInteractionInterface<TEnum> : IStringListInteractionInterface where TEnum : struct, Enum
 {
     private readonly IEnumerable<string> _enumerable;
+    
+    public int[]? IndexTranslator { get; }
 
     public EnumListInteractionInterface(IStringConverter? converter)
     {
         var buffer = Enum.GetNames<TEnum>();
         _enumerable = converter is null ? buffer : buffer.Select(converter.Convert);
+        IndexTranslator = EnumConverter.ToIntArray<TEnum>();
     }
     
     public IEnumerator<string> GetEnumerator()
@@ -91,6 +96,8 @@ public class EnumListInteractionInterface<TEnum> : IStringListInteractionInterfa
     {
         return GetEnumerator();
     }
+
+    
 }
 
 public class CheckBoxInteractionInterface : ISettingInteractionInterface

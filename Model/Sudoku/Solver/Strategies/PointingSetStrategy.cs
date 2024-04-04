@@ -88,7 +88,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
         _miniPos = miniPos;
     }
     
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
         {
@@ -122,5 +122,10 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
 
         return $"{_number} is present only in the cells {_miniPos} in mini grid {_miniPos.MiniGridNumber() + 1}, so" +
                $" it can be removed from any other cells in {unit.ToString().ToLower()} {lineNumber}";
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

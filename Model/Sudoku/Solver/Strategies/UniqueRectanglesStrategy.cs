@@ -410,7 +410,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _roof = roof;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -428,6 +428,11 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudo
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -443,7 +448,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
         _link = link;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -462,6 +467,11 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -477,7 +487,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
         _als = als;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -499,6 +509,11 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -514,7 +529,7 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatab
         _stronglyLinkedPossibility = stronglyLinkedPossibility;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -531,5 +546,10 @@ public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatab
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

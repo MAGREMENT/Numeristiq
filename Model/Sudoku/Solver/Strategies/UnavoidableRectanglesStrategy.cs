@@ -155,7 +155,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableS
         _roof = roof;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -173,6 +173,11 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableS
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -188,7 +193,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
         _als = als;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -209,5 +214,10 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

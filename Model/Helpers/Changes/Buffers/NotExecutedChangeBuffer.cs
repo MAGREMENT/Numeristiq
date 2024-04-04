@@ -51,7 +51,7 @@ public class NotExecutedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TV
         
         foreach (var commit in _commitsBuffer)
         {
-            _commits.Add(new BuiltChangeCommit<THighlighter>(pusher, commit.Changes, commit.Builder.Build(commit.Changes, snapshot)));
+            _commits.Add(new BuiltChangeCommit<THighlighter>(pusher, commit.Changes, commit.Builder.BuildReport(commit.Changes, snapshot)));
         }
         
         _commitsBuffer.Clear();

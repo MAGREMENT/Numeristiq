@@ -100,7 +100,7 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
         _unit = unit;
     }
     
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
@@ -167,5 +167,10 @@ public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingSt
             + ch1 + " and " + ch2 + " that is not part of the X-Wing.";
 
         return start;
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

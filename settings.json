@@ -10,5 +10,6 @@
   "Paste default format": "2",
   "Open paste dialog": "True",
   "Line format empty cell representation": "0",
-  "Convert solo candidate to given for grid format": "False"
+  "Convert solo candidate to given for grid format": "False",
+  "Main possibilities location": "9"
 }

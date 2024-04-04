@@ -87,7 +87,7 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _restrictedCommons = restrictedCommons;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -118,5 +118,10 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudo
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

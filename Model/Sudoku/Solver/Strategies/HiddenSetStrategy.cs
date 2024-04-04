@@ -181,7 +181,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdata
         _unit = unit;
     }
     
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -212,6 +212,11 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdata
         return $"The possibilities {_possibilities} are limited to the cells {_linePos.ToString(_unit, _unitNumber)} in" +
                $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -225,7 +230,7 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUp
         _miniPos = miniPos;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -246,5 +251,10 @@ public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUp
     {
         return $"The possibilities {_possibilities} are limited to the cells {_miniPos} in" +
                $" mini grid {_miniPos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

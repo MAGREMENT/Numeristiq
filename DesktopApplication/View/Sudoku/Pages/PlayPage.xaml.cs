@@ -10,7 +10,6 @@ using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Utility;
 using Model.Sudoku.Player;
-using Model.Sudoku.Solver;
 using Model.Utility;
 
 namespace DesktopApplication.View.Sudoku.Pages;
@@ -32,6 +31,13 @@ public partial class PlayPage : ISudokuPlayView
     #region ISudokuPlayView
 
     public ISudokuPlayerDrawer Drawer => Board;
+    public ISudokuSolverDrawer ClueShower => Board;
+
+    public void FocusDrawer()
+    {
+        Board.Focus();
+    }
+
     public void SetChangeLevelOptions(string[] options, int value)
     {
         ChangeLevelSelector.SetOptions(options, value);
@@ -58,9 +64,14 @@ public partial class PlayPage : ISudokuPlayView
         else ForwardArrow.Stroke = Brushes.Gray;
     }
 
-    public void ShowClue(SudokuClue? clue)
+    public void ShowClueState(bool isShowing)
     {
-        //TODO (use dispatcher)
+        ClueButton.Dispatcher.Invoke(() => ClueButton.Content = isShowing ? "Hide" : "Show");
+    }
+
+    public void ShowClueText(string text)
+    {
+        ClueText.Dispatcher.Invoke(() => ClueText.Text = text);
     }
     
     public void OpenOptionDialog(string name, OptionChosen callback, params string[] options)
@@ -225,5 +236,10 @@ public partial class PlayPage : ISudokuPlayView
     private void MoveForward(object sender, RoutedEventArgs e)
     {
         _presenter.MoveForward();
+    }
+
+    private void ChangeClueState(object sender, RoutedEventArgs e)
+    {
+        _presenter.ChangeClueState();
     }
 }

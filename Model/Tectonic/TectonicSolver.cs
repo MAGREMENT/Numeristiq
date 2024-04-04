@@ -139,6 +139,11 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
             : AddSolution(progress.Row, progress.Column, progress.Number, true);
     }
 
+    public void FakeChange()
+    {
+        _possibilityRemovedBuffer++;
+    }
+
     #region Private
 
     private void InitCandidates()

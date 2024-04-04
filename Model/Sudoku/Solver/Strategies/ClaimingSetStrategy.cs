@@ -113,7 +113,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _unit = unit;
     }
     
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)
@@ -150,5 +150,10 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
         return $"{_number} is present only in the cells {_linePos.ToString(_unit, _unitNumber)} in" +
                $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so it can be removed from any other cells in" +
                $" box {miniGirdNumber}";
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -495,7 +495,7 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _je = je;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je.AllPossibleSCells();
 
@@ -540,6 +540,11 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -553,7 +558,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSu
         _je2 = je2;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je1.AllPossibleSCells();
 
@@ -603,5 +608,10 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSu
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

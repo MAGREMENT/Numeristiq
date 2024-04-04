@@ -147,7 +147,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         _possibleLastLink = lastLink;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
         {
@@ -205,5 +205,10 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         }
                 
         lighter.CreateLink(minCells[0], minCells[1], LinkStrength.Strong);
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

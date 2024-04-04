@@ -104,7 +104,7 @@ public class NeighboringZonesReportBuilder : IChangeReportBuilder<ITectonicSolvi
         _off = new Dictionary<Cell, Cell>(off);
     }
 
-    public ChangeReport<ITectonicHighlighter> Build(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
     {
         return new ChangeReport<ITectonicHighlighter>("", lighter =>
         {
@@ -124,5 +124,10 @@ public class NeighboringZonesReportBuilder : IChangeReportBuilder<ITectonicSolvi
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+    
+    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    {
+        return Clue<ITectonicHighlighter>.Default();
     }
 }

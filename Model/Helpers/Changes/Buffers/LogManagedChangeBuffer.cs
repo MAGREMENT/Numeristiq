@@ -110,7 +110,7 @@ public class FirstOnlyPushHandler<TVerifier, THighlighter> : IPushHandler<TVerif
             producer.ExecuteChange(change);
         }
 
-        producer.LogManager.AddFromReport(commit.Builder.Build(commit.Changes, state), commit.Changes, pusher, state);
+        producer.LogManager.AddFromReport(commit.Builder.BuildReport(commit.Changes, state), commit.Changes, pusher, state);
     }
 }
 
@@ -131,7 +131,7 @@ public class UnorderedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVe
 
             if (impactfulChanges.Count == 0) continue;
             
-            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, state), impactfulChanges, pusher, state);
+            producer.LogManager.AddFromReport(commit.Builder.BuildReport(impactfulChanges, state), impactfulChanges, pusher, state);
         }
     }
 }
@@ -157,7 +157,7 @@ public class BestOnlyPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifi
             producer.ExecuteChange(change);
         }
 
-        producer.LogManager.AddFromReport(best.Builder.Build(best.Changes, state), best.Changes, pusher, state);
+        producer.LogManager.AddFromReport(best.Builder.BuildReport(best.Changes, state), best.Changes, pusher, state);
     }
 }
 
@@ -185,7 +185,7 @@ public class SortedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerif
 
             if (impactfulChanges.Count == 0) continue;
             
-            producer.LogManager.AddFromReport(commit.Builder.Build(impactfulChanges, state), impactfulChanges, pusher, state);
+            producer.LogManager.AddFromReport(commit.Builder.BuildReport(impactfulChanges, state), impactfulChanges, pusher, state);
         }
     }
 }

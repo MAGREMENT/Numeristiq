@@ -27,6 +27,19 @@ public static class EnumConverter
 
         return result;
     }
+
+    public static int[] ToIntArray<TEnum>() where TEnum : struct, Enum
+    {
+        var values = Enum.GetValues<TEnum>();
+        var result = new int[values.Length];
+
+        for (int i = 0; i < values.Length; i++)
+        {
+            result[i] = ToInt(values[i]);
+        }
+
+        return result;
+    }
     
     private static class StaticGenericCache<T>
         where T : struct, Enum

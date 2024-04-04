@@ -162,7 +162,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -193,6 +193,11 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         return $"The cells {cells} only contains the possibilities ({_pos.ToValuesString()})." +
                $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -212,7 +217,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatable
         _gn2 = gn2;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<CellPossibility> cells = new(4);
         
@@ -237,5 +242,10 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatable
     {
         return $"The cells {cells[0]}, {cells[1]} only contains the possibilities ({_pos}). Any other cell in" +
                $" mini grid {_miniRow * 3 + _miniCol + 1} cannot contain these possibilities";
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }

@@ -141,7 +141,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
@@ -164,6 +164,11 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
         return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
                $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
     }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
+    }
 }
 
 public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -179,7 +184,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatabl
         _n2 = n2;
     }
 
-    public ChangeReport<ISudokuHighlighter> Build(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray();
 
@@ -201,5 +206,10 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatabl
         
         return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
                $" mini grid {_pos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
+    }
+    
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    {
+        return Clue<ISudokuHighlighter>.Default();
     }
 }
