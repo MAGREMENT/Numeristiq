@@ -55,6 +55,14 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 
         return result;
     }
+
+    public void Generate(OnNewPuzzleGenerated handler, int count = 1)
+    {
+        for (int i = 0; i < count; i++)
+        {
+            handler(Generate());
+        }
+    }
 }
 
 

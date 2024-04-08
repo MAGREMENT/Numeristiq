@@ -169,6 +169,11 @@ public class SudokuPlayPresenter
         }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
     }
 
+    public void ComputePossibilities()
+    {
+        if(_player.Execute(new ComputePossibilitiesAction(_player.MainLocation))) OnCellDataChange();
+    }
+
     public void ChangeClueState()
     {
         if (_isClueShowing) HideClue(false);

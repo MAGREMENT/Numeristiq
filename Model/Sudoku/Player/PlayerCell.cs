@@ -116,6 +116,13 @@ public struct PlayerCell
         _bits |= buffer;
     }
 
+    public void FillPossibilities(PossibilitiesLocation location)
+    {
+        if (!Editable) return;
+
+        _bits |= 0x1FF << (int)location;
+    }
+
     public bool IsEmpty()
     {
         return _bits == 0;

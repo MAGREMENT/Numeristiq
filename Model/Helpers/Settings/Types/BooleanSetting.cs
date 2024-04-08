@@ -4,7 +4,7 @@ public class BooleanSetting : ISetting
 {
     public string Name { get; }
     public ISettingInteractionInterface InteractionInterface { get; } = new CheckBoxInteractionInterface();
-    public bool Value { get; set; }
+    public bool Value { get; private set; }
 
     public BooleanSetting(string name, bool defaultValue = false)
     {
@@ -19,6 +19,6 @@ public class BooleanSetting : ISetting
     
     public void Set(SettingValue value)
     {
-        Value = value.ToBool();
+        Value = InteractionInterface.Verify(value).ToBool();
     }
 }

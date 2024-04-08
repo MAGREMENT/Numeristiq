@@ -7,7 +7,7 @@ public class EnumSetting<TEnum> : ISetting where TEnum : struct, Enum
 {
     public string Name { get; }
     public ISettingInteractionInterface InteractionInterface { get; }
-    public TEnum Value { get; set; }
+    public TEnum Value { get; private set; }
 
     public EnumSetting(string name, IStringConverter? converter, TEnum defaultValue)
     {
@@ -21,9 +21,9 @@ public class EnumSetting<TEnum> : ISetting where TEnum : struct, Enum
         return new IntSettingValue(EnumConverter.ToInt(Value));
     }
 
-    public void Set(SettingValue s)
+    public void Set(SettingValue value)
     {
-        Value = EnumConverter.ToEnum<TEnum>(s.ToInt());
+        Value = EnumConverter.ToEnum<TEnum>(InteractionInterface.Verify(value).ToInt());
     }
 }
 

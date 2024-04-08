@@ -9,7 +9,7 @@ namespace Model.Helpers.Settings;
 
 public interface ISettingInteractionInterface
 {
-    
+    public SettingValue Verify(SettingValue value);
 }
 
 public interface IStringListInteractionInterface : ISettingInteractionInterface, IEnumerable<string>
@@ -29,6 +29,12 @@ public class SliderInteractionInterface : ISettingInteractionInterface
     public int Min { get; }
     public int Max { get; }
     public int TickFrequency { get; }
+    
+    public SettingValue Verify(SettingValue value)
+    {
+        var asInt = value.ToInt();
+        return asInt >= Min && asInt <= Max && (asInt - Min) % TickFrequency == 0 ? value : new IntSettingValue(Min);
+    }
 }
 
 public class MinMaxSliderInteractionInterface : ISettingInteractionInterface
@@ -47,6 +53,15 @@ public class MinMaxSliderInteractionInterface : ISettingInteractionInterface
     public int MaxMin { get; }
     public int MaxMax { get; }
     public int TickFrequency { get; }
+    
+    public SettingValue Verify(SettingValue value)
+    {
+        var mm = value.ToMinMax();
+        return mm.Min >= MinMin && mm.Min <= MinMax && (mm.Min - MinMin) % TickFrequency == 0
+               && mm.Max >= MaxMin && mm.Max <= MaxMax && (mm.Max - MaxMin) % TickFrequency == 0
+            ? value
+            : new MinMaxSettingValue(new MinMax(MinMin, MaxMax));
+    }
 }
 
 public class NameListInteractionInterface : IStringListInteractionInterface
@@ -72,13 +87,19 @@ public class NameListInteractionInterface : IStringListInteractionInterface
     }
 
     public int[]? IndexTranslator => null;
+    
+    public SettingValue Verify(SettingValue value)
+    {
+        var asInt = value.ToInt();
+        return asInt >= 0 && asInt < _names.Count ? value : new IntSettingValue(0);
+    }
 }
 
 public class EnumListInteractionInterface<TEnum> : IStringListInteractionInterface where TEnum : struct, Enum
 {
     private readonly IEnumerable<string> _enumerable;
     
-    public int[]? IndexTranslator { get; }
+    public int[] IndexTranslator { get; }
 
     public EnumListInteractionInterface(IStringConverter? converter)
     {
@@ -97,10 +118,17 @@ public class EnumListInteractionInterface<TEnum> : IStringListInteractionInterfa
         return GetEnumerator();
     }
 
-    
+
+    public SettingValue Verify(SettingValue value)
+    {
+        return IndexTranslator.Contains(value.ToInt()) ? value : new IntSettingValue(IndexTranslator[0]);
+    }
 }
 
 public class CheckBoxInteractionInterface : ISettingInteractionInterface
 {
-    
+    public SettingValue Verify(SettingValue value)
+    {
+        return value;
+    }
 }

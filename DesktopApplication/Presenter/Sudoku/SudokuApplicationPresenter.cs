@@ -52,7 +52,13 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
     
     public SudokuGeneratePresenter Initialize(ISudokuGenerateView view)
     {
-        return new SudokuGeneratePresenter(view);
+        var solver = new SudokuSolver
+        {
+            StrategyManager = _strategyManager
+        };
+        solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        
+        return new SudokuGeneratePresenter(view, solver, _settings);
     }
 
     public void InitializeApplication()

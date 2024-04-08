@@ -130,6 +130,9 @@
                     </Border>
                 </Grid>
             </Border>
+            
+            <Button Margin="0, 10, 0, 0" HorizontalAlignment="Center" Style="{StaticResource SolvePageButtonStyle}"
+                    Click="ComputePossibilities">Compute Possibilities</Button>
         </StackPanel>
     </Grid>
 </local:SudokuPage>

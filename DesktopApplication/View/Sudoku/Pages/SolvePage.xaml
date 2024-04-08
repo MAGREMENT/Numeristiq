@@ -27,7 +27,7 @@
                                  CellSelected="SelectCell" KeyDown="DoBoardInput"/>
         </Border>
         
-        <Grid Grid.Column="1">
+        <Grid Grid.Column="1" Margin="0, 0, 0, 5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="200"/>
@@ -43,9 +43,9 @@
             <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                        Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Logs</TextBlock>
             
-            <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="470" x:Name="LogViewer"
+            <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="480" x:Name="LogViewer"
                           Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">
-                <StackPanel MinHeight="468" x:Name="LogPanel"/>
+                <StackPanel x:Name="LogPanel"/>
             </ScrollViewer>
             
             <Button Grid.Row="2" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Solve" x:Name="SolveButton">Solve</Button>

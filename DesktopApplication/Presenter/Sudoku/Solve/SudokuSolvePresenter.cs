@@ -27,7 +27,7 @@ public class SudokuSolvePresenter : ICommitApplier
     private ISolvingState? _currentlyDisplayedState;
     private int _currentlyOpenedLog = -1;
     private Cell? _selectedCell;
-    private SolveTracker? _solveTracker;
+    private UIUpdaterTracker? _solveTracker;
 
     private int _logCount;
     private StateShown _stateShown = StateShown.Before;
@@ -64,7 +64,7 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _enabler.DisableActions(1);
         
-        _solveTracker ??= new SolveTracker(this, true);
+        _solveTracker ??= new UIUpdaterTracker(this, true);
         _solveTracker.UpdateLogs = true;
         _solver.AddTracker(_solveTracker);
         await Task.Run(() => _solver.Solve(stopAtProgress));
@@ -77,7 +77,7 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         _enabler.DisableActions(2);
         
-        _solveTracker ??= new SolveTracker(this, false);
+        _solveTracker ??= new UIUpdaterTracker(this, false);
         _solveTracker.UpdateLogs = false;
         var commits = await Task.Run(() => _solver.EveryPossibleNextStep());
         _solver.RemoveTracker(_solveTracker);
@@ -386,13 +386,13 @@ public class SudokuSolvePresenter : ICommitApplier
     }
 }
 
-public class SolveTracker : Tracker
+public class UIUpdaterTracker : Tracker
 {
     private readonly SudokuSolvePresenter _presenter;
     
     public bool UpdateLogs { get; set; }
 
-    public SolveTracker(SudokuSolvePresenter presenter, bool updateLogs)
+    public UIUpdaterTracker(SudokuSolvePresenter presenter, bool updateLogs)
     {
         _presenter = presenter;
         UpdateLogs = updateLogs;

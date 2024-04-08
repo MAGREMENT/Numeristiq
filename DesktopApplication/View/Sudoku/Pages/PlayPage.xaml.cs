@@ -242,4 +242,9 @@ public partial class PlayPage : ISudokuPlayView
     {
         _presenter.ChangeClueState();
     }
+
+    private void ComputePossibilities(object sender, RoutedEventArgs e)
+    {
+        _presenter.ComputePossibilities();
+    }
 }

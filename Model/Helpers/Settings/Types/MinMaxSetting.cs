@@ -6,7 +6,7 @@ public class MinMaxSetting : ISetting
 {
     public string Name { get; }
     public ISettingInteractionInterface InteractionInterface { get; } 
-    public MinMax Value { get; set; }
+    public MinMax Value { get; private set; }
 
     public MinMaxSetting(string name, int minMin, int minMax, int maxMin, int maxMax, int tickFrequency, int minDefault = 0, int maxDefault = 1)
     {
@@ -22,6 +22,6 @@ public class MinMaxSetting : ISetting
 
     public void Set(SettingValue value)
     {
-        Value = value.ToMinMax();
+        Value = InteractionInterface.Verify(value).ToMinMax();
     }
 }

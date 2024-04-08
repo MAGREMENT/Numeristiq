@@ -4,7 +4,7 @@ public class IntSetting : ISetting
 {
     public string Name { get; }
     public ISettingInteractionInterface InteractionInterface { get; }
-    public int Value { get; set; }
+    public int Value { get; private set; }
 
     public IntSetting(string name, ISettingInteractionInterface i, int defaultValue = 1)
     {
@@ -20,6 +20,6 @@ public class IntSetting : ISetting
 
     public void Set(SettingValue value)
     {
-        Value = value.ToInt();
+        Value = InteractionInterface.Verify(value).ToInt();
     }
 }

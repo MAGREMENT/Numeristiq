@@ -1,6 +1,5 @@
 ﻿using Model.Sudoku;
 using Model.Sudoku.Generator;
-using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
@@ -33,7 +32,7 @@ public class SudokuGenerateBatchCommand : Command
         var generated = _generator.Generate(count);
         Console.WriteLine($"Finished generating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
 
-        List<GeneratedSudoku> result = new(count);
+        List<EvaluatedGeneratedPuzzle> result = new(count);
 
         if (report.IsUsed(RateIndex) || report.IsUsed(HardestIndex))
         {
@@ -51,7 +50,7 @@ public class SudokuGenerateBatchCommand : Command
             {
                 solver.SetSudoku(s.Copy());
                 solver.Solve();
-                result.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
+                result.Add(new EvaluatedGeneratedPuzzle(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
                     ratings?.Rating ?? 0, hardest?.Hardest));
             
                 ratings?.Clear();
@@ -66,7 +65,7 @@ public class SudokuGenerateBatchCommand : Command
         {
             foreach (var s in generated)
             {
-                result.Add(new GeneratedSudoku(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
+                result.Add(new EvaluatedGeneratedPuzzle(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
                     0, null));
             }
         }
@@ -97,5 +96,3 @@ public class SudokuGenerateBatchCommand : Command
         }
     }
 }
-
-public record GeneratedSudoku(string Sudoku, double Rating, SudokuStrategy? HardestStrategy);
