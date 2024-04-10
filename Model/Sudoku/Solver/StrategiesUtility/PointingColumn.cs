@@ -143,4 +143,14 @@ public class PointingColumn : ISudokuElement
 
         return result;
     }
+
+    public bool Contains(Cell cell)
+    {
+        return Column == cell.Column && _pos.Contains(cell.Row);
+    }
+
+    public bool Contains(CellPossibility cp)
+    {
+        return Possibility == cp.Possibility && Column == cp.Column && _pos.Contains(cp.Row);
+    }
 }

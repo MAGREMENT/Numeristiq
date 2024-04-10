@@ -11,13 +11,13 @@ public class SeenCellCompareSearcher : ISharedSeenCellSearcher
         {
             if (unit != row1)
             {
-                if (Cells.ShareAUnit(unit, col1, row2, col2) &&
+                if (SudokuCellUtility.ShareAUnit(unit, col1, row2, col2) &&
                     !(unit == row2 && col1 == col2)) yield return new Cell(unit, col1);
             }
 
             if (unit != col1)
             {
-                if (Cells.ShareAUnit(row1, unit, row2, col2) &&
+                if (SudokuCellUtility.ShareAUnit(row1, unit, row2, col2) &&
                     !(row1 == row2 && unit == col2)) yield return new Cell(row1, unit);
             }
         }
@@ -33,7 +33,7 @@ public class SeenCellCompareSearcher : ISharedSeenCellSearcher
                 
                 if(row == row1 || col == col1 || (row == row2 && col == col2)) continue;
 
-                if (Cells.ShareAUnit(row, col, row2, col2)) yield return new Cell(row, col);
+                if (SudokuCellUtility.ShareAUnit(row, col, row2, col2)) yield return new Cell(row, col);
             }
         }
     }

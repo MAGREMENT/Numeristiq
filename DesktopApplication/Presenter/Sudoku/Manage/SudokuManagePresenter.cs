@@ -57,18 +57,21 @@ public class SudokuManagePresenter
         if (strategy is null) return;
         
         _manager.AddStrategy(strategy, position);
+        _updater.Update();
         _view.SetStrategyList(_manager.Strategies);
     }
 
     public void InterchangeStrategies(int posFrom, int posTo)
     {
         _manager.InterchangeStrategies(posFrom, posTo);
+        _updater.Update();
         _view.SetStrategyList(_manager.Strategies);
     }
 
     public void RemoveStrategy(int index)
     {
         _manager.RemoveStrategy(index);
+        _updater.Update();
         _view.SetStrategyList(_manager.Strategies);
         _view.ClearSelectedStrategy();
     }

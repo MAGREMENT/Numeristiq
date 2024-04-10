@@ -23,6 +23,7 @@ public static class Program
             _instance.AddCommand(new SudokuGenerateBatchCommand());
             _instance.AddCommand(new TectonicSolveCommand());
             _instance.AddCommand(new TectonicSolveBatchCommand());
+            _instance.AddCommand(new SudokuStrategyListCommand());
         }
 
         return _instance;

@@ -8,6 +8,12 @@ public class HardestStrategyTracker : Tracker
     private int _hardestIndex = -1;
     public SudokuStrategy? Hardest { get; private set; }
 
+    public override void OnSolveStart()
+    {
+        Hardest = null;
+        _hardestIndex = -1;
+    }
+
     public override void OnStrategyEnd(SudokuStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         if (solutionAdded + possibilitiesRemoved == 0) return;
@@ -18,11 +24,5 @@ public class HardestStrategyTracker : Tracker
             Hardest = strategy;
             _hardestIndex = index;
         }
-    }
-
-    public void Clear()
-    {
-        Hardest = null;
-        _hardestIndex = -1;
     }
 }

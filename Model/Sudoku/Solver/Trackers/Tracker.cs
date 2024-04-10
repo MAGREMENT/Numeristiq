@@ -7,6 +7,11 @@ public abstract class Tracker
         
     }
 
+    public virtual void OnSolveStart()
+    {
+        
+    }
+
     public virtual void OnStrategyStart(SudokuStrategy strategy, int index)
     {
         

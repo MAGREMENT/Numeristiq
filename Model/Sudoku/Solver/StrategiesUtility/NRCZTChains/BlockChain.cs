@@ -76,7 +76,7 @@ public class BlockChain : List<Block>
         {
             if (cp.Possibility == block.End.Possibility)
             {
-                if(Cells.ShareAUnit(block.End.ToCell(), cp.ToCell())) return true;
+                if(SudokuCellUtility.ShareAUnit(block.End.ToCell(), cp.ToCell())) return true;
             }
             else
             {

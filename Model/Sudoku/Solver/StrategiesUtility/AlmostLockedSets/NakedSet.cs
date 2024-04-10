@@ -59,7 +59,27 @@ public class NakedSet : ISudokuElement
 
         return result.ToArray();
     }
-    
+
+    public bool Contains(Cell cell)
+    {
+        foreach (var cp in _cellPossibilities)
+        {
+            if (cp.Cell == cell) return true;
+        }
+
+        return false;
+    }
+
+    public bool Contains(CellPossibility cp)
+    {
+        foreach (var cps in _cellPossibilities)
+        {
+            if (cps.Cell == cp.ToCell()) return cps.Possibilities.Contains(cp.Possibility);
+        }
+
+        return false;
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not NakedSet np) return false;

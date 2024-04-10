@@ -8,9 +8,64 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 
-public static class Cells
+public static class SudokuCellUtility
 {
     private static readonly ISharedSeenCellSearcher Searcher = new InCommonFindSearcher();
+
+    public static int SharedRow(IEnumerable<Cell> cells)
+    {
+        int r = -1;
+
+        foreach (var cell in cells)
+        {
+            if (r != -2)
+            {
+                if (r == -1) r = cell.Row;
+                else if (r != cell.Row) r = -2;
+            }
+        }
+
+        return r;
+    }
+
+    public static int SharedColumn(IEnumerable<Cell> cells)
+    {
+        int c = -1;
+
+        foreach (var cell in cells)
+        {
+            if (c != -2)
+            {
+                if (c == -1) c = cell.Column;
+                else if (c != cell.Column) c = -2;
+            }
+        }
+
+        return c;
+    }
+
+    public static (int, int) SharedLines(IEnumerable<Cell> cells)
+    {
+        int r = -1;
+        int c = -1;
+        
+        foreach (var cell in cells)
+        {
+            if (r != -2)
+            {
+                if (r == -1) r = cell.Row;
+                else if (r != cell.Row) r = -2;
+            }
+            
+            if (c != -2)
+            {
+                if (c == -1) c = cell.Column;
+                else if (c != cell.Column) c = -2;
+            }
+        }
+
+        return (r, c);
+    }
     
     public static bool ShareAUnit(int row1, int col1, int row2, int col2)
     {
@@ -467,17 +522,17 @@ public readonly struct CellPossibility : ISudokuElement, ICellPossibility
     
     public bool ShareAUnit(CellPossibility coord)
     {
-        return Cells.ShareAUnit(Row, Column, coord.Row, coord.Column);
+        return SudokuCellUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
     }
     
     public bool ShareAUnit(Cell coord)
     {
-        return Cells.ShareAUnit(Row, Column, coord.Row, coord.Column);
+        return SudokuCellUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
     }
 
     public IEnumerable<Cell> SharedSeenCells(CellPossibility coord)
     {
-        return Cells.SharedSeenCells(Row, Column, coord.Row, coord.Column);
+        return SudokuCellUtility.SharedSeenCells(Row, Column, coord.Row, coord.Column);
     }
 
     public override int GetHashCode()
@@ -518,6 +573,16 @@ public readonly struct CellPossibility : ISudokuElement, ICellPossibility
     public CellPossibility[] EveryCellPossibility()
     {
         return new[] { this };
+    }
+
+    public bool Contains(Cell cell)
+    {
+        return cell.Row == Row && cell.Column == Column;
+    }
+
+    public bool Contains(CellPossibility cp)
+    {
+        return cp == this;
     }
 
     public Cell ToCell()

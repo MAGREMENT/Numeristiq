@@ -36,7 +36,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         cells.AddRange(two.EveryCell());
 
         var possibility = one.EveryPossibilities().FirstPossibility();
-        foreach (var cell in Cells.SharedSeenCells(cells))
+        foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
         {
             view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
         }

@@ -1,5 +1,4 @@
-﻿using Model.Sudoku;
-using Model.Sudoku.Generator;
+﻿using Model.Sudoku.Generator;
 using Model.Sudoku.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
@@ -7,9 +6,8 @@ namespace ConsoleApplication.Commands;
 public class SudokuGenerateBatchCommand : Command
 {
     private const int CountIndex = 0;
-    private const int RateIndex = 1;
-    private const int HardestIndex = 2;
-    private const int SortIndex = 3;
+    private const int EvaluateIndex = 1;
+    private const int SortIndex = 2;
     
     public override string Description => "Generate a determined amount of Sudoku's";
     
@@ -17,8 +15,7 @@ public class SudokuGenerateBatchCommand : Command
     
     public SudokuGenerateBatchCommand() : base("SudokuGenerateBatch", 
         new Option("-c", "Count", OptionValueRequirement.Mandatory, OptionValueType.Int),
-        new Option("-r", "Rate puzzles difficulty"),
-        new Option("-h", "Find hardest strategy used"),
+        new Option("-e", "Evaluate puzzles"),
         new Option("-s", "Sort Sudoku's"))
     {
     }
@@ -32,17 +29,17 @@ public class SudokuGenerateBatchCommand : Command
         var generated = _generator.Generate(count);
         Console.WriteLine($"Finished generating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
 
-        List<EvaluatedGeneratedPuzzle> result = new(count);
+        List<GeneratedSudokuPuzzle> result = new(count);
 
-        if (report.IsUsed(RateIndex) || report.IsUsed(HardestIndex))
+        if (report.IsUsed(EvaluateIndex))
         {
             if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
-            var ratings = report.IsUsed(RateIndex) ? new RatingTracker() : null;
-            var hardest = report.IsUsed(HardestIndex) ? new HardestStrategyTracker() : null;
+            var ratings = new RatingTracker();
+            var hardest = new HardestStrategyTracker();
 
-            if (ratings is not null) solver.AddTracker(ratings);
-            if (hardest is not null) solver.AddTracker(hardest);
+            solver.AddTracker(ratings);
+            solver.AddTracker(hardest);
             
             Console.WriteLine("Started evaluating...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -50,23 +47,21 @@ public class SudokuGenerateBatchCommand : Command
             {
                 solver.SetSudoku(s.Copy());
                 solver.Solve();
-                result.Add(new EvaluatedGeneratedPuzzle(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
-                    ratings?.Rating ?? 0, hardest?.Hardest));
-            
-                ratings?.Clear();
-                hardest?.Clear();
+
+                var puzzle = new GeneratedSudokuPuzzle(s);
+                puzzle.SetEvaluation(ratings.Rating, hardest.Hardest!);
+                result.Add(puzzle);
             }
             Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
             
-            if (ratings is not null) solver.RemoveTracker(ratings);
-            if (hardest is not null) solver.RemoveTracker(hardest);
+            solver.RemoveTracker(ratings);
+            solver.RemoveTracker(hardest);
         }
         else
         {
             foreach (var s in generated)
             {
-                result.Add(new EvaluatedGeneratedPuzzle(SudokuTranslator.TranslateLineFormat(s, SudokuLineFormatEmptyCellRepresentation.Points),
-                    0, null));
+                result.Add(new GeneratedSudokuPuzzle(s));
             }
         }
 
@@ -79,9 +74,9 @@ public class SudokuGenerateBatchCommand : Command
                 var r = (int)(s2.Rating * 1000 - s1.Rating * 1000);
                 if (r != 0) return r;
 
-                if (s1.HardestStrategy is null || s2.HardestStrategy is null) return 0;
+                if (s1.Hardest is null || s2.Hardest is null) return 0;
 
-                return (int)s2.HardestStrategy.Difficulty - (int)s1.HardestStrategy.Difficulty;
+                return (int)s2.Hardest.Difficulty - (int)s1.Hardest.Difficulty;
             });
             Console.WriteLine($"Finished sorting in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
         }
@@ -89,9 +84,12 @@ public class SudokuGenerateBatchCommand : Command
         var n = 1;
         foreach (var s in result)
         {
-            Console.Write($"#{n++} {s.Sudoku}");
-            if(s.Rating != 0) Console.Write($" - {Math.Round(s.Rating, 2)}");
-            if(s.HardestStrategy is not null) Console.Write($" - {s.HardestStrategy}");
+            Console.Write($"#{n++} {s.AsString()}");
+            if (s.Evaluated)
+            {
+                Console.Write($" - {Math.Round(s.Rating, 2)}");
+                Console.Write($" - {s.Hardest}");
+            }
             Console.WriteLine();
         }
     }

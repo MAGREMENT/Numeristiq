@@ -26,6 +26,16 @@ public class TrackerManager
         if (_trackers.Count == 0) _trackers = null;
     }
 
+    public void OnSolveStart()
+    {
+        if (_trackers is null) return;
+
+        foreach (var tracker in _trackers)
+        {
+            tracker.OnSolveStart();
+        }
+    }
+
     public void OnStrategyStart(SudokuStrategy strategy, int index)
     {
         if (_trackers is null) return;

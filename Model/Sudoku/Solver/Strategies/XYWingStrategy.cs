@@ -92,7 +92,7 @@ public class XYWingStrategy : SudokuStrategy
     private bool Process(IStrategyUser strategyUser, int hingeRow, int hingeCol,
         int row1, int col1, int row2, int col2, int number)
     {
-        foreach (var cell in Cells.SharedSeenCells(row1, col1, row2, col2))
+        foreach (var cell in SudokuCellUtility.SharedSeenCells(row1, col1, row2, col2))
         {
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }

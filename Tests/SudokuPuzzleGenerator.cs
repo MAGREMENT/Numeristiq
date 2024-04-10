@@ -34,7 +34,6 @@ public class SudokuPuzzleGenerator
             {
                 Console.Write(SudokuTranslator.TranslateLineFormat(p, SudokuLineFormatEmptyCellRepresentation.Points));
                 solver.SetSudoku(p);
-                finder.Clear();
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest?.Name);
 

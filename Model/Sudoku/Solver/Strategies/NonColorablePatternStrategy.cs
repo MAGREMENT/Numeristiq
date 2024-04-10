@@ -83,7 +83,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
             var targets = outPossibilities.Count == 1 
                 ? outPossibilities 
-                : Cells.SharedSeenExistingPossibilities(strategyUser, outPossibilities);
+                : SudokuCellUtility.SharedSeenExistingPossibilities(strategyUser, outPossibilities);
             if (targets.Count == 0 || IsPatternValid(perfect, combination, poss.Count))
             {
                 outPossibilities.Clear();

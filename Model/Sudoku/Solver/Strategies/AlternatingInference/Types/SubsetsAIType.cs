@@ -65,7 +65,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
                 if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
 
-            foreach (var cell in Cells.SharedSeenCells(cells))
+            foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
             {
                 view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
@@ -84,7 +84,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
                     if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
                 }
                 
-                foreach (var cell in Cells.SharedSeenCells(cells))
+                foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
                 {
                     view.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                 }

@@ -54,7 +54,7 @@ public class BUGStrategy : SudokuStrategy
                 strategyUser.ChangeBuffer.ProposeSolutionAddition(additionalCandidates[0]);
                 break;
             default:
-                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyUser, additionalCandidates))
+                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(strategyUser, additionalCandidates))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }

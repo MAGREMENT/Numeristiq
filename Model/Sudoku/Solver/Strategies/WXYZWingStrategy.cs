@@ -248,7 +248,7 @@ public class WXYZWingStrategy : SudokuStrategy
 
         if (cells.Count == 1) return false;
 
-        foreach (var coord in Cells.SharedSeenCells(cells))
+        foreach (var coord in SudokuCellUtility.SharedSeenCells(cells))
         {
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Column);
         }

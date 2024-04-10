@@ -57,7 +57,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
 
                     linkGraph.Add(element, nakedSet, LinkStrength.Strong, LinkType.MonoDirectional);
 
-                    foreach (var ssc in Cells.SharedSeenCells(notIn))
+                    foreach (var ssc in SudokuCellUtility.SharedSeenCells(notIn))
                     {
                         if (strategyUser.PossibilitiesAt(ssc).Contains(p)) linkGraph.Add(new CellPossibility(ssc, p),
                                 element, LinkStrength.Weak, LinkType.MonoDirectional);
@@ -69,7 +69,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                     if (possibility == p) continue;
                     List<Cell> cells = new List<Cell>(als.EachCell(possibility)); //TODO skip
 
-                    foreach (var ssc in Cells.SharedSeenCells(cells))
+                    foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
                     {
                         if(strategyUser.PossibilitiesAt(ssc).Contains(possibility)) linkGraph.Add(nakedSet,
                             new CellPossibility(ssc, possibility), LinkStrength.Weak, LinkType.MonoDirectional);

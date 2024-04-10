@@ -42,7 +42,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
 
     private bool Search(IStrategyUser strategyUser, BiValue values, params Cell[] floor)
     {
-        foreach (var roof in Cells.DeadlyPatternRoofs(floor))
+        foreach (var roof in SudokuCellUtility.DeadlyPatternRoofs(floor))
         {
             if (Try(strategyUser, values, floor, roof)) return true;
         }
@@ -92,7 +92,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             if (and.Count == 1)
             {
                 var possibility = and.FirstPossibility();
-                foreach (var cell in Cells.SharedSeenCells(roof[0], roof[1]))
+                foreach (var cell in SudokuCellUtility.SharedSeenCells(roof[0], roof[1]))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
@@ -105,7 +105,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
         notBiValuePossibilities -= values.One;
         notBiValuePossibilities -= values.Two;
-        var ssc = new List<Cell>(Cells.SharedSeenCells(roof[0], roof[1]));
+        var ssc = new List<Cell>(SudokuCellUtility.SharedSeenCells(roof[0], roof[1]));
         foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
@@ -134,7 +134,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 if (strategyUser.PossibilitiesAt(r).Contains(possibility)) buffer.Add(r);
             }
 
-            foreach (var cell in Cells.SharedSeenCells(buffer))
+            foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }

@@ -156,7 +156,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     {
         List<Cell> total = new List<Cell>(centerCells);
         total.AddRange(als.EachCell());
-        foreach (var ssc in Cells.SharedSeenEmptyCells(strategyUser, total))
+        foreach (var ssc in SudokuCellUtility.SharedSeenEmptyCells(strategyUser, total))
         {
             foreach (var p in possibilities.EnumeratePossibilities())
             {

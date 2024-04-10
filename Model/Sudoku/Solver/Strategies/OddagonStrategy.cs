@@ -24,7 +24,7 @@ public class OddagonStrategy : SudokuStrategy
             if (ao.Guardians.Length == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
             else
             {
-                foreach (var cp in Cells.SharedSeenExistingPossibilities(strategyUser, ao.Guardians))
+                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(strategyUser, ao.Guardians))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }

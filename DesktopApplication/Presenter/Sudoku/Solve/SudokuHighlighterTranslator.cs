@@ -154,7 +154,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                     {
                         if (possibilitySearch != -1 && possT != possibilitySearch) continue;
 
-                        var dist = Cells.Distance(cellF.Cell, possF, cellT.Cell, possT);
+                        var dist = SudokuCellUtility.Distance(cellF.Cell, possF, cellT.Cell, possT);
                         if (dist < minDist)
                         {
                             minDist = dist;

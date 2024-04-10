@@ -101,14 +101,15 @@ public static class StrategyPool
         {AlmostLockedCandidatesStrategy.OfficialNameForType3, () => new AlmostLockedCandidatesStrategy(3)},
         {OddagonStrategy.OfficialName, () => new OddagonStrategy()},
         {OddagonForcingNetStrategy.OfficialName, () => new OddagonForcingNetStrategy(3)},
-        {BlossomLoopStrategy.OfficialNameForCell, () => new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new CellType())},
-        {BlossomLoopStrategy.OfficialNameForUnit, () => new BlossomLoopStrategy(new BLLoopFinderV2(12), new BLBranchFinderV1(), new UnitType())},
+        {BlossomLoopStrategy.OfficialNameForCell, () => new BlossomLoopStrategy(new BLLoopFinderV1(12), new BLBranchFinderV1(), new CellType())},
+        {BlossomLoopStrategy.OfficialNameForUnit, () => new BlossomLoopStrategy(new BLLoopFinderV1(12), new BLBranchFinderV1(), new UnitType())},
         {ThorsHammerStrategy.OfficialName, () => new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
         {ReverseBUGLiteStrategy.OfficialName, () => new ReverseBUGLiteStrategy()},
         {MiniUniquenessStrategy.OfficialName, () => new MiniUniquenessStrategy()},
         {UniquenessClueCoverStrategy.OfficialName, () => new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
         {ExtendedUniqueRectanglesStrategy.OfficialName, () => new ExtendedUniqueRectanglesStrategy()},
-        {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)}
+        {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)},
+        {XYZRingStrategy.OfficialName, () => new XYZRingStrategy()}
     };
 
     private static readonly Dictionary<string, string> Descriptions = new()

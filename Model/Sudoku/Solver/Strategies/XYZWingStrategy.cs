@@ -65,7 +65,7 @@ public class XYZWingStrategy : SudokuStrategy
     private bool Process(IStrategyUser strategyUser, int hingeRow, int hingeCol, int row1, int col1, int row2,
         int col2, int number)
     {
-        foreach (var cell in Cells.SharedSeenCells(new Cell(hingeRow, hingeCol),
+        foreach (var cell in SudokuCellUtility.SharedSeenCells(new Cell(hingeRow, hingeCol),
                      new Cell(row1, col1), new Cell(row2, col2)))
         {
             strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);

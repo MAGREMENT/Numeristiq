@@ -5,6 +5,10 @@ using Model.Helpers.Highlighting;
 using Model.Sudoku;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Strategies;
+using Model.Sudoku.Solver.Strategies.BlossomLoops;
+using Model.Sudoku.Solver.Strategies.BlossomLoops.BranchFinder;
+using Model.Sudoku.Solver.Strategies.BlossomLoops.LoopFinders;
+using Model.Sudoku.Solver.Strategies.BlossomLoops.Types;
 
 namespace Tests;
 
@@ -173,6 +177,54 @@ public class SudokuStrategiesTests
             "03c848csc4cs1121g10hg105481121034881c8112103c0g1050h485848g1210h4481140350210hs403c4k81448050381k0091121k00hc80h4811s4cck80321g1c811c821030hc805210503cos0cok8s811",
             "- 714 754 784 794 788 798");
     }
+    
+    #region BlossomLoop
+
+    [Test]
+    public void BlossomLoopTest()
+    {
+        TestSudokuStrategyInstance(new BlossomLoopStrategy(new BLLoopFinderV1(12), new BLBranchFinderV1(), new CellType()),
+            "2105090hh0o2124192og03og94418409akb4cg4g11aea88e0i0mg10i2105g11o0o811241s009s2d694c6i2j60h114gsic68k21g2090609114ie0qgsg05qga24kg14gec03cs7gagb84m81214cgs11kigi0a",
+            "- 228 431 463 689 889");
+    }
+
+    [Test]
+    public void BlossomLoopTest2()
+    {
+        TestSudokuStrategyInstance(new BlossomLoopStrategy(new BLLoopFinderV1(12), new BLBranchFinderV1(), new UnitType()),
+            "p2b2090hj2i241j494l205k0h2ja81hoj81o0hb0i005j841h80398210o0i12410m811cg1g441g2p2p009210h16o68q1121gggk0a4c46521i81ga05gihql821093i0541iiiihi811i42g16i88ai1105484o",
+            "- 328 269 171 172 378 182 793");
+    }
+    
+    #endregion
+
+    #region XYZRing
+
+    [Test]
+    public void XYZRingTest1()
+    {
+        TestSudokuStrategyInstance(new XYZRingStrategy(),
+            "2a052gga11i841gq81110o41gegc810q21gg2a81g10h6868110a050hg109810311054121052111g8koko81go0381410321gsgs0o11gg411i81h4ikik2i0m09g10q2g41812s2i0m11281o05182o03g18141",
+            "- 472 482 395");
+    }
+
+    [Test]
+    public void XYZRingTest2()
+    {
+        TestSudokuStrategyInstance(new XYZRingStrategy(),
+            "2a052gga11i841gq81110o41gegc810i21gg2a81g10h6868110a050hg109810311054121052111g8koko81gg0381410321gkgk0911gg411281h4ikik2i0m09g10a2g41812s2i0m11281o05182g03g18141",
+            "- 686 177");
+    }
+
+    [Test]
+    public void XYZRingTest3()
+    {
+        TestSudokuStrategyInstance(new XYZRingStrategy(),
+            "g105dg215i4i920982f003f0180548b00hg1093g3g811ig14105220ha0a20cg11122410c7409720m6g6gg1812m6460g10u81682i112u03cgcgg1098g052111b0g1091g3g058g0341b0bg05413iai09g18g",
+            "- 661 667 669");
+    }
+
+    #endregion
 
     private void TestSudokuStrategyInstance(SudokuStrategy strategy, string stateBefore32, string expectedAsString)
     {

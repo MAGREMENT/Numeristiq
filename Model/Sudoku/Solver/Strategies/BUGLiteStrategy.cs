@@ -193,7 +193,7 @@ public class BUGLiteStrategy : SudokuStrategy
                 {
                     var cp1 = new CellPossibility(cellsNotInStructure[0], asArray[i]);
                     var cp2 = new CellPossibility(cellsNotInStructure[1], asArray[i]);
-                    if (Cells.AreStronglyLinked(strategyUser, cp1, cp2))
+                    if (SudokuCellUtility.AreStronglyLinked(strategyUser, cp1, cp2))
                     {
                         var other = asArray[(i + 1) % 2];
                         strategyUser.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
@@ -206,7 +206,7 @@ public class BUGLiteStrategy : SudokuStrategy
         if (possibilitiesNotInStructure.Count == 1)
         {
             var p = possibilitiesNotInStructure.FirstPossibility();
-            foreach (var ssc in Cells.SharedSeenCells(cellsNotInStructure))
+            foreach (var ssc in SudokuCellUtility.SharedSeenCells(cellsNotInStructure))
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
             }

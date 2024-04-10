@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Controls;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Generate;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku.Controls;
-using Model.Sudoku;
 using Model.Sudoku.Generator;
 
 namespace DesktopApplication.View.Sudoku.Pages;
@@ -42,7 +40,7 @@ public partial class GeneratePage : ISudokuGenerateView
         return settings;
     }
 
-    public void UpdateNotEvaluatedList(IEnumerable<Model.Sudoku.Sudoku> sudokus)
+    public void UpdateNotEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus)
     {
         NotEvaluated.Dispatcher.Invoke(() =>
         {
@@ -50,21 +48,12 @@ public partial class GeneratePage : ISudokuGenerateView
 
             foreach (var sudoku in sudokus)
             {
-                var tb = new TextBlock
-                {
-                    FontSize = 14,
-                    Padding = new Thickness(5),
-                    Text = SudokuTranslator.TranslateLineFormat(sudoku,
-                        SudokuLineFormatEmptyCellRepresentation.Zeros)
-                };
-                
-                tb.SetResourceReference(ForegroundProperty, "Text");
-                NotEvaluated.Children.Add(tb);
+                NotEvaluated.Children.Add(new GeneratedPuzzleControl(sudoku));
             }
         });
     }
 
-    public void UpdateEvaluatedList(IEnumerable<EvaluatedGeneratedPuzzle> sudokus)
+    public void UpdateEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus)
     {
         Evaluated.Dispatcher.Invoke(() =>
         {
@@ -72,19 +61,16 @@ public partial class GeneratePage : ISudokuGenerateView
 
             foreach (var sudoku in sudokus)
             {
-                Evaluated.Children.Add(new EvaluatedGeneratedPuzzleControl(sudoku));
+                Evaluated.Children.Add(new GeneratedPuzzleControl(sudoku));
             }
         });
     }
 
-    public void UpdateCurrentlyEvaluated(Model.Sudoku.Sudoku? sudoku)
+    public void UpdateCurrentlyEvaluated(GeneratedSudokuPuzzle? sudoku)
     {
         CurrentlyEvaluated.Dispatcher.Invoke(() =>
         {
-            var s = sudoku is null
-                ? string.Empty
-                : SudokuTranslator.TranslateLineFormat(sudoku, SudokuLineFormatEmptyCellRepresentation.Zeros);
-            CurrentlyEvaluated.Text = s;
+            CurrentlyEvaluated.Child = sudoku is null ? null : new GeneratedPuzzleControl(sudoku);
         });
     }
 
@@ -100,6 +86,7 @@ public partial class GeneratePage : ISudokuGenerateView
 
     private void OnValueChange(int value)
     {
+        //KEEP THE "?"
         _presenter?.SetGenerationCount(value);
     }
 }

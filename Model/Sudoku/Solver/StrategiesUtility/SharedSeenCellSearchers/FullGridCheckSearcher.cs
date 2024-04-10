@@ -13,8 +13,8 @@ public class FullGridCheckSearcher : ISharedSeenCellSearcher
             {
                 if ((row == row1 && col == col1) || (row == row2 && col == col2)) continue;
                 
-                if (Cells.ShareAUnit(row, col, row1, col1)
-                    && Cells.ShareAUnit(row, col, row2, col2))
+                if (SudokuCellUtility.ShareAUnit(row, col, row1, col1)
+                    && SudokuCellUtility.ShareAUnit(row, col, row2, col2))
                 {
                     yield return new Cell(row, col); 
                 }
@@ -31,8 +31,8 @@ public class FullGridCheckSearcher : ISharedSeenCellSearcher
                 if (strategyUser.Sudoku[row, col] != 0 ||
                     (row == row1 && col == col1) || (row == row2 && col == col2)) continue;
                 
-                if (Cells.ShareAUnit(row, col, row1, col1)
-                    && Cells.ShareAUnit(row, col, row2, col2))
+                if (SudokuCellUtility.ShareAUnit(row, col, row1, col1)
+                    && SudokuCellUtility.ShareAUnit(row, col, row2, col2))
                 {
                     yield return new Cell(row, col);  
                 }

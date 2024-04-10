@@ -52,6 +52,16 @@ public class CellsPossibility : ISudokuElement
         return result;
     }
 
+    public bool Contains(Cell cell)
+    {
+        return _cells.Contains(cell);
+    }
+
+    public bool Contains(CellPossibility cp)
+    {
+        return _possibility == cp.Possibility && _cells.Contains(cp.ToCell());
+    }
+
     public override bool Equals(object? obj)
     {
         if (obj is not CellsPossibility cp || cp._possibility != _possibility 

@@ -244,8 +244,8 @@ public class FireworksStrategy : SudokuStrategy
                     {
                         if (!possibilities.Contains(possibility)) continue;
 
-                        if (!Cells.ShareAUnit(cell, df.RowWing)) one = false;
-                        if (!Cells.ShareAUnit(cell, df.ColumnWing)) two = false;
+                        if (!SudokuCellUtility.ShareAUnit(cell, df.RowWing)) one = false;
+                        if (!SudokuCellUtility.ShareAUnit(cell, df.ColumnWing)) two = false;
                     }
 
                     if (!one && !two) break;
@@ -264,11 +264,11 @@ public class FireworksStrategy : SudokuStrategy
                     List<Cell> total = new(one.EachCell());
                     total.AddRange(two.EachCell());
 
-                    foreach (var sharedSeenCell in Cells.SharedSeenCells(total))
+                    foreach (var sharedSeenCell in SudokuCellUtility.SharedSeenCells(total))
                     {
                         if (sharedSeenCell == df.Cross || sharedSeenCell == df.RowWing ||
-                            sharedSeenCell == df.ColumnWing || !Cells.ShareAUnit(sharedSeenCell, df.RowWing) ||
-                            !Cells.ShareAUnit(sharedSeenCell, df.ColumnWing)) continue;
+                            sharedSeenCell == df.ColumnWing || !SudokuCellUtility.ShareAUnit(sharedSeenCell, df.RowWing) ||
+                            !SudokuCellUtility.ShareAUnit(sharedSeenCell, df.ColumnWing)) continue;
 
                         foreach (var possibility in df.Possibilities.EnumeratePossibilities())
                         {
@@ -294,7 +294,7 @@ public class FireworksStrategy : SudokuStrategy
                 if (df.Possibilities.Contains(possibility)) continue;
 
                 var current = new CellPossibility(df.ColumnWing, possibility);
-                foreach (var friend in Cells.DefaultStrongLinks(user, current))
+                foreach (var friend in SudokuCellUtility.DefaultStrongLinks(user, current))
                 {
                     if (!friend.ShareAUnit(df.RowWing)) continue;
 
@@ -311,7 +311,7 @@ public class FireworksStrategy : SudokuStrategy
                 if (df.Possibilities.Contains(possibility)) continue;
 
                 var current = new CellPossibility(df.RowWing, possibility);
-                foreach (var friend in Cells.DefaultStrongLinks(user, current))
+                foreach (var friend in SudokuCellUtility.DefaultStrongLinks(user, current))
                 {
                     if (!friend.ShareAUnit(df.ColumnWing)) continue;
 

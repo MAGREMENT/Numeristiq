@@ -94,7 +94,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     {
         foreach (var entry in possibilitiesCells)
         {
-            foreach (var ssc in Cells.SharedSeenCells(entry.Value))
+            foreach (var ssc in SudokuCellUtility.SharedSeenCells(entry.Value))
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, ssc);
             }
@@ -127,7 +127,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
             ok = true;
             foreach (var c in toShareAUnitWith)
             {
-                if (!Cells.ShareAUnit(cell, c)) return false;
+                if (!SudokuCellUtility.ShareAUnit(cell, c)) return false;
             }
         }
 

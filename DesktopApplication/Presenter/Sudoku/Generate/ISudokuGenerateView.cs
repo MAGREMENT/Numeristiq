@@ -5,11 +5,11 @@ namespace DesktopApplication.Presenter.Sudoku.Generate;
 
 public interface ISudokuGenerateView
 {
-    void UpdateNotEvaluatedList(IEnumerable<Model.Sudoku.Sudoku> sudokus);
+    void UpdateNotEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus);
 
-    void UpdateEvaluatedList(IEnumerable<EvaluatedGeneratedPuzzle> sudokus);
+    void UpdateEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus);
 
-    void UpdateCurrentlyEvaluated(Model.Sudoku.Sudoku? sudoku);
+    void UpdateCurrentlyEvaluated(GeneratedSudokuPuzzle? sudoku);
 
     void AllowGeneration(bool allowed);
 }

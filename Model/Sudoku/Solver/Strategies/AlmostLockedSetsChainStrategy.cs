@@ -119,7 +119,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             cells.AddRange(first.EachCell(possibility));
             cells.AddRange(last.EachCell(possibility));
 
-            foreach (var ssc in Cells.SharedSeenCells(cells))
+            foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
             {
                 strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, ssc);
             }
@@ -193,7 +193,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         {
             foreach (var cell2 in elementAfter.EachCell(link))
             {
-                var dist = Cells.Distance(cell1, link, cell2, link);
+                var dist = SudokuCellUtility.Distance(cell1, link, cell2, link);
 
                 if (dist < minDistance)
                 {

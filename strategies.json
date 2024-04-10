@@ -215,6 +215,13 @@
     "Settings": {}
   },
   {
+    "Name": "XYZ-Ring",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
     "Name": "Finned X-Wing",
     "Enabled": true,
     "Locked": false,

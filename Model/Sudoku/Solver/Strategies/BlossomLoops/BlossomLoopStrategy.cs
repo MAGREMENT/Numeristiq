@@ -139,7 +139,7 @@ public class BlossomLoopStrategy : SudokuStrategy
                     }
                 }
 
-                foreach (var ssc in Cells.SharedSeenCells(c))
+                foreach (var ssc in SudokuCellUtility.SharedSeenCells(c))
                 {
                     strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                 }
@@ -185,7 +185,7 @@ public class BlossomLoopStrategy : SudokuStrategy
                 if (cp.Possibilities.Contains(possibility)) cells.Add(cp.Cell);
             }
 
-            foreach (var cell in Cells.SharedSeenCells(cells))
+            foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
             {
                 var cp = new CellPossibility(cell.Row, cell.Column, possibility);
                 if (!nope.Contains(cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);

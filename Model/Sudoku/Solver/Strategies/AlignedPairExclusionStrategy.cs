@@ -82,7 +82,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
 
     private bool Search(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
-        var shared = new List<Cell>(Cells.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2));
+        var shared = new List<Cell>(SudokuCellUtility.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2));
 
         var poss1 = strategyUser.PossibilitiesAt(row1, col1);
         var poss2 = strategyUser.PossibilitiesAt(row2, col2);
@@ -90,7 +90,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         
         if (shared.Count < poss1.Count || shared.Count < poss2.Count) return false;
 
-        var inSameUnit = Cells.ShareAUnit(row1, col1, row2, col2);
+        var inSameUnit = SudokuCellUtility.ShareAUnit(row1, col1, row2, col2);
         
         List<IPossibilitiesPositions> usefulAls = new();
         HashSet<BiValue> forbidden = new();

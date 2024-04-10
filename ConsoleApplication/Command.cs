@@ -1,6 +1,6 @@
 ﻿namespace ConsoleApplication;
 
-public abstract class Command
+public abstract class Command //TODO add aliases
 {
     public string Name { get; }
     public IReadOnlyList<Option> Options { get; }

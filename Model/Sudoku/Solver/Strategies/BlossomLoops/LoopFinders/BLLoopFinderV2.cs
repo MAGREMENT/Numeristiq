@@ -5,62 +5,88 @@ using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Sudoku.Solver.Strategies.BlossomLoops.LoopFinders;
 
-public class BLLoopFinderV2 : IBlossomLoopLoopFinder
+public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
 {
-    private readonly int _maxLoopSize;
-
-    public BLLoopFinderV2(int maxLoopSize)
-    {
-        _maxLoopSize = maxLoopSize;
-    }
-
     public List<LinkGraphLoop<ISudokuElement>> Find(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph)
     {
         List<LinkGraphLoop<ISudokuElement>> result = new();
 
-        foreach (var start in cps)
+        foreach (var cp in cps)
         {
-            Search(cps, graph, new LinkGraphChainBuilder<ISudokuElement>(start), result);
+            Search(result, graph, cp, cps);
         }
 
         return result;
     }
 
-    public void Search(CellPossibility[] cps, ILinkGraph<ISudokuElement> graph,
-        LinkGraphChainBuilder<ISudokuElement> builder, List<LinkGraphLoop<ISudokuElement>> result)
+    private void Search(List<LinkGraphLoop<ISudokuElement>> result, ILinkGraph<ISudokuElement> graph,
+        CellPossibility start, CellPossibility[] cps)
     {
-        if (builder.Count > _maxLoopSize) return;
-        
-        var last = builder.LastElement();
-        var first = builder.FirstElement();
-        var link = builder.LastLink() == LinkStrength.None ? LinkStrength.Any : (builder.LastLink() ==
-                LinkStrength.Strong ? LinkStrength.Any : LinkStrength.Strong);
+        Dictionary<ISudokuElement, ISudokuElement> on = new();
+        Dictionary<ISudokuElement, ISudokuElement> off = new();
+        Queue<ISudokuElement> queue = new();
 
-        foreach (var friend in graph.Neighbors(last, link))
+        queue.Enqueue(start);
+
+        while (queue.Count > 0)
         {
-            if (friend.Equals(first)) continue;
+            var current = queue.Dequeue();
+            foreach (var neighbor in graph.Neighbors(current))
+            {
+                if (neighbor.Equals(start)) continue;
 
-            if (friend is CellPossibility cp && cps.Contains(cp))
-            {
-                if (builder.Count < 3 || builder.Count % 2 != 1) continue;
-                
-                builder.Add(LinkStrength.Weak, friend);
-                result.Add(builder.ToLoop(LinkStrength.Strong));
-                builder.RemoveLast();
-            }
-            else if (!builder.ContainsElement(friend) && ComponentsCheck(cps, friend))
-            {
-                builder.Add(link == LinkStrength.Any ? LinkStrength.Weak : LinkStrength.Strong, friend);
-                Search(cps, graph, builder, result);
-                builder.RemoveLast();
+                if (neighbor is CellPossibility cp && cps.Contains(cp))
+                {
+                    var loop = TryMakeLoop(on, off, neighbor, start);
+                    if (loop is not null)
+                    {
+                        result.Add(loop);
+                        continue;
+                    }
+                }
+
+                off.TryAdd(neighbor, current);
+                foreach (var secondNeighbor in graph.Neighbors(neighbor, LinkStrength.Strong))
+                {
+                    if (!ComponentsCheck(cps, secondNeighbor)) continue;
+
+                    if (on.TryAdd(secondNeighbor, neighbor)) queue.Enqueue(secondNeighbor);
+                }
             }
         }
     }
-    
-    private bool ComponentsCheck(CellPossibility[] cps, ISudokuElement friend)
-    {
-        if (friend is CellPossibility) return true;
 
+    private static LinkGraphLoop<ISudokuElement>? TryMakeLoop(Dictionary<ISudokuElement, ISudokuElement> on, 
+        Dictionary<ISudokuElement, ISudokuElement> off, ISudokuElement end, ISudokuElement start)
+    {
+        List<ISudokuElement> elements = new();
+        List<LinkStrength> links = new();
+
+        elements.Add(end);
+        links.Add(LinkStrength.Strong);
+
+        while (true)
+        {
+            elements.Add(off[elements[^1]]);
+            links.Add(LinkStrength.Weak);
+
+            if (!on.TryGetValue(elements[^1], out var value)) break;
+
+            elements.Add(value);
+            links.Add(LinkStrength.Strong);
+        }
+
+        elements.Add(start);
+        links.Add(LinkStrength.Weak);
+        if (elements.Count < 4) return null;
+        
+        elements.Reverse();
+        links.Reverse();
+        return new LinkGraphLoop<ISudokuElement>(elements.ToArray(), links.ToArray());
+    }
+    
+    private static bool ComponentsCheck(CellPossibility[] cps, ISudokuElement friend)
+    {
         foreach (var cp in friend.EveryCellPossibility())
         {
             if (cps.Contains(cp)) return false;

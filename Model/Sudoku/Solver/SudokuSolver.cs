@@ -158,6 +158,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     public void Solve(bool stopAtProgress = false)
     {
         StartedSolving = true;
+        _trackerManager.OnSolveStart();
         
         for (int i = 0; i < StrategyManager.Strategies.Count; i++)
         {
