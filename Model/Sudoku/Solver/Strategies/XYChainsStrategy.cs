@@ -33,7 +33,7 @@ public class XYChainsStrategy : SudokuStrategy
     private bool Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
     {
-        CellPossibility friend = graph.Neighbors(current, LinkStrength.Strong).First();
+        var friend = graph.Neighbors(current, LinkStrength.Strong).First();
 
         route.Add(current);
         route.Add(friend);

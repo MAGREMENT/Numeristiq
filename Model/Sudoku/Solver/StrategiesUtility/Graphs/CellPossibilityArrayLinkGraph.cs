@@ -1,14 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Model.Utility;
 using Model.Utility.Collections;
 
 namespace Model.Sudoku.Solver.StrategiesUtility.Graphs;
 
 public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
 {
-    private UniqueList<CellPossibility>?[,,,] _cps = new UniqueList<CellPossibility>[9, 9, 9, 2];
+    private readonly UniqueList<CellPossibility>?[,,,] _cps = new UniqueList<CellPossibility>[9, 9, 9, 2];
     
     public void Add(CellPossibility from, CellPossibility to, LinkStrength strength, LinkType type = LinkType.BiDirectional)
     {
@@ -55,7 +54,19 @@ public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
 
     public void Clear()
     {
-        _cps = new UniqueList<CellPossibility>[9, 9, 9, 2];
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                for (int k = 0; k < 9; k++)
+                {
+                    for (int l = 0; l < 2; l++)
+                    {
+                        _cps[i,j,k,l]?.Clear();
+                    }
+                }
+            }
+        }
     }
     
     public IEnumerator<CellPossibility> GetEnumerator()
@@ -66,7 +77,9 @@ public class CellPossibilityArrayLinkGraph : ILinkGraph<CellPossibility>
             {
                 for (int p = 0; p < 9; p++)
                 {
-                    if (_cps[r, c, p, 0] is not null || _cps[r, c, p, 1] is not null)
+                    var weak = _cps[r, c, p, 0];
+                    var strong = _cps[r, c, p, 1];
+                    if ((weak is not null && weak.Count > 0) || (strong is not null && strong.Count > 0))
                         yield return new CellPossibility(r, c, p + 1);
                 }
             }

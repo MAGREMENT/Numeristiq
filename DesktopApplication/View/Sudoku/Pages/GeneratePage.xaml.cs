@@ -12,10 +12,14 @@ namespace DesktopApplication.View.Sudoku.Pages;
 public partial class GeneratePage : ISudokuGenerateView
 {
     private readonly SudokuGeneratePresenter _presenter;
+    private readonly bool _initialized;
+    
     public GeneratePage(SudokuApplicationPresenter appPresenter)
     {
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
+
+        _initialized = true;
     }
 
     public override void OnShow()
@@ -40,19 +44,6 @@ public partial class GeneratePage : ISudokuGenerateView
         return settings;
     }
 
-    public void UpdateNotEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus)
-    {
-        NotEvaluated.Dispatcher.Invoke(() =>
-        {
-            NotEvaluated.Children.Clear();
-
-            foreach (var sudoku in sudokus)
-            {
-                NotEvaluated.Children.Add(new GeneratedPuzzleControl(sudoku));
-            }
-        });
-    }
-
     public void UpdateEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus)
     {
         Evaluated.Dispatcher.Invoke(() =>
@@ -63,14 +54,6 @@ public partial class GeneratePage : ISudokuGenerateView
             {
                 Evaluated.Children.Add(new GeneratedPuzzleControl(sudoku));
             }
-        });
-    }
-
-    public void UpdateCurrentlyEvaluated(GeneratedSudokuPuzzle? sudoku)
-    {
-        CurrentlyEvaluated.Dispatcher.Invoke(() =>
-        {
-            CurrentlyEvaluated.Child = sudoku is null ? null : new GeneratedPuzzleControl(sudoku);
         });
     }
 
@@ -86,7 +69,6 @@ public partial class GeneratePage : ISudokuGenerateView
 
     private void OnValueChange(int value)
     {
-        //KEEP THE "?"
-        _presenter?.SetGenerationCount(value);
+        if(_initialized) _presenter.SetGenerationCount(value);
     }
 }

@@ -67,7 +67,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 foreach (var possibility in als.Possibilities.EnumeratePossibilities())
                 {
                     if (possibility == p) continue;
-                    List<Cell> cells = new List<Cell>(als.EachCell(possibility)); //TODO skip
+                    var cells = new List<Cell>(als.EachCell(possibility)); //TODO skip
 
                     foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
                     {

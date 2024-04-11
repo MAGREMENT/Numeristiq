@@ -43,6 +43,8 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     
     private int _solutionAddedBuffer;
     private int _possibilityRemovedBuffer;
+    private bool _changeWasMade;
+    
     public bool StartedSolving { get; private set; }
 
     private IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> _changeBuffer;
@@ -170,11 +172,9 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             ChangeBuffer.Push(current);
             _trackerManager.OnStrategyEnd(current, i, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
-            if (_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
+            if (!_changeWasMade) continue;
 
-            _solutionAddedBuffer = 0;
-            _possibilityRemovedBuffer = 0;
-            
+            ResetChangeTrackingVariables();
             i = -1;
             PreComputer.Reset();
 
@@ -203,8 +203,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             _trackerManager.OnStrategyEnd(current, i, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
             current.InstanceHandling = handling;
-            _solutionAddedBuffer = 0;
-            _possibilityRemovedBuffer = 0;
+            ResetChangeTrackingVariables();
         }
         
         var result = ((NotExecutedChangeBuffer<IUpdatableSudokuSolvingState,
@@ -228,10 +227,9 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
             ChangeBuffer.Push(current);
             _trackerManager.OnStrategyEnd(current, i, _solutionAddedBuffer, _possibilityRemovedBuffer);
 
-            if(_solutionAddedBuffer + _possibilityRemovedBuffer == 0) continue;
+            if(!_changeWasMade) continue;
             
-            _solutionAddedBuffer = 0;
-            _possibilityRemovedBuffer = 0;
+            ResetChangeTrackingVariables();
             break;
         }
 
@@ -350,7 +348,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
 
     public void FakeChange()
     {
-        _possibilityRemovedBuffer++;
+        _changeWasMade = true;
     }
 
     public LogManager<ISudokuHighlighter> LogManager { get; }
@@ -366,8 +364,12 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _currentState = null;
         _sudoku[row, col] = number;
         UpdatePossibilitiesAfterSolutionAdded(number, row, col);
-        
-        if(fromSolving) _solutionAddedBuffer++;
+
+        if (fromSolving)
+        {
+            _solutionAddedBuffer++;
+            _changeWasMade = true;
+        }
         return true;
     }
 
@@ -390,8 +392,12 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _rowsPositions[row, possibility - 1].Remove(col);
         _colsPositions[col, possibility - 1].Remove(row);
         _minisPositions[row / 3, col / 3, possibility - 1].Remove(row % 3, col % 3);
-        
-        if(fromSolving) _possibilityRemovedBuffer++;
+
+        if (fromSolving)
+        {
+            _possibilityRemovedBuffer++;
+            _changeWasMade = true;
+        }
         return true;
     }
     
@@ -409,6 +415,13 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     #endregion
 
     #region Private
+
+    private void ResetChangeTrackingVariables()
+    {
+        _possibilityRemovedBuffer = 0;
+        _solutionAddedBuffer = 0;
+        _changeWasMade = false;
+    }
 
     private void CallOnNewSudokuForEachStrategy()
     {

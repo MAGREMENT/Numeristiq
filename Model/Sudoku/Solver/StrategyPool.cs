@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Model.Helpers.Descriptions;
 using Model.Helpers.Settings;
 using Model.Sudoku.Solver.Strategies;
 using Model.Sudoku.Solver.Strategies.AlternatingInference;
@@ -111,10 +112,27 @@ public static class StrategyPool
         {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)},
         {XYZRingStrategy.OfficialName, () => new XYZRingStrategy()}
     };
+    
+    private static readonly IDescription NoDescription = new FullTextDescription("No Description Found");
 
-    private static readonly Dictionary<string, string> Descriptions = new()
+    private static readonly IDescription NakedSingleDescription = new FullTextDescription(
+        "One of the basic strategies for solving Sudoku's. When a cell has only one possibility, then it must be the solution for that cell");
+
+    private static readonly IDescription HiddenSingleDescription = new FullTextDescription(
+        "One the basic strategies for solving Sudoku's. When a unit (row, column or box) has only one cell holding a possibility, " +
+        "then that possibility must be the solution for that cell");
+
+    private static readonly IDescription JuniorExocetDescription = new FullTextDescription("This is a very complex strategy. For a Junior Exocet to exist, there is multiple requirements :\n" +
+        "1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells" +
+        "need to be in the same mini-line, meaning a line restricted to a box, and have a total of" +
+        "candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box" +
+        "than the base cells and the other target. These targets must each hold at least one base candidate" +
+        "2) TODO");
+
+    private static readonly Dictionary<string, IDescription> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
+        {HiddenSingleStrategy.OfficialName, HiddenSingleDescription},
         {JuniorExocetStrategy.OfficialName, JuniorExocetDescription}
     };
     
@@ -165,18 +183,7 @@ public static class StrategyPool
         return !Pool.TryGetValue(name, out var giver) ? null : giver();
     }
 
-    public static string GetDescription(string name) => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
-
-    private const string NoDescription = "No description found";
-
-    private const string NakedSingleDescription = "One of the basic strategies for solving Sudoku's. When a cell has only one possibility, then it must be the solution for that cell";
-
-    private const string JuniorExocetDescription = "This is a very complex strategy. For a Junior Exocet to exist, there is multiple requirements :\n" +
-                                                   "1) There exist 2 base cells and 2 target cells in a band (e.g. 3 lines in 3 boxes). The base cells" +
-                                                   "need to be in the same mini-line, meaning a line restricted to a box, and have a total of" +
-                                                   "candidates between 2 and 4, called base candidates. Each target cell is in a different line and in a different box" +
-                                                   "than the base cells and the other target. These targets must each hold atleast one base candidate" +
-                                                   "2) TODO";
+    public static IDescription GetDescription(string name) => Descriptions.TryGetValue(name, out var d) ? d : NoDescription;
 }
 
 public delegate SudokuStrategy GiveStrategy();

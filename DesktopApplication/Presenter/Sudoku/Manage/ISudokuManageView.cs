@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Descriptions;
 using Model.Sudoku.Solver;
 
 namespace DesktopApplication.Presenter.Sudoku.Manage;
@@ -10,6 +11,6 @@ public interface ISudokuManageView
     public void SetStrategyList(IReadOnlyList<SudokuStrategy> list);
     public void SetSelectedStrategyName(string name);
     public void SetManageableSettings(StrategySettingsPresenter presenter);
-    public void SetStrategyDescription(string description);
+    public void SetStrategyDescription(IDescription description);
     public void ClearSelectedStrategy();
 }

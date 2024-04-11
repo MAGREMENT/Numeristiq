@@ -30,7 +30,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     if (rp.Count == 1)
                     {
                         strategyUser.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
-                        strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.Row));
+                        strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Row));
                         if (StopOnFirstPush) return;
                     }
                     
@@ -38,7 +38,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     if (cp.Count == 1)
                     {
                         strategyUser.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
-                        strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.Column));
+                        strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Column));
                         if (StopOnFirstPush) return;
                     }
                     
@@ -47,7 +47,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     
                     var pos = mp.First();
                     strategyUser.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
-                    strategyUser.ChangeBuffer.Commit( new HiddenSingleReportBuilder(Unit.MiniGrid));
+                    strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.MiniGrid));
                     if (StopOnFirstPush) return;
                 }
             }

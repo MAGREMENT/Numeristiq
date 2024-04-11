@@ -8,6 +8,7 @@ using DesktopApplication.Presenter.Sudoku.Manage;
 using DesktopApplication.View.Settings;
 using DesktopApplication.View.Sudoku.Controls;
 using DesktopApplication.View.Utility;
+using Model.Helpers.Descriptions;
 using Model.Helpers.Logs;
 using Model.Sudoku.Solver;
 
@@ -105,21 +106,19 @@ public partial class ManagePage : ISudokuManageView
         }
     }
 
-    public void SetStrategyDescription(string description)
+    public void SetStrategyDescription(IDescription description)
     {
         InfoPanel.Children.Clear();
-        var tb = new TextBlock
-        {
-            FontSize = 14,
-            Text = description,
-            TextWrapping = TextWrapping.Wrap,
-            TextAlignment = TextAlignment.Center,
-            Margin = new Thickness(10)
-        };
-        
-        tb.SetResourceReference(ForegroundProperty, "Text");
 
-        InfoPanel.Children.Add(tb);
+        foreach (var line in description.EnumerateLines())
+        {
+            var element = TranslateDescriptionLine(line);
+            if (element is not null)
+            {
+                element.Margin = new Thickness(10);
+                InfoPanel.Children.Add(element);
+            }
+        }
     }
 
     public void ClearSelectedStrategy()
@@ -181,5 +180,31 @@ public partial class ManagePage : ISudokuManageView
     private void OnElementSelection(string s)
     {
         _presenter.OnSearchResultSelection(s);
+    }
+
+    private static FrameworkElement? TranslateDescriptionLine(IDescriptionLine line)
+    {
+        switch (line)
+        {
+            case TextDescriptionLine tdl:
+                var tb = new TextBlock
+                {
+                    FontSize = 14,
+                    Text = tdl.Text,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Center,
+                };
+                
+                tb.SetResourceReference(ForegroundProperty, "Text");
+                return tb;
+            
+            case TextImageDescriptionLine tidl :
+                var grid = new Grid();
+                //TODO
+                
+                return grid;
+            
+            default: return null;
+        }
     }
 }

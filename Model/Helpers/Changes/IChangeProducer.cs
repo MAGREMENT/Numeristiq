@@ -9,7 +9,7 @@ public interface IChangeProducer
     public bool CanRemovePossibility(CellPossibility cp);
     public bool CanAddSolution(CellPossibility cp);
     public bool ExecuteChange(SolverProgress progress);
-    public void FakeChange(); //TODO another cleaner way
+    public void FakeChange();
 }
 
 public interface ILogManagedChangeProducer<out TState, THighlighter> : IChangeProducer where TState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter

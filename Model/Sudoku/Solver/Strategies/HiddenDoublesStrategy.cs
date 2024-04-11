@@ -145,7 +145,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
-        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Explanation(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -157,9 +157,9 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
         });
     }
 
-    private string Explanation(Cell[] cells)
+    private string Explanation(IReadOnlyList<Cell> cells)
     {
-        if (cells.Length < 2) return "";
+        if (cells.Count < 2) return "";
 
         return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
                $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";

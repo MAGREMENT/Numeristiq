@@ -12,25 +12,9 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
     private T[] _array = Array.Empty<T>();
     public int Count { get; private set; }
     
-    public int IndexOf(T obj)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            if (_array[i].Equals(obj)) return i;
-        }
+    public int IndexOf(T obj) => Array.IndexOf(_array, obj, 0, Count);
 
-        return -1;
-    }
-
-    public bool Contains(T obj)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            if (_array[i].Equals(obj)) return true; //TODO fix boxing issue
-        }
-
-        return false;
-    }
+    public bool Contains(T obj) => IndexOf(obj) != -1;
 
     public void Add(T obj, CallBackOnAlreadyPresent callback)
     {
@@ -122,18 +106,6 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
     {
         _array = Array.Empty<T>();
         Count = 0;
-    }
-
-    public delegate bool IsMatch(T obj);
-
-    public int Find(IsMatch matcher)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            if (matcher(_array[i])) return i;
-        }
-
-        return -1;
     }
     
     public IEnumerator<T> GetEnumerator()

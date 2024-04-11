@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Sudoku.Solver.Strategies;
@@ -164,20 +167,20 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
+        var cells = _unit switch
+        {
+            Unit.Row => new Cell[] { new(_unitNumber, _other1), new(_unitNumber, _other2) },
+            Unit.Column => new Cell[] {new(_other1, _unitNumber), new(_other2, _unitNumber)},
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        
+        return new ChangeReport<ISudokuHighlighter>(Description(cells), lighter =>
         {
             foreach (var possibility in _pos.EnumeratePossibilities())
             {
-                switch (_unit)
+                foreach (var cell in cells)
                 {
-                    case Unit.Row :
-                        lighter.HighlightPossibility(possibility, _unitNumber, _other1, ChangeColoration.CauseOffOne);
-                        lighter.HighlightPossibility(possibility, _unitNumber, _other2, ChangeColoration.CauseOffOne);
-                        break;
-                    case Unit.Column :
-                        lighter.HighlightPossibility(possibility, _other1, _unitNumber, ChangeColoration.CauseOffOne);
-                        lighter.HighlightPossibility(possibility, _other2, _unitNumber, ChangeColoration.CauseOffOne);
-                        break;
+                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
                 } 
             }
 
@@ -185,13 +188,17 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         });
     }
 
-    private string Explanation()
+    private string Description(IReadOnlyList<Cell> cells)
     {
-        string cells = _unit == Unit.Row
-            ? $"[{_unitNumber}, {_other1}], [{_unitNumber}, {_other2}]"
-            : $"[{_other1}, {_unitNumber}], [{_other2}, {_unitNumber}]";
-        return $"The cells {cells} only contains the possibilities ({_pos.ToValuesString()})." +
-               $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
+        var builder = new StringBuilder($"Naked Doubles in {cells[0]}, {cells[1]} for ");
+
+        var n = 0;
+        _pos.Next(ref n);
+        builder.Append(n + ", ");
+        _pos.Next(ref n);
+        builder.Append(n);
+
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)

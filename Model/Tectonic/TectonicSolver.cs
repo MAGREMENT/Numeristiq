@@ -19,8 +19,8 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
         new CommonCellsStrategy(), new XChainStrategy() };
 
-    private int _possibilityRemovedBuffer;
-    private int _solutionAddedBuffer;
+    private bool _changeWasMade;
+    
     private IUpdatableTectonicSolvingState? _currentState;
     
     public bool StartedSolving { get; private set; }
@@ -85,11 +85,10 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
             _strategies[i].Apply(this);
             ChangeBuffer.Push(_strategies[i]);
 
-            if (_solutionAddedBuffer == 0 && _possibilityRemovedBuffer == 0) continue;
+            if (!_changeWasMade) continue;
 
             ProgressMade?.Invoke();
-            _solutionAddedBuffer = 0;
-            _possibilityRemovedBuffer = 0;
+            ResetChangeTrackingVariables();
             if (stopAtProgress) return;
             
             i = -1;
@@ -135,17 +134,22 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     public bool ExecuteChange(SolverProgress progress)
     {
         return progress.ProgressType == ProgressType.PossibilityRemoval 
-            ? RemovePossibility(progress.Row, progress.Column, progress.Number) 
+            ? RemovePossibility(progress.Row, progress.Column, progress.Number, true) 
             : AddSolution(progress.Row, progress.Column, progress.Number, true);
     }
 
     public void FakeChange()
     {
-        _possibilityRemovedBuffer++;
+        _changeWasMade = true;
     }
 
     #region Private
 
+    private void ResetChangeTrackingVariables()
+    {
+        _changeWasMade = false;
+    }
+    
     private void InitCandidates()
     {
         for (int row = 0; row < _tectonic.RowCount; row++)
@@ -181,13 +185,17 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         }
     }
 
-    private bool RemovePossibility(int row, int col, int number)
+    private bool RemovePossibility(int row, int col, int number, bool fromSolving)
     {
         if (!_possibilities[row, col].Contains(number)) return false;
 
         _currentState = null;
         _possibilities[row, col] -= number;
-        _possibilityRemovedBuffer++;
+
+        if (fromSolving)
+        {
+            _changeWasMade = true;
+        }
 
         return true;
     }
@@ -199,8 +207,11 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         _currentState = null;
         _tectonic[row, col] = number;
         UpdatePossibilitiesAfterSolutionAdded(row, col, number);
-        
-        if(fromSolving) _solutionAddedBuffer++;
+
+        if (fromSolving)
+        {
+            _changeWasMade = true;
+        }
         
         return true;
     }
