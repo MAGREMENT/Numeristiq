@@ -17,7 +17,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     private ReadOnlyBitSet16[,] _possibilities;
 
     private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
-        new CommonCellsStrategy(), new XChainStrategy() };
+        new ZoneInteractionStrategy(), new XChainStrategy(), new GroupEliminationStrategy() };
 
     private bool _changeWasMade;
     

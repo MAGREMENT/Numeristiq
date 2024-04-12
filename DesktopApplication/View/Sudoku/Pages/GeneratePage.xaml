@@ -39,11 +39,11 @@
                 <controls1:FilledSudokuGeneratorControl Grid.Row="1" Width="300" Height="100" Margin="0, 20, 0, 0"
                                                         HorizontalAlignment="Center" x:Name="FSG"/>
                 
-                <Path Grid.Row="2" HorizontalAlignment="Center" Width="40" Height="40" Margin="10" x:Name="ToRCR"
+                <Path Grid.Row="2" HorizontalAlignment="Center" Width="40" Height="40" Margin="10" x:Name="ToRDR"
                       Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 5,23 20,35 35,23" StrokeThickness="2"/>
                 
                 <controls1:DigitRemoverControl Grid.Row="3" Width="300" Height="100" HorizontalAlignment="Center"
-                                               x:Name="RDR"/>
+                                               x:Name="RDR" SymmetryChanged="ChangeSymmetry"/>
             </Grid>
         </Border>
         
@@ -51,7 +51,8 @@
               Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
               x:Name="ToEvaluator"/>
         
-        <controls1:EvaluatorControl Grid.Row="0" Grid.Column="2" Width="300" Height="300" x:Name="Evaluator"/>
+        <controls1:EvaluatorControl Grid.Row="0" Grid.Column="2" Width="300" Height="300" x:Name="Evaluator"
+                                    ManageCriteriaAsked="OpenManageCriteriaWindow"/>
         
         <Path Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Width="40" Height="40" Margin="10"
               Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
@@ -72,10 +73,25 @@
         </Grid>
         
         
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="150" Height="50" FontSize="20" x:Name="GenerateButton"
+        <Grid Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Row="0" Grid.Column="0" Width="150" Height="50" FontSize="20" x:Name="GenerateButton"
                     Style="{StaticResource SolvePageButtonStyle}" Click="Generate">Generate</Button>
-            <controls:NumberInputControl Margin="5, 0, 0, 0" Width="90" Min="1" Max="20" ValueChanged="OnValueChange"/>
-        </StackPanel>
+            
+            <controls:NumberInputControl Grid.Row="0" Grid.Column="1" Margin="5, 0, 0, 0" Width="90"
+                                         Min="1" Max="40" ValueChanged="OnValueChange"/>
+            
+            <Button Grid.Row="1" Grid.Column="0" Width="150" Height="50" FontSize="20" x:Name="StopButton"
+                    Style="{StaticResource SolvePageButtonStyle}" Click="Stop" Margin="0,10,0,0">Stop</Button>
+        </Grid>
     </Grid>
 </pages:SudokuPage>

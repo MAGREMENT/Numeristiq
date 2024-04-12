@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Generate;
 using DesktopApplication.View.Controls;
@@ -69,7 +68,7 @@ public partial class GeneratePage : ISudokuGenerateView
         {
             TransitionPlace.ToEvaluator => ToEvaluator,
             TransitionPlace.ToFinalList => ToFinalList,
-            TransitionPlace.ToRCR => ToRCR,
+            TransitionPlace.ToRDR => ToRDR,
             _ => throw new ArgumentOutOfRangeException()
         };
         
@@ -96,6 +95,11 @@ public partial class GeneratePage : ISudokuGenerateView
         GenerateButton.IsEnabled = allowed;
     }
 
+    public void AllowCancel(bool allowed)
+    {
+        StopButton.IsEnabled = allowed;
+    }
+
     private void Generate(object sender, RoutedEventArgs e)
     {
         _presenter.Generate();
@@ -104,5 +108,22 @@ public partial class GeneratePage : ISudokuGenerateView
     private void OnValueChange(int value)
     {
         if(_initialized) _presenter.SetGenerationCount(value);
+    }
+
+    private void ChangeSymmetry(bool value)
+    {
+        _presenter.SetKeepSymmetry(value);
+    }
+
+    private void OpenManageCriteriaWindow()
+    {
+        var window = new ManageCriteriaWindow(_presenter.ManageCriteria());
+        window.Show();
+    }
+
+    private void Stop(object sender, RoutedEventArgs e)
+    {
+        
+        _presenter.Stop();
     }
 }

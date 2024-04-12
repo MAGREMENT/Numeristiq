@@ -100,7 +100,7 @@ public partial class ManagePage : ISudokuManageView
             if (control is not null)
             {
                 control.AutoSet = true;
-                control.Margin = new Thickness(10, 10, 0, 5);
+                control.Margin = new Thickness(10, 10, 0, 0);
                 InfoPanel.Children.Add(control);
             }
         }
@@ -115,7 +115,7 @@ public partial class ManagePage : ISudokuManageView
             var element = TranslateDescriptionLine(line);
             if (element is not null)
             {
-                element.Margin = new Thickness(10);
+                element.Margin = new Thickness(10, 10, 10, 0);
                 InfoPanel.Children.Add(element);
             }
         }

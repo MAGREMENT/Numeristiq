@@ -8,9 +8,9 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonic.Strategies;
 
-public class CommonCellsStrategy : TectonicStrategy
+public class ZoneInteractionStrategy : TectonicStrategy
 {
-    public CommonCellsStrategy() : base("Common Cells", StrategyDifficulty.Easy, InstanceHandling.UnorderedAll)
+    public ZoneInteractionStrategy() : base("Zone Interaction", StrategyDifficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
     
@@ -37,16 +37,16 @@ public class CommonCellsStrategy : TectonicStrategy
                 buffer.Clear();
             }
 
-            strategyUser.ChangeBuffer.Commit(new CommonCellsReportBuilder(zone));
+            strategyUser.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
         }
     }
 }
 
-public class CommonCellsReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>
+public class ZoneInteractionReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>
 {
     private readonly IZone _zone;
 
-    public CommonCellsReportBuilder(IZone zone)
+    public ZoneInteractionReportBuilder(IZone zone)
     {
         _zone = zone;
     }

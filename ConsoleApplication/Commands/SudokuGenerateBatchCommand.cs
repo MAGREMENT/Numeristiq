@@ -11,7 +11,7 @@ public class SudokuGenerateBatchCommand : Command
     
     public override string Description => "Generate a determined amount of Sudoku's";
     
-    private readonly ISudokuPuzzleGenerator _generator = new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+    private readonly ISudokuPuzzleGenerator _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
     
     public SudokuGenerateBatchCommand() : base("SudokuGenerateBatch", 
         new Option("-c", "Count", OptionValueRequirement.Mandatory, OptionValueType.Int),

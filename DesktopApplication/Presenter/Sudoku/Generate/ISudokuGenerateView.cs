@@ -11,9 +11,10 @@ public interface ISudokuGenerateView
     void ShowTransition(TransitionPlace place);
     void UpdateEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus);
     void AllowGeneration(bool allowed);
+    void AllowCancel(bool allowed);
 }
 
 public enum TransitionPlace
 {
-    ToRCR, ToEvaluator, ToFinalList
+    ToRDR, ToEvaluator, ToFinalList
 }

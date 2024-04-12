@@ -93,13 +93,13 @@ public class SudokuSolvePresenter : ICommitApplier
     public void Clear()
     {
         _solver.SetSudoku(new Model.Sudoku.Sudoku());
-        SetShownState(_solver.StartState, true);
+        SetShownState(_solver.StartState, true, false);
         ClearLogs();
     }
 
     public void ShowCurrentState()
     {
-        SetShownState(_solver, false);
+        SetShownState(_solver, false, true);
     }
 
     public void UpdateLogs()
@@ -126,7 +126,7 @@ public class SudokuSolvePresenter : ICommitApplier
         if (_currentlyOpenedLog == index)
         {
             _currentlyOpenedLog = -1;
-            SetShownState(_solver, false);
+            SetShownState(_solver, false, true);
         }
         else
         {
@@ -134,7 +134,7 @@ public class SudokuSolvePresenter : ICommitApplier
             _currentlyOpenedLog = index;
 
             var log = _solver.LogManager.Logs[index];
-            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
+            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false, true); 
             _translator.Translate(log.HighlightManager); 
         }
     }
@@ -146,7 +146,7 @@ public class SudokuSolvePresenter : ICommitApplier
         if (_currentlyOpenedLog < 0 || _currentlyOpenedLog >= _solver.LogManager.Logs.Count) return;
         
         var log = _solver.LogManager.Logs[_currentlyOpenedLog];
-        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
+        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false, true); 
         _translator.Translate(log.HighlightManager);
     }
 
@@ -201,7 +201,7 @@ public class SudokuSolvePresenter : ICommitApplier
         
         var c = _selectedCell.Value;
         _solver.SetSolutionByHand(n, c.Row, c.Column);
-        SetShownState(_solver, !_solver.StartedSolving);
+        SetShownState(_solver, !_solver.StartedSolving, true);
         UpdateLogs();
     }
 
@@ -211,7 +211,7 @@ public class SudokuSolvePresenter : ICommitApplier
         
         var c = _selectedCell.Value;
         _solver.RemoveSolutionByHand(c.Row, c.Column);
-        SetShownState(_solver, !_solver.StartedSolving);
+        SetShownState(_solver, !_solver.StartedSolving, true);
         UpdateLogs();
     }
 
@@ -289,7 +289,7 @@ public class SudokuSolvePresenter : ICommitApplier
         _logCount = 0;
     }
 
-    private void SetShownState(ISolvingState solvingState, bool solutionAsClues)
+    private void SetShownState(ISolvingState solvingState, bool solutionAsClues, bool showPossibilities)
     {
         _currentlyDisplayedState = solvingState;
         var drawer = _view.Drawer;
@@ -304,7 +304,7 @@ public class SudokuSolvePresenter : ICommitApplier
                 if (number == 0)
                 {
                     if(solutionAsClues) drawer.SetClue(row, col, false);
-                    drawer.ShowPossibilities(row, col, solvingState.PossibilitiesAt(row, col).EnumeratePossibilities());
+                    if(showPossibilities) drawer.ShowPossibilities(row, col, solvingState.PossibilitiesAt(row, col).EnumeratePossibilities());
                 }
                 else
                 {
@@ -320,14 +320,14 @@ public class SudokuSolvePresenter : ICommitApplier
     private void SetNewSudoku(Model.Sudoku.Sudoku sudoku)
     {
         _solver.SetSudoku(sudoku);
-        SetShownState(_solver, true);
+        SetShownState(_solver, true, true);
         ClearLogs();
     }
 
     private void SetNewState(ISolvingState solvingState)
     {
         _solver.SetState(solvingState);
-        SetShownState(_solver, true);
+        SetShownState(_solver, true, true);
         ClearLogs();
     }
 

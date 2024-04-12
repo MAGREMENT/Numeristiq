@@ -8,7 +8,7 @@ namespace DesktopApplication.Presenter.Sudoku.Generate;
 public class SudokuGeneratePresenter
 {
     private readonly ISudokuGenerateView _view;
-    private readonly RCRSudokuPuzzleGenerator _generator;
+    private readonly RDRSudokuPuzzleGenerator _generator;
     private readonly Settings _settings;
     private readonly SudokuEvaluator _evaluator;
     
@@ -25,7 +25,7 @@ public class SudokuGeneratePresenter
         _view = view;
         _evaluator = new SudokuEvaluator(solver);
         _settings = settings;
-        _generator = new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+        _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuGeneratePage);
     }
@@ -39,11 +39,22 @@ public class SudokuGeneratePresenter
         _view.AllowGeneration(true);
     }
 
+    public void Stop()
+    {
+        _running = false;
+        _view.AllowCancel(false);
+    }
+
     public void SetGenerationCount(int value) => _generationCount = value;
+
+    public void SetKeepSymmetry(bool value) => _generator.KeepSymmetry = value;
+
+    public ManageCriteriaPresenterBuilder ManageCriteria() => new(_evaluator);
 
     private void GeneratePuzzles()
     {
         _running = true;
+        _view.AllowCancel(true);
 
         while (_running && _evaluatedList.Count < _generationCount)
         {
@@ -64,12 +75,15 @@ public class SudokuGeneratePresenter
                 _view.UpdateEvaluatedList(_evaluatedList);
             }
         }
+
+        _running = false;
+        _view.AllowCancel(false);
     }
 
     private void OnFilledSudokuGenerated()
     {
         _view.ActivateFilledSudokuGenerator(false);
-        _view.ShowTransition(TransitionPlace.ToRCR);
+        _view.ShowTransition(TransitionPlace.ToRDR);
         _view.ActivateRandomDigitRemover(true);
     }
 
@@ -80,4 +94,16 @@ public class SudokuGeneratePresenter
        
         _view.UpdateEvaluatedList(_evaluatedList);
     }
+}
+
+public class ManageCriteriaPresenterBuilder
+{
+    private readonly SudokuEvaluator _evaluator;
+
+    public ManageCriteriaPresenterBuilder(SudokuEvaluator evaluator)
+    {
+        _evaluator = evaluator;
+    }
+
+    public ManageCriteriaPresenter Build(IManageCriteriaView view) => new ManageCriteriaPresenter(view, _evaluator);
 }

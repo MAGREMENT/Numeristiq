@@ -79,6 +79,8 @@ public static class TectonicTranslator
 
     public static string TranslateRdFormat(IReadOnlyTectonic tectonic)
     {
+        if (tectonic.RowCount == 0 || tectonic.ColumnCount == 0) return "";
+        
         var builder = new StringBuilder($"{tectonic.RowCount}.{tectonic.ColumnCount}:");
 
         for (int row = 0; row < tectonic.RowCount; row++)

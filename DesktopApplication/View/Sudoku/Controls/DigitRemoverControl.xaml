@@ -24,7 +24,8 @@
                 BorderThickness="2" Width="20" Height="20" Background="Red" VerticalAlignment="Center" HorizontalAlignment="Right"/>
         
         <CheckBox Grid.Row="1" Grid.Column="0" Margin="20,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"
-                  Foreground="{DynamicResource Text}" FontSize="15" VerticalContentAlignment="Center">
+                  Foreground="{DynamicResource Text}" FontSize="15" VerticalContentAlignment="Center"
+                  Checked="ToSymmetric" Unchecked="ToNonSymmetric">
             Symmetric
         </CheckBox>
     </Grid>

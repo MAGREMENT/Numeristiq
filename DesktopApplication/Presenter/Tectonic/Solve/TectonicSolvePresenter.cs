@@ -46,17 +46,19 @@ public class TectonicSolvePresenter
             default: return;
         }
 
-        SetNewTectonic(tectonic);
+        SetNewTectonic(tectonic, true);
     }
 
     public void SetNewRowCount(int diff)
     {
-        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount));
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount),
+            false);
     }
 
     public void SetNewColumnCount(int diff)
     {
-        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff));
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff),
+            false);
     }
 
     public async void Solve(bool stopAtProgress)
@@ -70,7 +72,7 @@ public class TectonicSolvePresenter
 
     public void Clear()
     {
-        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount));
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount), false);
     }
     
     public void RequestLogOpening(int id)
@@ -83,7 +85,7 @@ public class TectonicSolvePresenter
         if (_currentlyOpenedLog == index)
         {
             _currentlyOpenedLog = -1;
-            SetShownState(_solver, false);
+            SetShownState(_solver, false, true);
         }
         else
         {
@@ -91,7 +93,7 @@ public class TectonicSolvePresenter
             _currentlyOpenedLog = index;
 
             var log = _solver.LogManager.Logs[index];
-            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
+            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false, true); 
             _translator.Translate(log.HighlightManager); 
         }
     }
@@ -103,7 +105,7 @@ public class TectonicSolvePresenter
         if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.LogManager.Logs.Count) return;
         
         var log = _solver.LogManager.Logs[_currentlyOpenedLog];
-        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false); 
+        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false, true); 
         _translator.Translate(log.HighlightManager);
     }
 
@@ -152,7 +154,7 @@ public class TectonicSolvePresenter
                 else
                 {
                     var tectonic = _solver.Tectonic.Copy();
-                    if (tectonic.MergeZones(_selectedZone, _solver.Tectonic.GetZone(c))) SetNewTectonic(tectonic);
+                    if (tectonic.MergeZones(_selectedZone, _solver.Tectonic.GetZone(c))) SetNewTectonic(tectonic, true);
                     
                     _view.Drawer.ClearCursor();
                     _selectedZone = null;
@@ -173,7 +175,7 @@ public class TectonicSolvePresenter
         if (_selectionMode == SelectionMode.Split)
         {
             var tectonic = _solver.Tectonic.Copy();
-            if (tectonic.SplitZone(_selectedCells.ToArray())) SetNewTectonic(tectonic);
+            if (tectonic.SplitZone(_selectedCells.ToArray())) SetNewTectonic(tectonic, true);
             _selectedCells.Clear();
             
             _view.Drawer.ClearCursor();
@@ -196,7 +198,7 @@ public class TectonicSolvePresenter
 
         var c = _selectedCells[0];
         _solver.SetSolutionByHand(n, c.Row, c.Column);
-        SetShownState(_solver, !_solver.StartedSolving);
+        SetShownState(_solver, !_solver.StartedSolving, true);
         UpdateLogs();
     }
 
@@ -206,7 +208,7 @@ public class TectonicSolvePresenter
         
         var c = _selectedCells[0];
         _solver.RemoveSolutionByHand(c.Row, c.Column);
-        SetShownState(_solver, !_solver.StartedSolving);
+        SetShownState(_solver, !_solver.StartedSolving, true);
         UpdateLogs();
     }
 
@@ -218,16 +220,16 @@ public class TectonicSolvePresenter
         _logCount = 0;
     }
     
-    private void SetNewTectonic(ITectonic tectonic)
+    private void SetNewTectonic(ITectonic tectonic, bool showPossibilities)
     {
         _solver.SetTectonic(tectonic);
         _view.Drawer.ClearHighlights();
         SetUpNewTectonic();
-        SetShownState(_solver, true);
+        SetShownState(_solver, true, showPossibilities);
         ClearLogs();
     }
 
-    private void SetShownState(ISolvingState state, bool asClue)
+    private void SetShownState(ISolvingState state, bool asClue, bool showPossibilities)
     {
         var drawer = _view.Drawer;
 
@@ -241,6 +243,8 @@ public class TectonicSolvePresenter
                 if (asClue) drawer.SetClue(row, col, number != 0);
                 if (number == 0)
                 {
+                    if (!showPossibilities) continue;
+                    
                     var zoneSize = _solver.Tectonic.GetZone(row, col).Count;
                     drawer.ShowPossibilities(row, col, state.PossibilitiesAt(row, col).Enumerate(1, zoneSize));
                 }
@@ -282,7 +286,7 @@ public class TectonicSolvePresenter
     
     private void OnProgressMade()
     {
-        SetShownState(_solver, false);
+        SetShownState(_solver, false, true);
         UpdateLogs();
     }
     

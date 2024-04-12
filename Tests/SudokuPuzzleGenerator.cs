@@ -12,7 +12,7 @@ public class SudokuPuzzleGenerator
     private const int SudokuCount = 25;
     
     private readonly ISudokuPuzzleGenerator generator =
-        new RCRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+        new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
     [Test]
     public void GenerationTest()

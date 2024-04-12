@@ -167,4 +167,26 @@ public static class TectonicCellUtility
             }
         }
     }
+
+    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, IReadOnlyList<Cell> cells)
+    {
+        if (cells.Count == 0) yield break; //TODO
+        if (cells.Count == 1) yield break; //TODO
+
+        foreach (var cell in SharedSeenCells(tectonic, cells[0], cells[1]))
+        {
+            bool ok = true;
+            
+            for (int i = 2; i < cells.Count; i++)
+            {
+                if (cells[i] == cell || (!AreNeighbors(cells[i], cell) && !tectonic.GetZone(cells[i]).Contains(cell)))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok) yield return cell;
+        }
+    }
 }

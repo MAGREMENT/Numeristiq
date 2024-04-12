@@ -1,4 +1,5 @@
-﻿using Model.Helpers;
+﻿using System;
+using Model.Helpers;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -8,8 +9,12 @@ public class Sudoku : IReadOnlySudoku
 {
     private const int GridSize = 9;
 
-    private readonly int[,] _grid = new int[GridSize, GridSize];
-    
+    private readonly int[,] _grid;
+
+    public Sudoku() => _grid = new int[GridSize, GridSize];
+
+    private Sudoku(int[,] grid) => _grid = grid;
+
     public bool IsComplete()
     {
         foreach (var cell in _grid)
@@ -135,16 +140,10 @@ public class Sudoku : IReadOnlySudoku
 
     public Sudoku Copy()
     {
-        Sudoku result = new Sudoku();
-        for (int i = 0; i < GridSize; i++)
-        {
-            for (int j = 0; j < GridSize; j++)
-            {
-                result[i, j] = this[i, j];
-            }
-        }
+        var buffer = new int[GridSize, GridSize];
+        Array.Copy(_grid, buffer, _grid.Length);
 
-        return result;
+        return new Sudoku(buffer);
     }
 
     public override string ToString()
