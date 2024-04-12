@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Shapes;
+using System.Windows.Threading;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Generate;
 using DesktopApplication.View.Controls;
@@ -42,6 +46,36 @@ public partial class GeneratePage : ISudokuGenerateView
         };
 
         return settings;
+    }
+
+    public void ActivateFilledSudokuGenerator(bool activated)
+    {
+        FSG.Dispatcher.Invoke(() => FSG.Activate(activated));
+    }
+
+    public void ActivateRandomDigitRemover(bool activated)
+    {
+        RDR.Dispatcher.Invoke(() => RDR.Activate(activated));
+    }
+
+    public void ActivatePuzzleEvaluator(bool activated)
+    {
+        Evaluator.Dispatcher.Invoke(() => Evaluator.Activate(activated));
+    }
+
+    public async void ShowTransition(TransitionPlace place)
+    {
+        var path = place switch
+        {
+            TransitionPlace.ToEvaluator => ToEvaluator,
+            TransitionPlace.ToFinalList => ToFinalList,
+            TransitionPlace.ToRCR => ToRCR,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+        
+        path.Dispatcher.Invoke(() => path.SetResourceReference(Shape.StrokeProperty, "Primary1"));
+        await Task.Delay(TimeSpan.FromMilliseconds(250));
+        path.Dispatcher.Invoke(() => path.SetResourceReference(Shape.StrokeProperty, "Text"));
     }
 
     public void UpdateEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus)

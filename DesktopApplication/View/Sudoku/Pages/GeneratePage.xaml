@@ -22,7 +22,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <Border Grid.Row="0" Grid.Column="0" Width="500" Height="400" Margin="10" BorderThickness="1"
+        <Border Grid.Row="0" Grid.Column="0" Width="450" Height="350" Margin="10" BorderThickness="1"
                 BorderBrush="{DynamicResource Text}">
             <Grid>
                 <Grid.RowDefinitions>
@@ -37,14 +37,40 @@
                 </TextBlock>
                 
                 <controls1:FilledSudokuGeneratorControl Grid.Row="1" Width="300" Height="100" Margin="0, 20, 0, 0"
-                                                        HorizontalAlignment="Center"></controls1:FilledSudokuGeneratorControl>
+                                                        HorizontalAlignment="Center" x:Name="FSG"/>
+                
+                <Path Grid.Row="2" HorizontalAlignment="Center" Width="40" Height="40" Margin="10" x:Name="ToRCR"
+                      Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 5,23 20,35 35,23" StrokeThickness="2"/>
+                
+                <controls1:DigitRemoverControl Grid.Row="3" Width="300" Height="100" HorizontalAlignment="Center"
+                                               x:Name="RDR"/>
             </Grid>
         </Border>
         
-        <ScrollViewer Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Margin="10"
-                      Style="{StaticResource TransparentBarScrollView}">
-            <StackPanel x:Name="Evaluated"></StackPanel>
-        </ScrollViewer>
+        <Path Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center" Width="40" Height="40" Margin="0,0,10,0"
+              Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
+              x:Name="ToEvaluator"/>
+        
+        <controls1:EvaluatorControl Grid.Row="0" Grid.Column="2" Width="300" Height="300" x:Name="Evaluator"/>
+        
+        <Path Grid.Row="0" Grid.Column="3" HorizontalAlignment="Center" Width="40" Height="40" Margin="10"
+              Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
+              x:Name="ToFinalList"/>
+        
+        <Grid Grid.Row="0" Grid.Column="4" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Foreground="{DynamicResource Text}" FontSize="18" Margin="5,0,0,0" VerticalAlignment="Center"
+                       FontWeight="Normal">Final List</TextBlock>
+            
+            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}" Margin="0,0,10,10">
+                <StackPanel x:Name="Evaluated"/>
+            </ScrollViewer>
+        </Grid>
+        
         
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center">
             <Button Width="150" Height="50" FontSize="20" x:Name="GenerateButton"

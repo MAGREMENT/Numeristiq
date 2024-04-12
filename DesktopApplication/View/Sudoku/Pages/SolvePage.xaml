@@ -41,7 +41,7 @@
             </Grid.RowDefinitions>
             
             <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                       Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Logs</TextBlock>
+                       Foreground="{DynamicResource Text}">Logs</TextBlock>
             
             <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="480" x:Name="LogViewer"
                           Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">
@@ -68,7 +68,7 @@
                 </Grid.ColumnDefinitions>
                 
                 <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                           Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Strategies</TextBlock>
+                           Foreground="{DynamicResource Text}">Strategies</TextBlock>
             </Grid>
             
             <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}" Height="620">

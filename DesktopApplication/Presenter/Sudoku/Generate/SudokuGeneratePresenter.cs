@@ -8,13 +8,14 @@ namespace DesktopApplication.Presenter.Sudoku.Generate;
 public class SudokuGeneratePresenter
 {
     private readonly ISudokuGenerateView _view;
-    private readonly ISudokuPuzzleGenerator _generator;
+    private readonly RCRSudokuPuzzleGenerator _generator;
     private readonly Settings _settings;
     private readonly SudokuEvaluator _evaluator;
     
     private readonly List<GeneratedSudokuPuzzle> _evaluatedList = new();
 
     private int _generationCount = 1;
+    private bool _running;
     private int _currentId = 1;
     
     public SettingsPresenter SettingsPresenter { get; }
@@ -42,7 +43,34 @@ public class SudokuGeneratePresenter
 
     private void GeneratePuzzles()
     {
-        
+        _running = true;
+
+        while (_running && _evaluatedList.Count < _generationCount)
+        {
+            _view.ActivateFilledSudokuGenerator(true);
+            var generated = new GeneratedSudokuPuzzle(_currentId++, _generator.Generate(OnFilledSudokuGenerated));
+            
+            _view.ActivateRandomDigitRemover(false);
+            _view.ShowTransition(TransitionPlace.ToEvaluator);
+            _view.ActivatePuzzleEvaluator(true);
+            
+            var evaluated = _evaluator.Evaluate(generated);
+            _view.ActivatePuzzleEvaluator(false);
+
+            if (evaluated is not null)
+            {
+                _evaluatedList.Add(evaluated);
+                _view.ShowTransition(TransitionPlace.ToFinalList);
+                _view.UpdateEvaluatedList(_evaluatedList);
+            }
+        }
+    }
+
+    private void OnFilledSudokuGenerated()
+    {
+        _view.ActivateFilledSudokuGenerator(false);
+        _view.ShowTransition(TransitionPlace.ToRCR);
+        _view.ActivateRandomDigitRemover(true);
     }
 
     private void Reset()

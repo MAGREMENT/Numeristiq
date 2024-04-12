@@ -16,32 +16,20 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
     {
         _filledGenerator = filledGenerator;
     }
+    
+    public Sudoku Generate(OnFilledSudokuGenerated action)
+    {
+        var filled = _filledGenerator.Generate();
+        action();
+
+        return RemoveRandomDigits(filled);
+    }
 
     public Sudoku Generate()
     {
         var filled = _filledGenerator.Generate();
 
-        var list = new List<int>(81);
-        for (int i = 0; i < 81; i++) list.Add(i);
-
-        while (list.Count > 0)
-        {
-            var i = _random.Next(list.Count);
-
-            var row = list[i] / 9;
-            var col = list[i] % 9;
-
-            list.RemoveAt(i);
-
-            var n = filled[row, col];
-            filled[row, col] = 0;
-            if (BackTracking.Fill(filled.Copy(), ConstantPossibilitiesGiver.Instance, 2).Length != 1)
-            {
-                filled[row, col] = n;
-            }
-        }
-
-        return filled;
+        return RemoveRandomDigits(filled);
     }
 
     public Sudoku[] Generate(int count)
@@ -56,16 +44,33 @@ public class RCRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
         return result;
     }
 
-    public void Generate(OnNewPuzzleGenerated handler, int count = 1)
+    private Sudoku RemoveRandomDigits(Sudoku sudoku)
     {
-        for (int i = 0; i < count; i++)
+        var list = new List<int>(81);
+        for (int i = 0; i < 81; i++) list.Add(i);
+
+        while (list.Count > 0)
         {
-            handler(Generate());
+            var i = _random.Next(list.Count);
+
+            var row = list[i] / 9;
+            var col = list[i] % 9;
+
+            list.RemoveAt(i);
+
+            var n = sudoku[row, col];
+            sudoku[row, col] = 0;
+            if (BackTracking.Fill(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 2).Length != 1)
+            {
+                sudoku[row, col] = n;
+            }
         }
+
+        return sudoku;
     }
 }
 
-
+public delegate void OnFilledSudokuGenerated();
 
 public class ConstantPossibilitiesGiver : IPossibilitiesGiver
 {

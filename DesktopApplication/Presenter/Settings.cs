@@ -33,8 +33,6 @@ public class Settings
             new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation", SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
             new BooleanSetting("Convert solo candidate to given for grid format"),
             new EnumSetting<PossibilitiesLocation>("Main possibilities location", SpaceConverter.Instance, PossibilitiesLocation.Middle),
-            new IntSetting("Evaluation trigger count", new SliderInteractionInterface(1, 20, 1), 5),
-            new IntSetting("Successive evaluation count", new SliderInteractionInterface(1, 20, 1), 3)
         };
         _collections = new[]
         {
@@ -56,10 +54,9 @@ public class Settings
                 new NamedListSpan<ISetting>("Player", _settings, 12),
                 new NamedListSpan<ISetting>("Editing", _settings, 8, 9, 11)
             },
-            new []
+            new [] //SudokuGenerateView
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
-                new NamedListSpan<ISetting>("Generation", _settings, 13, 14)
             }
         };
         _repository = repository;
@@ -126,8 +123,6 @@ public class Settings
         ((EnumSetting<SudokuLineFormatEmptyCellRepresentation>)_settings[10]).Value;
     public bool SoloToGiven => _settings[11].Get().ToBool();
     public PossibilitiesLocation MainLocation => ((EnumSetting<PossibilitiesLocation>)_settings[12]).Value;
-    public int EvaluationTriggerCount => _settings[13].Get().ToInt();
-    public int SuccessiveEvaluationCount => _settings[14].Get().ToInt();
     
     #region Private
 
