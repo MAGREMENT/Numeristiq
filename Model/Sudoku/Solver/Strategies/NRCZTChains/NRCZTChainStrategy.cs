@@ -4,6 +4,7 @@ using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Changes.Buffers;
+using Model.Sudoku.Solver.Strategies.AlternatingInference;
 using Model.Sudoku.Solver.StrategiesUtility;
 using Model.Sudoku.Solver.StrategiesUtility.Graphs;
 using Model.Sudoku.Solver.StrategiesUtility.NRCZTChains;
@@ -38,146 +39,195 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
 
     public override void Apply(IStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
-            ConstructRule.CellStrongLink, ConstructRule.CellWeakLink);
-        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
-
-        foreach (var start in graph)
+        for (int row = 0; row < 9; row++)
         {
-            HashSet<CellPossibility> startVisited = new();
-            HashSet<CellPossibility> endVisited = new();
-
-            startVisited.Add(start);
-            
-            foreach (var friend in graph.Neighbors(start, LinkStrength.Strong))
+            for (int col = 0; col < 9; col++)
             {
-                if (start == friend || endVisited.Contains(friend)) continue;
-
-                endVisited.Add(friend);
-                if (Search(strategyUser, graph, startVisited, endVisited,
-                        new BlockChain(new Block(start, friend), graph))) return;
+                foreach (var poss in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+                {
+                    if (Search(strategyUser, new CellPossibility(row, col, poss))) return;
+                }
             }
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph,
-        HashSet<CellPossibility> startVisited, HashSet<CellPossibility> endVisited, BlockChain chain)
+    private bool Search(IStrategyUser strategyUser, CellPossibility start)
     {
-        var all = chain.AllCellPossibilities();
+        HashSet<CellPossibility> blockStartVisited = new();
+        Queue<NRCZTChain> queue = new();
 
-        foreach (var bStart in graph.Neighbors(chain.Last().End))
+        blockStartVisited.Add(start);
+        foreach (var to in SudokuCellUtility.DefaultStrongLinks(strategyUser, start))
         {
-            if (all.Contains(bStart) || startVisited.Contains(bStart)) continue;
-
-            startVisited.Add(bStart);
-
-            foreach (var bEnd in graph.Neighbors(bStart, LinkStrength.Strong))
-            {
-                if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
-                
-                var block = new Block(bStart, bEnd);
-                chain.Add(block);
-                endVisited.Add(bEnd);
-
-                if (chain.PossibleTargets.Count > 0)
-                {
-                    if (Check(strategyUser, chain, graph)) return true;
-                    if (Search(strategyUser, graph, startVisited, endVisited, chain)) return true; 
-                }
-                
-                chain.RemoveLast(graph);
-            }
-
-            foreach (var condition in _conditions)
-            {
-                foreach (var (bEnd, manipulation) in condition.SearchEndUnderCondition(strategyUser,
-                             graph, chain, bStart))
-                {
-                    if (bStart == bEnd || bEnd == chain[0].Start || all.Contains(bEnd) || endVisited.Contains(bEnd)) continue;
-                    
-                    var block = new Block(bStart, bEnd);
-                    chain.Add(block);
-                    endVisited.Add(bEnd);
-
-                    manipulation.BeforeSearch(chain, graph);
-
-                    if (chain.PossibleTargets.Count > 0)
-                    {
-                        if (Check(strategyUser, chain, graph)) return true;
-                        if (Search(strategyUser, graph, startVisited, endVisited, chain)) return true; 
-                    }
-                    
-                    manipulation.AfterSearch(chain, graph);
-                
-                    chain.RemoveLast(graph);
-                }
-            }
+            queue.Enqueue(new NRCZTChain(strategyUser, start, to));
         }
 
+        while (queue.Count > 0)
+        {
+            var current = queue.Dequeue();
+
+            foreach (var from in SudokuCellUtility.SeenExistingPossibilities(strategyUser,  current.Last()))
+            {
+                if (blockStartVisited.Contains(from) || current.Contains(from)) continue;
+                
+                var rowPoss = strategyUser.RowPositionsAt(from.Row, from.Possibility);
+                if (rowPoss.Count == 2)
+                {
+                    var cp = new CellPossibility(from.Row, rowPoss.First(from.Column), from.Possibility);
+                    var chain = current.TryAdd(from, cp);
+                    if (chain is not null)
+                    {
+                        if (Process(strategyUser, chain)) return true;
+                        queue.Enqueue(chain);
+                    }
+                }
+                else if (_conditions.Length > 0)
+                {
+                    foreach (var condition in _conditions)
+                    {
+                        foreach (var chain in condition.AnalyzeRow(current, from, rowPoss))
+                        {
+                            if (Process(strategyUser, chain)) return true;
+                            queue.Enqueue(chain);
+                        }
+                    }
+                }
+
+                var colPoss = strategyUser.ColumnPositionsAt(from.Column, from.Possibility);
+                if (colPoss.Count == 2)
+                {
+                    var cp = new CellPossibility(colPoss.First(from.Row), from.Column, from.Possibility);
+                    var chain = current.TryAdd(from, cp);
+                    if (chain is not null)
+                    {
+                        if (Process(strategyUser, chain)) return true;
+                        queue.Enqueue(chain);
+                    }
+                }
+                else if (_conditions.Length > 0)
+                {
+                    foreach (var condition in _conditions)
+                    {
+                        foreach (var chain in condition.AnalyzeColumn(current, from, colPoss))
+                        {
+                            if (Process(strategyUser, chain)) return true;
+                            queue.Enqueue(chain);
+                        }
+                    }
+                }
+
+                var boxPoss = strategyUser.MiniGridPositionsAt(from.Row / 3,
+                    from.Column / 3, from.Possibility);
+                if (boxPoss.Count == 2)
+                {
+                    var cp = new CellPossibility(boxPoss.First(from.ToCell()), from.Possibility);
+                    var chain = current.TryAdd(from, cp);
+                    if (chain is not null)
+                    {
+                        if (Process(strategyUser, chain)) return true;
+                        queue.Enqueue(chain);
+                    }
+                }
+                else if (_conditions.Length > 0)
+                {
+                    foreach (var condition in _conditions)
+                    {
+                        foreach (var chain in condition.AnalyzeMiniGrid(current, from, boxPoss))
+                        {
+                            if (Process(strategyUser, chain)) return true;
+                            queue.Enqueue(chain);
+                        }
+                    }
+                }
+
+                var poss = strategyUser.PossibilitiesAt(from.Row, from.Column);
+                if (poss.Count == 2)
+                {
+                    var cp = new CellPossibility(from.Row, from.Column, poss.FirstPossibility(from.Possibility));
+                    var chain = current.TryAdd(from, cp);
+                    if (chain is not null)
+                    {
+                        if (Process(strategyUser, chain)) return true;
+                        queue.Enqueue(chain);
+                    }
+                }
+                else if (_conditions.Length > 0)
+                {
+                    foreach (var condition in _conditions)
+                    {
+                        foreach (var chain in condition.AnalyzePossibilities(current, from, poss))
+                        {
+                            if (Process(strategyUser, chain)) return true;
+                            queue.Enqueue(chain);
+                        }
+                    }
+                }
+
+                blockStartVisited.Add(from);
+            }
+        }
+        
         return false;
     }
 
-    private bool Check(IStrategyUser strategyUser, BlockChain chain, ILinkGraph<CellPossibility> graph)
+    private bool Process(IStrategyUser strategyUser, NRCZTChain chain)
     {
-        var last = chain.Last().End;
-        
+        var last = chain.Last();
         foreach (var target in chain.PossibleTargets)
         {
-            if (graph.AreNeighbors(target, last)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (SudokuCellUtility.AreLinked(target, last)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
-            new NRCChainReportBuilder(chain.Copy())) && StopOnFirstPush;
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(new NRCZTChainReportBuilder(chain))
+                                                    && StopOnFirstPush;
     }
 
     public int Compare(ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> first,
         ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> second)
     {
-        if (first.Builder is not NRCChainReportBuilder r1 ||
-            second.Builder is not NRCChainReportBuilder r2) return 0;
+        if (first.Builder is not IReportBuilderWithChain f ||
+            second.Builder is not IReportBuilderWithChain s) return 0;
 
-        return r2.Chain.Count - r1.Chain.Count;
+        return s.Length() - f.Length();
     }
 }
 
-public class NRCChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class NRCZTChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain
 {
-    public BlockChain Chain { get; }
+    private readonly NRCZTChain _chain;
 
-    public NRCChainReportBuilder(BlockChain chain)
+    public NRCZTChainReportBuilder(NRCZTChain chain)
     {
-        Chain = chain;
+        _chain = chain;
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(_chain.ToString(), lighter =>
         {
-            for (int i = 0; i < Chain.Count; i++)
+            foreach (var relation in _chain)
             {
-                var current = Chain[i];
-                
-                lighter.HighlightPossibility(current.Start, ChangeColoration.CauseOffOne);
-                lighter.HighlightPossibility(current.End, ChangeColoration.CauseOnOne);
-                lighter.CreateLink(current.Start, current.End, LinkStrength.Strong);
-
-                if (i + 1 < Chain.Count)
-                {
-                    lighter.CreateLink(current.End, Chain[i + 1].Start, LinkStrength.Weak);
-                }
+                lighter.HighlightPossibility(relation.From, ChangeColoration.CauseOffOne);
+                lighter.HighlightPossibility(relation.To, ChangeColoration.CauseOnOne);
+                lighter.CreateLink(relation.From, relation.To, LinkStrength.Strong);
             }
-
+            
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
 
-    private string Explanation()
-    {
-        return Chain.ToString();
-    }
-    
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
+    }
+
+    public int MaxRank()
+    {
+        return _chain.Last().DifficultyRank;
+    }
+
+    public int Length()
+    {
+        return _chain.Count;
     }
 }

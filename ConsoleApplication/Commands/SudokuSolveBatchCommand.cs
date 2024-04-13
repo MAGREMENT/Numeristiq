@@ -16,7 +16,7 @@ public class SudokuSolveBatchCommand : Command
     public SudokuSolveBatchCommand() : base("SudokuSolveBatch",
         new Option("-f", "Text file containing the Sudoku's", OptionValueRequirement.Mandatory, OptionValueType.File),
         new Option("--feedback", "Feedback for each Sudoku"),
-        new Option("-w", "Set all strategies behavior to wait for all"))
+        new Option("-u", "Set all strategies instance handling to unordered all"))
     {
     }
     

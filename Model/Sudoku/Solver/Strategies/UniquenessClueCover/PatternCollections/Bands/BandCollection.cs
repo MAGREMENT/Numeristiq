@@ -44,9 +44,9 @@ public class BandCollection : IPatternCollection
 
     public bool Apply(IStrategyUser strategyUser)
     {
-        foreach (var c in _candidates)
+        foreach (var candidate in _candidates)
         {
-            if (Try(strategyUser, c)) return true;
+            if (Try(strategyUser, candidate)) return true;
         }
 
         return false;
@@ -56,15 +56,24 @@ public class BandCollection : IPatternCollection
     {
         foreach (var pattern in _collection)
         {
-            if (!GetClues(strategyUser, mini, unit, pattern.ClueCount, pattern.DifferentClueCount)) continue;
+            if (!DoesClueNumbersMatch(strategyUser, mini, unit, pattern.ClueCount, pattern.DifferentClueCount)) continue;
 
             foreach (var boxKey in OrderKeyGenerator.GenerateAll())
             {
                 foreach (var widthKey in OrderKeyGenerator.GenerateAll())
                 {
-                    foreach (var lengthKey in OrderKeyGenerator.GenerateAll())
+                    foreach (var lengthKey1 in OrderKeyGenerator.GenerateAll())
                     {
-                        if (TryAndAddToCandidates(strategyUser, pattern, boxKey, widthKey, lengthKey, mini, unit)) return true;
+                        foreach (var lengthKey2 in OrderKeyGenerator.GenerateAll())
+                        {
+                            foreach (var lengthKey3 in OrderKeyGenerator.GenerateAll())
+                            {
+                                if (TryAndAddToCandidates(strategyUser, pattern, boxKey, widthKey, new []
+                                    {
+                                        lengthKey1, lengthKey2, lengthKey3
+                                    }, mini, unit)) return true;
+                            }
+                        }
                     }
                 }
             }
@@ -74,7 +83,7 @@ public class BandCollection : IPatternCollection
     }
 
     private bool TryAndAddToCandidates(IStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
-        int[] lengthKey, int mini, Unit unit)
+        int[][] lengthKeys, int mini, Unit unit)
     {
         _usedBuffer.Clear();
         
@@ -86,7 +95,7 @@ public class BandCollection : IPatternCollection
         {
             foreach (var entry in boxes[i])
             {
-                var cell = entry.Key.Transform(widthKey, lengthKey).ToCell(mini, i, unit);
+                var cell = entry.Key.Transform(widthKey, lengthKeys[i]).ToCell(mini, i, unit);
                 if (_cluesBuffer.Contains(cell)) _usedBuffer.Add(cell);
 
                 var solved = strategyUser.Sudoku[cell.Row, cell.Column];
@@ -99,7 +108,7 @@ public class BandCollection : IPatternCollection
 
         if (_usedBuffer.Count != _cluesBuffer.Count) return false;
 
-        var candidate = new BandPatternCandidate(pattern, boxKey, widthKey, lengthKey, mini, unit);
+        var candidate = new BandPatternCandidate(pattern, boxKey, widthKey, lengthKeys, mini, unit);
         _candidates.Add(candidate);
 
         return ok && Process(strategyUser, candidate, numberEquivalence);
@@ -114,7 +123,7 @@ public class BandCollection : IPatternCollection
         {
             foreach (var entry in boxes[i])
             {
-                var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKey).ToCell(candidate.Mini,
+                var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKeys[i]).ToCell(candidate.Mini,
                     i, candidate.Unit);
 
                 var solved = strategyUser.Sudoku[cell.Row, cell.Column];
@@ -136,7 +145,7 @@ public class BandCollection : IPatternCollection
         {
             foreach (var entry in eliminations[i])
             {
-                var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKey).ToCell(candidate.Mini,
+                var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKeys[i]).ToCell(candidate.Mini,
                     i, candidate.Unit);
 
                 foreach (var p in entry.Value.EveryElimination(numberEquivalence))
@@ -150,7 +159,7 @@ public class BandCollection : IPatternCollection
             new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstPush;
     }
     
-    private bool GetClues(IStrategyUser strategyUser, int mini, Unit unit, int maxClueCount, int maxDifferentClueCount)
+    private bool DoesClueNumbersMatch(IStrategyUser strategyUser, int mini, Unit unit, int maxClueCount, int maxDifferentClueCount)
     {
         _cluesBuffer.Clear();
 
@@ -176,7 +185,7 @@ public class BandCollection : IPatternCollection
     }
 }
 
-public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[] LengthKey, int Mini,
+public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[][] LengthKeys, int Mini,
     Unit Unit);
 
 public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
@@ -198,7 +207,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdata
             {
                 foreach (var key in boxes[i].Keys)
                 {
-                    var cell = key.Transform(_candidate.WidthKey, _candidate.LengthKey).ToCell(_candidate.Mini,
+                    var cell = key.Transform(_candidate.WidthKey, _candidate.LengthKeys[i]).ToCell(_candidate.Mini,
                         i, _candidate.Unit);
                     
                     lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
