@@ -86,7 +86,7 @@ public class LinePositions : IReadOnlyLinePositions
     {
         if (pos is LinePositions lp)
         {
-            var diff = _pos &= ~lp._pos;
+            var diff = _pos & ~lp._pos;
             return new LinePositions(diff, System.Numerics.BitOperations.PopCount((uint)diff));
         }
 

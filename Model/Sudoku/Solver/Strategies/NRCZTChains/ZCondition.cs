@@ -32,36 +32,55 @@ public class ZCondition : INRCZTCondition
 
     public IEnumerable<NRCZTChain> AnalyzeColumn(NRCZTChain current, CellPossibility from, IReadOnlyLinePositions colPoss)
     {
-        throw new System.NotImplementedException();
+        if (colPoss.Count != 3) yield break;
+        
+        int cursor = 0;
+        foreach (var row in colPoss)
+        {
+            if (row == from.Row) continue;
+            _buffer[cursor++] = new CellPossibility(row, from.Column, from.Possibility);
+        }
+
+        var chain = current.TryAdd(from, _buffer[0], _buffer[1]);
+        if (chain is not null) yield return chain;
+        
+        current.TryAdd(from, _buffer[1], _buffer[0]);
+        if (chain is not null) yield return chain;
     }
 
     public IEnumerable<NRCZTChain> AnalyzeMiniGrid(NRCZTChain current, CellPossibility from, IReadOnlyMiniGridPositions miniPoss)
     {
-        throw new System.NotImplementedException();
+        if (miniPoss.Count != 3) yield break;
+        
+        int cursor = 0;
+        foreach (var cell in miniPoss)
+        {
+            if (cell == from.ToCell()) continue;
+            _buffer[cursor++] = new CellPossibility(cell, from.Possibility);
+        }
+
+        var chain = current.TryAdd(from, _buffer[0], _buffer[1]);
+        if (chain is not null) yield return chain;
+        
+        current.TryAdd(from, _buffer[1], _buffer[0]);
+        if (chain is not null) yield return chain;
     }
 
     public IEnumerable<NRCZTChain> AnalyzePossibilities(NRCZTChain current, CellPossibility from, ReadOnlyBitSet16 poss)
     {
-        throw new System.NotImplementedException();
-    }
+        if (poss.Count != 3) yield break;
+        
+        int cursor = 0;
+        foreach (var p in poss.EnumeratePossibilities())
+        {
+            if (p == from.Possibility) continue;
+            _buffer[cursor++] = new CellPossibility(from.Row, from.Column, p);
+        }
 
-    public IEnumerable<NRCZTChain> AnalyzeRow()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public IEnumerable<NRCZTChain> AnalyzeColumn()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public IEnumerable<NRCZTChain> AnalyzeMiniGrid()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public IEnumerable<NRCZTChain> AnalyzePossibilities()
-    {
-        throw new System.NotImplementedException();
+        var chain = current.TryAdd(from, _buffer[0], _buffer[1]);
+        if (chain is not null) yield return chain;
+        
+        current.TryAdd(from, _buffer[1], _buffer[0]);
+        if (chain is not null) yield return chain;
     }
 }

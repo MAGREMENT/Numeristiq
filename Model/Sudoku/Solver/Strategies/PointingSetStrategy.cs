@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
@@ -118,7 +117,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
             lineNumber = firstChange.Column;
             unit = Unit.Column;
         }
-        else throw new Exception("Error while backtracking pointing possibilities");
+        else return "";
 
         return $"{_number} is present only in the cells {_miniPos} in mini grid {_miniPos.MiniGridNumber() + 1}, so" +
                $" it can be removed from any other cells in {unit.ToString().ToLower()} {lineNumber}";

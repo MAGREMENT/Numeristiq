@@ -13,11 +13,6 @@ public readonly struct ConjugateRelation
         To = to;
     }
 
-    public bool IsSame(CellPossibility from, CellPossibility to)
-    {
-        return From == from && to == To;
-    }
-
     public override bool Equals(object? obj)
     {
         return obj is ConjugateRelation cr && cr.From == From && cr.To == To;

@@ -248,7 +248,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     {
         if (pos is MiniGridPositions mgp)
         {
-            var diff = _pos &= ~mgp._pos;
+            var diff = _pos & ~mgp._pos;
             return new MiniGridPositions(diff, System.Numerics.BitOperations.PopCount((uint)diff), _startRow, _startCol);
         }
 

@@ -45,9 +45,9 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
     
     public NRCZTChain? TryAdd(CellPossibility from, CellPossibility to, CellPossibility mustSee)
     {
-        if (Contains(to)) return null;
+        if (Contains(to, mustSee)) return null;
 
-        var chain = new NRCZTChain(_relations, new ConjugateRelation(from, to), PossibleTargets);
+        var chain = new NRCZTChain(_relations, new ConjugateRelation(from, to), PossibleTargets, mustSee);
         return chain.PossibleTargets.Count == 0 ? null : chain;
     }
 
@@ -60,12 +60,12 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
 
         return false;
     }
-
-    public bool ContainsTo(CellPossibility to)
+    
+    public bool Contains(CellPossibility cp1, CellPossibility cp2)
     {
         foreach (var relation in _relations)
         {
-            if (relation.To == to) return true;
+            if (relation.From == cp1 || relation.To == cp1 || relation.From == cp2 || relation.To == cp2) return true;
         }
 
         return false;
@@ -88,7 +88,7 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
             builder.Append(_relations[i] + " - ");
         }
 
-        builder.Append(Last().ToString());
+        builder.Append(_relations[^1].ToString());
 
         return builder.ToString();
     }
