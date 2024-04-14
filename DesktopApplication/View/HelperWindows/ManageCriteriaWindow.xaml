@@ -19,7 +19,49 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         
-        <controls:TitleBarControl Grid.Row="0" Grid.Column="0" x:Name="TitleBar" Minimize="Minimize"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="TitleBar" Minimize="Minimize"
                                   ChangeSize="ChangeSize" Close="Close" AllowResize="False" AppTitle="Manage Criteria's"/>
+        
+        <Border Grid.Row="1" Grid.Column="0" Margin="10" Padding="10"
+                Background="{DynamicResource Background2}">
+            <Border VerticalAlignment="Stretch" HorizontalAlignment="Stretch" BorderThickness="1"
+                    BorderBrush="{DynamicResource Text}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <controls:SearchControl Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2"/>
+                    
+                    <StackPanel Grid.Row="0" Grid.Column="1"></StackPanel>
+                    
+                    <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource FullPrimaryButton}"
+                            Margin="10" FontSize="16" Height="40">Add</Button>
+                </Grid>
+            </Border>
+        </Border>
+        
+        <Grid Grid.Row="1" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <TextBlock Grid.Row="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                       FontSize="18" Foreground="{DynamicResource Text}">Criteria's</TextBlock>
+            
+            <ScrollViewer Grid.Row="1" Width="250" Style="{StaticResource TransparentBarScrollView}"></ScrollViewer>
+        </Grid>
     </Grid>
 </Window>

@@ -1,6 +1,8 @@
-﻿namespace ConsoleApplication;
+﻿using Model.Utility;
 
-public abstract class Command //TODO add aliases
+namespace ConsoleApplication;
+
+public abstract class Command
 {
     public string Name { get; }
     public IReadOnlyList<Argument> Arguments { get; }
@@ -39,7 +41,7 @@ public abstract class Command //TODO add aliases
     {
         for (int i = 0; i < Options.Count; i++)
         {
-            if (Options[i].Name.Equals(optionName)) return i;
+            if (Options[i].Name.EqualsCaseInsensitive(optionName)) return i;
         }
 
         return -1;

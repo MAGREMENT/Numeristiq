@@ -4,6 +4,17 @@ namespace Model.Utility;
 
 public static class StringExtensions
 {
+    public static bool EqualsCaseInsensitive(this string s, string other)
+    {
+        if (s.Length != other.Length) return false;
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (char.ToLower(s[i]) != char.ToLower(other[i])) return false;
+        }
+
+        return true;
+    }
+    
     public static string Repeat(this string s, int number)
     {
         if (number < 0) return "";

@@ -37,7 +37,19 @@ public partial class ManagePage : ISudokuManageView
 
     public void AddSearchResult(string s)
     {
-        Search.AddResult(s);
+        var tb = new TextBlock
+        {
+            Text = s,
+            Style = (Style)FindResource("SearchResult")
+        };
+        tb.MouseLeftButtonDown += (_, _) => _presenter.OnSearchResultSelection(s);
+        tb.MouseMove += (_, args) =>
+        {
+            if(args.LeftButton == MouseButtonState.Pressed)
+                DragDrop.DoDragDrop(tb, new StrategyDragDropData(s, -1), DragDropEffects.Move);
+        };
+        
+        Search.AddResult(tb);
     }
 
     public void SetStrategyList(IReadOnlyList<SudokuStrategy> list)
@@ -177,11 +189,6 @@ public partial class ManagePage : ISudokuManageView
         args.Handled = true;
     }
 
-    private void OnElementSelection(string s)
-    {
-        _presenter.OnSearchResultSelection(s);
-    }
-
     private static FrameworkElement? TranslateDescriptionLine(IDescriptionLine line)
     {
         switch (line)
@@ -208,3 +215,6 @@ public partial class ManagePage : ISudokuManageView
         }
     }
 }
+
+
+public record StrategyDragDropData(string Name, int Index);

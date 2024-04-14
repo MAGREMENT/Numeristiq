@@ -1,4 +1,6 @@
-﻿namespace ConsoleApplication;
+﻿using Model.Utility;
+
+namespace ConsoleApplication;
 
 public class Directory
 {
@@ -41,7 +43,7 @@ public class Directory
     {
         foreach (var directory in _directories)
         {
-            if (directory.Name == name) return directory;
+            if (directory.Name.EqualsCaseInsensitive(name)) return directory;
         }
 
         return null;
@@ -51,7 +53,7 @@ public class Directory
     {
         foreach (var command in _commands)
         {
-            if (command.Name == name) return command;
+            if (command.Name.EqualsCaseInsensitive(name)) return command;
         }
 
         return null;

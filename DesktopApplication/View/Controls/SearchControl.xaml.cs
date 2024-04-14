@@ -1,8 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 
-namespace DesktopApplication.View.Sudoku.Controls;
+namespace DesktopApplication.View.Controls;
 
 public partial class SearchControl
 {
@@ -10,8 +9,6 @@ public partial class SearchControl
     private bool _raiseEvent = true;
 
     public event OnSearch? Searched;
-
-    public event OnSelection? ElementSelected;
     
     public SearchControl()
     {
@@ -52,25 +49,10 @@ public partial class SearchControl
         ResultPanel.Children.Clear();
     }
 
-    public void AddResult(string s)
+    public void AddResult(UIElement element)
     {
-        var tb = new TextBlock
-        {
-            Text = s,
-            Style = (Style)FindResource("SearchResult")
-        };
-        tb.MouseLeftButtonDown += (_, _) => ElementSelected?.Invoke(s);
-        tb.MouseMove += (_, args) =>
-        {
-            if(args.LeftButton == MouseButtonState.Pressed)
-                DragDrop.DoDragDrop(tb, new StrategyDragDropData(s, -1), DragDropEffects.Move);
-        };
-        
-        ResultPanel.Children.Add(tb);
+        ResultPanel.Children.Add(element);
     }
 }
 
 public delegate void OnSearch(string s);
-public delegate void OnSelection(string s);
-
-public record StrategyDragDropData(string Name, int Index);

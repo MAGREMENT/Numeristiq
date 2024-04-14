@@ -1,17 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using Model.Sudoku.Generator.Criterias;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Trackers;
+using Model.Utility.Collections;
 
 namespace Model.Sudoku.Generator;
 
 public class SudokuEvaluator
 {
+    private static readonly IEvaluationCriteria[] AllCriterias =
+    {
+        new CantUseStrategyCriteria(),
+        new MustUseStrategyCriteria(),
+        new MaximumRatingCriteria(),
+        new MinimumRatingCriteria(),
+        new MaximumHardestDifficultyCriteria(),
+        new MinimumHardestDifficultyCriteria()
+    };
+    
     private readonly SudokuSolver _solver;
     private readonly RatingTracker _rTracker = new();
     private readonly HardestStrategyTracker _hsTracker = new();
     private readonly UsedStrategiesTracker _usTracker = new();
 
-    private readonly List<IEvaluationCriteria> _criterias = new();
+    private readonly UniqueList<IEvaluationCriteria> _criterias = new();
 
     public SudokuEvaluator(SudokuSolver solver)
     {
@@ -38,11 +49,21 @@ public class SudokuEvaluator
 
     public void AddCriteria(IEvaluationCriteria criteria)
     {
-        _criterias.Add(criteria);
+        _criterias.Add(criteria, i =>
+        {
+            _criterias.RemoveAt(i);
+            _criterias.InsertAt(criteria, i);
+        });
+    }
+
+    public void RemoveCriteria(int i)
+    {
+        _criterias.RemoveAt(i);
     }
 }
 
 public interface IEvaluationCriteria
 {
+    string Name { get; }
     bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker);
 }
