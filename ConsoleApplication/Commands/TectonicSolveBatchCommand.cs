@@ -6,28 +6,25 @@ namespace ConsoleApplication.Commands;
 public class TectonicSolveBatchCommand : Command
 {
     private const int FileIndex = 0;
-    private const int FeedbackIndex = 1;
+    private const int FeedbackIndex = 0;
 
     public override string Description => "Solves all the Tectonic's in a text file";
 
-    public TectonicSolveBatchCommand() : base("TectonicSolveBatch", 
-        new Option("-f", "Text file containing the Tectonic's", OptionValueRequirement.Mandatory, OptionValueType.File),
-        new Option("--feedback", "Feedback for each Tectonic"))
-    {
-    }
-
-    
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyOptionsReport report)
-    {
-        if (!report.IsUsed(FileIndex))
+    public TectonicSolveBatchCommand() : base("SolveBatch", 
+        new[]
         {
-            Console.WriteLine("No file specified");
-            return;
-        }
-
+            new Argument("Text file containing the Tectonic's", ValueType.File)
+        },
+        new[]
+        {
+            new Option("--feedback", "Feedback for each Tectonic")
+        }) { }
+    
+    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    {
         if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
         
-        using TextReader reader = new StreamReader((string)report.GetValue(FileIndex)!, Encoding.UTF8);
+        using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
 
         int count = 1;
         int success = 0;
@@ -53,7 +50,7 @@ public class TectonicSolveBatchCommand : Command
 
             var succeeded = solver.Tectonic.IsCorrect();
             if (succeeded) success++;
-            if (report.IsUsed(FeedbackIndex))
+            if (report.IsOptionUsed(FeedbackIndex))
             {
                 var status = succeeded ? "Ok !" : "Wrong !";
                 Console.WriteLine($"#{count} {status}");

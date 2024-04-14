@@ -2,90 +2,107 @@
 
 public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
 {
-    private readonly List<Command> _commands = new();
-    private int _defaultCommand = -1;
-    
-    public IReadOnlyList<Command> Commands => _commands;
+    public Directory Root { get; } = new("Root");
     public Instantiator Instantiator { get; } = new();
-
-    public void AddCommand(Command command, bool isDefault = false)
-    {
-        if (isDefault) _defaultCommand = _commands.Count;
-        _commands.Add(command);
-    }
-
+    
     public void Execute(string[] args)
     {
-        Command? c = null;
+        args = RemoveBlanks(args);
+        
+        Directory d = Root;
+        Command? c;
         
         if (args.Length == 0)
         {
-            if (_defaultCommand == -1) Console.WriteLine("No default command set");
-            else
-            {
-                c = _commands[_defaultCommand];
-                c.Execute(this, new OptionsReport(c));
-            }
+            c = Root.DefaultCommand();
             
+            if (c is null) Console.WriteLine("No default command set");
+            else c.Execute(this, new CallReport(Root, c));
+
             return;
         }
 
-        foreach (var candidate in _commands)
+        int cursor = 0;
+        for (; cursor < args.Length; cursor++)
         {
-            if (candidate.Name == args[0])
-            {
-                c = candidate;
-                break;
-            }
+            var buffer = d.FindDirectory(args[cursor]);
+            if (buffer is null) break;
+
+            d = buffer;
         }
+
+        c = cursor < args.Length ? d.FindCommand(args[cursor++]) : d.DefaultCommand();
 
         if (c == null)
         {
-            Console.WriteLine($"Command does not exist : {args[0]}");
+            Console.WriteLine("No corresponding command found");
             return;
         }
 
-        var report = new OptionsReport(c);
-
-        for (int i = 1; i < args.Length; i++)
+        if (args.Length - cursor < c.Arguments.Count)
         {
-            var index = c.IndexOf(args[i]);
+            Console.WriteLine($"Not enough arguments for command : {c.Name}");
+            return;
+        }
+
+        var report = new CallReport(d, c);
+
+        var argumentCursor = 0;
+        for (; cursor < args.Length; cursor++)
+        {
+            object? value;
+            
+            if (argumentCursor < c.Arguments.Count)
+            {
+                if (!CheckValueType(args[cursor], c.Arguments[argumentCursor].ValueType, out value))
+                {
+                    Console.WriteLine($"Value of the wrong type for argument {argumentCursor + 1}" +
+                                      $"\nExpected type '{c.Arguments[argumentCursor]}'");
+                    return;
+                }
+
+                report.SetArgumentValue(argumentCursor++, value);
+                continue;
+            }
+            
+            var index = c.IndexOfOption(args[cursor]);
             if (index == -1)
             {
-                Console.WriteLine($"Command '{c.Name}' is not compatible with this option : {args[i]}");
+                Console.WriteLine($"Command '{c.Name}' is not compatible with this option : {args[cursor]}");
+                return;
             }
 
             var o = c.Options[index];
-            object? value = null;
+            value = null;
             
             switch (o.ValueRequirement)
             {
-                case OptionValueRequirement.None : break;
-                case OptionValueRequirement.Mandatory :
-                    if (i == args.Length - 1)
+                case ValueRequirement.None : break;
+                case ValueRequirement.Mandatory :
+                    if (cursor == args.Length - 1)
                     {
                         Console.WriteLine($"Missing mandatory value for option '{o.Name}'");
                         return;
                     }
 
-                    if (!CheckValueType(args[i + 1], o.ValueType, out value))
+                    if (!CheckValueType(args[cursor + 1], o.ValueType, out value))
                     {
-                        Console.WriteLine($"Value of the wrong type for : {args[i] + 1}\nExpected type '{o.ValueType}'");
+                        Console.WriteLine($"Value of the wrong type for : {args[cursor] + 1}\nExpected type '{o.ValueType}'");
                         return;
                     }
 
-                    i++;
+                    cursor++;
                     break;
-                case OptionValueRequirement.Optional :
-                    if (i == args.Length - 1 || c.IndexOf(args[i + 1]) == -1) break;
+                case ValueRequirement.Optional :
+                    if (cursor == args.Length - 1 || c.IndexOfOption(args[cursor + 1]) == -1) break;
                     
-                    if (!CheckValueType(args[i + 1], o.ValueType, out value))
+                    if (!CheckValueType(args[cursor + 1], o.ValueType, out value))
                     {
-                        Console.WriteLine($"Value of the wrong type for : {args[i] + 1}\nExpected type '{o.ValueType}'");
+                        Console.WriteLine($"Value of the wrong type for : {args[cursor] + 1}\nExpected type '{o.ValueType}'");
                         return;
                     }
 
-                    i++;
+                    cursor++;
                     break;
             }
 
@@ -96,19 +113,31 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
         c.Execute(this, report);
     }
 
-    private bool CheckValueType(string value, OptionValueType type, out object? objectValue)
+    private string[] RemoveBlanks(string[] array)
     {
-        objectValue = null;
+        List<string> result = new();
+
+        foreach (var s in array)
+        {
+            if (!string.IsNullOrWhiteSpace(s)) result.Add(s);
+        }
+        
+        return result.ToArray();
+    }
+
+    private bool CheckValueType(string value, ValueType type, out object objectValue)
+    {
+        objectValue = default!;
 
         switch (type)
         {
-            case OptionValueType.None : return false;
-            case OptionValueType.String :
+            case ValueType.None : return false;
+            case ValueType.String :
                 objectValue = value.Length > 2 && value[0] == '"' && value[^1] == '"'
                     ? value.Substring(1, value.Length - 2)
                     : value;
                 return true;
-            case OptionValueType.Int :
+            case ValueType.Int :
                 try
                 {
                     objectValue = int.Parse(value);
@@ -118,7 +147,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
                 {
                     return false;
                 }
-            case OptionValueType.File :
+            case ValueType.File :
                 objectValue = value;
                 return File.Exists(value);
         }
@@ -129,7 +158,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
 
 public interface IReadOnlyArgumentInterpreter
 {
-    public IReadOnlyList<Command> Commands { get; }
+    public Directory Root { get; }
     public Instantiator Instantiator { get; }
     public void Execute(string[] args);
 }

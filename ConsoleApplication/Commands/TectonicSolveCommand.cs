@@ -8,22 +8,14 @@ public class TectonicSolveCommand : Command
     
     public override string Description => "Solves a Tectonic";
     
-    public TectonicSolveCommand() : base("TectonicSolve",
-        new Option("-s", "Tectonic string", OptionValueRequirement.Mandatory, OptionValueType.String))
-    {
-    }
+    public TectonicSolveCommand() : base("Solve",
+        new Argument("Tectonic string", ValueType.String)) { }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyOptionsReport report)
+    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        if (!report.IsUsed(StringIndex))
-        {
-            Console.WriteLine("No tectonic given");
-            return;
-        }
-        
         if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
 
-        var tectonic = TectonicTranslator.TranslateCodeFormat((string)report.GetValue(StringIndex)!);
+        var tectonic = TectonicTranslator.TranslateCodeFormat((string)report.GetArgumentValue(StringIndex));
         
         Console.WriteLine($"Before :\n{tectonic}");
 

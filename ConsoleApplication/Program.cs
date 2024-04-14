@@ -16,14 +16,20 @@ public static class Program
         if (_instance is null)
         {
             _instance = new ArgumentInterpreter();
-            _instance.AddCommand(new HelpCommand(), true);
-            _instance.AddCommand(new SessionCommand());
-            _instance.AddCommand(new SudokuSolveCommand());
-            _instance.AddCommand(new SudokuSolveBatchCommand());
-            _instance.AddCommand(new SudokuGenerateBatchCommand());
-            _instance.AddCommand(new TectonicSolveCommand());
-            _instance.AddCommand(new TectonicSolveBatchCommand());
-            _instance.AddCommand(new SudokuStrategyListCommand());
+            _instance.Root.AddCommand(new HelpCommand(), true)
+                .AddCommand(new SessionCommand());
+
+            _instance.Root.AddDirectory(new Directory("Sudoku"))
+                .AddCommand(new HelpCommand(), true)
+                .AddCommand(new SudokuSolveCommand())
+                .AddCommand(new SudokuSolveBatchCommand())
+                .AddCommand(new SudokuGenerateBatchCommand())
+                .AddCommand(new SudokuStrategyListCommand());
+
+            _instance.Root.AddDirectory(new Directory("Tectonic"))
+                .AddCommand(new HelpCommand(), true)
+                .AddCommand(new TectonicSolveCommand())
+                .AddCommand(new TectonicSolveBatchCommand());
         }
 
         return _instance;

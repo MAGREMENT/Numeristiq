@@ -12,17 +12,15 @@ public class SudokuGenerateBatchCommand : Command
     public override string Description => "Generate a determined amount of Sudoku's";
     
     private readonly ISudokuPuzzleGenerator _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
-    
-    public SudokuGenerateBatchCommand() : base("SudokuGenerateBatch", 
-        new Option("-c", "Count", OptionValueRequirement.Mandatory, OptionValueType.Int),
+
+    public SudokuGenerateBatchCommand() : base("GenerateBatch", 
+        new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),
         new Option("-e", "Evaluate puzzles"),
-        new Option("-s", "Sort Sudoku's"))
-    {
-    }
+        new Option("-s", "Sort puzzles")) { }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyOptionsReport report)
+    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        var count = report.IsUsed(CountIndex) ? (int)report.GetValue(CountIndex)! : 1;
+        var count = report.IsOptionUsed(CountIndex) ? (int)report.GetOptionValue(CountIndex)! : 1;
         
         Console.WriteLine("Started generating...");
         var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -31,7 +29,7 @@ public class SudokuGenerateBatchCommand : Command
 
         List<GeneratedSudokuPuzzle> result = new(count);
 
-        if (report.IsUsed(EvaluateIndex))
+        if (report.IsOptionUsed(EvaluateIndex))
         {
             if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
@@ -65,7 +63,7 @@ public class SudokuGenerateBatchCommand : Command
             }
         }
 
-        if (report.IsUsed(SortIndex))
+        if (report.IsOptionUsed(SortIndex))
         {
             Console.WriteLine("Started sorting...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
