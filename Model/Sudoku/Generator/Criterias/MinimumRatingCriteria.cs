@@ -1,14 +1,24 @@
-﻿using Model.Sudoku.Solver.Trackers;
+﻿using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
+using Model.Sudoku.Solver;
+using Model.Sudoku.Solver.Trackers;
 
 namespace Model.Sudoku.Generator.Criterias;
 
-public class MinimumRatingCriteria : IEvaluationCriteria
+public class MinimumRatingCriteria : EvaluationCriteria
 {
-    public double Rating { get; set; }
-
-    public string Name => "Minimum Rating";
+    public const string OfficialName = "Minimum Rating";
     
-    public bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker t) => puzzle.Rating >= Rating;
+    public MinimumRatingCriteria() : base(OfficialName, 
+        new DoubleSetting("Rating",
+            new SliderInteractionInterface(1, 3, 0.05)))
+    {
+    }
+
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
+    {
+        return puzzle.Rating >= _settings[0].Get().ToDouble();
+    }
 
     public override bool Equals(object? obj)
     {
@@ -17,6 +27,6 @@ public class MinimumRatingCriteria : IEvaluationCriteria
 
     public override int GetHashCode()
     {
-        return typeof(MinimumRatingCriteria).GetHashCode();
+        return Name.GetHashCode();
     }
 }

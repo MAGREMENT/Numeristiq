@@ -1,12 +1,12 @@
 ﻿namespace Model.Helpers.Settings.Types;
 
-public class IntSetting : ISetting
+public class StringSetting : ISetting
 {
     public string Name { get; }
     public ISettingInteractionInterface InteractionInterface { get; }
-    public int Value { get; private set; }
+    public string Value { get; private set; }
 
-    public IntSetting(string name, ISettingInteractionInterface i, int defaultValue = 1)
+    public StringSetting(string name, ISettingInteractionInterface i, string defaultValue = "")
     {
         Name = name;
         InteractionInterface = i;
@@ -15,12 +15,12 @@ public class IntSetting : ISetting
 
     public SettingValue Get()
     {
-        return new IntSettingValue(Value);
+        return new StringSettingValue(Value);
     }
 
     public void Set(SettingValue value, bool checkValidity = true)
     {
         value = checkValidity ? InteractionInterface.Verify(value) : value;
-        Value = value.ToInt();
+        Value = value.ToString()!;
     }
 }

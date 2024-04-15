@@ -20,8 +20,9 @@ public class MinMaxSetting : ISetting
         return new MinMaxSettingValue(Value);
     }
 
-    public void Set(SettingValue value)
+    public void Set(SettingValue value, bool checkValidity = true)
     {
-        Value = InteractionInterface.Verify(value).ToMinMax();
+        value = checkValidity ? InteractionInterface.Verify(value) : value;
+        Value = value.ToMinMax();
     }
 }

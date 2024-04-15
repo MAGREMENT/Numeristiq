@@ -16,9 +16,10 @@ public class BooleanSetting : ISetting
     {
         return new BoolSettingValue(Value);
     }
-    
-    public void Set(SettingValue value)
+
+    public void Set(SettingValue value, bool checkValidity = true)
     {
-        Value = InteractionInterface.Verify(value).ToBool();
+        value = checkValidity ? InteractionInterface.Verify(value) : value;
+        Value = value.ToBool();
     }
 }

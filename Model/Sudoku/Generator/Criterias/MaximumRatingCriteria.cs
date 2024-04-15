@@ -1,14 +1,24 @@
-﻿using Model.Sudoku.Solver.Trackers;
+﻿using Model.Helpers.Settings;
+using Model.Helpers.Settings.Types;
+using Model.Sudoku.Solver.Trackers;
 
 namespace Model.Sudoku.Generator.Criterias;
 
-public class MaximumRatingCriteria : IEvaluationCriteria
+public class MaximumRatingCriteria : EvaluationCriteria
 {
-    public double Rating { get; set; }
-
-    public string Name => "Maximum Rating";
-    public bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker t) => puzzle.Rating >= Rating;
+    public const string OfficialName = "Maximum Rating";
     
+    public MaximumRatingCriteria() : base(OfficialName, 
+        new DoubleSetting("Rating",
+            new SliderInteractionInterface(1, 3, 0.05), 3))
+    {
+    }
+
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
+    {
+        return puzzle.Rating <= _settings[0].Get().ToDouble();
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is MaximumRatingCriteria;
@@ -16,6 +26,6 @@ public class MaximumRatingCriteria : IEvaluationCriteria
 
     public override int GetHashCode()
     {
-        return typeof(MaximumRatingCriteria).GetHashCode();
+        return Name.GetHashCode();
     }
 }

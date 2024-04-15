@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         mc:Ignorable="d"
-        Title="ManageCriteriaWindow" Height="450" Width="800"
+        Title="ManageCriteriaWindow" Height="550" Width="1000"
         WindowStyle="None"
         ResizeMode="NoResize">
     
@@ -42,12 +42,26 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     
-                    <controls:SearchControl Grid.Row="0" Grid.Column="0" Width="250" Grid.RowSpan="2"/>
+                    <controls:SearchControl Grid.Row="0" Grid.Column="0" Width="300" Grid.RowSpan="2" x:Name="Search"/>
                     
-                    <StackPanel Grid.Row="0" Grid.Column="1"></StackPanel>
+                    <Grid Grid.Row="0" Grid.Column="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Border Grid.Row="0" Margin="10" BorderThickness="0,0,0,1"
+                                BorderBrush="{DynamicResource Text}" Padding="0,0,0,5">
+                            <TextBlock x:Name="CriteriaName" FontSize="16" HorizontalAlignment="Center"
+                                       Foreground="{DynamicResource Text}">No Criteria Selected</TextBlock>
+                        </Border>
+                        
+                        <StackPanel Grid.Row="1" x:Name="CriteriaOptions"/>
+                    </Grid>
                     
                     <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource FullPrimaryButton}"
-                            Margin="10" FontSize="16" Height="40">Add</Button>
+                            Margin="10" FontSize="16" Height="40" x:Name="Action" Visibility="Hidden"
+                            Click="DoButtonAction">Add</Button>
                 </Grid>
             </Border>
         </Border>
@@ -56,12 +70,20 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
             <TextBlock Grid.Row="0" Margin="10,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"
                        FontSize="18" Foreground="{DynamicResource Text}">Criteria's</TextBlock>
             
-            <ScrollViewer Grid.Row="1" Width="250" Style="{StaticResource TransparentBarScrollView}"></ScrollViewer>
+            <ScrollViewer Grid.Row="1" Width="300" Style="{StaticResource TransparentBarScrollView}">
+                <StackPanel x:Name="Criterias"/>
+            </ScrollViewer>
+            
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button FontSize="16" Padding="5" Margin="5" Click="OnSave">Save</Button>
+                <Button FontSize="16" Padding="5" Margin="5" Click="OnCancel">Cancel</Button>
+            </StackPanel>
         </Grid>
     </Grid>
 </Window>

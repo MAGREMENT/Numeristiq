@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Shapes;
 using DesktopApplication.Presenter.Sudoku;
 using DesktopApplication.Presenter.Sudoku.Generate;
@@ -21,6 +22,8 @@ public partial class GeneratePage : ISudokuGenerateView
     {
         InitializeComponent();
         _presenter = appPresenter.Initialize(this);
+
+        RenderOptions.SetBitmapScalingMode(Bin, BitmapScalingMode.Fant);
 
         _initialized = true;
     }
@@ -69,6 +72,7 @@ public partial class GeneratePage : ISudokuGenerateView
             TransitionPlace.ToEvaluator => ToEvaluator,
             TransitionPlace.ToFinalList => ToFinalList,
             TransitionPlace.ToRDR => ToRDR,
+            TransitionPlace.ToBin => ToBin,
             _ => throw new ArgumentOutOfRangeException()
         };
         
@@ -97,7 +101,12 @@ public partial class GeneratePage : ISudokuGenerateView
 
     public void AllowCancel(bool allowed)
     {
-        StopButton.IsEnabled = allowed;
+        StopButton.Dispatcher.Invoke(() => StopButton.IsEnabled = allowed);
+    }
+
+    public void SetCriteriaList(IReadOnlyList<EvaluationCriteria> criteriaList)
+    {
+        Evaluator.SetCriteriaList(criteriaList);
     }
 
     private void Generate(object sender, RoutedEventArgs e)
@@ -123,7 +132,6 @@ public partial class GeneratePage : ISudokuGenerateView
 
     private void Stop(object sender, RoutedEventArgs e)
     {
-        
         _presenter.Stop();
     }
 }

@@ -147,24 +147,6 @@ public static class StrategyPool
     }
 
     public static IEnumerable<string> EnumerateStrategies() => Pool.Keys;
-
-    public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, InstanceHandling handling,
-        Dictionary<string, SettingValue> settings)
-    {
-        if (!Pool.TryGetValue(name, out var giver)) return null;
-
-        var result = giver();
-        result.Enabled = enabled;
-        result.Locked = locked;
-        result.InstanceHandling = handling;
-
-        foreach (var entry in settings)
-        {
-            result.TrySetSetting(entry.Key, entry.Value);
-        }
-
-        return result;
-    }
     
     public static SudokuStrategy? CreateFrom(string name, bool enabled, bool locked, InstanceHandling handling)
     {

@@ -26,7 +26,7 @@ public partial class SliderControl
 
     public override void Set()
     {
-        Set(new IntSettingValue((int)Slider.Value));
+        Set(new DoubleSettingValue(Slider.Value));
     }
 
     private void OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

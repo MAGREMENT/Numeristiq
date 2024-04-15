@@ -34,7 +34,7 @@ public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingC
         return GetEnumerator();
     }
 
-    public void Set(int index, SettingValue value)
+    public void Set(int index, SettingValue value, bool checkValidity)
     {
         switch (index)
         {
@@ -45,7 +45,7 @@ public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingC
                 _strategy.InstanceHandling = (InstanceHandling)value.ToInt();
                 break;
             default:
-                _strategy.Set(index, value);
+                _strategy.Set(index, value, checkValidity);
                 break;
         }
 

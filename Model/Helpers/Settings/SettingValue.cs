@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Model.Utility;
@@ -18,6 +19,11 @@ public abstract class SettingValue
         return default;
     }
 
+    public virtual double ToDouble()
+    {
+        return default;
+    }
+    
     public virtual MinMax ToMinMax()
     {
         return default;
@@ -30,14 +36,12 @@ public abstract class SettingValue
 
     protected static int TranslateInt(string s)
     {
-        try
-        {
-            return int.Parse(s);
-        }
-        catch (Exception)
-        {
-            return default;
-        }
+        return int.TryParse(s, out var result) ? result : default;
+    }
+
+    protected static double TranslateDouble(string s)
+    {
+        return double.TryParse(s, out var result) ? result : default;
     }
 
     protected static MinMax TranslateMinMax(string s)
@@ -75,6 +79,11 @@ public class StringSettingValue : SettingValue
         return TranslateInt(_s);
     }
 
+    public override double ToDouble()
+    {
+        return TranslateDouble(_s);
+    }
+
     public override MinMax ToMinMax()
     {
         return TranslateMinMax(_s);
@@ -83,6 +92,16 @@ public class StringSettingValue : SettingValue
     public override string ToString()
     {
         return _s;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is SettingValue value && _s.Equals(value.ToString());
+    }
+
+    public override int GetHashCode()
+    {
+        return _s.GetHashCode();
     }
 }
 
@@ -105,9 +124,64 @@ public class IntSettingValue : SettingValue
         return _i;
     }
 
+    public override double ToDouble()
+    {
+        return _i;
+    }
+
     public override string ToString()
     {
         return _i.ToString();
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is SettingValue value && _i == value.ToInt();
+    }
+
+    public override int GetHashCode()
+    {
+        return _i.GetHashCode();
+    }
+}
+
+public class DoubleSettingValue : SettingValue
+{
+    private readonly double _d;
+
+    public DoubleSettingValue(double d)
+    {
+        _d = d;
+    }
+
+    public DoubleSettingValue(string s)
+    {
+        _d = TranslateDouble(s);
+    }
+
+    public override double ToDouble()
+    {
+        return _d;
+    }
+
+    public override int ToInt()
+    {
+        return (int)_d;
+    }
+
+    public override string ToString()
+    {
+        return Math.Round(_d, 2).ToString(CultureInfo.CurrentCulture);
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is SettingValue value && Math.Abs(_d - value.ToDouble()) < 0.00001;
+    }
+
+    public override int GetHashCode()
+    {
+        return _d.GetHashCode();
     }
 }
 
@@ -134,6 +208,16 @@ public class BoolSettingValue : SettingValue
     {
         return _b.ToString();
     }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is SettingValue value && _b == value.ToBool();
+    }
+
+    public override int GetHashCode()
+    {
+        return _b.GetHashCode();
+    }
 }
 
 public class MinMaxSettingValue : SettingValue
@@ -158,6 +242,16 @@ public class MinMaxSettingValue : SettingValue
     public override string ToString()
     {
         return _minMax.ToString();
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is SettingValue value && _minMax == value.ToMinMax();
+    }
+
+    public override int GetHashCode()
+    {
+        return _minMax.GetHashCode();
     }
 }
 

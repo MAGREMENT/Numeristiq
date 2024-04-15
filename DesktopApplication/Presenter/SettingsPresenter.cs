@@ -19,9 +19,9 @@ public class SettingsPresenter : IEnumerable<NamedListSpan<ISetting>>, ISettingC
         _autoUpdate = autoUpdate;
     }
 
-    public void Set(int index, SettingValue value)
+    public void Set(int index, SettingValue value, bool checkValidity)
     {
-        _settings.Set(index, value);
+        _settings.Set(index, value, checkValidity);
         if(_autoUpdate) Update();
     }
 

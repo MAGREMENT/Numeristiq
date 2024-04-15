@@ -21,9 +21,10 @@ public class EnumSetting<TEnum> : ISetting where TEnum : struct, Enum
         return new IntSettingValue(EnumConverter.ToInt(Value));
     }
 
-    public void Set(SettingValue value)
+    public void Set(SettingValue value, bool checkValidity = true)
     {
-        Value = EnumConverter.ToEnum<TEnum>(InteractionInterface.Verify(value).ToInt());
+        value = checkValidity ? InteractionInterface.Verify(value) : value;
+        Value = EnumConverter.ToEnum<TEnum>(value.ToInt());
     }
 }
 

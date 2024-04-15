@@ -12,9 +12,10 @@ public interface ISudokuGenerateView
     void UpdateEvaluatedList(IEnumerable<GeneratedSudokuPuzzle> sudokus);
     void AllowGeneration(bool allowed);
     void AllowCancel(bool allowed);
+    public void SetCriteriaList(IReadOnlyList<EvaluationCriteria> criteriaList);
 }
 
 public enum TransitionPlace
 {
-    ToRDR, ToEvaluator, ToFinalList
+    ToRDR, ToEvaluator, ToFinalList, ToBin
 }

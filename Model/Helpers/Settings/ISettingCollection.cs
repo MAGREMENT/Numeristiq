@@ -2,5 +2,5 @@
 
 public interface ISettingCollection
 {
-    public void Set(int index, SettingValue value);
+    public void Set(int index, SettingValue value, bool checkValidity);
 }

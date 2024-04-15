@@ -1,17 +1,26 @@
-﻿using Model.Sudoku.Solver;
+﻿using Model.Helpers.Settings.Types;
+using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Trackers;
+using Model.Utility;
 
 namespace Model.Sudoku.Generator.Criterias;
 
-public class MinimumHardestDifficultyCriteria : IEvaluationCriteria
+public class MinimumHardestDifficultyCriteria : EvaluationCriteria
 {
-    public StrategyDifficulty Difficulty { get; set; }
-
-    public string Name => "Minimum Hardest Difficulty";
-
-    public bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker t) =>
-        puzzle.Hardest is not null && puzzle.Hardest.Difficulty >= Difficulty;
+    public const string OfficialName = "Minimum Hardest Strategy";
     
+    public MinimumHardestDifficultyCriteria() : base(OfficialName, 
+        new EnumSetting<StrategyDifficulty>("Difficulty",
+            new SpaceConverter(), StrategyDifficulty.Basic))
+    {
+    }
+
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
+    {
+        return puzzle.Hardest is not null &&
+               puzzle.Hardest.Difficulty >= ((EnumSetting<StrategyDifficulty>)_settings[0]).Value;
+    }
+
     public override bool Equals(object? obj)
     {
         return obj is MinimumHardestDifficultyCriteria;
@@ -19,6 +28,6 @@ public class MinimumHardestDifficultyCriteria : IEvaluationCriteria
 
     public override int GetHashCode()
     {
-        return typeof(MinimumHardestDifficultyCriteria).GetHashCode();
+        return Name.GetHashCode();
     }
 }

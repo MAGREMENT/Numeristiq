@@ -2,14 +2,14 @@
 using System.Threading.Tasks;
 using Model.Sudoku.Generator;
 using Model.Sudoku.Solver;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Sudoku.Generate;
 
-public class SudokuGeneratePresenter
+public class SudokuGeneratePresenter : IManageCriteriaCallback
 {
     private readonly ISudokuGenerateView _view;
     private readonly RDRSudokuPuzzleGenerator _generator;
-    private readonly Settings _settings;
     private readonly SudokuEvaluator _evaluator;
     
     private readonly List<GeneratedSudokuPuzzle> _evaluatedList = new();
@@ -24,10 +24,9 @@ public class SudokuGeneratePresenter
     {
         _view = view;
         _evaluator = new SudokuEvaluator(solver);
-        _settings = settings;
         _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
-        SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuGeneratePage);
+        SettingsPresenter = new SettingsPresenter(settings, SettingCollections.SudokuGeneratePage);
     }
 
     public async void Generate()
@@ -49,7 +48,7 @@ public class SudokuGeneratePresenter
 
     public void SetKeepSymmetry(bool value) => _generator.KeepSymmetry = value;
 
-    public ManageCriteriaPresenterBuilder ManageCriteria() => new(_evaluator);
+    public ManageCriteriaPresenterBuilder ManageCriteria() => new(_evaluator.GetCriteriasCopy(), this);
 
     private void GeneratePuzzles()
     {
@@ -74,6 +73,10 @@ public class SudokuGeneratePresenter
                 _view.ShowTransition(TransitionPlace.ToFinalList);
                 _view.UpdateEvaluatedList(_evaluatedList);
             }
+            else
+            {
+                _view.ShowTransition(TransitionPlace.ToBin);
+            }
         }
 
         _running = false;
@@ -94,16 +97,30 @@ public class SudokuGeneratePresenter
        
         _view.UpdateEvaluatedList(_evaluatedList);
     }
+
+    public void SetCriterias(UniqueList<EvaluationCriteria> criteriaList)
+    {
+        _evaluator.SetCriterias(criteriaList);
+        _view.SetCriteriaList(criteriaList);
+    }
 }
 
 public class ManageCriteriaPresenterBuilder
 {
-    private readonly SudokuEvaluator _evaluator;
+    private readonly UniqueList<EvaluationCriteria> _criteriaList;
+    private readonly IManageCriteriaCallback _callback;
 
-    public ManageCriteriaPresenterBuilder(SudokuEvaluator evaluator)
+
+    public ManageCriteriaPresenterBuilder(UniqueList<EvaluationCriteria> criteriaList, IManageCriteriaCallback callback)
     {
-        _evaluator = evaluator;
+        _criteriaList = criteriaList;
+        _callback = callback;
     }
 
-    public ManageCriteriaPresenter Build(IManageCriteriaView view) => new ManageCriteriaPresenter(view, _evaluator);
+    public ManageCriteriaPresenter Build(IManageCriteriaView view) => new(view, _criteriaList, _callback);
+}
+
+public interface IManageCriteriaCallback
+{
+    public void SetCriterias(UniqueList<EvaluationCriteria> criteriaList);
 }

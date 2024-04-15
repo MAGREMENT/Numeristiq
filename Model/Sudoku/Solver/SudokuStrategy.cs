@@ -55,9 +55,9 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
         }
     }
 
-    public void Set(int index, SettingValue value)
+    public void Set(int index, SettingValue value, bool checkValidity = true)
     {
-        _settings[index].Set(value);
+        _settings[index].Set(value, checkValidity);
     }
 
     public override bool Equals(object? obj)

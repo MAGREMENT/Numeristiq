@@ -340,13 +340,6 @@
     "Settings": {}
   },
   {
-    "Name": "NRCZT-Chains",
-    "Enabled": true,
-    "Locked": false,
-    "InstanceHandling": 2,
-    "Settings": {}
-  },
-  {
     "Name": "Oddagon",
     "Enabled": false,
     "Locked": false,

@@ -1,4 +1,6 @@
-﻿using Model.Sudoku.Generator.Criterias;
+﻿using System.Collections.Generic;
+using System.Text;
+using Model.Helpers.Settings;
 using Model.Sudoku.Solver;
 using Model.Sudoku.Solver.Trackers;
 using Model.Utility.Collections;
@@ -7,22 +9,12 @@ namespace Model.Sudoku.Generator;
 
 public class SudokuEvaluator
 {
-    private static readonly IEvaluationCriteria[] AllCriterias =
-    {
-        new CantUseStrategyCriteria(),
-        new MustUseStrategyCriteria(),
-        new MaximumRatingCriteria(),
-        new MinimumRatingCriteria(),
-        new MaximumHardestDifficultyCriteria(),
-        new MinimumHardestDifficultyCriteria()
-    };
-    
     private readonly SudokuSolver _solver;
     private readonly RatingTracker _rTracker = new();
     private readonly HardestStrategyTracker _hsTracker = new();
     private readonly UsedStrategiesTracker _usTracker = new();
 
-    private readonly UniqueList<IEvaluationCriteria> _criterias = new();
+    private UniqueList<EvaluationCriteria> _criterias = new();
 
     public SudokuEvaluator(SudokuSolver solver)
     {
@@ -47,23 +39,54 @@ public class SudokuEvaluator
         return puzzle;
     }
 
-    public void AddCriteria(IEvaluationCriteria criteria)
+    public UniqueList<EvaluationCriteria> GetCriteriasCopy()
     {
-        _criterias.Add(criteria, i =>
-        {
-            _criterias.RemoveAt(i);
-            _criterias.InsertAt(criteria, i);
-        });
+        return _criterias.Copy();
     }
 
-    public void RemoveCriteria(int i)
+    public void SetCriterias(UniqueList<EvaluationCriteria> criteriaList)
     {
-        _criterias.RemoveAt(i);
+        _criterias = criteriaList.Copy();
     }
 }
 
-public interface IEvaluationCriteria
+public abstract class EvaluationCriteria : ISettingCollection
 {
-    string Name { get; }
-    bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker);
+    protected readonly ISetting[] _settings;
+    
+    public string Name { get; }
+    public IReadOnlyList<IReadOnlySetting> Settings => _settings;
+
+    public event OnSettingUpdate? SettingUpdated;
+
+    protected EvaluationCriteria(string name, params ISetting[] settings)
+    {
+        Name = name;
+        _settings = settings;
+    }
+    
+    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker);
+    public void Set(int index, SettingValue value, bool checkValidity)
+    {
+        if (index < 0 || index >= _settings.Length) return;
+
+        var setting = _settings[index];
+        setting.Set(value, checkValidity);
+        SettingUpdated?.Invoke(setting);
+    }
+
+    public override string ToString()
+    {
+        if (_settings.Length == 0) return Name;
+        
+        var builder = new StringBuilder($"{Name} : {_settings[0]}");
+        for (int i = 1; i < _settings.Length; i++)
+        {
+            builder.Append($", {_settings[i]}");
+        }
+
+        return builder.ToString();
+    }
 }
+
+public delegate void OnSettingUpdate(IReadOnlySetting setting);

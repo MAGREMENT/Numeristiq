@@ -19,21 +19,21 @@ public interface IStringListInteractionInterface : ISettingInteractionInterface,
 
 public class SliderInteractionInterface : ISettingInteractionInterface
 {
-    public SliderInteractionInterface(int min, int max, int tickFrequency)
+    public SliderInteractionInterface(double min, double max, double tickFrequency)
     {
         Min = min;
         Max = max;
         TickFrequency = tickFrequency;
     }
 
-    public int Min { get; }
-    public int Max { get; }
-    public int TickFrequency { get; }
+    public double Min { get; }
+    public double Max { get; }
+    public double TickFrequency { get; }
     
     public SettingValue Verify(SettingValue value)
     {
-        var asInt = value.ToInt();
-        return asInt >= Min && asInt <= Max && (asInt - Min) % TickFrequency == 0 ? value : new IntSettingValue(Min);
+        var asDouble = value.ToDouble();
+        return asDouble >= Min && asDouble <= Max && (asDouble - Min) % TickFrequency == 0 ? value : new DoubleSettingValue(Min);
     }
 }
 

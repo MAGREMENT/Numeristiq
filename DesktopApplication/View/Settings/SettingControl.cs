@@ -16,7 +16,7 @@ public abstract class SettingControl : UserControl
 
     protected void Set(SettingValue value)
     {
-        _callback.Set(_index, value);
+        _callback.Set(_index, value, false);
     }
 
     protected SettingControl(ISettingCollection callback, IReadOnlySetting setting, int index)

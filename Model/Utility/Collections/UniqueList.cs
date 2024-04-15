@@ -8,9 +8,30 @@ namespace Model.Utility.Collections;
 public class UniqueList<T> : IReadOnlyList<T> where T : notnull
 {
     private const int StartLength = 4;
-    
-    private T[] _array = Array.Empty<T>();
+
+    private T[] _array;
     public int Count { get; private set; }
+
+    public UniqueList()
+    {
+        _array = Array.Empty<T>();
+    }
+
+    public UniqueList(int count)
+    {
+        _array = new T[count];
+    }
+
+    public UniqueList<T> Copy()
+    {
+        var list = new UniqueList<T>(Count)
+        {
+            Count = Count
+        };
+        Array.Copy(_array, list._array, Count);
+
+        return list;
+    }
     
     public int IndexOf(T obj) => Array.IndexOf(_array, obj, 0, Count);
 

@@ -2,7 +2,7 @@
 
 public interface ISetting : IReadOnlySetting
 {
-    public void Set(SettingValue value);
+    public void Set(SettingValue value, bool checkValidity = true);
 }
 
 public interface IReadOnlySetting
