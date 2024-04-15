@@ -9,9 +9,8 @@
   "Open copy dialog": "True",
   "Paste default format": "2",
   "Open paste dialog": "True",
-  "Line format empty cell representation": "0",
+  "Line format empty cell representation": "2",
   "Convert solo candidate to given for grid format": "True",
   "Main possibilities location": "9",
-  "Evaluation trigger count": "5",
-  "Successive evaluation count": "3"
+  "Test solution count for clue": "False"
 }

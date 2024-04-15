@@ -15,12 +15,12 @@ public class HardCodedThemeRepository : IRepository<Theme[]>
         return new[]
         {
             new Theme("Default Dark", RGB.FromHex(0x0E0E15), RGB.FromHex(0x1C1C2C),
-                RGB.FromHex(0x272742), RGB.FromHex(0xFC880B), RGB.FromHex(0xEE810C),
-                RGB.FromHex(0xF52A0A), RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2),
+                RGB.FromHex(0x272742), RGB.FromHex(0xFC880B), RGB.FromHex(0xB56109),
+                RGB.FromHex(0xF52A0A), RGB.FromHex(0xBC1F07), RGB.FromHex(0xF50EE2),
                 RGB.FromHex(0xFFFFFF), RGB.FromHex(0xFFFFFF)),
             new Theme("Default Light", RGB.FromHex(0xC7DDE2), RGB.FromHex(0xD4E8EC),
-                RGB.FromHex(0xEDFBFF), RGB.FromHex(0xFC880B), RGB.FromHex(0xEE810C),
-                RGB.FromHex(0xF52A0A), RGB.FromHex(0xE8280B), RGB.FromHex(0xF50EE2),
+                RGB.FromHex(0xEDFBFF), RGB.FromHex(0xFC880B), RGB.FromHex(0xB56109),
+                RGB.FromHex(0xF52A0A), RGB.FromHex(0xBC1F07), RGB.FromHex(0xF50EE2),
                 RGB.FromHex(0x000000), RGB.FromHex(0x000000))
         };
     }

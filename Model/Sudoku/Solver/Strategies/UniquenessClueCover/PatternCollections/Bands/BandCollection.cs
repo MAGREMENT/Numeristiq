@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Sudoku.Solver.Explanation;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -199,27 +201,76 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdata
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        var cells = GetCells();
+        
+        return new ChangeReport<ISudokuHighlighter>(Description(cells), lighter =>
         {
-            var boxes = _candidate.Pattern.PlacementsWithKey(_candidate.BoxKey);
-
-            for (int i = 0; i < 3; i++)
+            foreach (var cell in cells)
             {
-                foreach (var key in boxes[i].Keys)
-                {
-                    var cell = key.Transform(_candidate.WidthKey, _candidate.LengthKeys[i]).ToCell(_candidate.Mini,
-                        i, _candidate.Unit);
-                    
-                    lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
-                }
+                lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
             }
             
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        });
+        }, Explanation(cells));
+    }
+
+    private string Description(List<Cell> cells)
+    {
+        if (cells.Count == 0) return "";
+        
+        var builder = new StringBuilder($"Uniqueness Clue Cover pattern match cells {cells[0]}");
+        for (int i = 1; i < cells.Count; i++)
+        {
+            builder.Append($", {cells[i]}");
+        }
+        
+        return builder.ToString();
+    }
+
+    private ExplanationElement? Explanation(List<Cell> cells)
+    {
+        if (cells.Count == 0) return null;
+
+        ExplanationElement start = new CellExplanationElement(cells[0]);
+        var current = start;
+
+        for (int i = 1; i < cells.Count; i++)
+        {
+            current = current.Append(", ").Append(cells[i]);
+        }
+
+        current.Append(" matches a UCC pattern, leading to the eliminations made by that specific pattern");
+        return start;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        return Clue<ISudokuHighlighter>.Default();
+        var cells = GetCells();
+
+        return new Clue<ISudokuHighlighter>(lighter =>
+        {
+            foreach (var cell in cells)
+            {
+                lighter.EncircleCell(cell);
+            }
+        }, "Those cells seems to match a certain pattern");
+    }
+
+    private List<Cell> GetCells()
+    {
+        List<Cell> cells = new();
+        
+        var boxes = _candidate.Pattern.PlacementsWithKey(_candidate.BoxKey);
+
+        for (int i = 0; i < 3; i++)
+        {
+            foreach (var key in boxes[i].Keys)
+            {
+                cells.Add(key.Transform(_candidate.WidthKey, _candidate.LengthKeys[i]).ToCell(_candidate.Mini,
+                    i, _candidate.Unit));
+            }
+        }
+
+        return cells;
     }
 }

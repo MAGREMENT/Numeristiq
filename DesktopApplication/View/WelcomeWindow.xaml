@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
+        xmlns:board="clr-namespace:DesktopApplication.View"
         mc:Ignorable="d"
         Height="290" Width="450"
         WindowStyle="None"
@@ -38,9 +39,10 @@
                         Click="OnTectonicClick">Tectonic</Button>
             </StackPanel>
         
-            <Border Margin="10" BorderThickness="5" BorderBrush="{DynamicResource Background2}" Width="230" Height="230" Grid.Column="1">
-                <Image Width="220" Height="220" x:Name="GameImage"/>
-            </Border>
+            <board:WelcomeBoard Grid.Column="1" x:Name="Board" Height="250" Width="250"
+                                TextBrush="{DynamicResource Text}"
+                                PrimaryBrush="{DynamicResource Primary1}"
+                                SecondaryBrush="{DynamicResource Secondary1}"/>
         </Grid>
     </DockPanel>
 </Window>

@@ -13,7 +13,7 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
     private readonly Random _random = new();
     private readonly IFilledSudokuGenerator _filledGenerator;
     
-    public bool KeepSymmetry { get; set; }
+    public bool KeepSymmetry { get; set; } //TODO Keep uniqueness
 
     public RDRSudokuPuzzleGenerator(IFilledSudokuGenerator filledGenerator)
     {
@@ -65,9 +65,8 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
             {
                 var r2 = 8 - row;
                 var c2 = 8 - col;
-                list.Remove(r2 * 9 - c2);
-                
-                TryRemove(sudoku, new Cell(row, col), new Cell(r2, c2));
+                if (list.Remove(r2 * 9 + c2)) TryRemove(sudoku, new Cell(row, col), new Cell(r2, c2));
+                else TryRemove(sudoku, row, col);
             }
             else TryRemove(sudoku, row, col);
         }

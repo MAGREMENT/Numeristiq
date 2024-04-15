@@ -35,7 +35,7 @@ public static class BackTracking
             result.Add(current.Copy());
             return result.Count >= stopAt;
         }
-        
+
         var row = position / 9;
         var col = position % 9;
         
@@ -58,7 +58,7 @@ public static class BackTracking
                 
                 current[row, col] = 0;
                 pos.Remove(row, col);
-            }
+            } 
         }
 
         return false;

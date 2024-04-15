@@ -11,8 +11,7 @@ public class SudokuPuzzleGenerator
 {
     private const int SudokuCount = 25;
     
-    private readonly ISudokuPuzzleGenerator generator =
-        new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+    private readonly RDRSudokuPuzzleGenerator generator = new(new BackTrackingFilledSudokuGenerator());
 
     [Test]
     public void GenerationTest()
@@ -33,11 +32,30 @@ public class SudokuPuzzleGenerator
             foreach (var p in puzzles)
             {
                 Console.Write(SudokuTranslator.TranslateLineFormat(p, SudokuLineFormatEmptyCellRepresentation.Points));
-                solver.SetSudoku(p);
+                solver.SetSudoku(p.Copy());
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest?.Name);
 
-                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, 2);
+                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+                Assert.That(solution, Has.Length.EqualTo(1));
+                Assert.That(solution[0].IsCorrect, Is.True);
+            }
+        });
+
+        generator.KeepSymmetry = true;
+        
+        puzzles = generator.Generate(SudokuCount);
+        
+        Assert.Multiple(() =>
+        {
+            foreach (var p in puzzles)
+            {
+                Console.Write(SudokuTranslator.TranslateLineFormat(p, SudokuLineFormatEmptyCellRepresentation.Points));
+                solver.SetSudoku(p.Copy());
+                solver.Solve();
+                Console.WriteLine(" - " + finder.Hardest?.Name);
+
+                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, int.MaxValue);
                 Assert.That(solution, Has.Length.EqualTo(1));
                 Assert.That(solution[0].IsCorrect, Is.True);
             }

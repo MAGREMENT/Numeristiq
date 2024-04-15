@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Model.Helpers.Descriptions;
-using Model.Helpers.Settings;
 using Model.Sudoku.Solver.Strategies;
 using Model.Sudoku.Solver.Strategies.AlternatingInference;
 using Model.Sudoku.Solver.Strategies.AlternatingInference.Algorithms;
@@ -129,11 +128,16 @@ public static class StrategyPool
         "than the base cells and the other target. These targets must each hold at least one base candidate" +
         "2) TODO");
 
+    private static readonly IDescription UniquenessClueCoverDescription = new FullTextDescription("This is a strategy relying on uniqueness." +
+        " It consists a catalogue of pattern that will examine every clue and any solution in a designated area of the grid. These patterns" +
+        " are generated beforehand by computers, making this strategy a bit controversial.");
+
     private static readonly Dictionary<string, IDescription> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
         {HiddenSingleStrategy.OfficialName, HiddenSingleDescription},
-        {JuniorExocetStrategy.OfficialName, JuniorExocetDescription}
+        {JuniorExocetStrategy.OfficialName, JuniorExocetDescription},
+        {UniquenessClueCoverStrategy.OfficialName, UniquenessClueCoverDescription}
     };
     
     public static IEnumerable<string> EnumerateStrategies(string filter)

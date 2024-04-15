@@ -26,8 +26,8 @@
 						    
 						    <Path Grid.Column="0" Margin="0,0,5,0" Width="20" Height="20"
 						          x:Name="Arrow" Visibility="Hidden" Stroke="{DynamicResource Text}"
-						          VerticalAlignment="Center"
-						          Data="M 3,3 17,10 3,17 7,10 Z"/>
+						          VerticalAlignment="Center" StrokeThickness="2"
+						          Data="M 3,3 17,10 3,17 Z"/>
 						    
 						    <ContentPresenter Grid.Column="1"
 							    Margin="0"
@@ -262,13 +262,13 @@
             <Setter Property="Width" Value="150"/>
             <Setter Property="Height" Value="50"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Margin" Value="7.5"/>
             <Setter Property="TextElement.FontSize" Value="20"/>
             <Setter Property="Template">
 	            <Setter.Value>
 		            <ControlTemplate TargetType="Button">
 			            <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
-			                    Background="{TemplateBinding Background}" CornerRadius="5"
+			                    Background="{TemplateBinding Background}"
 			                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2">
 				            <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 			            </Border>
@@ -509,7 +509,7 @@
 		    <Setter Property="Foreground" Value="White"/>
 		    <Setter Property="FontWeight" Value="SemiBold"/>
 		    <Setter Property="FontSize" Value="15"/>
-		    <Setter Property="Background" Value="{DynamicResource Primary2}"/>
+		    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
 		    <Setter Property="VerticalAlignment" Value="Center"/>
 		    <Setter Property="Template">
 			    <Setter.Value>

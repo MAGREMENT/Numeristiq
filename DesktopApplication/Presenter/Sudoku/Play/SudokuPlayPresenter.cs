@@ -200,13 +200,16 @@ public class SudokuPlayPresenter
         HideClue(true);
     }
     
-    private async Task<Clue<ISudokuHighlighter>?> GetClue()
+    private async Task<Clue<ISudokuHighlighter>?> GetClue() //TODO deactivate actions
     {
         var sudoku = SudokuTranslator.TranslateSolvingState(_player);
         if (sudoku.NumberCount() < 17) return new Clue<ISudokuHighlighter>("Not enough numbers in the Sudoku");
-        
-        var list = await Task.Run(() => BackTracking.Fill(sudoku, _player, 1));
-        if (list.Length == 0) return new Clue<ISudokuHighlighter>("The current sudoku has no solution");
+
+        if (_settings.TestSolutionCount)
+        {
+            var list = await Task.Run(() => BackTracking.Fill(sudoku, _player, 1));
+            if (list.Length == 0) return new Clue<ISudokuHighlighter>("The current sudoku has no solution"); 
+        }
         
         _solver.SetState(_player);
         return await Task.Run(() => _solver.NextClue());

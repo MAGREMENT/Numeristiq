@@ -136,7 +136,7 @@ public class OutlinedRectangleComponent : IDrawableComponent
         _pen = pen;
     }
 
-    public void Draw(DrawingContext context)
+    public virtual void Draw(DrawingContext context)
     {
         context.DrawRectangle(null, _pen, _rect);
     }
@@ -144,6 +144,23 @@ public class OutlinedRectangleComponent : IDrawableComponent
     public void SetBrush(Brush brush)
     {
         _pen.Brush = brush;
+    }
+}
+
+public class AngledOutlinedRectangleComponent : OutlinedRectangleComponent
+{
+    private readonly double _angle;
+    
+    public AngledOutlinedRectangleComponent(Rect rect, Pen pen, double angle) : base(rect, pen)
+    {
+        _angle = angle;
+    }
+
+    public override void Draw(DrawingContext context)
+    {
+        context.PushTransform(new RotateTransform(_angle));
+        base.Draw(context);
+        context.Pop();
     }
 }
 
@@ -238,7 +255,7 @@ public class TextInRectangleComponent : IDrawableComponent
         _verticalAlignment = verticalAlignment;
     }
 
-    public void Draw(DrawingContext context)
+    public virtual void Draw(DrawingContext context)
     {
         var deltaX = (_rect.Width - _text.Width) / 2;
         var deltaY = (_rect.Height - _text.Height) / 2;
@@ -250,6 +267,25 @@ public class TextInRectangleComponent : IDrawableComponent
     public void SetBrush(Brush brush)
     {
         _text.SetForegroundBrush(brush);
+    }
+}
+
+public class AngledTextInRectangleComponent : TextInRectangleComponent
+{
+    private readonly double _angle;
+    
+    public AngledTextInRectangleComponent(string text, double size, Brush foreground, Rect rect,
+        ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment, double angle)
+        : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
+    {
+        _angle = angle;
+    }
+
+    public override void Draw(DrawingContext context)
+    {
+        context.PushTransform(new RotateTransform(_angle));
+        base.Draw(context);
+        context.Pop();
     }
 }
 

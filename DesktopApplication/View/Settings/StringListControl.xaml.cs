@@ -25,12 +25,12 @@ public partial class StringListControl
                 HorizontalAlignment = HorizontalAlignment.Center
             });
         }
-
-        _raiseEvent = false;
-        ComboBox.SelectedIndex = setting.Get().ToInt();
-        _raiseEvent = true;
         
         _indexTranslator = indexTranslator;
+
+        _raiseEvent = false;
+        ComboBox.SelectedIndex = GetValueIndex(setting.Get());
+        _raiseEvent = true;
     }
 
     public override void Set()
@@ -42,5 +42,17 @@ public partial class StringListControl
     private void OnSelectionChange(object sender, SelectionChangedEventArgs e)
     {
         if(AutoSet && _raiseEvent) Set();
+    }
+
+    private int GetValueIndex(SettingValue value)
+    {
+        if (_indexTranslator is null) return value.ToInt();
+
+        for (int i = 0; i < _indexTranslator.Length; i++)
+        {
+            if (_indexTranslator[i] == value.ToInt()) return i;
+        }
+
+        return 0;
     }
 }

@@ -9,6 +9,8 @@ using Model.Sudoku.Solver.Strategies.BlossomLoops;
 using Model.Sudoku.Solver.Strategies.BlossomLoops.BranchFinder;
 using Model.Sudoku.Solver.Strategies.BlossomLoops.LoopFinders;
 using Model.Sudoku.Solver.Strategies.BlossomLoops.Types;
+using Model.Sudoku.Solver.Strategies.UniquenessClueCover;
+using Model.Sudoku.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 
 namespace Tests;
 
@@ -224,6 +226,26 @@ public class SudokuStrategiesTests
             "- 661 667 669");
     }
 
+    #endregion
+    
+    #region UniquenessClueCover
+
+    [Test]
+    public void UCCTest1()
+    {
+        TestSudokuStrategyInstance(new UniquenessClueCoverStrategy(BandCollection.FullCollection()),
+            "duumuojstgtceivajadquiuojotgt8eiva05dsukuo03tgtcegv8j8c4u403h009p0640hj08kok1141oi2109g6g24g09mghg05h262n281cqci05g821ka118a0a21114881424eg10e0hg182881c120ha6ae41",
+            "- 314 414 514 614 914 319 619 519 919");
+    }
+
+    [Test]
+    public void UCCTest2()
+    {
+        TestSudokuStrategyInstance(new UniquenessClueCoverStrategy(BandCollection.FullCollection()),
+            "rqmauidgmq05r8toj0rsm8ugdgmo3orcts03rumauidgmq3qrctsj4i2m20509c2920hp0j0gog811218k8go403412i816i5g4mg1341409i20hi20528411a1881a0110903agag41g4g4410582g111880a210h",
+            "- 336 436 536 636 539 639 939");
+    }
+    
     #endregion
 
     private void TestSudokuStrategyInstance(SudokuStrategy strategy, string stateBefore32, string expectedAsString)

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku;
@@ -25,7 +22,8 @@ public partial class WelcomeWindow
         _presenter = GlobalApplicationPresenter.Instance.InitializeWelcomePresenter();
         
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
-        RenderOptions.SetBitmapScalingMode(GameImage, BitmapScalingMode.Fant);
+        Board.DrawBase();
+        Board.Refresh();
             
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -43,12 +41,12 @@ public partial class WelcomeWindow
 
     private void OnSudokuMouseEnter(object sender, MouseEventArgs e)
     {
-        GameImage.Source = new BitmapImage(new Uri("/View/Images/SudokuImage.png", UriKind.Relative));
+        
     }
 
     private void OnTectonicMouseEnter(object sender, MouseEventArgs e)
     {
-        GameImage.Source = new BitmapImage(new Uri("/View/Images/TectonicImage.png", UriKind.Relative));
+        
     }
 
     private void OnSudokuClick(object sender, RoutedEventArgs e)

@@ -33,6 +33,7 @@ public class Settings
             new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation", SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
             new BooleanSetting("Convert solo candidate to given for grid format"),
             new EnumSetting<PossibilitiesLocation>("Main possibilities location", SpaceConverter.Instance, PossibilitiesLocation.Middle),
+            new BooleanSetting("Test solution count for clue")
         };
         _collections = new[]
         {
@@ -51,7 +52,7 @@ public class Settings
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
                 new NamedListSpan<ISetting>("Highlighting", _settings, 4, 5),
-                new NamedListSpan<ISetting>("Player", _settings, 12),
+                new NamedListSpan<ISetting>("Player", _settings, 12, 13),
                 new NamedListSpan<ISetting>("Editing", _settings, 8, 9, 11)
             },
             new [] //SudokuGenerateView
@@ -123,6 +124,7 @@ public class Settings
         ((EnumSetting<SudokuLineFormatEmptyCellRepresentation>)_settings[10]).Value;
     public bool SoloToGiven => _settings[11].Get().ToBool();
     public PossibilitiesLocation MainLocation => ((EnumSetting<PossibilitiesLocation>)_settings[12]).Value;
+    public bool TestSolutionCount => _settings[13].Get().ToBool();
     
     #region Private
 
