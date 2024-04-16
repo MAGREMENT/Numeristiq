@@ -11,18 +11,19 @@ namespace Model.Sudoku.Generator;
 public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 {
     private readonly Random _random = new();
-    private readonly IFilledSudokuGenerator _filledGenerator;
     
-    public bool KeepSymmetry { get; set; } //TODO Keep uniqueness
+    public IFilledSudokuGenerator FilledGenerator { private get; set; }
+    public bool KeepSymmetry { get; set; }
+    public bool KeepUniqueness { get; set; } = true;
 
     public RDRSudokuPuzzleGenerator(IFilledSudokuGenerator filledGenerator)
     {
-        _filledGenerator = filledGenerator;
+        FilledGenerator = filledGenerator;
     }
     
     public Sudoku Generate(OnFilledSudokuGenerated action)
     {
-        var filled = _filledGenerator.Generate();
+        var filled = FilledGenerator.Generate();
         action();
 
         return RemoveRandomDigits(filled);
@@ -30,7 +31,7 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 
     public Sudoku Generate()
     {
-        var filled = _filledGenerator.Generate();
+        var filled = FilledGenerator.Generate();
 
         return RemoveRandomDigits(filled);
     }
@@ -49,8 +50,7 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 
     private Sudoku RemoveRandomDigits(Sudoku sudoku)
     {
-        var list = new List<int>(81);
-        for (int i = 0; i < 81; i++) list.Add(i);
+        var list = FilledGenerator.GetRemovableCells();
 
         while (list.Count > 0)
         {
@@ -74,14 +74,14 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
         return sudoku;
     }
 
-    private static void TryRemove(Sudoku sudoku, int row, int col)
+    private void TryRemove(Sudoku sudoku, int row, int col)
     {
         var n = sudoku[row, col];
         sudoku[row, col] = 0;
-        if (BackTracking.Fill(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 2).Length != 1) sudoku[row, col] = n;
+        if (!IsSudokuValid(sudoku)) sudoku[row, col] = n;
     }
 
-    private static void TryRemove(Sudoku sudoku, params Cell[] cells)
+    private void TryRemove(Sudoku sudoku, params Cell[] cells)
     {
         var buffer = new int[cells.Length];
         for (int i = 0; i < cells.Length; i++)
@@ -90,12 +90,20 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
             sudoku[cells[i].Row, cells[i].Column] = 0;
         }
 
-        if (BackTracking.Fill(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 2).Length == 1) return;
+        if (IsSudokuValid(sudoku)) return;
         
         for (int i = 0; i < cells.Length; i++)
         {
             sudoku[cells[i].Row, cells[i].Column] = buffer[i];
         }
+    }
+
+    private bool IsSudokuValid(IReadOnlySudoku sudoku)
+    {
+        if (KeepUniqueness) return BackTracking.Fill(sudoku.Copy(),
+                ConstantPossibilitiesGiver.Instance, 2).Length == 1;
+
+        return BackTracking.Fill(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 1).Length > 0;
     }
 }
 

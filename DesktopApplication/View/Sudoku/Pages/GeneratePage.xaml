@@ -37,13 +37,14 @@
                 </TextBlock>
                 
                 <controls1:FilledSudokuGeneratorControl Grid.Row="1" Width="300" Height="100" Margin="0, 20, 0, 0"
-                                                        HorizontalAlignment="Center" x:Name="FSG"/>
+                                                        HorizontalAlignment="Center" x:Name="FSG" RandomSelected="OnRandomSelection"
+                                                        SeedSelected="OnSeedSelection"/>
                 
                 <Path Grid.Row="2" HorizontalAlignment="Center" Width="40" Height="40" Margin="10" x:Name="ToRDR"
                       Stroke="{DynamicResource Text}" Data="M 20,5 V 35 M 5,23 20,35 35,23" StrokeThickness="2"/>
                 
                 <controls1:DigitRemoverControl Grid.Row="3" Width="300" Height="100" HorizontalAlignment="Center"
-                                               x:Name="RDR" SymmetryChanged="ChangeSymmetry"/>
+                                               x:Name="RDR" SymmetryChanged="ChangeSymmetry" UniqueChanged="ChangeUnique"/>
             </Grid>
         </Border>
         

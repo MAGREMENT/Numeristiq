@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Model.Sudoku;
 using Model.Sudoku.Generator;
 using Model.Sudoku.Solver;
 using Model.Utility.Collections;
@@ -11,6 +13,7 @@ public class SudokuGeneratePresenter : IManageCriteriaCallback
     private readonly ISudokuGenerateView _view;
     private readonly RDRSudokuPuzzleGenerator _generator;
     private readonly SudokuEvaluator _evaluator;
+    private readonly Settings _setting;
     
     private readonly List<GeneratedSudokuPuzzle> _evaluatedList = new();
 
@@ -23,6 +26,7 @@ public class SudokuGeneratePresenter : IManageCriteriaCallback
     public SudokuGeneratePresenter(ISudokuGenerateView view, SudokuSolver solver, Settings settings)
     {
         _view = view;
+        _setting = settings;
         _evaluator = new SudokuEvaluator(solver);
         _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
@@ -48,6 +52,25 @@ public class SudokuGeneratePresenter : IManageCriteriaCallback
 
     public void SetKeepSymmetry(bool value) => _generator.KeepSymmetry = value;
 
+    public void SetKeepUniqueness(bool value) => _generator.KeepUniqueness = value;
+
+    public void SetRandomFilled() => _generator.FilledGenerator = new BackTrackingFilledSudokuGenerator();
+
+    public void SetSeedFilled(string s, SudokuStringFormat format)
+    {
+        var sudoku = format switch
+        {
+            SudokuStringFormat.Base32 => SudokuTranslator.TranslateSolvingState(
+                SudokuTranslator.TranslateBase32Format(s, new AlphabeticalBase32Translator())),
+            SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
+            SudokuStringFormat.Grid => SudokuTranslator.TranslateSolvingState(
+                SudokuTranslator.TranslateGridFormat(s, _setting.SoloToGiven)),
+            _ => throw new ArgumentOutOfRangeException()
+        };
+
+        _generator.FilledGenerator = new ConstantFilledSudokuGenerator(sudoku);
+    }
+    
     public ManageCriteriaPresenterBuilder ManageCriteria() => new(_evaluator.GetCriteriasCopy(), this);
 
     private void GeneratePuzzles()

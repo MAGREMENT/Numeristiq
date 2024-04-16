@@ -49,7 +49,7 @@ public class NakedSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
 
         var change = changes[0];
         var start = new StringExplanationElement($"{change.Number} is the only possibility for ");
-        _ = start + new Cell(change.Row, change.Column) + ". It is therefor the solution for that cell.";
+        _ = start + new Cell(change.Row, change.Column) + ". It is therefore the solution for that cell.";
 
         return start;
     }

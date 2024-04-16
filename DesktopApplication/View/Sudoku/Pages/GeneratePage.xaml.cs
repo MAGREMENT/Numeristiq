@@ -9,6 +9,7 @@ using DesktopApplication.Presenter.Sudoku.Generate;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Sudoku.Controls;
+using Model.Sudoku;
 using Model.Sudoku.Generator;
 
 namespace DesktopApplication.View.Sudoku.Pages;
@@ -121,7 +122,12 @@ public partial class GeneratePage : ISudokuGenerateView
 
     private void ChangeSymmetry(bool value)
     {
-        _presenter.SetKeepSymmetry(value);
+        if(_initialized) _presenter.SetKeepSymmetry(value);
+    }
+    
+    private void ChangeUnique(bool value)
+    {
+        if(_initialized) _presenter.SetKeepUniqueness(value);
     }
 
     private void OpenManageCriteriaWindow()
@@ -133,5 +139,16 @@ public partial class GeneratePage : ISudokuGenerateView
     private void Stop(object sender, RoutedEventArgs e)
     {
         _presenter.Stop();
+    }
+
+
+    private void OnRandomSelection()
+    {
+        _presenter.SetRandomFilled();
+    }
+
+    private void OnSeedSelection(string s, SudokuStringFormat format)
+    {
+        _presenter.SetSeedFilled(s, format);
     }
 }

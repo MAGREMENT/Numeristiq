@@ -6,6 +6,7 @@ namespace DesktopApplication.View.Sudoku.Controls;
 public partial class DigitRemoverControl
 {
     public event OnSymmetryChange? SymmetryChanged;
+    public event OnUniqueChange? UniqueChanged;
     
     public DigitRemoverControl()
     {
@@ -26,6 +27,18 @@ public partial class DigitRemoverControl
     {
         SymmetryChanged?.Invoke(false);
     }
+
+    private void ToUnique(object sender, RoutedEventArgs e)
+    {
+        UniqueChanged?.Invoke(true);
+    }
+
+    private void ToNonUnique(object sender, RoutedEventArgs e)
+    {
+        UniqueChanged?.Invoke(false);
+    }
 }
 
 public delegate void OnSymmetryChange(bool value);
+
+public delegate void OnUniqueChange(bool value);

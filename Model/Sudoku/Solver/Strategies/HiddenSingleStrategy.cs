@@ -85,7 +85,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         var ch = UnitMethods.Get(_unit).ToCoverHouse(cell);
         
         var start = new StringExplanationElement(changes[0].Number + " is only present in ");
-        _ = start + cell + " in " + ch + ". It is therefor the solution for this cell.";
+        _ = start + cell + " in " + ch + ". It is therefore the solution for this cell.";
 
         return start;
     }

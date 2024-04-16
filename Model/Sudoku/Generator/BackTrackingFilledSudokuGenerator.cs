@@ -10,6 +10,17 @@ public class BackTrackingFilledSudokuGenerator : IFilledSudokuGenerator
     {
         return BackTracking.Fill(new Sudoku(), new RandomPossibilitiesGiver(), 1)[0];
     }
+
+    public List<int> GetRemovableCells()
+    {
+        var list = new List<int>(81);
+        for (int i = 0; i < 81; i++)
+        {
+            list.Add(i);
+        }
+
+        return list;
+    }
 }
 
 public class RandomPossibilitiesGiver : IPossibilitiesGiver

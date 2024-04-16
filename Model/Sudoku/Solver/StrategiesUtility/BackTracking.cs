@@ -3,7 +3,7 @@ using Model.Sudoku.Solver.Position;
 
 namespace Model.Sudoku.Solver.StrategiesUtility;
 
-public static class BackTracking
+public static class BackTracking //TODO count method
 {
     public static Sudoku[] Fill(Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
