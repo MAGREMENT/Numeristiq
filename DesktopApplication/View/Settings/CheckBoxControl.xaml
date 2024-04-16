@@ -6,6 +6,6 @@
              xmlns:local="clr-namespace:DesktopApplication.View.Settings"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <CheckBox x:Name="Box" Foreground="{DynamicResource Text}" FontSize="15"
+    <CheckBox x:Name="Box" Foreground="{DynamicResource Text}" FontSize="15" Style="{StaticResource SettingCheckbox}"
               Checked="OnChecked" Unchecked="OnUnchecked" VerticalContentAlignment="Center"/>
 </local:SettingControl>

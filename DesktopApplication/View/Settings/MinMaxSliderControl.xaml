@@ -20,22 +20,22 @@
         </Grid.ColumnDefinitions>
         
         <Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Stretch" BorderThickness="0, 0, 1, 0"
-                BorderBrush="{DynamicResource Text}">
+                BorderBrush="{DynamicResource Text}" Padding="0,0,5,0">
             <TextBlock VerticalAlignment="Center" x:Name="Name" Foreground="{DynamicResource Text}" FontSize="15"/>
         </Border>
         
         <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}"
-                   Margin="0, 0, 0, 5" FontSize="15">Minimum</TextBlock>
+                   Margin="5, 0, 0, 5" FontSize="15">Minimum</TextBlock>
         <Slider Grid.Row="0" Grid.Column="2" Width="100" IsSnapToTickEnabled="True" x:Name="MinSlider" 
                 VerticalAlignment="Center" Margin="0, 0, 0, 5" ValueChanged="MinChanged"/>
         <TextBox Grid.Row="0" Grid.Column="3" Text="{Binding ElementName=MinSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Foreground="{DynamicResource Text}" Margin="0, 0, 0, 5"/>
+                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Style="{StaticResource SettingTextBox}" Margin="0, 0, 0, 5"/>
         
         <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" Foreground="{DynamicResource Text}"
-                   FontSize="15" >Minimum</TextBlock>
+                   FontSize="15" Margin="5,0,0,0">Maximum</TextBlock>
         <Slider Grid.Row="1" Grid.Column="2" Width="100" IsSnapToTickEnabled="True" x:Name="MaxSlider" 
                 VerticalAlignment="Center" ValueChanged="MaxChanged"/>
         <TextBox Grid.Row="1" Grid.Column="3" Text="{Binding ElementName=MaxSlider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Foreground="{DynamicResource Text}"/>
+                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Style="{StaticResource SettingTextBox}"/>
     </Grid>
 </local:SettingControl>

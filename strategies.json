@@ -185,14 +185,14 @@
   },
   {
     "Name": "Thor\u0027s Hammer",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Non-Colorable Pattern",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {

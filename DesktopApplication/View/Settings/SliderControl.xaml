@@ -18,6 +18,7 @@
         <Slider Grid.Column="1" Width="100" IsSnapToTickEnabled="True" x:Name="Slider" ValueChanged="OnValueChanged"
                 VerticalAlignment="Center"/>
         <TextBox Grid.Column="2" Text="{Binding ElementName=Slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
-                 TextAlignment="Right" Width="25" VerticalAlignment="Center" Foreground="{DynamicResource Text}"/>
+                 TextAlignment="Right" Width="25" VerticalAlignment="Center"
+                 Style="{StaticResource SettingTextBox}"/>
     </Grid>
 </local:SettingControl>

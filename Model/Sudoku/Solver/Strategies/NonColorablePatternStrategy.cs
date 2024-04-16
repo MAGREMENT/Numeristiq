@@ -17,15 +17,15 @@ public class NonColorablePatternStrategy : SudokuStrategy
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly MinMaxSetting _possCount;
-    private readonly IntSetting _maxNotInPatternCell;
+    private readonly IntSetting _maxUnPerfectPatternCell;
     
     public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     {
         _possCount = new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1, minPossCount, maxPossCount);
-        _maxNotInPatternCell = new IntSetting("Max out of pattern cells", new SliderInteractionInterface(1, 5, 1),
+        _maxUnPerfectPatternCell = new IntSetting("Max un-perfect pattern cells", new SliderInteractionInterface(1, 5, 1),
             maxNotInPatternCell);
         AddSetting(_possCount);
-        AddSetting(_maxNotInPatternCell);
+        AddSetting(_maxUnPerfectPatternCell);
     }
 
     
@@ -33,18 +33,12 @@ public class NonColorablePatternStrategy : SudokuStrategy
     {
         List<Cell> perfect = new();
         List<Cell> notPerfect = new();
-        var poss = new ReadOnlyBitSet16();
+        List<Cell> multiNotPerfect = new();
 
         for (int possCount = _possCount.Value.Min; possCount <= _possCount.Value.Max; possCount++)
         {
-            foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3,
-                         CombinationCalculator.NumbersSample))
+            foreach (var poss in CombinationCalculator.EveryPossibilityCombinationWithSpecificCount(3))
             {
-                foreach (var i in combination)
-                {
-                    poss += i;
-                }
-
                 for (int row = 0; row < 9; row++)
                 {
                     for (int col = 0; col < 9; col++)
@@ -54,24 +48,47 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
                         var cell = new Cell(row, col);
                         if (poss.ContainsAll(p)) perfect.Add(cell);
-                        else if (poss.ContainsAny(p)) notPerfect.Add(cell);
+                        else if (poss.ContainsAny(p))
+                        {
+                            if ((poss - p).Count > 1) multiNotPerfect.Add(cell);
+                            else notPerfect.Add(cell);
+                        }
                     }
                 }
 
                 if (perfect.Count > possCount && Try(strategyUser, perfect, notPerfect, poss)) return;
-
-                poss = new ReadOnlyBitSet16();
+                foreach (var cell in multiNotPerfect)
+                {
+                    if (Try(strategyUser, perfect, cell, poss)) return;
+                }
+                
                 perfect.Clear();
                 notPerfect.Clear();
+                multiNotPerfect.Clear();
             }
         }
+    }
+
+    private bool Try(IStrategyUser strategyUser, List<Cell> perfect, Cell multiNotPerfect, ReadOnlyBitSet16 poss)
+    {
+        var list = new List<Cell>(1) { multiNotPerfect };
+        if (IsPatternValid(perfect, list, poss.Count)) return false;
+
+        foreach (var p in poss.EnumeratePossibilities())
+        {
+            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, multiNotPerfect);
+        }
+        
+        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                    new NonColorablePatternReportBuilder(perfect.ToArray(), list, poss)) &&
+                StopOnFirstPush;
     }
 
     private bool Try(IStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
     {
         List<CellPossibility> outPossibilities = new();
         foreach (var combination in
-                 CombinationCalculator.EveryCombinationWithMaxCount(_maxNotInPatternCell.Value, notPerfect))
+                 CombinationCalculator.EveryCombinationWithMaxCount(_maxUnPerfectPatternCell.Value, notPerfect))
         {
             foreach (var cell in combination)
             {
@@ -106,6 +123,8 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
     private bool IsPatternValid(IReadOnlyList<Cell> one, IReadOnlyList<Cell> two, int count)
     {
+        if (one.Count + two.Count <= count) return true;
+        
         var forbidden = new GridPositions[count];
         for (int i = 0; i < count; i++)
         {
