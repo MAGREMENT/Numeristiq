@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -19,13 +20,13 @@ public abstract class BandPattern
         new Dictionary<BoxPosition, EliminationFlag>[3];
     
     public int DifferentClueCount { get; private set; }
-    public int ClueCount { get; private set; }
+    public int[] ClueCount { get; } = new int[3];
 
     protected void AddPlacement(int boxNumber, int boxWidth, int boxLength, int number)
     {
         if (!_placements[boxNumber].TryAdd(new BoxPosition(boxWidth, boxLength), number)) return;
         
-        ClueCount++;
+        ClueCount[boxNumber]++;
 
         var count = 0;
         foreach (var box in _placements)
@@ -122,6 +123,11 @@ public readonly struct BoxPosition
     public BoxPosition Transform(int[] widthKey, int[] lengthKey)
     {
         return new BoxPosition(widthKey[Width], lengthKey[Length]);
+    }
+
+    public BoxPosition UnTransform(int[] widthKey, int[] lengthKey)
+    {
+        return new BoxPosition(Array.IndexOf(widthKey, Width), Array.IndexOf(lengthKey, Length));
     }
 
     public Cell ToCell(int miniNumber, int bandNumber, Unit unit)

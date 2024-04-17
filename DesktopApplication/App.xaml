@@ -48,6 +48,7 @@
 	    </Style>
 	    
 	    <Style TargetType="CheckBox" x:Key="SettingCheckbox">
+		    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 		    <Setter Property="Template">
 			    <Setter.Value>
 				    <ControlTemplate TargetType="CheckBox">
@@ -58,7 +59,7 @@
 						    </Grid.ColumnDefinitions>
 						    
 						    <Border Grid.Column="0" Margin="0 0 5 0" BorderThickness="1"
-						            BorderBrush="{DynamicResource Text}" VerticalAlignment="Center"
+						            BorderBrush="{TemplateBinding BorderBrush}" VerticalAlignment="Center"
 						            HorizontalAlignment="Center" Background="Transparent">
 							    <Path Width="20" Height="20" Stroke="{DynamicResource Primary1}"
 							          Visibility="Hidden" Data="M 3,11 10,17 17,3" StrokeThickness="2" x:Name="Check"/>
@@ -73,6 +74,9 @@
 					    <ControlTemplate.Triggers>
 						    <Trigger Property="IsChecked" Value="True">
 							    <Setter TargetName="Check" Property="Visibility" Value="Visible"/>
+						    </Trigger>
+						    <Trigger Property="IsMouseOver" Value="True">
+							    <Setter Property="BorderBrush" Value="{DynamicResource Secondary1}"/>
 						    </Trigger>
 					    </ControlTemplate.Triggers>
 				    </ControlTemplate>

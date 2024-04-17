@@ -13,9 +13,6 @@ public class BandCollection : IPatternCollection
 {
     private readonly BandPattern[] _collection;
     private readonly List<BandPatternCandidate> _candidates = new();
-    
-    private readonly HashSet<Cell> _cluesBuffer = new();
-    private readonly List<Cell> _usedBuffer = new();
 
     public SudokuStrategy? Strategy { get; set; }
 
@@ -66,10 +63,16 @@ public class BandCollection : IPatternCollection
                 {
                     foreach (var lengthKey1 in OrderKeyGenerator.GenerateAll())
                     {
+                        if(!AreCluesMatching(strategyUser, pattern, boxKey, widthKey, lengthKey1, mini, unit, 0)) continue;
+                        
                         foreach (var lengthKey2 in OrderKeyGenerator.GenerateAll())
                         {
+                            if(!AreCluesMatching(strategyUser, pattern, boxKey, widthKey, lengthKey2, mini, unit, 1)) continue;
+                            
                             foreach (var lengthKey3 in OrderKeyGenerator.GenerateAll())
                             {
+                                if(!AreCluesMatching(strategyUser, pattern, boxKey, widthKey, lengthKey3, mini, unit, 2)) continue;
+                                
                                 if (TryAndAddToCandidates(strategyUser, pattern, boxKey, widthKey, new []
                                     {
                                         lengthKey1, lengthKey2, lengthKey3
@@ -83,12 +86,58 @@ public class BandCollection : IPatternCollection
 
         return false;
     }
+    
+    private bool DoesClueNumbersMatch(IStrategyUser strategyUser, int mini, Unit unit, int[] maxClueCount,
+        int maxDifferentClueCount)
+    {
+        int[] ccs = { 0, 0, 0 }; 
+        var differentClues = new ReadOnlyBitSet16();
+        for (int w = 0; w < 3; w++)
+        {
+            for (int cc = 0; cc < 3; cc++)
+            {
+                var start = cc * 3;
+                var end = start + 3;
+                for (int l = start; l < end; l++)
+                {
+                    var cell = unit == Unit.Row ? new Cell(mini * 3 + w, l) : new Cell(l, mini * 3 + w);
+                    var clue = strategyUser.StartState[cell.Row, cell.Column];
+                    if (clue == 0) continue;
+
+                    ccs[cc]++;
+                    differentClues += clue;
+                    if (ccs[cc] > maxClueCount[0] || differentClues.Count > maxDifferentClueCount) return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    private bool AreCluesMatching(IStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
+        int[] lengthKey, int mini, Unit unit, int boxNumber)
+    {
+        var box = pattern.PlacementsWithKey(boxKey)[boxNumber];
+        for (int w = 0; w < 3; w++)
+        {
+            for (int l = 0; l < 3; l++)
+            {
+                var cell = unit == Unit.Row 
+                    ? new Cell(mini * 3 + w, boxNumber * 3 + l)
+                    : new Cell(boxNumber * 3 + l, mini * 3 + w);
+                if (strategyUser.StartState[cell.Row, cell.Column] == 0) continue;
+
+                var bp = new BoxPosition(w, l).UnTransform(widthKey, lengthKey);
+                if(!box.ContainsKey(bp)) return false;
+            }
+        }
+
+        return true;
+    }
 
     private bool TryAndAddToCandidates(IStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
         int[][] lengthKeys, int mini, Unit unit)
     {
-        _usedBuffer.Clear();
-        
         var boxes = pattern.PlacementsWithKey(boxKey);
         int[] numberEquivalence = new int[pattern.DifferentClueCount];
         bool ok = true;
@@ -98,7 +147,6 @@ public class BandCollection : IPatternCollection
             foreach (var entry in boxes[i])
             {
                 var cell = entry.Key.Transform(widthKey, lengthKeys[i]).ToCell(mini, i, unit);
-                if (_cluesBuffer.Contains(cell)) _usedBuffer.Add(cell);
 
                 var solved = strategyUser.Sudoku[cell.Row, cell.Column];
                 if (solved == 0) ok = false;
@@ -107,8 +155,6 @@ public class BandCollection : IPatternCollection
                 else if (numberEquivalence[entry.Value] != solved) return false;
             }
         }
-
-        if (_usedBuffer.Count != _cluesBuffer.Count) return false;
 
         var candidate = new BandPatternCandidate(pattern, boxKey, widthKey, lengthKeys, mini, unit);
         _candidates.Add(candidate);
@@ -156,34 +202,15 @@ public class BandCollection : IPatternCollection
                 }
             }
         }
+
+        //Debug
+        if (strategyUser.ChangeBuffer.NotEmpty())
+        {
+            int a = 0;
+        }
         
         return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
             new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstPush;
-    }
-    
-    private bool DoesClueNumbersMatch(IStrategyUser strategyUser, int mini, Unit unit, int maxClueCount, int maxDifferentClueCount)
-    {
-        _cluesBuffer.Clear();
-
-        int clueCount = 0;
-        var differentClues = new ReadOnlyBitSet16();
-        for (int w = 0; w < 3; w++)
-        {
-            for (int l = 0; l < 9; l++)
-            {
-                var cell = unit == Unit.Row ? new Cell(mini * 3 + w, l) : new Cell(l, mini * 3 + w);
-                var clue = strategyUser.StartState[cell.Row, cell.Column];
-                if (clue == 0) continue;
-
-                clueCount++;
-                differentClues += clue;
-                if (clueCount > maxClueCount || differentClues.Count > maxDifferentClueCount) return false;
-
-                _cluesBuffer.Add(cell);
-            }
-        }
-
-        return true;
     }
 }
 
