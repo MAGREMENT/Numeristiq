@@ -1,5 +1,5 @@
-﻿using Model.Sudoku.Generator;
-using Model.Sudoku.Solver.Trackers;
+﻿using Model.Sudokus.Generator;
+using Model.Sudokus.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
 

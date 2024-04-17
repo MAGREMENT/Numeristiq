@@ -1,10 +1,10 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using DesktopApplication.Presenter.Sudoku.Solve;
-using DesktopApplication.Presenter.Sudoku.Solve.Explanation;
+using DesktopApplication.Presenter.Sudokus.Solve;
+using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 using DesktopApplication.View.Utility;
-using Model.Sudoku.Solver.Explanation;
+using Model.Sudokus.Solver.Explanation;
 
 namespace DesktopApplication.View.HelperWindows;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
-using Model.Sudoku.Solver.Position;
+using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
 

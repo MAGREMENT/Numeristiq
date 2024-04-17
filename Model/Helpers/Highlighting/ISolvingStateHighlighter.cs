@@ -1,6 +1,6 @@
 ﻿using Model.Helpers.Changes;
-using Model.Sudoku.Solver.StrategiesUtility;
-using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.StrategiesUtility.Graphs;
 using Model.Utility;
 
 namespace Model.Helpers.Highlighting;

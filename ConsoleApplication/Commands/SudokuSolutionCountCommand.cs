@@ -1,6 +1,6 @@
-﻿using Model.Sudoku;
-using Model.Sudoku.Generator;
-using Model.Sudoku.Solver.StrategiesUtility;
+﻿using Model.Sudokus;
+using Model.Sudokus.Generator;
+using Model.Sudokus.Solver.StrategiesUtility;
 
 namespace ConsoleApplication.Commands;
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.StrategiesUtility;
 using Model.Utility;
 
 namespace Model.Helpers.Changes.Buffers;

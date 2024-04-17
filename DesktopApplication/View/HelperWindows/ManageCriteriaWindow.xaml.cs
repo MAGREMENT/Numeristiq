@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using DesktopApplication.Presenter.Sudoku.Generate;
+using DesktopApplication.Presenter.Sudokus.Generate;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Settings;
 using Model.Helpers.Settings;
-using Model.Sudoku.Generator;
+using Model.Sudokus.Generator;
 
 namespace DesktopApplication.View.HelperWindows;
 

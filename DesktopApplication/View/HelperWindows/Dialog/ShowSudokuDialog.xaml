@@ -1,0 +1,17 @@
+﻿<dialog:DialogWindow x:Class="DesktopApplication.View.HelperWindows.Dialog.ShowSudokuDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:dialog="clr-namespace:DesktopApplication.View.HelperWindows.Dialog"
+        xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
+        mc:Ignorable="d"
+        Title="ShowSudokuDialog" SizeToContent="WidthAndHeight">
+    <Border Padding="20" BorderThickness="1" BorderBrush="{DynamicResource Text}"
+            Background="{DynamicResource Background1}">
+        <controls:SudokuBoard PossibilitySize="23" BackgroundBrush="{DynamicResource Background2}"
+                              LineBrush="{DynamicResource Text}" SpecialNumberBrush="{DynamicResource Primary1}"
+                              DefaultNumberBrush="{DynamicResource Text}" x:Name="Board"
+                              BigLineWidth="3" SmallLineWidth="1"/>
+    </Border>
+</dialog:DialogWindow>

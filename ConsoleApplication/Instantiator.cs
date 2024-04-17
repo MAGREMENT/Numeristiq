@@ -1,6 +1,6 @@
 ﻿using Model.Helpers.Changes.Buffers;
-using Model.Sudoku.Solver;
-using Model.Tectonic;
+using Model.Sudokus.Solver;
+using Model.Tectonics;
 using Repository;
 
 namespace ConsoleApplication;

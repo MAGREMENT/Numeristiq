@@ -1,7 +1,7 @@
 ﻿using System.Text;
-using Model.Sudoku;
-using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Trackers;
+using Model.Sudokus;
+using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
 

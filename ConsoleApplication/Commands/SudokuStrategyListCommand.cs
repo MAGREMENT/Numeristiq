@@ -1,4 +1,4 @@
-﻿using Model.Sudoku.Solver;
+﻿using Model.Sudokus.Solver;
 
 namespace ConsoleApplication.Commands;
 

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using Model.Helpers.Settings;
-using Model.Sudoku.Generator;
+using Model.Sudokus.Generator;
 
 namespace DesktopApplication.View.Controls;
 

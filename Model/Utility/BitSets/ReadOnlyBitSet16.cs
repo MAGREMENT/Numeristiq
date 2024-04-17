@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Model.Sudoku.Solver.Strategies;
+using Model.Sudokus.Solver.Strategies;
 
 namespace Model.Utility.BitSets;
 

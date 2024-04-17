@@ -2,7 +2,7 @@
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
-using Model.Sudoku;
+using Model.Sudokus;
 
 namespace ConsoleApplication.Commands;
 

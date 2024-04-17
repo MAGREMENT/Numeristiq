@@ -1,4 +1,4 @@
-﻿using Model.Sudoku;
+﻿using Model.Sudokus;
 
 namespace Tests;
 

@@ -2,15 +2,15 @@
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
-using Model.Sudoku;
-using Model.Sudoku.Solver;
-using Model.Sudoku.Solver.Strategies;
-using Model.Sudoku.Solver.Strategies.BlossomLoops;
-using Model.Sudoku.Solver.Strategies.BlossomLoops.BranchFinder;
-using Model.Sudoku.Solver.Strategies.BlossomLoops.LoopFinders;
-using Model.Sudoku.Solver.Strategies.BlossomLoops.Types;
-using Model.Sudoku.Solver.Strategies.UniquenessClueCover;
-using Model.Sudoku.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
+using Model.Sudokus;
+using Model.Sudokus.Solver;
+using Model.Sudokus.Solver.Strategies;
+using Model.Sudokus.Solver.Strategies.BlossomLoops;
+using Model.Sudokus.Solver.Strategies.BlossomLoops.BranchFinder;
+using Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
+using Model.Sudokus.Solver.Strategies.BlossomLoops.Types;
+using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
+using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 
 namespace Tests;
 

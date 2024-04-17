@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using DesktopApplication.Presenter.Sudoku;
-using DesktopApplication.Presenter.Tectonic;
+using DesktopApplication.Presenter.Sudokus;
+using DesktopApplication.Presenter.Tectonics;
 using Model;
 using Model.Helpers.Settings;
 using Repository;

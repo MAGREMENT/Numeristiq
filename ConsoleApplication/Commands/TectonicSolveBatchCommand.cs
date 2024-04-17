@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Model.Tectonic;
+using Model.Tectonics;
 
 namespace ConsoleApplication.Commands;
 

@@ -2,8 +2,8 @@
 using Model;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
-using Model.Sudoku;
-using Model.Sudoku.Player;
+using Model.Sudokus;
+using Model.Sudokus.Player;
 using Model.Utility;
 using Model.Utility.Collections;
 

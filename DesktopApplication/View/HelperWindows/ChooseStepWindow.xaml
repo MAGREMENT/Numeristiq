@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
-        xmlns:controls1="clr-namespace:DesktopApplication.View.Sudoku.Controls"
+        xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
         Title="ChooseStepWindow" Height="640" Width="1150"
         WindowStyle="None"

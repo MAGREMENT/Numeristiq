@@ -3,8 +3,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;
-using DesktopApplication.View.Sudoku;
-using DesktopApplication.View.Tectonic;
+using DesktopApplication.View.Sudokus;
+using DesktopApplication.View.Tectonics;
 
 namespace DesktopApplication.View;
 

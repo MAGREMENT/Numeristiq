@@ -1,0 +1,138 @@
+﻿<pages:SudokuPage x:Class="DesktopApplication.View.Sudokus.Pages.PlayPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
+      xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
+      mc:Ignorable="d"
+      Title="PlayPage" Height="660" Width="1300">
+    <Grid Background="{DynamicResource Background1}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <Border Grid.Column="0" 
+                Background="{DynamicResource Background2}"
+                Padding="10"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+            <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
+                                  SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{DynamicResource Text}"
+                                  LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
+                                  SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"
+                                  CellSelected="SelectCell" CellAddedToSelection="AddCellToSelection" KeyDown="DoBoardInput"/>
+        </Border>
+        
+        <StackPanel Grid.Column="1">
+            <controls:OptionSelectorControl x:Name="ChangeLevelSelector" OptionChanged="SetChangeLevel" Margin="0, 10, 0, 0"/>
+            
+            <Border Background="{DynamicResource Background2}" BorderBrush="{DynamicResource Text}"
+                    BorderThickness="1" Padding="10" HorizontalAlignment="Center" Margin="0, 10, 0, 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" FontSize="18" x:Name="TimerTime"
+                               Foreground="{DynamicResource Text}" HorizontalAlignment="Center">
+                        0:00:00:000
+                    </TextBlock>
+                    
+                    <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource TimerButton}" Margin="0, 10, 10, 0" Click="Start">
+                        <Path Stroke="{DynamicResource Text}" Width="50" Height="30"
+                              Data="M 14,5 H 19 V 25 H 14 Z M 24,5 40,15 24,25 Z "/>
+                    </Button>
+                    
+                    <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource TimerButton}" Margin="0, 10, 0, 0" Click="PlayOrPause">
+                        <Path Stroke="{DynamicResource Text}" Width="50" Height="30" 
+                              Data="M 17,5 33,15 17,25 Z" x:Name="TimerMiddleButtonPath"/>
+                    </Button>
+                    
+                    <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource TimerButton}" Margin="10, 10, 0, 0" Click="Stop">
+                        <Path Stroke="{DynamicResource Text}" Width="50" Height="30"
+                              Data="M 15,5 H 35 V 25 H 15 Z"/>
+                    </Button>
+                </Grid>
+            </Border>
+            
+            <Border Margin="0, 10, 0, 0" BorderBrush="{DynamicResource Text}" BorderThickness="1"
+                    HorizontalAlignment="Center" Background="{DynamicResource Background2}">
+                <Grid x:Name="ColorGrid">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Background3}"
+                            Margin="10" BorderThickness="1" Width="30" Height="30" MouseLeftButtonDown="ClearHighlights">
+                        <Path Stroke="Red" StrokeThickness="3" Width="28" Height="28"
+                              Data="M 4,4 24,24 M 4,24 24,4"/>
+                    </Border>
+                </Grid>
+            </Border>
+            
+            <Grid Background="{DynamicResource Background2}" HorizontalAlignment="Center" Margin="0, 10, 0, 0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <Button Grid.Column="0" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="BackButton" Click="MoveBack">
+                    <Path Stroke="Gray" Width="30" Height="30" x:Name="BackArrow"
+                          Data="M 5,15 H 25 M 5,15 14,7 M 5,15 14,23"/>
+                </Button>
+                
+                <Button Grid.Column="1" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="ForwardButton" Click="MoveForward">
+                    <Path Stroke="Gray" Width="30" Height="30" x:Name="ForwardArrow"
+                          Data="M 5,15 H 25 M 25,15 16,7 M 25,15 16,23"/>
+                </Button>
+            </Grid>
+            
+            <Border Margin="0, 10, 0, 0" Background="{DynamicResource Background2}" BorderThickness="1"
+                    BorderBrush="{DynamicResource Text}" HorizontalAlignment="Center" Padding="10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource SimpleHoverButton}" HorizontalAlignment="Right"
+                            FontSize="16" Foreground="{DynamicResource Text}" Margin="0, 0, 7, 0"
+                            x:Name="ClueButton" Click="ChangeClueState">Show</Button>
+                    <TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" Foreground="{DynamicResource Text}"
+                               VerticalAlignment="Center" HorizontalAlignment="Left">Clue</TextBlock>
+                    
+                    <Border Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="{DynamicResource Background3}"
+                            Margin="0, 10, 0, 0" Padding="5">
+                        <TextBlock Width="250" Height="100" FontSize="14" Foreground="{DynamicResource Text}"
+                                   x:Name="ClueText" TextWrapping="Wrap"></TextBlock>
+                    </Border>
+                </Grid>
+            </Border>
+            
+            <Button Margin="0, 10, 0, 0" HorizontalAlignment="Center" Style="{StaticResource SolvePageButtonStyle}"
+                    Click="ComputePossibilities">Compute Possibilities</Button>
+        </StackPanel>
+    </Grid>
+</pages:SudokuPage>

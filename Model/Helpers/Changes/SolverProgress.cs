@@ -1,4 +1,4 @@
-﻿using Model.Sudoku.Solver.StrategiesUtility;
+﻿using Model.Sudokus.Solver.StrategiesUtility;
 
 namespace Model.Helpers.Changes;
 

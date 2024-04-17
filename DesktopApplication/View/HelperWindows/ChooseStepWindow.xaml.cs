@@ -1,8 +1,8 @@
-﻿using DesktopApplication.Presenter.Sudoku.Solve;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using DesktopApplication.Presenter.Sudoku.Solve.ChooseStep;
+using DesktopApplication.Presenter.Sudokus.Solve;
+using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
 using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;

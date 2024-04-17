@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudoku.Solver.Explanation;
+using Model.Sudokus.Solver.Explanation;
 
 namespace Model.Helpers.Logs;
 

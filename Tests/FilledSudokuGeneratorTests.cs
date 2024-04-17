@@ -1,5 +1,5 @@
-﻿using Model.Sudoku;
-using Model.Sudoku.Generator;
+﻿using Model.Sudokus;
+using Model.Sudokus.Generator;
 
 namespace Tests;
 

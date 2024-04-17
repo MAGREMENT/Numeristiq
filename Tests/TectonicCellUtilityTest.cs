@@ -1,4 +1,4 @@
-﻿using Model.Tectonic;
+﻿using Model.Tectonics;
 using Model.Utility;
 
 namespace Tests;

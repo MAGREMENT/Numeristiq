@@ -2,9 +2,8 @@
 using Model;
 using Model.Helpers.Changes;
 using Model.Helpers.Logs;
-using Model.Sudoku;
-using Model.Sudoku.Player;
-using Model.Sudoku.Solver.Explanation;
+using Model.Sudokus.Player;
+using Model.Sudokus.Solver.Explanation;
 using Model.Utility;
 
 namespace DesktopApplication.View.Utility;

@@ -1,8 +1,8 @@
 using System;
 using Model.Helpers.Changes;
-using Model.Sudoku;
-using Model.Sudoku.Solver.StrategiesUtility;
-using Model.Sudoku.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus;
+using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.StrategiesUtility.Graphs;
 
 namespace Model.Helpers.Highlighting;
 

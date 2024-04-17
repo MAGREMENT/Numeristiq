@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Model.Sudoku.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.StrategiesUtility;
 
 namespace DesktopApplication.View.Utility;
 

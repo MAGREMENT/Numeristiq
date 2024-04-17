@@ -1,0 +1,64 @@
+﻿using System;
+using System.Collections.Generic;
+using Model.Helpers;
+using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.StrategiesUtility.Oddagons.Algorithms;
+
+namespace Model.Sudokus.Solver.StrategiesUtility.Oddagons;
+
+public static class OddagonSearcher
+{
+    private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 3);
+
+    public static List<AlmostOddagon> Search(IStrategyUser strategyUser)
+    {
+        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
+            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+        return Algorithm.Search(strategyUser, strategyUser.PreComputer.Graphs.SimpleLinkGraph);
+    }
+
+    public static IEnumerable<CellPossibility> FindGuardians(ISudokuSolvingState holder, CellPossibility one, CellPossibility two)
+    {
+        if (one.Possibility == two.Possibility)
+        {
+            if (one.Row == two.Row)
+            {
+                foreach (var col in holder.RowPositionsAt(one.Row, one.Possibility))
+                {
+                    if (col == one.Column || col == two.Column) continue;
+
+                    yield return new CellPossibility(one.Row, col, one.Possibility);
+                }
+            }
+            else if (one.Column == two.Column)
+            {
+                foreach (var row in holder.ColumnPositionsAt(one.Column, one.Possibility))
+                {
+                    if (row == one.Row || row == two.Row) continue;
+
+                    yield return new CellPossibility(row, one.Column, one.Possibility);
+                }
+            }
+            else if (one.Row / 3 == two.Row / 3 && one.Column / 3 == two.Column / 3)
+            {
+                foreach (var cell in holder.MiniGridPositionsAt(one.Row / 3, one.Column / 3, one.Possibility))
+                {
+                    if (cell == one.ToCell() || cell == two.ToCell()) continue;
+                        
+                    yield return new CellPossibility(cell, one.Possibility);
+                }
+            }
+            else throw new Exception();
+        }
+        else if (one.Row == two.Row && one.Column == two.Column)
+        {
+            foreach (var p in holder.PossibilitiesAt(one.Row, one.Column).EnumeratePossibilities())
+            {
+                if (p == one.Possibility || p == two.Possibility) continue;
+
+                yield return new CellPossibility(one.Row, one.Column, p);
+            }
+        }
+        else throw new Exception();
+    }
+}
