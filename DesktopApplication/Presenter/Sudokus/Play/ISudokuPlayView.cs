@@ -8,6 +8,7 @@ public interface ISudokuPlayView
     ISudokuPlayerDrawer Drawer { get; }
     ISudokuSolverDrawer ClueShower { get; }
 
+    void InitializeHighlightColorBoxes();
     void FocusDrawer();
     void SetChangeLevelOptions(string[] options, int value);
     void SetIsPlaying(bool isPlaying);

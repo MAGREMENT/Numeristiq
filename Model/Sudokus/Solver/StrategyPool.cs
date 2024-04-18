@@ -14,8 +14,8 @@ using Model.Sudokus.Solver.Strategies.MultiSector.Searchers;
 using Model.Sudokus.Solver.Strategies.NRCZTChains;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver;
 

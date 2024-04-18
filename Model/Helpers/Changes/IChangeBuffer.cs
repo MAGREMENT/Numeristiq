@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace Model.Helpers.Changes;
@@ -12,7 +12,7 @@ namespace Model.Helpers.Changes;
 /// </summary>
 public interface IChangeBuffer<out TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
-    public bool HandlesLog { get; }
+    public bool IsManagingSteps { get; }
     
     public void ProposePossibilityRemoval(int possibility, Cell cell)
     {

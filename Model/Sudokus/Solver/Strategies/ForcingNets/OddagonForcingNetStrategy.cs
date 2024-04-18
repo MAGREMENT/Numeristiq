@@ -4,11 +4,11 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring.ColoringResults;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
-using Model.Sudokus.Solver.StrategiesUtility.Oddagons;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.CellColoring;
+using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Oddagons;
 
 namespace Model.Sudokus.Solver.Strategies.ForcingNets;
 

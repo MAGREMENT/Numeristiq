@@ -4,7 +4,7 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 

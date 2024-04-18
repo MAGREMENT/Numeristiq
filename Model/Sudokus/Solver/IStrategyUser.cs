@@ -1,8 +1,8 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.AlmostLockedSets;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -14,7 +14,7 @@ public interface IStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
     
     IUpdatableSolvingState StartState { get; }
     
-    bool LogsManaged { get; }
+    bool StepsManaged { get; }
 
     IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     

@@ -17,7 +17,7 @@ public partial class EvaluatorControl
     
     public void Activate(bool activated)
     {
-        ActivatedLamp.Background = activated ? Brushes.ForestGreen : Brushes.Red;
+        ActivatedLamp.SetResourceReference(BackgroundProperty, activated ? "On" : "Off");
     }
 
     private void ManageCriteria(object sender, RoutedEventArgs e)

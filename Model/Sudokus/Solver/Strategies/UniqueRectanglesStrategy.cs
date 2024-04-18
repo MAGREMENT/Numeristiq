@@ -4,8 +4,8 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver.PossibilityPosition;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 

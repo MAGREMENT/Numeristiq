@@ -11,8 +11,18 @@
         <Brush x:Key="Secondary1">#F52A0A</Brush>
         <Brush x:Key="Secondary2">#E8280B</Brush>
         <Brush x:Key="Accent">#F50EE2</Brush>
-	    <Brush x:Key="Text">#FFFFFF</Brush>
-	    <Color x:Key="ThumbColor">#FFFFFF</Color>
+	    <Brush x:Key="Text">White</Brush>
+	    <Color x:Key="ThumbColor">White</Color>
+	    <Brush x:Key="On">ForestGreen</Brush>
+	    <Brush x:Key="Off">Red</Brush>
+	    <Brush x:Key="Disabled">Gray</Brush>
+	    <Brush x:Key="IntensityZero">Gray</Brush>
+	    <Brush x:Key="IntensityOne">RoyalBlue</Brush>
+	    <Brush x:Key="IntensityTwo">Green</Brush>
+	    <Brush x:Key="IntensityThree">Orange</Brush>
+	    <Brush x:Key="IntensityFour">Red</Brush>
+	    <Brush x:Key="IntensityFive">Purple</Brush>
+	    <Brush x:Key="IntensitySix">White</Brush>
 	    
 	    <Style TargetType="TextBox" x:Key="SettingTextBox">
 		    <Setter Property="Background" Value="{DynamicResource Background3}"/>
@@ -206,12 +216,12 @@
 						    <Trigger Property="IsChecked" Value="True">
 							    <Setter TargetName="Border" Property="HorizontalAlignment" Value="Left"/>
 							    <Setter TargetName="Block" Property="Text" Value="On"/>
-							    <Setter TargetName="Block" Property="Foreground" Value="ForestGreen"></Setter>
+							    <Setter TargetName="Block" Property="Foreground" Value="{DynamicResource On}"></Setter>
 						    </Trigger>
 						    <Trigger Property="IsChecked" Value="False">
 							    <Setter TargetName="Border" Property="HorizontalAlignment" Value="Right"/>
 							    <Setter TargetName="Block" Property="Text" Value="Off"/>
-							    <Setter TargetName="Block" Property="Foreground" Value="Red"/>
+							    <Setter TargetName="Block" Property="Foreground" Value="{DynamicResource Off}"/>
 						    </Trigger>
 						    <Trigger SourceName="Border" Property="IsMouseOver" Value="True">
 							    <Setter TargetName="Border" Property="BorderBrush" Value="{DynamicResource Primary1}"/>
@@ -235,7 +245,7 @@
 	    
 	    <Style TargetType="TextBox" x:Key="SearchTextBox">
 		    <Setter Property="FontSize" Value="18"/>
-		    <Setter Property="Foreground" Value="DarkGray"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Disabled}"/>
 		    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 		    <Setter Property="CaretBrush" Value="{DynamicResource Text}"/>
 		    <Setter Property="Height" Value="30"/>
@@ -407,6 +417,10 @@
 				    <Setter TargetName="OutsideBorder" Property="Background" Value="{DynamicResource Background3}"/>
 				    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>
 			    </Trigger>
+			    
+			    <Trigger Property="IsEnabled" Value="False">
+				    <Setter Property="Foreground" Value="{DynamicResource Disabled}"/>
+			    </Trigger>
 		    </ControlTemplate.Triggers>
 	    </ControlTemplate>
 	    
@@ -535,7 +549,7 @@
 								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Background3}" />
 							</Trigger>
 							<Trigger Property="IsEnabled" Value="False">
-								<Setter Property="Foreground" Value="Gray"></Setter>
+								<Setter Property="Foreground" Value="{DynamicResource Disabled}"></Setter>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>
@@ -627,10 +641,10 @@
 						
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Secondary1}"/>
+								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Off}"/>
 							</Trigger>
 							<Trigger Property="IsPressed" Value="true">
-								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Secondary2}"/>
+								<Setter TargetName="Border" Property="Background" Value="{DynamicResource Off}"/>
 							</Trigger>
 						</ControlTemplate.Triggers>
 					</ControlTemplate>

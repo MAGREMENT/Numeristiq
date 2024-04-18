@@ -10,7 +10,7 @@ using Model.Sudokus;
 using Model.Sudokus.Player;
 using Model.Sudokus.Player.Actions;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudokus.Play;
@@ -49,6 +49,12 @@ public class SudokuPlayPresenter
         SettingsPresenter = new SettingsPresenter(_settings, SettingCollections.SudokuPlayPage);
 
         _player.Timer.TimeElapsed += _view.SetTimeElapsed;
+
+        App.Current.ThemeInformation.ThemeChanged += () =>
+        {
+            RefreshHighlights();
+            _view.InitializeHighlightColorBoxes();
+        };
     }
 
     public void SelectCell(Cell cell)

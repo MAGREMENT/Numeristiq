@@ -3,7 +3,6 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
-using DesktopApplication.View.Utility;
 using Model.Sudokus.Solver.Explanation;
 
 namespace DesktopApplication.View.HelperWindows;
@@ -55,9 +54,11 @@ public partial class StepExplanationWindow : IStepExplanationView
             {
                 var run = new Run
                 {
-                    Foreground = ColorUtility.ToBrush(start.Color),
                     Text = start.ToString()
                 };
+                
+                run.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(start.Color));
+                
                 if (start.ShouldBeBold) run.FontWeight = FontWeights.Bold;
 
                 if (start.DoesShowSomething)

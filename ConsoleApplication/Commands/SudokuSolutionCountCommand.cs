@@ -1,6 +1,6 @@
 ﻿using Model.Sudokus;
 using Model.Sudokus.Generator;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 
 namespace ConsoleApplication.Commands;
 

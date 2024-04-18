@@ -1,11 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
-using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
-using Model.Helpers.Logs;
 
 namespace DesktopApplication.View.HelperWindows;
 
@@ -46,9 +43,10 @@ public partial class ChooseStepWindow : IChooseStepView
         var tb = new TextBlock
         {
             Text = maker.Name,
-            Foreground = new SolidColorBrush(ColorUtility.ToColor((Intensity)maker.Difficulty)),
             Style = (Style)FindResource("SearchResult")
         };
+        tb.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(maker.Difficulty));
+        
         tb.MouseLeftButtonDown += (_, _) => _presenter.ShowStep(index);
         
         StepsPanel.Children.Add(tb);

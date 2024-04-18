@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 
@@ -13,14 +13,14 @@ public class NotExecutedChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TV
 
     private readonly List<BuiltChangeCommit<THighlighter>> _commits = new();
 
-    private readonly ILogManagedChangeProducer<TVerifier, THighlighter> _producer;
+    private readonly IStepManagingChangeProducer<TVerifier, THighlighter> _producer;
 
-    public NotExecutedChangeBuffer(ILogManagedChangeProducer<TVerifier, THighlighter> producer)
+    public NotExecutedChangeBuffer(IStepManagingChangeProducer<TVerifier, THighlighter> producer)
     {
         _producer = producer;
     }
 
-    public bool HandlesLog => false;
+    public bool IsManagingSteps => false;
 
     public void ProposePossibilityRemoval(CellPossibility cp)
     {

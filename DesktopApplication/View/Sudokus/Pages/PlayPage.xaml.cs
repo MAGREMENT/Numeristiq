@@ -9,7 +9,6 @@ using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
-using DesktopApplication.View.Utility;
 using Model.Sudokus.Player;
 using Model.Utility;
 
@@ -57,12 +56,10 @@ public partial class PlayPage : ISudokuPlayView
     public void SetHistoricAvailability(bool canMoveBack, bool canMoveForward)
     {
         BackButton.IsEnabled = canMoveBack;
-        if (canMoveBack) BackArrow.SetResourceReference(Shape.StrokeProperty, "Text");
-        else BackArrow.Stroke = Brushes.Gray;
+        BackArrow.SetResourceReference(Shape.StrokeProperty, canMoveBack ? "Text" : "Disabled");
 
         ForwardButton.IsEnabled = canMoveForward;
-        if(canMoveForward) ForwardArrow.SetResourceReference(Shape.StrokeProperty, "Text");
-        else ForwardArrow.Stroke = Brushes.Gray;
+        ForwardArrow.SetResourceReference(Shape.StrokeProperty, canMoveForward ? "Text" : "Disabled");
     }
 
     public void ShowClueState(bool isShowing)
@@ -195,8 +192,10 @@ public partial class PlayPage : ISudokuPlayView
         _presenter.Stop();
     }
 
-    private void InitializeHighlightColorBoxes()
+    public void InitializeHighlightColorBoxes()
     {
+        ColorGrid.Children.RemoveRange(1, ColorGrid.Children.Count - 1);
+        
         for (int row = 0; row < 2; row++)
         {
             for (int col = 0; col < 4; col++)
@@ -211,7 +210,7 @@ public partial class PlayPage : ISudokuPlayView
                     BorderThickness = new Thickness(1),
                     Width = 30,
                     Height = 30,
-                    Background = ColorUtility.ToBrush(color)
+                    Background = App.Current.ThemeInformation.ToBrush(color)
                 };
 
                 border.SetResourceReference(Border.BorderBrushProperty, "Background3");

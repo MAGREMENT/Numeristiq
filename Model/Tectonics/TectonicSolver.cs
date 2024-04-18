@@ -2,15 +2,15 @@
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Logs;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Helpers.Steps;
+using Model.Sudokus.Solver.Utility;
 using Model.Tectonics.Strategies;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Tectonics;
 
-public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableTectonicSolvingState,
+public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdatableTectonicSolvingState,
     ITectonicHighlighter>, ISolvingState
 {
     private ITectonic _tectonic;
@@ -25,7 +25,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
     
     public bool StartedSolving { get; private set; }
 
-    public LogManager<ITectonicHighlighter> LogManager { get; } = new();
+    public StepHistory<ITectonicHighlighter> StepHistory { get; } = new();
 
     public IUpdatableTectonicSolvingState CurrentState
     {
@@ -56,7 +56,7 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         _possibilities = new ReadOnlyBitSet16[_tectonic.RowCount, _tectonic.ColumnCount];
         InitCandidates();
         
-        LogManager.Clear();
+        StepHistory.Clear();
         StartedSolving = false;
     }
 
@@ -67,8 +67,8 @@ public class TectonicSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatabl
         var before = CurrentState;
         if (!AddSolution(row, col, number, false)) return;
         
-        if(StartedSolving && ChangeBuffer.HandlesLog)
-            LogManager.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
+        if(StartedSolving && ChangeBuffer.IsManagingSteps)
+            StepHistory.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
     }
 
     public void RemoveSolutionByHand(int row, int col)

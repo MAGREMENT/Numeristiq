@@ -28,7 +28,7 @@ public class SudokuSolveCommand : Command
         if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
         var oldBuffer = solver.ChangeBuffer;
-        if (report.IsOptionUsed(PathIndex)) solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        if (report.IsOptionUsed(PathIndex)) solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         else solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(StringIndex));
@@ -43,7 +43,7 @@ public class SudokuSolveCommand : Command
         if (report.IsOptionUsed(PathIndex))
         {
             Console.WriteLine("\nPath :");
-            foreach (var log in solver.LogManager.Logs)
+            foreach (var log in solver.StepHistory.Steps)
             {
                 var explanation = log.Explanation is null ? "None" : log.Explanation.FullExplanation();
                 Console.WriteLine($"{log.Id}. {log.Title}\nDescription : {log.Description}\nChanges :" +

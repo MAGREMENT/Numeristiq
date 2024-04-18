@@ -1,8 +1,8 @@
 ﻿using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.StrategiesUtility;
 using Model.Sudokus.Solver.Trackers;
+using Model.Sudokus.Solver.Utility;
 using Repository;
 
 namespace Tests;

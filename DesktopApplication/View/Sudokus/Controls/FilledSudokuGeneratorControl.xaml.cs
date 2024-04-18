@@ -22,7 +22,7 @@ public partial class FilledSudokuGeneratorControl
     
     public void Activate(bool activated)
     {
-        ActivatedLamp.Background = activated ? Brushes.ForestGreen : Brushes.Red;
+        ActivatedLamp.SetResourceReference(BackgroundProperty, activated ? "On" : "Off");
     }
 
     private void OnSeedMouseEnter(object sender, MouseEventArgs e)
@@ -59,7 +59,7 @@ public partial class FilledSudokuGeneratorControl
             Seed.SetResourceReference(BorderBrushProperty, "Primary1");
             SeedView.Visibility = Visibility.Visible;
 
-            RandomText.Foreground = Brushes.Gray;
+            RandomText.SetResourceReference(ForegroundProperty, "Disabled");
             Random.BorderBrush = Brushes.Transparent;
 
             _isRandom = false;
@@ -76,7 +76,7 @@ public partial class FilledSudokuGeneratorControl
 
         SeedView.Visibility = Visibility.Collapsed;
         Seed.BorderBrush = Brushes.Transparent;
-        SeedText.Foreground = Brushes.Gray;
+        SeedText.SetResourceReference(ForegroundProperty, "Disabled");
 
         _isRandom = true;
         RandomSelected?.Invoke();

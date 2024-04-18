@@ -1,7 +1,7 @@
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring.ColoringResults;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.CellColoring;
+using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
 

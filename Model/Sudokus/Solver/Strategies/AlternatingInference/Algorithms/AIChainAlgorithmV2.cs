@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
 

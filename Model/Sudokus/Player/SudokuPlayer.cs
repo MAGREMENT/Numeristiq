@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Model.Helpers;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Player.HistoricEvents;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -13,7 +13,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
 {
     private readonly PlayerCell[,] _cells = new PlayerCell[9, 9];
     private readonly Dictionary<Cell, ReadOnlyBitSet16> _highlights = new();
-    private readonly Historic _historic = new();
+    private readonly ActionHistory _actionHistory = new();
     private readonly PlayerTimer _timer = new();
 
     public PossibilitiesLocation MainLocation { get; set; } = PossibilitiesLocation.Middle;
@@ -44,7 +44,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
             }
         }
         
-        _historic.AddNewEvent(collection);
+        _actionHistory.AddNewEvent(collection);
         return changeMade;
     }
 
@@ -53,7 +53,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
         if (!action.CanExecute(this, on)) return false;
         
         var e = action.Execute(this, on);
-        if (e is not null) _historic.AddNewEvent(e);
+        if (e is not null) _actionHistory.AddNewEvent(e);
         return true;
     }
 
@@ -61,7 +61,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
     {
         if (!action.CanExecute(this)) return false;
         var e = action.Execute(this);
-        if (e is not null) _historic.AddNewEvent(e);
+        if (e is not null) _actionHistory.AddNewEvent(e);
         return true;
     }
 
@@ -102,18 +102,18 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
         }
     }
 
-    public bool CanMoveBack() => _historic.CanMoveBack();
+    public bool CanMoveBack() => _actionHistory.CanMoveBack();
 
-    public bool CanMoveForward() => _historic.CanMoveForward();
+    public bool CanMoveForward() => _actionHistory.CanMoveForward();
 
     public void MoveBack()
     {
-        _historic.MoveBack()?.Reverse(this);
+        _actionHistory.MoveBack()?.Reverse(this);
     }
 
     public void MoveForward()
     {
-        _historic.MoveForward()?.Do(this);
+        _actionHistory.MoveForward()?.Do(this);
     }
 
     public void SetCellDataFor(int row, int col, PlayerCell data) => _cells[row, col] = data;
@@ -148,7 +148,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
 
     private void OnTimerStarting()
     {
-        _historic.Clear();
+        _actionHistory.Clear();
 
         for (int row = 0; row < 9; row++)
         {

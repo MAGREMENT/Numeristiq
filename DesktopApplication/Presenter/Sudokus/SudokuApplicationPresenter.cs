@@ -29,7 +29,7 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
         {
             StrategyManager = _strategyManager
         };
-        solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         
         return new SudokuSolvePresenter(view, solver, _settings, this);
     }
@@ -40,7 +40,7 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
         {
             StrategyManager = _strategyManager
         };
-        solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+        solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         
         return new SudokuPlayPresenter(view, solver, _settings);
     }

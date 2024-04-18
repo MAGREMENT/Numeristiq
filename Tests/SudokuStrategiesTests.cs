@@ -21,7 +21,7 @@ public class SudokuStrategiesTests
     [OneTimeSetUp]
     public void FirstSetUp()
     {
-        _solver.ChangeBuffer = new LogManagedChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(_solver);
+        _solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(_solver);
     }
 
     [TearDown]
@@ -289,7 +289,7 @@ public class SudokuStrategiesTests
         _solver.Solve(true);
 
         List<SolverProgress> progresses = new();
-        foreach (var log in _solver.LogManager.Logs)
+        foreach (var log in _solver.StepHistory.Steps)
         {
             progresses.AddRange(log.Changes);
         }

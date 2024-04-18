@@ -4,7 +4,8 @@ using System.Windows;
 using System.Windows.Media;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Utility;
-using Model.Helpers.Logs;
+using Model;
+using Model.Helpers.Steps;
 using Model.Sudokus.Generator;
 
 namespace DesktopApplication.View.Sudokus.Controls;
@@ -32,7 +33,7 @@ public partial class GeneratedPuzzleControl
             else
             {
                 Hardest.Text = puzzle.Hardest.Name;
-                Hardest.Foreground = new SolidColorBrush(ColorUtility.ToColor((Intensity)puzzle.Hardest.Difficulty));
+                Hardest.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(puzzle.Hardest.Difficulty));
             }
         }
     }

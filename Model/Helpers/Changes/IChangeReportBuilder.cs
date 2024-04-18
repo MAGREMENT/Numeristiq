@@ -100,7 +100,7 @@ public class Clue<T> : IHighlightable<T> where T : ISolvingStateHighlighter
 
 public enum ChangeColoration
 {
-    None = 0, Neutral, ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree,
+    None, Neutral, ChangeOne, ChangeTwo, CauseOffOne, CauseOffTwo, CauseOffThree,
     CauseOffFour, CauseOffFive, CauseOffSix, CauseOffSeven, CauseOffEight, CauseOffNine,
     CauseOffTen, CauseOnOne
 }

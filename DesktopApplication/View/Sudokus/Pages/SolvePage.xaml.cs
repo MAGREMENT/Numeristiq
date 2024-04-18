@@ -11,7 +11,7 @@ using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Logs;
+using Model.Helpers.Steps;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;
@@ -51,11 +51,11 @@ public partial class SolvePage : ISudokuSolveView
         ClearButton.IsEnabled = true;
     }
 
-    public void AddLog(ISolverLog<ISudokuHighlighter> log, StateShown stateShown)
+    public void AddLog(ISolverStep<ISudokuHighlighter> step, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {
-            var lc = new LogControl(log, stateShown);
+            var lc = new StepControl(step, stateShown);
             LogPanel.Children.Add(lc);
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
@@ -80,7 +80,7 @@ public partial class SolvePage : ISudokuSolveView
     public void OpenLog(int index)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not LogControl lc) return;
+        if (LogPanel.Children[index] is not StepControl lc) return;
         
         lc.Open();
     }
@@ -88,7 +88,7 @@ public partial class SolvePage : ISudokuSolveView
     public void CloseLog(int index)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not LogControl lc) return;
+        if (LogPanel.Children[index] is not StepControl lc) return;
         
         lc.Close();
     }
@@ -97,7 +97,7 @@ public partial class SolvePage : ISudokuSolveView
     {
         foreach (var child in LogPanel.Children)
         {
-            if (child is not LogControl lc) continue;
+            if (child is not StepControl lc) continue;
 
             lc.SetStateShown(stateShown);
         }
@@ -106,7 +106,7 @@ public partial class SolvePage : ISudokuSolveView
     public void SetCursorPosition(int index, string s)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not LogControl lc) return;
+        if (LogPanel.Children[index] is not StepControl lc) return;
 
         lc.SetCursorPosition(s);
     }

@@ -14,7 +14,7 @@ public class TectonicApplicationPresenter
     public TectonicApplicationPresenter(Settings settings)
     {
         _solver.ChangeBuffer =
-            new LogManagedChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(_solver);
+            new StepManagingChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(_solver);
         _settings = settings;
     }
 

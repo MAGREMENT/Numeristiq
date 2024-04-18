@@ -1,6 +1,6 @@
 ﻿using Model.Helpers.Highlighting;
-using Model.Helpers.Logs;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Helpers.Steps;
+using Model.Sudokus.Solver.Utility;
 
 namespace Model.Helpers.Changes;
 
@@ -12,8 +12,8 @@ public interface IChangeProducer
     public void FakeChange();
 }
 
-public interface ILogManagedChangeProducer<out TState, THighlighter> : IChangeProducer where TState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+public interface IStepManagingChangeProducer<out TState, THighlighter> : IChangeProducer where TState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
-    public LogManager<THighlighter> LogManager { get; }
+    public StepHistory<THighlighter> StepHistory { get; }
     public TState CurrentState { get; }
 }

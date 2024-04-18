@@ -60,7 +60,7 @@
             </Grid.RowDefinitions>
             
             <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
-                       Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Logs</TextBlock>
+                       Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Steps</TextBlock>
             
             <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="470" x:Name="LogViewer"
                           Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">

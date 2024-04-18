@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 
@@ -16,7 +16,7 @@ public class FastChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVerifier
         _producer = producer;
     }
 
-    public bool HandlesLog => false;
+    public bool IsManagingSteps => false;
 
     public void ProposePossibilityRemoval(CellPossibility cp)
     {

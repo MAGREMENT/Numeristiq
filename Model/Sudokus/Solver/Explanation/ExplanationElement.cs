@@ -1,5 +1,5 @@
 ﻿using System.Text;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Explanation;

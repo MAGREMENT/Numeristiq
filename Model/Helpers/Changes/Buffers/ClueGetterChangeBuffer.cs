@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 
@@ -13,16 +13,16 @@ public class ClueGetterChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
     
     private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
 
-    private readonly ILogManagedChangeProducer<TVerifier, THighlighter> _producer;
+    private readonly IStepManagingChangeProducer<TVerifier, THighlighter> _producer;
     
     public Clue<THighlighter>? CurrentClue { get; private set; }
 
-    public ClueGetterChangeBuffer(ILogManagedChangeProducer<TVerifier, THighlighter> producer)
+    public ClueGetterChangeBuffer(IStepManagingChangeProducer<TVerifier, THighlighter> producer)
     {
         _producer = producer;
     }
     
-    public bool HandlesLog => false;
+    public bool IsManagingSteps => false;
 
     public void ProposePossibilityRemoval(CellPossibility cp)
     {

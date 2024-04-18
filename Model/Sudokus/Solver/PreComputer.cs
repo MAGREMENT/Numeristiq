@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using Model.Sudokus.Solver.PossibilityPosition;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring.ColoringResults;
-using Model.Sudokus.Solver.StrategiesUtility.Exocet;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
-using Model.Sudokus.Solver.StrategiesUtility.Oddagons;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.CellColoring;
+using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Exocet;
+using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.Oddagons;
 using Model.Utility;
 using Model.Utility.BitSets;
 

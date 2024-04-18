@@ -1,5 +1,5 @@
 ﻿using Model.Helpers.Highlighting;
-using Model.Helpers.Logs;
+using Model.Helpers.Steps;
 using Model.Sudokus.Solver.Explanation;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.Explanation;
@@ -7,22 +7,22 @@ namespace DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 public class StepExplanationPresenter
 {
     private readonly IStepExplanationView _view;
-    private readonly ISolverLog<ISudokuHighlighter> _log;
+    private readonly ISolverStep<ISudokuHighlighter> _step;
     private readonly SudokuHighlighterTranslator _translator;
 
     private bool _showHighlight = true;
     private ExplanationElement? _currentlyShown;
 
-    public StepExplanationPresenter(IStepExplanationView view, ISolverLog<ISudokuHighlighter> log, Settings _settings)
+    public StepExplanationPresenter(IStepExplanationView view, ISolverStep<ISudokuHighlighter> step, Settings _settings)
     {
         _view = view;
-        _log = log;
+        _step = step;
         _translator = new SudokuHighlighterTranslator(view.Drawer, _settings);
     }
 
     public void Initialize()
     {
-        var state = _log.StateBefore;
+        var state = _step.From;
         
         var drawer = _view.Drawer;
         for (int row = 0; row < 9; row++)
@@ -35,8 +35,8 @@ public class StepExplanationPresenter
             }
         }
 
-        _translator.Translate(_log.HighlightManager);
-        _view.ShowExplanation(_log.Explanation);
+        _translator.Translate(_step.HighlightManager);
+        _view.ShowExplanation(_step.Explanation);
     }
 
     public void ShowExplanationElement(ExplanationElement element)
@@ -45,7 +45,7 @@ public class StepExplanationPresenter
         
         _view.Drawer.ClearHighlights();
         _currentlyShown.Show(_view.ExplanationHighlighter);
-        if(_showHighlight) _translator.Translate(_log.HighlightManager);
+        if(_showHighlight) _translator.Translate(_step.HighlightManager);
         else _view.Drawer.Refresh();
     }
 
@@ -54,7 +54,7 @@ public class StepExplanationPresenter
         _currentlyShown = null;
         
         _view.Drawer.ClearHighlights();
-        if(_showHighlight) _translator.Translate(_log.HighlightManager);
+        if(_showHighlight) _translator.Translate(_step.HighlightManager);
         else _view.Drawer.Refresh();
     }
 
@@ -72,6 +72,6 @@ public class StepExplanationPresenter
         _showHighlight = true;
         
         _currentlyShown?.Show(_view.ExplanationHighlighter);
-        _translator.Translate(_log.HighlightManager);
+        _translator.Translate(_step.HighlightManager);
     }
 }

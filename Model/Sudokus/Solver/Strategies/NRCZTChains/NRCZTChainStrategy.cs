@@ -5,9 +5,9 @@ using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Strategies.AlternatingInference;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
-using Model.Sudokus.Solver.StrategiesUtility.NRCZTChains;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Sudokus.Solver.Utility.NRCZTChains;
 
 namespace Model.Sudokus.Solver.Strategies.NRCZTChains;
 

@@ -3,19 +3,19 @@ using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Logs;
+using Model.Helpers.Steps;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.States;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.AlmostLockedSets;
 using Model.Sudokus.Solver.Trackers;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableSudokuSolvingState, ISudokuHighlighter>, ISolveResult
+public class SudokuSolver : IStrategyUser, IStepManagingChangeProducer<IUpdatableSudokuSolvingState, ISudokuHighlighter>, ISolveResult
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -27,7 +27,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
     public IReadOnlySudoku Sudoku => _sudoku;
 
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
-    public bool LogsManaged { get; private set; }
+    public bool StepsManaged { get; private set; }
 
     private IUpdatableSudokuSolvingState? _currentState;
 
@@ -66,7 +66,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
 
         PreComputer = new PreComputer(this);
         
-        LogManager = new LogManager<ISudokuHighlighter>();
+        StepHistory = new StepHistory<ISudokuHighlighter>();
 
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
@@ -92,7 +92,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         ResetPossibilities();
         StartState = new StateArraySolvingState(this);
 
-        LogManager.Clear();
+        StepHistory.Clear();
         PreComputer.Reset();
 
         StartedSolving = false;
@@ -119,7 +119,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         }
         StartState = new StateArraySolvingState(this);
         
-        LogManager.Clear();
+        StepHistory.Clear();
         PreComputer.Reset();
 
         StartedSolving = false;
@@ -133,7 +133,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         if (!AddSolution(number, row, col, false)) return;
         
         if(!StartedSolving) StartState = new StateArraySolvingState(this);
-        else if (LogsManaged) LogManager.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
+        else if (StepsManaged) StepHistory.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
     }
 
     public void RemoveSolutionByHand(int row, int col)
@@ -146,11 +146,11 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
 
     public void RemovePossibilityByHand(int possibility, int row, int col)
     {
-        if (StartedSolving && LogsManaged)
+        if (StartedSolving && StepsManaged)
         {
             var stateBefore = CurrentState;
             if (!RemovePossibility(possibility, row, col, false)) return;
-            LogManager.AddByHand(possibility, row, col, ProgressType.PossibilityRemoval, stateBefore);
+            StepHistory.AddByHand(possibility, row, col, ProgressType.PossibilityRemoval, stateBefore);
         }
         else if (!RemovePossibility(possibility, row, col, false)) return;
 
@@ -314,7 +314,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         set
         {
             _changeBuffer = value;
-            LogsManaged = value.HandlesLog;
+            StepsManaged = value.IsManagingSteps;
         } 
     }
     public PreComputer PreComputer { get; }
@@ -351,7 +351,7 @@ public class SudokuSolver : IStrategyUser, ILogManagedChangeProducer<IUpdatableS
         _changeWasMade = true;
     }
 
-    public LogManager<ISudokuHighlighter> LogManager { get; }
+    public StepHistory<ISudokuHighlighter> StepHistory { get; }
 
     #endregion
 

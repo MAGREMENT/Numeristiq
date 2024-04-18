@@ -5,7 +5,7 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilityPosition;
-using Model.Sudokus.Solver.StrategiesUtility;
+using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 

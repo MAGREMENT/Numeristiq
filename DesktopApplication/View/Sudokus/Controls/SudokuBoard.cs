@@ -10,8 +10,8 @@ using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver.Explanation;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
@@ -283,13 +283,13 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
     {
         Layers[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-            _possibilitySize, _possibilitySize), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+            _possibilitySize, _possibilitySize), App.Current.ThemeInformation.ToBrush(coloration)));
     }
 
     public void FillCell(int row, int col, ChangeColoration coloration)
     {
         Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-            _cellSize, _cellSize), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+            _cellSize, _cellSize), App.Current.ThemeInformation.ToBrush(coloration)));
     }
 
     public void EncirclePossibility(int row, int col, int possibility)
@@ -342,7 +342,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         }
         
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
+            new Pen(App.Current.ThemeInformation.ToBrush(coloration), _bigLineWidth)));
     }
 
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration coloration)
@@ -380,13 +380,13 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         }
         
         Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(new SolidColorBrush(ColorUtility.ToColor(coloration)), _bigLineWidth)));
+            new Pen(App.Current.ThemeInformation.ToBrush(coloration), _bigLineWidth)));
     }
 
     public void DelimitPossibilityPatch(CellPossibility[] cps, ChangeColoration coloration)
     {
         var w = _possibilitySize / 6;
-        var brush = new SolidColorBrush(ColorUtility.ToColor(coloration));
+        var brush = App.Current.ThemeInformation.ToBrush(coloration);
 
         var list = Layers[PossibilitiesHighlightIndex];
         foreach (var cp in cps)
@@ -511,7 +511,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         if (colors.Length == 1)
         {
             Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-                _cellSize, _cellSize), ColorUtility.ToBrush(colors[0])));
+                _cellSize, _cellSize), App.Current.ThemeInformation.ToBrush(colors[0])));
             return;
         }
         
@@ -523,7 +523,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         foreach (var color in colors)
         {
             var next = angle + rotationFactor * angleDelta;
-            list.Add(new FilledPolygonComponent(ColorUtility.ToBrush(color),
+            list.Add(new FilledPolygonComponent(App.Current.ThemeInformation.ToBrush(color),
                 MathUtility.GetMultiColorHighlightingPolygon(center, _cellSize, 
                     _cellSize, angle, next, rotationFactor)));
             angle = next;

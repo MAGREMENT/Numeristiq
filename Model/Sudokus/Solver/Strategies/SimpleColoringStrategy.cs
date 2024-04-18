@@ -2,10 +2,10 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.StrategiesUtility;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring;
-using Model.Sudokus.Solver.StrategiesUtility.CellColoring.ColoringResults;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility;
+using Model.Sudokus.Solver.Utility.CellColoring;
+using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
+using Model.Sudokus.Solver.Utility.Graphs;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -23,7 +23,7 @@ public class SimpleColoringStrategy : SudokuStrategy
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
-                     Coloring.On, strategyUser.LogsManaged))
+                     Coloring.On, strategyUser.StepsManaged))
         {
             if(coloredVertices.Count <= 1) continue;
 

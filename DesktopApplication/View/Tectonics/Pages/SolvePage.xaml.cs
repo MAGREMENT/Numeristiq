@@ -4,7 +4,7 @@ using DesktopApplication.Presenter.Tectonics;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Logs;
+using Model.Helpers.Steps;
 using Model.Utility;
 
 namespace DesktopApplication.View.Tectonics.Pages;
@@ -32,11 +32,11 @@ public partial class SolvePage : ITectonicSolveView
         TextBox.SetText(s);
     }
 
-    public void AddLog(ISolverLog<ITectonicHighlighter> log, StateShown stateShown)
+    public void AddLog(ISolverStep<ITectonicHighlighter> step, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {
-            var lc = new LogControl(log, stateShown);
+            var lc = new StepControl(step, stateShown);
             LogPanel.Children.Add(lc);
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
@@ -53,7 +53,7 @@ public partial class SolvePage : ITectonicSolveView
     public void OpenLog(int index)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not LogControl lc) return;
+        if (LogPanel.Children[index] is not StepControl lc) return;
 
         _logOpen = index;
         lc.Open();
@@ -62,7 +62,7 @@ public partial class SolvePage : ITectonicSolveView
     public void CloseLogs()
     {
         if (_logOpen < 0 || _logOpen >= LogPanel.Children.Count) return;
-        if (LogPanel.Children[_logOpen] is not LogControl lc) return;
+        if (LogPanel.Children[_logOpen] is not StepControl lc) return;
 
         _logOpen = -1;
         lc.Close();
@@ -72,7 +72,7 @@ public partial class SolvePage : ITectonicSolveView
     {
         foreach (var child in LogPanel.Children)
         {
-            if (child is not LogControl lc) continue;
+            if (child is not StepControl lc) continue;
 
             lc.SetStateShown(stateShown);
         }
@@ -81,7 +81,7 @@ public partial class SolvePage : ITectonicSolveView
     public void SetCursorPosition(int index, string s)
     {
         if (index < 0 || index > LogPanel.Children.Count) return;
-        if (LogPanel.Children[index] is not LogControl lc) return;
+        if (LogPanel.Children[index] is not StepControl lc) return;
 
         lc.SetCursorPosition(s);
     }

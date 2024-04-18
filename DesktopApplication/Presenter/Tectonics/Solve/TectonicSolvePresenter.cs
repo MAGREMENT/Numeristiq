@@ -13,8 +13,8 @@ public class TectonicSolvePresenter
 
     private readonly TectonicHighlightTranslator _translator;
     
-    private int _logCount;
-    private int _currentlyOpenedLog = -1;
+    private int _stepCount;
+    private int _currentlyOpenedStep = -1;
     private StateShown _stateShown = StateShown.Before;
     private readonly ContainingList<Cell> _selectedCells = new();
     private IZone? _selectedZone;
@@ -78,22 +78,22 @@ public class TectonicSolvePresenter
     public void RequestLogOpening(int id)
     {
         var index = id - 1;
-        if (index < 0 || index > _solver.LogManager.Logs.Count) return;
+        if (index < 0 || index > _solver.StepHistory.Steps.Count) return;
         
         _view.CloseLogs();
 
-        if (_currentlyOpenedLog == index)
+        if (_currentlyOpenedStep == index)
         {
-            _currentlyOpenedLog = -1;
+            _currentlyOpenedStep = -1;
             SetShownState(_solver, false, true);
         }
         else
         {
             _view.OpenLog(index);
-            _currentlyOpenedLog = index;
+            _currentlyOpenedStep = index;
 
-            var log = _solver.LogManager.Logs[index];
-            SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false, true); 
+            var log = _solver.StepHistory.Steps[index];
+            SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
             _translator.Translate(log.HighlightManager); 
         }
     }
@@ -102,24 +102,24 @@ public class TectonicSolvePresenter
     {
         _stateShown = ss;
         _view.SetLogsStateShown(ss);
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.LogManager.Logs.Count) return;
+        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep > _solver.StepHistory.Steps.Count) return;
         
-        var log = _solver.LogManager.Logs[_currentlyOpenedLog];
-        SetShownState(_stateShown == StateShown.Before ? log.StateBefore : log.StateAfter, false, true); 
+        var log = _solver.StepHistory.Steps[_currentlyOpenedStep];
+        SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
         _translator.Translate(log.HighlightManager);
     }
 
     public void RequestHighlightShift(bool isLeft)
     {
-        if (_currentlyOpenedLog < 0 || _currentlyOpenedLog > _solver.LogManager.Logs.Count) return;
+        if (_currentlyOpenedStep < 0 || _currentlyOpenedStep > _solver.StepHistory.Steps.Count) return;
         
-        var log = _solver.LogManager.Logs[_currentlyOpenedLog];
+        var log = _solver.StepHistory.Steps[_currentlyOpenedStep];
         if(isLeft) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
         
         _view.Drawer.ClearHighlights();
         _translator.Translate(log.HighlightManager);
-        _view.SetCursorPosition(_currentlyOpenedLog, log.HighlightManager.CursorPosition());
+        _view.SetCursorPosition(_currentlyOpenedStep, log.HighlightManager.CursorPosition());
     }
 
     public void SelectCell(Cell c)
@@ -217,7 +217,7 @@ public class TectonicSolvePresenter
     private void ClearLogs()
     {
         _view.ClearLogs();
-        _logCount = 0;
+        _stepCount = 0;
     }
     
     private void SetNewTectonic(ITectonic tectonic, bool showPossibilities)
@@ -292,15 +292,15 @@ public class TectonicSolvePresenter
     
     private void UpdateLogs()
     {
-        if (_solver.LogManager.Logs.Count < _logCount)
+        if (_solver.StepHistory.Steps.Count < _stepCount)
         {
             ClearLogs();
             return;
         }
 
-        for (;_logCount < _solver.LogManager.Logs.Count; _logCount++)
+        for (;_stepCount < _solver.StepHistory.Steps.Count; _stepCount++)
         {
-            _view.AddLog(_solver.LogManager.Logs[_logCount], _stateShown);
+            _view.AddLog(_solver.StepHistory.Steps[_stepCount], _stateShown);
         }
     }
 

@@ -8,7 +8,6 @@ using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.View.Settings;
 using DesktopApplication.View.Utility;
 using Model.Helpers.Descriptions;
-using Model.Helpers.Logs;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;
@@ -61,11 +60,12 @@ public partial class ManagePage : ISudokuManageView
             var tb = new TextBlock
             {
                 Text = strategy.Name,
-                Foreground = new SolidColorBrush(ColorUtility.ToColor((Intensity)strategy.Difficulty)),
                 Padding = new Thickness(5, 5, 0, 5),
                 FontSize = 15,
                 AllowDrop = true
             };
+            tb.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(strategy.Difficulty));
+            
             var iForEvent = i;
             tb.MouseLeftButtonDown += (_, _) =>
             {

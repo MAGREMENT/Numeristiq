@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Shapes;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Controls;
@@ -29,7 +29,7 @@ public partial class StrategyControl
     {
         if (enabled)
         {
-            CheckMark.Stroke = Brushes.ForestGreen;
+            CheckMark.SetResourceReference(Shape.StrokeProperty, "On");
             CheckMark.Visibility = Visibility.Visible;
             CrossMark.Visibility = Visibility.Collapsed;
             TextBlock.HorizontalAlignment = HorizontalAlignment.Left;
@@ -38,7 +38,7 @@ public partial class StrategyControl
         }
         else
         {
-            CrossMark.Stroke = Brushes.Red;
+            CheckMark.SetResourceReference(Shape.StrokeProperty, "Off");
             CrossMark.Visibility = Visibility.Visible;
             CheckMark.Visibility = Visibility.Collapsed;
             TextBlock.HorizontalAlignment = HorizontalAlignment.Right;
@@ -49,8 +49,8 @@ public partial class StrategyControl
 
     public void LockStrategy()
     {
-        CheckMark.Stroke = Brushes.Gray;
-        CrossMark.Stroke = Brushes.Gray;
+        CheckMark.SetResourceReference(Shape.StrokeProperty, "Disabled");
+        CrossMark.SetResourceReference(Shape.StrokeProperty, "Disabled");
 
         _state = -1;
     }

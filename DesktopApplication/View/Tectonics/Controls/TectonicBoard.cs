@@ -5,9 +5,8 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonics.Solve;
-using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
-using Model.Sudokus.Solver.StrategiesUtility.Graphs;
+using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;
 using MathUtility = DesktopApplication.View.Utility.MathUtility;
@@ -428,13 +427,13 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         var delta = (_cellSize - size) / 2;
         
         Layers[PossibilityHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col) + (possibility - 1) * size, GetTop(row) + delta,
-            size, size), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+            size, size), App.Current.ThemeInformation.ToBrush(coloration)));
     }
 
     public void FillCell(int row, int col, ChangeColoration coloration)
     {
         Layers[CellHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-            _cellSize, _cellSize), new SolidColorBrush(ColorUtility.ToColor(coloration))));
+            _cellSize, _cellSize), App.Current.ThemeInformation.ToBrush(coloration)));
     }
     
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,

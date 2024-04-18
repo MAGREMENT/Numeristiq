@@ -15,7 +15,7 @@ public partial class DigitRemoverControl
 
     public void Activate(bool activated)
     {
-        ActivatedLamp.Background = activated ? Brushes.ForestGreen : Brushes.Red;
+        ActivatedLamp.SetResourceReference(BackgroundProperty, activated ? "On" : "Off");
     }
 
     private void ToSymmetric(object sender, RoutedEventArgs e)
