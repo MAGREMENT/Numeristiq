@@ -32,11 +32,6 @@ public class AlternatingInferenceGeneralization : TectonicStrategy
 
     private bool Search(ITectonicStrategyUser strategyUser, ILinkGraph<ITectonicElement> graph, CellPossibility start)
     {
-        //Debug
-        if (start == new CellPossibility(1, 1, 3))
-        {
-            int a = 0;
-        }
         Dictionary<ITectonicElement, ITectonicElement> on = new();
         Dictionary<ITectonicElement, ITectonicElement> off = new();
         Queue<ITectonicElement> queue = new();

@@ -15,12 +15,13 @@ public class HiddenSingleStrategy : TectonicStrategy
     {
         for(int i = 0; i < strategyUser.Tectonic.Zones.Count; i++)
         {
-            for (int n = 1; n <= strategyUser.Tectonic.Zones[i].Count; n++)
+            var zone = strategyUser.Tectonic.Zones[i];
+            for (int n = 1; n <= zone.Count; n++)
             {
                 var poss = strategyUser.ZonePositionsFor(i, n);
                 if (poss.Count != 1) continue;
 
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(n, strategyUser.Tectonic.Zones[i][poss.First(0, strategyUser.Tectonic.Zones[i].Count)]);
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(n, zone[poss.First(0, zone.Count)]);
                 strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
             }
         }

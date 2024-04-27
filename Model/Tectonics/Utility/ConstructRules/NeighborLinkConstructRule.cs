@@ -5,7 +5,7 @@ using Model.Utility;
 
 namespace Model.Tectonics.Utility.ConstructRules;
 
-public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITectonicElement> //TODO fix for 5.4:0d0rd0r100r00d0rd0rd40d0r00r5d0r0r0
+public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITectonicElement>
 {
     public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicStrategyUser strategyUser)
     {
@@ -45,16 +45,17 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, I
                         if (pos.Count == entry.Value.Count + 1)
                         {
                             Cell? buffer = null;
-                            foreach (var cell in entry.Key)
+                            foreach (var n in pos.EnumeratePositions())
                             {
-                                if (!TectonicCellUtility.AreNeighbors(cell, new Cell(row, col)))
+                                var cell = entry.Key[n];
+                                if (!TectonicCellUtility.AreNeighbors(entry.Key[n], new Cell(row, col)))
                                 {
                                     buffer = cell;
                                 }
                             }
 
                             if (buffer is null) continue;
-                            
+
                             var zoneGroup = new ZoneGroup(entry.Value, p);
                             linkGraph.Add(new CellPossibility(row, col, p), 
                                 zoneGroup, LinkStrength.Weak, LinkType.MonoDirectional);

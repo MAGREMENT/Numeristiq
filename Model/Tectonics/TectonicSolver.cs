@@ -25,7 +25,6 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         new HiddenSingleStrategy(),
         new ZoneInteractionStrategy(),
         new AlternatingInferenceGeneralization(new XChainType()),
-        //new XChainStrategy(),
         new GroupEliminationStrategy(),
         new AlternatingInferenceGeneralization(new AlternatingInferenceChainType())
     };

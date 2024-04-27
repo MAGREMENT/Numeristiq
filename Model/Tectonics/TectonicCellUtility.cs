@@ -137,7 +137,7 @@ public static class TectonicCellUtility
         }
     }
 
-    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, Cell one, Cell two)
+    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, Cell one, Cell two) //TODO to non-repeating cells
     {
         foreach (var neighbor in GetNeighbors(one, tectonic.RowCount, tectonic.ColumnCount))
         {
