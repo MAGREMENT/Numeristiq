@@ -14,7 +14,7 @@ public class ZoneInteractionStrategy : TectonicStrategy
     {
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ITectonicStrategyUser strategyUser)
     {
         List<Cell> buffer = new();
         

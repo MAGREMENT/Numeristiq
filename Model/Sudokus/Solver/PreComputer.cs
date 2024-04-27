@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
@@ -13,7 +14,7 @@ namespace Model.Sudokus.Solver;
 
 public class PreComputer
 {
-    private readonly IStrategyUser _strategyUser;
+    private readonly ISudokuStrategyUser _strategyUser;
 
     private List<IPossibilitiesPositions>? _als;
 
@@ -28,12 +29,12 @@ public class PreComputer
     private PossibilitiesGraph<IPossibilitiesPositions>? _alsGraph;
     private PositionsGraph<IPossibilitiesPositions>? _ahsGraph;
     
-    public LinkGraphManager Graphs { get; }
+    public LinkGraphManager<ISudokuStrategyUser, ISudokuElement> Graphs { get; }
 
-    public PreComputer(IStrategyUser strategyUser)
+    public PreComputer(ISudokuStrategyUser strategyUser)
     {
         _strategyUser = strategyUser;
-        Graphs = new LinkGraphManager(strategyUser);
+        Graphs = new LinkGraphManager<ISudokuStrategyUser, ISudokuElement>(strategyUser, new SudokuConstructRuleBank());
     }
 
     public void Reset()
@@ -129,9 +130,9 @@ public class PreComputer
 
     private ColoringDictionary<ISudokuElement> DoColor(ISudokuElement start, Coloring firstColor)
     {
-        _strategyUser.PreComputer.Graphs.ConstructComplex(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
-            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities,
-            ConstructRule.AlmostNakedPossibilities, ConstructRule.JuniorExocet);
+        _strategyUser.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities,
+            SudokuConstructRuleBank.AlmostNakedPossibilities);
         var graph = _strategyUser.PreComputer.Graphs.ComplexLinkGraph;
 
         return ColorHelper.ColorFromStart<ISudokuElement, ColoringDictionary<ISudokuElement>>(

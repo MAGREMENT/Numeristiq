@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -50,6 +51,32 @@ public class CellsPossibility : ISudokuElement
         }
 
         return result;
+    }
+
+    public IEnumerable<int> EnumeratePossibilities()
+    {
+        yield return _possibility;
+    }
+
+    public IEnumerable<CellPossibilities> EnumerateCellPossibilities()
+    {
+        for (int i = 0; i < _cells.Length; i++)
+        {
+            yield return new CellPossibilities(_cells[i], _possibility);
+        }
+    }
+
+    public IEnumerable<Cell> EnumerateCell()
+    {
+        return _cells;
+    }
+
+    public IEnumerable<CellPossibility> EnumerateCellPossibility()
+    {
+        for (int i = 0; i < _cells.Length; i++)
+        {
+            yield return new CellPossibility(_cells[i], _possibility);
+        }
     }
 
     public bool Contains(Cell cell)

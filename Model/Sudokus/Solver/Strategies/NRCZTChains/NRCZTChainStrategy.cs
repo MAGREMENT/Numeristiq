@@ -8,6 +8,7 @@ using Model.Sudokus.Solver.Strategies.AlternatingInference;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.NRCZTChains;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.NRCZTChains;
 
@@ -37,7 +38,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
         };
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -51,7 +52,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, CellPossibility start)
+    private bool Search(ISudokuStrategyUser strategyUser, CellPossibility start)
     {
         HashSet<CellPossibility> blockStartVisited = new();
         Queue<NRCZTChain> queue = new();
@@ -170,7 +171,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, NRCZTChain chain)
+    private bool Process(ISudokuStrategyUser strategyUser, NRCZTChain chain)
     {
         var last = chain.Last();
         foreach (var target in chain.PossibleTargets)

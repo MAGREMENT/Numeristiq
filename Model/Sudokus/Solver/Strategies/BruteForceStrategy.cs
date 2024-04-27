@@ -12,14 +12,14 @@ public class BruteForceStrategy : SudokuStrategy
 
     public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultInstanceHandling) { }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var solution = BackTracking.Fill(strategyUser.Sudoku.Copy(), strategyUser, 1);
 
         if (solution.Length == 1) Process(strategyUser, solution[0]);
     }
 
-    private void Process(IStrategyUser strategyUser, Sudoku s)
+    private void Process(ISudokuStrategyUser strategyUser, Sudoku s)
     {
         for (int r = 0; r < 9; r++)
         {

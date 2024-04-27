@@ -18,7 +18,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int i = 0; i < 81; i++)
         {
@@ -40,7 +40,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, BiValue values, params Cell[] floor)
+    private bool Search(ISudokuStrategyUser strategyUser, BiValue values, params Cell[] floor)
     {
         foreach (var roof in SudokuCellUtility.DeadlyPatternRoofs(floor))
         {
@@ -50,7 +50,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Try(IStrategyUser strategyUser, BiValue values, Cell[] floor, Cell[] roof)
+    private bool Try(ISudokuStrategyUser strategyUser, BiValue values, Cell[] floor, Cell[] roof)
     {
         if (strategyUser.StartState[roof[0].Row, roof[0].Column] != 0 || strategyUser.StartState[roof[1].Row, roof[1].Column] != 0) return false;
         
@@ -119,7 +119,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         return false;
     }
     
-    private void ProcessArWithAls(IStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessArWithAls(ISudokuStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities.EnumeratePossibilities())

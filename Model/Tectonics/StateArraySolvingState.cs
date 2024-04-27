@@ -12,7 +12,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
     private readonly ushort[,] _bits;
     private readonly IReadOnlyList<IZone> _zones;
 
-    public StateArraySolvingState(IStrategyUser solver)
+    public StateArraySolvingState(ITectonicStrategyUser solver)
     {
         _bits = new ushort[solver.Tectonic.RowCount, solver.Tectonic.ColumnCount];
 

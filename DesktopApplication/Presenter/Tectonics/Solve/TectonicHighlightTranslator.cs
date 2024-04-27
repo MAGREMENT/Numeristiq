@@ -1,7 +1,8 @@
 ﻿using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Tectonics.Utility;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
@@ -34,5 +35,43 @@ public class TectonicHighlightTranslator : ITectonicHighlighter
     {
         _drawer.CreateLink(from.Row, from.Column, from.Possibility, to.Row,
             to.Column, to.Possibility, linkStrength, LinkOffsetSidePriority.Any);
+    }
+
+    public void HighlightElement(ITectonicElement element, ChangeColoration coloration)
+    {
+        foreach (var cp in element.EnumerateCellPossibility())
+        {
+            HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
+        }
+    }
+
+    public void CreateLink(ITectonicElement from, ITectonicElement to, LinkStrength linkStrength)
+    {
+        if (from is CellPossibility cpF)
+        {
+            foreach (var cpT in to.EnumerateCellPossibility())
+            {
+                CreateLink(cpF, cpT, linkStrength);
+            }
+        }
+        else if (from is ZoneGroup zg && to is CellPossibility cpT)
+        {
+            var min = zg.Cells[0];
+            var minDist = CellUtility.Distance(
+                min, zg.Possibility, cpT.ToCell(), cpT.Possibility);
+
+            for (int i = 1; i < zg.Cells.Count; i++)
+            {
+                var dist = CellUtility.Distance(
+                    zg.Cells[i], zg.Possibility, cpT.ToCell(), cpT.Possibility);
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    min = zg.Cells[i];
+                }
+            }
+            
+            CreateLink(new CellPossibility(min, zg.Possibility), cpT, linkStrength);
+        }
     }
 }

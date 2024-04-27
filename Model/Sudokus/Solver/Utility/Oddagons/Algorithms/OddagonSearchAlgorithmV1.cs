@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 
 public class OddagonSearchAlgorithmV1 : IOddagonSearchAlgorithm
 {
-    public List<AlmostOddagon> Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(ISudokuStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
     {
         var result = new List<AlmostOddagon>();
 

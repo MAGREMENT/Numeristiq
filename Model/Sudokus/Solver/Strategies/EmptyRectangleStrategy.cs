@@ -18,7 +18,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -76,7 +76,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
         }
     }
 
-    private bool Check(IStrategyUser strategyUser, int possibility, Cell hinge, Cell one, Cell two,
+    private bool Check(ISudokuStrategyUser strategyUser, int possibility, Cell hinge, Cell one, Cell two,
         bool isOneLinkStrong, bool isTwoLinkStrong)
     {
         var positions = strategyUser.PositionsFor(possibility).Copy();

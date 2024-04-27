@@ -9,7 +9,7 @@ public static class JuniorExocetSearcher
 {
     private const int Max = 4;
     
-    public static List<JuniorExocet> FullGrid(IStrategyUser strategyUser)
+    public static List<JuniorExocet> FullGrid(ISudokuStrategyUser strategyUser)
     {
         var result = new List<JuniorExocet>();
 
@@ -49,7 +49,7 @@ public static class JuniorExocetSearcher
         return result;
     }
 
-    private static void TryOfBase(IStrategyUser strategyUser, Cell base1, Cell base2, ReadOnlyBitSet16 basePossibilities,
+    private static void TryOfBase(ISudokuStrategyUser strategyUser, Cell base1, Cell base2, ReadOnlyBitSet16 basePossibilities,
         List<JuniorExocet> result)
     {
         var isRowJe = base1.Row == base2.Row;
@@ -118,7 +118,7 @@ public static class JuniorExocetSearcher
         }
     }
 
-    private static List<Cell> RowTargetCandidates(IStrategyUser strategyUser, Cell base1,
+    private static List<Cell> RowTargetCandidates(ISudokuStrategyUser strategyUser, Cell base1,
         ReadOnlyBitSet16 basePossibilities)
     {
         //Rule 2
@@ -147,7 +147,7 @@ public static class JuniorExocetSearcher
         return result;
     }
     
-    private static List<Cell> ColumnTargetCandidates(IStrategyUser strategyUser, Cell base1,
+    private static List<Cell> ColumnTargetCandidates(ISudokuStrategyUser strategyUser, Cell base1,
         ReadOnlyBitSet16 basePossibilities)
     {
         //Rule 2
@@ -252,7 +252,7 @@ public static class JuniorExocetSearcher
         }
     }
 
-    private static void FillRowSCells(IStrategyUser strategyUser, Dictionary<int, GridPositions> sCellsPositions,
+    private static void FillRowSCells(ISudokuStrategyUser strategyUser, Dictionary<int, GridPositions> sCellsPositions,
         Cell base1, Cell base2, Cell t1, Cell t2, ReadOnlyBitSet16 basePossibilities)
     {
         var lastBaseCol = OtherUnitInBox(base1.Column, base2.Column);
@@ -274,7 +274,7 @@ public static class JuniorExocetSearcher
         }
     }
     
-    private static void FillColumnSCells(IStrategyUser strategyUser, Dictionary<int, GridPositions> sCellsPositions,
+    private static void FillColumnSCells(ISudokuStrategyUser strategyUser, Dictionary<int, GridPositions> sCellsPositions,
         Cell base1, Cell base2, Cell t1, Cell t2, ReadOnlyBitSet16 basePossibilities)
     {
         var lastBaseRow = OtherUnitInBox(base1.Row, base2.Row);

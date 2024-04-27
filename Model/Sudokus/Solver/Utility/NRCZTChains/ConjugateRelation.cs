@@ -1,4 +1,5 @@
 ﻿using System;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.NRCZTChains;
 

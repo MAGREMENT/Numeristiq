@@ -25,7 +25,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         AddSetting(_minSharedSeenCells);
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int start1 = 0; start1 < 9; start1 += 3)
         {
@@ -190,7 +190,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, Cell c1, Cell c2, Cell c3)
+    private bool Search(ISudokuStrategyUser strategyUser, Cell c1, Cell c2, Cell c3)
     {
         var ssc = SudokuCellUtility.SharedSeenEmptyCells(strategyUser, c1, c2, c3);
 
@@ -263,7 +263,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
             new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && StopOnFirstPush;
     }
 
-    private void SearchForElimination(IStrategyUser strategyUser, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,
+    private void SearchForElimination(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,
         ReadOnlyBitSet16 poss3, Cell c1, Cell c2, Cell c3, HashSet<TriValue> forbiddenTri, HashSet<BiValue> forbiddenBi)
     {
         foreach (var p1 in poss1.EnumeratePossibilities())

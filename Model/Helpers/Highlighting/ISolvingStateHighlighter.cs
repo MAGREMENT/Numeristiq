@@ -1,6 +1,7 @@
 ﻿using Model.Helpers.Changes;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Tectonics.Utility;
 using Model.Utility;
 
 namespace Model.Helpers.Highlighting;
@@ -47,12 +48,13 @@ public interface ISudokuHighlighter : ISolvingStateHighlighter
 
     public void EncircleHouse(House house, ChangeColoration coloration);
 
-    public void HighlightSudokuElement(ISudokuElement element, ChangeColoration coloration);
+    public void HighlightElement(ISudokuElement element, ChangeColoration coloration);
 
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength);
 }
 
 public interface ITectonicHighlighter : ISolvingStateHighlighter
 {
-    
+    public void HighlightElement(ITectonicElement element, ChangeColoration coloration);
+    public void CreateLink(ITectonicElement from, ITectonicElement to, LinkStrength linkStrength);
 }

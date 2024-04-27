@@ -3,6 +3,7 @@ using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
@@ -50,11 +51,11 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
             extremities.Item2.Row, extremities.Item2.Column, coloration);
     }
 
-    public void HighlightSudokuElement(ISudokuElement element, ChangeColoration coloration)
+    public void HighlightElement(ISudokuElement element, ChangeColoration coloration)
     {
         if (ChangeColorationUtility.IsOff(coloration) && element is PointingRow or PointingColumn or CellsPossibility)
         {
-            foreach (var cp in element.EveryCellPossibility())
+            foreach (var cp in element.EnumerateCellPossibility())
             {
                 HighlightPossibility(cp.Possibility, cp.Row, cp.Column, coloration);
             }
@@ -70,7 +71,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
             case PointingRow pr :
                 var minCol = 9;
                 var maxCol = -1;
-                foreach (var cell in pr.EveryCell())
+                foreach (var cell in pr.EnumerateCell())
                 {
                     if (cell.Column < minCol) minCol = cell.Column;
                     if (cell.Column > maxCol) maxCol = cell.Column;
@@ -82,7 +83,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
             case PointingColumn pc :
                 var minRow = 9;
                 var maxRow = -1;
-                foreach (var cell in pc.EveryCell())
+                foreach (var cell in pc.EnumerateCell())
                 {
                     if (cell.Row < minRow) minRow = cell.Row;
                     if (cell.Row > maxRow) maxRow = cell.Row;
@@ -142,9 +143,9 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
         var minCells = new CellPossibility[2];
         var minDist = double.MaxValue;
 
-        foreach (var cellF in from.EveryCellPossibilities())
+        foreach (var cellF in from.EnumerateCellPossibilities())
         {
-            foreach (var cellT in to.EveryCellPossibilities())
+            foreach (var cellT in to.EnumerateCellPossibilities())
             {
                 foreach (var possF in cellF.Possibilities.EnumeratePossibilities())
                 {
@@ -154,7 +155,7 @@ public class SudokuHighlighterTranslator : ISudokuHighlighter
                     {
                         if (possibilitySearch != -1 && possT != possibilitySearch) continue;
 
-                        var dist = SudokuCellUtility.Distance(cellF.Cell, possF, cellT.Cell, possT);
+                        var dist = CellUtility.Distance(cellF.Cell, possF, cellT.Cell, possT);
                         if (dist < minDist)
                         {
                             minDist = dist;

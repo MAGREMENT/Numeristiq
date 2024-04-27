@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace Model.Helpers.Changes.Buffers;
 

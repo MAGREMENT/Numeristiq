@@ -35,7 +35,7 @@ public class HiddenSetStrategy : SudokuStrategy
         }
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -57,7 +57,7 @@ public class HiddenSetStrategy : SudokuStrategy
         }
     }
 
-    private bool RecursiveRowMashing(IStrategyUser strategyUser, int start, LinePositions mashed,
+    private bool RecursiveRowMashing(ISudokuStrategyUser strategyUser, int start, LinePositions mashed,
         ReadOnlyBitSet16 visited, int row)
     {
         for (int i = start; i <= 9; i++)
@@ -89,7 +89,7 @@ public class HiddenSetStrategy : SudokuStrategy
         return false;
     }
     
-    private bool RecursiveColumnMashing(IStrategyUser strategyUser, int start, LinePositions mashed,
+    private bool RecursiveColumnMashing(ISudokuStrategyUser strategyUser, int start, LinePositions mashed,
         ReadOnlyBitSet16 visited, int col)
     {
         for (int i = start; i <= 9; i++)
@@ -121,7 +121,7 @@ public class HiddenSetStrategy : SudokuStrategy
         return false;
     }
     
-    private bool RecursiveMiniGridMashing(IStrategyUser strategyUser, int start, MiniGridPositions mashed,
+    private bool RecursiveMiniGridMashing(ISudokuStrategyUser strategyUser, int start, MiniGridPositions mashed,
         ReadOnlyBitSet16 visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
@@ -153,7 +153,7 @@ public class HiddenSetStrategy : SudokuStrategy
         return false;
     }
 
-    private void RemoveAllPossibilitiesExcept(int row, int col, ReadOnlyBitSet16 except, IStrategyUser strategyUser)
+    private void RemoveAllPossibilitiesExcept(int row, int col, ReadOnlyBitSet16 except, ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.NRCZTChains;
 
@@ -11,7 +12,7 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
 
     public int Count => _relations.Count;
 
-    public NRCZTChain(IStrategyUser strategyUser, CellPossibility from, CellPossibility to)
+    public NRCZTChain(ISudokuStrategyUser strategyUser, CellPossibility from, CellPossibility to)
     {
         _relations.Add(new ConjugateRelation(from, to));
         PossibleTargets.UnionWith(SudokuCellUtility.SeenExistingPossibilities(strategyUser, from));

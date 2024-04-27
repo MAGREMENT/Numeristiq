@@ -87,7 +87,7 @@ public class JuniorExocet
         return sCells;
     }
 
-    public bool CompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
+    public bool CompatibilityCheck(ISudokuStrategyUser strategyUser, int poss1, int poss2)
     {
         if (!BaseCandidates.Contains(poss1) || !BaseCandidates.Contains(poss2))
             throw new ArgumentException("Possibility not in base candidates");
@@ -99,7 +99,7 @@ public class JuniorExocet
             : ColumnCompatibilityCheck(strategyUser, poss1, poss2);
     }
 
-    private bool RowCompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
+    private bool RowCompatibilityCheck(ISudokuStrategyUser strategyUser, int poss1, int poss2)
     {
         int urThreatCount = 0;
         var possibilities = new ReadOnlyBitSet16(poss1, poss2);
@@ -138,7 +138,7 @@ public class JuniorExocet
         return false;
     }
     
-    private bool ColumnCompatibilityCheck(IStrategyUser strategyUser, int poss1, int poss2)
+    private bool ColumnCompatibilityCheck(ISudokuStrategyUser strategyUser, int poss1, int poss2)
     {
         int urThreatCount = 0;
         var possibilities = new ReadOnlyBitSet16(poss1, poss2);

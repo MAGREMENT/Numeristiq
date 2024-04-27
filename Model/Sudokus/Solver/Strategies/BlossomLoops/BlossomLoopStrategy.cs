@@ -3,6 +3,7 @@ using System.Linq;
 using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -30,10 +31,10 @@ public class BlossomLoopStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructComplex(ConstructRule.PointingPossibilities,
-            ConstructRule.CellStrongLink, ConstructRule.CellWeakLink, ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+        strategyUser.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.PointingPossibilities,
+            SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink, SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
         var graph = strategyUser.PreComputer.Graphs.ComplexLinkGraph;
 
         foreach (var cps in _type.Candidates(strategyUser))
@@ -72,19 +73,19 @@ public class BlossomLoopStrategy : SudokuStrategy
         {
             foreach (var element in b.Branch.Elements)
             {
-                foreach (var cp in element.EveryCellPossibility()) nope.Add(cp);
+                foreach (var cp in element.EnumerateCellPossibility()) nope.Add(cp);
             }
         }
         
         foreach (var element in loop)
         {
-            foreach (var cp in element.EveryCellPossibility()) nope.Add(cp);
+            foreach (var cp in element.EnumerateCellPossibility()) nope.Add(cp);
         }
 
         return nope;
     }
 
-    private void HandleWeakLoopLink(IStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
+    private void HandleWeakLoopLink(ISudokuStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope, BlossomLoopBranch[] branches)
     {
         List<ISudokuElement> toTakeIntoAccount = new();
@@ -98,14 +99,14 @@ public class BlossomLoopStrategy : SudokuStrategy
         {
             var and = one.EveryPossibilities() & two.EveryPossibilities();
             var or = one.EveryPossibilities() | two.EveryPossibilities();
-            var cells = new HashSet<Cell>(one.EveryCell());
-            cells.UnionWith(two.EveryCell());
+            var cells = new HashSet<Cell>(one.EnumerateCell());
+            cells.UnionWith(two.EnumerateCell());
 
             foreach (var element in toTakeIntoAccount)
             {
                 and &= element.EveryPossibilities();
                 or |= element.EveryPossibilities();
-                cells.UnionWith(element.EveryCell());
+                cells.UnionWith(element.EnumerateCell());
             }
 
             if (cells.Count == 1)
@@ -121,19 +122,19 @@ public class BlossomLoopStrategy : SudokuStrategy
             {
                 List<Cell> c = new();
                 
-                foreach (var cp in one.EveryCellPossibilities())
+                foreach (var cp in one.EnumerateCellPossibilities())
                 {
                     if(cp.Possibilities.Contains(p)) c.Add(cp.Cell);
                 }
                 
-                foreach (var cp in two.EveryCellPossibilities())
+                foreach (var cp in two.EnumerateCellPossibilities())
                 {
                     if(cp.Possibilities.Contains(p)) c.Add(cp.Cell);
                 }
 
                 foreach (var element in toTakeIntoAccount)
                 {
-                    foreach (var cp in element.EveryCellPossibilities())
+                    foreach (var cp in element.EnumerateCellPossibilities())
                     {
                         if(cp.Possibilities.Contains(p)) c.Add(cp.Cell);
                     }
@@ -148,7 +149,7 @@ public class BlossomLoopStrategy : SudokuStrategy
         
     }
 
-    private void HandleWeakBranchLink(IStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
+    private void HandleWeakBranchLink(ISudokuStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope)
     {
         var cp1 = one.EveryCellPossibilities();
@@ -223,10 +224,10 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
                     var color = current.Branch.Links[j] == LinkStrength.Weak
                         ? ChangeColoration.CauseOnOne
                         : ChangeColoration.CauseOffOne;
-                    lighter.HighlightSudokuElement(current.Branch.Elements[j], color);
+                    lighter.HighlightElement(current.Branch.Elements[j], color);
                     if (j == current.Branch.Links.Length - 1)
                     {
-                        lighter.HighlightSudokuElement(current.Branch.Elements[j + 1], color == ChangeColoration.CauseOnOne ?
+                        lighter.HighlightElement(current.Branch.Elements[j + 1], color == ChangeColoration.CauseOnOne ?
                             ChangeColoration.CauseOffOne : ChangeColoration.CauseOnOne);
                     }
                     
@@ -248,7 +249,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
                 
             foreach (var element in _loop)
             {
-                lighter.HighlightSudokuElement(element, coloring);
+                lighter.HighlightElement(element, coloring);
                 coloring = coloring == ChangeColoration.CauseOnOne
                     ? ChangeColoration.CauseOffOne
                     : ChangeColoration.CauseOnOne;

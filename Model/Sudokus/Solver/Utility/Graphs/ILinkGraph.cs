@@ -12,19 +12,6 @@ public interface ILinkGraph<T> : IEnumerable<T> where T : notnull
     public void Clear();
 }
 
-public static class LinkGraphs
-{
-    public static ILinkGraph<CellPossibility> NewSimple()
-    {
-        return new DictionaryLinkGraph<CellPossibility>();
-    }
-    
-    public static ILinkGraph<ISudokuElement> NewComplex()
-    {
-        return new DictionaryLinkGraph<ISudokuElement>();
-    }
-}
-
 public enum LinkStrength
 {
     None = 0, Strong = 1, Weak = 2, Any = 3

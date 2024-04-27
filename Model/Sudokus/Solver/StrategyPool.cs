@@ -16,6 +16,7 @@ using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver;
 

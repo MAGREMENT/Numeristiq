@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.Types;
 
 public class UnitType : IBlossomLoopType
 {
     public string Name => BlossomLoopStrategy.OfficialNameForUnit;
-    public IEnumerable<CellPossibility[]> Candidates(IStrategyUser strategyUser)
+    public IEnumerable<CellPossibility[]> Candidates(ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {

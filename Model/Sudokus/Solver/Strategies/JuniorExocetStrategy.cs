@@ -19,7 +19,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var jes = strategyUser.PreComputer.JuniorExocet();
         
@@ -37,7 +37,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
     }
 
-    private bool ProcessDouble(IStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2) //TODO : correct this
+    private bool ProcessDouble(ISudokuStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2) //TODO : correct this
     {
         var unit = je1.GetUnit();
         if (unit != je2.GetUnit()) return false;
@@ -154,7 +154,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         return default;
     }
 
-    private bool Process(IStrategyUser strategyUser, JuniorExocet je)
+    private bool Process(ISudokuStrategyUser strategyUser, JuniorExocet je)
     {
         ReadOnlyBitSet16[] removedBaseCandidates = { new(), new() };
 
@@ -451,7 +451,7 @@ public class JuniorExocetStrategy : SudokuStrategy
                && StopOnFirstPush;
     }
 
-    private void RemoveAll(IStrategyUser strategyUser, Cell cell, ReadOnlyBitSet16 except)
+    private void RemoveAll(ISudokuStrategyUser strategyUser, Cell cell, ReadOnlyBitSet16 except)
     {
         foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
         {
@@ -461,7 +461,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
     }
 
-    private void RemoveAllNonSCells(IStrategyUser strategyUser, JuniorExocet je,
+    private void RemoveAllNonSCells(ISudokuStrategyUser strategyUser, JuniorExocet je,
         Dictionary<int, List<House>> coverHouses)
     {
         foreach (var entry in je.SCells)

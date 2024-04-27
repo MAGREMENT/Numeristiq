@@ -23,7 +23,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         _maxNotDrawnCandidates = maxNotDrawnCandidates;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int startRow = 0; startRow < 9; startRow += 3)
         {
@@ -74,7 +74,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         }
     }
 
-    private bool Try(IStrategyUser strategyUser, Unit unit, params Cell[] cells)
+    private bool Try(ISudokuStrategyUser strategyUser, Unit unit, params Cell[] cells)
     {
         var possibilities = new ReadOnlyBitSet16();
         foreach (var cell in cells)
@@ -126,7 +126,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         return false;
     }
 
-    private void Process(IStrategyUser strategyUser, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
+    private void Process(ISudokuStrategyUser strategyUser, IPossibilitiesPositions boxPP, IPossibilitiesPositions unitPP,
         Cell[] center, ReadOnlyBitSet16 centerPossibilities, List<Cell> cellsInBox, List<Cell> cellsInUnit)
     {
         var centerGP = new GridPositions();
@@ -162,7 +162,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         }
     }
 
-    private static List<Cell> CellsInBox(IStrategyUser strategyUser, Cell[] cells)
+    private static List<Cell> CellsInBox(ISudokuStrategyUser strategyUser, Cell[] cells)
     {
         var result = new List<Cell>();
 
@@ -184,7 +184,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         return result;
     }
 
-    private static List<Cell> CellsInUnit(IStrategyUser strategyUser, Cell[] cells, Unit unit)
+    private static List<Cell> CellsInUnit(ISudokuStrategyUser strategyUser, Cell[] cells, Unit unit)
     {
         var result = new List<Cell>();
 
@@ -199,7 +199,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         return result;
     }
     
-    private static List<IPossibilitiesPositions> Combinations(IStrategyUser strategyUser, GridPositions forbiddenPositions, 
+    private static List<IPossibilitiesPositions> Combinations(ISudokuStrategyUser strategyUser, GridPositions forbiddenPositions, 
         ReadOnlyBitSet16 forbiddenPossibilities, int max, IReadOnlyList<Cell> sample)
     {
         var result = new List<IPossibilitiesPositions>();
@@ -210,7 +210,7 @@ public class SueDeCoqStrategy : SudokuStrategy
         return result;
     }
 
-    private static void Combinations(IStrategyUser strategyUser, GridPositions forbiddenPositions, 
+    private static void Combinations(ISudokuStrategyUser strategyUser, GridPositions forbiddenPositions, 
         ReadOnlyBitSet16 forbiddenPossibilities, int max, int start, IReadOnlyList<Cell> sample,
         List<IPossibilitiesPositions> result, List<Cell> currentCells, ReadOnlyBitSet16 currentPossibilities)
     {

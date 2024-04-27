@@ -25,7 +25,7 @@ public class ThorsHammerStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         Dictionary<int, MiniGridPositions> boxCandidates = new();
         foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, CombinationCalculator.NumbersSample))
@@ -56,7 +56,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         }
     }
 
-    private bool TryEveryLoop(IStrategyUser strategyUser, int[] possibilities,
+    private bool TryEveryLoop(ISudokuStrategyUser strategyUser, int[] possibilities,
         Dictionary<int, MiniGridPositions> boxCandidates)
     {
         var graph = new BoxGraph();
@@ -78,7 +78,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         return false;
     }
     
-    private bool TryEveryPattern(IStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
+    private bool TryEveryPattern(ISudokuStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
         Dictionary<int, MiniGridPositions> boxCandidates, Dictionary<int, MiniGridPositions> current, int n)
     {
         if (n == loop.Length) return Search(strategyUser, possibilities, loop, current);
@@ -93,7 +93,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Search(IStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
+    private bool Search(ISudokuStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
         Dictionary<int, MiniGridPositions> boxCandidates)
     {
         var pp = new ParityPair[loop.Length];
@@ -150,8 +150,8 @@ public class ThorsHammerStrategy : SudokuStrategy
         if (notInPattern.Count == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
         else
         {
-            strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
-                ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+            strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+                SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
             var linkGraph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
             foreach (var target in linkGraph.Neighbors(notInPattern[0]))

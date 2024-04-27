@@ -9,6 +9,7 @@ using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Oddagons;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.ForcingNets;
 
@@ -26,7 +27,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
         AddSetting(_maxNumberOfGuardians);
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var oddagon in strategyUser.PreComputer.AlmostOddagons())
         {

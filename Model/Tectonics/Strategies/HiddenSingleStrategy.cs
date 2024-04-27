@@ -11,7 +11,7 @@ public class HiddenSingleStrategy : TectonicStrategy
     {
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ITectonicStrategyUser strategyUser)
     {
         for(int i = 0; i < strategyUser.Tectonic.Zones.Count; i++)
         {

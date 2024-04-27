@@ -17,7 +17,7 @@ public class OddagonStrategy : SudokuStrategy
     {
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var ao in strategyUser.PreComputer.AlmostOddagons())
         {

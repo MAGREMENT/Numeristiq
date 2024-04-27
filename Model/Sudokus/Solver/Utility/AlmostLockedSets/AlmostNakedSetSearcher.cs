@@ -7,12 +7,12 @@ namespace Model.Sudokus.Solver.Utility.AlmostLockedSets;
 
 public class AlmostNakedSetSearcher
 {
-    private readonly IStrategyUser _strategyUser;
+    private readonly ISudokuStrategyUser _strategyUser;
 
     public int Max { get; set; } = 5;
     public int Difference { get; set; } = 1;
 
-    public AlmostNakedSetSearcher(IStrategyUser strategyUser)
+    public AlmostNakedSetSearcher(ISudokuStrategyUser strategyUser)
     {
         _strategyUser = strategyUser;
     }

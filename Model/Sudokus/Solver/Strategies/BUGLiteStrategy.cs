@@ -28,7 +28,7 @@ public class BUGLiteStrategy : SudokuStrategy
         AddSetting(_maxStructSize);
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var structuresDone = new HashSet<GridPositions>();
         
@@ -80,7 +80,7 @@ public class BUGLiteStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
+    private bool Search(ISudokuStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
         List<IBUGLiteCondition> conditionsToMeet, HashSet<IBUGLiteCondition> conditionsMet, HashSet<GridPositions> structuresDone)
     {
         var current = conditionsToMeet[0];
@@ -152,7 +152,7 @@ public class BUGLiteStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp)
+    private bool Process(ISudokuStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp)
     {
         var cellsNotInStructure = new List<Cell>();
         var possibilitiesNotInStructure = new ReadOnlyBitSet16();
@@ -233,7 +233,7 @@ public record BUGLiteConditionMatch(BiCellPossibilities BiCellPossibilities, par
 
 public interface IBUGLiteCondition
 { 
-    IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyUser strategyUser, GridPositions done);
+    IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuStrategyUser strategyUser, GridPositions done);
 }
 
 public class RowBUGLiteCondition : IBUGLiteCondition
@@ -249,7 +249,7 @@ public class RowBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyUser strategyUser, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuStrategyUser strategyUser, GridPositions done)
     {
         var miniCol = _one.Column / 3;
 
@@ -318,7 +318,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(IStrategyUser strategyUser, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuStrategyUser strategyUser, GridPositions done)
     {
         var miniRow = _one.Row / 3;
 

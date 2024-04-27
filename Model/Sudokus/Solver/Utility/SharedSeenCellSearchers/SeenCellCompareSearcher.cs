@@ -38,7 +38,7 @@ public class SeenCellCompareSearcher : ISharedSeenCellSearcher
         }
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
         return ISharedSeenCellSearcher.DefaultSharedSeenEmptyCells(this, strategyUser, row1, col1, row2, col2);
     }
@@ -48,7 +48,7 @@ public class SeenCellCompareSearcher : ISharedSeenCellSearcher
         throw new System.NotImplementedException();
     }
 
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         throw new System.NotImplementedException();

@@ -15,7 +15,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
     {
         var graph = type.GetGraph(strategyUser);
         _loopsProcessed.Clear();
@@ -25,7 +25,7 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         }
     }
 
-    private void Search(ILinkGraph<T> graph, LinkGraphChainBuilder<T> path, IAlternatingInferenceType<T> inferenceType, IStrategyUser view)
+    private void Search(ILinkGraph<T> graph, LinkGraphChainBuilder<T> path, IAlternatingInferenceType<T> inferenceType, ISudokuStrategyUser view)
     {
         if (path.Count > _maxLoopSize) return;
         var last = path.LastElement();

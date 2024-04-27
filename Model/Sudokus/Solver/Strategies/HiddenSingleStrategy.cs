@@ -16,7 +16,7 @@ public class HiddenSingleStrategy : SudokuStrategy
 
     public HiddenSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultInstanceHandling){}
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {

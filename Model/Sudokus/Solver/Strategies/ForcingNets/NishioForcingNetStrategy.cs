@@ -7,6 +7,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies.ForcingNets;
@@ -19,7 +20,7 @@ public class NishioForcingNetStrategy : SudokuStrategy
     public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
     { }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         ContradictionSearcher cs = new ContradictionSearcher(strategyUser);
 
@@ -72,11 +73,11 @@ public class ContradictionSearcher
 
     private readonly Dictionary<int, GridPositions> _onPositions = new();
 
-    private readonly IStrategyUser _view;
+    private readonly ISudokuStrategyUser _view;
 
     public ContradictionCause Cause { get; private set; } = ContradictionCause.None;
 
-    public ContradictionSearcher(IStrategyUser view)
+    public ContradictionSearcher(ISudokuStrategyUser view)
     {
         _view = view;
     }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Helpers;
+using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Oddagons;
 
@@ -10,10 +12,10 @@ public static class OddagonSearcher
 {
     private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 3);
 
-    public static List<AlmostOddagon> Search(IStrategyUser strategyUser)
+    public static List<AlmostOddagon> Search(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.CellWeakLink,
-            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
         return Algorithm.Search(strategyUser, strategyUser.PreComputer.Graphs.SimpleLinkGraph);
     }
 

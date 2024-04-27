@@ -17,7 +17,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     {
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         HashSet<GridPositions> alreadyExplored = new();
         
@@ -42,7 +42,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells,
+    private bool Search(ISudokuStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells,
         GridPositions positions, HashSet<GridPositions> alreadyExplored)
     {
         foreach (var cell in positions.AllSeenCells())
@@ -90,7 +90,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool Process(ISudokuStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         foreach (var entry in possibilitiesCells)
         {
@@ -117,7 +117,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
         return result;
     }
 
-    private bool ShareAUnitWithAll(IStrategyUser strategyUser, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool ShareAUnitWithAll(ISudokuStrategyUser strategyUser, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         bool ok = false;
         foreach (var poss in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())

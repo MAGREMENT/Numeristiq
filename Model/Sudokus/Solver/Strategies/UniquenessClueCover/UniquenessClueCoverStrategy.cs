@@ -20,7 +20,7 @@ public class UniquenessClueCoverStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var c in _collections)
         {

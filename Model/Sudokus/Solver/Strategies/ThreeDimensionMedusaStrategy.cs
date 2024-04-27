@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -14,9 +17,9 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
 
     public ThreeDimensionMedusaStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) {}
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink, ConstructRule.CellStrongLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.CellStrongLink);
         var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
@@ -44,7 +47,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchColor(IStrategyUser strategyUser, IReadOnlyList<CellPossibility> toSearch,
+    private bool SearchColor(ISudokuStrategyUser strategyUser, IReadOnlyList<CellPossibility> toSearch,
         IReadOnlyList<CellPossibility> other, HashSet<CellPossibility> inGraph)
     {
         GridPositions[] seen = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
@@ -109,7 +112,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
         return false;
     }
 
-    private void SearchMix(IStrategyUser strategyUser, IReadOnlyList<CellPossibility> one,
+    private void SearchMix(ISudokuStrategyUser strategyUser, IReadOnlyList<CellPossibility> one,
         IReadOnlyList<CellPossibility> two, HashSet<CellPossibility> inGraph)
     {
         foreach (var first in one)
@@ -144,7 +147,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
         }
     }
     
-    private void RemoveAllExcept(IStrategyUser strategyUser, int row, int col, int exceptOne, int exceptTwo)
+    private void RemoveAllExcept(ISudokuStrategyUser strategyUser, int row, int col, int exceptOne, int exceptTwo)
     {
         for (int i = 1; i <= 9; i++)
         {

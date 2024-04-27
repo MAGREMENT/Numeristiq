@@ -38,7 +38,7 @@ public class GridFormationStrategy : SudokuStrategy
         }
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     { 
         for (int number = 1; number <= 9; number++)
         {
@@ -47,7 +47,7 @@ public class GridFormationStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, int start, Unit unit, int number, LinePositions or,
+    private bool Search(ISudokuStrategyUser strategyUser, int start, Unit unit, int number, LinePositions or,
         LinePositions visited)
     {
         for (int i = start; i < 9; i++)
@@ -73,7 +73,7 @@ public class GridFormationStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, LinePositions visited, LinePositions toRemove, int number, Unit unit)
+    private bool Process(ISudokuStrategyUser strategyUser, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
         foreach (var first in toRemove)
         {

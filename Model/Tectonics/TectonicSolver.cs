@@ -1,23 +1,34 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Steps;
-using Model.Sudokus.Solver.Utility;
 using Model.Tectonics.Strategies;
+using Model.Tectonics.Strategies.AlternatingInference;
+using Model.Tectonics.Strategies.AlternatingInference.Types;
+using Model.Tectonics.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Tectonics;
 
-public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdatableTectonicSolvingState,
+public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer<IUpdatableTectonicSolvingState,
     ITectonicHighlighter>, ISolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet16[,] _possibilities;
 
-    private readonly TectonicStrategy[] _strategies = { new NakedSingleStrategy(), new HiddenSingleStrategy(),
-        new ZoneInteractionStrategy(), new XChainStrategy(), new GroupEliminationStrategy() };
+    private readonly TectonicStrategy[] _strategies = 
+    { 
+        new NakedSingleStrategy(),
+        new HiddenSingleStrategy(),
+        new ZoneInteractionStrategy(),
+        new AlternatingInferenceGeneralization(new XChainType()),
+        //new XChainStrategy(),
+        new GroupEliminationStrategy(),
+        new AlternatingInferenceGeneralization(new AlternatingInferenceChainType())
+    };
 
     private bool _changeWasMade;
     
@@ -37,7 +48,9 @@ public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdata
     }
 
     public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; set; }
-    
+
+    public LinkGraphManager<ITectonicStrategyUser, ITectonicElement> Graphs { get; }
+
     public IReadOnlyTectonic Tectonic => _tectonic;
 
     public event OnProgressMade? ProgressMade;
@@ -48,6 +61,7 @@ public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdata
         _possibilities = new ReadOnlyBitSet16[0, 0];
 
         ChangeBuffer = new FastChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(this);
+        Graphs = new LinkGraphManager<ITectonicStrategyUser, ITectonicElement>(this, new TectonicConstructRuleBank());
     }
 
     public void SetTectonic(ITectonic tectonic)
@@ -57,6 +71,8 @@ public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdata
         InitCandidates();
         
         StepHistory.Clear();
+        Graphs.Clear();
+        
         StartedSolving = false;
     }
 
@@ -89,9 +105,10 @@ public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdata
 
             ProgressMade?.Invoke();
             ResetChangeTrackingVariables();
-            if (stopAtProgress) return;
-            
             i = -1;
+            Graphs.Clear();
+            
+            if (stopAtProgress) return;
         }
     }
     
@@ -107,7 +124,7 @@ public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdata
     
     public int this[int row, int col] => _tectonic[row, col];
     
-    public ReadOnlyBitSet16 ZonePositionsFor(int zone, int n)
+    public ReadOnlyBitSet16 ZonePositionsFor(int zone, int n) //TODO To buffer
     {
         var result = new ReadOnlyBitSet16();
         var z = _tectonic.Zones[zone];
@@ -115,6 +132,19 @@ public class TectonicSolver : IStrategyUser, IStepManagingChangeProducer<IUpdata
         for (int i = 0; i < z.Count; i++)
         {
             var cell = z[i];
+            if (_possibilities[cell.Row, cell.Column].Contains(n)) result += i;
+        }
+
+        return result;
+    }
+    
+    public ReadOnlyBitSet16 ZonePositionsFor(IZone zone, int n)
+    {
+        var result = new ReadOnlyBitSet16();
+
+        for (int i = 0; i < zone.Count; i++)
+        {
+            var cell = zone[i];
             if (_possibilities[cell.Row, cell.Column].Contains(n)) result += i;
         }
 

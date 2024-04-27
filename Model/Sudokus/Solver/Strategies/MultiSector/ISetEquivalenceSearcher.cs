@@ -4,5 +4,5 @@ namespace Model.Sudokus.Solver.Strategies.MultiSector;
 
 public interface ISetEquivalenceSearcher 
 {
-    public IEnumerable<SetEquivalence> Search(IStrategyUser strategyUser);
+    public IEnumerable<SetEquivalence> Search(ISudokuStrategyUser strategyUser);
 }

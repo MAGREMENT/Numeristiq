@@ -22,7 +22,7 @@ public class FullGridCheckSearcher : ISharedSeenCellSearcher
         }
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -45,7 +45,7 @@ public class FullGridCheckSearcher : ISharedSeenCellSearcher
         throw new System.NotImplementedException();
     }
 
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         throw new System.NotImplementedException();

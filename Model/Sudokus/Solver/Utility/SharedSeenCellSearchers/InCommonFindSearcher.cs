@@ -116,7 +116,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         yield return new Cell(row2, col1);
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
         int miniRow1 = row1 / 3;
         int miniCol1 = col1 / 3;
@@ -242,7 +242,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         }
     }
 
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         if (pos1 == pos2)

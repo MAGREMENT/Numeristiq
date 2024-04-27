@@ -17,7 +17,7 @@ public class ReverseBUGStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         GridPositions[] positions = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
 

@@ -24,7 +24,7 @@ public class PatternOverlayStrategy : SudokuStrategy
         _maxPatternNumber = maxPatternNumber;
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var allPatterns = GetPatterns(strategyUser);
 
@@ -98,7 +98,7 @@ public class PatternOverlayStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchForElimination(IStrategyUser strategyUser, int number, List<GridPositions> patterns)
+    private bool SearchForElimination(ISudokuStrategyUser strategyUser, int number, List<GridPositions> patterns)
     {
         if (patterns.Count == 0) return false;
         
@@ -116,7 +116,7 @@ public class PatternOverlayStrategy : SudokuStrategy
             && StopOnFirstPush;
     }
 
-    private List<GridPositions>[] GetPatterns(IStrategyUser strategyUser)
+    private List<GridPositions>[] GetPatterns(ISudokuStrategyUser strategyUser)
     {
         List<GridPositions>[] result = new List<GridPositions>[9];
 
@@ -133,7 +133,7 @@ public class PatternOverlayStrategy : SudokuStrategy
         return result;
     }
 
-    private void SearchForPattern(IStrategyUser strategyUser, LinePositions colsUsed, LinePositions miniColsUsed,
+    private void SearchForPattern(ISudokuStrategyUser strategyUser, LinePositions colsUsed, LinePositions miniColsUsed,
         GridPositions current, int number, List<GridPositions> result, int row)
     {
         if (row == 9)

@@ -191,12 +191,12 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static IEnumerable<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
         return Searcher.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2);
     }
     
-    public static List<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, IReadOnlyList<Cell> list)
+    public static List<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, IReadOnlyList<Cell> list)
     {
         if (list.Count == 0) return new List<Cell>();
         if (list.Count == 1) return SeenEmptyCells(strategyUser, list[^1]);
@@ -221,7 +221,7 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static List<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, Cell one, Cell two,
+    public static List<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, Cell one, Cell two,
         params Cell[] others)
     {
         List<Cell> result = new List<Cell>();
@@ -255,7 +255,7 @@ public static class SudokuCellUtility
                (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
     }
 
-    public static List<CellPossibility> SeenExistingPossibilities(IStrategyUser strategyUser, CellPossibility cp)
+    public static List<CellPossibility> SeenExistingPossibilities(ISudokuStrategyUser strategyUser, CellPossibility cp)
     {
         var result = new List<CellPossibility>();
 
@@ -290,14 +290,14 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, CellPossibility first,
+    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, CellPossibility first,
         CellPossibility second)
     {
         return Searcher.SharedSeenExistingPossibilities(strategyUser, first.Row, first.Column, first.Possibility,
             second.Row, second.Column, second.Possibility);
     }
 
-    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser,
+    public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser,
         IReadOnlyList<CellPossibility> list) //TODO USE THIS
     {
         if (list.Count == 0) return new List<CellPossibility>();
@@ -322,7 +322,7 @@ public static class SudokuCellUtility
         return result;
     }
     
-    public static List<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser,
+    public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser,
         IReadOnlyList<CellPossibility> list, int count)
     {
         if (count > list.Count) return new List<CellPossibility>();
@@ -348,7 +348,7 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static IEnumerable<CellPossibility> DefaultStrongLinks(IStrategyUser strategyUser, CellPossibility cp)
+    public static IEnumerable<CellPossibility> DefaultStrongLinks(ISudokuStrategyUser strategyUser, CellPossibility cp)
     {
         var poss = strategyUser.PossibilitiesAt(cp.Row, cp.Column);
         if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.FirstPossibility(cp.Possibility));
@@ -363,7 +363,7 @@ public static class SudokuCellUtility
         if (mPos.Count == 2) yield return new CellPossibility(mPos.First(cp.ToCell()), cp.Possibility);
     }
 
-    public static bool AreStronglyLinked(IStrategyUser strategyUser, CellPossibility cp1, CellPossibility cp2)
+    public static bool AreStronglyLinked(ISudokuStrategyUser strategyUser, CellPossibility cp1, CellPossibility cp2)
     {
         if (cp1.Row == cp2.Row && cp1.Column == cp2.Column)
             return strategyUser.PossibilitiesAt(cp1.Row, cp2.Column).Count == 2;
@@ -477,182 +477,5 @@ public static class SudokuCellUtility
         yield return (buffer[0], buffer[3]);
         yield return (buffer[1], buffer[2]);
     }
-    
-    public static double Distance(Cell oneCell, int onePoss, Cell twoCell, int twoPoss)
-    {
-        var oneX = oneCell.Column * 3 + onePoss % 3;
-        var oneY = oneCell.Row * 3 + onePoss / 3;
-
-        var twoX = twoCell.Column * 3 + twoPoss % 3;
-        var twoY = twoCell.Row * 3 + twoPoss / 3;
-
-        var dx = twoX - oneX;
-        var dy = twoY - oneY;
-
-        return Math.Sqrt(dx * dx + dy * dy);
-    }
 }
 
-public interface ICellPossibility
-{
-    public int Possibility { get; }
-    public int Row { get; }
-    public int Column { get; } 
-}
-
-public readonly struct CellPossibility : ISudokuElement, ICellPossibility
-{
-    public int Possibility { get; }
-    public int Row { get; }
-    public int Column { get; }
-
-    public CellPossibility(int row, int col, int possibility)
-    {
-        Possibility = possibility;
-        Row = row;
-        Column = col;
-    }
-
-    public CellPossibility(Cell coord, int possibility)
-    {
-        Possibility = possibility;
-        Row = coord.Row;
-        Column = coord.Column;
-    }
-    
-    public bool ShareAUnit(CellPossibility coord)
-    {
-        return SudokuCellUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
-    }
-    
-    public bool ShareAUnit(Cell coord)
-    {
-        return SudokuCellUtility.ShareAUnit(Row, Column, coord.Row, coord.Column);
-    }
-
-    public IEnumerable<Cell> SharedSeenCells(CellPossibility coord)
-    {
-        return SudokuCellUtility.SharedSeenCells(Row, Column, coord.Row, coord.Column);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Possibility, Row, Column);
-    }
-
-    public override bool Equals(object? obj)
-    {
-        return (obj is CellPossibility cp && cp == this) ||
-               (obj is ICellPossibility icp && icp.Possibility == Possibility && icp.Row == Row && icp.Column == Column);
-    }
-
-    public override string ToString()
-    {
-        return $"{Possibility}r{Row + 1}c{Column + 1}";
-    }
-
-    public int DifficultyRank => 1;
-
-    public CellPossibilities[] EveryCellPossibilities()
-    {
-        return new[] { new CellPossibilities(this) };
-    }
-
-    public Cell[] EveryCell()
-    {
-        return new Cell[] { new(Row, Column) };
-    }
-
-    public ReadOnlyBitSet16 EveryPossibilities()
-    {
-        var result = new ReadOnlyBitSet16();
-        result += Possibility;
-        return result;
-    }
-
-    public CellPossibility[] EveryCellPossibility()
-    {
-        return new[] { this };
-    }
-
-    public bool Contains(Cell cell)
-    {
-        return cell.Row == Row && cell.Column == Column;
-    }
-
-    public bool Contains(CellPossibility cp)
-    {
-        return cp == this;
-    }
-
-    public Cell ToCell()
-    {
-        return new Cell(Row, Column);
-    }
-
-    public static bool operator ==(CellPossibility left, CellPossibility right)
-    {
-        return left.Possibility == right.Possibility && left.Row == right.Row && left.Column == right.Column;
-    }
-
-    public static bool operator !=(CellPossibility left, CellPossibility right)
-    {
-        return !(left == right);
-    }
-}
-
-public class CellPossibilities
-{
-    public Cell Cell { get; }
-    public ReadOnlyBitSet16 Possibilities { get; }
-    
-    public CellPossibilities(Cell cell, ReadOnlyBitSet16 possibilities)
-    {
-        Cell = cell;
-        Possibilities = possibilities;
-    }
-
-    public CellPossibilities(Cell cell, int possibility)
-    {
-        Cell = cell;
-        var buffer = new ReadOnlyBitSet16();
-        buffer += possibility;
-        Possibilities = buffer;
-    }
-    
-    public CellPossibilities(CellPossibility coord)
-    {
-        Cell = new Cell(coord.Row, coord.Column);
-        var buffer = new ReadOnlyBitSet16();
-        buffer += coord.Possibility;
-        Possibilities = buffer;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (obj is not CellPossibilities cp) return false;
-        return Cell == cp.Cell && Possibilities.Equals(cp.Possibilities);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(Cell.GetHashCode(), Possibilities.GetHashCode());
-    }
-
-    public override string ToString()
-    {
-        return $"{Cell} => {Possibilities}";
-    }
-}
-
-public readonly struct MiniGrid
-{
-    public MiniGrid(int miniRow, int miniColumn)
-    {
-        MiniRow = miniRow;
-        MiniColumn = miniColumn;
-    }
-
-    public int MiniRow { get; }
-    public int MiniColumn { get; }
-}

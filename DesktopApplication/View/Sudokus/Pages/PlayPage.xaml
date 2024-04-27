@@ -25,10 +25,59 @@
                                   CellSelected="SelectCell" CellAddedToSelection="AddCellToSelection" KeyDown="DoBoardInput"/>
         </Border>
         
-        <StackPanel Grid.Column="1">
-            <controls:OptionSelectorControl x:Name="ChangeLevelSelector" OptionChanged="SetChangeLevel" Margin="0, 10, 0, 0"/>
+        <Grid Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
             
-            <Border Background="{DynamicResource Background2}" BorderBrush="{DynamicResource Text}"
+            <StackPanel Grid.Column="0" Orientation="Vertical" Margin="20,0,0,0">
+                <Grid Background="{DynamicResource Background2}" HorizontalAlignment="Left" Margin="0, 10, 0, 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                
+                    <Button Grid.Column="0" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="BackButton" Click="MoveBack">
+                        <Path Stroke="Gray" Width="30" Height="30" x:Name="BackArrow"
+                              Data="M 5,15 H 25 M 5,15 14,7 M 5,15 14,23"/>
+                    </Button>
+                
+                    <Button Grid.Column="1" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="ForwardButton" Click="MoveForward">
+                        <Path Stroke="Gray" Width="30" Height="30" x:Name="ForwardArrow"
+                              Data="M 5,15 H 25 M 25,15 16,7 M 25,15 16,23"/>
+                    </Button>
+                </Grid>
+                
+                <controls:OptionSelectorControl x:Name="ChangeLevelSelector" OptionChanged="SetChangeLevel" Margin="0, 10, 0, 0"/>
+                
+                <Border Margin="0, 10, 0, 0" BorderBrush="{DynamicResource Text}" BorderThickness="1"
+                        HorizontalAlignment="Center" Background="{DynamicResource Background2}">
+                    <Grid x:Name="ColorGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                    
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                    
+                        <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Background3}"
+                                Margin="10" BorderThickness="1" Width="30" Height="30" MouseLeftButtonDown="ClearHighlights">
+                            <Path Stroke="{DynamicResource Text}" StrokeThickness="3" Width="28" Height="28"
+                                  Data="M 4,4 24,24 M 4,24 24,4"/>
+                        </Border>
+                    </Grid>
+                </Border>
+            </StackPanel>
+            
+            <StackPanel Grid.Column="2" Orientation="Vertical" Margin="0,0,20,0">
+                <Border Background="{DynamicResource Background2}" BorderBrush="{DynamicResource Text}"
                     BorderThickness="1" Padding="10" HorizontalAlignment="Center" Margin="0, 10, 0, 0">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -64,48 +113,8 @@
                 </Grid>
             </Border>
             
-            <Border Margin="0, 10, 0, 0" BorderBrush="{DynamicResource Text}" BorderThickness="1"
-                    HorizontalAlignment="Center" Background="{DynamicResource Background2}">
-                <Grid x:Name="ColorGrid">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Background3}"
-                            Margin="10" BorderThickness="1" Width="30" Height="30" MouseLeftButtonDown="ClearHighlights">
-                        <Path Stroke="Red" StrokeThickness="3" Width="28" Height="28"
-                              Data="M 4,4 24,24 M 4,24 24,4"/>
-                    </Border>
-                </Grid>
-            </Border>
-            
-            <Grid Background="{DynamicResource Background2}" HorizontalAlignment="Center" Margin="0, 10, 0, 0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <Button Grid.Column="0" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="BackButton" Click="MoveBack">
-                    <Path Stroke="Gray" Width="30" Height="30" x:Name="BackArrow"
-                          Data="M 5,15 H 25 M 5,15 14,7 M 5,15 14,23"/>
-                </Button>
-                
-                <Button Grid.Column="1" Padding="5" Margin="5" Style="{StaticResource SimpleHoverButton}" x:Name="ForwardButton" Click="MoveForward">
-                    <Path Stroke="Gray" Width="30" Height="30" x:Name="ForwardArrow"
-                          Data="M 5,15 H 25 M 25,15 16,7 M 25,15 16,23"/>
-                </Button>
-            </Grid>
-            
             <Border Margin="0, 10, 0, 0" Background="{DynamicResource Background2}" BorderThickness="1"
-                    BorderBrush="{DynamicResource Text}" HorizontalAlignment="Center" Padding="10">
+                        BorderBrush="{DynamicResource Text}" HorizontalAlignment="Center" Padding="10">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -133,6 +142,7 @@
             
             <Button Margin="0, 10, 0, 0" HorizontalAlignment="Center" Style="{StaticResource SolvePageButtonStyle}"
                     Click="ComputePossibilities">Compute Possibilities</Button>
-        </StackPanel>
+            </StackPanel>
+        </Grid>
     </Grid>
 </pages:SudokuPage>

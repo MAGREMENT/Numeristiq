@@ -16,7 +16,6 @@ public class FishStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fish";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
-    private const int MinUnitCount = 0;
 
     private readonly MinMaxSetting _unitCount;
     private readonly IntSetting _maxNumberOfExoFins;
@@ -67,7 +66,7 @@ public class FishStrategy : SudokuStrategy
         AddSetting(_allowCannibalism);
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -77,7 +76,7 @@ public class FishStrategy : SudokuStrategy
             for (int i = 0; i < CoverHouses.Length; i++)
             {
                 var current = CoverHouses[i];
-                if (UnitMethods.Get(current.Unit).Count(positions, current.Number) > MinUnitCount) possibleCoverHouses.Add(i);
+                if (UnitMethods.Get(current.Unit).Count(positions, current.Number) > 0) possibleCoverHouses.Add(i);
             }
             
             for (int unitCount = _unitCount.Value.Min; unitCount <= _unitCount.Value.Max; unitCount++)
@@ -95,7 +94,7 @@ public class FishStrategy : SudokuStrategy
     private readonly GridPositions _buffer = new();
     private readonly HashSet<Cell> _endoFins = new();
     
-    private bool TryFind(IStrategyUser strategyUser, int number, int[] combination)
+    private bool TryFind(ISudokuStrategyUser strategyUser, int number, int[] combination)
     {
         _toCover.Void();
         _baseSet.Clear();
@@ -147,7 +146,7 @@ public class FishStrategy : SudokuStrategy
 
     private readonly List<Cell> _fins = new();
 
-    private bool Process(IStrategyUser strategyUser, int number, House[] coverSet, IReadOnlyGridPositions exoFins)
+    private bool Process(ISudokuStrategyUser strategyUser, int number, House[] coverSet, IReadOnlyGridPositions exoFins)
     {
         _fins.Clear();
         var gpOfCoverSet = new GridPositions();
@@ -185,7 +184,7 @@ public class FishStrategy : SudokuStrategy
                     _toCover.Copy(), new List<Cell>(_fins))) && StopOnFirstPush;
     }
 
-    private void ProcessCannibalism(IStrategyUser strategyUser, int number, House[] coverSet)
+    private void ProcessCannibalism(ISudokuStrategyUser strategyUser, int number, House[] coverSet)
     {
         foreach (var cell in _toCover)
         {

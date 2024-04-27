@@ -22,7 +22,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int mini = 0; mini < 3; mini++)
         {

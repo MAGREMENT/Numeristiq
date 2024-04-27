@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -16,9 +18,9 @@ public class SimpleColoringStrategy : SudokuStrategy
 
     public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling){}
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
         var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
@@ -43,14 +45,14 @@ public class SimpleColoringStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchForTwiceInTheSameUnit(IStrategyUser strategyUser,
+    private bool SearchForTwiceInTheSameUnit(ISudokuStrategyUser strategyUser,
         ColoringList<CellPossibility> cv)
     {
         return SearchColorForTwiceInTheSameUnit(strategyUser, cv.On, cv.Off) ||
                SearchColorForTwiceInTheSameUnit(strategyUser, cv.Off, cv.On);
     }
 
-    private bool SearchColorForTwiceInTheSameUnit(IStrategyUser strategyUser,
+    private bool SearchColorForTwiceInTheSameUnit(ISudokuStrategyUser strategyUser,
         IReadOnlyList<CellPossibility> toSearch, IReadOnlyList<CellPossibility> other)
     {
         for (int i = 0; i < toSearch.Count; i++)
@@ -72,7 +74,7 @@ public class SimpleColoringStrategy : SudokuStrategy
         return false;
     }
 
-    private void SearchForTwoColorsElsewhere(IStrategyUser strategyUser,
+    private void SearchForTwoColorsElsewhere(ISudokuStrategyUser strategyUser,
         ColoringList<CellPossibility> cv)
     {
         HashSet<CellPossibility> inGraph = new(cv.On);

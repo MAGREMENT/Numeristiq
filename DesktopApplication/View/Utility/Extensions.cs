@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace DesktopApplication.View.Utility;
 

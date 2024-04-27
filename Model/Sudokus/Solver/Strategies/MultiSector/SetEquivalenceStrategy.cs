@@ -20,7 +20,7 @@ public class SetEquivalenceStrategy : SudokuStrategy
         _searchers = searchers;
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var searcher in _searchers)
         {

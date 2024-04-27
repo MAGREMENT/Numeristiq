@@ -2,9 +2,11 @@
 using System.Linq;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -15,10 +17,10 @@ public class XYChainsStrategy : SudokuStrategy
 
     public XYChainsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) {}
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.XYChainSpecific,
-            ConstructRule.CellStrongLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.XYChainSpecific,
+            SudokuConstructRuleBank.CellStrongLink);
         var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
         var route = new List<CellPossibility>();
         var visited = new HashSet<CellPossibility>();
@@ -30,7 +32,7 @@ public class XYChainsStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, CellPossibility current,
+    private bool Search(ISudokuStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
     {
         var friend = graph.Neighbors(current, LinkStrength.Strong).First();
@@ -56,7 +58,7 @@ public class XYChainsStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, List<CellPossibility> visited)
+    private bool Process(ISudokuStrategyUser strategyUser, List<CellPossibility> visited)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {

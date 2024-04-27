@@ -6,6 +6,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.ForcingNets;
 
@@ -21,7 +22,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
         _max = maxPossibilities;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -81,7 +82,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(IStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings)
+    private bool Process(ISudokuStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {

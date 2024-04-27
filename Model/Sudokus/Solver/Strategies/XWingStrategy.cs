@@ -17,7 +17,7 @@ public class XWingStrategy : SudokuStrategy
 
     public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling){}
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         Dictionary<IReadOnlyLinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)
@@ -50,7 +50,7 @@ public class XWingStrategy : SudokuStrategy
         }
     }
 
-    private bool RemoveFromColumns(IStrategyUser strategyUser, IReadOnlyLinePositions cols, int row1, int row2, int number)
+    private bool RemoveFromColumns(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -66,7 +66,7 @@ public class XWingStrategy : SudokuStrategy
             && StopOnFirstPush;
     }
 
-    private bool RemoveFromRows(IStrategyUser strategyUser, IReadOnlyLinePositions rows, int col1, int col2, int number)
+    private bool RemoveFromRows(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions rows, int col1, int col2, int number)
     {
         for (int col = 0; col < 9; col++)
         {

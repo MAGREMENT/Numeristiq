@@ -29,7 +29,7 @@ public class BandCollection : IPatternCollection
             new BrokenLTripleClueBandPattern());
     }
 
-    public bool Filter(IStrategyUser strategyUser)
+    public bool Filter(ISudokuStrategyUser strategyUser)
     {
         _candidates.Clear();
         for (int mini = 0; mini < 3; mini++)
@@ -41,7 +41,7 @@ public class BandCollection : IPatternCollection
         return false;
     }
 
-    public bool Apply(IStrategyUser strategyUser)
+    public bool Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var candidate in _candidates)
         {
@@ -51,7 +51,7 @@ public class BandCollection : IPatternCollection
         return false;
     }
 
-    private bool CheckForCandidates(IStrategyUser strategyUser, int mini, Unit unit)
+    private bool CheckForCandidates(ISudokuStrategyUser strategyUser, int mini, Unit unit)
     {
         foreach (var pattern in _collection)
         {
@@ -87,7 +87,7 @@ public class BandCollection : IPatternCollection
         return false;
     }
     
-    private bool DoesClueNumbersMatch(IStrategyUser strategyUser, int mini, Unit unit, int[] maxClueCount,
+    private bool DoesClueNumbersMatch(ISudokuStrategyUser strategyUser, int mini, Unit unit, int[] maxClueCount,
         int maxDifferentClueCount)
     {
         int[] ccs = { 0, 0, 0 }; 
@@ -114,7 +114,7 @@ public class BandCollection : IPatternCollection
         return true;
     }
 
-    private bool AreCluesMatching(IStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
+    private bool AreCluesMatching(ISudokuStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
         int[] lengthKey, int mini, Unit unit, int boxNumber)
     {
         var box = pattern.PlacementsWithKey(boxKey)[boxNumber];
@@ -135,7 +135,7 @@ public class BandCollection : IPatternCollection
         return true;
     }
 
-    private bool TryAndAddToCandidates(IStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
+    private bool TryAndAddToCandidates(ISudokuStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
         int[][] lengthKeys, int mini, Unit unit)
     {
         var boxes = pattern.PlacementsWithKey(boxKey);
@@ -162,7 +162,7 @@ public class BandCollection : IPatternCollection
         return ok && Process(strategyUser, candidate, numberEquivalence);
     }
     
-    private bool Try(IStrategyUser strategyUser, BandPatternCandidate candidate)
+    private bool Try(ISudokuStrategyUser strategyUser, BandPatternCandidate candidate)
     {
         var boxes = candidate.Pattern.PlacementsWithKey(candidate.BoxKey);
         int[] numberEquivalence = new int[candidate.Pattern.DifferentClueCount];
@@ -185,7 +185,7 @@ public class BandCollection : IPatternCollection
         return Process(strategyUser, candidate, numberEquivalence);
     }
 
-    private bool Process(IStrategyUser strategyUser, BandPatternCandidate candidate, int[] numberEquivalence)
+    private bool Process(ISudokuStrategyUser strategyUser, BandPatternCandidate candidate, int[] numberEquivalence)
     {
         var eliminations = candidate.Pattern.EliminationsWithKey(candidate.BoxKey);
 

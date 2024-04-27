@@ -14,7 +14,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
 
     public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         Dictionary<IReadOnlyLinePositions, int> lines = new();
         Dictionary<IReadOnlyMiniGridPositions, int> minis = new();
@@ -73,7 +73,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
     }
     
-    private bool ProcessRow(IStrategyUser strategyUser, IReadOnlyLinePositions positions, int row, int n1,
+    private bool ProcessRow(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions positions, int row, int n1,
         int n2)
     {
         foreach (var col in positions)
@@ -90,7 +90,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
             new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && StopOnFirstPush;
     }
 
-    private bool ProcessColumn(IStrategyUser strategyUser, IReadOnlyLinePositions positions, int col,
+    private bool ProcessColumn(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions positions, int col,
         int n1, int n2)
     {
         foreach(var row in positions)
@@ -107,7 +107,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
             new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && StopOnFirstPush;
     }
 
-    private bool ProcessMiniGrid(IStrategyUser strategyUser, IReadOnlyMiniGridPositions positions, int n1, int n2)
+    private bool ProcessMiniGrid(ISudokuStrategyUser strategyUser, IReadOnlyMiniGridPositions positions, int n1, int n2)
     {
         foreach (var cell in positions)
         {

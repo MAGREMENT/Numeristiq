@@ -9,13 +9,14 @@ using Model.Sudokus.Solver.States;
 using Model.Sudokus.Solver.Trackers;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
+using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : IStrategyUser, IStepManagingChangeProducer<IUpdatableSudokuSolvingState, ISudokuHighlighter>, ISolveResult
+public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUpdatableSudokuSolvingState, ISudokuHighlighter>, ISolveResult
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];

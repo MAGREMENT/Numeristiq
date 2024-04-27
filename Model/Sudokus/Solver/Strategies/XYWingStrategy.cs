@@ -14,7 +14,7 @@ public class XYWingStrategy : SudokuStrategy
 
     public XYWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling) {}
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var map = new PositionsMap(strategyUser, Only2Possibilities);
         
@@ -89,7 +89,7 @@ public class XYWingStrategy : SudokuStrategy
         return possibilities.Count == 2;
     }
 
-    private bool Process(IStrategyUser strategyUser, int hingeRow, int hingeCol,
+    private bool Process(ISudokuStrategyUser strategyUser, int hingeRow, int hingeCol,
         int row1, int col1, int row2, int col2, int number)
     {
         foreach (var cell in SudokuCellUtility.SharedSeenCells(row1, col1, row2, col2))

@@ -18,7 +18,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row1 = 0; row1 < 9; row1++)
         {

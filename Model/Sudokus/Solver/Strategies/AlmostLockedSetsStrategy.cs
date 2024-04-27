@@ -18,7 +18,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var linked in strategyUser.PreComputer.ConstructAlmostLockedSetGraph())
         {

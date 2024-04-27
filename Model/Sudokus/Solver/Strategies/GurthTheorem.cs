@@ -25,7 +25,7 @@ public class GurthTheorem : SudokuStrategy
         };
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         foreach (var symmetry in _symmetries)
         {
@@ -50,7 +50,7 @@ public abstract class Symmetry
     private bool _isSymmetric;
     private bool _appliedOnce;
 
-    public void Run(IStrategyUser strategyUser)
+    public void Run(ISudokuStrategyUser strategyUser)
     {
         if (!_isSymmetric)
         {
@@ -82,7 +82,7 @@ public abstract class Symmetry
     protected abstract IEnumerable<Cell> CenterCells();
     protected abstract Cell GetSymmetricalCell(int row, int col);
 
-    private void ApplyOnce(IStrategyUser strategyUser)
+    private void ApplyOnce(ISudokuStrategyUser strategyUser)
     {
         var selfMap = SelfMap();
 
@@ -98,7 +98,7 @@ public abstract class Symmetry
         }
     }
 
-    private void ApplyEveryTime(IStrategyUser strategyUser)
+    private void ApplyEveryTime(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -124,7 +124,7 @@ public abstract class Symmetry
         }
     }
 
-    private bool Check(IStrategyUser strategyUser)
+    private bool Check(ISudokuStrategyUser strategyUser)
     {
         _mapping = new int[9];
         HashSet<Cell> centerCells = new HashSet<Cell>(CenterCells());

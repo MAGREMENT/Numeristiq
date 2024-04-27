@@ -26,7 +26,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
             _ => throw new ArgumentException("Type not valid")
         };
     }
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -52,7 +52,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchRowCandidate(IStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
+    private bool SearchRowCandidate(ISudokuStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int row = start; row < 9; row++)
@@ -76,7 +76,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
         return false;
     }
 
-    private bool SearchRowFinned(IStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchRowFinned(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int row = 0; row < 9; row++)
@@ -122,7 +122,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
         return false;
     }
     
-    private bool SearchColumnCandidate(IStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
+    private bool SearchColumnCandidate(ISudokuStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int col = start; col < 9; col++)
@@ -146,7 +146,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
         return false;
     }
     
-    private bool SearchColumnFinned(IStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchColumnFinned(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int col = 0; col < 9; col++)

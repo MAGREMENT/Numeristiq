@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver.PossibilityPosition;
@@ -25,7 +26,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         AddSetting(_allowMissingCandidates);
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
@@ -65,7 +66,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, BiValue values, params Cell[] floor)
+    private bool Search(ISudokuStrategyUser strategyUser, BiValue values, params Cell[] floor)
     {
         foreach (var roof in SudokuCellUtility.DeadlyPatternRoofs(floor))
         {
@@ -75,7 +76,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Try(IStrategyUser strategyUser, BiValue values, Cell[] floor, params Cell[] roof)
+    private bool Try(ISudokuStrategyUser strategyUser, BiValue values, Cell[] floor, params Cell[] roof)
     {
         var roofOnePossibilities = strategyUser.PossibilitiesAt(roof[0]);
         var roofTwoPossibilities = strategyUser.PossibilitiesAt(roof[1]);
@@ -204,7 +205,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         //Type 6 (aka hidden type 2)
         if (roof[0].Row == roof[1].Row || roof[0].Column == roof[1].Column)
         {
-            strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+            strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
             var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
             for (int i = 0; i < 2; i++)
@@ -239,7 +240,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private void ProcessUrWithAls(IStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessUrWithAls(ISudokuStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities.EnumeratePossibilities())
@@ -263,7 +264,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchHidden(IStrategyUser strategyUser, BiValue values, Cell cell)
+    private bool SearchHidden(ISudokuStrategyUser strategyUser, BiValue values, Cell cell)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -311,7 +312,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ValidateRoof(IStrategyUser strategyUser, BiValue biValue, Cell cell, ref ReadOnlyBitSet16 possibilities)
+    private bool ValidateRoof(ISudokuStrategyUser strategyUser, BiValue biValue, Cell cell, ref ReadOnlyBitSet16 possibilities)
     {
         if (!possibilities.Contains(biValue.One))
         {
@@ -334,7 +335,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return true;
     }
     
-    private bool ValidateRoof(IStrategyUser strategyUser, BiValue biValue, Cell cell,
+    private bool ValidateRoof(ISudokuStrategyUser strategyUser, BiValue biValue, Cell cell,
         ref ReadOnlyBitSet16 possibilities, ref bool oneWasChanged, ref bool twoWasChanged)
     {
         if (!possibilities.Contains(biValue.One))

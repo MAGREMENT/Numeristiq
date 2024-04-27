@@ -1,15 +1,18 @@
 using System.Linq;
+using Model.Helpers;
+using Model.Helpers.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class XYChainSpecificConstructRule : IConstructRule
+public class XYChainSpecificConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement>
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
     {
         
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {

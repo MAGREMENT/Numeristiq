@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 
@@ -13,7 +14,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
     }
 
 
-    public List<AlmostOddagon> Search(IStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(ISudokuStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
     {
         List<AlmostOddagon> result = new();
         foreach (var start in graph)
@@ -24,7 +25,7 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
         return result;
     }
 
-    private void Search(IStrategyUser strategyUser, LinkGraphChainBuilder<CellPossibility> builder,
+    private void Search(ISudokuStrategyUser strategyUser, LinkGraphChainBuilder<CellPossibility> builder,
         ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
     {
         if (builder.Count > _maxLength) return;

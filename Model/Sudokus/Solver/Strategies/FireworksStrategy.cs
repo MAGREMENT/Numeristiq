@@ -22,7 +22,7 @@ public class FireworksStrategy : SudokuStrategy
     }
 
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         GridPositions[] limitations = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
         List<Fireworks> dualFireworks = new List<Fireworks>();
@@ -152,7 +152,7 @@ public class FireworksStrategy : SudokuStrategy
         ProcessDualFireworks(strategyUser, dualFireworks);
     }
 
-    private bool ProcessTripleFireworks(IStrategyUser user, Fireworks fireworks)
+    private bool ProcessTripleFireworks(ISudokuStrategyUser user, Fireworks fireworks)
     {
         foreach (var possibility in user.PossibilitiesAt(fireworks.Cross).EnumeratePossibilities())
         {
@@ -175,7 +175,7 @@ public class FireworksStrategy : SudokuStrategy
         return user.ChangeBuffer.Commit( new FireworksReportBuilder(fireworks));
     }
 
-    private void ProcessDualFireworks(IStrategyUser user, List<Fireworks> fireworksList)
+    private void ProcessDualFireworks(ISudokuStrategyUser user, List<Fireworks> fireworksList)
     {
         //Quad
         for (int i = 0; i < fireworksList.Count; i++)

@@ -3,6 +3,7 @@ using Model.Helpers.Changes;
 using Model.Sudokus;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Helpers.Highlighting;
 
@@ -101,7 +102,7 @@ public readonly struct HighlightInstruction
                     (_bits >> 12) & 0xF);
                 break;
             case InstructionType.HighlightSudokuElement :
-                highlighter.HighlightSudokuElement(registers[(_bits >> 12) & 0xFFF],
+                highlighter.HighlightElement(registers[(_bits >> 12) & 0xFFF],
                     (ChangeColoration)((_bits >> 28) & 0xF));
                 break;
             case InstructionType.CreateLink :

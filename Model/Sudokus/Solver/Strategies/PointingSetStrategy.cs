@@ -37,7 +37,7 @@ public class PointingSetStrategy : SudokuStrategy
 
     public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {

@@ -37,7 +37,7 @@ public class NakedSetStrategy : SudokuStrategy
     }
     
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -64,7 +64,7 @@ public class NakedSetStrategy : SudokuStrategy
         }
     }
 
-    private LinePositions EveryRowCellWithLessPossibilities(IStrategyUser strategyUser, int row, int than)
+    private LinePositions EveryRowCellWithLessPossibilities(ISudokuStrategyUser strategyUser, int row, int than)
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
@@ -76,7 +76,7 @@ public class NakedSetStrategy : SudokuStrategy
         return result;
     }
 
-    private bool RecursiveRowMashing(IStrategyUser strategyUser, ReadOnlyBitSet16 current,
+    private bool RecursiveRowMashing(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 current,
         LinePositions possibleCols, int cursor, int row, LinePositions visited)
     {
         int col;
@@ -106,7 +106,7 @@ public class NakedSetStrategy : SudokuStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromRow(IStrategyUser strategyUser, int row, ReadOnlyBitSet16 toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromRow(ISudokuStrategyUser strategyUser, int row, ReadOnlyBitSet16 toRemove, LinePositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())
         {
@@ -120,7 +120,7 @@ public class NakedSetStrategy : SudokuStrategy
             except, row, Unit.Row)) && StopOnFirstPush;
     }
     
-    private LinePositions EveryColumnCellWithLessPossibilities(IStrategyUser strategyUser, int col, int than)
+    private LinePositions EveryColumnCellWithLessPossibilities(ISudokuStrategyUser strategyUser, int col, int than)
     {
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
@@ -132,7 +132,7 @@ public class NakedSetStrategy : SudokuStrategy
         return result;
     }
     
-    private bool RecursiveColumnMashing(IStrategyUser strategyUser, ReadOnlyBitSet16 current,
+    private bool RecursiveColumnMashing(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 current,
         LinePositions possibleRows, int cursor, int col, LinePositions visited)
     {
         int row;
@@ -161,7 +161,7 @@ public class NakedSetStrategy : SudokuStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromColumn(IStrategyUser strategyUser, int col, ReadOnlyBitSet16 toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromColumn(ISudokuStrategyUser strategyUser, int col, ReadOnlyBitSet16 toRemove, LinePositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())
         {
@@ -175,7 +175,7 @@ public class NakedSetStrategy : SudokuStrategy
             col, Unit.Column)) && StopOnFirstPush;
     }
     
-    private MiniGridPositions EveryMiniGridCellWithLessPossibilities(IStrategyUser strategyUser, int miniRow, int miniCol, int than)
+    private MiniGridPositions EveryMiniGridCellWithLessPossibilities(ISudokuStrategyUser strategyUser, int miniRow, int miniCol, int than)
     {
         MiniGridPositions result = new(miniRow, miniCol);
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -193,7 +193,7 @@ public class NakedSetStrategy : SudokuStrategy
         return result;
     }
     
-    private bool RecursiveMiniGridMashing(IStrategyUser strategyUser, ReadOnlyBitSet16 current,
+    private bool RecursiveMiniGridMashing(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 current,
         MiniGridPositions possiblePos, int cursor, int miniRow, int miniCol, MiniGridPositions visited)
     {
         Cell pos;
@@ -223,7 +223,7 @@ public class NakedSetStrategy : SudokuStrategy
         return false;
     }
     
-    private bool RemovePossibilitiesFromMiniGrid(IStrategyUser strategyUser, int miniRow, int miniCol, ReadOnlyBitSet16 toRemove,
+    private bool RemovePossibilitiesFromMiniGrid(ISudokuStrategyUser strategyUser, int miniRow, int miniCol, ReadOnlyBitSet16 toRemove,
         MiniGridPositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())

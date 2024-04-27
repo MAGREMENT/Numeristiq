@@ -15,7 +15,7 @@ public class XChainStrategy : TectonicStrategy
     {
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ITectonicStrategyUser strategyUser)
     {
         for (int z = 0; z < strategyUser.Tectonic.Zones.Count; z++)
         {
@@ -33,7 +33,7 @@ public class XChainStrategy : TectonicStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, int possibility, Cell startOff, Cell startOn)
+    private bool Search(ITectonicStrategyUser tectonicStrategyUser, int possibility, Cell startOff, Cell startOn)
     {
         HashSet<Cell> on = new();
         Dictionary<Cell, Cell> off = new();
@@ -49,12 +49,12 @@ public class XChainStrategy : TectonicStrategy
             var current = queue.Dequeue();
 
             foreach (var neighbor in TectonicCellUtility.GetNeighbors(current.Row, current.Column,
-                         strategyUser.Tectonic.RowCount, strategyUser.Tectonic.ColumnCount))
+                         tectonicStrategyUser.Tectonic.RowCount, tectonicStrategyUser.Tectonic.ColumnCount))
             {
-                if (!strategyUser.PossibilitiesAt(neighbor).Contains(possibility) 
+                if (!tectonicStrategyUser.PossibilitiesAt(neighbor).Contains(possibility) 
                     || neighbor == startOff || !off.TryAdd(neighbor, current)) continue;
                 
-                var zone = strategyUser.Tectonic.GetZone(neighbor);
+                var zone = tectonicStrategyUser.Tectonic.GetZone(neighbor);
                 if (!zoneBuffer.Contains(zone)) zoneBuffer.Add(zone);
             }
 
@@ -62,19 +62,19 @@ public class XChainStrategy : TectonicStrategy
             {
                 foreach (var cell in zone)
                 {
-                    if (strategyUser.PossibilitiesAt(cell).Contains(possibility) && !off.ContainsKey(cell)) cellBuffer.Add(cell);
+                    if (tectonicStrategyUser.PossibilitiesAt(cell).Contains(possibility) && !off.ContainsKey(cell)) cellBuffer.Add(cell);
                 }
 
                 if (cellBuffer.Count == 1 && on.Add(cellBuffer[0]))
                 {
                     queue.Enqueue(cellBuffer[0]);
 
-                    foreach (var cell in TectonicCellUtility.SharedSeenCells(strategyUser.Tectonic, startOff, cellBuffer[0]))
+                    foreach (var cell in TectonicCellUtility.SharedSeenCells(tectonicStrategyUser.Tectonic, startOff, cellBuffer[0]))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                        tectonicStrategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                     }
 
-                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
+                    if (tectonicStrategyUser.ChangeBuffer.NotEmpty() && tectonicStrategyUser.ChangeBuffer
                             .Commit(new NeighboringZonesReportBuilder(possibility, on, off, startOff)) 
                                                              && StopOnFirstPush) return true;
                 }

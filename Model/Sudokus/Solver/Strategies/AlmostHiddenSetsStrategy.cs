@@ -3,8 +3,8 @@ using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.PossibilityPosition;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -17,9 +17,9 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     {
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
         var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var linked in strategyUser.PreComputer.ConstructAlmostHiddenSetGraph())
@@ -34,7 +34,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
         }
     }
 
-    private bool Process2CommonCells(IStrategyUser strategyUser, IPossibilitiesPositions one,
+    private bool Process2CommonCells(ISudokuStrategyUser strategyUser, IPossibilitiesPositions one,
         IPossibilitiesPositions two)
     {
         foreach (var cell in one.EachCell())
@@ -66,7 +66,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
                                                        && StopOnFirstPush;
     }
 
-    private bool Process1CommonCell(IStrategyUser strategyUser, IPossibilitiesPositions one,
+    private bool Process1CommonCell(ISudokuStrategyUser strategyUser, IPossibilitiesPositions one,
         IPossibilitiesPositions two, ILinkGraph<CellPossibility> graph)
     {
         List<Link<CellPossibility>> links = new();

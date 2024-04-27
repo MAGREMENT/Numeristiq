@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilityPosition;
@@ -24,10 +25,10 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var graph = strategyUser.PreComputer.AlmostHiddenSetGraph();
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.UnitStrongLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
         var linkGraph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var start in graph)
@@ -37,7 +38,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, PositionsGraph<IPossibilitiesPositions> graph,
+    private bool Search(ISudokuStrategyUser strategyUser, PositionsGraph<IPossibilitiesPositions> graph,
         ReadOnlyBitSet16 occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, Cell> chain,
         ILinkGraph<CellPossibility> linkGraph)
     {
@@ -67,7 +68,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForLoop(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, Cell> builder,
+    private bool CheckForLoop(ISudokuStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, Cell> builder,
         Cell[] possibleLastLinks)
     {
         foreach (var ll in possibleLastLinks)
@@ -104,7 +105,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForChain(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, Cell> chain, ILinkGraph<CellPossibility> linkGraph)
+    private bool CheckForChain(ISudokuStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, Cell> chain, ILinkGraph<CellPossibility> linkGraph)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
         

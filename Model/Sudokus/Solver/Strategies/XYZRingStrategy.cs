@@ -2,6 +2,7 @@
 using System.Linq;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -18,10 +19,10 @@ public class XYZRingStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         strategyUser.PreComputer.Graphs.ConstructComplex(
-            ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink, ConstructRule.PointingPossibilities);
+            SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities);
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
@@ -33,7 +34,7 @@ public class XYZRingStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchBaseWing(IStrategyUser strategyUser, ILinkGraph<ISudokuElement> graph, Cell hinge, ReadOnlyBitSet16 possibilities)
+    private bool SearchBaseWing(ISudokuStrategyUser strategyUser, ILinkGraph<ISudokuElement> graph, Cell hinge, ReadOnlyBitSet16 possibilities)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -55,7 +56,7 @@ public class XYZRingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool SearchRing(IStrategyUser strategyUser, ILinkGraph<ISudokuElement> graph, Cell hinge, Cell hingeRow, Cell hingeCol, int poss)
+    private bool SearchRing(ISudokuStrategyUser strategyUser, ILinkGraph<ISudokuElement> graph, Cell hinge, Cell hingeRow, Cell hingeCol, int poss)
     {
         var cph = new CellPossibility(hinge, poss);
         var cpr = new CellPossibility(hingeRow, poss);
@@ -77,7 +78,7 @@ public class XYZRingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, Cell hinge, Cell hingeRow, Cell hingeCol, int poss,
+    private bool Process(ISudokuStrategyUser strategyUser, Cell hinge, Cell hingeRow, Cell hingeCol, int poss,
         ISudokuElement rowFriend, ISudokuElement columnFriend)
     {
         var p = strategyUser.PossibilitiesAt(hingeRow).FirstPossibility(poss);
@@ -99,7 +100,7 @@ public class XYZRingStrategy : SudokuStrategy
         }
 
         List<Cell> buffer = new() { hingeRow, hinge };
-        buffer.AddRange(rowFriend.EveryCell());
+        buffer.AddRange(rowFriend.EnumerateCell());
 
         foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
         {
@@ -112,7 +113,7 @@ public class XYZRingStrategy : SudokuStrategy
         buffer.Clear();
         buffer.Add(hingeCol);
         buffer.Add(hinge);
-        buffer.AddRange(columnFriend.EveryCell());
+        buffer.AddRange(columnFriend.EnumerateCell());
         
         foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
         {
@@ -128,7 +129,7 @@ public class XYZRingStrategy : SudokuStrategy
 
     private bool CheckIntegrity(ISudokuElement element, params CellPossibility[] no)
     {
-        foreach (var cp in element.EveryCellPossibility())
+        foreach (var cp in element.EnumerateCellPossibility())
         {
             if (no.Contains(cp)) return false;
         }
@@ -164,12 +165,12 @@ public class XYZRingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
             lighter.HighlightCell(_hingeRow, ChangeColoration.CauseOffTwo);
             lighter.HighlightCell(_hingeColumn, ChangeColoration.CauseOffTwo);
 
-            foreach (var p in _rowFriend.EveryCellPossibility())
+            foreach (var p in _rowFriend.EnumerateCellPossibility())
             {
                 lighter.HighlightPossibility(p, ChangeColoration.CauseOffOne);
             }
             
-            foreach (var p in _columnFriend.EveryCellPossibility())
+            foreach (var p in _columnFriend.EnumerateCellPossibility())
             {
                 lighter.HighlightPossibility(p, ChangeColoration.CauseOffOne);
             }

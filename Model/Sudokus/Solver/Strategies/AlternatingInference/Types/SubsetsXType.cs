@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -15,14 +17,14 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
     public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
     public SudokuStrategy? Strategy { get; set; }
     
-    public ILinkGraph<ISudokuElement> GetGraph(IStrategyUser strategyUser)
+    public ILinkGraph<ISudokuElement> GetGraph(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructComplex(ConstructRule.UnitStrongLink, ConstructRule.UnitWeakLink,
-            ConstructRule.PointingPossibilities);
+        strategyUser.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink,
+            SudokuConstructRuleBank.PointingPossibilities);
         return strategyUser.PreComputer.Graphs.ComplexLinkGraph;
     }
 
-    public bool ProcessFullLoop(IStrategyUser strategyUser, LinkGraphLoop<ISudokuElement> loop)
+    public bool ProcessFullLoop(ISudokuStrategyUser strategyUser, LinkGraphLoop<ISudokuElement> loop)
     {
         loop.ForEachLink((one, two)
             => ProcessWeakLink(strategyUser, one, two), LinkStrength.Weak);
@@ -30,10 +32,10 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return strategyUser.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.NiceLoop));
     }
     
-    private void ProcessWeakLink(IStrategyUser view, ISudokuElement one, ISudokuElement two)
+    private void ProcessWeakLink(ISudokuStrategyUser view, ISudokuElement one, ISudokuElement two)
     {
-        List<Cell> cells = new List<Cell>(one.EveryCell());
-        cells.AddRange(two.EveryCell());
+        List<Cell> cells = new List<Cell>(one.EnumerateCell());
+        cells.AddRange(two.EnumerateCell());
 
         var possibility = one.EveryPossibilities().FirstPossibility();
         foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
@@ -42,7 +44,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         }
     }
 
-    public bool ProcessWeakInferenceLoop(IStrategyUser strategyUser, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
+    public bool ProcessWeakInferenceLoop(ISudokuStrategyUser strategyUser, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
     {
         if (inference is not CellPossibility single) return false;
         strategyUser.ChangeBuffer.ProposePossibilityRemoval(single.Possibility, single.Row, single.Column);
@@ -50,7 +52,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return strategyUser.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.WeakInference));
     }
 
-    public bool ProcessStrongInferenceLoop(IStrategyUser strategyUser, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
+    public bool ProcessStrongInferenceLoop(ISudokuStrategyUser strategyUser, ISudokuElement inference, LinkGraphLoop<ISudokuElement> loop)
     {
         if (inference is not CellPossibility single) return false;
         strategyUser.ChangeBuffer.ProposeSolutionAddition(single.Possibility, single.Row, single.Column);
@@ -58,7 +60,7 @@ public class SubsetsXType : IAlternatingInferenceType<ISudokuElement>
         return strategyUser.ChangeBuffer.Commit( new AlternatingInferenceLoopReportBuilder<ISudokuElement>(loop, LoopType.StrongInference));
     }
 
-    public bool ProcessChain(IStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain, ILinkGraph<ISudokuElement> graph)
+    public bool ProcessChain(ISudokuStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain, ILinkGraph<ISudokuElement> graph)
     {
         return IAlternatingInferenceType<ISudokuElement>.ProcessChainWithComplexGraph(strategyUser,
             chain, graph, Strategy!);

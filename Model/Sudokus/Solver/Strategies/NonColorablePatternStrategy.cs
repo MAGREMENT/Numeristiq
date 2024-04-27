@@ -29,7 +29,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         List<Cell> perfect = new();
         List<Cell> notPerfect = new();
@@ -69,7 +69,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
         }
     }
 
-    private bool Try(IStrategyUser strategyUser, List<Cell> perfect, Cell multiNotPerfect, ReadOnlyBitSet16 poss)
+    private bool Try(ISudokuStrategyUser strategyUser, List<Cell> perfect, Cell multiNotPerfect, ReadOnlyBitSet16 poss)
     {
         var list = new List<Cell>(1) { multiNotPerfect };
         if (IsPatternValid(perfect, list, poss.Count)) return false;
@@ -84,7 +84,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
                 StopOnFirstPush;
     }
 
-    private bool Try(IStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
+    private bool Try(ISudokuStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
     {
         List<CellPossibility> outPossibilities = new();
         foreach (var combination in

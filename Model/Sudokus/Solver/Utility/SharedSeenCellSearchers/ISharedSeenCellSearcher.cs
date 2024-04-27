@@ -14,16 +14,16 @@ public interface ISharedSeenCellSearcher
 {
     IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2);
 
-    IEnumerable<Cell> SharedSeenEmptyCells(IStrategyUser strategyUser, int row1, int col1, int row2,
+    IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2,
         int col2);
 
     IEnumerable<CellPossibility> SharedSeenPossibilities(int row1, int col1, int pos1, int row2, int col2, int pos2);
 
-    IEnumerable<CellPossibility> SharedSeenExistingPossibilities(IStrategyUser strategyUser, int row1, int col1,
+    IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1,
         int pos1, int row2, int col2, int pos2);
 
     static IEnumerable<Cell> DefaultSharedSeenEmptyCells(ISharedSeenCellSearcher searcher,
-        IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+        ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
         foreach (var coord in searcher.SharedSeenCells(row1, col1, row2, col2))
         {

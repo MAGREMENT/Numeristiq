@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -19,10 +20,10 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(ConstructRule.CellStrongLink, ConstructRule.UnitStrongLink,
-            ConstructRule.CellWeakLink, ConstructRule.UnitWeakLink);
+        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.UnitStrongLink,
+            SudokuConstructRuleBank.CellWeakLink, SudokuConstructRuleBank.UnitWeakLink);
         
         for (int mini = 0; mini < 3; mini++)
         {
@@ -31,7 +32,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, int mini, Unit unit)
+    private bool Search(ISudokuStrategyUser strategyUser, int mini, Unit unit)
     {
         for (int u = 0; u < 3; u++)
         {
@@ -57,7 +58,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ContinueSearch(IStrategyUser strategyUser, Unit unit, Cell c1, Cell c2, ReadOnlyBitSet16 poss)
+    private bool ContinueSearch(ISudokuStrategyUser strategyUser, Unit unit, Cell c1, Cell c2, ReadOnlyBitSet16 poss)
     {
         var list = new List<Cell> { c1, c2 };
 
@@ -97,7 +98,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ProcessCombinations(IStrategyUser strategyUser, ReadOnlyBitSet16 poss, List<Cell> cells)
+    private bool ProcessCombinations(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss, List<Cell> cells)
     {
         if (poss.Count < 3) return false;
         var array = poss.ToArray();
@@ -110,7 +111,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, ReadOnlyBitSet16 poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
+    private bool Process(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
     {
         List<CellPossibility> pNotInPattern = new List<CellPossibility>();
         List<Cell> cNotInPattern = new List<Cell>();

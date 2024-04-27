@@ -23,7 +23,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
         _cellsSearchers = searchers;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         List<PossibilityCovers> covers = new();
         foreach (var searcher in _cellsSearchers)
@@ -49,7 +49,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(IStrategyUser strategyUser, GridPositions grid, List<PossibilityCovers> covers)
+    private bool Process(ISudokuStrategyUser strategyUser, GridPositions grid, List<PossibilityCovers> covers)
     {
         List<PossibilityCovers> alternativesTotal = new();
         HashSet<House> emptyForbidden = new();
@@ -96,7 +96,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
 
 public interface IMultiSectorCellsSearcher
 {
-    public IEnumerable<GridPositions> SearchGrids(IStrategyUser strategyUser);
+    public IEnumerable<GridPositions> SearchGrids(ISudokuStrategyUser strategyUser);
 }
 
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>

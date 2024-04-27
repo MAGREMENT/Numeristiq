@@ -6,6 +6,7 @@ using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference;
 
@@ -25,7 +26,7 @@ public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomComm
         _algorithm = algo;
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         _algorithm.Run(strategyUser, _type);
     }
@@ -48,17 +49,17 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     public StrategyDifficulty Difficulty { get; }
     SudokuStrategy? Strategy { set; get; }
     
-    ILinkGraph<T> GetGraph(IStrategyUser strategyUser);
+    ILinkGraph<T> GetGraph(ISudokuStrategyUser strategyUser);
 
-    bool ProcessFullLoop(IStrategyUser strategyUser, LinkGraphLoop<T> loop);
+    bool ProcessFullLoop(ISudokuStrategyUser strategyUser, LinkGraphLoop<T> loop);
 
-    bool ProcessWeakInferenceLoop(IStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
+    bool ProcessWeakInferenceLoop(ISudokuStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessStrongInferenceLoop(IStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
+    bool ProcessStrongInferenceLoop(ISudokuStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessChain(IStrategyUser strategyUser, LinkGraphChain<T> chain, ILinkGraph<T> graph);
+    bool ProcessChain(ISudokuStrategyUser strategyUser, LinkGraphChain<T> chain, ILinkGraph<T> graph);
 
-    static bool ProcessChainWithSimpleGraph(IStrategyUser strategyUser, LinkGraphChain<CellPossibility> chain,
+    static bool ProcessChainWithSimpleGraph(ISudokuStrategyUser strategyUser, LinkGraphChain<CellPossibility> chain,
         ILinkGraph<CellPossibility> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -74,7 +75,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
                             strategy.StopOnFirstPush;
     }
     
-    static bool ProcessChainWithComplexGraph(IStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain,
+    static bool ProcessChainWithComplexGraph(ISudokuStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain,
         ILinkGraph<ISudokuElement> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -96,7 +97,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 public interface IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     AlgorithmType Type { get; }
-    void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type);
+    void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type);
 }
 
 public enum AlgorithmType
@@ -132,7 +133,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
                 
                 foreach (var element in _loop)
                 {
-                    lighter.HighlightSudokuElement(element, coloring);
+                    lighter.HighlightElement(element, coloring);
                     coloring = coloring == ChangeColoration.CauseOnOne
                         ? ChangeColoration.CauseOffOne
                         : ChangeColoration.CauseOnOne;
@@ -199,7 +200,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
                 
                 foreach (var element in _chain)
                 {
-                    lighter.HighlightSudokuElement(element, coloring);
+                    lighter.HighlightElement(element, coloring);
                     coloring = coloring == ChangeColoration.CauseOnOne
                         ? ChangeColoration.CauseOffOne
                         : ChangeColoration.CauseOnOne;

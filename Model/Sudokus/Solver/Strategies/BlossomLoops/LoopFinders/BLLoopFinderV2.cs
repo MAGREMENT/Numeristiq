@@ -2,6 +2,7 @@
 using System.Linq;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.LoopFinders;
 
@@ -87,7 +88,7 @@ public class BLLoopFinderV2 : IBlossomLoopLoopFinder //TODO fix
     
     private static bool ComponentsCheck(CellPossibility[] cps, ISudokuElement friend)
     {
-        foreach (var cp in friend.EveryCellPossibility())
+        foreach (var cp in friend.EnumerateCellPossibility())
         {
             if (cps.Contains(cp)) return false;
         }

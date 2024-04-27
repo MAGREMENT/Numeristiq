@@ -2,6 +2,7 @@
 using Model.Helpers.Changes;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Helpers.Highlighting;
 
@@ -79,7 +80,7 @@ public class SudokuHighlightCompiler : IHighlightCompiler<ISudokuHighlighter>, I
             house.Unit, house.Number, coloration));
     }
 
-    public void HighlightSudokuElement(ISudokuElement element, ChangeColoration coloration)
+    public void HighlightElement(ISudokuElement element, ChangeColoration coloration)
     {
         _registers.Add(element);
         _instructions.Add(new HighlightInstruction(InstructionType.HighlightSudokuElement,

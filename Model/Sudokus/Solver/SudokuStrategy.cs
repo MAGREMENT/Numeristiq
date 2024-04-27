@@ -41,7 +41,7 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
         _settings.Add(s);
     }
     
-    public abstract void Apply(IStrategyUser strategyUser);
+    public abstract void Apply(ISudokuStrategyUser strategyUser);
     public virtual void OnNewSudoku(IReadOnlySudoku s) { }
     public void TrySetSetting(string name, SettingValue value)
     {

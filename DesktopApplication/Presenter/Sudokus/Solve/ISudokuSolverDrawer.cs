@@ -2,6 +2,7 @@
 using Model.Helpers.Changes;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 

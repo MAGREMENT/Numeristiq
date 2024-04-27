@@ -4,6 +4,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringAlgorithms;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.BranchFinder;
 
@@ -75,7 +76,7 @@ public class BLBranchFinderV1 : IBlossomLoopBranchFinder
     {
         if (element is CellPossibility a) return cps.Contains(a);
         
-        foreach (var cp in element.EveryCellPossibility())
+        foreach (var cp in element.EnumerateCellPossibility())
         {
             if (cps.Contains(cp)) return true;
         }

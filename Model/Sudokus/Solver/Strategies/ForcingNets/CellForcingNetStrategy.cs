@@ -22,7 +22,7 @@ public class CellForcingNetStrategy : SudokuStrategy
         _max = maxPossibilities;
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -44,7 +44,7 @@ public class CellForcingNetStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(IStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
+    private bool Process(ISudokuStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
     {
         foreach (var element in colorings[0])
         {

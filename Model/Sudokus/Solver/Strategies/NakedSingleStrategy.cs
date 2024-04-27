@@ -14,7 +14,7 @@ public class NakedSingleStrategy : SudokuStrategy
 
     public NakedSingleStrategy() : base(OfficialName, StrategyDifficulty.Basic, DefaultInstanceHandling) {}
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {

@@ -5,6 +5,7 @@ using Model.Helpers.Highlighting;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -23,7 +24,7 @@ public class BUGStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         List<CellPossibility> additionalCandidates = new(_maxAdditionalCandidates.Value);
         for (int number = 1; number <= 9; number++)

@@ -8,7 +8,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver;
 
-public interface IStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
+public interface ISudokuStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
 { 
     IReadOnlySudoku Sudoku { get; }
     

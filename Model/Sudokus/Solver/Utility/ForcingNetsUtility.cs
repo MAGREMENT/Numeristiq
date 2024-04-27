@@ -5,6 +5,7 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility;
 
@@ -24,7 +25,7 @@ public static class ForcingNetsUtility
 
                 if (alreadyHighlighted.Contains(to)) break;
                 
-                lighter.HighlightSudokuElement(to, link == LinkStrength.Strong ? ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
+                lighter.HighlightElement(to, link == LinkStrength.Strong ? ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
                 lighter.CreateLink(from, to, link);
                 alreadyHighlighted.Add(to);
             }
@@ -33,7 +34,7 @@ public static class ForcingNetsUtility
 
             if (!alreadyHighlighted.Contains(first))
             {
-                lighter.HighlightSudokuElement(first, startColoring == Coloring.On ?
+                lighter.HighlightElement(first, startColoring == Coloring.On ?
                     ChangeColoration.CauseOnOne : ChangeColoration.CauseOffOne);
                 alreadyHighlighted.Add(first);
             }

@@ -170,7 +170,7 @@ public static class TectonicCellUtility
 
     public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, IReadOnlyList<Cell> cells)
     {
-        if (cells.Count == 0) yield break; //TODO
+        if (cells.Count == 0) yield break;
         if (cells.Count == 1) yield break; //TODO
 
         foreach (var cell in SharedSeenCells(tectonic, cells[0], cells[1]))
@@ -187,6 +187,28 @@ public static class TectonicCellUtility
             }
 
             if (ok) yield return cell;
+        }
+    }
+
+    public static IEnumerable<CellPossibility> SharedSeenPossibilities(ITectonicStrategyUser strategyUser,
+        CellPossibility cp1, CellPossibility cp2)
+    {
+        var c1 = cp1.ToCell();
+        var c2 = cp2.ToCell();
+        if (cp1.Possibility == cp2.Possibility)
+        {
+            foreach (var cell in SharedSeenCells(strategyUser.Tectonic, c1, c2))
+            {
+                yield return new CellPossibility(cell, cp1.Possibility);
+            }
+        }
+        else if (c1 == c2)
+        {
+            foreach (var p in strategyUser.PossibilitiesAt(c1).EnumeratePossibilities())
+            {
+                if (p != cp1.Possibility && p != cp2.Possibility)
+                    yield return new CellPossibility(c1, p);
+            }
         }
     }
 }

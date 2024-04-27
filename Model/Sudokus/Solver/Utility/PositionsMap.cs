@@ -14,7 +14,7 @@ public class PositionsMap
         { new(2, 0), new(2, 1), new(2, 2) }
     };
     
-    public PositionsMap(IStrategyUser strategyUser, Filter filter)
+    public PositionsMap(ISudokuStrategyUser strategyUser, Filter filter)
     {
         for (int row = 0; row < 9; row++)
         {

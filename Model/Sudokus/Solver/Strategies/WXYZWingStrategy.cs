@@ -17,7 +17,7 @@ public class WXYZWingStrategy : SudokuStrategy
 
     public WXYZWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) {}
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -80,7 +80,7 @@ public class WXYZWingStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchRow(IStrategyUser strategyUser, MiniGridPositions miniPositions,
+    private bool SearchRow(ISudokuStrategyUser strategyUser, MiniGridPositions miniPositions,
         ReadOnlyBitSet16 possibilities, Cell hinge)
     {
         for (int col = 0; col < 9; col++)
@@ -124,7 +124,7 @@ public class WXYZWingStrategy : SudokuStrategy
         return false;
     }
     
-    private bool SearchColumn(IStrategyUser strategyUser, MiniGridPositions miniPositions,
+    private bool SearchColumn(ISudokuStrategyUser strategyUser, MiniGridPositions miniPositions,
         ReadOnlyBitSet16 possibilities, Cell hinge)
     {
         for (int row = 0; row < 9; row++)
@@ -168,7 +168,7 @@ public class WXYZWingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(IStrategyUser strategyUser, MiniGridPositions miniPositions, LinePositions linePositions,
+    private bool Process(ISudokuStrategyUser strategyUser, MiniGridPositions miniPositions, LinePositions linePositions,
         Unit unit, int unitNumber, ReadOnlyBitSet16 possibilities)
     {
         if (possibilities.Count != 4) return false;

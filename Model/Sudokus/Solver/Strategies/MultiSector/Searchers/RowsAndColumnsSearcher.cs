@@ -18,7 +18,7 @@ public class RowsAndColumnsSearcher : ISetEquivalenceSearcher, IMultiSectorCells
         _maximumUnitDifference = maximumUnitDifference;
     }
 
-    public IEnumerable<SetEquivalence> Search(IStrategyUser strategyUser)
+    public IEnumerable<SetEquivalence> Search(ISudokuStrategyUser strategyUser)
     {
         for (int rowCount = _minimumUnitCount; rowCount <= _maximumUnitCount; rowCount++)
         {
@@ -95,7 +95,7 @@ public class RowsAndColumnsSearcher : ISetEquivalenceSearcher, IMultiSectorCells
         new(Unit.Column, 8),
     };
 
-    public IEnumerable<GridPositions> SearchGrids(IStrategyUser strategyUser)
+    public IEnumerable<GridPositions> SearchGrids(ISudokuStrategyUser strategyUser)
     {
         var possibilityGrid = new GridPositions();
         

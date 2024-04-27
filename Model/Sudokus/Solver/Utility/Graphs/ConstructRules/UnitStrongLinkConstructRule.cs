@@ -1,10 +1,12 @@
 ﻿using System.Linq;
+using Model.Helpers.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class UnitStrongLinkConstructRule : IConstructRule
+public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement> //TODO another rule with merged weak & strong links
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -43,7 +45,7 @@ public class UnitStrongLinkConstructRule : IConstructRule
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {

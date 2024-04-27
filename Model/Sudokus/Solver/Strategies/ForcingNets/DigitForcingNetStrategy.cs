@@ -6,6 +6,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.ForcingNets;
 
@@ -19,7 +20,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
         
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -38,7 +39,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(IStrategyUser view, ColoringDictionary<ISudokuElement> onColoring,
+    private bool Process(ISudokuStrategyUser view, ColoringDictionary<ISudokuElement> onColoring,
         ColoringDictionary<ISudokuElement> offColoring)
     {
         foreach (var on in onColoring)
@@ -91,7 +92,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
         return false;
     }
 
-    private void RemoveAll(IStrategyUser view, int row, int col, int except1, int except2)
+    private void RemoveAll(ISudokuStrategyUser view, int row, int col, int except1, int except2)
     {
         foreach (var possibility in view.PossibilitiesAt(row, col).EnumeratePossibilities())
         {

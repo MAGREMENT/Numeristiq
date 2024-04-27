@@ -15,7 +15,7 @@ public class SKLoopsStrategy : SudokuStrategy
 
     public SKLoopsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) { }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int miniCol = 0; miniCol < 2; miniCol++)
         {
@@ -59,7 +59,7 @@ public class SKLoopsStrategy : SudokuStrategy
         }
     }
     
-    private bool IsCellValid(IStrategyUser strategyUser, int row, int col)
+    private bool IsCellValid(ISudokuStrategyUser strategyUser, int row, int col)
     {
         if (strategyUser.Sudoku[row, col] == 0) return false;
         
@@ -86,7 +86,7 @@ public class SKLoopsStrategy : SudokuStrategy
         return countRow <= 2 && countCol <= 2;
     }
 
-    private bool ConfirmPattern(IStrategyUser strategyUser, params Cell[] cells)
+    private bool ConfirmPattern(ISudokuStrategyUser strategyUser, params Cell[] cells)
     {
         var one = CrossColPossibilities(strategyUser, cells[0]);
         var two = CrossColPossibilities(strategyUser, cells[3]);
@@ -124,7 +124,7 @@ public class SKLoopsStrategy : SudokuStrategy
         }
     }
     
-    private bool IsLoop(IStrategyUser strategyUser, Cell[] cells, ReadOnlyBitSet16 start)
+    private bool IsLoop(ISudokuStrategyUser strategyUser, Cell[] cells, ReadOnlyBitSet16 start)
     {
         int possibilityCount = 0;
         int cellCount = 0;
@@ -153,7 +153,7 @@ public class SKLoopsStrategy : SudokuStrategy
         return ProcessPattern(strategyUser, cells, links);
     }
 
-    private bool ProcessPattern(IStrategyUser strategyUser, Cell[] cells, ReadOnlyBitSet16[] links)
+    private bool ProcessPattern(ISudokuStrategyUser strategyUser, Cell[] cells, ReadOnlyBitSet16[] links)
     {
         var miniCol1 = cells[0].Column / 3;
         var miniCol2 = cells[1].Column / 3;
@@ -247,7 +247,7 @@ public class SKLoopsStrategy : SudokuStrategy
             new SKLoopsReportBuilder(cells, links)) && StopOnFirstPush;
     }
 
-    private PossibilitiesAndNumber CrossRowPossibilities(IStrategyUser strategyUser, Cell cell)
+    private PossibilitiesAndNumber CrossRowPossibilities(ISudokuStrategyUser strategyUser, Cell cell)
     {
         int startCol = cell.Column / 3 * 3;
         var result = new ReadOnlyBitSet16();
@@ -269,7 +269,7 @@ public class SKLoopsStrategy : SudokuStrategy
         return new PossibilitiesAndNumber(result, count);
     }
 
-    private PossibilitiesAndNumber CrossColPossibilities(IStrategyUser strategyUser, Cell cell)
+    private PossibilitiesAndNumber CrossColPossibilities(ISudokuStrategyUser strategyUser, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
         var result = new ReadOnlyBitSet16();

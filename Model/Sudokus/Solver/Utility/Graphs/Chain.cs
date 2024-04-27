@@ -251,21 +251,6 @@ public class LinkGraphChain<T> : Chain<T, LinkStrength> where T : ISudokuElement
     {
     }
 
-    public LinkGraphChain<T> AddInFrontAndAtEnd(LinkStrength frontLink, T frontElement, LinkStrength endLink, T endElement)
-    {
-        var eBuffer = new T[Elements.Length + 2];
-        var lBuffer = new LinkStrength[Links.Length + 2];
-
-        Array.Copy(Elements, 0, eBuffer, 1, Elements.Length);
-        Array.Copy(Links, 0, lBuffer, 1, Links.Length);
-        eBuffer[0] = frontElement;
-        lBuffer[0] = frontLink;
-        eBuffer[^1] = endElement;
-        lBuffer[^1] = endLink;
-
-        return new LinkGraphChain<T>(eBuffer, lBuffer);
-    }
-
     public LinkGraphLoop<T>? TryMakeLoop(LinkGraphChain<T> path)
     {
         if (IsMonoDirectional && path.IsMonoDirectional) return null;

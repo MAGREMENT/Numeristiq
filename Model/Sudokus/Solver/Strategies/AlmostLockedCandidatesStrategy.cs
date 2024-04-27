@@ -30,7 +30,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -139,7 +139,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
 
-    private void HandleCorrespondence(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private void HandleCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         IEnumerable<Cell> cells)
     {
         foreach (var cell in cells)
@@ -151,7 +151,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
 
-    private void HandleAls(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private void HandleAls(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         Cell[] centerCells, IPossibilitiesPositions als)
     {
         List<Cell> total = new List<Cell>(centerCells);
@@ -165,7 +165,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
 
-    private LinePositions RowCorrespondence(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private LinePositions RowCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         int exceptMiniCol, int row)
     {
         LinePositions result = new LinePositions();
@@ -181,7 +181,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
     
-    private LinePositions ColumnCorrespondence(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private LinePositions ColumnCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         int exceptMiniRow, int col)
     {
         LinePositions result = new LinePositions();
@@ -197,7 +197,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private MiniGridPositions MiniGridCorrespondence(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private MiniGridPositions MiniGridCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         int exceptNumber, Unit unitExcept, int miniRow, int miniCol)
     {
         MiniGridPositions result = new(miniRow, miniCol);
@@ -214,7 +214,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private List<IPossibilitiesPositions> SearchRowForAls(IStrategyUser strategyUser, int row,
+    private List<IPossibilitiesPositions> SearchRowForAls(ISudokuStrategyUser strategyUser, int row,
         int miniColExcept)
     {
         var result = new List<IPossibilitiesPositions>();
@@ -224,7 +224,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private void SearchRowForAls(IStrategyUser strategyUser, int row, int miniColExcept, int start,
+    private void SearchRowForAls(ISudokuStrategyUser strategyUser, int row, int miniColExcept, int start,
         ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int col = start; col < 9; col++)
@@ -248,7 +248,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
     
-    private List<IPossibilitiesPositions> SearchColumnForAls(IStrategyUser strategyUser, int col,
+    private List<IPossibilitiesPositions> SearchColumnForAls(ISudokuStrategyUser strategyUser, int col,
         int miniRowExcept)
     {
         var result = new List<IPossibilitiesPositions>();
@@ -259,7 +259,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
     
-    private void SearchColumnForAls(IStrategyUser strategyUser, int col, int miniRowExcept, int start,
+    private void SearchColumnForAls(ISudokuStrategyUser strategyUser, int col, int miniRowExcept, int start,
         ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int row = start; row < 9; row++)
@@ -283,7 +283,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
 
-    private List<IPossibilitiesPositions> SearchMiniGridForAls(IStrategyUser strategyUser, int miniRow,
+    private List<IPossibilitiesPositions> SearchMiniGridForAls(ISudokuStrategyUser strategyUser, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit)
     {
         var result = new List<IPossibilitiesPositions>();
@@ -294,7 +294,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private void SearchMiniGridForAls(IStrategyUser strategyUser, int miniRow,
+    private void SearchMiniGridForAls(ISudokuStrategyUser strategyUser, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit, int start, ReadOnlyBitSet16 currentPossibilities,
         MiniGridPositions currentPositions, List<IPossibilitiesPositions> result)
     {

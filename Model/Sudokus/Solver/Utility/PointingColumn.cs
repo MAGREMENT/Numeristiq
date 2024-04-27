@@ -144,6 +144,35 @@ public class PointingColumn : ISudokuElement
         return result;
     }
 
+    public IEnumerable<int> EnumeratePossibilities()
+    {
+        yield return Possibility;
+    }
+
+    public IEnumerable<CellPossibilities> EnumerateCellPossibilities()
+    {
+        foreach (var row in _pos)
+        {
+            yield return new CellPossibilities(new Cell(row, Column), Possibility);
+        }
+    }
+
+    public IEnumerable<Cell> EnumerateCell()
+    {
+        foreach (var row in _pos)
+        {
+            yield return new Cell(row, Column);
+        }
+    }
+
+    public IEnumerable<CellPossibility> EnumerateCellPossibility()
+    {
+        foreach (var row in _pos)
+        {
+            yield return new CellPossibility(row, Column, Possibility);
+        }
+    }
+
     public bool Contains(Cell cell)
     {
         return Column == cell.Column && _pos.Contains(cell.Row);

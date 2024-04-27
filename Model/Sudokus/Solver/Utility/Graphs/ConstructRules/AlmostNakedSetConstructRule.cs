@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class AlmostNakedSetConstructRule : IConstructRule
+public class AlmostNakedSetConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement>
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
     {
         foreach (var als in strategyUser.PreComputer.AlmostLockedSets())
         {
@@ -67,7 +69,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
                 foreach (var possibility in als.Possibilities.EnumeratePossibilities())
                 {
                     if (possibility == p) continue;
-                    var cells = new List<Cell>(als.EachCell(possibility)); //TODO skip
+                    var cells = new List<Cell>(als.EachCell(possibility));
 
                     foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
                     {
@@ -79,7 +81,7 @@ public class AlmostNakedSetConstructRule : IConstructRule
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
     {
         
     }

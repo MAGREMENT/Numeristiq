@@ -16,7 +16,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
 
     public AlignedPairExclusionStrategy() : base(OfficialName,  StrategyDifficulty.Hard, DefaultInstanceHandling) { }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int start1 = 0; start1 < 9; start1 += 3)
         {
@@ -80,7 +80,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    private bool Search(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
     {
         var shared = new List<Cell>(SudokuCellUtility.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2));
 
@@ -123,7 +123,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
                 && StopOnFirstPush;
     }
 
-    private void SearchForElimination(IStrategyUser strategyUser, ReadOnlyBitSet16 poss1,
+    private void SearchForElimination(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss1,
         ReadOnlyBitSet16 poss2, HashSet<BiValue> forbidden, int row, int col, bool inSameUnit)
     {
         foreach (var p1 in poss1.EnumeratePossibilities())

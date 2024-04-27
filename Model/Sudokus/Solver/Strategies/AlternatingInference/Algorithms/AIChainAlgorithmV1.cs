@@ -6,7 +6,7 @@ namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
 public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
-    public void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
     {
         var graph = type.GetGraph(strategyUser);
         HashSet<T> processed = new();
@@ -19,7 +19,7 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
         }
     }
 
-    private bool Search(IStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Search(ISudokuStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChainBuilder<T> builder, HashSet<T> explored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
@@ -57,7 +57,7 @@ public class AIChainAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T :
         return false;
     }
 
-    private bool Check(IStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Check(ISudokuStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChain<T> chain)
     {
         return type.ProcessChain(user, chain, graph);

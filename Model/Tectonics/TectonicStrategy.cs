@@ -18,5 +18,5 @@ public abstract class TectonicStrategy : ICommitMaker
         InstanceHandling = defaultHandling;
     }
     
-    public abstract void Apply(IStrategyUser strategyUser);
+    public abstract void Apply(ITectonicStrategyUser strategyUser);
 }

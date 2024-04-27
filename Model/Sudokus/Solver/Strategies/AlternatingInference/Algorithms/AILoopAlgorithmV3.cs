@@ -2,6 +2,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Graphs;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
 
@@ -9,7 +10,7 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
 {
     public AlgorithmType Type => AlgorithmType.Loop;
     
-    public void Run(IStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
     {
         var graph = type.GetGraph(strategyUser);
         

@@ -23,7 +23,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         _checkLength2 = checkLength2;
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var graph = strategyUser.PreComputer.AlmostLockedSetGraph();
 
@@ -34,7 +34,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(IStrategyUser strategyUser, PossibilitiesGraph<IPossibilitiesPositions> graph,
+    private bool Search(ISudokuStrategyUser strategyUser, PossibilitiesGraph<IPossibilitiesPositions> graph,
         GridPositions occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
@@ -63,7 +63,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForLoop(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> builder,
+    private bool CheckForLoop(ISudokuStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> builder,
         ReadOnlyBitSet16 possibleLastLinks, GridPositions occupied)
     {
         foreach (var ll in possibleLastLinks.EnumeratePossibilities())
@@ -102,7 +102,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForChain(IStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> chain)
+    private bool CheckForChain(ISudokuStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
 
@@ -193,7 +193,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatabl
         {
             foreach (var cell2 in elementAfter.EachCell(link))
             {
-                var dist = SudokuCellUtility.Distance(cell1, link, cell2, link);
+                var dist = CellUtility.Distance(cell1, link, cell2, link);
 
                 if (dist < minDistance)
                 {

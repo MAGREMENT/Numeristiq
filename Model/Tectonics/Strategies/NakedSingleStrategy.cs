@@ -11,7 +11,7 @@ public class NakedSingleStrategy : TectonicStrategy
     {
     }
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ITectonicStrategyUser strategyUser)
     {
         for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
         {

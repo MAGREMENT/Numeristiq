@@ -60,6 +60,35 @@ public class NakedSet : ISudokuElement
         return result.ToArray();
     }
 
+    public IEnumerable<int> EnumeratePossibilities()
+    {
+        return EveryPossibilities().EnumeratePossibilities();
+    }
+
+    public IEnumerable<CellPossibilities> EnumerateCellPossibilities()
+    {
+        return _cellPossibilities;
+    }
+
+    public IEnumerable<Cell> EnumerateCell()
+    {
+        for (int i = 0; i < _cellPossibilities.Length; i++)
+        {
+            yield return _cellPossibilities[i].Cell;
+        }
+    }
+
+    public IEnumerable<CellPossibility> EnumerateCellPossibility()
+    {
+        foreach (var cp in _cellPossibilities)
+        {
+            foreach (var p in cp.Possibilities.EnumeratePossibilities())
+            {
+                yield return new CellPossibility(cp.Cell, p);
+            }
+        }
+    }
+
     public bool Contains(Cell cell)
     {
         foreach (var cp in _cellPossibilities)

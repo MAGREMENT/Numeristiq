@@ -17,7 +17,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
     public NakedDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         Dictionary<ReadOnlyBitSet16, int> dict = new();
         for (int row = 0; row < 9; row++)
@@ -86,7 +86,7 @@ public class NakedDoublesStrategy : SudokuStrategy
         }
     }
 
-    private bool ProcessRow(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int row, int col1,
+    private bool ProcessRow(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int row, int col1,
         int col2)
     {
         for (int col = 0; col < 9; col++)
@@ -104,7 +104,7 @@ public class NakedDoublesStrategy : SudokuStrategy
             && StopOnFirstPush;
     }
 
-    private bool ProcessColumn(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int col,
+    private bool ProcessColumn(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int col,
         int row1, int row2)
     {
         for (int row = 0; row < 9; row++)
@@ -122,7 +122,7 @@ public class NakedDoublesStrategy : SudokuStrategy
             && StopOnFirstPush;
     }
 
-    private bool ProcessMiniGrid(IStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private bool ProcessMiniGrid(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
         int miniRow, int miniCol, int gridNumber1, int gridNumber2)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

@@ -19,7 +19,7 @@ public class DeathBlossomStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         var allAls = strategyUser.PreComputer.AlmostLockedSets();
         Dictionary<int, List<IPossibilitiesPositions>> concernedAls = new();
@@ -121,7 +121,7 @@ public class DeathBlossomStrategy : SudokuStrategy
         }
     }
 
-    private void Process(IStrategyUser strategyUser, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
+    private void Process(ISudokuStrategyUser strategyUser, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
     {
         List<Cell> buffer = new();
         strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);

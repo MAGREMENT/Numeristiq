@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
+using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Position;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class PointingPossibilitiesConstructRule : IConstructRule
+public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement>
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -21,12 +24,12 @@ public class PointingPossibilitiesConstructRule : IConstructRule
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, IStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
     {
         
     }
 
-    private void SearchForPointingInMiniGrid(IStrategyUser strategyUser, ILinkGraph<ISudokuElement> linkGraph,
+    private void SearchForPointingInMiniGrid(ISudokuStrategyUser strategyUser, ILinkGraph<ISudokuElement> linkGraph,
         IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)

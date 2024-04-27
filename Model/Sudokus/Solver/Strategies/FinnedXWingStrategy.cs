@@ -14,7 +14,7 @@ public class FinnedXWingStrategy : SudokuStrategy
 
     public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling){}
     
-    public override void Apply(IStrategyUser strategyUser)
+    public override void Apply(ISudokuStrategyUser strategyUser)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -54,7 +54,7 @@ public class FinnedXWingStrategy : SudokuStrategy
         }
     }
 
-    private bool ExamineRow(IStrategyUser strategyUser, int normalRow, int finnedRow,
+    private bool ExamineRow(ISudokuStrategyUser strategyUser, int normalRow, int finnedRow,
         IReadOnlyLinePositions normalPos, IReadOnlyLinePositions finnedPos, int number)
     {
         var asArray = normalPos.ToArray();
@@ -70,7 +70,7 @@ public class FinnedXWingStrategy : SudokuStrategy
                 finnedRow, number, Unit.Row)) && StopOnFirstPush;
     }
 
-    private bool ExamineColumn(IStrategyUser strategyUser, int normalCol, int finnedCol,
+    private bool ExamineColumn(ISudokuStrategyUser strategyUser, int normalCol, int finnedCol,
         IReadOnlyLinePositions normalPos, IReadOnlyLinePositions finnedPos, int number)
     {
         var asArray = normalPos.ToArray();
@@ -98,7 +98,7 @@ public class FinnedXWingStrategy : SudokuStrategy
         return true;
     }
 
-    private void ProcessRow(IStrategyUser strategyUser, int normalRow, int finnedRow, int finnedCol, int number)
+    private void ProcessRow(ISudokuStrategyUser strategyUser, int normalRow, int finnedRow, int finnedCol, int number)
     {
         var startRow = finnedRow / 3 * 3;
         for (int i = 0; i < 3; i++)
@@ -121,7 +121,7 @@ public class FinnedXWingStrategy : SudokuStrategy
         return true;
     }
     
-    private void ProcessColumn(IStrategyUser strategyUser, int normalCol, int finnedCol, int finnedRow, int number)
+    private void ProcessColumn(ISudokuStrategyUser strategyUser, int normalCol, int finnedCol, int finnedRow, int number)
     {
         var startCol = finnedCol / 3 * 3;
         for (int i = 0; i < 3; i++)
