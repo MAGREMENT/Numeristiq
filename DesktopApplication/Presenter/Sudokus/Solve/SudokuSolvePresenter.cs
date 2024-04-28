@@ -12,6 +12,7 @@ using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Trackers;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 

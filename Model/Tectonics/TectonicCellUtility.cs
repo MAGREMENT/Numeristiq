@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonics;
 

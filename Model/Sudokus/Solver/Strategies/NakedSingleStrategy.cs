@@ -4,6 +4,7 @@ using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Explanation;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies;
 

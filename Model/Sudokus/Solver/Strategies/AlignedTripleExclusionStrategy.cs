@@ -212,17 +212,17 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         {
             int i = 0;
             bool useful = false;
-            while (aals.Possibilities.Next(ref i))
+            while (aals.Possibilities.HasNextPossibility(ref i))
             {
                 if (!or.Contains(i)) continue;
 
                 int j = i;
-                while (aals.Possibilities.Next(ref j))
+                while (aals.Possibilities.HasNextPossibility(ref j))
                 {
                     if (!or.Contains(j)) continue;
 
                     int k = j;
-                    while (aals.Possibilities.Next(ref k))
+                    while (aals.Possibilities.HasNextPossibility(ref k))
                     {
                         if (!or.Contains(k)) continue;
 
@@ -239,12 +239,12 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         {
             int i = 0;
             bool useful = false;
-            while (als.Possibilities.Next(ref i))
+            while (als.Possibilities.HasNextPossibility(ref i))
             {
                 if (!or.Contains(i)) continue;
                 
                 int j = i;
-                while (als.Possibilities.Next(ref j))
+                while (als.Possibilities.HasNextPossibility(ref j))
                 {
                     if (!or.Contains(j)) continue;
 

@@ -2,7 +2,6 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -113,7 +112,7 @@ public class SKLoopsStrategy : SudokuStrategy
 
     private static void EachCombination(List<ReadOnlyBitSet16> result, ReadOnlyBitSet16 total, ReadOnlyBitSet16 toSearch, int cursor)
     {
-        while(total.Next(ref cursor))
+        while(total.HasNextPossibility(ref cursor))
         {
             if (toSearch.Contains(cursor)) continue;
 

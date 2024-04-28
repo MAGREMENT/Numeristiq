@@ -4,6 +4,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 

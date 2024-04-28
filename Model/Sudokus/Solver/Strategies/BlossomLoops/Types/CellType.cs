@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops.Types;
 

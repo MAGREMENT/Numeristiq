@@ -17,7 +17,7 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
     ITectonicHighlighter>, ISolvingState
 {
     private ITectonic _tectonic;
-    private ReadOnlyBitSet16[,] _possibilities;
+    private ReadOnlyBitSet8[,] _possibilities;
 
     private readonly TectonicStrategy[] _strategies = 
     { 
@@ -57,7 +57,7 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
     public TectonicSolver()
     {
         _tectonic = new BlankTectonic();
-        _possibilities = new ReadOnlyBitSet16[0, 0];
+        _possibilities = new ReadOnlyBitSet8[0, 0];
 
         ChangeBuffer = new FastChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(this);
         Graphs = new LinkGraphManager<ITectonicStrategyUser, ITectonicElement>(this, new TectonicConstructRuleBank());
@@ -66,7 +66,7 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
     public void SetTectonic(ITectonic tectonic)
     {
         _tectonic = tectonic;
-        _possibilities = new ReadOnlyBitSet16[_tectonic.RowCount, _tectonic.ColumnCount];
+        _possibilities = new ReadOnlyBitSet8[_tectonic.RowCount, _tectonic.ColumnCount];
         InitCandidates();
         
         StepHistory.Clear();
@@ -110,22 +110,27 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
             if (stopAtProgress) return;
         }
     }
-    
-    public ReadOnlyBitSet16 PossibilitiesAt(Cell cell)
+
+    ReadOnlyBitSet16 ISolvingState.PossibilitiesAt(int row, int col)
+    {
+        return ReadOnlyBitSet16.FromBitSet(PossibilitiesAt(row, col));
+    }
+
+    public ReadOnlyBitSet8 PossibilitiesAt(Cell cell)
     {
         return _possibilities[cell.Row, cell.Column];
     }
     
-    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
+    public ReadOnlyBitSet8 PossibilitiesAt(int row, int col)
     {
         return _possibilities[row, col];
     }
     
     public int this[int row, int col] => _tectonic[row, col];
     
-    public ReadOnlyBitSet16 ZonePositionsFor(int zone, int n) //TODO To buffer
+    public ReadOnlyBitSet8 ZonePositionsFor(int zone, int n) //TODO To buffer
     {
-        var result = new ReadOnlyBitSet16();
+        var result = new ReadOnlyBitSet8();
         var z = _tectonic.Zones[zone];
 
         for (int i = 0; i < z.Count; i++)
@@ -137,9 +142,9 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         return result;
     }
     
-    public ReadOnlyBitSet16 ZonePositionsFor(IZone zone, int n)
+    public ReadOnlyBitSet8 ZonePositionsFor(IZone zone, int n)
     {
-        var result = new ReadOnlyBitSet16();
+        var result = new ReadOnlyBitSet8();
 
         for (int i = 0; i < zone.Count; i++)
         {
@@ -185,7 +190,7 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         {
             for (int col = 0; col < _tectonic.ColumnCount; col++)
             {
-                _possibilities[row, col] = ReadOnlyBitSet16.Filled(1, _tectonic.GetZone(row, col).Count);
+                _possibilities[row, col] = ReadOnlyBitSet8.Filled(1, _tectonic.GetZone(row, col).Count);
             }
         }
         
@@ -201,7 +206,7 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
 
     private void UpdatePossibilitiesAfterSolutionAdded(int row, int col, int number)
     {
-        _possibilities[row, col] = new ReadOnlyBitSet16();
+        _possibilities[row, col] = new ReadOnlyBitSet8();
 
         foreach (var neighbor in TectonicCellUtility.GetNeighbors(row, col, _tectonic.RowCount, _tectonic.ColumnCount))
         {

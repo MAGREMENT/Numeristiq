@@ -266,10 +266,10 @@ public class JuniorExocetStrategy : SudokuStrategy
             HashSet<BiValue> forbiddenPairs = new();
 
             int i = 0;
-            while (je.BaseCandidates.Next(ref i))
+            while (je.BaseCandidates.HasNextPossibility(ref i))
             {
                 int j = i;
-                while (je.BaseCandidates.Next(ref j))
+                while (je.BaseCandidates.HasNextPossibility(ref j))
                 {
                     if (!je.CompatibilityCheck(strategyUser, i, j)) forbiddenPairs.Add(new BiValue(i, j));
                 }
@@ -429,11 +429,9 @@ public class JuniorExocetStrategy : SudokuStrategy
                 }
             }
 
-            var n = 0;
-            revisedBaseCandidates.Next(ref n);
+            var n = revisedBaseCandidates.NextPossibility(0);
             var allSCells = je.SCells[n];
-            revisedBaseCandidates.Next(ref n);
-            allSCells.ApplyOr(je.SCells[n]);
+            allSCells.ApplyOr(je.SCells[revisedBaseCandidates.NextPossibility(n)]);
 
             if (allSCells.Count == 4)
             {

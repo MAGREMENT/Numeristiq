@@ -66,6 +66,8 @@ public static class TectonicTranslator
             
             foreach (var list in zones.Values)
             {
+                if(list.Count > IZone.MaxCount) return new BlankTectonic();
+                    
                 result.AddZoneUnchecked(list);
             }
 

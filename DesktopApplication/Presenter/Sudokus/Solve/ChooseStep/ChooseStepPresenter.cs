@@ -2,6 +2,7 @@
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
 

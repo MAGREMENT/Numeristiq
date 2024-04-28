@@ -8,6 +8,8 @@ namespace Model.Tectonics;
 
 public interface IZone : IContainingEnumerable<Cell>
 {
+    public const int MaxCount = 5;
+    
     int Count { get; }
     
     Cell this[int index] { get; }

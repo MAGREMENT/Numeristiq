@@ -64,7 +64,9 @@ public partial class EmbeddedTectonicBoardControl
 
     private int ComputeOptimalCellSize(double space, int number)
     {
-        return (int) ((space - Board.BigLineWidth * (number + 1)) / number);
+        var simulation = (int) ((space - Board.BigLineWidth * (number + 1)) / number);
+        var blw = Board.BigLineRange.GetValueFor(simulation);
+        return (int) ((space - blw * (number + 1)) / number);
     }
 
     private void OnCellSelection(int row, int col)

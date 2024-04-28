@@ -2,6 +2,7 @@
 using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Utility.ConstructRules;
 
@@ -45,7 +46,7 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, I
                         if (pos.Count == entry.Value.Count + 1)
                         {
                             Cell? buffer = null;
-                            foreach (var n in pos.EnumeratePositions())
+                            foreach (var n in pos.EnumeratePositions(entry.Key))
                             {
                                 var cell = entry.Key[n];
                                 if (!TectonicCellUtility.AreNeighbors(entry.Key[n], new Cell(row, col)))

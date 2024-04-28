@@ -3,6 +3,7 @@ using Model.Helpers;
 using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 

@@ -9,6 +9,7 @@ using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies;
 

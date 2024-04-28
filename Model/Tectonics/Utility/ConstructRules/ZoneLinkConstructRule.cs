@@ -1,6 +1,7 @@
 ﻿using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Utility.ConstructRules;
 
@@ -16,11 +17,9 @@ public class ZoneLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITect
                 var pos = strategyUser.ZonePositionsFor(i, n);
                 if (pos.Count == 2)
                 {
-                    int a = -1;
-                    pos.Next(ref a);
-                    var first = new CellPossibility(zone[a], n);
-                    pos.Next(ref a);
-                    linkGraph.Add(first, new CellPossibility(zone[a], n), LinkStrength.Strong);
+                    var a = pos.NextPosition(-1);
+                    linkGraph.Add(new CellPossibility(zone[a], n),
+                        new CellPossibility(zone[pos.NextPosition(a)], n), LinkStrength.Strong);
                 }
                 else if (pos.Count > 2)
                 {
@@ -47,11 +46,9 @@ public class ZoneLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITect
                 var pos = strategyUser.ZonePositionsFor(i, n);
                 if (pos.Count == 2)
                 {
-                    int a = -1;
-                    pos.Next(ref a);
-                    var first = new CellPossibility(zone[a], n);
-                    pos.Next(ref a);
-                    linkGraph.Add(first, new CellPossibility(zone[a], n), LinkStrength.Strong);
+                    var a = pos.NextPosition(-1);
+                    linkGraph.Add(new CellPossibility(zone[a], n),
+                        new CellPossibility(zone[pos.NextPosition(a)], n), LinkStrength.Strong);
                 }
                 else if (pos.Count > 2)
                 {

@@ -5,6 +5,7 @@ using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Oddagons;
 

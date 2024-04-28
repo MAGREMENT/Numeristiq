@@ -4,87 +4,85 @@ using Model.Sudokus.Solver.Strategies;
 
 namespace Model.Utility.BitSets;
 
-public readonly struct ReadOnlyBitSet16
+public readonly struct ReadOnlyBitSet8
 {
-    public ushort Bits { get; }
+    public byte Bits { get; }
     public int Count { get; }
 
-    public ReadOnlyBitSet16()
+    public ReadOnlyBitSet8()
     {
         Bits = 0;
         Count = 0;
     }
 
-    public ReadOnlyBitSet16(int i)
+    public ReadOnlyBitSet8(int i)
     {
-        Bits = (ushort)(1 << i);
+        Bits = (byte)(1 << i);
         Count = 1;
     }
 
-    public ReadOnlyBitSet16(params int[] numbers)
+    public ReadOnlyBitSet8(params int[] numbers)
     {
-        ushort b = 0;
+        byte b = 0;
         foreach (var n in numbers)
         {
-            b |= (ushort)(1 << n);
+            b |= (byte)(1 << n);
         }
 
         Bits = b;
         Count = System.Numerics.BitOperations.PopCount(b);
     }
     
-    public ReadOnlyBitSet16(IEnumerable<int> numbers)
+    public ReadOnlyBitSet8(IEnumerable<int> numbers)
     {
-        ushort b = 0;
+        byte b = 0;
         foreach (var n in numbers)
         {
-            b |= (ushort)(1 << n);
+            b |= (byte)(1 << n);
         }
 
         Bits = b;
         Count = System.Numerics.BitOperations.PopCount(b);
     }
 
-    private ReadOnlyBitSet16(ushort bits)
+    private ReadOnlyBitSet8(byte bits)
     {
         Bits = bits;
         Count = System.Numerics.BitOperations.PopCount(bits);
     }
 
-    private ReadOnlyBitSet16(ushort bits, int count)
+    private ReadOnlyBitSet8(byte bits, int count)
     {
         Bits = bits;
         Count = count;
     }
 
-    public static ReadOnlyBitSet16 Filled(int from, int to)
+    public static ReadOnlyBitSet8 Filled(int from, int to)
     {
-        return new ReadOnlyBitSet16((ushort)(~(0xFFFF << (to - from + 1)) << from));
+        return new ReadOnlyBitSet8((byte)(~(0xFF << (to - from + 1)) << from));
     }
 
-    public static ReadOnlyBitSet16 FromBits(ushort bits)
+    public static ReadOnlyBitSet8 FromBits(byte bits)
     {
-        return new ReadOnlyBitSet16(bits);
+        return new ReadOnlyBitSet8(bits);
     }
-
-    public static ReadOnlyBitSet16 FromBitSet(ReadOnlyBitSet8 bitSet) => new(bitSet.Bits, bitSet.Count);
 
     public bool Contains(int num)
     {
         return ((Bits >> num) & 1) > 0;
     }
 
-    public bool ContainsAll(ReadOnlyBitSet16 set)
+    public bool ContainsAll(ReadOnlyBitSet8 set)
     {
         return (Bits | set.Bits) == Bits;
     }
 
-    public bool ContainsAny(ReadOnlyBitSet16 set)
+    public bool ContainsAny(ReadOnlyBitSet8 set)
     {
         return (Bits & set.Bits) != 0;
     }
 
-    public bool ContainsOnlyOne(ReadOnlyBitSet16 set)
+    public bool ContainsOnlyOne(ReadOnlyBitSet8 set)
     {
         return (this & set).Count == 1;
     }
@@ -145,7 +143,7 @@ public readonly struct ReadOnlyBitSet16
     {
         int[] result = new int[Count];
         int cursor = 0;
-        for (int i = 0; i < 16 && cursor < result.Length; i++)
+        for (int i = 0; i < 8 && cursor < result.Length; i++)
         {
             if (Contains(i)) result[cursor++] = i;
         }
@@ -153,32 +151,32 @@ public readonly struct ReadOnlyBitSet16
         return result;
     }
 
-    public static ReadOnlyBitSet16 operator +(ReadOnlyBitSet16 set, int num)
+    public static ReadOnlyBitSet8 operator +(ReadOnlyBitSet8 set, int num)
     {
-        return new ReadOnlyBitSet16((ushort)(set.Bits | (1 << num)), set.Contains(num) ? set.Count : set.Count + 1);
+        return new ReadOnlyBitSet8((byte)(set.Bits | (1 << num)), set.Contains(num) ? set.Count : set.Count + 1);
     }
 
-    public static ReadOnlyBitSet16 operator +(ReadOnlyBitSet16 left, ReadOnlyBitSet16 right)
+    public static ReadOnlyBitSet8 operator +(ReadOnlyBitSet8 left, ReadOnlyBitSet8 right)
     {
-        return new ReadOnlyBitSet16((ushort)(left.Bits | right.Bits));
+        return new ReadOnlyBitSet8((byte)(left.Bits | right.Bits));
     }
 
-    public static ReadOnlyBitSet16 operator -(ReadOnlyBitSet16 set, int num)
+    public static ReadOnlyBitSet8 operator -(ReadOnlyBitSet8 set, int num)
     {
-        return new ReadOnlyBitSet16((ushort)(set.Bits & ~(1 << num)), set.Contains(num) ? set.Count - 1 : set.Count);
+        return new ReadOnlyBitSet8((byte)(set.Bits & ~(1 << num)), set.Contains(num) ? set.Count - 1 : set.Count);
     }
 
-    public static ReadOnlyBitSet16 operator -(ReadOnlyBitSet16 left, ReadOnlyBitSet16 right)
+    public static ReadOnlyBitSet8 operator -(ReadOnlyBitSet8 left, ReadOnlyBitSet8 right)
     {
-        return new ReadOnlyBitSet16((ushort)(left.Bits & ~right.Bits));
+        return new ReadOnlyBitSet8((byte)(left.Bits & ~right.Bits));
     }
 
-    public static ReadOnlyBitSet16 operator &(ReadOnlyBitSet16 left, ReadOnlyBitSet16 right)
+    public static ReadOnlyBitSet8 operator &(ReadOnlyBitSet8 left, ReadOnlyBitSet8 right)
     {
-        return new ReadOnlyBitSet16((ushort)(left.Bits & right.Bits));
+        return new ReadOnlyBitSet8((byte)(left.Bits & right.Bits));
     }
     
-    public ReadOnlyBitSet16 AndMulti(params ReadOnlyBitSet16[] sets)
+    public ReadOnlyBitSet8 AndMulti(params ReadOnlyBitSet8[] sets)
     {
         var b = Bits;
         foreach (var set in sets)
@@ -186,16 +184,16 @@ public readonly struct ReadOnlyBitSet16
             b &= set.Bits;
         }
 
-        return new ReadOnlyBitSet16(b);
+        return new ReadOnlyBitSet8(b);
     }
 
 
-    public static ReadOnlyBitSet16 operator |(ReadOnlyBitSet16 left, ReadOnlyBitSet16 right)
+    public static ReadOnlyBitSet8 operator |(ReadOnlyBitSet8 left, ReadOnlyBitSet8 right)
     {
-        return new ReadOnlyBitSet16((ushort)(left.Bits | right.Bits));
+        return new ReadOnlyBitSet8((byte)(left.Bits | right.Bits));
     }
 
-    public ReadOnlyBitSet16 OrMulti(params ReadOnlyBitSet16[] sets)
+    public ReadOnlyBitSet8 OrMulti(params ReadOnlyBitSet8[] sets)
     {
         var b = Bits;
         foreach (var set in sets)
@@ -203,47 +201,47 @@ public readonly struct ReadOnlyBitSet16
             b |= set.Bits;
         }
 
-        return new ReadOnlyBitSet16(b);
+        return new ReadOnlyBitSet8(b);
     }
 
-    public static ReadOnlyBitSet16 operator ~(ReadOnlyBitSet16 set)
+    public static ReadOnlyBitSet8 operator ~(ReadOnlyBitSet8 set)
     {
-        return new ReadOnlyBitSet16((ushort)~set.Bits, 16 - set.Count);
+        return new ReadOnlyBitSet8((byte)~set.Bits, 8 - set.Count);
     }
 
-    public static bool operator ==(ReadOnlyBitSet16 left, ReadOnlyBitSet16 right)
+    public static bool operator ==(ReadOnlyBitSet8 left, ReadOnlyBitSet8 right)
     {
         return left.Bits == right.Bits;
     }
     
-    public static bool operator !=(ReadOnlyBitSet16 left, ReadOnlyBitSet16 right)
+    public static bool operator !=(ReadOnlyBitSet8 left, ReadOnlyBitSet8 right)
     {
         return left.Bits != right.Bits;
     }
     
-    public static bool operator ==(ReadOnlyBitSet16 left, BiValue right)
+    public static bool operator ==(ReadOnlyBitSet8 left, BiValue right)
     {
         return left.Count == 2 && left.Contains(right.One) && left.Contains(right.Two);
     }
     
-    public static bool operator !=(ReadOnlyBitSet16 left, BiValue right)
+    public static bool operator !=(ReadOnlyBitSet8 left, BiValue right)
     {
         return left.Count != 2 || !left.Contains(right.One) || !left.Contains(right.Two);
     }
     
-    public static bool operator ==(BiValue left, ReadOnlyBitSet16 right)
+    public static bool operator ==(BiValue left, ReadOnlyBitSet8 right)
     {
         return right == left;
     }
     
-    public static bool operator !=(BiValue left, ReadOnlyBitSet16 right)
+    public static bool operator !=(BiValue left, ReadOnlyBitSet8 right)
     {
         return right != left;
     }
 
     public override bool Equals(object? obj)
     {
-        return obj is ReadOnlyBitSet16 set && set.Bits == Bits;
+        return obj is ReadOnlyBitSet8 set && set.Bits == Bits;
     }
 
     public override int GetHashCode()
@@ -255,7 +253,7 @@ public readonly struct ReadOnlyBitSet16
     {
         var builder = new StringBuilder();
 
-        for (int i = 15; i >= 0; i--)
+        for (int i = 7; i >= 0; i--)
         {
             builder.Append(Contains(i) ? '1' : '0');
         }
@@ -268,7 +266,7 @@ public readonly struct ReadOnlyBitSet16
         var builder = new StringBuilder();
 
         bool added = false;
-        for (int i = 15; i >= 0; i--)
+        for (int i = 7; i >= 0; i--)
         {
             if (!Contains(i)) continue;
             

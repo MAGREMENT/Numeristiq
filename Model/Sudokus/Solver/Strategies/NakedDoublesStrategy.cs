@@ -4,7 +4,6 @@ using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -192,11 +191,8 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
     {
         var builder = new StringBuilder($"Naked Doubles in {cells[0]}, {cells[1]} for ");
 
-        var n = 0;
-        _pos.Next(ref n);
-        builder.Append(n + ", ");
-        _pos.Next(ref n);
-        builder.Append(n);
+        var n = _pos.NextPossibility(0);
+        builder.Append(n + ", " + _pos.NextPossibility(n));
 
         return builder.ToString();
     }

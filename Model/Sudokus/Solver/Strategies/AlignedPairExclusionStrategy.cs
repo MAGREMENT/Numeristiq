@@ -99,12 +99,12 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         {
             int i = 0;
             bool useful = false;
-            while (als.Possibilities.Next(ref i))
+            while (als.Possibilities.HasNextPossibility(ref i))
             {
                 if (!or.Contains(i)) continue;
                 
                 int j = i;
-                while (als.Possibilities.Next(ref j))
+                while (als.Possibilities.HasNextPossibility(ref j))
                 {
                     if (!or.Contains(j)) continue;
                     

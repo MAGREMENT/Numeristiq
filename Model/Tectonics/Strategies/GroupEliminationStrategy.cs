@@ -37,7 +37,7 @@ public class GroupEliminationStrategy : TectonicStrategy
         }
     }
 
-    private bool SearchForGroup(ITectonicStrategyUser tectonicStrategyUser, List<Cell> cells, ReadOnlyBitSet16 possibilities, HashSet<Cell> done)
+    private bool SearchForGroup(ITectonicStrategyUser tectonicStrategyUser, List<Cell> cells, ReadOnlyBitSet8 possibilities, HashSet<Cell> done)
     {
         if (cells.Count == possibilities.Count && ProcessGroup(tectonicStrategyUser, cells, possibilities)) return true;
 
@@ -62,7 +62,7 @@ public class GroupEliminationStrategy : TectonicStrategy
         return false;
     }
 
-    private bool ProcessGroup(ITectonicStrategyUser tectonicStrategyUser, List<Cell> cells, ReadOnlyBitSet16 possibilities)
+    private bool ProcessGroup(ITectonicStrategyUser tectonicStrategyUser, List<Cell> cells, ReadOnlyBitSet8 possibilities)
     {
         List<Cell> buffer = new();
         foreach (var possibility in possibilities.EnumeratePossibilities())

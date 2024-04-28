@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonics.Solve;
+using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
@@ -31,6 +32,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     private int _rowCount;
     private int _columnCount;
     private double _bigLineWidth;
+    private DependantThicknessRange _bigLineRange;
     private double _smallLineWidth;
 
     private bool[,] _isSpecialNumberBrush = new bool[0, 0];
@@ -135,7 +137,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         set
         {
             _cellSize = value;
-            UpdateSize();
+            BigLineWidth = BigLineRange.GetValueFor(value);
         }
     }
 
@@ -169,11 +171,21 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 
     public double BigLineWidth
     {
-        get => _bigLineWidth;
-        set
+        get =>_bigLineWidth;
+        private set
         {
             _bigLineWidth = value;
             UpdateSize();
+        }
+    } 
+
+    public DependantThicknessRange BigLineRange
+    {
+        get => _bigLineRange;
+        set
+        {
+            _bigLineRange = value;
+            BigLineWidth = value.GetValueFor(CellSize);
         }
     }
 

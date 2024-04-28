@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 
