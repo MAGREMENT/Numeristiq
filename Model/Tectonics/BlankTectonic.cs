@@ -27,6 +27,8 @@ public class BlankTectonic : ITectonic
         return EmptyZone.Instance;
     }
 
+    public int GetZoneNumber(IZone zone) => -1;
+
     public bool IsFromSameZone(Cell c1, Cell c2)
     {
         return false;
@@ -60,5 +62,12 @@ public class BlankTectonic : ITectonic
     public void AddZoneUnchecked(IReadOnlyList<Cell> cells)
     {
         
+    }
+
+    public ITectonic Transfer(int rowCount, int columnCount)
+    {
+        if (rowCount == 0 || columnCount == 0) return new BlankTectonic();
+
+        return new ArrayTectonic(rowCount, columnCount);
     }
 }

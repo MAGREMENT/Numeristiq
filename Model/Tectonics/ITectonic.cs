@@ -29,6 +29,7 @@ public interface IReadOnlyTectonic : ISolvingState
     
     public IReadOnlyList<IZone> Zones { get; }
     public IZone GetZone(Cell cell);
+    public int GetZoneNumber(IZone zone);
 
     public IZone GetZone(int row, int col)
     {
@@ -40,5 +41,6 @@ public interface IReadOnlyTectonic : ISolvingState
     public bool IsCorrect();
 
     public ITectonic Copy();
+    public ITectonic Transfer(int rowCount, int columnCount);
 }
 

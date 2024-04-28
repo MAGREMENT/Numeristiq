@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -44,6 +45,36 @@ public class ArrayTectonic : ITectonic
         {
             _cells[cell.Row, cell.Column].Zone = z;
         }
+    }
+
+    public ITectonic Transfer(int rowCount, int columnCount)
+    {
+        if (rowCount == 0 || columnCount == 0) return new BlankTectonic();
+
+        var result = new ArrayTectonic(rowCount, columnCount);
+        var minRow = Math.Min(rowCount, RowCount);
+        var minCol = Math.Min(columnCount, ColumnCount);
+        
+        for(int row = 0; row < minRow; row++)
+        {
+            for (int col = 0; col < minCol; col++)
+            {
+                result[row, col] = this[row, col];
+            }
+        }
+
+        foreach (var zone in _zones)
+        {
+            List<Cell> cellsInbound = new();
+            foreach (var cell in zone)
+            {
+                if (cell.Row < minRow && cell.Column < minCol) cellsInbound.Add(cell);
+            }
+
+            result.AddZoneUnchecked(cellsInbound);
+        }
+
+        return result;
     }
 
     public int this[int row, int col]
@@ -122,6 +153,16 @@ public class ArrayTectonic : ITectonic
     public IZone GetZone(Cell cell)
     {
         return _cells[cell.Row, cell.Column].Zone ?? new SoloZone(cell);
+    }
+
+    public int GetZoneNumber(IZone zone)
+    {
+        for (var i = 0; i < _zones.Count; i++)
+        {
+            if (_zones[i].Equals(zone)) return i;
+        }
+
+        return -1;
     }
 
     public bool IsFromSameZone(Cell c1, Cell c2)

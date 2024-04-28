@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -169,11 +170,32 @@ public static class TectonicCellUtility
         }
     }
 
+    public static IEnumerable<Cell> SeenCells(IReadOnlyTectonic tectonic, Cell cell)
+    {
+        var zone = tectonic.GetZone(cell);
+        foreach (var c in zone)
+        {
+            if (c != cell) yield return c;
+        }
+
+        foreach (var c in GetNeighbors(cell, tectonic.RowCount, tectonic.ColumnCount))
+        {
+            if (!zone.Contains(c)) yield return c;
+        }
+    }
+
     public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, IReadOnlyList<Cell> cells)
     {
-        if (cells.Count == 0) yield break;
-        if (cells.Count == 1) yield break; //TODO
+        return cells.Count switch
+        {
+            0 => Enumerable.Empty<Cell>(),
+            1 => SeenCells(tectonic, cells[0]),
+            _ => CheckedSharedSeenCells(tectonic, cells)
+        };
+    }
 
+    private static IEnumerable<Cell> CheckedSharedSeenCells(IReadOnlyTectonic tectonic, IReadOnlyList<Cell> cells)
+    {
         foreach (var cell in SharedSeenCells(tectonic, cells[0], cells[1]))
         {
             bool ok = true;

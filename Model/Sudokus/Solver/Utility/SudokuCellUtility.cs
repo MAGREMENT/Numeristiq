@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Helpers;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -113,7 +111,7 @@ public static class SudokuCellUtility
         return result;
     }
     
-    public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2) //TODO "AsList"
+    public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
     {
         return Searcher.SharedSeenCells(row1, col1, row2, col2);
     }

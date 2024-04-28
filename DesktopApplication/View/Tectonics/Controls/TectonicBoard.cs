@@ -299,9 +299,8 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     public void ShowPossibilities(int row, int column, IEnumerable<int> possibilities)
     {
         var zoneSize = _associatedCells.CountAt(row, column);
-        var posSize = _cellSize / zoneSize;
+        var posSize = GetPossibilitySize(row, column);
         var textSize = posSize * 3 / 4;
-        var delta = (_cellSize - posSize) / 2;
         
         foreach (var possibility in possibilities)
         {
@@ -310,7 +309,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             Dispatcher.Invoke(() =>
             {
                 Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), textSize,
-                    DefaultNumberBrush, new Rect(GetLeft(column) + (possibility - 1) * posSize, GetTop(row) + delta, posSize,
+                    DefaultNumberBrush, new Rect(GetLeft(row, column, possibility), GetTop(row, column, possibility), posSize,
                         posSize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center)); 
             });
         }
@@ -436,9 +435,8 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
     {
         var size = GetPossibilitySize(row, col);
-        var delta = (_cellSize - size) / 2;
         
-        Layers[PossibilityHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col) + (possibility - 1) * size, GetTop(row) + delta,
+        Layers[PossibilityHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(row, col, possibility), GetTop(row, col, possibility),
             size, size), App.Current.ThemeInformation.ToBrush(coloration)));
     }
 
@@ -451,8 +449,8 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     public void CreateLink(int rowFrom, int colFrom, int possibilityFrom, int rowTo, int colTo, int possibilityTo,
         LinkStrength strength, LinkOffsetSidePriority priority)
     {
-        var from = Center(rowFrom, colFrom, possibilityFrom);
-        var to = Center(rowTo, colTo, possibilityTo);
+        var from = GetCenter(rowFrom, colFrom, possibilityFrom);
+        var to = GetCenter(rowTo, colTo, possibilityTo);
         var middle = new Point(from.X + (to.X - from.X) / 2, from.Y + (to.Y - from.Y) / 2);
 
         var offsets = MathUtility.ShiftSecondPointPerpendicularly(from, middle, LinkOffset);
@@ -518,18 +516,65 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         return _cellSize + _bigLineWidth - _smallLineWidth;
     }
 
-    private Point Center(int row, int col, int possibility)
+    private double GetLeft(int row, int column, int possibility)
     {
-        var size = GetPossibilitySize(row, col);
-        var delta = (_cellSize - size) / 2;
+        var l = GetLeft(column);
+        var size = GetPossibilitySize(row, column);
+        switch (_associatedCells.CountAt(row, column))
+        {
+            case 1 : return l + (_cellSize - size) / 2;
+            case 2 : return l + size * (possibility - 1);
+            case 3 :
+                if(possibility == 1) return l + (_cellSize - size) / 2;
+                return l + size * (possibility - 2);
+            case 4 : return l + size * ((possibility - 1) % 2);
+            case 5 :
+                if (possibility is 1 or 4) return l;
+                if(possibility is 3) return l + (_cellSize - size) / 2;
+                return l + (_cellSize - size);
+            default: return 0;
+        }
+    }
 
-        return new Point(GetLeft(col) + size * (possibility -1) + size / 2, GetTop(row) + delta + size / 2);
+    private double GetTop(int row, int column, int possibility)
+    {
+        var t = GetTop(row);
+        var size = GetPossibilitySize(row, column);
+        switch (_associatedCells.CountAt(row, column))
+        {
+            case 1 :
+            case 2 : return t + (_cellSize - size) / 2;
+            case 3 :
+                if (possibility == 1) return t;
+                return t + size;
+            case 4 : return t + size * ((possibility - 1) / 2);
+            case 5 :
+                if (possibility is 1 or 2) return t;
+                if(possibility is 3) return t + (_cellSize - size) / 2;
+                return t + (_cellSize - size);
+            default: return 0;
+        }
+    }
+
+    private Point GetCenter(int row, int col, int possibility)
+    {
+        var halfSize = GetPossibilitySize(row, col) / 2;
+
+        return new Point(GetLeft(row, col, possibility) + halfSize,
+            GetTop(row, col, possibility) + halfSize);
     }
 
     private double GetPossibilitySize(int row, int col)
     {
-        var zoneSize = _associatedCells.CountAt(row, col);
-        return _cellSize / zoneSize;
+        return _associatedCells.CountAt(row, col) switch
+        {
+            1 => _cellSize / 4 * 3,
+            2 => _cellSize / 2,
+            3 => _cellSize / 2,
+            4 => _cellSize / 2,
+            5 => _cellSize / 3,
+            _ => 0
+        };
     }
 
     private void UpdateSize()
