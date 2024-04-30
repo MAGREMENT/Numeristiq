@@ -177,14 +177,14 @@ public class WXYZWingStrategy : SudokuStrategy
 
         foreach (var possibility in possibilities.EnumeratePossibilities())
         {
-            SharedUnits? sharedUnits = null;
+            SharedHouses? sharedUnits = null;
             bool nope = false;
             
             foreach (var current in miniPositions)
             {
                 if (!strategyUser.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
 
-                if (sharedUnits is null) sharedUnits = new SharedUnits(current);
+                if (sharedUnits is null) sharedUnits = new SharedHouses(current);
                 else
                 {
                     sharedUnits.Share(current);
@@ -211,7 +211,7 @@ public class WXYZWingStrategy : SudokuStrategy
                 
                 if (!strategyUser.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
 
-                if (sharedUnits is null) sharedUnits = new SharedUnits(current);
+                if (sharedUnits is null) sharedUnits = new SharedHouses(current);
                 else
                 {
                     sharedUnits.Share(current);

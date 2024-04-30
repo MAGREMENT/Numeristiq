@@ -207,6 +207,11 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         };
     }
 
+    public void SetOptimalCellSize(double space)
+    {
+        PossibilitySize = (int)((space - 4 * BigLineWidth - 6 * SmallLineWidth) / 27);
+    }
+
     #region ISudokuDrawer
 
     public void PutCursorOn(Cell cell)

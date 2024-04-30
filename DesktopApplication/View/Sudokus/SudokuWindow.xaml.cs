@@ -11,6 +11,7 @@ public partial class SudokuWindow
 
     private int _currentPage = -1;
     private bool _cancelNavigation = true;
+    private readonly bool _initialized;
     
     public SudokuWindow()
     {
@@ -27,6 +28,8 @@ public partial class SudokuWindow
         };
 
         SwapPage(0);
+
+        _initialized = true;
     }
     
     private void Minimize()
@@ -57,5 +60,17 @@ public partial class SudokuWindow
     private void CancelNavigation(object sender, NavigatingCancelEventArgs e)
     {
         if(_cancelNavigation) e.Cancel = true;
+    }
+
+    private void UpdatePageSize(object sender, SizeChangedEventArgs e)
+    {
+        if (!_initialized) return;
+        
+        Frame.Width = ActualWidth;
+        Frame.Height = ActualHeight - 90;
+        foreach (var page in _pages)
+        {
+            page.UpdateSize(Frame.Width, Frame.Height);   
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using DesktopApplication.Presenter.Sudokus.Generate;
 using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.Presenter.Sudokus.Play;
@@ -75,9 +76,24 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
     {
         _strategiesRepository?.Upload(_strategyManager.Strategies);
     }
+
+    public void Upload(Stream stream)
+    {
+        if (_strategiesRepository is not SudokuStrategiesJSONRepository r) return;
+        r.Upload(_strategyManager.Strategies, stream);
+    }
+
+    public void Download(Stream stream)
+    {
+        if (_strategiesRepository is not SudokuStrategiesJSONRepository r) return;
+        _strategyManager.ClearStrategies();
+        _strategyManager.AddStrategies(r.Download(stream));
+    }
 }
 
 public interface IStrategyRepositoryUpdater
 {
     public void Update();
+    public void Upload(Stream stream);
+    public void Download(Stream stream);
 }

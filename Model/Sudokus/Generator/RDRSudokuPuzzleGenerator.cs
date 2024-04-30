@@ -100,10 +100,10 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
 
     private bool IsSudokuValid(IReadOnlySudoku sudoku)
     {
-        if (KeepUniqueness) return BackTracking.Fill(sudoku.Copy(),
-                ConstantPossibilitiesGiver.Instance, 2).Length == 1;
+        if (KeepUniqueness) return BackTracking.Count(sudoku.Copy(),
+                ConstantPossibilitiesGiver.Instance, 2) == 1;
 
-        return BackTracking.Fill(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 1).Length > 0;
+        return BackTracking.Count(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 1) > 0;
     }
 }
 

@@ -589,33 +589,40 @@
 		    </Setter>
 	    </Style>
 	    
+	    <ControlTemplate TargetType="Button" x:Key="FullColorButton">
+		    <Border Padding="3" BorderThickness="0" Background="{TemplateBinding Background}"
+		            CornerRadius="2">
+			    <ContentPresenter
+				    Margin="0"
+				    HorizontalAlignment="Center"
+				    VerticalAlignment="Center"
+				    Focusable="False"
+				    RecognizesAccessKey="True" />
+		    </Border>
+					    
+		    <ControlTemplate.Triggers>
+			    <Trigger Property="IsMouseOver" Value="True">
+				    <Setter Property="Background" Value="{DynamicResource Accent}"></Setter>
+			    </Trigger>
+		    </ControlTemplate.Triggers>
+	    </ControlTemplate>
+	    
 	    <Style x:Key="FullPrimaryButton" TargetType="Button">
 		    <Setter Property="Foreground" Value="White"/>
 		    <Setter Property="FontWeight" Value="SemiBold"/>
 		    <Setter Property="FontSize" Value="15"/>
 		    <Setter Property="Background" Value="{DynamicResource Primary1}"/>
 		    <Setter Property="VerticalAlignment" Value="Center"/>
-		    <Setter Property="Template">
-			    <Setter.Value>
-				    <ControlTemplate TargetType="Button">
-					    <Border Padding="3" BorderThickness="0" Background="{TemplateBinding Background}"
-					            CornerRadius="2">
-						    <ContentPresenter
-							    Margin="0"
-							    HorizontalAlignment="Center"
-							    VerticalAlignment="Center"
-							    Focusable="False"
-							    RecognizesAccessKey="True" />
-					    </Border>
-				    </ControlTemplate>
-			    </Setter.Value>
-		    </Setter>
-		    
-		    <Style.Triggers>
-			    <Trigger Property="IsMouseOver" Value="True">
-				    <Setter Property="Background" Value="{DynamicResource Accent}"></Setter>
-			    </Trigger>
-		    </Style.Triggers>
+		    <Setter Property="Template" Value="{StaticResource FullColorButton}"/>
+	    </Style>
+	    
+	    <Style x:Key="FullSecondaryButton" TargetType="Button">
+		    <Setter Property="Foreground" Value="White"/>
+		    <Setter Property="FontWeight" Value="SemiBold"/>
+		    <Setter Property="FontSize" Value="15"/>
+		    <Setter Property="Background" Value="{DynamicResource Secondary1}"/>
+		    <Setter Property="VerticalAlignment" Value="Center"/>
+		    <Setter Property="Template" Value="{StaticResource FullColorButton}"/>
 	    </Style>
 
 		<Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">

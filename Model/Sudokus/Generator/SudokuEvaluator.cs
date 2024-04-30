@@ -7,7 +7,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Generator;
 
-public class SudokuEvaluator
+public class SudokuEvaluator : IStrategiesContext
 {
     private readonly SudokuSolver _solver;
     private readonly RatingTracker _rTracker = new();
@@ -47,6 +47,17 @@ public class SudokuEvaluator
     public void SetCriterias(UniqueList<EvaluationCriteria> criteriaList)
     {
         _criterias = criteriaList.Copy();
+    }
+
+    public IReadOnlyList<string> GetUsedStrategiesName()
+    {
+        string[] result = new string[_solver.StrategyManager.Strategies.Count];
+        for (int i = 0; i < _solver.StrategyManager.Strategies.Count; i++)
+        {
+            result[i] = _solver.StrategyManager.Strategies[i].Name;
+        }
+
+        return result;
     }
 }
 

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Model.Helpers.Descriptions;
 using Model.Sudokus.Solver;
 
@@ -13,4 +14,6 @@ public interface ISudokuManageView
     public void SetManageableSettings(StrategySettingsPresenter presenter);
     public void SetStrategyDescription(IDescription description);
     public void ClearSelectedStrategy();
+    Stream? GetUploadPresetStream();
+    Stream? GetDownloadPresetStream();
 }

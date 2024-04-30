@@ -11,7 +11,26 @@ public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<Sudok
 
     public override IReadOnlyList<SudokuStrategy>? Download()
     {
-        var download = InternalDownload<StrategyDAO[]>();
+        return To(InternalDownload<StrategyDAO[]>());
+    }
+
+    public override bool Upload(IReadOnlyList<SudokuStrategy> DAO)
+    {
+        return InternalUpload(To(DAO));
+    }
+    
+    public IReadOnlyList<SudokuStrategy>? Download(Stream stream)
+    {
+        return To(InternalDownload<StrategyDAO[]>(stream));
+    }
+
+    public bool Upload(IReadOnlyList<SudokuStrategy> DAO, Stream stream)
+    {
+        return InternalUpload(To(DAO), stream);
+    }
+
+    private static List<SudokuStrategy>? To(StrategyDAO[]? download)
+    {
         if (download is null) return null;
 
         var result = new List<SudokuStrategy>();
@@ -24,7 +43,7 @@ public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<Sudok
         return result;
     }
 
-    public override bool Upload(IReadOnlyList<SudokuStrategy> DAO)
+    private static StrategyDAO[] To(IReadOnlyList<SudokuStrategy> DAO)
     {
         var toUpload = new StrategyDAO[DAO.Count];
         for (int i = 0; i < DAO.Count; i++)
@@ -32,7 +51,7 @@ public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<Sudok
             toUpload[i] = StrategyDAO.From(DAO[i]);
         }
 
-        return InternalUpload(toUpload);
+        return toUpload;
     }
 }
 

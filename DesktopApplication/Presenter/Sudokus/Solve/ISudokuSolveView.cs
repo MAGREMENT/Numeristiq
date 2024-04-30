@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Steps;
 using Model.Sudokus.Solver;

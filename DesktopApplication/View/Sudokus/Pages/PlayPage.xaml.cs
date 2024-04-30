@@ -102,6 +102,11 @@ public partial class PlayPage : ISudokuPlayView
         return settings;
     }
 
+    protected override void InternalUpdateSize()
+    {
+        
+    }
+
     private void SelectCell(int row, int col)
     {
         _presenter.SelectCell(new Cell(row, col));

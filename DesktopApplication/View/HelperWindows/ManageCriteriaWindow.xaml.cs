@@ -65,7 +65,16 @@ public partial class ManageCriteriaWindow : IManageCriteriaView
     public void SetButtonAction(bool toAdd)
     {
         Action.Visibility = Visibility.Visible;
-        Action.Content = toAdd ? "Add" : "Remove";
+        if (toAdd)
+        {
+            Action.Content = "Add";
+            Action.Style = (Style)Action.FindResource("FullPrimaryButton");
+        }
+        else
+        {
+            Action.Content = "Remove";
+            Action.Style = (Style)Action.FindResource("FullSecondaryButton");
+        }
     }
 
     public void SetCriteriaList(IReadOnlyList<EvaluationCriteria> criteriaList)

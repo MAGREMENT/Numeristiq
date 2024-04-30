@@ -132,3 +132,30 @@ public class CheckBoxInteractionInterface : ISettingInteractionInterface
         return value;
     }
 }
+
+public class AutoFillingInteractionInterface : ISettingInteractionInterface
+{
+    private readonly IReadOnlyList<string> _allowed;
+
+    public AutoFillingInteractionInterface(IReadOnlyList<string> allowed)
+    {
+        _allowed = allowed;
+    }
+
+    public string Fill(string s)
+    {
+        if (string.IsNullOrWhiteSpace(s)) return _allowed[0];
+        
+        foreach (var str in _allowed)
+        {
+            if (str.Contains(s)) return str;
+        }
+
+        return _allowed[0];
+    }
+
+    public SettingValue Verify(SettingValue value)
+    {
+        return _allowed.Contains(value.ToString()) ? value : new StringSettingValue(_allowed[0]);
+    }
+}

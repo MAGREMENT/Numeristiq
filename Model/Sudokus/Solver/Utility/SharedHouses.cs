@@ -4,20 +4,20 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility;
 
-public class SharedUnits : IEnumerable<SharedUnit>
+public class SharedHouses : IEnumerable<House>
 {
-    //3 times 4 bits representing the unit number and then 1 bit for if it is shared (1) or not (0)
+    //3 times 4 bits representing the house number and then 1 bit for if it is shared (1) or not (0)
     //1mmmm1cccc1rrrr
     private int _units;
     public int Count { get; private set; }
 
-    private SharedUnits(int row, int col)
+    private SharedHouses(int row, int col)
     {
         _units = row | 1 << 4 | col << 5 | 1 << 9 | ToGridNumber(row, col) << 10 | 1 << 14;
         Count = 3;
     }
 
-    public SharedUnits(Cell cell) : this(cell.Row, cell.Column)
+    public SharedHouses(Cell cell) : this(cell.Row, cell.Column)
     {
         
     }
@@ -87,27 +87,15 @@ public class SharedUnits : IEnumerable<SharedUnit>
         return (_units >> 10) & 0xF;
     }
 
-    public IEnumerator<SharedUnit> GetEnumerator()
+    public IEnumerator<House> GetEnumerator()
     {
-        if (Peek(4)) yield return new SharedUnit(Unit.Row, GetRow());
-        if (Peek(9)) yield return new SharedUnit(Unit.Column, GetColumn());
-        if (Peek(14)) yield return new SharedUnit(Unit.MiniGrid, GetGridNumber());
+        if (Peek(4)) yield return new House(Unit.Row, GetRow());
+        if (Peek(9)) yield return new House(Unit.Column, GetColumn());
+        if (Peek(14)) yield return new House(Unit.MiniGrid, GetGridNumber());
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
-}
-
-public readonly struct SharedUnit
-{
-    public SharedUnit(Unit unit, int number)
-    {
-        Unit = unit;
-        Number = number;
-    }
-
-    public Unit Unit { get; }
-    public int Number { get; }
 }

@@ -7,12 +7,12 @@ public static class CriteriaPool
 {
     private static readonly Dictionary<string, GiveCriteria> Pool = new()
     {
-        {MinimumRatingCriteria.OfficialName, () => new MinimumRatingCriteria()},
-        {MaximumRatingCriteria.OfficialName, () => new MaximumRatingCriteria()},
-        {MinimumHardestDifficultyCriteria.OfficialName, () => new MinimumHardestDifficultyCriteria()},
-        {MaximumHardestDifficultyCriteria.OfficialName, () => new MaximumHardestDifficultyCriteria()},
-        {MustUseStrategyCriteria.OfficialName, () => new MustUseStrategyCriteria()},
-        {CantUseStrategyCriteria.OfficialName, () => new CantUseStrategyCriteria()},
+        {MinimumRatingCriteria.OfficialName, _ => new MinimumRatingCriteria()},
+        {MaximumRatingCriteria.OfficialName, _ => new MaximumRatingCriteria()},
+        {MinimumHardestDifficultyCriteria.OfficialName, _ => new MinimumHardestDifficultyCriteria()},
+        {MaximumHardestDifficultyCriteria.OfficialName, _ => new MaximumHardestDifficultyCriteria()},
+        {MustUseStrategyCriteria.OfficialName, c => new MustUseStrategyCriteria(c.GetUsedStrategiesName())},
+        {CantUseStrategyCriteria.OfficialName, c => new CantUseStrategyCriteria(c.GetUsedStrategiesName())},
     };
     
     public static IEnumerable<string> EnumerateCriterias(string filter)
@@ -27,8 +27,13 @@ public static class CriteriaPool
 
     public static IEnumerable<string> EnumerateCriterias() => Pool.Keys;
 
-    public static EvaluationCriteria? CreateFrom(string s) 
-        => Pool.TryGetValue(s, out var giver) ? giver() : null;
+    public static EvaluationCriteria? CreateFrom(string s, IStrategiesContext context) 
+        => Pool.TryGetValue(s, out var giver) ? giver(context) : null;
 }
 
-public delegate EvaluationCriteria GiveCriteria();
+public delegate EvaluationCriteria GiveCriteria(IStrategiesContext context);
+
+public interface IStrategiesContext
+{
+    IReadOnlyList<string> GetUsedStrategiesName();
+}

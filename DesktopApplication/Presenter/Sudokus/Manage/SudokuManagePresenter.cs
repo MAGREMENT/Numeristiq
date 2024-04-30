@@ -80,4 +80,21 @@ public class SudokuManagePresenter
     {
         _view.ClearSelectedStrategy();
     }
+    
+    
+    public void UploadPreset()
+    {
+        using var stream = _view.GetUploadPresetStream();
+        if (stream is null) return;
+        
+        _updater.Upload(stream);
+    }
+
+    public void DownloadPreset()
+    {
+        using var stream = _view.GetDownloadPresetStream();
+        if (stream is null) return;
+
+        _updater.Download(stream);
+    }
 }

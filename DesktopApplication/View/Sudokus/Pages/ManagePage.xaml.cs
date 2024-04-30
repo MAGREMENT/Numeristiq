@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -7,6 +8,7 @@ using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.View.Settings;
 using DesktopApplication.View.Utility;
+using Microsoft.Win32;
 using Model.Helpers.Descriptions;
 using Model.Sudokus.Solver;
 
@@ -138,6 +140,38 @@ public partial class ManagePage : ISudokuManageView
         InfoPanel.Children.Clear();
     }
 
+    public Stream? GetUploadPresetStream()
+    {
+        var dialog = new SaveFileDialog
+        {
+            AddExtension = true,
+            DefaultExt = "json",
+            RestoreDirectory = true,
+            Filter = "JSON File (*.json)|*.json"
+        };
+        var result = dialog.ShowDialog();
+
+        if (result != true) return null;
+        
+        return dialog.OpenFile();
+    }
+
+    public Stream? GetDownloadPresetStream()
+    {
+        var dialog = new OpenFileDialog
+        {
+            AddExtension = true,
+            Filter = "JSON File (*.json)|*.json",
+            RestoreDirectory = true,
+            DefaultExt = "json"
+        };
+        var result = dialog.ShowDialog();
+
+        if (result != true) return null;
+        
+        return dialog.OpenFile();
+    }
+
     public override void OnShow()
     {
         _presenter.OnShow();
@@ -151,6 +185,11 @@ public partial class ManagePage : ISudokuManageView
     public override object? TitleBarContent()
     {
         return null;
+    }
+
+    protected override void InternalUpdateSize()
+    {
+        
     }
 
     private void OnSearch(string s)
@@ -213,6 +252,16 @@ public partial class ManagePage : ISudokuManageView
             default: return null;
         }
     }
+
+    private void Upload(object sender, RoutedEventArgs e)
+    {
+        _presenter.UploadPreset();
+    }
+    
+    private void Download(object sender, RoutedEventArgs e)
+    {
+        _presenter.DownloadPreset();
+    } 
 }
 
 

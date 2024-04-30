@@ -3,13 +3,28 @@ using Model.Sudokus.Solver.Position;
 
 namespace Model.Sudokus.Solver.Utility;
 
-public static class BackTracking //TODO count method
+public static class BackTracking
 {
     public static Sudoku[] Fill(Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
-        List<Sudoku> result = new();
-        
-        var positions = new GridPositions[] { new(), new(), new(), new(), new(), new(), new(), new(), new() };
+        var result = new SudokuBackTrackingListResult();
+        Start(result, start, giver, stopAt);
+        return result.ToArray();
+    }
+
+    public static int Count(Sudoku start, IPossibilitiesGiver giver, int stopAt)
+    {
+        var result = new SudokuBackTrackingCountResult();
+        Start(result, start, giver, stopAt);
+        return result.Count;
+    }
+    
+    private static void Start(ISudokuBackTrackingResult result, Sudoku start, IPossibilitiesGiver giver, int stopAt)
+    {
+        var positions = new GridPositions[]
+        {
+            new(), new(), new(), new(), new(), new(), new(), new(), new()
+        };
 
         for (int row = 0; row < 9; row++)
         {
@@ -23,16 +38,15 @@ public static class BackTracking //TODO count method
         }
         
         Search(result, start, giver, positions, 0, stopAt);
-
-        return result.ToArray();
     }
     
-    private static bool Search(List<Sudoku> result, Sudoku current, IPossibilitiesGiver giver,
-        GridPositions[] positions, int position, int stopAt)
+    
+    private static bool Search(ISudokuBackTrackingResult result, Sudoku current, IPossibilitiesGiver giver,
+        IReadOnlyList<GridPositions> positions, int position, int stopAt)
     {
         if (position == 81)
         {
-            result.Add(current.Copy());
+            result.AddNewResult(current.Copy());
             return result.Count >= stopAt;
         }
 
@@ -69,3 +83,28 @@ public interface IPossibilitiesGiver
 {
     IEnumerable<int> EnumeratePossibilitiesAt(int row, int col);
 }
+
+public interface ISudokuBackTrackingResult
+{
+    void AddNewResult(Sudoku sudoku);
+    int Count { get; }
+}
+
+public class SudokuBackTrackingListResult : List<Sudoku>, ISudokuBackTrackingResult
+{
+    public void AddNewResult(Sudoku sudoku)
+    {
+        Add(sudoku.Copy());
+    }
+}
+
+public class SudokuBackTrackingCountResult : ISudokuBackTrackingResult
+{
+    public void AddNewResult(Sudoku sudoku)
+    {
+        Count++;
+    }
+
+    public int Count { get; private set; }
+}
+

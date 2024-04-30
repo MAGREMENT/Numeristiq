@@ -213,8 +213,8 @@ public class SudokuPlayPresenter
 
         if (_settings.TestSolutionCount)
         {
-            var list = await Task.Run(() => BackTracking.Fill(sudoku, _player, 1));
-            if (list.Length == 0) return new Clue<ISudokuHighlighter>("The current sudoku has no solution"); 
+            var count = await Task.Run(() => BackTracking.Count(sudoku, _player, 1));
+            if (count == 0) return new Clue<ISudokuHighlighter>("The current sudoku has no solution"); 
         }
         
         _solver.SetState(_player);

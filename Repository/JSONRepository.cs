@@ -55,6 +55,19 @@ public class JSONRepository<T> : IRepository<T> where T : class?
         }
     }
 
+    protected TDownload? InternalDownload<TDownload>(Stream stream) where TDownload : class?
+    {
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+        try
+        {
+            return JsonSerializer.Deserialize<TDownload>(reader.ReadToEnd());
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     public virtual bool Upload(T DAO)
     {
         return InternalUpload(DAO);
@@ -72,6 +85,24 @@ public class JSONRepository<T> : IRepository<T> where T : class?
                 Access = FileAccess.Write,
                 Share = FileShare.None
             });
+
+            writer.Write(JsonSerializer.Serialize(DAO, new JsonSerializerOptions
+            {
+                WriteIndented = true
+            }));
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+    
+    protected bool InternalUpload<TUpload>(TUpload DAO, Stream stream)
+    {
+        try
+        {
+            using var writer = new StreamWriter(stream);
 
             writer.Write(JsonSerializer.Serialize(DAO, new JsonSerializerOptions
             {

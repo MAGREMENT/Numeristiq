@@ -7,8 +7,10 @@
         xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
         Height="750" Width="1300"
+        MinHeight="750" MinWidth="1300"
         WindowStyle="None"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        SizeChanged="UpdatePageSize">
     
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
@@ -17,12 +19,12 @@
     <Grid Background="{DynamicResource Background1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height="660"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
         
         <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
-                                AllowResize="False" AppIcon="../Images/appicon.png" AppTitle="NextLogic"/>
+                                AllowResize="True" AppIcon="../Images/appicon.png" AppTitle="NextLogic"/>
         
         <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Width="1300" Height="660" x:Name="Frame" Navigating="CancelNavigation"/>
         

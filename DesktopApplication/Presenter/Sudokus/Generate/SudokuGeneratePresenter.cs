@@ -131,6 +131,11 @@ public class SudokuGeneratePresenter : IManageCriteriaCallback
         _evaluator.SetCriterias(criteriaList);
         _view.SetCriteriaList(criteriaList);
     }
+
+    public IReadOnlyList<string> GetUsedStrategiesName()
+    {
+        return _evaluator.GetUsedStrategiesName();
+    }
 }
 
 public class ManageCriteriaPresenterBuilder
@@ -148,7 +153,7 @@ public class ManageCriteriaPresenterBuilder
     public ManageCriteriaPresenter Build(IManageCriteriaView view) => new(view, _criteriaList, _callback);
 }
 
-public interface IManageCriteriaCallback
+public interface IManageCriteriaCallback : IStrategiesContext
 {
     public void SetCriterias(UniqueList<EvaluationCriteria> criteriaList);
 }

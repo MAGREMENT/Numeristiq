@@ -36,7 +36,7 @@ public class SudokuPuzzleGenerator
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest?.Name);
 
-                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, 2);
                 Assert.That(solution, Has.Length.EqualTo(1));
                 Assert.That(solution[0].IsCorrect, Is.True);
             }
@@ -55,7 +55,7 @@ public class SudokuPuzzleGenerator
                 solver.Solve();
                 Console.WriteLine(" - " + finder.Hardest?.Name);
 
-                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+                var solution = BackTracking.Fill(p, ConstantPossibilitiesGiver.Instance, 2);
                 Assert.That(solution, Has.Length.EqualTo(1));
                 Assert.That(solution[0].IsCorrect, Is.True);
             }

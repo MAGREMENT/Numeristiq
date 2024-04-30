@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver.Strategies;
 using Model.Sudokus.Solver.Trackers;
@@ -9,8 +11,9 @@ public class CantUseStrategyCriteria : EvaluationCriteria
 {
     public const string OfficialName = "Can't Use Strategy";
     
-    public CantUseStrategyCriteria() : base(OfficialName, 
-        new StringSetting("StrategyName", null! /*TODO*/, NakedSingleStrategy.OfficialName))
+    public CantUseStrategyCriteria(IReadOnlyList<string> usedStrategies) : base(OfficialName, 
+        new StringSetting("StrategyName", new AutoFillingInteractionInterface(usedStrategies)
+            , NakedSingleStrategy.OfficialName))
     {
     }
 

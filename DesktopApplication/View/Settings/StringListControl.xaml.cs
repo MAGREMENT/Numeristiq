@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using Model.Helpers.Settings;
@@ -10,12 +11,15 @@ public partial class StringListControl
     private readonly bool _raiseEvent;
     private readonly int[]? _indexTranslator;
     
-    public StringListControl(ISettingCollection presenter, IReadOnlySetting setting, int index, int[]? indexTranslator) : base(presenter, setting, index)
+    public StringListControl(ISettingCollection presenter, IReadOnlySetting setting, int index) : base(presenter, setting, index)
     {
         InitializeComponent();
 
+        if (setting.InteractionInterface is not IStringListInteractionInterface i) throw new Exception();
+        _indexTranslator = i.IndexTranslator;
+
         SettingName.Text = setting.Name;
-        foreach (var s in setting.InteractionInterface as IStringListInteractionInterface ?? Enumerable.Empty<string>())
+        foreach (var s in i)
         {
             ComboBox.Items.Add(new ComboBoxItem
             {
@@ -25,8 +29,6 @@ public partial class StringListControl
                 HorizontalAlignment = HorizontalAlignment.Center
             });
         }
-        
-        _indexTranslator = indexTranslator;
 
         _raiseEvent = false;
         ComboBox.SelectedIndex = GetValueIndex(setting.Get());

@@ -26,11 +26,26 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="40"/>
                 </Grid.ColumnDefinitions>
             
                 <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                            Foreground="{DynamicResource Text}">Strategies</TextBlock>
-                <Border Grid.Column="1" Width="40" Height="40" Background="{DynamicResource Background1}"
+                
+                <Button Grid.Column="1" Width="40" Height="40" Style="{StaticResource SimpleHoverButton}"
+                        Click="Upload">
+                    <Path Width="30" Height="30" Stroke="{DynamicResource Text}" HorizontalAlignment="Center"
+                          VerticalAlignment="Center" Data="M 5,25 H 25 M 15,5 V 20 M 10,13 15,20 20,13"/>
+                </Button>
+                
+                <Button Grid.Column="2" Width="40" Height="40" Style="{StaticResource SimpleHoverButton}"
+                        Click="Download">
+                    <Path Width="30" Height="30" Stroke="{DynamicResource Text}" HorizontalAlignment="Center"
+                          VerticalAlignment="Center" Data="M 5,25 H 25 M 15,5 V 20 M 10,12 15,5 20,12"/>
+                </Button>
+                
+                <Border Grid.Column="3" Width="40" Height="40" Background="{DynamicResource Background1}"
                         AllowDrop="True" Drop="DropInBin">
                     <Image VerticalAlignment="Center" HorizontalAlignment="Center"
                            Source="../../Images/bin.png" Width="30" Height="30" x:Name="Bin"/>

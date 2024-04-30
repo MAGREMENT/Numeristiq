@@ -52,6 +52,11 @@ public partial class GeneratePage : ISudokuGenerateView
         return settings;
     }
 
+    protected override void InternalUpdateSize()
+    {
+        
+    }
+
     public void ActivateFilledSudokuGenerator(bool activated)
     {
         FSG.Dispatcher.Invoke(() => FSG.Activate(activated));

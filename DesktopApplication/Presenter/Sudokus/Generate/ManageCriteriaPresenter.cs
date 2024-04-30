@@ -30,7 +30,7 @@ public class ManageCriteriaPresenter
 
     public void SelectCriteriaFromSearch(string s)
     {
-        var criteria = CriteriaPool.CreateFrom(s);
+        var criteria = CriteriaPool.CreateFrom(s, _callback);
         if (criteria is null) return;
 
         if (_currentlySelectedCriteria is not null)

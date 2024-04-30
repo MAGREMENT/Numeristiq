@@ -10,8 +10,8 @@
       Title="SolvePage" Height="660" Width="1300">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="650"/>
-            <ColumnDefinition Width="400"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="405"/>
             <ColumnDefinition Width="250"/>
         </Grid.ColumnDefinitions>
         
@@ -27,7 +27,7 @@
                                  CellSelected="SelectCell" KeyDown="DoBoardInput"/>
         </Border>
         
-        <Grid Grid.Column="1" Margin="0, 0, 0, 5">
+        <Grid Grid.Column="1" Margin="0, 0, 5, 5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="200"/>
                 <ColumnDefinition Width="200"/>
@@ -56,17 +56,11 @@
         
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <Grid Grid.Row="0" Height="40">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                
+            <Grid Grid.Row="0">
                 <TextBlock Grid.Column="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                            Foreground="{DynamicResource Text}">Strategies</TextBlock>
             </Grid>
