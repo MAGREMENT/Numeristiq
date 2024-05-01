@@ -17,7 +17,7 @@ public class StepManagingChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<T
     private readonly IPushHandler<TVerifier, THighlighter>[] _pushHandlers =
     {
         new FirstOnlyPushHandler<TVerifier, THighlighter>(), new UnorderedAllPushHandler<TVerifier, THighlighter>(),
-        new BestOnlyPushHandler<TVerifier, THighlighter>()
+        new BestOnlyPushHandler<TVerifier, THighlighter>(), new SortedAllPushHandler<TVerifier, THighlighter>()
     };
 
     public StepManagingChangeBuffer(IStepManagingChangeProducer<TVerifier, THighlighter> changeProducer)
@@ -137,15 +137,13 @@ public class UnorderedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVe
 }
 
 public class BestOnlyPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
-{
-    private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
-    
+{ 
     public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, IStepManagingChangeProducer<TVerifier, THighlighter> producer)
     {
         var state = producer.CurrentState;
 
         var best = commits[0];
-        var comparer = pusher as ICustomCommitComparer<TVerifier, THighlighter> ?? _default;
+        var comparer = pusher as ICommitComparer ??  DefaultCommitComparer.Instance;
 
         for (int i = 1; i < commits.Count; i++)
         {
@@ -164,13 +162,11 @@ public class BestOnlyPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifi
 public class SortedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerifier, THighlighter>
     where TVerifier : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
-    private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
-    
     public void Push(ICommitMaker pusher, List<ChangeCommit<TVerifier, THighlighter>> commits, IStepManagingChangeProducer<TVerifier, THighlighter> producer)
     {
         var state = producer.CurrentState;
         
-        var comparer = pusher as ICustomCommitComparer<TVerifier, THighlighter> ?? _default;
+        var comparer = pusher as ICommitComparer ?? DefaultCommitComparer.Instance;
         
         commits.Sort((c1, c2) => comparer.Compare(c1, c2));
 
@@ -190,7 +186,7 @@ public class SortedAllPushHandler<TVerifier, THighlighter> : IPushHandler<TVerif
     }
 }
 
-public interface ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
+public interface ICommitComparer
 {
     /// <summary>
     /// Compare two commits
@@ -201,15 +197,26 @@ public interface ICustomCommitComparer<TVerifier, THighlighter> where TVerifier 
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
-    public int Compare(ChangeCommit<TVerifier, THighlighter> first, ChangeCommit<TVerifier, THighlighter> second);
+    public int Compare(IChangeCommit first, IChangeCommit second);
 }
 
-public class DefaultCommitComparer<TVerifier, THighlighter> : ICustomCommitComparer<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
+public class DefaultCommitComparer : ICommitComparer
 {
     private const int SolutionAddedValue = 3;
     private const int PossibilityRemovedValue = 1;
-    
-    public int Compare(ChangeCommit<TVerifier, THighlighter> first, ChangeCommit<TVerifier, THighlighter> second)
+
+    private static DefaultCommitComparer? _instance;
+
+    public static DefaultCommitComparer Instance
+    {
+        get
+        {
+            _instance ??= new DefaultCommitComparer();
+            return _instance;
+        }
+    }
+
+    public int Compare(IChangeCommit first, IChangeCommit second)
     {
         int score = 0;
 

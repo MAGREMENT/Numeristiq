@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver;
 using Model.Utility;
@@ -8,11 +9,11 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Strategies;
 
-public class GroupEliminationStrategy : TectonicStrategy
+public class GroupEliminationStrategy : TectonicStrategy, ICommitComparer
 {
     private const int Limit = 4;
     
-    public GroupEliminationStrategy() : base("Group Elimination", StrategyDifficulty.Hard, InstanceHandling.FirstOnly)
+    public GroupEliminationStrategy() : base("Group Elimination", StrategyDifficulty.Hard, InstanceHandling.BestOnly)
     {
     }
 
@@ -83,22 +84,30 @@ public class GroupEliminationStrategy : TectonicStrategy
         return tectonicStrategyUser.ChangeBuffer.Commit(new GroupEliminationReportBuilder(cells.ToArray()))
             && StopOnFirstPush;
     }
+
+    public int Compare(IChangeCommit first, IChangeCommit second)
+    {
+        if (first.TryGetBuilder<GroupEliminationReportBuilder>(out var gerp1)
+            || second.TryGetBuilder<GroupEliminationReportBuilder>(out var gerp2)) return 0;
+
+        return gerp2.Cells.Length - gerp1.Cells.Length;
+    }
 }
 
 public class GroupEliminationReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
 {
-    private readonly Cell[] _cells;
+    public Cell[] Cells { get; }
 
     public GroupEliminationReportBuilder(Cell[] cells)
     {
-        _cells = cells;
+        Cells = cells;
     }
 
     public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableTectonicSolvingState snapshot)
     {
         return new ChangeReport<ITectonicHighlighter>("", lighter =>
         {
-            foreach (var cell in _cells)
+            foreach (var cell in Cells)
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
             }

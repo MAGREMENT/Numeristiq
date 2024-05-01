@@ -3,7 +3,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Player;
 
-public struct PlayerCell
+public struct PlayerCell //TODO make readonly
 {
     /*
      * 0-8 bottom possibilities

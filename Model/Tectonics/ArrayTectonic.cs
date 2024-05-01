@@ -43,15 +43,17 @@ public class ArrayTectonic : ITectonic
         _zones.Add(z);
         foreach (var cell in z)
         {
-            _cells[cell.Row, cell.Column].Zone = z;
+            _cells[cell.Row, cell.Column] += z;
         }
     }
 
     public ITectonic Transfer(int rowCount, int columnCount)
     {
-        if (rowCount == 0 || columnCount == 0) return new BlankTectonic();
+        if (rowCount == 0 && columnCount == 0) return new BlankTectonic();
 
         var result = new ArrayTectonic(rowCount, columnCount);
+        if (rowCount == 0 || columnCount == 0) return result;
+        
         var minRow = Math.Min(rowCount, RowCount);
         var minCol = Math.Min(columnCount, ColumnCount);
         
@@ -80,7 +82,7 @@ public class ArrayTectonic : ITectonic
     public int this[int row, int col]
     {
         get => _cells[row, col].Number;
-        set => _cells[row, col].Number = value;
+        set => _cells[row, col] += value;
     }
 
     public bool MergeZones(Cell c1, Cell c2)
@@ -213,7 +215,7 @@ public class ArrayTectonic : ITectonic
             for (int col = 0; col < ColumnCount; col++)
             {
                 var number = _cells[row, col].Number;
-                if (number != 0) _cells[row, col].Number = number;
+                if (number != 0) _cells[row, col] += number;
             }
         }
 
@@ -260,7 +262,7 @@ public class ArrayTectonic : ITectonic
         _zones.Add(zone);
         foreach (var cell in zone)
         {
-            _cells[cell.Row, cell.Column].Zone = zone;
+            _cells[cell.Row, cell.Column] += zone;
         }
     }
 
@@ -270,7 +272,7 @@ public class ArrayTectonic : ITectonic
         
         foreach (var cell in zone)
         {
-            _cells[cell.Row, cell.Column].Zone = null;
+            _cells[cell.Row, cell.Column] += null;
         }
     }
 
@@ -279,14 +281,29 @@ public class ArrayTectonic : ITectonic
         var zone = _zones[zoneIndex];
         foreach (var cell in zone)
         {
-            if(_cells[cell.Row, cell.Column].Number > zone.Count) _cells[cell.Row, cell.Column].Number = 0;
+            if (_cells[cell.Row, cell.Column].Number > zone.Count) _cells[cell.Row, cell.Column] += 0;
         }
     }
 }
 
-public struct TectonicCell
+public readonly struct TectonicCell
 {
-    public int Number { get; set; }
-    public IZone? Zone { get; set; }
+    public TectonicCell()
+    {
+        Number = 0;
+        Zone = null;
+    }
+
+    public TectonicCell(int number, IZone? zone)
+    {
+        Number = number;
+        Zone = zone;
+    }
+    
+    public int Number { get; }
+    public IZone? Zone { get; }
+
+    public static TectonicCell operator +(TectonicCell left, int n) => new(n, left.Zone);
+    public static TectonicCell operator +(TectonicCell left, IZone? zone) => new(left.Number, zone);
 }
 

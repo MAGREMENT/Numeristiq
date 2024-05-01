@@ -62,9 +62,8 @@ public partial class ManagePage : ISudokuManageView
             var tb = new TextBlock
             {
                 Text = strategy.Name,
-                Padding = new Thickness(5, 5, 0, 5),
-                FontSize = 15,
-                AllowDrop = true
+                AllowDrop = true,
+                Style = (Style)FindResource("SimpleHoverBlock")
             };
             tb.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(strategy.Difficulty));
             

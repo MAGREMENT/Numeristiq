@@ -1,4 +1,6 @@
-﻿namespace Model.Utility;
+﻿using System;
+
+namespace Model.Utility;
 
 public readonly struct MinMax
 {
@@ -24,6 +26,16 @@ public readonly struct MinMax
     public bool IsInBetweenInclusive(int n)
     {
         return n >= Min && n <= Max;
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is MinMax other && other.Min == Min && other.Max == Max;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Min, Max);
     }
 
     public static bool operator ==(MinMax left, MinMax right)

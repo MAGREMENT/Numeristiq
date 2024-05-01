@@ -20,13 +20,12 @@ public class CallReport : IReadOnlyCallReport
 
     public void AddUsedOption(int index)
     {
-        _options[index].IsUsed = true;
+        _options[index] = new OptionValue(true);
     }
 
     public void AddUsedOption(int index, object value)
     {
-        _options[index].IsUsed = true;
-        _options[index].Value = value;
+        _options[index] = new OptionValue(true, value);
     }
 
     public void SetArgumentValue(int index, object value)
@@ -55,8 +54,26 @@ public interface IReadOnlyCallReport
     public object GetArgumentValue(int index);
 }
 
-public struct OptionValue
+public readonly struct OptionValue
 {
-    public bool IsUsed { get; set; }
-    public object? Value { get; set; } 
+    public OptionValue()
+    {
+        IsUsed = false;
+        Value = null;
+    }
+
+    public OptionValue(bool isUsed)
+    {
+        IsUsed = isUsed;
+        Value = null;
+    }
+
+    public OptionValue(bool isUsed, object value)
+    {
+        IsUsed = isUsed;
+        Value = value;
+    }
+
+    public bool IsUsed { get; }
+    public object? Value { get; }
 }

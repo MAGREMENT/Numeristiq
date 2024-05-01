@@ -122,6 +122,11 @@ public partial class GeneratePage : ISudokuGenerateView
         dialog.Show();
     }
 
+    public void CopyToClipboard(string s)
+    {
+        Clipboard.SetText(s);
+    }
+
     private void Generate(object sender, RoutedEventArgs e)
     {
         _presenter.Generate();
@@ -167,5 +172,10 @@ public partial class GeneratePage : ISudokuGenerateView
     private void ShowSeed()
     {
         _presenter.ShowSeed();
+    }
+
+    private void CopyAll(object sender, RoutedEventArgs e)
+    {
+        _presenter.CopyAll();
     }
 }

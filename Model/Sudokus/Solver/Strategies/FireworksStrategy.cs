@@ -12,7 +12,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies;
 
-public class FireworksStrategy : SudokuStrategy
+public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002700109064200050008903004090007000003409800200100003400000000005000900600000
 {
     public const string OfficialName = "Fireworks";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;

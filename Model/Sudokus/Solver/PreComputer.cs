@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.PossibilityPosition;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;
 using Model.Sudokus.Solver.Utility.Exocet;

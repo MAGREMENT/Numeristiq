@@ -19,7 +19,7 @@ public class MustUseStrategyCriteria : EvaluationCriteria
 
     public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
     {
-        return usedStrategiesTracker.WasUsed(_settings[0].ToString()!);
+        return usedStrategiesTracker.WasUsed(_settings[0].Get().ToString()!);
     }
 
     public override bool Equals(object? obj)

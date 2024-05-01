@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Tectonics.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization : TectonicStrategy
+public class AlternatingInferenceGeneralization : TectonicStrategy //TODO manage loops
 {
     private readonly IAlternatingInferenceType _type;
     

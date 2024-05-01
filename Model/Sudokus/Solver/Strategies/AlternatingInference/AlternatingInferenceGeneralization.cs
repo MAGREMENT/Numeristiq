@@ -10,7 +10,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState, ISudokuHighlighter> where T : ISudokuElement
+public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICommitComparer where T : ISudokuElement
 {
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.BestOnly;
 
@@ -31,11 +31,10 @@ public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICustomComm
         _algorithm.Run(strategyUser, _type);
     }
 
-    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> first,
-        ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> second)
+    public int Compare(IChangeCommit first, IChangeCommit second)
     {
-        if (first.Builder is not IReportBuilderWithChain r1 ||
-            second.Builder is not IReportBuilderWithChain r2) return 0;
+        if (first.TryGetBuilder<IReportBuilderWithChain>(out var r1) ||
+            second.TryGetBuilder<IReportBuilderWithChain>(out var r2)) return 0;
 
         var rankDiff = r2.MaxRank() - r1.MaxRank();
         return rankDiff == 0 ? r2.Length() - r1.Length() : rankDiff;

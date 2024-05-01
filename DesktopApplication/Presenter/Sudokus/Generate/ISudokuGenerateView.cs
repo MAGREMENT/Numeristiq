@@ -15,6 +15,7 @@ public interface ISudokuGenerateView
     void AllowCancel(bool allowed);
     void SetCriteriaList(IReadOnlyList<EvaluationCriteria> criteriaList);
     void ShowSudoku(Sudoku sudoku);
+    void CopyToClipboard(string s);
 }
 
 public enum TransitionPlace

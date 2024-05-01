@@ -65,10 +65,22 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <TextBlock Foreground="{DynamicResource Text}" FontSize="18" Margin="5,0,0,0" VerticalAlignment="Center"
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{DynamicResource Text}" FontSize="18" Margin="5,0,0,0" VerticalAlignment="Center"
                        FontWeight="Normal">Final List</TextBlock>
             
-            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}" Margin="0,0,10,10">
+            <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource SimpleHoverButton}" Margin="0, 0, 10, 0" Click="CopyAll">
+                <Path Width="40" Height="40" Stroke="{DynamicResource Text}"
+                      Data="M 7,35 V 10 H 27 V 35 H 7 M 15,10 V 5 H 35 V 30 H 27"/>
+            </Button>
+            
+            <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource TransparentBarScrollView}"
+                          Margin="0,0,10,10">
                 <StackPanel x:Name="Evaluated"/>
             </ScrollViewer>
         </Grid>

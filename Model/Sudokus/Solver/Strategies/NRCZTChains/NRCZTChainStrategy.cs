@@ -13,7 +13,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies.NRCZTChains;
 
-public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
 {
     public const string OfficialNameForDefault = "NRC-Chains";
     public const string OfficialNameForTCondition = "NRCT-Chains";
@@ -184,11 +184,10 @@ public class NRCZTChainStrategy : SudokuStrategy, ICustomCommitComparer<IUpdatab
                                                     && StopOnFirstPush;
     }
 
-    public int Compare(ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> first,
-        ChangeCommit<IUpdatableSudokuSolvingState, ISudokuHighlighter> second)
+    public int Compare(IChangeCommit first, IChangeCommit second)
     {
-        if (first.Builder is not IReportBuilderWithChain f ||
-            second.Builder is not IReportBuilderWithChain s) return 0;
+        if (first.TryGetBuilder<IReportBuilderWithChain>(out var f) ||
+            second.TryGetBuilder<IReportBuilderWithChain>(out var s)) return 0;
 
         return s.Length() - f.Length();
     }

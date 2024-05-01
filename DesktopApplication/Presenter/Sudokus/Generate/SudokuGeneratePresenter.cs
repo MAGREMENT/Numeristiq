@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
@@ -130,6 +131,17 @@ public class SudokuGeneratePresenter : IManageCriteriaCallback
     {
         _evaluator.SetCriterias(criteriaList);
         _view.SetCriteriaList(criteriaList);
+    }
+
+    public void CopyAll()
+    {
+        var builder = new StringBuilder();
+        foreach (var puzzle in _evaluatedList)
+        {
+            builder.Append(SudokuTranslator.TranslateLineFormat(puzzle.Sudoku, _setting.EmptyCellRepresentation));
+            builder.Append('\n');
+        }
+        _view.CopyToClipboard(builder.ToString());
     }
 
     public IReadOnlyList<string> GetUsedStrategiesName()

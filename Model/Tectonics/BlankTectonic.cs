@@ -66,7 +66,7 @@ public class BlankTectonic : ITectonic
 
     public ITectonic Transfer(int rowCount, int columnCount)
     {
-        if (rowCount == 0 || columnCount == 0) return new BlankTectonic();
+        if (rowCount == 0 && columnCount == 0) return new BlankTectonic();
 
         return new ArrayTectonic(rowCount, columnCount);
     }

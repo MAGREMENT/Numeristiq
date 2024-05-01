@@ -12,8 +12,6 @@ public class ClueGetterChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
     
     private readonly List<ChangeCommit<TVerifier, THighlighter>> _commits = new();
     
-    private readonly ICustomCommitComparer<TVerifier, THighlighter> _default = new DefaultCommitComparer<TVerifier, THighlighter>();
-
     private readonly IStepManagingChangeProducer<TVerifier, THighlighter> _producer;
     
     public Clue<THighlighter>? CurrentClue { get; private set; }
@@ -59,7 +57,7 @@ public class ClueGetterChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
         var state = _producer.CurrentState;
 
         var best = _commits[0];
-        var comparer = pusher as ICustomCommitComparer<TVerifier, THighlighter> ?? _default;
+        var comparer = pusher as ICommitComparer ??  DefaultCommitComparer.Instance;
 
         for (int i = 1; i < _commits.Count; i++)
         {
