@@ -1,6 +1,6 @@
 ﻿using Model.Sudokus;
 using Model.Sudokus.Generator;
-using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace ConsoleApplication.Commands;
 
@@ -20,7 +20,7 @@ public class SudokuSolutionCountCommand : Command
 
         var result = BackTracking.Fill(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
         
-        Console.WriteLine($"Number of solutions : {result.Length}\n");
+        Console.WriteLine($"Number of solutions : {result.Count}\n");
 
         foreach (var s in result)
         {

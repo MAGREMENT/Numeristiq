@@ -179,7 +179,7 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
             i = -1;
             PreComputer.Reset();
 
-            if (stopAtProgress || _sudoku.IsComplete()) break;
+            if (stopAtProgress || _sudoku.IsComplete()) break; //TODO optimize isComplete with buffer
         }
 
         _trackerManager.OnSolveDone(this);

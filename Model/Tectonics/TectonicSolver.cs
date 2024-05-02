@@ -1,4 +1,5 @@
-﻿using Model.Helpers;
+﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Graphs;
@@ -26,7 +27,8 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         new ZoneInteractionStrategy(),
         new AlternatingInferenceGeneralization(new XChainType()),
         new GroupEliminationStrategy(),
-        new AlternatingInferenceGeneralization(new AlternatingInferenceChainType())
+        new AlternatingInferenceGeneralization(new AlternatingInferenceChainType()),
+        new BruteForceStrategy()
     };
 
     private bool _changeWasMade;
@@ -107,7 +109,7 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
             i = -1;
             Graphs.Clear();
             
-            if (stopAtProgress) return;
+            if (stopAtProgress || Tectonic.IsComplete()) return; //TODO optimize isComplete with buffer
         }
     }
 
@@ -260,6 +262,11 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
     }
 
     #endregion
+
+    public IEnumerable<int> EnumeratePossibilitiesAt(int row, int col)
+    {
+        return _possibilities[row, col].EnumeratePossibilities();
+    }
 }
 
 public delegate void OnProgressMade();

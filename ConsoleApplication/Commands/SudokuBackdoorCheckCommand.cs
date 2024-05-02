@@ -3,7 +3,7 @@ using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Strategies;
 using Model.Sudokus.Solver.Strategies.AlternatingInference.Types;
-using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace ConsoleApplication.Commands;
 
@@ -46,8 +46,8 @@ public class SudokuBackdoorCheckCommand : Command
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(StringIndex));
 
-        var solutions = BackTracking.Fill(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, int.MaxValue);
-        if (solutions.Length == 0)
+        var solutions = BackTracking.Fill(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+        if (solutions.Count == 0)
         {
             Console.WriteLine("The sudoku has no solution");
             return;

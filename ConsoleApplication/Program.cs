@@ -31,7 +31,8 @@ public static class Program
             _instance.Root.AddDirectory(new Directory("Tectonic"))
                 .AddCommand(new HelpCommand(), true)
                 .AddCommand(new TectonicSolveCommand())
-                .AddCommand(new TectonicSolveBatchCommand());
+                .AddCommand(new TectonicSolveBatchCommand())
+                .AddCommand(new TectonicSolutionCountCommand());
         }
 
         return _instance;

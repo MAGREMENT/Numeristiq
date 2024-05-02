@@ -1,7 +1,7 @@
 ﻿using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -16,7 +16,7 @@ public class BruteForceStrategy : SudokuStrategy
     {
         var solution = BackTracking.Fill(strategyUser.Sudoku.Copy(), strategyUser, 1);
 
-        if (solution.Length == 1) Process(strategyUser, solution[0]);
+        if (solution.Count == 1) Process(strategyUser, solution[0]);
     }
 
     private void Process(ISudokuStrategyUser strategyUser, Sudoku s)

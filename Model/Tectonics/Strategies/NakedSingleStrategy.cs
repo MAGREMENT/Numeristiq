@@ -25,7 +25,5 @@ public class NakedSingleStrategy : TectonicStrategy
                 strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
             }
         }
-        
-        
     }
 }

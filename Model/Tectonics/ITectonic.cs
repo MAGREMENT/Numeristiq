@@ -39,6 +39,7 @@ public interface IReadOnlyTectonic : ISolvingState
     public bool IsFromSameZone(Cell c1, Cell c2);
 
     public bool IsCorrect();
+    public bool IsComplete();
 
     public ITectonic Copy();
     public ITectonic Transfer(int rowCount, int columnCount);

@@ -36,7 +36,12 @@ public class BlankTectonic : ITectonic
 
     public bool IsCorrect()
     {
-        return false;
+        return true;
+    }
+
+    public bool IsComplete()
+    {
+        return true;
     }
 
     public ITectonic Copy()

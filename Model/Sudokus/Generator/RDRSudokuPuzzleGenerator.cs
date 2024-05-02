@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace Model.Sudokus.Generator;
@@ -98,12 +97,12 @@ public class RDRSudokuPuzzleGenerator : ISudokuPuzzleGenerator
         }
     }
 
-    private bool IsSudokuValid(IReadOnlySudoku sudoku)
+    private bool IsSudokuValid(Sudoku sudoku)
     {
-        if (KeepUniqueness) return BackTracking.Count(sudoku.Copy(),
+        if (KeepUniqueness) return BackTracking.Count(sudoku,
                 ConstantPossibilitiesGiver.Instance, 2) == 1;
 
-        return BackTracking.Count(sudoku.Copy(), ConstantPossibilitiesGiver.Instance, 1) > 0;
+        return BackTracking.Count(sudoku, ConstantPossibilitiesGiver.Instance, 1) > 0;
     }
 }
 

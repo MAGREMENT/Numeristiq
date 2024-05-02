@@ -193,10 +193,22 @@ public class ArrayTectonic : ITectonic
             var toCheck = ReadOnlyBitSet16.Filled(1, zone.Count);
             foreach (var cell in zone)
             {
-                toCheck -= this[cell.Row, cell.Column];
+                var num = this[cell.Row, cell.Column];
+                if (!toCheck.Contains(num)) return false;
+                toCheck -= num;
             }
 
             if (toCheck.Count != 0) return false;
+        }
+
+        return true;
+    }
+
+    public bool IsComplete()
+    {
+        foreach (var cell in _cells)
+        {
+            if (cell.Number == 0) return false;
         }
 
         return true;
@@ -215,7 +227,7 @@ public class ArrayTectonic : ITectonic
             for (int col = 0; col < ColumnCount; col++)
             {
                 var number = _cells[row, col].Number;
-                if (number != 0) _cells[row, col] += number;
+                if (number != 0) result[row, col] += number;
             }
         }
 

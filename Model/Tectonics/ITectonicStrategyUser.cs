@@ -8,7 +8,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics;
 
-public interface ITectonicStrategyUser
+public interface ITectonicStrategyUser : IPossibilitiesGiver
 {
     IReadOnlyTectonic Tectonic { get; }
     ReadOnlyBitSet8 PossibilitiesAt(Cell cell);
