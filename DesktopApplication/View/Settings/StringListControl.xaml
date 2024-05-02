@@ -6,7 +6,7 @@
              xmlns:settings="clr-namespace:DesktopApplication.View.Settings"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid Background="Transparent" HorizontalAlignment="Left">
+    <Grid Background="{DynamicResource Background2}" HorizontalAlignment="Left">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
             <ColumnDefinition/>
@@ -16,6 +16,6 @@
                  VerticalAlignment="Center" Margin="0, 0, 5, 0" x:Name="SettingName"/>
       
       <ComboBox Grid.Column="1" Height="30" Width="150" VerticalAlignment="Center" IsReadOnly="True" x:Name="ComboBox"
-                SelectionChanged="OnSelectionChange"/>
+                SelectionChanged="OnSelectionChange" Style="{StaticResource SettingComboBox}"/>
     </Grid>
 </settings:SettingControl>

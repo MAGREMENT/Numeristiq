@@ -1,4 +1,6 @@
-﻿namespace Model.Sudokus.Solver.Trackers;
+﻿using Model.Helpers;
+
+namespace Model.Sudokus.Solver.Trackers;
 
 public abstract class Tracker
 {
@@ -31,6 +33,8 @@ public abstract class Tracker
 public interface ISolveResult
 {
     public IReadOnlySudoku Sudoku { get; }
+    
+    public IUpdatableSolvingState StartState { get; }
 
     public bool IsWrong();
 }

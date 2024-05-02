@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         Title="SettingWindow" Height="450" Width="800"
         WindowStyle="None"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
+    
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
     </WindowChrome.WindowChrome>

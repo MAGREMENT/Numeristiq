@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -12,7 +11,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies;
 
-public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002700109064200050008903004090007000003409800200100003400000000005000900600000
+public class FireworksStrategy : SudokuStrategy
 {
     public const string OfficialName = "Fireworks";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
@@ -24,8 +23,9 @@ public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {
-        GridPositions[] limitations = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
-        List<Fireworks> dualFireworks = new List<Fireworks>();
+        Span<int> rowCandidates = stackalloc int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
+        Span<int> columnCandidates = stackalloc int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
+        var dualFireworks = new List<Fireworks>();
         
         for (int row = 0; row < 9; row++)
         {
@@ -38,7 +38,6 @@ public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002
                 {
                     var rowPositions = strategyUser.RowPositionsAt(row, possibility);
                     var colPositions = strategyUser.ColumnPositionsAt(col, possibility);
-                    var currentLimitations = limitations[possibility - 1];
 
                     var miniRow = row / 3;
                     var miniCol = col / 3;
@@ -74,82 +73,92 @@ public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002
 
                     switch (possibleRow, possibleCol)
                     {
-                        case (-2, -2) : 
+                        case (-2, -2) :
                             continue;
-                        case (-2, _) :
-                            if (rowPositions.Count != 2) continue;
-
-                            possibleCol = rowPositions.First(col);
-                            if (possibleCol / 3 == col / 3) continue;
-
-                            currentLimitations.Add(row, col);
-                            currentLimitations.Add(row, possibleCol);
-
+                        case (-2, >= 0) :
+                            rowCandidates[possibility - 1] = rowPositions.Count == 2 ? possibleCol : -1;
                             break; 
-                        case (_, -2) :
-                            if (colPositions.Count != 2) continue;
-
-                            possibleRow = colPositions.First(row);
-                            if (possibleRow / 3 == row / 3) continue;
-
-                            currentLimitations.Add(row, col);
-                            currentLimitations.Add(possibleRow, col);
-
+                        case (>= 0, -2) :
+                            columnCandidates[possibility - 1] = colPositions.Count == 2 ? possibleRow : -1;
                             break;
                         default :
-                            currentLimitations.Add(row, col);
-                            if(possibleCol >= 0) currentLimitations.Add(row, possibleCol);
-                            if(possibleRow >= 0) currentLimitations.Add(possibleRow, col);
+                            if(possibleCol >= 0) rowCandidates[possibility - 1] = possibleCol;
+                            if(possibleRow >= 0) columnCandidates[possibility - 1] = possibleRow;
                             break;
                     }
                 }
 
-                for (int i = 0; i < limitations.Length; i++)
+                var i = 0;
+                while (possibilities.HasNextPossibility(ref i))
                 {
-                    if (limitations[i].Count == 0) continue;
-                    
-                    for (int j = i + 1; j < limitations.Length; j++)
-                    {
-                        if (limitations[j].Count == 0) continue;
+                    var r1 = rowCandidates[i - 1];
+                    var c1 = columnCandidates[i - 1];
+                    if (r1 == -1 && c1 == -1) continue;
 
-                        var or = limitations[i].Or(limitations[j]);
-                        if (or.RowCount(row) > 2 || or.ColumnCount(col) > 2) continue;
+                    var j = i;
+                    while(possibilities.HasNextPossibility(ref j))
+                    {
+                        var r2 = rowCandidates[j - 1];
+                        var c2 = columnCandidates[j - 1];
+                        if (r2 == -1 && c2 == -1) continue;
+
+                        if (!TryGetCandidate(r1, r2, true, out var rCandidate)) continue;
+                        if (!TryGetCandidate(c1, c2, true, out var cCandidate)) continue;
                         
-                        if (or.Count == 3)
+                        if (rCandidate != -1 && cCandidate != -1)
                         {
-                            var poss = new ReadOnlyBitSet16(i + 1, j + 1);
-                            dualFireworks.Add(new Fireworks(or, poss));
+                            var poss = new ReadOnlyBitSet16(i, j);
+                            dualFireworks.Add(new Fireworks(new Cell(row, col),
+                                new Cell(row, rCandidate), new Cell(cCandidate, col), poss));
                         }
 
-                        if (or.Count <= 3)
+                        var k = j;
+                        while(possibilities.HasNextPossibility(ref k))
                         {
-                            for (int k = j + 1; k < limitations.Length; k++)
-                            {
-                                if (limitations[k].Count == 0) continue;
+                            var r3 = rowCandidates[k - 1];
+                            var c3 = columnCandidates[k - 1];
+                            if (r3 == -1 && c3 == -1) continue;
                                     
-                                var or2 = or.Or(limitations[k]);
-                                if (or2.RowCount(row) > 2 || or2.ColumnCount(col) > 2) continue;
+                            if (!TryGetCandidate(rowCandidates[k - 1], rCandidate, false, out var rFinal)) 
+                                continue;
+                            if (!TryGetCandidate(columnCandidates[k - 1], cCandidate, false, out var cFinal))
+                                continue;
                                 
-                                if (or2.Count == 3)
-                                {
-                                    var poss = new ReadOnlyBitSet16(i + 1, j + 1, k + 1);
+                            var poss = new ReadOnlyBitSet16(i, j, k);
                                     
-                                    if(ProcessTripleFireworks(strategyUser, new Fireworks(or2, poss)) &&
-                                       StopOnFirstPush) return;
-                                }
-                            }
+                            if(ProcessTripleFireworks(strategyUser, new Fireworks(new Cell(row, col),
+                                   new Cell(row, rFinal), new Cell(cFinal, col), poss)) &&
+                               StopOnFirstPush) return;
                         }
                     }
                 }
 
-                foreach (var gp in limitations)
-                {
-                    gp.Void();
-                }
+                rowCandidates.Fill(-1);
+                columnCandidates.Fill(-1);
             }
         }
 
         ProcessDualFireworks(strategyUser, dualFireworks);
+    }
+
+    private static bool TryGetCandidate(int one, int two, bool allowNegative, out int result)
+    {
+        result = -1;
+        if (one == -1)
+        {
+            if (two == -1) return allowNegative;
+            
+            result = two;
+            return true;
+        }
+        
+        if (two == -1 || one == two)
+        {
+            result = one;
+            return true;
+        }
+
+        return false;
     }
 
     private bool ProcessTripleFireworks(ISudokuStrategyUser user, Fireworks fireworks)
@@ -172,7 +181,7 @@ public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002
                 fireworks.ColumnWing.Row, fireworks.ColumnWing.Column);
         }
 
-        return user.ChangeBuffer.Commit( new FireworksReportBuilder(fireworks));
+        return user.ChangeBuffer.Commit(new FireworksReportBuilder(fireworks));
     }
 
     private void ProcessDualFireworks(ISudokuStrategyUser user, List<Fireworks> fireworksList)
@@ -328,7 +337,7 @@ public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002
         foreach (var df in fireworksList)
         {
             var opposite = new Cell(df.ColumnWing.Row, df.RowWing.Column);
-            if (user.PossibilitiesAt(opposite).Equals(df.Possibilities))
+            if (user.PossibilitiesAt(opposite) == df.Possibilities)
             {
                 foreach (var p in user.PossibilitiesAt(df.Cross).EnumeratePossibilities())
                 {
@@ -348,11 +357,11 @@ public class FireworksStrategy : SudokuStrategy //TODO Look into fixing : 040002
                 var one = fireworksList[i];
                 var two = fireworksList[j];
                 
-                if(!one.Possibilities.Equals(two.Possibilities) || one.ColumnWing.Row != two.ColumnWing.Row
+                if(one.Possibilities != two.Possibilities || one.ColumnWing.Row != two.ColumnWing.Row
                    || one.RowWing.Column != two.RowWing.Column) continue;
 
                 var center = new Cell(one.ColumnWing.Row, two.RowWing.Column);
-                if (!user.PossibilitiesAt(center).Equals(one.Possibilities)) continue;
+                if (user.PossibilitiesAt(center) != one.Possibilities) continue;
 
                 foreach (var possibility in user.PossibilitiesAt(one.Cross).EnumeratePossibilities())
                 {
@@ -399,43 +408,6 @@ public class Fireworks
         Cross = cross;
         RowWing = rowWing;
         ColumnWing = columnWing;
-        Possibilities = possibilities;
-    }
-
-    public Fireworks(GridPositions gp, ReadOnlyBitSet16 possibilities)
-    {
-        var asArray = gp.ToArray();
-        var first = asArray[0];
-        int row = -1;
-        int col = -1;
-
-        for (int i = 1; i < 3; i++)
-        {
-            if (asArray[i].Row == first.Row) row = i;
-            if (asArray[i].Column == first.Column) col = i;
-        }
-
-        switch (row, col)
-        {
-            case (> 0, > 0) :
-                Cross = first;
-                RowWing = asArray[row];
-                ColumnWing = asArray[col];
-                break;
-            case (> 0, -1) :
-                Cross = asArray[row];
-                RowWing = first;
-                ColumnWing = asArray[row == 1 ? 2 : 1];
-                break;
-            case (-1, > 0) :
-                Cross = asArray[col];
-                ColumnWing = first;
-                RowWing = asArray[col == 1 ? 2 : 1];
-                break;
-            default:
-                throw new ArgumentException("Not a firework");
-        }
-        
         Possibilities = possibilities;
     }
 

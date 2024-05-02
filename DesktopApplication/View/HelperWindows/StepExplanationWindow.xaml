@@ -8,7 +8,8 @@
         mc:Ignorable="d"
         Title="StepExplanationWindow" Height="630" Width="900"
         WindowStyle="None"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
     
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />

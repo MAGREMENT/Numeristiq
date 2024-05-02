@@ -50,7 +50,7 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
 
     private IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> _changeBuffer;
     private readonly TrackerManager _trackerManager;
-    
+
     public SudokuSolver() : this(new Sudoku()) { }
 
     private SudokuSolver(Sudoku s)

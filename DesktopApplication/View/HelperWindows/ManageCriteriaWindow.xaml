@@ -7,7 +7,8 @@
         mc:Ignorable="d"
         Title="ManageCriteriaWindow" Height="550" Width="1000"
         WindowStyle="None"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen">
     
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
