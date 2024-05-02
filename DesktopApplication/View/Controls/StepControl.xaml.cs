@@ -22,7 +22,7 @@ public partial class StepControl
         _id = step.Id;
 
         Title.Text = step.Title;
-        Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(step.Intensity));
+        Title.SetResourceReference(ForegroundProperty, ThemeInformation.ResourceNameFor(step.Difficulty));
         Number.Text = $"#{step.Id}";
         HighlightCount.Text = step.GetCursorPosition();
         SetStateShown(stateShown);

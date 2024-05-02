@@ -19,7 +19,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
 
     private readonly IntSetting _minSharedSeenCells;
     
-    public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+    public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         _minSharedSeenCells = new IntSetting("Minimum shared seen cells", new SliderInteractionInterface(5, 12, 1), minSharedSeenCells);
         AddSetting(_minSharedSeenCells);

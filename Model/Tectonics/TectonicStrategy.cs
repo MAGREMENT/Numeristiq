@@ -6,12 +6,12 @@ namespace Model.Tectonics;
 public abstract class TectonicStrategy : ICommitMaker
 {
     public string Name { get; }
-    public StrategyDifficulty Difficulty { get; }
+    public StepDifficulty Difficulty { get; }
     public InstanceHandling InstanceHandling { get; set; }
     
     protected bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
 
-    protected TectonicStrategy(string name, StrategyDifficulty difficulty, InstanceHandling defaultHandling)
+    protected TectonicStrategy(string name, StepDifficulty difficulty, InstanceHandling defaultHandling)
     {
         Name = name;
         Difficulty = difficulty;

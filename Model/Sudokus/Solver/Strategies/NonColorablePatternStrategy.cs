@@ -21,7 +21,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     private readonly MinMaxSetting _possCount;
     private readonly IntSetting _maxUnPerfectPatternCell;
     
-    public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public NonColorablePatternStrategy(int minPossCount, int maxPossCount, int maxNotInPatternCell) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
         _possCount = new MinMaxSetting("Possibility count", 2, 5, 2, 5, 1, minPossCount, maxPossCount);
         _maxUnPerfectPatternCell = new IntSetting("Max un-perfect pattern cells", new SliderInteractionInterface(1, 5, 1),

@@ -14,7 +14,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     public const string OfficialName = "Almost Locked Sets";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlmostLockedSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public AlmostLockedSetsStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
 

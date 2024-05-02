@@ -13,7 +13,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
     public const string OfficialName = "Reverse BUG-Lite";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public ReverseBUGLiteStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
+    public ReverseBUGLiteStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }

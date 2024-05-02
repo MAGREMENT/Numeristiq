@@ -17,7 +17,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
     public const string OfficialName = "Mini-Uniqueness";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public MiniUniquenessStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
+    public MiniUniquenessStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }

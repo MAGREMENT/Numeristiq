@@ -9,7 +9,7 @@ public class UniquenessClueCoverStrategy : SudokuStrategy
     private bool _needFilter = true;
     
     public UniquenessClueCoverStrategy(params IPatternCollection[] collections)
-        : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+        : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _collections = collections;

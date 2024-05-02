@@ -36,7 +36,7 @@ public class ClaimingSetStrategy : SudokuStrategy
     public const string OfficialName = "Claiming Set";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public ClaimingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
+    public ClaimingSetStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

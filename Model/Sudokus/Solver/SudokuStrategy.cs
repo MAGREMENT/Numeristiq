@@ -10,7 +10,7 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
     private readonly List<ISetting> _settings = new();
     
     public string Name { get; protected init; }
-    public StrategyDifficulty Difficulty { get; protected init; }
+    public StepDifficulty Difficulty { get; protected init; }
     public UniquenessDependency UniquenessDependency { get; protected init; }
     public InstanceHandling InstanceHandling { get; set; }
     public IReadOnlyList<ISetting> Settings => _settings;
@@ -28,7 +28,7 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
 
     public bool StopOnFirstPush => InstanceHandling == InstanceHandling.FirstOnly;
 
-    protected SudokuStrategy(string name, StrategyDifficulty difficulty, InstanceHandling defaultHandling)
+    protected SudokuStrategy(string name, StepDifficulty difficulty, InstanceHandling defaultHandling)
     {
         Name = name;
         Difficulty = difficulty;
@@ -69,9 +69,9 @@ public abstract class SudokuStrategy : ICommitMaker, ISettingCollection
     }
 }
 
-public enum StrategyDifficulty
+public enum StepDifficulty
 {
-    None, Basic, Easy, Medium, Hard, Extreme, ByTrial
+    None, Basic, Easy, Medium, Hard, Extreme, Inhuman, ByTrial
 }
 
 public enum UniquenessDependency

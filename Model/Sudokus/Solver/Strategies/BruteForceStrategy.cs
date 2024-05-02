@@ -10,7 +10,7 @@ public class BruteForceStrategy : SudokuStrategy
     public const string OfficialName = "Brute Force";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public BruteForceStrategy() : base(OfficialName, StrategyDifficulty.ByTrial, DefaultInstanceHandling) { }
+    public BruteForceStrategy() : base(OfficialName, StepDifficulty.ByTrial, DefaultInstanceHandling) { }
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

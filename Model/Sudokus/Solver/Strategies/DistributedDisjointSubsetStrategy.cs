@@ -14,7 +14,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     public const string OfficialName = "Distributed Disjoint Subset";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public DistributedDisjointSubsetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public DistributedDisjointSubsetStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
     

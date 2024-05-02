@@ -39,6 +39,14 @@ public class StrategyManager
             _strategies.Add(s);
         }
     }
+
+    public void AddStrategies(params SudokuStrategy[] strategies)
+    {
+        foreach (var s in strategies)
+        {
+            _strategies.Add(s);
+        }
+    }
     
     public void RemoveStrategy(int position)
     {

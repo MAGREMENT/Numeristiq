@@ -14,7 +14,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     public const string OfficialName = "Almost Hidden Sets";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlmostHiddenSetsStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public AlmostHiddenSetsStrategy() : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
     }
     

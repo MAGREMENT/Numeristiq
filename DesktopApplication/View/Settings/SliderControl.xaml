@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:DesktopApplication.View.Settings"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
+    <Grid Background="{DynamicResource Background2}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
@@ -16,7 +16,7 @@
         <TextBlock Grid.Column="0" Margin="0, 0, 5, 0" x:Name="Name" VerticalAlignment="Center" 
                    Foreground="{DynamicResource Text}" FontSize="15"/>
         <Slider Grid.Column="1" Width="100" IsSnapToTickEnabled="True" x:Name="Slider" ValueChanged="OnValueChanged"
-                VerticalAlignment="Center"/>
+                VerticalAlignment="Center" Style="{StaticResource SettingSlider}"/>
         <TextBox Grid.Column="2" Text="{Binding ElementName=Slider, Path=Value, UpdateSourceTrigger=PropertyChanged}"
                  TextAlignment="Right" Width="35" VerticalAlignment="Center"
                  Style="{StaticResource SettingTextBox}"/>

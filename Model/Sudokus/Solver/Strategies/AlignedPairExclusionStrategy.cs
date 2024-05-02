@@ -14,7 +14,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     public const string OfficialName = "Aligned Pair Exclusion";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlignedPairExclusionStrategy() : base(OfficialName,  StrategyDifficulty.Hard, DefaultInstanceHandling) { }
+    public AlignedPairExclusionStrategy() : base(OfficialName,  StepDifficulty.Hard, DefaultInstanceHandling) { }
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

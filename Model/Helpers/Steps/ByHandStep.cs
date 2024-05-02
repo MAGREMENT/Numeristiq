@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Explanation;
 
 namespace Model.Helpers.Steps;
@@ -10,14 +11,13 @@ public class ByHandStep<THighlighter> : ISolverStep<THighlighter> where THighlig
 {
     public int Id { get; }
     public string Title { get; }
-    public Intensity Intensity => Intensity.Six;
+    public StepDifficulty Difficulty => StepDifficulty.None;
     public IReadOnlyList<SolverProgress> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
     public IUpdatableSolvingState From { get; }
     public IUpdatableSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager => new(new DelegateHighlightable<THighlighter>(HighLight));
-    public bool FromSolving => false;
 
     private readonly SolverProgress _progress;
 

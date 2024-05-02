@@ -19,7 +19,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
 
     private readonly BooleanSetting _allowMissingCandidates;
     
-    public UniqueRectanglesStrategy(bool allowMissingCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+    public UniqueRectanglesStrategy(bool allowMissingCandidates) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", allowMissingCandidates);
         UniquenessDependency = UniquenessDependency.FullyDependent;

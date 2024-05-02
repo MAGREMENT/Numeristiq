@@ -17,7 +17,7 @@ public class NishioForcingNetStrategy : SudokuStrategy
     public const string OfficialName = "Nishio Forcing Net";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public NishioForcingNetStrategy() : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public NishioForcingNetStrategy() : base(OfficialName, StepDifficulty.Inhuman, DefaultInstanceHandling)
     { }
 
     public override void Apply(ISudokuStrategyUser strategyUser)

@@ -8,7 +8,7 @@ public class XChainType : IAlternatingInferenceType
 {
     public string Name => "X-Chains";
 
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Hard;
+    public StepDifficulty Difficulty => StepDifficulty.Hard;
     
     public ILinkGraph<ITectonicElement> GetGraph(ITectonicStrategyUser strategyUser)
     {

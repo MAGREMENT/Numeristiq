@@ -15,7 +15,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
     public const string OfficialName = "Extended Unique Rectangles";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public ExtendedUniqueRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+    public ExtendedUniqueRectanglesStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }

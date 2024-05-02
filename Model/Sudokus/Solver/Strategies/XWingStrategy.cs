@@ -15,7 +15,7 @@ public class XWingStrategy : SudokuStrategy
     public const string OfficialName = "X-Wing";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public XWingStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling){}
+    public XWingStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling){}
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

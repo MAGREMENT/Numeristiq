@@ -14,7 +14,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
     public const string OfficialName = "Unavoidable Rectangles";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public UnavoidableRectanglesStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+    public UnavoidableRectanglesStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }

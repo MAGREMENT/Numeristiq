@@ -42,13 +42,14 @@ public partial class App : IGlobalApplicationView
         Resources["On"] = ThemeInformation.ToBrush(t.On);
         Resources["Off"] = ThemeInformation.ToBrush(t.Off);
         Resources["Disabled"] = ThemeInformation.ToBrush(t.Disabled);
-        Resources["IntensityZero"] = ThemeInformation.ToBrush(t.IntensityZero);
-        Resources["IntensityOne"] = ThemeInformation.ToBrush(t.IntensityOne);
-        Resources["IntensityTwo"] = ThemeInformation.ToBrush(t.IntensityTwo);
-        Resources["IntensityThree"] = ThemeInformation.ToBrush(t.IntensityThree);
-        Resources["IntensityFour"] = ThemeInformation.ToBrush(t.IntensityFour);
-        Resources["IntensityFive"] = ThemeInformation.ToBrush(t.IntensityFive);
-        Resources["IntensitySix"] = ThemeInformation.ToBrush(t.IntensitySix);
+        Resources["DifficultyNone"] = ThemeInformation.ToBrush(t.DifficultyNone);
+        Resources["DifficultyBasic"] = ThemeInformation.ToBrush(t.DifficultyBasic);
+        Resources["DifficultyEasy"] = ThemeInformation.ToBrush(t.DifficultyEasy);
+        Resources["DifficultyMedium"] = ThemeInformation.ToBrush(t.DifficultyMedium);
+        Resources["DifficultyHard"] = ThemeInformation.ToBrush(t.DifficultyHard);
+        Resources["DifficultyExtreme"] = ThemeInformation.ToBrush(t.DifficultyExtreme);
+        Resources["DifficultyInhuman"] = ThemeInformation.ToBrush(t.DifficultyInhuman);
+        Resources["DifficultyByTrial"] = ThemeInformation.ToBrush(t.DifficultyByTrial);
 
         ThemeInformation.SetTheme(t);
     }
@@ -156,12 +157,10 @@ public class ThemeInformation
         };
     }
 
-    public static string ResourceNameFor(Intensity intensity)
+    public static string ResourceNameFor(StepDifficulty difficulty)
     {
-        return "Intensity" + intensity;
+        return "Difficulty" + difficulty;
     }
-
-    public static string ResourceNameFor(StrategyDifficulty difficulty) => ResourceNameFor((Intensity)difficulty);
     
     public static Brush ToBrush(RGB rgb)
     {

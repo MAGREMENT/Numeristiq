@@ -24,11 +24,11 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
 
     private readonly INRCZTCondition[] _conditions;
     
-    public NRCZTChainStrategy(params INRCZTCondition[] conditions) : base("", StrategyDifficulty.None, DefaultInstanceHandling)
+    public NRCZTChainStrategy(params INRCZTCondition[] conditions) : base("", StepDifficulty.None, DefaultInstanceHandling)
     {
         _conditions = conditions;
 
-        Difficulty = _conditions.Length > 0 ? StrategyDifficulty.Extreme : StrategyDifficulty.Hard;
+        Difficulty = _conditions.Length > 0 ? StepDifficulty.Extreme : StepDifficulty.Hard;
 
         Name = conditions.Length switch
         {

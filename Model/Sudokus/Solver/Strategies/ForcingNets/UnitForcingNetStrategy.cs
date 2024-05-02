@@ -17,7 +17,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
 
     private readonly int _max;
 
-    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public UnitForcingNetStrategy(int maxPossibilities) : base(OfficialName, StepDifficulty.Inhuman, DefaultInstanceHandling)
     {
         _max = maxPossibilities;
     }

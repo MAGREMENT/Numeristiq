@@ -13,7 +13,7 @@ public class GroupEliminationStrategy : TectonicStrategy, ICommitComparer
 {
     private const int Limit = 4;
     
-    public GroupEliminationStrategy() : base("Group Elimination", StrategyDifficulty.Hard, InstanceHandling.BestOnly)
+    public GroupEliminationStrategy() : base("Group Elimination", StepDifficulty.Hard, InstanceHandling.BestOnly)
     {
     }
 

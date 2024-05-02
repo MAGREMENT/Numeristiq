@@ -16,7 +16,7 @@ public class FireworksStrategy : SudokuStrategy
     public const string OfficialName = "Fireworks";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
     
-    public FireworksStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+    public FireworksStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
     }
 

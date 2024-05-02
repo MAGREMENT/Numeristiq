@@ -79,7 +79,7 @@ public interface IAlternatingInferenceType
 {
     string Name { get; }
     
-    StrategyDifficulty Difficulty { get; }
+    StepDifficulty Difficulty { get; }
 
     ILinkGraph<ITectonicElement> GetGraph(ITectonicStrategyUser strategyUser);
 }

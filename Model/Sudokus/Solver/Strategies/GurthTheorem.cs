@@ -15,7 +15,7 @@ public class GurthTheorem : SudokuStrategy
 
     private readonly List<Symmetry> _symmetries;
 
-    public GurthTheorem() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling)
+    public GurthTheorem() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
         _symmetries = new List<Symmetry>

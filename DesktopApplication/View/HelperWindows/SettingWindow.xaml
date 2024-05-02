@@ -44,8 +44,10 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
-            <Button Grid.Column="1" Width="50" Height="30" Margin="5,0,5,0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save">Save</Button>
-            <Button Grid.Column="2" Width="50" Height="30" Margin="5, 0, 5, 0" VerticalAlignment="Center" HorizontalAlignment="Center" Click="Cancel">Cancel</Button>
+            <Button Grid.Column="1" Margin="5,0,5,0" Style="{StaticResource BorderButton}"
+                    VerticalAlignment="Center" HorizontalAlignment="Center" Click="Save" Background="{DynamicResource Primary1}">Save</Button>
+            <Button Grid.Column="2" Margin="5, 0, 5, 0" VerticalAlignment="Center" Style="{StaticResource BorderButton}"
+                    HorizontalAlignment="Center" Click="Cancel" Background="{DynamicResource Off}">Cancel</Button>
         </Grid>
     </Grid>
 </Window>

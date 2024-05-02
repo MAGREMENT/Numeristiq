@@ -10,7 +10,7 @@ namespace Model.Tectonics.Strategies;
 
 public class ZoneInteractionStrategy : TectonicStrategy
 {
-    public ZoneInteractionStrategy() : base("Zone Interaction", StrategyDifficulty.Easy, InstanceHandling.UnorderedAll)
+    public ZoneInteractionStrategy() : base("Zone Interaction", StepDifficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
     

@@ -18,19 +18,19 @@ public class NakedSetStrategy : SudokuStrategy
 
     private readonly int _type;
 
-    public NakedSetStrategy(int type) : base("", StrategyDifficulty.None, DefaultInstanceHandling)
+    public NakedSetStrategy(int type) : base("", StepDifficulty.None, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)
         {
             case 2 : Name = OfficialNameForType2;
-                Difficulty = StrategyDifficulty.Easy;
+                Difficulty = StepDifficulty.Easy;
                 break;
             case 3 : Name = OfficialNameForType3;
-                Difficulty = StrategyDifficulty.Easy;
+                Difficulty = StepDifficulty.Easy;
                 break;
             case 4 : Name = OfficialNameForType4;
-                Difficulty = StrategyDifficulty.Easy;
+                Difficulty = StepDifficulty.Easy;
                 break;
             default : throw new ArgumentException("Type not valid");
         }

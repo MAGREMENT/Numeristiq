@@ -10,15 +10,15 @@ public class MinimumHardestDifficultyCriteria : EvaluationCriteria
     public const string OfficialName = "Minimum Hardest Strategy";
     
     public MinimumHardestDifficultyCriteria() : base(OfficialName, 
-        new EnumSetting<StrategyDifficulty>("Difficulty",
-            new SpaceConverter(), StrategyDifficulty.Basic))
+        new EnumSetting<StepDifficulty>("Difficulty",
+            new SpaceConverter(), StepDifficulty.Basic))
     {
     }
 
     public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
     {
         return puzzle.Hardest is not null &&
-               puzzle.Hardest.Difficulty >= ((EnumSetting<StrategyDifficulty>)_settings[0]).Value;
+               puzzle.Hardest.Difficulty >= ((EnumSetting<StepDifficulty>)_settings[0]).Value;
     }
 
     public override bool Equals(object? obj)

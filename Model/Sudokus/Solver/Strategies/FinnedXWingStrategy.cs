@@ -12,7 +12,7 @@ public class FinnedXWingStrategy : SudokuStrategy
     public const string OfficialName = "Finned X-Wing";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public FinnedXWingStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling){}
+    public FinnedXWingStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling){}
     
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

@@ -16,7 +16,7 @@ public class SubsetsAIType : IAlternatingInferenceType<ISudokuElement>
 
     public string LoopName => OfficialLoopName;
     public string ChainName => OfficialChainName;
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
+    public StepDifficulty Difficulty => StepDifficulty.Extreme;
     public SudokuStrategy? Strategy { get; set; }
     public ILinkGraph<ISudokuElement> GetGraph(ISudokuStrategyUser strategyUser)
     {

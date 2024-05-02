@@ -7,7 +7,7 @@ namespace Model.Tectonics.Strategies;
 
 public class HiddenSingleStrategy : TectonicStrategy
 {
-    public HiddenSingleStrategy() : base("Hidden Single", StrategyDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public HiddenSingleStrategy() : base("Hidden Single", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
     

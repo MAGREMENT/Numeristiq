@@ -18,7 +18,7 @@ public class SueDeCoqStrategy : SudokuStrategy
 
     private readonly int _maxNotDrawnCandidates;
     
-    public SueDeCoqStrategy(int maxNotDrawnCandidates) : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling)
+    public SueDeCoqStrategy(int maxNotDrawnCandidates) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         _maxNotDrawnCandidates = maxNotDrawnCandidates;
     }

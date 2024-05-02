@@ -8,7 +8,7 @@ public class AlternatingInferenceChainType : IAlternatingInferenceType
 {
     public string Name => "Alternating Inference Chains";
 
-    public StrategyDifficulty Difficulty => StrategyDifficulty.Extreme;
+    public StepDifficulty Difficulty => StepDifficulty.Extreme;
     
     public ILinkGraph<ITectonicElement> GetGraph(ITectonicStrategyUser strategyUser)
     {

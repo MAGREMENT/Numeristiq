@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
+using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Explanation;
 
 namespace Model.Helpers.Steps;
@@ -9,7 +10,7 @@ public interface ISolverStep
 {
     int Id { get; }
     string Title { get; }
-    Intensity Intensity { get; }
+    StepDifficulty Difficulty { get; }
     string Description { get; }
     ExplanationElement? Explanation { get; }
     string GetCursorPosition();
@@ -26,9 +27,4 @@ public interface ISolverStep<THighlighter> : ISolverStep
     {
         return HighlightManager.CursorPosition();
     }
-}
-
-public enum Intensity
-{
-    Zero, One, Two, Three, Four, Five, Six
 }

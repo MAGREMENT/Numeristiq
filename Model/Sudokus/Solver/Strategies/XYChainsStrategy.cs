@@ -15,7 +15,7 @@ public class XYChainsStrategy : SudokuStrategy
     public const string OfficialName = "XY-Chains";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public XYChainsStrategy() : base(OfficialName, StrategyDifficulty.Hard, DefaultInstanceHandling) {}
+    public XYChainsStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) {}
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

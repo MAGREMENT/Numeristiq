@@ -13,7 +13,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
     public const string OfficialName = "Hidden Doubles";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public HiddenDoublesStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
+    public HiddenDoublesStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
     
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

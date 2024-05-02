@@ -16,7 +16,7 @@ public class SimpleColoringStrategy : SudokuStrategy
     public const string OfficialName = "Simple Coloring";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public SimpleColoringStrategy() : base(OfficialName, StrategyDifficulty.Medium, DefaultInstanceHandling){}
+    public SimpleColoringStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling){}
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

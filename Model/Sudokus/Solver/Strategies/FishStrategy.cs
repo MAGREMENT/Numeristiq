@@ -54,7 +54,7 @@ public class FishStrategy : SudokuStrategy
     };
     
     public FishStrategy(int minUnitCount, int maxUnitCount, int maxNumberOfExoFins, int maxNumberOfEndoFins,
-        bool allowCannibalism) : base(OfficialName, StrategyDifficulty.Extreme, DefaultInstanceHandling)
+        bool allowCannibalism) : base(OfficialName, StepDifficulty.Extreme, DefaultInstanceHandling)
     {
         _unitCount = new MinMaxSetting("Unit count", 2, 4, 2, 5, 1, minUnitCount, maxUnitCount);
         _maxNumberOfExoFins = new IntSetting("Max number of exo fins", new SliderInteractionInterface(0, 5, 1), maxNumberOfExoFins);

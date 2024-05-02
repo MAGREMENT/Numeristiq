@@ -16,7 +16,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
     public const string OfficialName = "Digit Forcing Net";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public DigitForcingNetStrategy() : base(OfficialName,  StrategyDifficulty.Extreme, DefaultInstanceHandling)
+    public DigitForcingNetStrategy() : base(OfficialName,  StepDifficulty.Inhuman, DefaultInstanceHandling)
     {
         
     }

@@ -35,7 +35,7 @@ public class PointingSetStrategy : SudokuStrategy
     public const string OfficialName = "Pointing Set";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public PointingSetStrategy() : base(OfficialName, StrategyDifficulty.Easy, DefaultInstanceHandling){}
+    public PointingSetStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
 
     public override void Apply(ISudokuStrategyUser strategyUser)
     {

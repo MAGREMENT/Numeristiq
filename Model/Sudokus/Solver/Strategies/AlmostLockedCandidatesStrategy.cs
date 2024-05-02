@@ -18,7 +18,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
 
     private readonly int _type;
     
-    public AlmostLockedCandidatesStrategy(int type) : base("", StrategyDifficulty.Medium, DefaultInstanceHandling)
+    public AlmostLockedCandidatesStrategy(int type) : base("", StepDifficulty.Medium, DefaultInstanceHandling)
     {
         _type = type;
         switch (type)

@@ -25,7 +25,8 @@ public static class Program
                 .AddCommand(new SudokuSolveBatchCommand())
                 .AddCommand(new SudokuGenerateBatchCommand())
                 .AddCommand(new SudokuStrategyListCommand())
-                .AddCommand(new SudokuSolutionCountCommand());
+                .AddCommand(new SudokuSolutionCountCommand())
+                .AddCommand(new SudokuBackdoorCheckCommand());
 
             _instance.Root.AddDirectory(new Directory("Tectonic"))
                 .AddCommand(new HelpCommand(), true)
