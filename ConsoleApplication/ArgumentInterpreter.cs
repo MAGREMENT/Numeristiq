@@ -5,14 +5,12 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
     public Directory Root { get; } = new("Root");
     public Instantiator Instantiator { get; } = new();
     
-    public void Execute(string[] args)
+    public void Execute(IReadOnlyList<string> args)
     {
-        args = RemoveBlanks(args);
-        
-        Directory d = Root;
+        var d = Root;
         Command? c;
         
-        if (args.Length == 0)
+        if (args.Count == 0)
         {
             c = Root.DefaultCommand();
             
@@ -23,7 +21,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
         }
 
         int cursor = 0;
-        for (; cursor < args.Length; cursor++)
+        for (; cursor < args.Count; cursor++)
         {
             var buffer = d.FindDirectory(args[cursor]);
             if (buffer is null) break;
@@ -31,7 +29,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
             d = buffer;
         }
 
-        c = cursor < args.Length ? d.FindCommand(args[cursor++]) : d.DefaultCommand();
+        c = cursor < args.Count ? d.FindCommand(args[cursor++]) : d.DefaultCommand();
 
         if (c == null)
         {
@@ -39,7 +37,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
             return;
         }
 
-        if (args.Length - cursor < c.Arguments.Count)
+        if (args.Count - cursor < c.Arguments.Count)
         {
             Console.WriteLine($"Not enough arguments for command : {c.Name}");
             return;
@@ -48,7 +46,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
         var report = new CallReport(d, c);
 
         var argumentCursor = 0;
-        for (; cursor < args.Length; cursor++)
+        for (; cursor < args.Count; cursor++)
         {
             object? value;
             
@@ -79,7 +77,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
             {
                 case ValueRequirement.None : break;
                 case ValueRequirement.Mandatory :
-                    if (cursor == args.Length - 1)
+                    if (cursor == args.Count - 1)
                     {
                         Console.WriteLine($"Missing mandatory value for option '{o.Name}'");
                         return;
@@ -94,7 +92,7 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
                     cursor++;
                     break;
                 case ValueRequirement.Optional :
-                    if (cursor == args.Length - 1 || c.IndexOfOption(args[cursor + 1]) == -1) break;
+                    if (cursor == args.Count - 1 || c.IndexOfOption(args[cursor + 1]) == -1) break;
                     
                     if (!CheckValueType(args[cursor + 1], o.ValueType, out value))
                     {
@@ -111,18 +109,6 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
         }
 
         c.Execute(this, report);
-    }
-
-    private string[] RemoveBlanks(string[] array)
-    {
-        List<string> result = new();
-
-        foreach (var s in array)
-        {
-            if (!string.IsNullOrWhiteSpace(s)) result.Add(s);
-        }
-        
-        return result.ToArray();
     }
 
     private bool CheckValueType(string value, ValueType type, out object objectValue)
@@ -160,5 +146,5 @@ public interface IReadOnlyArgumentInterpreter
 {
     public Directory Root { get; }
     public Instantiator Instantiator { get; }
-    public void Execute(string[] args);
+    public void Execute(IReadOnlyList<string> args);
 }

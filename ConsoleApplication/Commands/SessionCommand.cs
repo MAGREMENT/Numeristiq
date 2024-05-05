@@ -44,11 +44,42 @@ public class SessionCommand : Command
 
             if (StopCommands.Contains(response)) break;
             
-            interpreter.Execute(response.Split(' '));
+            interpreter.Execute(GetArgs(response));
         }
         
         Console.WriteLine("\nSession closed");
         _isRunning = false;
+    }
+
+    private static List<string> GetArgs(string s)
+    {
+        List<string> result = new();
+        var builder = new StringBuilder();
+
+        bool isQuoted = false;
+        foreach (var c in s)
+        {
+            if (c == '"')
+            {
+                isQuoted = !isQuoted;
+                continue;
+            }
+            
+            if (isQuoted || c != ' ')
+            {
+                builder.Append(c);
+                continue;
+            }
+            
+            if (builder.Length == 0) continue;
+            
+            result.Add(builder.ToString());
+            builder.Clear();
+        }
+        
+        if(builder.Length > 0) result.Add(builder.ToString());
+        
+        return result;
     }
 
     private static string StopCommandsToString()

@@ -184,6 +184,13 @@
     "Settings": {}
   },
   {
+    "Name": "Senior Exocet",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 0,
+    "Settings": {}
+  },
+  {
     "Name": "Thor\u0027s Hammer",
     "Enabled": false,
     "Locked": false,

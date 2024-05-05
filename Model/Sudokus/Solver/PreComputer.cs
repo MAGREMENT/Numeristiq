@@ -140,7 +140,7 @@ public class PreComputer
 
     private List<JuniorExocet> DoJuniorExocet()
     {
-        return JuniorExocetSearcher.FullGrid(_strategyUser);
+        return ExocetSearcher.SearchJuniors(_strategyUser);
     }
 
     private List<AlmostOddagon> DoAlmostOddagons()

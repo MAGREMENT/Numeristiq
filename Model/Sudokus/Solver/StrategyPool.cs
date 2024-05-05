@@ -14,7 +14,6 @@ using Model.Sudokus.Solver.Strategies.MultiSector.Searchers;
 using Model.Sudokus.Solver.Strategies.NRCZTChains;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 
@@ -110,7 +109,8 @@ public static class StrategyPool
         {UniquenessClueCoverStrategy.OfficialName, () => new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
         {ExtendedUniqueRectanglesStrategy.OfficialName, () => new ExtendedUniqueRectanglesStrategy()},
         {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)},
-        {XYZRingStrategy.OfficialName, () => new XYZRingStrategy()}
+        {XYZRingStrategy.OfficialName, () => new XYZRingStrategy()},
+        {SeniorExocetStrategy.OfficialName, () => new SeniorExocetStrategy()}
     };
     
     private static readonly IDescription NoDescription = new FullTextDescription("No Description Found");

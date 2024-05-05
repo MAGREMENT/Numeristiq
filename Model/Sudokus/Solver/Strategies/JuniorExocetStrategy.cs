@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
@@ -37,7 +38,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
     }
 
-    private bool ProcessDouble(ISudokuStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2) //TODO : correct this
+    private bool ProcessDouble(ISudokuStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2)
     {
         var unit = je1.GetUnit();
         if (unit != je2.GetUnit()) return false;
@@ -55,35 +56,49 @@ public class JuniorExocetStrategy : SudokuStrategy
 
         if (baseCells.Count != 4) return false;
 
-        HashSet<Cell> targetCells = new()
+        Cell? targetCommon = null;
+        HashSet<Cell> targetCells = new();
+        if (!targetCells.Add(je1.Target1)) targetCommon = je1.Target1;
+        if (!targetCells.Add(je1.Target2)) targetCommon = je1.Target2;
+        if (!targetCells.Add(je2.Target1)) targetCommon = je2.Target1;
+        if (!targetCells.Add(je2.Target2)) targetCommon = je2.Target2;
+
+        if (targetCells.Count < 3) return false;
+        
+        Cell? baseAndTargetCommon = null;
+
+        if (targetCells.Remove(je1.Base1))
         {
-            je1.Target1,
-            je1.Target2,
-            je2.Target1,
-            je2.Target2,
-        };
+            if (baseAndTargetCommon is not null || targetCommon is not null) return false;
+            baseAndTargetCommon = je1.Base1;
+        }
+        if(targetCells.Remove(je1.Base2))
+        {
+            if (baseAndTargetCommon is not null || targetCommon is not null) return false;
+            baseAndTargetCommon = je1.Base2;
+        }
+        if(targetCells.Remove(je2.Base1))
+        {
+            if (baseAndTargetCommon is not null || targetCommon is not null) return false;
+            baseAndTargetCommon = je2.Base1;
+        }
+        if(targetCells.Remove(je2.Base2))
+        {
+            if (baseAndTargetCommon is not null || targetCommon is not null) return false;
+            baseAndTargetCommon = je2.Base2;
+        }
 
-        bool commonTarget = targetCells.Count == 3;
-
-        targetCells.Remove(je1.Base1);
-        targetCells.Remove(je1.Base2);
-        targetCells.Remove(je2.Base1);
-        targetCells.Remove(je2.Base2);
-
-        bool baseAndTargetCommon = !commonTarget && targetCells.Count == 3;
-
-        var or = je1.BaseCandidates | je2.BaseCandidates;
-        if (targetCells.Count != or.Count) return false;
+        var totalCandidates = je1.BaseCandidates | je2.BaseCandidates;
+        if (targetCells.Count != totalCandidates.Count) return false;
 
         //Elimination 0
-        if (commonTarget || baseAndTargetCommon)
+        if (targetCommon is not null || baseAndTargetCommon is not null)
         {
-            var cell = FindFirstTargetNotIn(je1, je2, targetCells);
             var and = je1.BaseCandidates & je2.BaseCandidates;
-
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            if (and.Count == 1)
             {
-                if (!and.Contains(possibility)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                var cell = targetCommon ?? baseAndTargetCommon;
+                strategyUser.ChangeBuffer.ProposeSolutionAddition(and.FirstPossibility(), cell!.Value);
             }
         }
 
@@ -91,7 +106,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         var bCells = new List<Cell>(baseCells);
         var tCells = new List<Cell>(targetCells);
         
-        foreach (var possibility in or.EnumeratePossibilities())
+        foreach (var possibility in totalCandidates.EnumeratePossibilities())
         {
             foreach (var cell in SudokuCellUtility.SharedSeenCells(bCells))
             {
@@ -104,29 +119,28 @@ public class JuniorExocetStrategy : SudokuStrategy
             }
         }
 
+        var cover1 = je1.ComputeAllCoverHouses();
+        var cover2 = je2.ComputeAllCoverHouses();
         //Elimination 2
         var crossLines = je1.SCellsLinePositions().Or(je2.SCellsLinePositions());
         if (crossLines.Count == 3)
         {
-            RemoveAllNonSCells(strategyUser, je1, je1.ComputeAllCoverHouses());
-            RemoveAllNonSCells(strategyUser, je2, je2.ComputeAllCoverHouses());
+            RemoveAllNonSCells(strategyUser, je1, cover1);
+            RemoveAllNonSCells(strategyUser, je2, cover2);
         }
         else
         {
-            foreach (var possibility in je1.BaseCandidates.EnumeratePossibilities())
+            foreach (var entry in cover1)
             {
-                if (!je2.BaseCandidates.Contains(possibility)) continue;
-
-                var cov1 = je1.ComputeCoverHouses(possibility);
-                var cov2 = je2.ComputeCoverHouses(possibility);
-
-                foreach (var house1 in cov1)
+                if (!cover2.TryGetValue(entry.Key, out var c2)) continue;
+                
+                foreach (var house1 in entry.Value)
                 {
-                    foreach (var house2 in cov2)
+                    foreach (var house2 in c2)
                     {
-                        if (house1 != house2 || house1.Unit != unit) continue;
+                        if (house1 != house2) continue;
 
-                        var totalMap = je1.SCells[possibility].Or(je2.SCells[possibility]);
+                        var totalMap = je1.SCells[entry.Key].Or(je2.SCells[entry.Key]);
                         for (int other = 0; other < 9; other++)
                         {
                             var cell = unit == Unit.Row
@@ -134,7 +148,7 @@ public class JuniorExocetStrategy : SudokuStrategy
                                 : new Cell(other, house1.Number);
 
                             if (!totalMap.Contains(cell))
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                         }
                     }
                 }
@@ -143,15 +157,6 @@ public class JuniorExocetStrategy : SudokuStrategy
 
         return strategyUser.ChangeBuffer.Commit( new DoubleJuniorExocetReportBuilder(je1, je2))
                && StopOnFirstPush;
-    }
-
-    private static Cell FindFirstTargetNotIn(JuniorExocet je1, JuniorExocet je2, HashSet<Cell> total)
-    {
-        if (!total.Contains(je1.Target1)) return je1.Target1;
-        if (!total.Contains(je1.Target2)) return je1.Target2;
-        if (!total.Contains(je2.Target1)) return je2.Target1;
-        if (!total.Contains(je2.Target2)) return je2.Target2;
-        return default;
     }
 
     private bool Process(ISudokuStrategyUser strategyUser, JuniorExocet je)
@@ -445,8 +450,7 @@ public class JuniorExocetStrategy : SudokuStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit( new JuniorExocetReportBuilder(je))
-               && StopOnFirstPush;
+        return strategyUser.ChangeBuffer.Commit(new ExocetReportBuilder(je)) && StopOnFirstPush;
     }
 
     private void RemoveAll(ISudokuStrategyUser strategyUser, Cell cell, ReadOnlyBitSet16 except)
@@ -459,7 +463,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
     }
 
-    private void RemoveAllNonSCells(ISudokuStrategyUser strategyUser, JuniorExocet je,
+    public static void RemoveAllNonSCells(ISudokuStrategyUser strategyUser, Exocet je,
         Dictionary<int, List<House>> coverHouses)
     {
         foreach (var entry in je.SCells)
@@ -484,41 +488,40 @@ public class JuniorExocetStrategy : SudokuStrategy
     
 }
 
-public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly JuniorExocet _je;
+    private readonly Exocet _e;
 
-    public JuniorExocetReportBuilder(JuniorExocet je)
+    public ExocetReportBuilder(Exocet e)
     {
-        _je = je;
+        _e = e;
     }
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
     {
-        List<Cell> sCells = _je.AllPossibleSCells();
+        var sCells = _e.AllPossibleSCells();
 
         List<CellPossibility> sPossibilities = new();
-        foreach (var cell in sCells)
-        {
-            foreach (var possibility in _je.BaseCandidates.EnumeratePossibilities())
-            {
-                if(snapshot.PossibilitiesAt(cell).Contains(possibility)) sPossibilities.Add(new CellPossibility(cell, possibility));
-            }
-        }
-
         List<Cell> sSolved = new();
         foreach (var cell in sCells)
         {
-            if (_je.BaseCandidates.Contains(snapshot[cell.Row, cell.Column])) sSolved.Add(cell);
+            if (_e.BaseCandidates.Contains(snapshot[cell.Row, cell.Column])) sSolved.Add(cell);
+            else
+            {
+                foreach (var possibility in _e.BaseCandidates.EnumeratePossibilities())
+                {
+                    if(snapshot.PossibilitiesAt(cell).Contains(possibility)) sPossibilities.Add(new CellPossibility(cell, possibility));
+                } 
+            }
         }
 
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
-            lighter.HighlightCell(_je.Base1, ChangeColoration.CauseOffOne);
-            lighter.HighlightCell(_je.Base2, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_e.Base1, ChangeColoration.CauseOffOne);
+            lighter.HighlightCell(_e.Base2, ChangeColoration.CauseOffOne);
             
-            lighter.HighlightCell(_je.Target1, ChangeColoration.CauseOffTwo);
-            lighter.HighlightCell(_je.Target2, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_e.Target1, ChangeColoration.CauseOffTwo);
+            lighter.HighlightCell(_e.Target2, ChangeColoration.CauseOffTwo);
 
             foreach (var cell in sCells)
             {
@@ -537,6 +540,33 @@ public class JuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
+    }
+
+    private string Description()
+    {
+        var type = _e is JuniorExocet ? "Junior Exocet" : "Senior Exocet";
+        var baseS = _e.Base1.Row == _e.Base2.Row
+            ? $"r{_e.Base1.Row + 1}c{_e.Base1.Column + 1}{_e.Base2.Column + 1}"
+            : $"r{_e.Base1.Row + 1}{_e.Base2.Row + 1}c{_e.Base1.Column + 1}";
+        var builder = new StringBuilder($"{type} in {baseS}, {_e.Target1}, {_e.Target2}\nCover houses :\n");
+
+        foreach (var entry in _e.ComputeAllCoverHouses())
+        {
+            builder.Append($"{entry.Key} : ");
+            if (entry.Value.Count == 0) builder.Append("none\n");
+            else
+            {
+                builder.Append(entry.Value[0].ToString());
+                for (int i = 1; i < entry.Value.Count; i++)
+                {
+                    builder.Append(", " + entry.Value[i]);
+                }
+
+                builder.Append('\n');
+            }
+        }
+        
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)

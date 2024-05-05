@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility;
@@ -44,6 +45,21 @@ public readonly struct House
     public static bool operator !=(House left, House right)
     {
         return !(left == right);
+    }
+
+    public Cell GetCellAt(int unit)
+    {
+        return Unit == Unit.Row
+            ? new Cell(Number, unit)
+            : new Cell(unit, Number);
+    }
+
+    public IEnumerable<Cell> EnumerateCells()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            yield return GetCellAt(i);
+        }
     }
 
     public bool Contains(Cell cell)

@@ -7,7 +7,6 @@ using Model.Helpers.Steps;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.States;
 using Model.Sudokus.Solver.Trackers;
-using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -179,7 +178,7 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
             i = -1;
             PreComputer.Reset();
 
-            if (stopAtProgress || _sudoku.IsComplete()) break; //TODO optimize isComplete with buffer
+            if (stopAtProgress || _sudoku.IsComplete()) break; //TODO optimize isComplete with buffer with abstract class ?
         }
 
         _trackerManager.OnSolveDone(this);

@@ -13,8 +13,8 @@ public class StatisticsTracker : Tracker
     private int _count;
     private int _success;
     private int _solverFails;
-    
-    public bool NotifySolveDone { get; set; }
+
+    public event OnSolveDone? SolveDone;
 
     public override void Prepare(SudokuSolver solver)
     {
@@ -41,25 +41,11 @@ public class StatisticsTracker : Tracker
 
     public override void OnSolveDone(ISolveResult result)
     {
-        var wasWrong = false;
-        
         _count++;
         if (result.Sudoku.IsCorrect()) _success++;
-        else if (result.IsWrong())
-        {
-            _solverFails++;
-            wasWrong = true;
-        }
-
-        if (!NotifySolveDone) return;
+        else if (result.IsWrong()) _solverFails++;
         
-        Console.Write($"#{_count} ");
-        if(result.Sudoku.IsCorrect()) Console.WriteLine("Ok !");
-        else
-        {
-            Console.Write(wasWrong ? "Solver failed" : "Solver did not find solution");
-            Console.WriteLine($" => '{SudokuTranslator.TranslateLineFormat(result.StartState, SudokuLineFormatEmptyCellRepresentation.Points)}'");
-        }
+        SolveDone?.Invoke(result, _count);
     }
     
     public override string ToString()
@@ -201,3 +187,5 @@ public class StrategyStatistics
         return Math.Round((double)TotalTime / 1000, 4);
     }
 }
+
+public delegate void OnSolveDone(ISolveResult result, int count);

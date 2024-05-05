@@ -9,7 +9,9 @@ public class SudokuSolveBatchCommand : Command
 {
     private const int FileIndex = 0;
     private const int FeedbackIndex = 0;
-    private const int WaitForAllIndex = 0;
+    private const int UnorderedIndex = 1;
+    private const int FailsIndex = 2;
+    private const int InstancesIndex = 3;
     
     public override string Description => "Solves all the Sudoku's in a text file";
     
@@ -21,14 +23,17 @@ public class SudokuSolveBatchCommand : Command
         new []
         {
             new Option("--feedback", "Feedback for each Sudoku"),
-            new Option("-u", "Set all strategies instance handling to unordered all")
+            new Option("-u", "Set all strategies instance handling to unordered all"),
+            new Option("--listfails", "Lists all solver fails at the end"),
+            new Option("--listinstances", "List all Sudoku's that presented the strategy in their solution path",
+                ValueRequirement.Mandatory, ValueType.String)
         }) { }
     
     public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 
-        if (report.IsOptionUsed(WaitForAllIndex))
+        if (report.IsOptionUsed(UnorderedIndex))
         {
             foreach (var s in solver.StrategyManager.Strategies)
             {
@@ -39,7 +44,17 @@ public class SudokuSolveBatchCommand : Command
         var statistics = new StatisticsTracker();
         solver.AddTracker(statistics);
 
-        if (report.IsOptionUsed(FeedbackIndex)) statistics.NotifySolveDone = true;
+        if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
+
+        List<string> fails = new();
+        List<string> instances = new();
+        UsedStrategiesTracker? usedTracker = null;
+
+        if (report.IsOptionUsed(InstancesIndex))
+        {
+            usedTracker = new UsedStrategiesTracker();
+            solver.AddTracker(usedTracker);
+        }
         
         using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
 
@@ -50,8 +65,55 @@ public class SudokuSolveBatchCommand : Command
             
             solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
             solver.Solve();
+
+            if (report.IsOptionUsed(FailsIndex) && solver.IsWrong())
+            {
+                fails.Add(s);
+            }
+
+            if (usedTracker is not null && usedTracker.WasUsed((string)report.GetOptionValue(InstancesIndex)!))
+            {
+                instances.Add(s);
+            }
         }
 
         Console.WriteLine(statistics);
+
+        if (report.IsOptionUsed(FailsIndex))
+        {
+            if(fails.Count == 0) Console.WriteLine("\nNo fail detected");
+            else
+            {
+                Console.WriteLine($"\n{fails.Count} fails detected");
+                for (int i = 0; i < fails.Count; i++)
+                {
+                    Console.WriteLine($"   {i + 1}: {fails[i]}");
+                }
+            }
+        }
+        
+        if (report.IsOptionUsed(InstancesIndex))
+        {
+            if(instances.Count == 0) Console.WriteLine("\nNo instance detected");
+            else
+            {
+                Console.WriteLine($"\n{instances.Count} instances detected");
+                for (int i = 0; i < instances.Count; i++)
+                {
+                    Console.WriteLine($"   {i + 1}: {instances[i]}");
+                }
+            }
+        }
+    }
+
+    private static void OnSolveDone(ISolveResult result, int count)
+    {
+        Console.Write($"#{count} ");
+        if(result.Sudoku.IsCorrect()) Console.WriteLine("Ok !");
+        else
+        {
+            Console.Write(result.IsWrong() ? "Solver failed" : "Solver did not find solution");
+            Console.WriteLine($" => {SudokuTranslator.TranslateLineFormat(result.StartState, SudokuLineFormatEmptyCellRepresentation.Points)}");
+        }
     }
 }

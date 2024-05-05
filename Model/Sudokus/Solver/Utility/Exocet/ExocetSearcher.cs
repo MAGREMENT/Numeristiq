@@ -5,11 +5,51 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Exocet;
 
-public static class JuniorExocetSearcher
+public static class ExocetSearcher
 {
     private const int Max = 4;
+
+    public static List<SeniorExocet> SearchSeniors(ISudokuStrategyUser strategyUser)
+    {
+        var result = new List<SeniorExocet>();
+
+        for (int unit = 0; unit < 9; unit++)
+        {
+            for (int otherStart = 0; otherStart < 9; otherStart += 3)
+            {
+                for (int o1 = 0; o1 < 2; o1++)
+                {
+                    for (int o2 = o1 + 1; o2 < 3; o2++)
+                    {
+                        //Rule 1
+                        var base1 = new Cell(unit, otherStart + o1);
+                        var base2 = new Cell(unit, otherStart + o2);
+
+                        var poss1 = strategyUser.PossibilitiesAt(base1);
+                        var poss2 = strategyUser.PossibilitiesAt(base2);
+                        var or = poss1 | poss2;
+
+                        if (poss1.Count != 0 && poss2.Count != 0 && or.Count <= Max)
+                            TryOfBase(strategyUser, base1, base2, or, result);
+                        
+                        base1 = new Cell(otherStart + o1, unit);
+                        base2 = new Cell(otherStart + o2, unit);
+
+                        poss1 = strategyUser.PossibilitiesAt(base1);
+                        poss2 = strategyUser.PossibilitiesAt(base2);
+                        or = poss1 | poss2;
+
+                        if (poss1.Count != 0 && poss2.Count != 0 && or.Count <= Max)
+                            TryOfBase(strategyUser, base1, base2, or, result);
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
     
-    public static List<JuniorExocet> FullGrid(ISudokuStrategyUser strategyUser)
+    public static List<JuniorExocet> SearchJuniors(ISudokuStrategyUser strategyUser)
     {
         var result = new List<JuniorExocet>();
 
@@ -49,6 +89,122 @@ public static class JuniorExocetSearcher
         return result;
     }
 
+    private static void TryOfBase(ISudokuStrategyUser strategyUser, Cell base1, Cell base2,
+        ReadOnlyBitSet16 basePossibilities, List<SeniorExocet> result)
+    {
+        var isRowJe = base1.Row == base2.Row;
+        var escapeCross = isRowJe
+            ? new House(Unit.Column, OtherUnitInBox(base1.Column, base2.Column))
+            : new House(Unit.Row, OtherUnitInBox(base1.Row, base2.Row));
+
+        var u = OtherUnitsInBox(isRowJe ? base1.Column / 3 : base1.Row / 3);
+        for (int i = 0; i < 3; i++)
+        {
+            var cross1 = new House(isRowJe ? Unit.Column : Unit.Row, u[0] * 3 + i);
+            for (int j = 0; j < 3; j++)
+            {
+                var cross2 = new House(isRowJe ? Unit.Column : Unit.Row, u[1] * 3 + j);
+                var targetCandidates = TargetCandidates(strategyUser, base1, escapeCross,
+                    cross1, cross2, basePossibilities);
+
+                for (int k = 0; k < targetCandidates.Count; k++)
+                {
+                    for (int l = k + 1; l < targetCandidates.Count; l++)
+                    {
+                        var t1 = targetCandidates[k];
+                        var t2 = targetCandidates[l];
+                        
+                        if(t1.Row == t2.Row || t1.Column == t2.Column || 
+                           !(strategyUser.PossibilitiesAt(t1) | strategyUser.PossibilitiesAt(t2)).ContainsAll(basePossibilities)) continue;
+
+                        Dictionary<int, GridPositions> sCells = new();
+                        foreach (var p in basePossibilities.EnumeratePossibilities())
+                        {
+                            var gp = new GridPositions();
+                            FillSCells(strategyUser, gp, base1, escapeCross, p, t1, t2, isRowJe);
+                            FillSCells(strategyUser, gp, base1, cross1, p, t1, t2, isRowJe);
+                            FillSCells(strategyUser, gp, base1, cross2, p, t1, t2, isRowJe);
+
+                            sCells.Add(p, gp);
+                        }
+
+                        bool notOk = false;
+                        foreach (var gp in sCells.Values)
+                        {
+                            if (!gp.CanBeCoveredByUnits(2, Unit.Row, Unit.Column))
+                            {
+                                notOk = true;
+                                break;
+                            }
+                        }
+
+                        if (notOk) continue;
+                        
+                        result.Add(new SeniorExocet(base1, base2, t1, t2, basePossibilities,
+                            escapeCross, cross1, cross2, sCells));
+                    }
+                }
+            }
+        }
+    }
+
+    private static void FillSCells(ISudokuStrategyUser strategyUser, GridPositions gp, Cell base1,
+        House house, int possibility, Cell t1, Cell t2, bool isRowJe)
+    {
+        foreach (var cell in house.EnumerateCells())
+        {
+            if (isRowJe)
+            {
+                if (cell.Row == t1.Row || cell.Row == t2.Row) continue;
+            }
+            else if (cell.Column == t1.Column || cell.Column == t2.Column) continue;
+            if (SudokuCellUtility.ShareAUnit(cell, base1)) continue;
+            if(strategyUser.Contains(cell.Row, cell.Column, possibility)) gp.Add(cell);
+        }
+    }
+
+    private static List<Cell> TargetCandidates(ISudokuStrategyUser strategyUser, Cell base1,
+        House escapeCross, House cross1, House cross2, ReadOnlyBitSet16 basePossibilities)
+    {
+        var result = new List<Cell>();
+        var buffer = new List<Cell>();
+
+        for (int u = 0; u < 9; u++)
+        {
+            if (escapeCross.Unit == Unit.Column)
+            {
+                if (u == base1.Row) continue;
+            }
+            else if (u == base1.Column) continue;
+            
+            buffer.Add(cross1.GetCellAt(u));
+            buffer.Add(cross2.GetCellAt(u));
+            var e = escapeCross.GetCellAt(u);
+            if (e.Row / 3 != base1.Row / 3 || e.Column / 3 != base1.Column / 3) buffer.Add(e);
+
+            foreach (var c in buffer)
+            {
+                if (!strategyUser.PossibilitiesAt(c).ContainsAny(basePossibilities)) continue;
+                bool ok = true;
+                foreach (var other in buffer)
+                {
+                    if(other == c) continue;
+                    if (strategyUser.ContainsAny(other, basePossibilities))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+                
+                if(ok) result.Add(c);
+            }
+            
+            buffer.Clear();
+        }
+
+        return result;
+    }
+
     private static void TryOfBase(ISudokuStrategyUser strategyUser, Cell base1, Cell base2, ReadOnlyBitSet16 basePossibilities,
         List<JuniorExocet> result)
     {
@@ -65,8 +221,8 @@ public static class JuniorExocetSearcher
                 var t1 = targetCandidates[i];
                 var t2 = targetCandidates[j];
 
-                if (!(strategyUser.PossibilitiesAt(t1) | strategyUser.PossibilitiesAt(t2))
-                    .ContainsAll(basePossibilities) || (t1.Row / 3 == t2.Row / 3 && t1.Column / 3 == t2.Column / 3)) continue;
+                if ((t1.Row / 3 == t2.Row / 3 && t1.Column / 3 == t2.Column / 3) || 
+                    !(strategyUser.PossibilitiesAt(t1) | strategyUser.PossibilitiesAt(t2)).ContainsAll(basePossibilities)) continue;
 
                 Cell[] t1MirrorNodes;
                 Cell[] t2MirrorNodes;

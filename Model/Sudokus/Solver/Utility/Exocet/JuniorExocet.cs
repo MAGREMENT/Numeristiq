@@ -6,43 +6,25 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Exocet;
 
-public class JuniorExocet
+public class JuniorExocet : Exocet
 {
-    public Cell Base1 { get; }
-    public Cell Base2 { get; }
-    public Cell Target1 { get; }
-    public Cell Target2 { get; }
-    public ReadOnlyBitSet16 BaseCandidates { get; }
     public Cell EscapeCell { get; }
-    
     public Cell[] Target1MirrorNodes { get; }
-    
     public Cell[] Target2MirrorNodes { get; }
     
-    public Dictionary<int, GridPositions> SCells { get; }
 
     public JuniorExocet(Cell base1, Cell base2, Cell target1, Cell target2, ReadOnlyBitSet16 baseCandidates,
         Cell escapeCell, Cell[] target1MirrorNodes, Cell[] target2MirrorNodes, Dictionary<int, GridPositions> sCells)
+    : base(base1, base2, target1, target2, baseCandidates, sCells)
     {
-        Base1 = base1;
-        Base2 = base2;
-        Target1 = target1;
-        Target2 = target2;
-        BaseCandidates = baseCandidates;
         EscapeCell = escapeCell;
         Target1MirrorNodes = target1MirrorNodes;
         Target2MirrorNodes = target2MirrorNodes;
-        SCells = sCells;
-    }
-
-    public Unit GetUnit()
-    {
-        return Base1.Row == Base2.Row ? Unit.Row : Unit.Column;
     }
 
     public LinePositions SCellsLinePositions()
     {
-        LinePositions result = new LinePositions();
+        var result = new LinePositions();
         if (GetUnit() == Unit.Row)
         {
             result.Add(EscapeCell.Column);
@@ -59,7 +41,8 @@ public class JuniorExocet
         return result;
     }
 
-    public List<Cell> AllPossibleSCells(){
+    public override List<Cell> AllPossibleSCells()
+    {
         List<Cell> sCells = new();
         if (GetUnit() == Unit.Row)
         {
@@ -175,31 +158,5 @@ public class JuniorExocet
         }
 
         return false;
-    }
-
-    public Dictionary<int, List<House>> ComputeAllCoverHouses()
-    {
-        var result = new Dictionary<int, List<House>>();
-
-        foreach (var possibility in BaseCandidates.EnumeratePossibilities())
-        {
-            result.Add(possibility, ComputeCoverHouses(possibility));
-        }
-
-        return result;
-    }
-
-    public List<House> ComputeCoverHouses(int possibility)
-    {
-        if (!BaseCandidates.Contains(possibility)) return new List<House>();
-
-        return SCells[possibility].BestCoverHouses(MethodsInPriorityOrder());
-    }
-
-    private IUnitMethods[] MethodsInPriorityOrder()
-    {
-        return GetUnit() == Unit.Row
-            ? new IUnitMethods[] { new RowMethods(), new ColumnMethods() } 
-            : new IUnitMethods[] { new ColumnMethods(), new RowMethods() };
     }
 }
