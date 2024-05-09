@@ -146,12 +146,12 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         get => _rowCount;
         set
         {
-            var old = _rowCount;
+            if (value == _rowCount) return;
+            
             _rowCount = value;
             UpdateSize();
             AdaptSpecialBrushArray();
-
-            if (_rowCount != old) RowCountChanged?.Invoke(_rowCount);
+            RowCountChanged?.Invoke(_rowCount);
         }
     }
 
@@ -160,12 +160,12 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         get => _columnCount;
         set
         {
-            var old = _columnCount;
+            if (value == _columnCount) return;
+            
             _columnCount = value;
             UpdateSize();
             AdaptSpecialBrushArray();
-
-            if (_columnCount != old) ColumnCountChanged?.Invoke(_columnCount);
+            ColumnCountChanged?.Invoke(_columnCount);
         }
     }
 
@@ -217,7 +217,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         Borders.Cleared += () =>
         {
             _associatedCells.New(RowCount, ColumnCount);
-            UpdateAndDrawLines();
+            UpdateLines();
         };
 
         Borders.ElementAdded += e =>
@@ -227,7 +227,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             var cells = e.ComputeNeighboringCells();
             _associatedCells.Merge(cells.Item1, cells.Item2);
             
-            UpdateAndDrawLines();
+            UpdateLines();
         };
 
         MouseLeftButtonDown += (_, args) =>
@@ -579,8 +579,8 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
 
     private void UpdateSize()
     {
-        double w = _cellSize * _columnCount + _bigLineWidth * (_columnCount + 1);
-        double h = _cellSize * _rowCount + _bigLineWidth * (_rowCount + 1);
+        var w = _cellSize * _columnCount + _bigLineWidth * (_columnCount + 1);
+        var h = _cellSize * _rowCount + _bigLineWidth * (_rowCount + 1);
 
         if (Math.Abs(Width - w) < 0.01 && Math.Abs(Height - h) < 0.01) return;
 
@@ -588,26 +588,25 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         Height = h;
         
         Clear();
-        UpdateBackground();
-        UpdateLines();
+        SetBackground();
+        SetLines();
         Refresh();
     }
     
-    private void UpdateBackground()
-    {
-        Layers[BackgroundIndex].Add(new FilledRectangleComponent(
-            new Rect(0, 0, Width, Height), BackgroundBrush));
-    }
-
-    private void UpdateAndDrawLines()
+    private void UpdateLines()
     {
         Layers[SmallLinesIndex].Clear();
         Layers[BigLinesIndex].Clear();
-        UpdateLines();
+        SetLines();
         Refresh();
     }
+    
+    private void SetBackground()
+    {
+        Layers[BackgroundIndex].Add(new FilledRectangleComponent(new Rect(0, 0, Width, Height), BackgroundBrush));
+    }
 
-    private void UpdateLines()
+    private void SetLines()
     {
         if (RowCount == 0 || ColumnCount == 0) return;
         
@@ -629,7 +628,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             
             for (int col = 0; col < _columnCount; col++)
             {
-                var b = Get(BorderDirection.Horizontal, row, col);
+                var b = GetBorder(BorderDirection.Horizontal, row, col);
 
                 if (b is not null && b.IsThin)
                 {
@@ -657,7 +656,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             
             for (int col = 0; col < _columnCount - 1; col++)
             {
-                var b = Get(BorderDirection.Vertical, row, col);
+                var b = GetBorder(BorderDirection.Vertical, row, col);
 
                 if (b is not null && b.IsThin)
                 {
@@ -677,7 +676,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         }
     }
 
-    private NeighborBorder? Get(BorderDirection direction, int row, int col)
+    private NeighborBorder? GetBorder(BorderDirection direction, int row, int col)
     {
         foreach (var item in Borders)
         {

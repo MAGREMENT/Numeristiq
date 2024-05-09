@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using DesktopApplication.Presenter.Kakuros;
+using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Tectonics;
 using Model;
@@ -37,6 +39,11 @@ public class GlobalApplicationPresenter
     public TectonicApplicationPresenter InitializeTectonicApplicationPresenter()
     {
         return new TectonicApplicationPresenter(_settings);
+    }
+
+    public KakuroApplicationPresenter InitializeKakuroApplicationPresenter()
+    {
+        return new KakuroApplicationPresenter();
     }
     
     private void TrySetTheme()

@@ -25,6 +25,9 @@
       <None Remove="View\Images\bin.png" />
       <Resource Include="View\Images\bin.png" />
 
+
+
+
     </ItemGroup>
 
 

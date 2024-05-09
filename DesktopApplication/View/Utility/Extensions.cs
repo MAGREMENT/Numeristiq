@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -28,5 +29,12 @@ public static class Extensions
 
         var newPossibility = cp.Possibility + vShift * 3 + hShift;
         return cps.Contains(new CellPossibility(cp.Row, cp.Column, newPossibility));
+    }
+
+    public static T[] CopyToNewSize<T>(this T[] array, int size)
+    {
+        var buffer = new T[size];
+        Array.Copy(array, buffer, array.Length);
+        return buffer;
     }
 }
