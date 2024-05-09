@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonics.Solve;
+using DesktopApplication.View.Controls;
 using DesktopApplication.View.Utility;
 using Model.Helpers.Changes;
 using Model.Sudokus.Solver.Utility.Graphs;
@@ -14,7 +15,7 @@ using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Tectonics.Controls;
 
-public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
+public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;
     private const int CellHighlightIndex = 1;
@@ -134,11 +135,14 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     public double CellSize
     {
         get => _cellSize;
-        set
-        {
-            _cellSize = value;
-            BigLineWidth = BigLineRange.GetValueFor(value);
-        }
+        set => SetCellSize(value, true);
+    }
+
+    private void SetCellSize(double value, bool fireEvent)
+    {
+        _cellSize = value;
+        _bigLineWidth = BigLineRange.GetValueFor(value);
+        UpdateSize(fireEvent);
     }
 
     public int RowCount
@@ -149,7 +153,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             if (value == _rowCount) return;
             
             _rowCount = value;
-            UpdateSize();
+            UpdateSize(true);
             AdaptSpecialBrushArray();
             RowCountChanged?.Invoke(_rowCount);
         }
@@ -163,7 +167,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             if (value == _columnCount) return;
             
             _columnCount = value;
-            UpdateSize();
+            UpdateSize(true);
             AdaptSpecialBrushArray();
             ColumnCountChanged?.Invoke(_columnCount);
         }
@@ -175,7 +179,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         private set
         {
             _bigLineWidth = value;
-            UpdateSize();
+            UpdateSize(true);
         }
     } 
 
@@ -195,7 +199,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         set
         {
             _smallLineWidth = value;
-            UpdateSize();
+            UpdateSize(true);
         }
     }
 
@@ -547,6 +551,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
             case 3 :
                 if (possibility == 1) return t;
                 return t + size;
+            // ReSharper disable once PossibleLossOfFraction
             case 4 : return t + size * ((possibility - 1) / 2);
             case 5 :
                 if (possibility is 1 or 2) return t;
@@ -577,7 +582,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         };
     }
 
-    private void UpdateSize()
+    private void UpdateSize(bool fireEvent)
     {
         var w = _cellSize * _columnCount + _bigLineWidth * (_columnCount + 1);
         var h = _cellSize * _rowCount + _bigLineWidth * (_rowCount + 1);
@@ -591,6 +596,8 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
         SetBackground();
         SetLines();
         Refresh();
+        
+        if(fireEvent) OptimizableSizeChanged?.Invoke();
     }
     
     private void UpdateLines()
@@ -764,6 +771,27 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer
     }
 
     #endregion
+
+    public event OnSizeChange? OptimizableSizeChanged;
+    public int WidthSizeMetricCount => ColumnCount;
+    public int HeightSizeMetricCount => RowCount;
+
+    public double GetHeightAdditionalSize() => _bigLineWidth * (RowCount + 1);
+
+    public double GetWidthAdditionalSize() => _bigLineWidth * (ColumnCount + 1);
+
+    public bool HasSize() => RowCount > 0 && ColumnCount > 0;
+
+    public double SimulateSizeMetric(int n, SizeType type)
+    {
+        var blw = _bigLineRange.GetValueFor(n);
+        return type == SizeType.Width ? blw + (blw + n) * ColumnCount : blw + (blw + n) * RowCount;
+    }
+
+    public void SetSizeMetric(int n)
+    {
+        SetCellSize(n, false);
+    }
 }
 
 public record NeighborBorder(int InsideRow, int InsideColumn, BorderDirection Direction, bool IsThin)

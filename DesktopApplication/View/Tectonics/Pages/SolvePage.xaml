@@ -14,12 +14,18 @@
             <ColumnDefinition Width="400"/>
         </Grid.ColumnDefinitions>
         
-        <controls:EmbeddedTectonicBoardControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer"
-                                               RowCountChanged="OnRowCountChanged"
-                                               ColumnCountChanged="OnColumnCountChanged"
-                                               CellSelected="OnCellSelection"
-                                               CellAddedToSelection="OnCellAddedToSelection"
-                                               SelectionEnded="OnSelectionEnd"/>
+        <global:SizeOptimizedContentControl Grid.Column="0" Width="640" Height="640" x:Name="EmbeddedDrawer">
+            <global:SizeOptimizedContentControl.OptimizableContent>
+                <controls:TectonicBoard 
+                    BackgroundBrush="Transparent" LineBrush="{DynamicResource Text}"
+                    DefaultNumberBrush="{DynamicResource Text}"
+                    BigLineRange="3, 5, 50, 100" SmallLineWidth="1" CellSize="50" LinkBrush="{DynamicResource Accent}"
+                    CursorBrush="{DynamicResource Secondary1}" CellSelected="OnCellSelection"
+                    RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"
+                    CellAddedToSelection="OnCellAddedToSelection" SelectionEnded="OnSelectionEnd"
+                    SpecialNumberBrush="{DynamicResource Primary1}"/>
+            </global:SizeOptimizedContentControl.OptimizableContent>
+        </global:SizeOptimizedContentControl>
         
         <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0, 20, 0, 0">
             <controls:DimensionChooser TitleText="Rows" x:Name="RowCount" DimensionChangeAsked="OnRowDimensionChangeAsked"

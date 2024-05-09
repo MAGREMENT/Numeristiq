@@ -51,14 +51,18 @@ public class TectonicSolvePresenter
 
     public void SetNewRowCount(int diff)
     {
-        SetNewTectonic(_solver.Tectonic.Transfer(_solver.Tectonic.RowCount + diff, _solver.Tectonic.ColumnCount),
-            true);
+        var r = _solver.Tectonic.RowCount + diff;
+        if (r is < 0 or > 25) return;
+        
+        SetNewTectonic(_solver.Tectonic.Transfer(r, _solver.Tectonic.ColumnCount), true);
     }
 
     public void SetNewColumnCount(int diff)
     {
-        SetNewTectonic(_solver.Tectonic.Transfer(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount + diff),
-            true);
+        var c = _solver.Tectonic.ColumnCount + diff;
+        if (c is < 0 or > 25) return;
+        
+        SetNewTectonic(_solver.Tectonic.Transfer(_solver.Tectonic.RowCount, c), true);
     }
 
     public async void Solve(bool stopAtProgress)

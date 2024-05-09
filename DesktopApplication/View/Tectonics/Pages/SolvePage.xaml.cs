@@ -3,6 +3,7 @@ using System.Windows.Input;
 using DesktopApplication.Presenter.Tectonics;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
+using DesktopApplication.View.Tectonics.Controls;
 using Model.Helpers.Highlighting;
 using Model.Helpers.Steps;
 using Model.Utility;
@@ -22,10 +23,9 @@ public partial class SolvePage : ITectonicSolveView
         _presenter = appPresenter.Initialize(this);
         
         DefaultMode.IsChecked = true; //Do NOT move this to XAML
-        EmbeddedDrawer.Board.KeyDown += DoBoardInput;
     }
 
-    public ITectonicDrawer Drawer => EmbeddedDrawer.Drawer;
+    public ITectonicDrawer Drawer => (TectonicBoard)EmbeddedDrawer.OptimizableContent!;
 
     public void SetTectonicString(string s)
     {
@@ -212,5 +212,15 @@ public partial class SolvePage : ITectonicSolveView
                 _presenter.DeleteCurrentCell();
                 break;
         }
+    }
+
+    private void OnRowCountChange(int number)
+    {
+        RowCount.SetDimension(number);
+    }
+
+    private void OnColumnCountChange(int number)
+    {
+        ColumnCount.SetDimension(number);
     }
 }
