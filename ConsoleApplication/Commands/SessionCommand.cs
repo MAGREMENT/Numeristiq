@@ -15,7 +15,7 @@ public class SessionCommand : Command
     {
     }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (_isRunning)
         {

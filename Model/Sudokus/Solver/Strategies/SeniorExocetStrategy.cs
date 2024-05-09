@@ -31,7 +31,7 @@ public class SeniorExocetStrategy : SudokuStrategy
             }
             
             if(strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
-                   .Commit(new ExocetReportBuilder(exo)) && StopOnFirstPush) return;
+                   .Commit(new DoubleTargetExocetReportBuilder(exo)) && StopOnFirstPush) return;
         }
     }
 }

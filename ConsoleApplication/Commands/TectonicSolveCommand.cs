@@ -11,7 +11,7 @@ public class TectonicSolveCommand : Command
     public TectonicSolveCommand() : base("Solve",
         new Argument("Tectonic string", ValueType.String)) { }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
 

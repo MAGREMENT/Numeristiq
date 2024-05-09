@@ -9,17 +9,13 @@ public abstract class Exocet
 {
     public Cell Base1 { get; }
     public Cell Base2 { get; }
-    public Cell Target1 { get; }
-    public Cell Target2 { get; }
     public ReadOnlyBitSet16 BaseCandidates { get; }
     public Dictionary<int, GridPositions> SCells { get; }
     
     
-    protected Exocet(Cell base1, Cell base2, Cell target1, Cell target2, ReadOnlyBitSet16 baseCandidates, Dictionary<int, GridPositions> sCells)
+    protected Exocet(Cell base1, Cell base2, ReadOnlyBitSet16 baseCandidates, Dictionary<int, GridPositions> sCells)
     {
         Base1 = base1;
-        Target1 = target1;
-        Target2 = target2;
         BaseCandidates = baseCandidates;
         SCells = sCells;
         Base2 = base2;

@@ -110,7 +110,8 @@ public static class StrategyPool
         {ExtendedUniqueRectanglesStrategy.OfficialName, () => new ExtendedUniqueRectanglesStrategy()},
         {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)},
         {XYZRingStrategy.OfficialName, () => new XYZRingStrategy()},
-        {SeniorExocetStrategy.OfficialName, () => new SeniorExocetStrategy()}
+        {SeniorExocetStrategy.OfficialName, () => new SeniorExocetStrategy()},
+        {SingleTargetExocetStrategy.OfficialName, () => new SingleTargetExocetStrategy()}
     };
     
     private static readonly IDescription NoDescription = new FullTextDescription("No Description Found");

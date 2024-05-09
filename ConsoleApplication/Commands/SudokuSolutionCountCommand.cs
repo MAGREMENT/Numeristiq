@@ -14,7 +14,7 @@ public class SudokuSolutionCountCommand : Command
     }
 
     public override string Description => "Counts the number of solutions for a given Sudoku";
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(SudokuIndex));
 

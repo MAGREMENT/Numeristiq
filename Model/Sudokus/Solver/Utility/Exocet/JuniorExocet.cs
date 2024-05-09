@@ -6,7 +6,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Exocet;
 
-public class JuniorExocet : Exocet
+public class JuniorExocet : DoubleTargetExocet
 {
     public Cell EscapeCell { get; }
     public Cell[] Target1MirrorNodes { get; }

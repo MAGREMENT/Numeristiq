@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Windows.Documents;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;

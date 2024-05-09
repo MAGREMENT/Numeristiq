@@ -22,7 +22,7 @@ public static class BackTracking
         return result.Count;
     }
 
-    public static IReadOnlyList<ITectonic> Fill(ITectonic start, IPossibilitiesGiver giver, int stopAt) //TODO into strategy + command
+    public static IReadOnlyList<ITectonic> Fill(ITectonic start, IPossibilitiesGiver giver, int stopAt)
     {
         var result = new List<ITectonic>();
         Start(result, start, giver, stopAt);

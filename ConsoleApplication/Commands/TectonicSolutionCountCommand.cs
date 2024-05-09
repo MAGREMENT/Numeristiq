@@ -13,7 +13,7 @@ public class TectonicSolutionCountCommand : Command
     }
 
     public override string Description => "Counts the number of solutions for a given Sudoku";
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var tectonic = TectonicTranslator.TranslateRdFormat((string)report.GetArgumentValue(SudokuIndex));
 

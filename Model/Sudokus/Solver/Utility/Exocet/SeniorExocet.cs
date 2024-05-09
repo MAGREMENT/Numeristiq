@@ -5,7 +5,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Exocet;
 
-public class SeniorExocet : Exocet
+public class SeniorExocet : DoubleTargetExocet
 {
     public House EscapeCross { get; }
     public House Cross1 { get; }

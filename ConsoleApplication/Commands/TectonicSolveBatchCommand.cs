@@ -20,7 +20,7 @@ public class TectonicSolveBatchCommand : Command
             new Option("--feedback", "Feedback for each Tectonic")
         }) { }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
         

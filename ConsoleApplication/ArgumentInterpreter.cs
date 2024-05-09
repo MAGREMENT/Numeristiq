@@ -1,6 +1,6 @@
 ﻿namespace ConsoleApplication;
 
-public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
+public class ArgumentInterpreter
 {
     public Directory Root { get; } = new("Root");
     public Instantiator Instantiator { get; } = new();
@@ -140,11 +140,4 @@ public class ArgumentInterpreter : IReadOnlyArgumentInterpreter
 
         return false;
     }
-}
-
-public interface IReadOnlyArgumentInterpreter
-{
-    public Directory Root { get; }
-    public Instantiator Instantiator { get; }
-    public void Execute(IReadOnlyList<string> args);
 }

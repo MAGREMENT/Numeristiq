@@ -191,6 +191,13 @@
     "Settings": {}
   },
   {
+    "Name": "Single Target Exocet",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 1,
+    "Settings": {}
+  },
+  {
     "Name": "Thor\u0027s Hammer",
     "Enabled": false,
     "Locked": false,
@@ -264,6 +271,13 @@
     "Settings": {}
   },
   {
+    "Name": "Unavoidable Rectangles",
+    "Enabled": true,
+    "Locked": false,
+    "InstanceHandling": 0,
+    "Settings": {}
+  },
+  {
     "Name": "Unique Rectangles",
     "Enabled": true,
     "Locked": false,
@@ -271,13 +285,6 @@
     "Settings": {
       "Missing candidates allowed": "True"
     }
-  },
-  {
-    "Name": "Unavoidable Rectangles",
-    "Enabled": true,
-    "Locked": false,
-    "InstanceHandling": 0,
-    "Settings": {}
   },
   {
     "Name": "Extended Unique Rectangles",

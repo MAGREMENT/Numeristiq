@@ -18,7 +18,7 @@ public class SudokuGenerateBatchCommand : Command
         new Option("-e", "Evaluate puzzles"),
         new Option("-s", "Sort puzzles")) { }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var count = report.IsOptionUsed(CountIndex) ? (int)report.GetOptionValue(CountIndex)! : 1;
         

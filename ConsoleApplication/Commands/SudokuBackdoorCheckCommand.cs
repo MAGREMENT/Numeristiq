@@ -24,7 +24,7 @@ public class SudokuBackdoorCheckCommand : Command
         }) { }
 
     public override string Description => "Checks if the Sudoku has a possible backdoor";
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = new SudokuSolver();
         if (report.IsOptionUsed(SetIndex))

@@ -38,7 +38,7 @@ public class JuniorExocetStrategy : SudokuStrategy
         }
     }
 
-    private bool ProcessDouble(ISudokuStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2)
+    private bool ProcessDouble(ISudokuStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2) //TODO fix : ..........5724...98....947...9..3...5..9..12...3.1.9...6....25....56.....7......6
     {
         var unit = je1.GetUnit();
         if (unit != je2.GetUnit()) return false;
@@ -450,7 +450,7 @@ public class JuniorExocetStrategy : SudokuStrategy
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(new ExocetReportBuilder(je)) && StopOnFirstPush;
+        return strategyUser.ChangeBuffer.Commit(new DoubleTargetExocetReportBuilder(je)) && StopOnFirstPush;
     }
 
     private void RemoveAll(ISudokuStrategyUser strategyUser, Cell cell, ReadOnlyBitSet16 except)
@@ -488,11 +488,11 @@ public class JuniorExocetStrategy : SudokuStrategy
     
 }
 
-public class ExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly Exocet _e;
+    private readonly DoubleTargetExocet _e;
 
-    public ExocetReportBuilder(Exocet e)
+    public DoubleTargetExocetReportBuilder(DoubleTargetExocet e)
     {
         _e = e;
     }

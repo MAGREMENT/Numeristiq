@@ -10,7 +10,7 @@ public class SudokuStrategyListCommand : Command
 
     public override string Description => "Gets the list of every Sudoku strategy implemented";
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         int count = 1;
         foreach (var s in StrategyPool.EnumerateStrategies())

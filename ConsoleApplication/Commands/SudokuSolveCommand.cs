@@ -23,7 +23,7 @@ public class SudokuSolveCommand : Command
             new Option("-p", "Show solving path")
         }) { }
     
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
 

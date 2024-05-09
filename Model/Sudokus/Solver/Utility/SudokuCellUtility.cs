@@ -296,7 +296,7 @@ public static class SudokuCellUtility
     }
 
     public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser,
-        IReadOnlyList<CellPossibility> list) //TODO USE THIS
+        IReadOnlyList<CellPossibility> list) //TODO USE THIS + to enumerable
     {
         if (list.Count == 0) return new List<CellPossibility>();
         if (list.Count == 1) return SeenExistingPossibilities(strategyUser, list[0]);
@@ -306,32 +306,6 @@ public static class SudokuCellUtility
         {
             bool ok = true;
             for (int i = 2; i < list.Count; i++)
-            {
-                if (!AreLinked(cp, list[i]) || list[i] == cp)
-                {
-                    ok = false;
-                    break;
-                }
-            }
-
-            if(ok) result.Add(cp);
-        }
-
-        return result;
-    }
-    
-    public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser,
-        IReadOnlyList<CellPossibility> list, int count)
-    {
-        if (count > list.Count) return new List<CellPossibility>();
-        if (count == 0) return new List<CellPossibility>();
-        if (count == 1) return SeenExistingPossibilities(strategyUser, list[0]);
-
-        var result = new List<CellPossibility>();
-        foreach (var cp in SharedSeenExistingPossibilities(strategyUser, list[0], list[1]))
-        {
-            bool ok = true;
-            for (int i = 2; i < count ; i++)
             {
                 if (!AreLinked(cp, list[i]) || list[i] == cp)
                 {
@@ -458,22 +432,39 @@ public static class SudokuCellUtility
 
     public static IEnumerable<(MiniGrid, MiniGrid)> DiagonalMiniGridAssociation(int miniRowExcept, int miniColExcept)
     {
-        List<MiniGrid> buffer = new(4);
+        int r1, r2;
+        int c1, c2;
 
-        for (int miniRow = 0; miniRow < 3; miniRow++)
+        switch (miniRowExcept)
         {
-            if (miniRow == miniRowExcept) continue;
-            
-            for (int miniCol = 0; miniCol < 3; miniCol++)
-            {
-                if (miniCol == miniColExcept) continue;
-
-                buffer.Add(new MiniGrid(miniRow, miniCol));
-            }
+            case 0 : r1 = 1;
+                r2 = 2;
+                break;
+            case 1 : r1 = 0;
+                r2 = 2;
+                break;
+            case 2 : r1 = 0;
+                r2 = 1;
+                break;
+            default: yield break;
+        }
+        
+        switch (miniColExcept)
+        {
+            case 0 : c1 = 1;
+                c2 = 2;
+                break;
+            case 1 : c1 = 0;
+                c2 = 2;
+                break;
+            case 2 : c1 = 0;
+                c2 = 1;
+                break;
+            default: yield break;
         }
 
-        yield return (buffer[0], buffer[3]);
-        yield return (buffer[1], buffer[2]);
+        yield return (new MiniGrid(r1, c1), new MiniGrid(r2, c2));
+        yield return (new MiniGrid(r1, c2), new MiniGrid(r2, c1));
     }
 }
 

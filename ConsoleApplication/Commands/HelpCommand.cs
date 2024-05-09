@@ -14,7 +14,7 @@ public class HelpCommand : Command
     {
     }
 
-    public override void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         Console.WriteLine("\nUsage : [Directory]* [Command] [Argument] ([Option] [Value]?)*");
 

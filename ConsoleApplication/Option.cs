@@ -13,7 +13,7 @@ public class Option
         if (name[0] != '-') throw new ArgumentException("An option name must start with a '-'", nameof(name));
         if ((valueRequirement == ValueRequirement.None && valueType != ValueType.None)
             || (valueType == ValueType.None && valueRequirement != ValueRequirement.None))
-            throw new ArgumentException("If the value type or requirement is set the none, the other has to be too");
+            throw new ArgumentException("If the value type or requirement is set to none, the other has to be too");
         
         Name = name;
         Description = description;

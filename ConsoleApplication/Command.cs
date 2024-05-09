@@ -47,5 +47,5 @@ public abstract class Command
         return -1;
     }
 
-    public abstract void Execute(IReadOnlyArgumentInterpreter interpreter, IReadOnlyCallReport report);
+    public abstract void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report);
 }

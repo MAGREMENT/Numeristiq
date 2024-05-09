@@ -501,11 +501,7 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
             _rowsPositions[row, i].Remove(col);
             _colsPositions[col, i].Remove(row);
             _minisPositions[miniRow, miniCol, i].Remove(gridRow, gridCol);
-        }
-        
-        for (int i = 0; i < 9; i++)
-        {
-            RemovePossibilityCheckLess(number, row, i);
+            RemovePossibilityCheckLess(number, row, i); //TODO look into clearing this
             RemovePossibilityCheckLess(number, i, col);
             RemovePossibilityCheckLess(number,  startRow + i / 3, startCol + i % 3);
         }
