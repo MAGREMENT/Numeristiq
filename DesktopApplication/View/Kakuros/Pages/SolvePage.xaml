@@ -1,0 +1,23 @@
+﻿<Page x:Class="DesktopApplication.View.Kakuros.Pages.SolvePage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
+      xmlns:c="clr-namespace:DesktopApplication.View.Kakuros.Controls"
+      mc:Ignorable="d"
+      Title="SolvePage" Height="760" Width="1000">
+    <Grid Background="{DynamicResource Background1}">
+        <controls:SizeOptimizedContentControl VerticalAlignment="Center" HorizontalAlignment="Center"
+                                              Width="740" Height="740" x:Name="ContentControl">
+            <controls:SizeOptimizedContentControl.OptimizableContent>
+                <c:KakuroBoard NumberLineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
+                               DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
+                               CellSize="20" LineWidth="3" AmountHeightFactor="0.7"
+                               AmountWidthFactor="0.7"/>
+            </controls:SizeOptimizedContentControl.OptimizableContent>
+        </controls:SizeOptimizedContentControl>
+        
+        <controls:HideableTextBox TextChanged="OnNewKakuro"/>
+    </Grid>
+</Page>

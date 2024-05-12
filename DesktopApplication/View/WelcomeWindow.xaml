@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:board="clr-namespace:DesktopApplication.View"
         mc:Ignorable="d"
-        Height="290" Width="450"
+        Height="340" Width="450"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -34,13 +34,13 @@
                                Foreground="{DynamicResource Text}" VerticalAlignment="Center">NextLogic</TextBlock>
                 </StackPanel>
                 
-                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnSudokuMouseEnter"
-                        Click="OnSudokuClick">Sudoku</Button>
-                <Button Style="{StaticResource WelcomeButtonStyle}" MouseEnter="OnTectonicMouseEnter"
-                        Click="OnTectonicClick">Tectonic</Button>
+                <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnSudokuClick">Sudoku</Button>
+                <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnTectonicClick">Tectonic</Button>
+                <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnKakuroClick">Kakuro</Button>
             </StackPanel>
         
             <board:WelcomeBoard Grid.Column="1" x:Name="Board" Height="250" Width="250"
+                                VerticalAlignment="Bottom"
                                 TextBrush="{DynamicResource Text}"
                                 PrimaryBrush="{DynamicResource Primary1}"
                                 SecondaryBrush="{DynamicResource Secondary1}"/>

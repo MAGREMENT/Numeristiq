@@ -15,6 +15,8 @@ public interface IKakuro
     
     bool AddSum(IKakuroSum sum);
     void AddSumUnchecked(IKakuroSum sum);
+    
+    int this[int row, int col] { get; set; }
 }
 
 public interface IKakuroSum : IEnumerable<Cell>
@@ -25,6 +27,7 @@ public interface IKakuroSum : IEnumerable<Cell>
 
     int GetFarthestRow();
     int GetFarthestColumn();
+    Cell GetAmountCell();
 }
 
 public enum Orientation

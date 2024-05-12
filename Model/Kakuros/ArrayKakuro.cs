@@ -52,6 +52,11 @@ public class ArrayKakuro : IKakuro
                 if (HorizontalSumFor(cell) is not null) return false;
             }
             else if (VerticalSumFor(cell) is not null) return false;
+
+            var amountCell = sum.GetAmountCell();
+            if (amountCell.Row < 0 || amountCell.Column < 0 || amountCell.Row >= RowCount ||
+                amountCell.Column >= ColumnCount) continue;
+            if (_cells[amountCell.Row, amountCell.Column].IsUsed()) return false;
         }
 
         AddSumUnchecked(sum);
@@ -63,10 +68,16 @@ public class ArrayKakuro : IKakuro
         var fr = sum.GetFarthestRow();
         var fc = sum.GetFarthestColumn();
 
-        if (fr > RowCount || fc > ColumnCount)
+        if (fr >= RowCount || fc >= ColumnCount)
         {
-            var buffer = new KakuroCell[fr, fc];
-            Array.Copy(_cells, buffer, _cells.Length);
+            var buffer = new KakuroCell[Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1)];
+            for (int row = 0; row < RowCount; row++)
+            {
+                for (int col = 0; col < ColumnCount; col++)
+                {
+                    buffer[row, col] = _cells[row, col];
+                }
+            }
             _cells = buffer;
         }
 
@@ -76,6 +87,12 @@ public class ArrayKakuro : IKakuro
             if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += sum;
             else _cells[cell.Row, cell.Column] -= sum;
         }
+    }
+
+    public int this[int row, int col]
+    {
+        get => _cells[row, col].Number;
+        set => _cells[row, col] += value;
     }
 }
 
@@ -94,6 +111,8 @@ public readonly struct KakuroCell
         VerticalSum = verticalSum;
         HorizontalSum = horizontalSum;
     }
+
+    public bool IsUsed() => VerticalSum is not null || HorizontalSum is not null;
 
     public int Number { get; }
     public IKakuroSum? VerticalSum { get; }

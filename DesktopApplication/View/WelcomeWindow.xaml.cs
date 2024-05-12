@@ -1,8 +1,8 @@
 ﻿using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;
+using DesktopApplication.View.Kakuros;
 using DesktopApplication.View.Sudokus;
 using DesktopApplication.View.Tectonics;
 
@@ -39,16 +39,6 @@ public partial class WelcomeWindow
         WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
     }
 
-    private void OnSudokuMouseEnter(object sender, MouseEventArgs e)
-    {
-        
-    }
-
-    private void OnTectonicMouseEnter(object sender, MouseEventArgs e)
-    {
-        
-    }
-
     private void OnSudokuClick(object sender, RoutedEventArgs e)
     {
         var window = new SudokuWindow();
@@ -59,6 +49,13 @@ public partial class WelcomeWindow
     private void OnTectonicClick(object sender, RoutedEventArgs e)
     {
         var window = new TectonicWindow();
+        window.Show();
+        Close();
+    }
+    
+    private void OnKakuroClick(object sender, RoutedEventArgs e)
+    {
+        var window = new KakuroWindow();
         window.Show();
         Close();
     }

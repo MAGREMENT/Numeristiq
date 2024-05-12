@@ -1,6 +1,6 @@
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
-public class IKakuroSolveView
+public interface IKakuroSolveView
 {
-    
+    IKakuroSolverDrawer Drawer { get; }
 }

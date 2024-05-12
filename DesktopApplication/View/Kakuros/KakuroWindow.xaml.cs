@@ -1,19 +1,19 @@
 ﻿using System.Windows;
 using DesktopApplication.Presenter;
-using DesktopApplication.View.Tectonics.Pages;
+using DesktopApplication.View.Kakuros.Pages;
 
-namespace DesktopApplication.View.Tectonics;
+namespace DesktopApplication.View.Kakuros;
 
-public partial class TectonicWindow
+public partial class KakuroWindow
 {
-    public TectonicWindow()
+    public KakuroWindow()
     {
         InitializeComponent();
         
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
 
-        var presenter = GlobalApplicationPresenter.Instance.InitializeTectonicApplicationPresenter();
+        var presenter = GlobalApplicationPresenter.Instance.InitializeKakuroApplicationPresenter();
 
         Frame.Content = new SolvePage(presenter);
     }
