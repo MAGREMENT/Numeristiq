@@ -42,6 +42,8 @@ public interface IKakuroSum : IEnumerable<Cell>
     int GetFarthestRow();
     int GetFarthestColumn();
     Cell GetAmountCell();
+    
+    Cell this[int index] { get; }
 }
 
 public enum Orientation

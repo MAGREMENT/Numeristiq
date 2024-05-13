@@ -24,6 +24,8 @@ public class VerticalKakuroSum : IKakuroSum
     public int GetFarthestColumn() => _start.Column;
     public Cell GetAmountCell() => new(_start.Row - 1, _start.Column);
 
+    public Cell this[int index] => new(_start.Row + index, _start.Column);
+
     public IEnumerator<Cell> GetEnumerator()
     {
         yield return _start;
@@ -58,6 +60,8 @@ public class HorizontalKakuroSum : IKakuroSum
 
     public int GetFarthestColumn() => _start.Column + Length - 1;
     public Cell GetAmountCell() => new(_start.Row, _start.Column - 1);
+
+    public Cell this[int index] => new(_start.Row, _start.Column + index);
 
     public IEnumerator<Cell> GetEnumerator()
     {

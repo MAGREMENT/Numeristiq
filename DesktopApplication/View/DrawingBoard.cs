@@ -57,7 +57,7 @@ public abstract class DrawingBoard : FrameworkElement
         Dispatcher.Invoke(() =>
         {
             if (!RefreshAllowed) return;
-
+            
             var context = _visual.RenderOpen();
 
             foreach (var list in _layers)
@@ -68,6 +68,7 @@ public abstract class DrawingBoard : FrameworkElement
                 }
             }
 
+            context.Pop();
             context.Close();
             InvalidateVisual();
         });

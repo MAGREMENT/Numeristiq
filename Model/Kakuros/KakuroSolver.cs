@@ -16,7 +16,9 @@ public class KakuroSolver : IKakuroStrategyUser, IChangeProducer
 
     private readonly IKakuroCombinationCalculator _combinationCalculator;
     private readonly KakuroStrategy[] _strategies = {
-        new NakedSingleStrategy()
+        new NakedSingleStrategy(),
+        new AmountCoherencyStrategy(),
+        new CombinationCoherencyStrategy()
     };
 
     private bool _wasChangeMade;

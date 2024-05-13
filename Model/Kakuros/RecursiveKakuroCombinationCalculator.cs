@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Windows.Documents;
 using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
@@ -36,7 +35,22 @@ public class RecursiveKakuroCombinationCalculator : IKakuroCombinationCalculator
     {
         for (; start < 9; start++)
         {
-            //TODO
+            currentNumbers.Add(start);
+            var newTotal = currentTotal + start;
+                
+            if (currentNumbers.Count == cellCount - 1)
+            {
+                var last = amount - newTotal;
+                if (last >= start + 1 && last is >= 1 and <= 9)
+                {
+                    currentNumbers.Add(last);
+                    result.Add(currentNumbers.ToArray());
+                    currentNumbers.RemoveAt(currentNumbers.Count - 1);
+                }
+            }
+            else Calculate(result, currentNumbers, newTotal, amount, cellCount, start + 1);
+            
+            currentNumbers.RemoveAt(currentNumbers.Count - 1);
         }
     }
     
