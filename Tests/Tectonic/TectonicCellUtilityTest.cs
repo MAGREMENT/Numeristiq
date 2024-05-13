@@ -1,7 +1,7 @@
 ﻿using Model.Tectonics;
 using Model.Utility;
 
-namespace Tests;
+namespace Tests.Tectonic;
 
 public class TectonicCellUtilityTest
 {

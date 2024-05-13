@@ -1,4 +1,5 @@
-﻿using Model.Kakuros;
+﻿using System.Collections.Generic;
+using Model.Kakuros;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 
@@ -10,6 +11,10 @@ public interface IKakuroSolverDrawer
     void ClearPresence();
     void SetPresence(int row, int col, bool value);
     void SetPresence(int row, int col, Orientation orientation, bool value);
+    void ClearNumbers();
+    void SetAmount(int row, int col, int n, Orientation orientation);
+    void SetSolution(int row, int col, int n);
+    void SetPossibilities(int row, int col, IEnumerable<int> poss);
     void RedrawLines();
     void Refresh();
 }

@@ -1,6 +1,6 @@
 using Model.Tectonics;
 
-namespace Tests;
+namespace Tests.Tectonic;
 
 public class TectonicTranslatorTests
 {

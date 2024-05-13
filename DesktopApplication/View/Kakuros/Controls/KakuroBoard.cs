@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Tectonics.Controls;
@@ -160,14 +161,63 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
         get => (Brush)GetValue(AmountLineBrushProperty);
     }
     
-    public KakuroBoard() : base(4)
+    public KakuroBoard() : base(5)
     {
     }
 
     public void SetSolution(int row, int col, int n)
     {
-        if (!_numberPresence[row, col]) return;
-        //TODO
+        Dispatcher.Invoke(() =>
+        {
+            if (!_numberPresence[row, col]) return;
+
+            Layers[NumberIndex].Add(new TextInRectangleComponent(n.ToString(), _cellSize * 3 / 4,
+                DefaultNumberBrush, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
+                ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+        });
+    }
+
+    public void SetPossibilities(int row, int col, IEnumerable<int> poss)
+    {
+        Dispatcher.Invoke(() =>
+        {
+            var pSize = _cellSize / 3;
+            foreach (var p in poss)
+            {
+                var l = GetLeft(col) + pSize * ((p - 1) % 3);
+                // ReSharper disable once PossibleLossOfFraction
+                var t = GetTop(row) + pSize * ((p - 1) / 3);
+            
+                Layers[NumberIndex].Add(new TextInRectangleComponent(p.ToString(), pSize * 3 / 4,
+                    DefaultNumberBrush, new Rect(l, t, pSize, pSize),
+                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+            }
+        });
+    }
+
+    public void ClearNumbers()
+    {
+        Dispatcher.Invoke(() => Layers[NumberIndex].Clear());
+    }
+
+    public void SetAmount(int row, int col, int n, Orientation orientation)
+    {
+        if (orientation == Orientation.Vertical)
+        {
+            var t = row < 0 ? _lineWidth : GetTop(row) + _cellSize - _amountHeight;
+            var l = GetLeft(col);
+            Layers[AmountIndex].Add(new TextInRectangleComponent(n.ToString(), _amountHeight * 3 / 4,
+                AmountLineBrush, new Rect(l, t, _amountWidth, _amountHeight), ComponentHorizontalAlignment.Center,
+                ComponentVerticalAlignment.Center));
+        }
+        else
+        {
+            var t = GetTop(row);
+            var l = col < 0 ? _lineWidth : GetLeft(col) + _cellSize - _amountWidth;
+            Layers[AmountIndex].Add(new TextInRectangleComponent(n.ToString(), _amountHeight * 3 / 4,
+                AmountLineBrush, new Rect(l, t, _amountWidth, _amountHeight), ComponentHorizontalAlignment.Center,
+                ComponentVerticalAlignment.Center));
+        }
     }
 
     public void ClearPresence()
@@ -307,6 +357,10 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
                     new Point(xBl, yBl), new Pen(AmountLineBrush, _lineWidth)));
 
                 var yTl = GetTop(cell.Row) - half;
+                if (cell.Column < 0 || cell.Row <= 0 || !_numberPresence[cell.Row - 1, cell.Column])
+                {
+                    yTl -= _amountWidth;
+                }
                 
                 Layers[AmountLineIndex].Add(new LineComponent(new Point(xBl, yBl),
                     new Point(xBl, yTl), new Pen(AmountLineBrush, _lineWidth)));

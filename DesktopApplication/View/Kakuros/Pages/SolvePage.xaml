@@ -8,16 +8,27 @@
       mc:Ignorable="d"
       Title="SolvePage" Height="760" Width="1000">
     <Grid Background="{DynamicResource Background1}">
-        <controls:SizeOptimizedContentControl VerticalAlignment="Center" HorizontalAlignment="Center"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        
+        <controls:SizeOptimizedContentControl Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
                                               Width="740" Height="740" x:Name="ContentControl">
             <controls:SizeOptimizedContentControl.OptimizableContent>
                 <c:KakuroBoard NumberLineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
                                DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
-                               CellSize="20" LineWidth="3" AmountHeightFactor="0.7"
-                               AmountWidthFactor="0.7"/>
+                               CellSize="20" LineWidth="3" AmountHeightFactor="0.5" AmountWidthFactor="0.5"/>
             </controls:SizeOptimizedContentControl.OptimizableContent>
         </controls:SizeOptimizedContentControl>
         
-        <controls:HideableTextBox TextChanged="OnNewKakuro"/>
+        <StackPanel Grid.Column="1" Margin="10" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
+                    Click="Solve">Solve</Button>
+            <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
+                    Click="Advance">Advance</Button>
+        </StackPanel>
+        
+        <controls:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="OnNewKakuro"/>
     </Grid>
 </Page>

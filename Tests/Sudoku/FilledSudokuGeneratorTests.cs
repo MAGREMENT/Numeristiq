@@ -1,7 +1,6 @@
-﻿using Model.Sudokus;
-using Model.Sudokus.Generator;
+﻿using Model.Sudokus.Generator;
 
-namespace Tests;
+namespace Tests.Sudoku;
 
 public class FilledSudokuGeneratorTests
 {
@@ -12,7 +11,7 @@ public class FilledSudokuGeneratorTests
     [Test]
     public void GenerationTest()
     {
-        var suds = new Sudoku[SudokuCount];
+        var suds = new Model.Sudokus.Sudoku[SudokuCount];
 
         for (int i = 0; i < SudokuCount; i++)
         {

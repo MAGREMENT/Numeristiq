@@ -3,20 +3,34 @@ using Model.Utility;
 
 namespace Model.Kakuros;
 
-public interface IKakuro
+public interface IKakuro : IReadOnlyKakuro
+{
+    bool AddSum(IKakuroSum sum);
+    void AddSumUnchecked(IKakuroSum sum);
+    
+    new int this[int row, int col] { get; set; }
+    int this[Cell cell]
+    {
+        get => this[cell.Row, cell.Column];
+        set => this[cell.Row, cell.Column] = value;
+    }
+}
+
+public interface IReadOnlyKakuro
 {
     int RowCount { get; }
     int ColumnCount { get; }
     IReadOnlyList<IKakuroSum> Sums { get; }
-
+    IEnumerable<Cell> EnumerateCells();
+    
     IEnumerable<IKakuroSum> SumsFor(Cell cell);
     IKakuroSum? VerticalSumFor(Cell cell);
     IKakuroSum? HorizontalSumFor(Cell cell);
-    
-    bool AddSum(IKakuroSum sum);
-    void AddSumUnchecked(IKakuroSum sum);
-    
-    int this[int row, int col] { get; set; }
+    List<int> GetSolutions(IKakuroSum sum);
+
+    int this[int row, int col] { get; }
+
+    bool IsComplete();
 }
 
 public interface IKakuroSum : IEnumerable<Cell>

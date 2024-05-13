@@ -111,12 +111,12 @@ public partial class SolvePage : ITectonicSolveView
         _presenter.Clear();
     }
 
-    private void OnRowCountChanged(int number)
+    private void OnRowCountChange(int number)
     {
         RowCount.SetDimension(number);
     }
 
-    private void OnColumnCountChanged(int number)
+    private void OnColumnCountChange(int number)
     {
         ColumnCount.SetDimension(number);
     }
@@ -212,15 +212,5 @@ public partial class SolvePage : ITectonicSolveView
                 _presenter.DeleteCurrentCell();
                 break;
         }
-    }
-
-    private void OnRowCountChange(int number)
-    {
-        RowCount.SetDimension(number);
-    }
-
-    private void OnColumnCountChange(int number)
-    {
-        ColumnCount.SetDimension(number);
     }
 }

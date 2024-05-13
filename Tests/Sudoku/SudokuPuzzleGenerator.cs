@@ -5,7 +5,7 @@ using Model.Sudokus.Solver.Trackers;
 using Model.Utility;
 using Repository;
 
-namespace Tests;
+namespace Tests.Sudoku;
 
 public class SudokuPuzzleGenerator
 {

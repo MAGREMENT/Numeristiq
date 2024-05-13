@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Utility;
+using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class ArrayKakuro : IKakuro
+public class ArrayKakuro : IKakuro, ISolvingState
 {
     private KakuroCell[,] _cells;
     private readonly List<IKakuroSum> _sums = new();
@@ -40,8 +42,26 @@ public class ArrayKakuro : IKakuro
         return _cells[cell.Row, cell.Column].HorizontalSum;
     }
 
+    public List<int> GetSolutions(IKakuroSum sum)
+    {
+        List<int> result = new();
+        foreach (var cell in sum)
+        {
+            var n = this[cell.Row, cell.Column];
+            if (n != 0) result.Add(n);
+        }
+
+        return result;
+    }
+
     public bool AddSum(IKakuroSum sum)
     {
+        if (KakuroCellUtility.MaxAmountFor(sum.Length) < sum.Amount) return false;
+        
+        var amountCell = sum.GetAmountCell();
+        if (amountCell is { Row: >= 0, Column: >= 0 } && amountCell.Row < RowCount &&
+            amountCell.Column < ColumnCount && _cells[amountCell.Row, amountCell.Column].IsUsed()) return false;
+        
         foreach (var cell in sum)
         {
             if (cell.Row < 0 || cell.Column < 0) return false;
@@ -52,11 +72,6 @@ public class ArrayKakuro : IKakuro
                 if (HorizontalSumFor(cell) is not null) return false;
             }
             else if (VerticalSumFor(cell) is not null) return false;
-
-            var amountCell = sum.GetAmountCell();
-            if (amountCell.Row < 0 || amountCell.Column < 0 || amountCell.Row >= RowCount ||
-                amountCell.Column >= ColumnCount) continue;
-            if (_cells[amountCell.Row, amountCell.Column].IsUsed()) return false;
         }
 
         AddSumUnchecked(sum);
@@ -93,6 +108,32 @@ public class ArrayKakuro : IKakuro
     {
         get => _cells[row, col].Number;
         set => _cells[row, col] += value;
+    }
+
+    public bool IsComplete()
+    {
+        foreach (var cell in _cells)
+        {
+            if (cell.IsUsed() && cell.Number == 0) return false;
+        }
+
+        return true;
+    }
+
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
+    {
+        return new ReadOnlyBitSet16();
+    }
+
+    public IEnumerable<Cell> EnumerateCells()
+    {
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                if (_cells[row, col].IsUsed()) yield return new Cell(row, col);
+            }
+        }
     }
 }
 

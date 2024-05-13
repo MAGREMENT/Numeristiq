@@ -12,7 +12,7 @@ using Model.Sudokus.Solver.Strategies.BlossomLoops.Types;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 using Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 
-namespace Tests;
+namespace Tests.Sudoku;
 
 public class SudokuStrategiesTests
 {

@@ -1,4 +1,5 @@
-﻿using DesktopApplication.Presenter.Kakuros;
+﻿using System.Windows;
+using DesktopApplication.Presenter.Kakuros;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Kakuros.Controls;
 
@@ -21,5 +22,15 @@ public partial class SolvePage : IKakuroSolveView
     private void OnNewKakuro(string s)
     {
         _presenter.SetNewKakuro(s);
+    }
+
+    private void Solve(object sender, RoutedEventArgs e)
+    {
+        _presenter.Solve(false);
+    }
+
+    private void Advance(object sender, RoutedEventArgs e)
+    {
+        _presenter.Solve(true);
     }
 }
