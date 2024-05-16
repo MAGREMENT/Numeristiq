@@ -42,6 +42,7 @@ public interface IReadOnlyTectonic : ISolvingState
     public bool IsComplete();
 
     public ITectonic Copy();
+    public ITectonic CopyNumberLess();
     public ITectonic Transfer(int rowCount, int columnCount);
 }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Model.Utility;
 
@@ -25,6 +26,11 @@ public class VerticalKakuroSum : IKakuroSum
     public Cell GetAmountCell() => new(_start.Row - 1, _start.Column);
 
     public Cell this[int index] => new(_start.Row + index, _start.Column);
+    
+    public IKakuroSum WithLength(int length)
+    {
+        return new VerticalKakuroSum(_start, Amount, length);
+    }
 
     public IEnumerator<Cell> GetEnumerator()
     {
@@ -38,6 +44,16 @@ public class VerticalKakuroSum : IKakuroSum
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is VerticalKakuroSum s && s._start == _start && s.Length == Length;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_start, Length, Amount, Orientation);
     }
 }
 
@@ -62,6 +78,10 @@ public class HorizontalKakuroSum : IKakuroSum
     public Cell GetAmountCell() => new(_start.Row, _start.Column - 1);
 
     public Cell this[int index] => new(_start.Row, _start.Column + index);
+    public IKakuroSum WithLength(int length)
+    {
+        return new HorizontalKakuroSum(_start, Amount, length);
+    }
 
     public IEnumerator<Cell> GetEnumerator()
     {
@@ -75,5 +95,15 @@ public class HorizontalKakuroSum : IKakuroSum
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is HorizontalKakuroSum s && s._start == _start && s.Length == Length;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(_start, Length, Amount, Orientation);
     }
 }

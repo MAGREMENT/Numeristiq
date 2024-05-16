@@ -76,7 +76,13 @@ public class TectonicSolvePresenter
 
     public void Clear()
     {
-        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount), false);
+        SetNewTectonic(new ArrayTectonic(_solver.Tectonic.RowCount, _solver.Tectonic.ColumnCount),
+            false);
+    }
+
+    public void Reset()
+    {
+        SetNewTectonic(_solver.Tectonic.CopyNumberLess(), false);
     }
     
     public void RequestLogOpening(int id)

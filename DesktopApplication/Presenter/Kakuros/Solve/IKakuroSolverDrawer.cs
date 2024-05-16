@@ -15,6 +15,9 @@ public interface IKakuroSolverDrawer
     void SetAmount(int row, int col, int n, Orientation orientation);
     void SetSolution(int row, int col, int n);
     void SetPossibilities(int row, int col, IEnumerable<int> poss);
+    void ClearCursor();
+    void PutCursorOnNumberCell(int row, int col);
+    void PutCursorOnAmountCell(int row, int col, Orientation orientation);
     void RedrawLines();
     void Refresh();
 }

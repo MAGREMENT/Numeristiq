@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Model.Helpers;
 using Model.Kakuros;
+using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
@@ -9,6 +10,10 @@ public class KakuroSolvePresenter
 {
     private readonly IKakuroSolveView _view;
     private readonly KakuroSolver _solver;
+
+    private Cell? _selectedCell;
+    private IKakuroSum? _selectedSum;
+    private int _bufferedAmount;
 
     public KakuroSolvePresenter(IKakuroSolveView view)
     {
@@ -28,6 +33,90 @@ public class KakuroSolvePresenter
         _solver.ProgressMade += OnProgressMade;
         await Task.Run(() => _solver.Solve(stopAtProgress));
         _solver.ProgressMade -= OnProgressMade;
+    }
+
+    public void SelectCell(int row, int col)
+    {
+        _selectedSum = null;
+        var cell = new Cell(row, col);
+        if (cell == _selectedCell)
+        {
+            _selectedCell = null;
+            _view.Drawer.ClearCursor();
+        }
+        else
+        {
+            _selectedCell = cell;
+            _view.Drawer.PutCursorOnNumberCell(row, col);
+        }
+        
+        _view.Drawer.Refresh();
+    }
+
+    public void SelectSum(int row, int col)
+    {
+        _selectedCell = null;
+        IKakuroSum? sum = null;
+        foreach (var s in _solver.Kakuro.Sums)
+        {
+            var cell = s.GetAmountCell();
+            if (cell.Row == row && cell.Column == col)
+            {
+                sum = s;
+                break;
+            }
+        }
+
+        if (sum is null || sum.Equals(_selectedSum))
+        {
+            _selectedSum = null;
+            _view.Drawer.ClearCursor();
+        }
+        else
+        {
+            _selectedSum = sum;
+            _bufferedAmount = sum.Amount;
+            _view.Drawer.PutCursorOnAmountCell(row, col, sum.Orientation);
+        }
+        
+        _view.Drawer.Refresh();
+    }
+
+    public void AddCell()
+    {
+        if (_selectedSum is null) return;
+
+        var copy = _solver.Kakuro.Copy();
+        if (!copy.AddCellTo(_selectedSum)) return;
+        
+        _solver.SetKakuro(copy);
+        ShowNewKakuro(copy);
+    }
+
+    public void RemoveCell()
+    {
+        if (_selectedSum is null) return;
+
+        var copy = _solver.Kakuro.Copy();
+        if(!copy.RemoveCellFrom(_selectedSum)) return;
+        
+        _solver.SetKakuro(copy);
+        ShowNewKakuro(copy);
+    }
+
+    public void AddDigitToAmount(int n)
+    {
+        //TODO
+    }
+
+    public void RemoveDigitFromAmount()
+    {
+        //TODO
+    }
+
+    public void EnterAmount()
+    {
+        //TODO
     }
 
     private void ShowNewKakuro(IKakuro k)
@@ -69,8 +158,7 @@ public class KakuroSolvePresenter
         foreach (var cell in _solver.Kakuro.EnumerateCells())
         {
             var n = state[cell.Row, cell.Column];
-            if (n == 0)
-                drawer.SetPossibilities(cell.Row, cell.Column,
+            if (n == 0) drawer.SetPossibilities(cell.Row, cell.Column,
                     state.PossibilitiesAt(cell).EnumeratePossibilities());
             else drawer.SetSolution(cell.Row, cell.Column, n);
         }

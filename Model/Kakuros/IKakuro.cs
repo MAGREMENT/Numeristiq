@@ -14,6 +14,9 @@ public interface IKakuro : IReadOnlyKakuro
         get => this[cell.Row, cell.Column];
         set => this[cell.Row, cell.Column] = value;
     }
+    
+    bool AddCellTo(IKakuroSum sum);
+    bool RemoveCellFrom(IKakuroSum sum);
 }
 
 public interface IReadOnlyKakuro
@@ -31,6 +34,8 @@ public interface IReadOnlyKakuro
     int this[int row, int col] { get; }
 
     bool IsComplete();
+
+    IKakuro Copy();
 }
 
 public interface IKakuroSum : IEnumerable<Cell>
@@ -44,6 +49,8 @@ public interface IKakuroSum : IEnumerable<Cell>
     Cell GetAmountCell();
     
     Cell this[int index] { get; }
+
+    IKakuroSum WithLength(int length);
 }
 
 public enum Orientation

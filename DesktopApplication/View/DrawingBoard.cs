@@ -67,8 +67,7 @@ public abstract class DrawingBoard : FrameworkElement
                     component.Draw(context);
                 }
             }
-
-            context.Pop();
+            
             context.Close();
             InvalidateVisual();
         });

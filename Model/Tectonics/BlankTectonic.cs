@@ -49,6 +49,11 @@ public class BlankTectonic : ITectonic
         return new BlankTectonic();
     }
 
+    public ITectonic CopyNumberLess()
+    {
+        return new BlankTectonic();
+    }
+
     public bool MergeZones(Cell c1, Cell c2) => false;
     public bool MergeZones(IZone z1, IZone z2) => false;
 

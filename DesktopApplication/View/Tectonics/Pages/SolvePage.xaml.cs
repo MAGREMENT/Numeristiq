@@ -101,9 +101,9 @@ public partial class SolvePage : ITectonicSolveView
         _presenter.Solve(true);
     }
 
-    private void ChooseStep(object sender, RoutedEventArgs e)
+    private void Reset(object sender, RoutedEventArgs e)
     {
-        
+        _presenter.Reset();
     }
 
     private void Clear(object sender, RoutedEventArgs e)

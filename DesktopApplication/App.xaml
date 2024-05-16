@@ -49,6 +49,32 @@
 		    </Setter>
 	    </Style>
 	    
+	    <Style TargetType="TextBox" x:Key="HideableTextBox">
+		    <Setter Property="Background" Value="Transparent"/>
+		    <Setter Property="CaretBrush" Value="{DynamicResource Text}"/>
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+		    <Setter Property="Height" Value="25"/>
+		    <Setter Property="FontSize" Value="15"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="TextBox">
+					    <Border HorizontalAlignment="Stretch" VerticalAlignment="Center"
+					            BorderBrush="{DynamicResource Text}" BorderThickness="1"
+					            Height="{TemplateBinding Height}" Width="{TemplateBinding Width}"
+					            Background="{TemplateBinding Background}">
+						    <ScrollViewer
+							    Margin="3, 0, 3, 0"
+							    HorizontalAlignment="Stretch"
+							    VerticalAlignment="Center"
+							    x:Name="PART_ContentHost"
+							    HorizontalScrollBarVisibility="Disabled"
+							    VerticalScrollBarVisibility="Disabled"/>
+					    </Border>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
+	    
 	    <Style TargetType="TextBox" x:Key="SettingTextBox">
 		    <Setter Property="Background" Value="{DynamicResource Background3}"/>
 		    <Setter Property="BorderBrush" Value="{DynamicResource Text}"/>

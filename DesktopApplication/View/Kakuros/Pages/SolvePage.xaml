@@ -18,7 +18,9 @@
             <controls:SizeOptimizedContentControl.OptimizableContent>
                 <c:KakuroBoard NumberLineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
                                DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
-                               CellSize="20" LineWidth="3" AmountHeightFactor="0.5" AmountWidthFactor="0.5"/>
+                               CellSize="20" LineWidth="3" AmountHeightFactor="0.5" AmountWidthFactor="0.5"
+                               CellSelected="OnCellSelection" CursorBrush="{DynamicResource Secondary1}"
+                               KeyDown="DoBoardInput"/>
             </controls:SizeOptimizedContentControl.OptimizableContent>
         </controls:SizeOptimizedContentControl>
         

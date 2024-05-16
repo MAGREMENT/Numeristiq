@@ -2,21 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Tectonics.Controls;
 using Model.Kakuros;
+using Model.Utility;
 
 namespace DesktopApplication.View.Kakuros.Controls;
 
 public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
 {
     private const int BackgroundIndex = 0;
-    private const int AmountLineIndex = 1;
-    private const int AmountIndex = 2;
-    private const int NumberLineIndex = 3;
-    private const int NumberIndex = 4;
+    private const int CursorIndex = 1;
+    private const int AmountLineIndex = 2;
+    private const int AmountIndex = 3;
+    private const int NumberLineIndex = 4;
+    private const int NumberIndex = 5;
 
     private int _rowCount;
     private int _columnCount;
@@ -161,8 +162,36 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
         get => (Brush)GetValue(AmountLineBrushProperty);
     }
     
-    public KakuroBoard() : base(5)
+    public static readonly DependencyProperty CursorBrushProperty =
+        DependencyProperty.Register(nameof(CursorBrush), typeof(Brush), typeof(KakuroBoard),
+            new PropertyMetadata((obj, args) =>
+            {
+                if (obj is not KakuroBoard board || args.NewValue is not Brush brush) return;
+                board.SetLayerBrush(CursorIndex, brush);
+                board.Refresh();
+            }));
+    
+    public Brush CursorBrush
     {
+        set => SetValue(CursorBrushProperty, value);
+        get => (Brush)GetValue(CursorBrushProperty);
+    }
+
+    public event OnCellSelection? CellSelected;
+    
+    public KakuroBoard() : base(6)
+    {
+        Focusable = true;
+        
+        MouseLeftButtonDown += (_, args) =>
+        {
+            Focus();
+            var result = ComputeSelectedCell(args.GetPosition(this));
+            if (result.Item1 is not null)
+            {
+                CellSelected?.Invoke(result.Item1.Value, result.Item2);
+            }
+        };
     }
 
     public void SetSolution(int row, int col, int n)
@@ -193,6 +222,26 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
                     ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
             }
         });
+    }
+
+    public void ClearCursor()
+    {
+        Layers[CursorIndex].Clear();
+    }
+
+    public void PutCursorOnNumberCell(int row, int col)
+    {
+        var half = _lineWidth / 2;
+        Layers[CursorIndex].Clear();
+        Layers[CursorIndex].Add(new OutlinedRectangleComponent(new Rect(GetLeft(col) + half,
+            GetTop(row) + half, _cellSize - _lineWidth, _cellSize - _lineWidth), new Pen(CursorBrush, 3)));
+    }
+
+    public void PutCursorOnAmountCell(int row, int col, Orientation orientation)
+    {
+        Layers[CursorIndex].Clear();
+        SetAmountCellLines(Layers[CursorIndex], new AmountCell(row, col, orientation), CursorBrush,
+            3, 4.5);
     }
 
     public void ClearNumbers()
@@ -272,8 +321,8 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
 
     private void UpdateSize(bool fireEvent)
     {
-        var w = _rowCount * _cellSize + _amountWidth + (_rowCount + 2) * _lineWidth;
-        var h = _columnCount * _cellSize + _amountHeight + (_columnCount + 2) * _lineWidth;
+        var w = _columnCount * _cellSize + _amountWidth + (_columnCount + 2) * _lineWidth;
+        var h = _rowCount * _cellSize + _amountHeight + (_rowCount + 2) * _lineWidth;
         
         if (Math.Abs(Width - w) < 0.01 && Math.Abs(Height - h) < 0.01) return;
 
@@ -291,6 +340,56 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
     private void SetBackground()
     {
         Layers[BackgroundIndex].Add(new FilledRectangleComponent(new Rect(0, 0, Width, Height), BackgroundBrush));
+    }
+
+    private void SetAmountCellLines(ICollection<IDrawableComponent> layer, AmountCell cell, Brush brush,
+        double width, double inwardOffset)
+    {
+        var half = width / 2;
+        if (cell.Orientation == Orientation.Vertical)
+        {
+            var xBr = GetLeft(cell.Column) + _cellSize + half - inwardOffset;
+            var yBr = cell.Row < 0 
+                ? _amountHeight + _lineWidth + half - inwardOffset 
+                : GetTop(cell.Row) + _cellSize + half - inwardOffset;
+            var xTr = xBr - _amountHeight;
+            var yTr = yBr - _amountWidth + inwardOffset * 2;
+            layer.Add(new LineComponent(new Point(xBr, yBr),
+                new Point(xTr, yTr), new Pen(brush, _lineWidth)));
+
+            double xTl = GetLeft(cell.Column) - half + inwardOffset;
+            if (cell.Column <= 0 || cell.Row < 0 || !_numberPresence[cell.Row, cell.Column - 1])
+            {
+                xTl -= _amountHeight;
+                if (!_amountPresence.Contains(new AmountCell(cell.Row, cell.Column - 1, Orientation.Vertical)))
+                {
+                    var xBl = GetLeft(cell.Column) - half + inwardOffset;
+                    layer.Add(new LineComponent(new Point(xTl, yTr),
+                        new Point(xBl, yBr), new Pen(brush, _lineWidth)));
+                }
+            }
+                
+            layer.Add(new LineComponent(new Point(xTl, yTr),
+                new Point(xTr, yTr), new Pen(brush, _lineWidth)));
+        }
+        else
+        {
+            var xBr = GetLeft(cell.Column) + _cellSize + half - inwardOffset;
+            var yBr = GetTop(cell.Row) + _cellSize + half - inwardOffset;
+            var xBl = xBr - _amountHeight + inwardOffset;
+            var yBl = yBr - _amountHeight - inwardOffset;
+            layer.Add(new LineComponent(new Point(xBr, yBr),
+                new Point(xBl, yBl), new Pen(brush, _lineWidth)));
+
+            var yTl = GetTop(cell.Row) - half + inwardOffset;
+            if (cell.Column < 0 || cell.Row <= 0 || !_numberPresence[cell.Row - 1, cell.Column])
+            {
+                yTl -= _amountWidth;
+            }
+                
+            layer.Add(new LineComponent(new Point(xBl, yBl),
+                new Point(xBl, yTl), new Pen(brush, _lineWidth)));
+        }
     }
 
     private void SetLines()
@@ -320,52 +419,98 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
             }
         }
 
-        var half = _lineWidth / 2;
         foreach (var cell in _amountPresence)
         {
-            if (cell.Orientation == Orientation.Vertical)
-            {
-                var xBr = GetLeft(cell.Column) + _cellSize + half;
-                var yBr = cell.Row < 0 ? _amountHeight + _lineWidth + half : GetTop(cell.Row) + _cellSize + half;
-                var xTr = xBr - _amountHeight;
-                var yTr = yBr - _amountWidth;
-                Layers[AmountLineIndex].Add(new LineComponent(new Point(xBr, yBr),
-                    new Point(xTr, yTr), new Pen(AmountLineBrush, _lineWidth)));
+            SetAmountCellLines(Layers[AmountLineIndex], cell, AmountLineBrush, _lineWidth, 0);
+        }
+    }
+    
+    private (Cell?, bool) ComputeSelectedCell(Point position)
+    {
+        var row = -2;
+        var col = -2;
 
-                double xTl = GetLeft(cell.Column) - half;
-                if (cell.Column <= 0 || cell.Row < 0 || !_numberPresence[cell.Row, cell.Column - 1])
-                {
-                    xTl -= _amountHeight;
-                    if (!_amountPresence.Contains(new AmountCell(cell.Row, cell.Column - 1, Orientation.Vertical)))
-                    {
-                        var xBl = GetLeft(cell.Column) - half;
-                        Layers[AmountLineIndex].Add(new LineComponent(new Point(xTl, yTr),
-                            new Point(xBl, yBr), new Pen(AmountLineBrush, _lineWidth)));
-                    }
-                }
-                
-                Layers[AmountLineIndex].Add(new LineComponent(new Point(xTl, yTr),
-                    new Point(xTr, yTr), new Pen(AmountLineBrush, _lineWidth)));
-            }
-            else
-            {
-                var xBr = GetLeft(cell.Column) + _cellSize + half;
-                var yBr = GetTop(cell.Row) + _cellSize + half;
-                var xBl = xBr - _amountHeight;
-                var yBl = yBr - _amountHeight;
-                Layers[AmountLineIndex].Add(new LineComponent(new Point(xBr, yBr),
-                    new Point(xBl, yBl), new Pen(AmountLineBrush, _lineWidth)));
+        var x = position.X;
+        var y = position.Y;
+        bool isAmountCell = false;
 
-                var yTl = GetTop(cell.Row) - half;
-                if (cell.Column < 0 || cell.Row <= 0 || !_numberPresence[cell.Row - 1, cell.Column])
+        if (x < _lineWidth) return (null, false);
+        if (y < _lineWidth) return (null, false);
+
+        x -= _lineWidth;
+        y -= _lineWidth;
+
+        if (x < _amountWidth)
+        {
+            col = -1;
+            isAmountCell = true;
+        }
+
+        if (y < _amountHeight)
+        {
+            row = -1;
+            isAmountCell = true;
+        }
+
+        x -= _amountWidth;
+        y -= _amountHeight;
+
+        if (col == -2)
+        {
+            for (int c = 0; c < ColumnCount; c++)
+            {
+                if(x < _lineWidth) return (null, false);
+                x -= _lineWidth;
+                if (x < _cellSize)
                 {
-                    yTl -= _amountWidth;
+                    col = c;
+                    break;
                 }
-                
-                Layers[AmountLineIndex].Add(new LineComponent(new Point(xBl, yBl),
-                    new Point(xBl, yTl), new Pen(AmountLineBrush, _lineWidth)));
+
+                x -= _cellSize;
             }
         }
+
+        if (row == -2)
+        {
+            for (int r = 0; r < RowCount; r++)
+            {
+                if(y < _lineWidth) return (null, false);
+                y -= _lineWidth;
+                if (y < _cellSize)
+                {
+                    row = r;
+                    break;
+                }
+
+                y -= _cellSize;
+            }
+        }
+
+        if (row == -2 || col == -2) return (null, false);
+
+        var cell = new Cell(row, col);
+        if (isAmountCell)
+        {
+            if(IsAmountCellPresent(cell)) return (cell, true);
+        }
+        else
+        {
+            if (_numberPresence[row, col]) return (cell, false);
+            if(IsAmountCellPresent(cell)) return (cell, true);
+        }
+
+        return (null, false);
+    }
+
+    private bool IsAmountCellPresent(Cell cell)
+    {
+        foreach (var c in _amountPresence)
+        {
+            if (c.Row == cell.Row && c.Column == cell.Column) return true;
+        }
+
+        return false;
     }
     
     #endregion
@@ -406,3 +551,5 @@ public readonly struct AmountCell
     public int Column { get; }
     public Orientation Orientation { get; }
 }
+
+public delegate void OnCellSelection(Cell cell, bool isAmountCell);

@@ -9,7 +9,7 @@ namespace Model.Kakuros;
 public class ArrayKakuro : IKakuro, ISolvingState
 {
     private KakuroCell[,] _cells;
-    private readonly List<IKakuroSum> _sums = new();
+    private readonly List<IKakuroSum> _sums;
 
     public int RowCount => _cells.GetLength(0);
     public int ColumnCount => _cells.GetLength(1);
@@ -18,11 +18,19 @@ public class ArrayKakuro : IKakuro, ISolvingState
     public ArrayKakuro()
     {
         _cells = new KakuroCell[0, 0];
+        _sums = new List<IKakuroSum>();
     }
 
     public ArrayKakuro(int rowCount, int colCount)
     {
         _cells = new KakuroCell[rowCount, colCount];
+        _sums = new List<IKakuroSum>();
+    }
+
+    private ArrayKakuro(KakuroCell[,] cells, List<IKakuroSum> sums)
+    {
+        _cells = cells;
+        _sums = sums;
     }
     
     public IEnumerable<IKakuroSum> SumsFor(Cell cell)
@@ -65,7 +73,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
         foreach (var cell in sum)
         {
             if (cell.Row < 0 || cell.Column < 0) return false;
-            if(cell.Row >= RowCount || cell.Column >= ColumnCount) continue;
+            if (cell.Row >= RowCount || cell.Column >= ColumnCount) continue;
 
             if (sum.Orientation == Orientation.Horizontal)
             {
@@ -80,28 +88,8 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
     public void AddSumUnchecked(IKakuroSum sum)
     {
-        var fr = sum.GetFarthestRow();
-        var fc = sum.GetFarthestColumn();
-
-        if (fr >= RowCount || fc >= ColumnCount)
-        {
-            var buffer = new KakuroCell[Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1)];
-            for (int row = 0; row < RowCount; row++)
-            {
-                for (int col = 0; col < ColumnCount; col++)
-                {
-                    buffer[row, col] = _cells[row, col];
-                }
-            }
-            _cells = buffer;
-        }
-
         _sums.Add(sum);
-        foreach (var cell in sum)
-        {
-            if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += sum;
-            else _cells[cell.Row, cell.Column] -= sum;
-        }
+        UpdateArrayAfterAddition(sum);
     }
 
     public int this[int row, int col]
@@ -115,6 +103,66 @@ public class ArrayKakuro : IKakuro, ISolvingState
         foreach (var cell in _cells)
         {
             if (cell.IsUsed() && cell.Number == 0) return false;
+        }
+
+        return true;
+    }
+
+    public IKakuro Copy()
+    {
+        var buffer = new KakuroCell[RowCount, ColumnCount];
+        Array.Copy(_cells, buffer, _cells.Length);
+
+        return new ArrayKakuro(buffer, new List<IKakuroSum>(_sums));
+    }
+
+    public bool AddCellTo(IKakuroSum sum)
+    {
+        if (sum.Length >= 9) return false;
+
+        var index = _sums.IndexOf(sum);
+        if (index == -1) return false;
+
+        var newSum = sum.WithLength(sum.Length + 1);
+        _sums[index] = newSum;
+        UpdateArrayAfterAddition(newSum);
+
+        return true;
+    }
+
+    public bool RemoveCellFrom(IKakuroSum sum)
+    {
+        if (sum.Length == 1) return false;
+        
+        var index = _sums.IndexOf(sum);
+        if (index == -1) return false;
+        
+        var newSum = sum.WithLength(sum.Length -1);
+        _sums[index] = newSum;
+
+        var fr = 0;
+        var fc = 0;
+        foreach (var s in _sums)
+        {
+            fr = Math.Max(s.GetFarthestRow(), fr);
+            fc = Math.Max(s.GetFarthestColumn(), fc);
+        }
+
+        if (fr != RowCount || fc != ColumnCount)
+        {
+            ResizeTo(fr + 1, fc + 1);
+        }
+
+        foreach (var cell in newSum)
+        {
+            if (newSum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += newSum;
+            else _cells[cell.Row, cell.Column] -= newSum;
+        }
+        var toRemove = sum[^1];
+        if (toRemove.Row < RowCount && toRemove.Column < ColumnCount)
+        {
+            if (sum.Orientation == Orientation.Vertical) _cells[toRemove.Row, toRemove.Column] += null;
+            else _cells[toRemove.Row, toRemove.Column] -= null;
         }
 
         return true;
@@ -134,6 +182,36 @@ public class ArrayKakuro : IKakuro, ISolvingState
                 if (_cells[row, col].IsUsed()) yield return new Cell(row, col);
             }
         }
+    }
+
+    private void UpdateArrayAfterAddition(IKakuroSum sum)
+    {
+        var fr = sum.GetFarthestRow();
+        var fc = sum.GetFarthestColumn();
+
+        if (fr >= RowCount || fc >= ColumnCount)
+        {
+            ResizeTo(Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1));
+        }
+        
+        foreach (var cell in sum)
+        {
+            if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += sum;
+            else _cells[cell.Row, cell.Column] -= sum;
+        }
+    }
+
+    private void ResizeTo(int rowCount, int colCount)
+    {
+        var buffer = new KakuroCell[rowCount, colCount];
+        for (int row = 0; row < RowCount && row < rowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount && col < colCount; col++)
+            {
+                buffer[row, col] = _cells[row, col];
+            }
+        }
+        _cells = buffer;
     }
 }
 

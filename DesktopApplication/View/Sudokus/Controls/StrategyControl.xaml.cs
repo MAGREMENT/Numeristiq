@@ -18,6 +18,9 @@ public partial class StrategyControl
         TextBlock.Text = strategy.Name;
         if (strategy.Locked) LockStrategy();
         else EnableStrategy(strategy.Enabled);
+
+        MouseEnter += (_, _) => SetResourceReference(BackgroundProperty, "Background3");
+        MouseLeave += (_, _) => SetResourceReference(BackgroundProperty, "Background2");
     }
 
     public void SetHighlight(bool highlighted)

@@ -216,11 +216,7 @@ public class ArrayTectonic : ITectonic
 
     public ITectonic Copy()
     {
-        var result = new ArrayTectonic(RowCount, ColumnCount);
-        foreach (var zone in _zones)
-        {
-            result.AddZone(zone);
-        }
+        var result = CopyNumberLess();
 
         for (int row = 0; row < RowCount; row++)
         {
@@ -234,6 +230,17 @@ public class ArrayTectonic : ITectonic
         return result;
     }
 
+    public ITectonic CopyNumberLess()
+    {
+        var result = new ArrayTectonic(RowCount, ColumnCount);
+        foreach (var zone in _zones)
+        {
+            result.AddZone(zone);
+        }
+
+        return result;
+    }
+    
     public override string ToString()
     {
         StringBuilder builder = new();
