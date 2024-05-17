@@ -1,22 +1,8 @@
-/.idea
+**/.idea/
+**/obj/
+**/bin/
 
-/Model/bin
-/Model/obj
-
-/DesktopApplication/bin
-/DesktopApplication/obj
-/DesktopApplication/.idea
-
-/Tests/bin
-/Tests/obj
-
-/Repository/bin
-/Repository/obj
-
-/ConsoleApplication/bin
-/ConsoleApplication/obj
-
-/publish
+/publish/
 
 *.user
 *.cache
