@@ -1,4 +1,4 @@
-# Numeriq © 2023 by Zachary Vanvlasselaer is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International 
+# Numeristiq © 2023 by Zachary Vanvlasselaer is licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International 
 
 ## Public License
 
