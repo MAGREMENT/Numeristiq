@@ -371,25 +371,13 @@ public class SudokuSolvePresenter : ICommitApplier
     private void AllowUniqueness(SettingValue value)
     {
         var yes = value.ToBool();
-
+        _solver.StrategyManager.AllowUniqueness(yes);
+        
         for (int i = 0; i < _solver.StrategyManager.Strategies.Count; i++)
         {
             var s = _solver.StrategyManager.Strategies[i];
-            if (s.UniquenessDependency != UniquenessDependency.FullyDependent) continue;
-            
-            if (yes)
-            {
-                s.Locked = false;
-                s.Enabled = true;
-                _view.EnableStrategy(i, s.Enabled);
-            }
-            else
-            {
-                s.Enabled = false;
-                s.Locked = true;
-                _view.EnableStrategy(i, s.Enabled);
-                _view.LockStrategy(i);
-            }
+            _view.EnableStrategy(i, s.Enabled);
+            if (s.Locked) _view.LockStrategy(i);
         }
         
         _updater.Update();

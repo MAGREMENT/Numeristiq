@@ -57,7 +57,7 @@ public class ClueGetterChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<TVe
         var state = _producer.CurrentState;
 
         var best = _commits[0];
-        var comparer = pusher as ICommitComparer ??  DefaultCommitComparer.Instance;
+        var comparer = pusher as ICommitComparer ?? DefaultCommitComparer.Instance;
 
         for (int i = 1; i < _commits.Count; i++)
         {

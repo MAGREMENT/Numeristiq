@@ -5,8 +5,9 @@ namespace Model.Sudokus.Solver;
 
 public class StrategyManager
 {
-    public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
     private readonly UniqueList<SudokuStrategy> _strategies = new();
+    
+    public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
     public IReadOnlyList<SudokuStrategy> Strategies => _strategies;
 
     public void ClearStrategies()
@@ -59,5 +60,17 @@ public class StrategyManager
         _strategies.RemoveAt(positionOne);
         var newPosTwo = positionTwo > positionOne ? positionTwo - 1 : positionTwo;
         AddStrategy(buffer, newPosTwo);
+    }
+
+    public void AllowUniqueness(bool yes)
+    {
+        UniquenessDependantStrategiesAllowed = yes;
+        foreach (var s in Strategies)
+        {
+            if (s.UniquenessDependency != UniquenessDependency.FullyDependent) continue;
+
+            s.Enabled = yes;
+            s.Locked = !yes;
+        }
     }
 }

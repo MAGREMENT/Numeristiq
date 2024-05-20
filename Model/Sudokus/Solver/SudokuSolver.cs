@@ -25,11 +25,15 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
     private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
     
     public IReadOnlySudoku Sudoku => _sudoku;
+    private IUpdatableSudokuSolvingState? _currentState;
+    private int _solutionAddedBuffer;
+    private int _possibilityRemovedBuffer;
+    private bool _changeWasMade;
+    private IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> _changeBuffer;
+    private readonly TrackerManager _trackerManager;
 
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public bool StepsManaged { get; private set; }
-
-    private IUpdatableSudokuSolvingState? _currentState;
 
     public IUpdatableSudokuSolvingState CurrentState
     {
@@ -41,14 +45,9 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
     }
     public IUpdatableSolvingState StartState { get; private set; }
     
-    private int _solutionAddedBuffer;
-    private int _possibilityRemovedBuffer;
-    private bool _changeWasMade;
-    
     public bool StartedSolving { get; private set; }
-
-    private IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> _changeBuffer;
-    private readonly TrackerManager _trackerManager;
+    
+    public StrategyManager StrategyManager { get; init; }
 
     public SudokuSolver() : this(new Sudoku()) { }
 
@@ -81,8 +80,6 @@ public class SudokuSolver : ISudokuStrategyUser, IStepManagingChangeProducer<IUp
     {
         _trackerManager.RemoveTracker(tracker);
     }
-
-    public StrategyManager StrategyManager { get; init; }
 
     public void SetSudoku(Sudoku s)
     {
