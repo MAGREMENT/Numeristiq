@@ -25,7 +25,7 @@
         </Grid.RowDefinitions>
         
         <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
-                                AllowResize="False" AppIcon="../Images/appicon.png" AppTitle="NextLogic"/>
+                                AllowResize="False" AppIcon="../Images/appicon.png" AppTitle="Numeristiq"/>
         
         <Frame NavigationUIVisibility="Hidden" Grid.Row="1" Width="1300" Height="660" x:Name="Frame" Navigating="CancelNavigation"/>
         

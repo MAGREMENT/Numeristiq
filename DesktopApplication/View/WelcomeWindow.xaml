@@ -31,7 +31,7 @@
                 <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 20" HorizontalAlignment="Center">
                     <Image Width="50" Height="50" VerticalAlignment="Center" x:Name="Image" Source="Images/appicon.png"/>
                     <TextBlock FontSize="25" FontWeight="Bold" Margin="10, 0, 0, 0"
-                               Foreground="{DynamicResource Text}" VerticalAlignment="Center">NextLogic</TextBlock>
+                               Foreground="{DynamicResource Text}" VerticalAlignment="Center">Numeristiq</TextBlock>
                 </StackPanel>
                 
                 <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnSudokuClick">Sudoku</Button>
