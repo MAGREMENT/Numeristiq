@@ -50,6 +50,33 @@ public partial class SolvePage : IKakuroSolveView
                 break;
             case Key.Z : _presenter.RemoveCell();
                 break;
+            case Key.NumPad1 : _presenter.AddDigitToAmount(1);
+                break;
+            case Key.NumPad2 : _presenter.AddDigitToAmount(2);
+                break;
+            case Key.NumPad3 : _presenter.AddDigitToAmount(3);
+                break;
+            case Key.NumPad4 : _presenter.AddDigitToAmount(4);
+                break;
+            case Key.NumPad5 : _presenter.AddDigitToAmount(5);
+                break;
+            case Key.NumPad6 : _presenter.AddDigitToAmount(6);
+                break;
+            case Key.NumPad7 : _presenter.AddDigitToAmount(7);
+                break;
+            case Key.NumPad8 : _presenter.AddDigitToAmount(8);
+                break;
+            case Key.NumPad9 : _presenter.AddDigitToAmount(9);
+                break;
+            case Key.Back : _presenter.RemoveDigitFromAmount();
+                break;
+            case Key.Enter : _presenter.EnterAmount();
+                break;
         }
+    }
+
+    private void OnLostFocus(object sender, RoutedEventArgs e)
+    {
+        _presenter.EnterAmount();
     }
 }

@@ -255,18 +255,33 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
         {
             var t = row < 0 ? _lineWidth : GetTop(row) + _cellSize - _amountHeight;
             var l = GetLeft(col);
-            Layers[AmountIndex].Add(new TextInRectangleComponent(n.ToString(), _amountHeight * 3 / 4,
-                AmountLineBrush, new Rect(l, t, _amountWidth, _amountHeight), ComponentHorizontalAlignment.Center,
-                ComponentVerticalAlignment.Center));
+            Layers[AmountIndex].Add(new AmountComponent(n.ToString(), _amountHeight * 3 / 4,
+                AmountLineBrush, new Rect(l, t, _amountWidth, _amountHeight), row, col, orientation)); 
         }
         else
         {
             var t = GetTop(row);
             var l = col < 0 ? _lineWidth : GetLeft(col) + _cellSize - _amountWidth;
-            Layers[AmountIndex].Add(new TextInRectangleComponent(n.ToString(), _amountHeight * 3 / 4,
-                AmountLineBrush, new Rect(l, t, _amountWidth, _amountHeight), ComponentHorizontalAlignment.Center,
-                ComponentVerticalAlignment.Center));
+            Layers[AmountIndex].Add(new AmountComponent(n.ToString(), _amountHeight * 3 / 4,
+                AmountLineBrush, new Rect(l, t, _amountWidth, _amountHeight), row, col, orientation));
         }
+    }
+    
+    public void ReplaceAmount(int row, int col, int n, Orientation orientation)
+    {
+        AmountComponent? comp = null;
+        foreach (var component in Layers[AmountIndex])
+        {
+            if (component is not AmountComponent ac) continue;
+            if (ac.IsSame(row, col, orientation))
+            {
+                comp = ac;
+                break;
+            }
+        }
+
+        if (comp is null) SetAmount(row, col, n, orientation);
+        else comp.SetAmount(n);
     }
 
     public void ClearPresence()
@@ -553,3 +568,29 @@ public readonly struct AmountCell
 }
 
 public delegate void OnCellSelection(Cell cell, bool isAmountCell);
+
+public class AmountComponent : TextInRectangleComponent
+{
+    private readonly int _row;
+    private readonly int _col;
+    private readonly Orientation _orientation;
+    private readonly double _size;
+    private readonly Brush _foreground;
+    
+    public AmountComponent(string text, double size, Brush foreground, Rect rect, int row, int col,
+        Orientation orientation) : base(text, size, foreground, rect, ComponentHorizontalAlignment.Center,
+        ComponentVerticalAlignment.Center)
+    {
+        _size = size;
+        _foreground = foreground;
+        _row = row;
+        _col = col;
+        _orientation = orientation;
+    }
+
+    public bool IsSame(int row, int col, Orientation orientation) => col == _col && row == _row &&
+                                                     orientation == _orientation;
+
+    public void SetAmount(int n) => _text = new FormattedText(n.ToString(), Info,
+        Flow, Typeface, _size, _foreground, 1);
+}

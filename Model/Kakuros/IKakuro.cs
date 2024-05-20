@@ -17,6 +17,7 @@ public interface IKakuro : IReadOnlyKakuro
     
     bool AddCellTo(IKakuroSum sum);
     bool RemoveCellFrom(IKakuroSum sum);
+    void ReplaceAmount(IKakuroSum sum, int amount);
 }
 
 public interface IReadOnlyKakuro

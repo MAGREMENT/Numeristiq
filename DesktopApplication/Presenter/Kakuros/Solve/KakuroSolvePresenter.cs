@@ -13,7 +13,7 @@ public class KakuroSolvePresenter
 
     private Cell? _selectedCell;
     private IKakuroSum? _selectedSum;
-    private int _bufferedAmount;
+    private int _bufferedAmount = -1;
 
     public KakuroSolvePresenter(IKakuroSolveView view)
     {
@@ -37,7 +37,8 @@ public class KakuroSolvePresenter
 
     public void SelectCell(int row, int col)
     {
-        _selectedSum = null;
+        EnterAmount();
+        
         var cell = new Cell(row, col);
         if (cell == _selectedCell)
         {
@@ -56,6 +57,7 @@ public class KakuroSolvePresenter
     public void SelectSum(int row, int col)
     {
         _selectedCell = null;
+        
         IKakuroSum? sum = null;
         foreach (var s in _solver.Kakuro.Sums)
         {
@@ -67,11 +69,7 @@ public class KakuroSolvePresenter
             }
         }
 
-        if (sum is null || sum.Equals(_selectedSum))
-        {
-            _selectedSum = null;
-            _view.Drawer.ClearCursor();
-        }
+        if (sum is null || sum.Equals(_selectedSum)) EnterAmount();
         else
         {
             _selectedSum = sum;
@@ -106,17 +104,39 @@ public class KakuroSolvePresenter
 
     public void AddDigitToAmount(int n)
     {
-        //TODO
+        if (_selectedSum is null) return;
+        
+        _bufferedAmount *= 10;
+        _bufferedAmount += n;
+
+        var cell = _selectedSum.GetAmountCell();
+        _view.Drawer.ReplaceAmount(cell.Row, cell.Column, _bufferedAmount, _selectedSum.Orientation);
+        _view.Drawer.Refresh();
     }
 
     public void RemoveDigitFromAmount()
     {
-        //TODO
+        if (_selectedSum is null) return;
+        
+        _bufferedAmount /= 10;
+        
+        var cell = _selectedSum.GetAmountCell();
+        _view.Drawer.ReplaceAmount(cell.Row, cell.Column, _bufferedAmount, _selectedSum.Orientation);
+        _view.Drawer.Refresh();
     }
 
     public void EnterAmount()
     {
-        //TODO
+        if (_selectedSum is null) return;
+
+        var copy = _solver.Kakuro.Copy();
+        copy.ReplaceAmount(_selectedSum, _bufferedAmount);
+        _solver.SetKakuro(copy);
+        ShowNewKakuro(copy);
+        
+        _selectedSum = null;
+        _bufferedAmount = -1;
+        _view.Drawer.ClearCursor();
     }
 
     private void ShowNewKakuro(IKakuro k)

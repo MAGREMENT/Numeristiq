@@ -13,6 +13,7 @@ public interface IKakuroSolverDrawer
     void SetPresence(int row, int col, Orientation orientation, bool value);
     void ClearNumbers();
     void SetAmount(int row, int col, int n, Orientation orientation);
+    void ReplaceAmount(int row, int col, int n, Orientation orientation);
     void SetSolution(int row, int col, int n);
     void SetPossibilities(int row, int col, IEnumerable<int> poss);
     void ClearCursor();

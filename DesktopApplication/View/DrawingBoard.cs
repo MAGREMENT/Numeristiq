@@ -237,11 +237,11 @@ public class LineComponent : IDrawableComponent
 
 public class TextInRectangleComponent : IDrawableComponent
 {
-    private static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
-    private const FlowDirection Flow = FlowDirection.LeftToRight;
-    private static readonly Typeface Typeface = new("Arial");
+    protected static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
+    protected const FlowDirection Flow = FlowDirection.LeftToRight;
+    protected static readonly Typeface Typeface = new("Arial");
     
-    private readonly FormattedText _text;
+    protected FormattedText _text;
     private readonly Rect _rect;
     private readonly ComponentHorizontalAlignment _horizontalAlignment;
     private readonly ComponentVerticalAlignment _verticalAlignment;

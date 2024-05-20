@@ -20,7 +20,7 @@
                                DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
                                CellSize="20" LineWidth="3" AmountHeightFactor="0.5" AmountWidthFactor="0.5"
                                CellSelected="OnCellSelection" CursorBrush="{DynamicResource Secondary1}"
-                               KeyDown="DoBoardInput"/>
+                               KeyDown="DoBoardInput" LostFocus="OnLostFocus"/>
             </controls:SizeOptimizedContentControl.OptimizableContent>
         </controls:SizeOptimizedContentControl>
         
