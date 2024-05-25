@@ -44,7 +44,7 @@
                        Foreground="{DynamicResource Text}">Steps</TextBlock>
             
             <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="480" x:Name="LogViewer"
-                          Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">
+                          Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Top">
                 <StackPanel x:Name="LogPanel"/>
             </ScrollViewer>
             
@@ -65,7 +65,7 @@
                            Foreground="{DynamicResource Text}">Strategies</TextBlock>
             </Grid>
             
-            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}" Height="620">
+            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollViewer}" Height="620">
                 <StackPanel MinHeight="618" x:Name="StrategyPanel"/>
             </ScrollViewer>
         </Grid>

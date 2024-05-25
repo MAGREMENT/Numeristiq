@@ -69,7 +69,7 @@
                        Background="{DynamicResource Background1}" Foreground="{DynamicResource Text}">Steps</TextBlock>
             
             <ScrollViewer Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Height="470" x:Name="LogViewer"
-                          Style="{StaticResource TransparentBarScrollView}" VerticalAlignment="Top">
+                          Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Top">
                 <StackPanel MinHeight="468" x:Name="LogPanel"/>
             </ScrollViewer>
             

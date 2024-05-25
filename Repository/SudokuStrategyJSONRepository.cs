@@ -5,7 +5,7 @@ namespace Repository;
 
 public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<SudokuStrategy>>
 {
-    public SudokuStrategiesJSONRepository(string fileName) : base(fileName)
+    public SudokuStrategiesJSONRepository(string filePath) : base(filePath)
     {
     }
 

@@ -168,12 +168,15 @@ public class ArrayKakuro : IKakuro, ISolvingState
         return true;
     }
 
-    public void ReplaceAmount(IKakuroSum sum, int amount)
+    public bool ReplaceAmount(IKakuroSum sum, int amount)
     {
-        var index = _sums.IndexOf(sum);
-        if (index == -1) return;
+        if (amount < 1 || amount > KakuroCellUtility.MaxAmountFor(sum.Length)) return false;
         
-        //TODO
+        var index = _sums.IndexOf(sum);
+        if (index == -1) return false;
+
+        _sums[index] = _sums[index].WithAmount(amount);
+        return true;
     }
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)

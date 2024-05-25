@@ -31,7 +31,7 @@ public class SudokuSolveBatchCommand : Command
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
+        var solver = interpreter.Instantiator.InstantiateSudokuSolver();
 
         if (report.IsOptionUsed(UnorderedIndex))
         {

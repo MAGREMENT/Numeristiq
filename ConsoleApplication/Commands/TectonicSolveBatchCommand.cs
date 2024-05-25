@@ -22,8 +22,7 @@ public class TectonicSolveBatchCommand : Command
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
-        
+        var solver = interpreter.Instantiator.InstantiateTectonicSolver();
         using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
 
         int count = 1;

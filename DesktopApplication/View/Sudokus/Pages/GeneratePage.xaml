@@ -79,7 +79,7 @@
                       Data="M 7,35 V 10 H 27 V 35 H 7 M 15,10 V 5 H 35 V 30 H 27"/>
             </Button>
             
-            <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource TransparentBarScrollView}"
+            <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Style="{StaticResource TransparentBarScrollViewer}"
                           Margin="0,0,10,10">
                 <StackPanel x:Name="Evaluated"/>
             </ScrollViewer>

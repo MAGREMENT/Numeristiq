@@ -41,7 +41,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             
-            <ScrollViewer Grid.Row="0" Style="{StaticResource TransparentBarScrollView}" x:Name="Viewer"/>
+            <ScrollViewer Grid.Row="0" Style="{StaticResource TransparentBarScrollViewer}" x:Name="Viewer"/>
             
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>

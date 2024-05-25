@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Model.Utility;
 
 namespace Model.Kakuros;
@@ -7,13 +8,41 @@ namespace Model.Kakuros;
 /// Sum format : (rr,cc>aa,ll;)*:(rr,cc,n;)*
 /// rr : row
 /// cc : col
-/// > : direction (> or v)
+/// > : orientation (> or v)
 /// aa : amount
 /// ll : length
 /// n : number
 /// </summary>
 public static class KakuroTranslator
 {
+    public static string TranslateSumFormat(IReadOnlyKakuro kakuro)
+    {
+        var builder = new StringBuilder();
+        foreach (var sum in kakuro.Sums)
+        {
+            var start = sum.GetStartCell();
+            var orientation = sum.Orientation == Orientation.Vertical ? 'v' : '>';
+            builder.Append($"{start.Row},{start.Column}{orientation}{sum.Amount},{sum.Length};");
+        }
+
+        bool done = false;
+        foreach (var cell in kakuro.EnumerateCells())
+        {
+            var n = kakuro[cell.Row, cell.Column];
+            if (n == 0) continue;
+
+            if (!done)
+            {
+                builder.Append(':');
+                done = true;
+            }
+
+            builder.Append($"{cell.Row},{cell.Column},{n};");
+        }
+
+        return builder.ToString();
+    }
+    
     public static IKakuro TranslateSumFormat(string s)
     {
         var index = s.IndexOf(':');

@@ -12,7 +12,7 @@
         </Grid.RowDefinitions>
         <TextBox Grid.Row="0" Style="{StaticResource SearchTextBox}" x:Name="Box" Margin="5" TextChanged="Box_OnTextChanged">Search</TextBox>
         
-        <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollView}">
+        <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollViewer}">
             <StackPanel x:Name="ResultPanel"/>
         </ScrollViewer>
     </Grid>

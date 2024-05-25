@@ -20,6 +20,11 @@ public class KakuroSolvePresenter
         _view = view;
         _solver = new KakuroSolver(new RecursiveKakuroCombinationCalculator());
     }
+    
+    public void OnKakuroAsStringBoxShowed()
+    {
+        _view.SetKakuroAsString(KakuroTranslator.TranslateSumFormat(_solver.Kakuro));
+    }
 
     public void SetNewKakuro(string s)
     {
@@ -130,13 +135,18 @@ public class KakuroSolvePresenter
         if (_selectedSum is null) return;
 
         var copy = _solver.Kakuro.Copy();
-        copy.ReplaceAmount(_selectedSum, _bufferedAmount);
-        _solver.SetKakuro(copy);
-        ShowNewKakuro(copy);
+        bool success = copy.ReplaceAmount(_selectedSum, _bufferedAmount);
         
         _selectedSum = null;
         _bufferedAmount = -1;
         _view.Drawer.ClearCursor();
+
+        if (success)
+        {
+            _solver.SetKakuro(copy);
+            ShowNewKakuro(copy);
+        }
+        else ShowState(_solver);
     }
 
     private void ShowNewKakuro(IKakuro k)
@@ -147,6 +157,7 @@ public class KakuroSolvePresenter
         drawer.ColumnCount = k.ColumnCount;
 
         drawer.ClearNumbers();
+        drawer.ClearAmounts();
         drawer.ClearPresence();
         foreach (var sum in k.Sums)
         {

@@ -31,6 +31,7 @@
                     Click="Advance">Advance</Button>
         </StackPanel>
         
-        <controls:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="OnNewKakuro"/>
+        <controls:HideableTextBox Grid.Column="0" Grid.ColumnSpan="2" TextChanged="OnNewKakuro" x:Name="KakuroAsString"
+                                  Showed="OnKakuroAsStringShowed"/>
     </Grid>
 </Page>

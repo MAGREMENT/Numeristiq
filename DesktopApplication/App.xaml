@@ -552,7 +552,7 @@
 		    </Setter>
 	    </Style>
 	    
-	    <Style x:Key="TransparentBarScrollView" TargetType="ScrollViewer">
+	    <Style x:Key="TransparentBarScrollViewer" TargetType="ScrollViewer">
 		    <Setter Property="Background" Value="{DynamicResource Background2}"/>
 		    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
 		    <Setter Property="Template">

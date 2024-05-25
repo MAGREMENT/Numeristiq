@@ -23,7 +23,7 @@
         <Border Grid.Row="0" Grid.Column="1" x:Name="ActivatedLamp" Margin="10" BorderBrush="{DynamicResource Text}"
                 BorderThickness="2" Width="20" Height="20" Background="Red" VerticalAlignment="Center" HorizontalAlignment="Right"/>
         
-        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TransparentBarScrollView}">
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource TransparentBarScrollViewer}">
             <StackPanel x:Name="CriteriaList"/>
         </ScrollViewer>
         

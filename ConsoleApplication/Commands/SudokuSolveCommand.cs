@@ -25,9 +25,9 @@ public class SudokuSolveCommand : Command
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
-
+        var solver = interpreter.Instantiator.InstantiateSudokuSolver();
         var oldBuffer = solver.ChangeBuffer;
+        
         if (report.IsOptionUsed(PathIndex)) solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         else solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
 

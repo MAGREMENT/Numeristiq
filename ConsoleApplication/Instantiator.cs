@@ -1,5 +1,4 @@
-﻿using Model.Helpers.Changes.Buffers;
-using Model.Sudokus.Solver;
+﻿using Model.Sudokus.Solver;
 using Model.Tectonics;
 using Repository;
 
@@ -7,29 +6,29 @@ namespace ConsoleApplication;
 
 public class Instantiator
 {
-    private SudokuStrategiesJSONRepository? _sRepo;
+    private const bool IsForProduction = false;
+    
+    private IReadOnlyList<SudokuStrategy>? _strategies;
+    private bool _sudokuInstantiated;
 
-    public bool InstantiateSudokuSolver(out SudokuSolver solver)
+    public SudokuSolver InstantiateSudokuSolver()
     {
-        if (_sRepo is null)
+        if (!_sudokuInstantiated)
         {
-            _sRepo = new SudokuStrategiesJSONRepository("strategies.json");
-            if (!_sRepo.Initialize(true))
-            {
-                Console.WriteLine("Exception while initializing repository");
-                solver = null!;
-                return false;
-            }
+            var pInstantiator = new PathInstantiator(!IsForProduction, true);
+            _strategies = new SudokuStrategiesJSONRepository(pInstantiator.Instantiate("strategies.json"))
+                .Download();
+            _sudokuInstantiated = true;
         }
 
-        solver = new SudokuSolver();
-        solver.StrategyManager.AddStrategies(_sRepo.Download());
-        return true;
+        var solver = new SudokuSolver();
+        solver.StrategyManager.AddStrategies(_strategies);
+
+        return solver;
     }
 
-    public bool InstantiateTectonicSolver(out TectonicSolver solver)
+    public TectonicSolver InstantiateTectonicSolver()
     {
-        solver = new TectonicSolver();
-        return true;
+        return new TectonicSolver();
     }
 }

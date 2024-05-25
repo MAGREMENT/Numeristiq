@@ -13,8 +13,7 @@ public class TectonicSolveCommand : Command
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
-        if (!interpreter.Instantiator.InstantiateTectonicSolver(out var solver)) return;
-
+        var solver = interpreter.Instantiator.InstantiateTectonicSolver();
         var tectonic = TectonicTranslator.TranslateCodeFormat((string)report.GetArgumentValue(StringIndex));
         
         Console.WriteLine($"Before :\n{tectonic}");

@@ -248,6 +248,11 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
     {
         Dispatcher.Invoke(() => Layers[NumberIndex].Clear());
     }
+    
+    public void ClearAmounts()
+    {
+        Dispatcher.Invoke(() => Layers[AmountIndex].Clear());
+    }
 
     public void SetAmount(int row, int col, int n, Orientation orientation)
     {

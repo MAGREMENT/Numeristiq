@@ -24,12 +24,18 @@ public class VerticalKakuroSum : IKakuroSum
 
     public int GetFarthestColumn() => _start.Column;
     public Cell GetAmountCell() => new(_start.Row - 1, _start.Column);
+    public Cell GetStartCell() => _start;
 
     public Cell this[int index] => new(_start.Row + index, _start.Column);
     
     public IKakuroSum WithLength(int length)
     {
         return new VerticalKakuroSum(_start, Amount, length);
+    }
+
+    public IKakuroSum WithAmount(int amount)
+    {
+        return new VerticalKakuroSum(_start, amount, Length);
     }
 
     public IEnumerator<Cell> GetEnumerator()
@@ -76,11 +82,17 @@ public class HorizontalKakuroSum : IKakuroSum
 
     public int GetFarthestColumn() => _start.Column + Length - 1;
     public Cell GetAmountCell() => new(_start.Row, _start.Column - 1);
+    public Cell GetStartCell() => _start;
 
     public Cell this[int index] => new(_start.Row, _start.Column + index);
     public IKakuroSum WithLength(int length)
     {
         return new HorizontalKakuroSum(_start, Amount, length);
+    }
+
+    public IKakuroSum WithAmount(int amount)
+    {
+        return new HorizontalKakuroSum(_start, amount, Length);
     }
 
     public IEnumerator<Cell> GetEnumerator()

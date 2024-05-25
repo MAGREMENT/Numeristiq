@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using DesktopApplication.Presenter.Kakuros;
-using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Tectonics;
 using Model;
@@ -12,6 +11,8 @@ namespace DesktopApplication.Presenter;
 
 public class GlobalApplicationPresenter
 {
+    private const bool IsForProduction = false;
+    
     private readonly Settings _settings;
     private readonly IGlobalApplicationView _view;
     private readonly Theme[] _themes;
@@ -57,6 +58,7 @@ public class GlobalApplicationPresenter
     #region Instance
 
     private static GlobalApplicationPresenter? _instance;
+    private static PathInstantiator? _pathInstantiator;
 
     public static GlobalApplicationPresenter Instance
     {
@@ -67,15 +69,20 @@ public class GlobalApplicationPresenter
         }
     }
 
+    public static PathInstantiator PathInstantiator
+    {
+        get
+        {
+            _pathInstantiator ??= new PathInstantiator(!IsForProduction, true);
+            return _pathInstantiator;
+        }
+    }
+
     public static GlobalApplicationPresenter InitializeInstance(IGlobalApplicationView view)
     {
         var themeRepository = new HardCodedThemeRepository();
-        if (!themeRepository.Initialize(true)) 
-            throw new Exception("Theme repository initialization went wrong");
-
-        var settingsRepository = new JSONRepository<Dictionary<string, SettingValue>>("settings.json");
-        if (!settingsRepository.Initialize(true))
-            throw new Exception("Setting repository initialization went wrong");
+        
+        var settingsRepository = new JSONRepository<Dictionary<string, SettingValue>>(PathInstantiator.Instantiate("settings.json"));
 
         var themes = themeRepository.Download();
         var settingsDic = settingsRepository.Download();

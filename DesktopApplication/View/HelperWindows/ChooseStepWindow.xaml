@@ -70,7 +70,7 @@
             </Button>
             
             <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4" Margin="0, 5, 0, 0"
-                          Style="{StaticResource TransparentBarScrollView}">
+                          Style="{StaticResource TransparentBarScrollViewer}">
                 <StackPanel x:Name="StepsPanel"/>
             </ScrollViewer>
         </Grid>

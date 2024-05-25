@@ -64,12 +64,9 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
 
     public void InitializeApplication()
     {
-        _strategiesRepository = new SudokuStrategiesJSONRepository("strategies.json");
-        if (_strategiesRepository.Initialize(true))
-        {
-            _strategyManager.AddStrategies(_strategiesRepository.Download());
-        }
-        else _strategiesRepository = null;
+        _strategiesRepository = new SudokuStrategiesJSONRepository(
+            GlobalApplicationPresenter.PathInstantiator.Instantiate("strategies.json"));
+        _strategyManager.AddStrategies(_strategiesRepository.Download());
     }
 
     public void Update()

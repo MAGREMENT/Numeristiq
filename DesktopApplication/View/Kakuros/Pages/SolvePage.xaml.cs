@@ -13,13 +13,17 @@ public partial class SolvePage : IKakuroSolveView
 
     public IKakuroSolverDrawer Drawer => (KakuroBoard)ContentControl.OptimizableContent!;
     
+    public void SetKakuroAsString(string s)
+    {
+        KakuroAsString.SetText(s);
+    }
+
     public SolvePage(KakuroApplicationPresenter presenter)
     {
         InitializeComponent();
 
         _presenter = presenter.Initialize(this);
     }
-
 
     private void OnNewKakuro(string s)
     {
@@ -78,5 +82,10 @@ public partial class SolvePage : IKakuroSolveView
     private void OnLostFocus(object sender, RoutedEventArgs e)
     {
         _presenter.EnterAmount();
+    }
+
+    private void OnKakuroAsStringShowed()
+    {
+        _presenter.OnKakuroAsStringBoxShowed();
     }
 }

@@ -6,33 +6,11 @@ namespace Repository;
 
 public class JSONRepository<T> : IRepository<T> where T : class?
 {
-    private readonly string _fileName;
+    private readonly string _filePath;
 
-    private string? _path;
-
-    public JSONRepository(string fileName)
+    public JSONRepository(string filePath)
     {
-        _fileName = fileName;
-    }
-    
-    public bool Initialize(bool createNewOnNoneExistingFound)
-    {
-        if (_path is not null) return true;
-
-        _path = SearchPathToJSONFile();
-        if (_path is not null) return true;
-        if (!createNewOnNoneExistingFound) return false;
-        
-        var buffer = $@"{Directory.GetCurrentDirectory()}\{_fileName}";
-        try
-        {
-            using var stream = File.Create(buffer);
-            return true;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
+        _filePath = filePath;
     }
 
     public virtual T? Download()
@@ -42,11 +20,9 @@ public class JSONRepository<T> : IRepository<T> where T : class?
 
     protected TDownload? InternalDownload<TDownload>() where TDownload : class?
     {
-        if (_path is null) return null;
-        
-        using var reader = new StreamReader(_path, Encoding.UTF8);
         try
         {
+            using var reader = new StreamReader(_filePath, Encoding.UTF8);
             return JsonSerializer.Deserialize<TDownload>(reader.ReadToEnd());
         }
         catch (Exception)
@@ -57,9 +33,9 @@ public class JSONRepository<T> : IRepository<T> where T : class?
 
     protected TDownload? InternalDownload<TDownload>(Stream stream) where TDownload : class?
     {
-        using var reader = new StreamReader(stream, Encoding.UTF8);
         try
         {
+            using var reader = new StreamReader(stream, Encoding.UTF8);
             return JsonSerializer.Deserialize<TDownload>(reader.ReadToEnd());
         }
         catch (Exception)
@@ -75,11 +51,9 @@ public class JSONRepository<T> : IRepository<T> where T : class?
 
     protected bool InternalUpload<TUpload>(TUpload DAO)
     {
-        if (_path is null) return false;
-
         try
         {
-            using var writer = new StreamWriter(_path, new FileStreamOptions
+            using var writer = new StreamWriter(_filePath, new FileStreamOptions
             {
                 Mode = FileMode.Truncate,
                 Access = FileAccess.Write,
@@ -114,19 +88,5 @@ public class JSONRepository<T> : IRepository<T> where T : class?
         {
             return false;
         }
-    }
-
-    private string? SearchPathToJSONFile()
-    {
-        var current = Directory.GetCurrentDirectory();
-        while (!File.Exists($@"{current}\{_fileName}"))
-        {
-            var buffer = Directory.GetParent(current);
-            if (buffer is null) return null;
-
-            current = buffer.FullName;
-        }
-
-        return $@"{current}\{_fileName}";
     }
 }

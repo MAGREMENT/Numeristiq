@@ -17,7 +17,7 @@ public interface IKakuro : IReadOnlyKakuro
     
     bool AddCellTo(IKakuroSum sum);
     bool RemoveCellFrom(IKakuroSum sum);
-    void ReplaceAmount(IKakuroSum sum, int amount);
+    bool ReplaceAmount(IKakuroSum sum, int amount);
 }
 
 public interface IReadOnlyKakuro
@@ -48,10 +48,12 @@ public interface IKakuroSum : IEnumerable<Cell>
     int GetFarthestRow();
     int GetFarthestColumn();
     Cell GetAmountCell();
+    Cell GetStartCell();
     
     Cell this[int index] { get; }
 
     IKakuroSum WithLength(int length);
+    IKakuroSum WithAmount(int amount);
 }
 
 public enum Orientation

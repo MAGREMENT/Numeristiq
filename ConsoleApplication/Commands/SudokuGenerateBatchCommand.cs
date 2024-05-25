@@ -31,7 +31,7 @@ public class SudokuGenerateBatchCommand : Command
 
         if (report.IsOptionUsed(EvaluateIndex))
         {
-            if (!interpreter.Instantiator.InstantiateSudokuSolver(out var solver)) return;
+            var solver = interpreter.Instantiator.InstantiateSudokuSolver();
 
             var ratings = new RatingTracker();
             var hardest = new HardestStrategyTracker();
