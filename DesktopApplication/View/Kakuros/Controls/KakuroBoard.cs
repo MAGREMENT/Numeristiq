@@ -240,8 +240,25 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
     public void PutCursorOnAmountCell(int row, int col, Orientation orientation)
     {
         Layers[CursorIndex].Clear();
-        SetAmountCellLines(Layers[CursorIndex], new AmountCell(row, col, orientation), CursorBrush,
-            3, 4.5);
+        var half = _lineWidth / 3;
+        if (orientation == Orientation.Vertical)
+        {
+            var xBr = GetLeft(col) + _cellSize - half;
+            var yBr = row < 0 
+                ? _amountHeight + _lineWidth + half - _lineWidth
+                : GetTop(row) + _cellSize + half - _lineWidth;
+            
+            Layers[CursorIndex].Add(new LineComponent(new Point(xBr, yBr),
+                new Point(GetLeftFull(col), yBr), new Pen(CursorBrush, _lineWidth)));
+        }
+        else
+        {
+            var xBr = GetLeft(col) + _cellSize + half - _lineWidth;
+            var yBr = GetTop(row) + _cellSize - half;
+            
+            Layers[CursorIndex].Add(new LineComponent(new Point(xBr, yBr),
+                new Point(xBr, GetTopFull(row)), new Pen(CursorBrush, _lineWidth)));
+        }
     }
 
     public void ClearNumbers()
@@ -362,28 +379,27 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
         Layers[BackgroundIndex].Add(new FilledRectangleComponent(new Rect(0, 0, Width, Height), BackgroundBrush));
     }
 
-    private void SetAmountCellLines(ICollection<IDrawableComponent> layer, AmountCell cell, Brush brush,
-        double width, double inwardOffset)
+    private void SetAmountCellLines(ICollection<IDrawableComponent> layer, AmountCell cell, Brush brush, double width)
     {
         var half = width / 2;
         if (cell.Orientation == Orientation.Vertical)
         {
-            var xBr = GetLeft(cell.Column) + _cellSize + half - inwardOffset;
+            var xBr = GetLeft(cell.Column) + _cellSize + half;
             var yBr = cell.Row < 0 
-                ? _amountHeight + _lineWidth + half - inwardOffset 
-                : GetTop(cell.Row) + _cellSize + half - inwardOffset;
+                ? _amountHeight + _lineWidth + half
+                : GetTop(cell.Row) + _cellSize + half;
             var xTr = xBr - _amountHeight;
-            var yTr = yBr - _amountWidth + inwardOffset * 2;
+            var yTr = yBr - _amountWidth;
             layer.Add(new LineComponent(new Point(xBr, yBr),
                 new Point(xTr, yTr), new Pen(brush, _lineWidth)));
 
-            double xTl = GetLeft(cell.Column) - half + inwardOffset;
+            double xTl = GetLeft(cell.Column) - half;
             if (cell.Column <= 0 || cell.Row < 0 || !_numberPresence[cell.Row, cell.Column - 1])
             {
                 xTl -= _amountHeight;
                 if (!_amountPresence.Contains(new AmountCell(cell.Row, cell.Column - 1, Orientation.Vertical)))
                 {
-                    var xBl = GetLeft(cell.Column) - half + inwardOffset;
+                    var xBl = GetLeft(cell.Column) - half;
                     layer.Add(new LineComponent(new Point(xTl, yTr),
                         new Point(xBl, yBr), new Pen(brush, _lineWidth)));
                 }
@@ -394,14 +410,14 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
         }
         else
         {
-            var xBr = GetLeft(cell.Column) + _cellSize + half - inwardOffset;
-            var yBr = GetTop(cell.Row) + _cellSize + half - inwardOffset;
-            var xBl = xBr - _amountHeight + inwardOffset;
-            var yBl = yBr - _amountHeight - inwardOffset;
+            var xBr = GetLeft(cell.Column) + _cellSize + half;
+            var yBr = GetTop(cell.Row) + _cellSize + half;
+            var xBl = xBr - _amountHeight;
+            var yBl = yBr - _amountHeight;
             layer.Add(new LineComponent(new Point(xBr, yBr),
                 new Point(xBl, yBl), new Pen(brush, _lineWidth)));
 
-            var yTl = GetTop(cell.Row) - half + inwardOffset;
+            var yTl = GetTop(cell.Row) - half;
             if (cell.Column < 0 || cell.Row <= 0 || !_numberPresence[cell.Row - 1, cell.Column])
             {
                 yTl -= _amountWidth;
@@ -441,7 +457,7 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
 
         foreach (var cell in _amountPresence)
         {
-            SetAmountCellLines(Layers[AmountLineIndex], cell, AmountLineBrush, _lineWidth, 0);
+            SetAmountCellLines(Layers[AmountLineIndex], cell, AmountLineBrush, _lineWidth);
         }
     }
     

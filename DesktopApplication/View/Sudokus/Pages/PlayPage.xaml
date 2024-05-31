@@ -6,7 +6,7 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="PlayPage" Height="660" Width="1300">
+      Title="PlayPage" d:DesignHeight="660" d:DesignWidth="1300">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

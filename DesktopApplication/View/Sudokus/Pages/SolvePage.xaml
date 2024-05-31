@@ -7,7 +7,7 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" Height="660" Width="1300">
+      Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1300">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

@@ -323,10 +323,5 @@ public partial class SolvePage : ISudokuSolveView
 
         return settings;
     }
-
-    protected override void InternalUpdateSize()
-    {
-        Board.SetOptimalCellSize(Height - 40);
-    }
 }
 

@@ -6,7 +6,7 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
       xmlns:c="clr-namespace:DesktopApplication.View.Kakuros.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" Height="760" Width="1000">
+      Title="SolvePage" d:DesignHeight="760" d:DesignWidth="1000">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>

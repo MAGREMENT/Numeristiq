@@ -11,9 +11,10 @@ public abstract class DrawingBoard : FrameworkElement
 {
     private readonly DrawingVisual _visual = new();
     private readonly List<IDrawableComponent>[] _layers;
-    
+
     protected IReadOnlyList<List<IDrawableComponent>> Layers => _layers;
     public bool RefreshAllowed { get; set; } = true;
+    public bool AntiAliasing { get; set; } = true;
 
     protected DrawingBoard(int layerCount)
     {
@@ -64,7 +65,7 @@ public abstract class DrawingBoard : FrameworkElement
             {
                 foreach (var component in list)
                 {
-                    component.Draw(context);
+                    component.Draw(context, !AntiAliasing);
                 }
             }
             
@@ -99,7 +100,7 @@ public abstract class DrawingBoard : FrameworkElement
 
 public interface IDrawableComponent
 { 
-    void Draw(DrawingContext context);
+    void Draw(DrawingContext context, bool withGuidelines);
     void SetBrush(Brush brush);
 }
 
@@ -114,9 +115,21 @@ public class FilledRectangleComponent : IDrawableComponent
         _brush = brush;
     }
 
-    public void Draw(DrawingContext context)
+    public void Draw(DrawingContext context, bool withGuidelines)
     {
+        if (withGuidelines)
+        {
+            var gSet = new GuidelineSet();
+            gSet.GuidelinesX.Add(_rect.Left);
+            gSet.GuidelinesX.Add(_rect.Right);
+            gSet.GuidelinesY.Add(_rect.Top);
+            gSet.GuidelinesY.Add(_rect.Bottom);
+            context.PushGuidelineSet(gSet);
+        }
+        
         context.DrawRectangle(_brush, null, _rect);
+        
+        if(withGuidelines) context.Pop();
     }
 
     public void SetBrush(Brush brush)
@@ -136,9 +149,22 @@ public class OutlinedRectangleComponent : IDrawableComponent
         _pen = pen;
     }
 
-    public virtual void Draw(DrawingContext context)
+    public virtual void Draw(DrawingContext context, bool withGuidelines)
     {
+        if (withGuidelines)
+        {
+            var gSet = new GuidelineSet();
+            var half = _pen.Thickness / 2;
+            gSet.GuidelinesX.Add(_rect.Left - half);
+            gSet.GuidelinesX.Add(_rect.Right + half);
+            gSet.GuidelinesY.Add(_rect.Top - half);
+            gSet.GuidelinesY.Add(_rect.Bottom + half);
+            context.PushGuidelineSet(gSet);
+        }
+        
         context.DrawRectangle(null, _pen, _rect);
+        
+        if(withGuidelines) context.Pop();
     }
 
     public void SetBrush(Brush brush)
@@ -156,10 +182,10 @@ public class AngledOutlinedRectangleComponent : OutlinedRectangleComponent
         _angle = angle;
     }
 
-    public override void Draw(DrawingContext context)
+    public override void Draw(DrawingContext context, bool withGuidelines)
     {
         context.PushTransform(new RotateTransform(_angle));
-        base.Draw(context);
+        base.Draw(context, withGuidelines);
         context.Pop();
     }
 }
@@ -181,7 +207,7 @@ public class FilledPolygonComponent : IDrawableComponent
         _brush = brush;
     }
 
-    public void Draw(DrawingContext context)
+    public void Draw(DrawingContext context, bool withGuidelines)
     {
         var segmentCollection = new PathSegmentCollection();
         for (int i = 1; i < _points.Length; i++)
@@ -224,9 +250,21 @@ public class LineComponent : IDrawableComponent
         _pen = pen;
     }
 
-    public void Draw(DrawingContext context)
+    public void Draw(DrawingContext context, bool withGuidelines)
     {
+        if (withGuidelines)
+        {
+            var gSet = new GuidelineSet();
+            gSet.GuidelinesX.Add(_from.X);
+            gSet.GuidelinesX.Add(_to.X);
+            gSet.GuidelinesY.Add(_from.Y);
+            gSet.GuidelinesY.Add(_to.Y);
+            context.PushGuidelineSet(gSet);
+        }
+        
         context.DrawLine(_pen, _from, _to);
+
+        if (withGuidelines) context.Pop();
     }
 
     public void SetBrush(Brush brush)
@@ -255,7 +293,7 @@ public class TextInRectangleComponent : IDrawableComponent
         _verticalAlignment = verticalAlignment;
     }
 
-    public virtual void Draw(DrawingContext context)
+    public virtual void Draw(DrawingContext context, bool withGuidelines)
     {
         var deltaX = (_rect.Width - _text.Width) / 2;
         var deltaY = (_rect.Height - _text.Height) / 2;
@@ -281,10 +319,10 @@ public class AngledTextInRectangleComponent : TextInRectangleComponent
         _angle = angle;
     }
 
-    public override void Draw(DrawingContext context)
+    public override void Draw(DrawingContext context, bool withGuidelines)
     {
         context.PushTransform(new RotateTransform(_angle));
-        base.Draw(context);
+        base.Draw(context, withGuidelines);
         context.Pop();
     }
 }

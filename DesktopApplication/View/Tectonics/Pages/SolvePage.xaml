@@ -6,7 +6,7 @@
       xmlns:global="clr-namespace:DesktopApplication.View.Controls"
       xmlns:controls="clr-namespace:DesktopApplication.View.Tectonics.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" Height="660" Width="1210">
+      Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1210">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="660"/>

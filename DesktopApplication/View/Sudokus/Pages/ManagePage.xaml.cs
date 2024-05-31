@@ -186,11 +186,6 @@ public partial class ManagePage : ISudokuManageView
         return null;
     }
 
-    protected override void InternalUpdateSize()
-    {
-        
-    }
-
     private void OnSearch(string s)
     {
         _presenter.OnSearch(s);
