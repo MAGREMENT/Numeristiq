@@ -1,5 +1,6 @@
-﻿using Model.Sudokus.Generator;
-using Model.Sudokus.Solver.Trackers;
+﻿using Model.Core.Trackers;
+using Model.Sudokus.Generator;
+using Model.Sudokus.Solver;
 
 namespace ConsoleApplication.Commands;
 
@@ -33,11 +34,11 @@ public class SudokuGenerateBatchCommand : Command
         {
             var solver = interpreter.Instantiator.InstantiateSudokuSolver();
 
-            var ratings = new RatingTracker();
-            var hardest = new HardestStrategyTracker();
+            var ratings = new RatingTracker<SudokuStrategy, ISudokuSolveResult>();
+            var hardest = new HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult>();
 
-            solver.AddTracker(ratings);
-            solver.AddTracker(hardest);
+            ratings.Attach(solver);
+            hardest.Attach(solver);
             
             Console.WriteLine("Started evaluating...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -52,8 +53,8 @@ public class SudokuGenerateBatchCommand : Command
             }
             Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
             
-            solver.RemoveTracker(ratings);
-            solver.RemoveTracker(hardest);
+            ratings.Detach(solver);
+            hardest.Detach(solver);
         }
         else
         {

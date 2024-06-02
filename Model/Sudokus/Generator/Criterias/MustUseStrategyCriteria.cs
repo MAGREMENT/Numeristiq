@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Core.Trackers;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
+using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Strategies;
-using Model.Sudokus.Solver.Trackers;
 
 namespace Model.Sudokus.Generator.Criterias;
 
@@ -17,7 +18,7 @@ public class MustUseStrategyCriteria : EvaluationCriteria
     {
     }
 
-    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> usedStrategiesTracker)
     {
         return usedStrategiesTracker.WasUsed(_settings[0].Get().ToString()!);
     }

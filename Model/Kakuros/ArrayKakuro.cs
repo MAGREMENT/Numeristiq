@@ -13,6 +13,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
     public int RowCount => _cells.GetLength(0);
     public int ColumnCount => _cells.GetLength(1);
+
     public IReadOnlyList<IKakuroSum> Sums => _sums;
 
     public ArrayKakuro()
@@ -31,6 +32,28 @@ public class ArrayKakuro : IKakuro, ISolvingState
     {
         _cells = cells;
         _sums = sums;
+    }
+    
+    public int GetSolutionCount()
+    {
+        int total = 0;
+        foreach (var cell in _cells)
+        {
+            if (cell.Number != 0) total++;
+        }
+
+        return total;
+    }
+
+    public int GetCellCount()
+    {
+        int total = 0;
+        foreach (var cell in _cells)
+        {
+            if (cell.IsUsed()) total++;
+        }
+
+        return total;
     }
     
     public IEnumerable<IKakuroSum> SumsFor(Cell cell)

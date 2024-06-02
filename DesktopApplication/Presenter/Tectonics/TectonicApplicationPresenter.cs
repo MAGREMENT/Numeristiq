@@ -1,8 +1,8 @@
 ﻿using DesktopApplication.Presenter.Tectonics.Solve;
-using Model.Helpers;
-using Model.Helpers.Changes.Buffers;
-using Model.Helpers.Highlighting;
 using Model.Tectonics;
+using Model.Tectonics.Strategies;
+using Model.Tectonics.Strategies.AlternatingInference;
+using Model.Tectonics.Strategies.AlternatingInference.Types;
 
 namespace DesktopApplication.Presenter.Tectonics;
 
@@ -13,9 +13,14 @@ public class TectonicApplicationPresenter
 
     public TectonicApplicationPresenter(Settings settings)
     {
-        _solver.ChangeBuffer =
-            new StepManagingChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(_solver);
         _settings = settings;
+        _solver.StrategyManager.AddStrategies(new NakedSingleStrategy(),
+            new HiddenSingleStrategy(),
+            new ZoneInteractionStrategy(),
+            new AlternatingInferenceGeneralization(new XChainType()),
+            new GroupEliminationStrategy(),
+            new AlternatingInferenceGeneralization(new AlternatingInferenceChainType()),
+            new BruteForceStrategy());
     }
 
     public TectonicSolvePresenter Initialize(ITectonicSolveView view)

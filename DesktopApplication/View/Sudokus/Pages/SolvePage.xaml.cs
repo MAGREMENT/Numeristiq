@@ -11,8 +11,8 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
+using Model.Core.Steps;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Steps;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;
@@ -52,7 +52,7 @@ public partial class SolvePage : ISudokuSolveView
         ClearButton.IsEnabled = true;
     }
 
-    public void AddLog(ISolverStep<ISudokuHighlighter> step, StateShown stateShown)
+    public void AddLog(IStep<ISudokuHighlighter> step, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {

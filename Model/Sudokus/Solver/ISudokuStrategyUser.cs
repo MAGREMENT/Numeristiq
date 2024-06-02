@@ -1,4 +1,5 @@
-﻿using Model.Helpers;
+﻿using Model.Core;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility;
@@ -12,11 +13,9 @@ public interface ISudokuStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
 { 
     IReadOnlySudoku Sudoku { get; }
     
-    IUpdatableSolvingState StartState { get; }
-    
-    bool StepsManaged { get; }
+    IUpdatableSudokuSolvingState? StartState { get; }
 
-    IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
+    ChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     
     PreComputer PreComputer { get; }
     
@@ -25,6 +24,8 @@ public interface ISudokuStrategyUser : ISudokuSolvingState, IPossibilitiesGiver
     AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
     bool UniquenessDependantStrategiesAllowed { get; }
+    
+    public bool FastMode { get; set; }
 
     public ReadOnlyBitSet16 RawPossibilitiesAt(int row, int col);
     

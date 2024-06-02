@@ -1,5 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Model;
+using Model.Core;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver;

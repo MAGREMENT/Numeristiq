@@ -26,6 +26,7 @@ public interface IReadOnlyTectonic : ISolvingState
 {
     public int RowCount { get; }
     public int ColumnCount { get; }
+    public int GetSolutionCount();
     
     public IReadOnlyList<IZone> Zones { get; }
     public IZone GetZone(Cell cell);

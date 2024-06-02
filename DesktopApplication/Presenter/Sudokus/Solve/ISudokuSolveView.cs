@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Model.Core.Steps;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Steps;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
@@ -13,7 +13,7 @@ public interface ISudokuSolveView
     void SetSudokuAsString(string s);
     void DisableSolveActions();
     void EnableSolveActions();
-    void AddLog(ISolverStep<ISudokuHighlighter> step, StateShown _shown);
+    void AddLog(IStep<ISudokuHighlighter> step, StateShown _shown);
     void ClearLogs();
     void OpenLog(int index);
     void CloseLog(int index);

@@ -1,85 +1,55 @@
-﻿using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Changes.Buffers;
+﻿using Model.Core;
+using Model.Helpers;
 using Model.Helpers.Highlighting;
-using Model.Kakuros.Strategies;
-using Model.Tectonics;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class KakuroSolver : IKakuroStrategyUser, IChangeProducer
+public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingState, ISolvingStateHighlighter, object>,
+    IKakuroStrategyUser
 {
     private IKakuro _kakuro = new ArrayKakuro();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];
-
     private readonly IKakuroCombinationCalculator _combinationCalculator;
-    private readonly KakuroStrategy[] _strategies = {
-        new NakedSingleStrategy(),
-        new AmountCoherencyStrategy(),
-        new CombinationCoherencyStrategy()
-    };
-
-    private bool _wasChangeMade;
     
-    public IChangeBuffer<IUpdatableSolvingState, ISolvingStateHighlighter> ChangeBuffer { get; set; }
-
-    public event OnProgressMade? ProgressMade;
+    public IReadOnlyKakuro Kakuro => _kakuro;
 
     public KakuroSolver(IKakuroCombinationCalculator combinationCalculator)
     {
         _combinationCalculator = combinationCalculator;
-        ChangeBuffer = new FastChangeBuffer<IUpdatableSolvingState, ISolvingStateHighlighter>(this);
     }
-
-    public IReadOnlyKakuro Kakuro => _kakuro;
 
     public void SetKakuro(IKakuro kakuro)
     {
         _kakuro = kakuro;
         _possibilities = new ReadOnlyBitSet16[kakuro.RowCount, kakuro.ColumnCount];
         InitPossibilities();
-    }
-
-    public void Solve(bool stopAtProgress)
-    {
-        for (int i = 0; i < _strategies.Length; i++)
-        {
-            var s = _strategies[i];
-
-            s.Apply(this);
-            ChangeBuffer.Push(s);
-
-            if (!_wasChangeMade) continue;
-
-            _wasChangeMade = false;
-            i = -1;
-            ProgressMade?.Invoke();
-
-            if (stopAtProgress || _kakuro.IsComplete()) return;
-        }
+        OnNewSolvable(_kakuro.GetSolutionCount());
     }
 
     public int this[int row, int col] => _kakuro[row, col];
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col) => _possibilities[row, col];
 
-    public bool CanRemovePossibility(CellPossibility cp) => _possibilities[cp.Row, cp.Column].Contains(cp.Possibility);
+    public override bool CanRemovePossibility(CellPossibility cp) => _possibilities[cp.Row, cp.Column].Contains(cp.Possibility);
 
-    public bool CanAddSolution(CellPossibility cp) => _possibilities[cp.Row, cp.Column].Contains(cp.Possibility)
+    public override bool CanAddSolution(CellPossibility cp) => _possibilities[cp.Row, cp.Column].Contains(cp.Possibility)
                                                       && _kakuro[cp.Row, cp.Column] == 0;
 
-    public bool ExecuteChange(SolverProgress progress)
+    protected override IUpdatableSolvingState GetSolvingState()
     {
-        return progress.ProgressType == ProgressType.PossibilityRemoval 
-            ? RemovePossibility(progress.Row, progress.Column, progress.Number) 
-            : AddSolution(progress.Row, progress.Column, progress.Number);
+        return new KakuroSolvingState();
     }
 
-    public void FakeChange()
+    protected override object GetSolveResult()
     {
-        _wasChangeMade = true;
+        return this;
+    }
+
+    protected override bool IsComplete()
+    {
+        return _solutionCount == _kakuro.GetCellCount();
     }
 
     #region Private
@@ -101,23 +71,38 @@ public class KakuroSolver : IKakuroStrategyUser, IChangeProducer
         }
     }
 
-    private bool RemovePossibility(int row, int col, int n)
+    protected override bool RemoveSolution(int row, int col)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    protected override bool RemovePossibility(int row, int col, int n)
     {
         if (!_possibilities[row, col].Contains(n)) return false;
 
+        _currentState = null;
         _possibilities[row, col] -= n;
-        _wasChangeMade = true;
         return true;
     }
 
-    private bool AddSolution(int row, int col, int n)
+    protected override void OnChangeMade()
+    {
+        
+    }
+
+    protected override void ApplyStrategy(KakuroStrategy strategy)
+    {
+        strategy.Apply(this);
+    }
+
+    protected override bool AddSolution(int row, int col, int n)
     {
         if (_kakuro[row, col] != 0) return false;
 
+        _currentState = null;
         _possibilities[row, col] = new ReadOnlyBitSet16();
         _kakuro[row, col] = n;
         UpdatePossibilitiesAfterSolutionAdded(row, col, n);
-        _wasChangeMade = true;
 
         return true;
     }

@@ -1,4 +1,5 @@
-﻿using Model.Helpers.Changes;
+﻿using Model;
+using Model.Core;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
 
@@ -7,7 +8,7 @@ public interface IChooseStepView
     public ISudokuSolverDrawer Drawer { get; }
     
     public void ClearCommits();
-    public void AddCommit(ICommitMaker maker, int index);
+    public void AddCommit(Strategy maker, int index);
     public void SetPreviousPageExistence(bool exists);
     public void SetNextPageExistence(bool exists);
     public void SetTotalPage(int n);

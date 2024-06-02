@@ -9,6 +9,11 @@ public class BlankTectonic : ITectonic
 {
     public int RowCount => 0;
     public int ColumnCount => 0;
+    public int GetSolutionCount()
+    {
+        return 0;
+    }
+
     public IReadOnlyList<IZone> Zones => Array.Empty<IZone>();
 
     public int this[int row, int col]

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Model.Core.Trackers;
 using Model.Helpers.Settings;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Trackers;
 using Model.Utility.Collections;
 
 namespace Model.Sudokus.Generator;
@@ -10,9 +10,9 @@ namespace Model.Sudokus.Generator;
 public class SudokuEvaluator : IStrategiesContext
 {
     private readonly SudokuSolver _solver;
-    private readonly RatingTracker _rTracker = new();
-    private readonly HardestStrategyTracker _hsTracker = new();
-    private readonly UsedStrategiesTracker _usTracker = new();
+    private readonly RatingTracker<SudokuStrategy, ISudokuSolveResult> _rTracker = new();
+    private readonly HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult> _hsTracker = new();
+    private readonly UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> _usTracker = new();
 
     private UniqueList<EvaluationCriteria> _criterias = new();
 
@@ -20,9 +20,9 @@ public class SudokuEvaluator : IStrategiesContext
     {
         _solver = solver;
 
-        _solver.AddTracker(_rTracker);
-        _solver.AddTracker(_hsTracker);
-        _solver.AddTracker(_usTracker);
+        _rTracker.Attach(solver);
+        _hsTracker.Attach(solver);
+        _usTracker.Attach(solver);
     }
 
     public GeneratedSudokuPuzzle? Evaluate(GeneratedSudokuPuzzle puzzle)
@@ -76,7 +76,7 @@ public abstract class EvaluationCriteria : ISettingCollection
         _settings = settings;
     }
     
-    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker);
+    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> usedStrategiesTracker);
     public void Set(int index, SettingValue value, bool checkValidity)
     {
         if (index < 0 || index >= _settings.Length) return;

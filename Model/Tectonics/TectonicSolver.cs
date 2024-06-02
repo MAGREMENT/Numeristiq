@@ -1,67 +1,28 @@
 ﻿using System.Collections.Generic;
+using Model.Core;
 using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Steps;
-using Model.Tectonics.Strategies;
-using Model.Tectonics.Strategies.AlternatingInference;
-using Model.Tectonics.Strategies.AlternatingInference.Types;
 using Model.Tectonics.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Tectonics;
 
-public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer<IUpdatableTectonicSolvingState,
-    ITectonicHighlighter>, ISolvingState
+public class TectonicSolver : StrategySolver<TectonicStrategy, IUpdatableTectonicSolvingState,
+    ITectonicHighlighter, object>, ITectonicStrategyUser, ISolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet8[,] _possibilities;
 
-    private readonly TectonicStrategy[] _strategies = 
-    { 
-        new NakedSingleStrategy(),
-        new HiddenSingleStrategy(),
-        new ZoneInteractionStrategy(),
-        new AlternatingInferenceGeneralization(new XChainType()),
-        new GroupEliminationStrategy(),
-        new AlternatingInferenceGeneralization(new AlternatingInferenceChainType()),
-        new BruteForceStrategy()
-    };
-
-    private bool _changeWasMade;
-    
-    private IUpdatableTectonicSolvingState? _currentState;
-    
-    public bool StartedSolving { get; private set; }
-
-    public StepHistory<ITectonicHighlighter> StepHistory { get; } = new();
-
-    public IUpdatableTectonicSolvingState CurrentState
-    {
-        get
-        {
-            _currentState ??= new StateArraySolvingState(this);
-            return _currentState;
-        }
-    }
-
-    public IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; set; }
-
-    public LinkGraphManager<ITectonicStrategyUser, ITectonicElement> Graphs { get; }
-
     public IReadOnlyTectonic Tectonic => _tectonic;
-
-    public event OnProgressMade? ProgressMade;
+    public LinkGraphManager<ITectonicStrategyUser, ITectonicElement> Graphs { get; }
 
     public TectonicSolver()
     {
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet8[0, 0];
-
-        ChangeBuffer = new FastChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter>(this);
+        
         Graphs = new LinkGraphManager<ITectonicStrategyUser, ITectonicElement>(this, new TectonicConstructRuleBank());
     }
 
@@ -71,46 +32,8 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         _possibilities = new ReadOnlyBitSet8[_tectonic.RowCount, _tectonic.ColumnCount];
         InitCandidates();
         
-        StepHistory.Clear();
+        OnNewSolvable(_tectonic.GetSolutionCount());
         Graphs.Clear();
-        
-        StartedSolving = false;
-    }
-
-    public void SetSolutionByHand(int number, int row, int col)
-    {
-        if (_tectonic[row, col] != 0) RemoveSolution(row, col);
-
-        var before = CurrentState;
-        if (!AddSolution(row, col, number, false)) return;
-        
-        if(StartedSolving && ChangeBuffer.IsManagingSteps)
-            StepHistory.AddByHand(number, row, col, ProgressType.SolutionAddition, before);
-    }
-
-    public void RemoveSolutionByHand(int row, int col)
-    {
-        if (StartedSolving) return;
-
-        RemoveSolution(row, col);
-    }
-
-    public void Solve(bool stopAtProgress = false)
-    {
-        for (int i = 0; i < _strategies.Length; i++)
-        {
-            _strategies[i].Apply(this);
-            ChangeBuffer.Push(_strategies[i]);
-
-            if (!_changeWasMade) continue;
-
-            ProgressMade?.Invoke();
-            ResetChangeTrackingVariables();
-            i = -1;
-            Graphs.Clear();
-            
-            if (stopAtProgress || Tectonic.IsComplete()) return; //TODO optimize isComplete with buffer
-        }
     }
 
     ReadOnlyBitSet16 ISolvingState.PossibilitiesAt(int row, int col)
@@ -157,34 +80,32 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         return result;
     }
 
-    public bool CanRemovePossibility(CellPossibility cp)
+    public override bool CanRemovePossibility(CellPossibility cp)
     {
         return _possibilities[cp.Row, cp.Column].Contains(cp.Possibility);
     }
 
-    public bool CanAddSolution(CellPossibility cp)
+    public override bool CanAddSolution(CellPossibility cp)
     {
         return _tectonic[cp.Row, cp.Column] == 0;
     }
 
-    public bool ExecuteChange(SolverProgress progress)
+    protected override IUpdatableTectonicSolvingState GetSolvingState()
     {
-        return progress.ProgressType == ProgressType.PossibilityRemoval 
-            ? RemovePossibility(progress.Row, progress.Column, progress.Number, true) 
-            : AddSolution(progress.Row, progress.Column, progress.Number, true);
+        return new StateArraySolvingState(this);
     }
 
-    public void FakeChange()
+    protected override object GetSolveResult()
     {
-        _changeWasMade = true;
+        return this;
     }
 
+    protected override bool IsComplete()
+    {
+        return _solutionCount == _tectonic.RowCount * _tectonic.ColumnCount;
+    }
+    
     #region Private
-
-    private void ResetChangeTrackingVariables()
-    {
-        _changeWasMade = false;
-    }
     
     private void InitCandidates()
     {
@@ -221,44 +142,46 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         }
     }
 
-    private bool RemovePossibility(int row, int col, int number, bool fromSolving)
+    protected override bool RemovePossibility(int row, int col, int number)
     {
         if (!_possibilities[row, col].Contains(number)) return false;
 
         _currentState = null;
         _possibilities[row, col] -= number;
-
-        if (fromSolving)
-        {
-            _changeWasMade = true;
-        }
-
+        
         return true;
     }
 
-    private bool AddSolution(int row, int col, int number, bool fromSolving)
+    protected override bool AddSolution(int row, int col, int number)
     {
         if (_tectonic[row, col] != 0) return false;
 
         _currentState = null;
         _tectonic[row, col] = number;
         UpdatePossibilitiesAfterSolutionAdded(row, col, number);
-
-        if (fromSolving)
-        {
-            _changeWasMade = true;
-        }
         
         return true;
     }
 
-    private void RemoveSolution(int row, int col)
+    protected override bool RemoveSolution(int row, int col)
     {
-        if (_tectonic[row, col] == 0) return;
+        if (_tectonic[row, col] == 0) return false;
 
         _currentState = null;
         _tectonic[row, col] = 0;
         InitCandidates();
+
+        return true;
+    }
+
+    protected override void OnChangeMade()
+    {
+        Graphs.Clear();
+    }
+
+    protected override void ApplyStrategy(TectonicStrategy strategy)
+    {
+        strategy.Apply(this);
     }
 
     #endregion
@@ -268,5 +191,3 @@ public class TectonicSolver : ITectonicStrategyUser, IStepManagingChangeProducer
         return _possibilities[row, col].EnumeratePossibilities();
     }
 }
-
-public delegate void OnProgressMade();

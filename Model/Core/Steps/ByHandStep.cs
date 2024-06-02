@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Explanation;
 
-namespace Model.Helpers.Steps;
+namespace Model.Core.Steps;
 
-public class ByHandStep<THighlighter> : ISolverStep<THighlighter> where THighlighter : ISolvingStateHighlighter
+public class ByHandStep<THighlighter> : IStep<THighlighter> where THighlighter : ISolvingStateHighlighter
 {
     public int Id { get; }
     public string Title { get; }

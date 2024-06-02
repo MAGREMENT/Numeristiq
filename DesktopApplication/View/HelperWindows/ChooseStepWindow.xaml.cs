@@ -2,7 +2,8 @@
 using System.Windows.Controls;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;
-using Model.Helpers.Changes;
+using Model;
+using Model.Core;
 
 namespace DesktopApplication.View.HelperWindows;
 
@@ -38,7 +39,7 @@ public partial class ChooseStepWindow : IChooseStepView
         StepsPanel.Children.Clear();
     }
 
-    public void AddCommit(ICommitMaker maker, int index)
+    public void AddCommit(Strategy maker, int index)
     {
         var tb = new TextBlock
         {

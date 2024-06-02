@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Model.Core;
 using Model.Helpers.Descriptions;
 using Model.Sudokus.Solver.Strategies;
 using Model.Sudokus.Solver.Strategies.AlternatingInference;

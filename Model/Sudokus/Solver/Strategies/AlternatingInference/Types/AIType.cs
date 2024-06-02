@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Utility;

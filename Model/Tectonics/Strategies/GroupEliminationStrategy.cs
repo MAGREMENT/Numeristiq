@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
+using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Changes;
-using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver;
 using Model.Utility;
 using Model.Utility.BitSets;
 

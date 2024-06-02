@@ -1,5 +1,5 @@
-﻿using Model.Helpers.Highlighting;
-using Model.Helpers.Steps;
+﻿using Model.Core.Steps;
+using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Explanation;
 using Model.Utility.BitSets;
 
@@ -8,13 +8,13 @@ namespace DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 public class StepExplanationPresenter
 {
     private readonly IStepExplanationView _view;
-    private readonly ISolverStep<ISudokuHighlighter> _step;
+    private readonly IStep<ISudokuHighlighter> _step;
     private readonly SudokuHighlighterTranslator _translator;
 
     private bool _showHighlight = true;
     private ExplanationElement? _currentlyShown;
 
-    public StepExplanationPresenter(IStepExplanationView view, ISolverStep<ISudokuHighlighter> step, Settings _settings)
+    public StepExplanationPresenter(IStepExplanationView view, IStep<ISudokuHighlighter> step, Settings _settings)
     {
         _view = view;
         _step = step;

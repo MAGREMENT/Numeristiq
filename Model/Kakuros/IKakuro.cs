@@ -24,6 +24,8 @@ public interface IReadOnlyKakuro
 {
     int RowCount { get; }
     int ColumnCount { get; }
+    int GetSolutionCount();
+    int GetCellCount();
     IReadOnlyList<IKakuroSum> Sums { get; }
     IEnumerable<Cell> EnumerateCells();
     

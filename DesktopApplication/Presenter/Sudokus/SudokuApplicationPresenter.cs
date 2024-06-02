@@ -5,9 +5,6 @@ using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using Model;
-using Model.Helpers;
-using Model.Helpers.Changes.Buffers;
-using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver;
 using Repository;
 
@@ -15,7 +12,7 @@ namespace DesktopApplication.Presenter.Sudokus;
 
 public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
 {
-    private readonly StrategyManager _strategyManager = new();
+    private readonly StrategyManager<SudokuStrategy> _strategyManager = new();
     private IRepository<IReadOnlyList<SudokuStrategy>>? _strategiesRepository;
     private readonly Settings _settings;
 
@@ -30,7 +27,6 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
         {
             StrategyManager = _strategyManager
         };
-        solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         
         return new SudokuSolvePresenter(view, solver, _settings, this);
     }
@@ -41,7 +37,6 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
         {
             StrategyManager = _strategyManager
         };
-        solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         
         return new SudokuPlayPresenter(view, solver, _settings);
     }
@@ -57,7 +52,6 @@ public class SudokuApplicationPresenter : IStrategyRepositoryUpdater
         {
             StrategyManager = _strategyManager
         };
-        solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
         
         return new SudokuGeneratePresenter(view, solver, _settings);
     }

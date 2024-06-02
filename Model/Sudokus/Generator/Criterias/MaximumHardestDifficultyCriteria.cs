@@ -1,6 +1,7 @@
-﻿using Model.Helpers.Settings.Types;
+﻿using Model.Core;
+using Model.Core.Trackers;
+using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Trackers;
 using Model.Utility;
 
 namespace Model.Sudokus.Generator.Criterias;
@@ -15,7 +16,7 @@ public class MaximumHardestDifficultyCriteria : EvaluationCriteria
     {
     }
 
-    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> usedStrategiesTracker)
     {
         return puzzle.Hardest is not null &&
                puzzle.Hardest.Difficulty <= ((EnumSetting<StepDifficulty>)_settings[0]).Value;

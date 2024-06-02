@@ -4,8 +4,8 @@ using DesktopApplication.Presenter.Tectonics;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Tectonics.Controls;
+using Model.Core.Steps;
 using Model.Helpers.Highlighting;
-using Model.Helpers.Steps;
 using Model.Utility;
 
 namespace DesktopApplication.View.Tectonics.Pages;
@@ -32,7 +32,7 @@ public partial class SolvePage : ITectonicSolveView
         TextBox.SetText(s);
     }
 
-    public void AddLog(ISolverStep<ITectonicHighlighter> step, StateShown stateShown)
+    public void AddLog(IStep<ITectonicHighlighter> step, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {

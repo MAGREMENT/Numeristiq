@@ -1,15 +1,11 @@
-﻿using Model.Helpers.Changes;
-using Model.Sudokus.Solver;
+﻿using Model.Core;
 
 namespace Model.Kakuros;
 
-public abstract class KakuroStrategy : ICommitMaker
-{
-    public string Name { get; }
-    public StepDifficulty Difficulty { get; }
-    public InstanceHandling InstanceHandling { get; }
-    
+public abstract class KakuroStrategy : Strategy
+{ 
     protected KakuroStrategy(string name, StepDifficulty difficulty, InstanceHandling instanceHandling)
+        : base(name, difficulty, instanceHandling)
     {
         Name = name;
         Difficulty = difficulty;

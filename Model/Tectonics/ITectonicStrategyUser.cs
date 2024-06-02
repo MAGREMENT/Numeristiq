@@ -1,5 +1,5 @@
-﻿using Model.Helpers;
-using Model.Helpers.Changes;
+﻿using Model.Core;
+using Model.Helpers;
 using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
 using Model.Tectonics.Utility;
@@ -18,6 +18,6 @@ public interface ITectonicStrategyUser : IPossibilitiesGiver
     }
     ReadOnlyBitSet8 ZonePositionsFor(int zone, int n);
     ReadOnlyBitSet8 ZonePositionsFor(IZone zone, int n);
-    IChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
+    ChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
     LinkGraphManager<ITectonicStrategyUser, ITectonicElement> Graphs { get; }
 }

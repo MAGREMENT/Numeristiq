@@ -1,5 +1,5 @@
-﻿using Model.Helpers.Highlighting;
-using Model.Helpers.Steps;
+﻿using Model.Core.Steps;
+using Model.Helpers.Highlighting;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 
@@ -8,7 +8,7 @@ public interface ITectonicSolveView
     public ITectonicDrawer Drawer { get; }
 
     void SetTectonicString(string s);
-    void AddLog(ISolverStep<ITectonicHighlighter> step, StateShown _shown);
+    void AddLog(IStep<ITectonicHighlighter> step, StateShown _shown);
     void ClearLogs();
     void OpenLog(int index);
     void CloseLogs();

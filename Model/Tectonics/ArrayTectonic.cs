@@ -13,12 +13,24 @@ public class ArrayTectonic : ITectonic
     
     public int RowCount => _cells.GetLength(0);
     public int ColumnCount => _cells.GetLength(1);
+
     public IReadOnlyList<IZone> Zones => _zones;
 
     public ArrayTectonic(int rowCount, int colCount)
     {
         _cells = new TectonicCell[rowCount, colCount];
         _zones = new List<IZone>();
+    }
+    
+    public int GetSolutionCount()
+    {
+        int total = 0;
+        foreach (var cell in _cells)
+        {
+            if (cell.Number != 0) total++;
+        }
+
+        return total;
     }
     
     public void AddZone(IReadOnlyList<Cell> cells)

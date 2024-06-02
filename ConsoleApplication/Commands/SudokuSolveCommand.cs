@@ -1,7 +1,4 @@
-﻿using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Changes.Buffers;
-using Model.Helpers.Highlighting;
+﻿using Model.Helpers.Changes;
 using Model.Sudokus;
 
 namespace ConsoleApplication.Commands;
@@ -26,10 +23,8 @@ public class SudokuSolveCommand : Command
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = interpreter.Instantiator.InstantiateSudokuSolver();
-        var oldBuffer = solver.ChangeBuffer;
-        
-        if (report.IsOptionUsed(PathIndex)) solver.ChangeBuffer = new StepManagingChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
-        else solver.ChangeBuffer = new FastChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter>(solver);
+
+        if (!report.IsOptionUsed(PathIndex)) solver.FastMode = true;
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(StringIndex));
         
@@ -43,14 +38,12 @@ public class SudokuSolveCommand : Command
         if (report.IsOptionUsed(PathIndex))
         {
             Console.WriteLine("\nPath :");
-            foreach (var log in solver.StepHistory.Steps)
+            foreach (var log in solver.Steps)
             {
                 var explanation = log.Explanation is null ? "None" : log.Explanation.FullExplanation();
                 Console.WriteLine($"{log.Id}. {log.Title}\nDescription : {log.Description}\nChanges :" +
                                   $" {ChangeReportHelper.ChangesToString(log.Changes)}\nExplanation : {explanation}");
             }
         }
-        
-        solver.ChangeBuffer = oldBuffer;
     }
 }

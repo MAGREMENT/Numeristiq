@@ -1,4 +1,5 @@
-﻿using Model.Sudokus.Solver.Utility.Exocet;
+﻿using Model.Core;
+using Model.Sudokus.Solver.Utility.Exocet;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies;

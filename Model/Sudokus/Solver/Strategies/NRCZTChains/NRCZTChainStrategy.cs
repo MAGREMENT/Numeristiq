@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Changes;
-using Model.Helpers.Changes.Buffers;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Strategies.AlternatingInference;
 using Model.Sudokus.Solver.Utility;

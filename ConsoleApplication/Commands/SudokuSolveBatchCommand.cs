@@ -1,7 +1,9 @@
 ﻿using System.Text;
+using Model;
+using Model.Core;
+using Model.Core.Trackers;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Trackers;
 
 namespace ConsoleApplication.Commands;
 
@@ -41,19 +43,19 @@ public class SudokuSolveBatchCommand : Command
             }
         }
         
-        var statistics = new StatisticsTracker();
-        solver.AddTracker(statistics);
+        var statistics = new SudokuStatisticsTracker();
+        statistics.Attach(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
 
         List<string> fails = new();
         List<string> instances = new();
-        UsedStrategiesTracker? usedTracker = null;
+        UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult>? usedTracker = null;
 
         if (report.IsOptionUsed(InstancesIndex))
         {
-            usedTracker = new UsedStrategiesTracker();
-            solver.AddTracker(usedTracker);
+            usedTracker = new UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult>();
+            usedTracker.Attach(solver);
         }
         
         using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
@@ -106,7 +108,7 @@ public class SudokuSolveBatchCommand : Command
         }
     }
 
-    private static void OnSolveDone(ISolveResult result, int count)
+    private static void OnSolveDone(ISudokuSolveResult result, int count)
     {
         Console.Write($"#{count} ");
         if(result.Sudoku.IsCorrect()) Console.WriteLine("Ok !");

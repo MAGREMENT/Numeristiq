@@ -88,6 +88,17 @@ public class Sudoku : IReadOnlySudoku
         return new ReadOnlyBitSet16();
     }
 
+    public int GetSolutionCount()
+    {
+        int total = 0;
+        foreach (var n in _grid)
+        {
+            if (n != 0) total++;
+        }
+
+        return total;
+    }
+
     public int RowCount(int row, int number)
     {
         int result = 0;

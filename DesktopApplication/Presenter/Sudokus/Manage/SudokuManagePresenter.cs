@@ -5,10 +5,10 @@ namespace DesktopApplication.Presenter.Sudokus.Manage;
 public class SudokuManagePresenter
 {
     private readonly ISudokuManageView _view;
-    private readonly StrategyManager _manager;
+    private readonly StrategyManager<SudokuStrategy> _manager;
     private readonly IStrategyRepositoryUpdater _updater;
 
-    public SudokuManagePresenter(ISudokuManageView view, StrategyManager manager, 
+    public SudokuManagePresenter(ISudokuManageView view, StrategyManager<SudokuStrategy> manager, 
         IStrategyRepositoryUpdater updater)
     {
         _view = view;

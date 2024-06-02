@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using Model.Sudokus.Solver;
 using Model.Utility;
 
-namespace Model.Sudokus.Solver.Trackers;
+namespace Model.Core.Trackers;
 
-public class StatisticsTracker : Tracker
+public class SudokuStatisticsTracker : Tracker<SudokuStrategy, ISudokuSolveResult>
 {
     private readonly List<int> _retransmissions = new();
     private readonly List<StrategyStatistics> _statistics = new();
@@ -15,10 +16,25 @@ public class StatisticsTracker : Tracker
     private int _solverFails;
 
     public event OnSolveDone? SolveDone;
-
-    public override void Prepare(SudokuSolver solver)
+    
+    protected override void OnAttach(ITrackerAttachable<SudokuStrategy, ISudokuSolveResult> attachable)
     {
-        foreach (var strategy in solver.StrategyManager.Strategies)
+        Prepare(attachable.EnumerateStrategies());
+        attachable.StrategyStarted += OnStrategyStart;
+        attachable.StrategyEnded += OnStrategyEnd;
+        attachable.SolveDone += OnSolveDone;
+    }
+
+    protected override void OnDetach(ITrackerAttachable<SudokuStrategy, ISudokuSolveResult> attachable)
+    {
+        attachable.StrategyStarted -= OnStrategyStart;
+        attachable.StrategyEnded -= OnStrategyEnd;
+        attachable.SolveDone -= OnSolveDone;
+    }
+
+    private void Prepare(IEnumerable<SudokuStrategy> strategies)
+    {
+        foreach (var strategy in strategies)
         {
             if (strategy.Enabled)
             {
@@ -29,17 +45,17 @@ public class StatisticsTracker : Tracker
         }
     }
 
-    public override void OnStrategyStart(SudokuStrategy strategy, int index)
+    private void OnStrategyStart(SudokuStrategy strategy, int index)
     {
         Get(index)?.StartUsing();
     }
 
-    public override void OnStrategyEnd(SudokuStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnStrategyEnd(SudokuStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         Get(index)?.StopUsing(solutionAdded, possibilitiesRemoved);
     }
 
-    public override void OnSolveDone(ISolveResult result)
+    private void OnSolveDone(ISudokuSolveResult result)
     {
         _count++;
         if (result.Sudoku.IsCorrect()) _success++;
@@ -138,6 +154,8 @@ public class StatisticsTracker : Tracker
 
         return _statistics[index];
     }
+
+    
 }
 
 public class StrategyStatistics
@@ -188,4 +206,4 @@ public class StrategyStatistics
     }
 }
 
-public delegate void OnSolveDone(ISolveResult result, int count);
+public delegate void OnSolveDone(ISudokuSolveResult result, int count);

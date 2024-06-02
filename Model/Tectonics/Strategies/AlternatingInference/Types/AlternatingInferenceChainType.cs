@@ -1,4 +1,5 @@
-﻿using Model.Sudokus.Solver;
+﻿using Model.Core;
+using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Tectonics.Utility;
 

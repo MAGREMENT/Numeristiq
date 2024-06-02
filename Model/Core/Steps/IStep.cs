@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Explanation;
 
-namespace Model.Helpers.Steps;
+namespace Model.Core.Steps;
 
-public interface ISolverStep
+public interface IStep
 {
     int Id { get; }
     string Title { get; }
@@ -16,14 +16,14 @@ public interface ISolverStep
     string GetCursorPosition();
 }
 
-public interface ISolverStep<THighlighter> : ISolverStep
+public interface IStep<THighlighter> : IStep
 { 
     IReadOnlyList<SolverProgress> Changes { get; }
     IUpdatableSolvingState From { get; }
     IUpdatableSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
 
-    string ISolverStep.GetCursorPosition()
+    string IStep.GetCursorPosition()
     {
         return HighlightManager.CursorPosition();
     }

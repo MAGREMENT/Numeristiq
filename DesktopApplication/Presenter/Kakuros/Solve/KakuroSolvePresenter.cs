@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Model.Helpers;
 using Model.Kakuros;
+using Model.Kakuros.Strategies;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -19,6 +20,9 @@ public class KakuroSolvePresenter
     {
         _view = view;
         _solver = new KakuroSolver(new RecursiveKakuroCombinationCalculator());
+        _solver.StrategyManager.AddStrategies(new NakedSingleStrategy(),
+            new AmountCoherencyStrategy(),
+            new CombinationCoherencyStrategy());
     }
     
     public void OnKakuroAsStringBoxShowed()
@@ -35,9 +39,9 @@ public class KakuroSolvePresenter
 
     public async void Solve(bool stopAtProgress)
     {
-        _solver.ProgressMade += OnProgressMade;
+        _solver.StrategyEnded += OnProgressMade;
         await Task.Run(() => _solver.Solve(stopAtProgress));
-        _solver.ProgressMade -= OnProgressMade;
+        _solver.StrategyEnded -= OnProgressMade;
     }
 
     public void SelectCell(int row, int col)
@@ -179,7 +183,10 @@ public class KakuroSolvePresenter
         drawer.Refresh();
     }
 
-    private void OnProgressMade() => ShowState(_solver);
+    private void OnProgressMade(KakuroStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    {
+        if(solutionAdded + possibilitiesRemoved > 0) ShowState(_solver);
+    } 
 
     private void ShowState(ISolvingState state)
     {

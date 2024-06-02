@@ -1,7 +1,7 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Model.Helpers.Steps;
+using Model.Core.Steps;
 
 namespace DesktopApplication.View.Controls;
 
@@ -15,7 +15,7 @@ public partial class StepControl
     public event OnHighlightShift? HighlightShifted;
     public event OnExplanationAsked? ExplanationAsked;
     
-    public StepControl(ISolverStep step, StateShown stateShown)
+    public StepControl(IStep step, StateShown stateShown)
     {
         InitializeComponent();
 

@@ -1,26 +1,27 @@
 ﻿using System.Collections.Generic;
+using Model.Core;
 using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver;
 
-public class StrategyManager
+public class StrategyManager<TStrategy> where TStrategy : Strategy
 {
-    private readonly UniqueList<SudokuStrategy> _strategies = new();
+    private readonly UniqueList<TStrategy> _strategies = new();
     
     public bool UniquenessDependantStrategiesAllowed { get; private set; } = true;
-    public IReadOnlyList<SudokuStrategy> Strategies => _strategies;
+    public IReadOnlyList<TStrategy> Strategies => _strategies;
 
     public void ClearStrategies()
     {
         _strategies.Clear();
     }
     
-    public void AddStrategy(SudokuStrategy strategy)
+    public void AddStrategy(TStrategy strategy)
     {
         _strategies.Add(strategy, i => InterchangeStrategies(i, _strategies.Count));
     }
 
-    public void AddStrategy(SudokuStrategy strategy, int position)
+    public void AddStrategy(TStrategy strategy, int position)
     {
         if (position == _strategies.Count)
         {
@@ -31,7 +32,7 @@ public class StrategyManager
         _strategies.InsertAt(strategy, position, i => InterchangeStrategies(i, position));
     }
     
-    public void AddStrategies(IReadOnlyList<SudokuStrategy>? strategies)
+    public void AddStrategies(IReadOnlyList<TStrategy>? strategies)
     {
         if (strategies is null) return;
         
@@ -41,7 +42,7 @@ public class StrategyManager
         }
     }
 
-    public void AddStrategies(params SudokuStrategy[] strategies)
+    public void AddStrategies(params TStrategy[] strategies)
     {
         foreach (var s in strategies)
         {

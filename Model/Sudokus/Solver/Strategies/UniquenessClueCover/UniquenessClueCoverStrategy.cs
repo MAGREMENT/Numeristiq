@@ -1,4 +1,6 @@
-﻿namespace Model.Sudokus.Solver.Strategies.UniquenessClueCover;
+﻿using Model.Core;
+
+namespace Model.Sudokus.Solver.Strategies.UniquenessClueCover;
 
 public class UniquenessClueCoverStrategy : SudokuStrategy
 {

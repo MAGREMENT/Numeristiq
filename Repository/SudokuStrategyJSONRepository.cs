@@ -1,3 +1,5 @@
+using Model;
+using Model.Core;
 using Model.Helpers.Settings;
 using Model.Sudokus.Solver;
 

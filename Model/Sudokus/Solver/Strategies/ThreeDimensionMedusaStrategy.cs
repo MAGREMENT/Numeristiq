@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Position;
@@ -25,7 +26,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
-                     Coloring.On, strategyUser.StepsManaged))
+                     Coloring.On, !strategyUser.FastMode))
         {
             if(coloredVertices.Count <= 1) continue;
             

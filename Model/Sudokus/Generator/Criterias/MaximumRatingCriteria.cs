@@ -1,6 +1,7 @@
-﻿using Model.Helpers.Settings;
+﻿using Model.Core.Trackers;
+using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
-using Model.Sudokus.Solver.Trackers;
+using Model.Sudokus.Solver;
 
 namespace Model.Sudokus.Generator.Criterias;
 
@@ -14,7 +15,7 @@ public class MaximumRatingCriteria : EvaluationCriteria
     {
     }
 
-    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> usedStrategiesTracker)
     {
         return puzzle.Rating <= _settings[0].Get().ToDouble();
     }
