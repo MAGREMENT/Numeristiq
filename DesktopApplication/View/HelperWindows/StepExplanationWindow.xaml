@@ -12,7 +12,7 @@
         WindowStartupLocation="CenterScreen">
     
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+        <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
     <Grid Background="{DynamicResource Background1}">

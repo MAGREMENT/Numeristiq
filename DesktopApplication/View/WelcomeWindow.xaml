@@ -12,13 +12,13 @@
         WindowStartupLocation="CenterScreen">
     
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="40" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+        <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
     <DockPanel>
         <controls:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
                                AllowResize="False">
-            <controls:SettingsButton Clicked="ShowSettingWindow"></controls:SettingsButton>
+            <controls:SettingsButton Clicked="ShowSettingWindow"/>
         </controls:TitleBarControl>
         
         <Grid Background="{DynamicResource Background1}">
