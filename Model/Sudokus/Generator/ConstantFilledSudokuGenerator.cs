@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using Model.Core.Generators;
+using Model.Utility;
 
 namespace Model.Sudokus.Generator;
 
-public class ConstantFilledSudokuGenerator : IFilledSudokuGenerator
+public class ConstantFilledSudokuGenerator : IFilledPuzzleGenerator<Sudoku>
 {
     public Sudoku Sudoku { get; set; }
     
@@ -16,13 +18,21 @@ public class ConstantFilledSudokuGenerator : IFilledSudokuGenerator
         return Sudoku.Copy();
     }
 
-    public List<int> GetRemovableCells()
+    public Sudoku Generate(out List<Cell> removableCells)
     {
-        var list = new List<int>(41);
+        removableCells = GetRemovableCells();
+        return Generate();
+    }
 
-        for (int i = 0; i < 81; i++)
+    private List<Cell> GetRemovableCells()
+    {
+        var list = new List<Cell>(41);
+        for (int row = 0; row < 9; row++)
         {
-            if (Sudoku[i / 9, i % 9] != 0) list.Add(i);
+            for (int col = 0; col < 9; col++)
+            {
+                if (Sudoku[row, col] != 0) list.Add(new Cell(row, col));
+            }
         }
 
         return list;

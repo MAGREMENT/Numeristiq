@@ -1,4 +1,6 @@
-﻿using Model.Core.Trackers;
+﻿using Model.Core.Generators;
+using Model.Core.Trackers;
+using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
 
@@ -12,7 +14,7 @@ public class SudokuGenerateBatchCommand : Command
     
     public override string Description => "Generate a determined amount of Sudoku's";
     
-    private readonly ISudokuPuzzleGenerator _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+    private readonly IPuzzleGenerator<Sudoku> _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
     public SudokuGenerateBatchCommand() : base("GenerateBatch", 
         new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),

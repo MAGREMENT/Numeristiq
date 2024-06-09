@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Tests.Tectonic;
 
-public class TectonicCellUtilityTest
+public class TectonicCellUtilityTests
 {
     [Test]
     public void NonAdjacentTest()

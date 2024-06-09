@@ -1,7 +1,7 @@
 ﻿using Model.Helpers.Graphs;
-using Model.Tectonics.Utility.ConstructRules;
+using Model.Tectonics.Solver.Utility.ConstructRules;
 
-namespace Model.Tectonics.Utility;
+namespace Model.Tectonics.Solver.Utility;
 
 public class TectonicConstructRuleBank : IConstructRuleBank<ITectonicStrategyUser, ITectonicElement>
 {

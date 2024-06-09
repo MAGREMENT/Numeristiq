@@ -1,9 +1,8 @@
 ﻿using Model.Core;
-using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Utility.Graphs;
-using Model.Tectonics.Utility;
+using Model.Tectonics.Solver.Utility;
 
-namespace Model.Tectonics.Strategies.AlternatingInference.Types;
+namespace Model.Tectonics.Solver.Strategies.AlternatingInference.Types;
 
 public class XChainType : IAlternatingInferenceType
 {

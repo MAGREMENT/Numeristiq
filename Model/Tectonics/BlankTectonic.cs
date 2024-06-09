@@ -54,7 +54,7 @@ public class BlankTectonic : ITectonic
         return new BlankTectonic();
     }
 
-    public ITectonic CopyNumberLess()
+    public ITectonic CopyWithoutDigits()
     {
         return new BlankTectonic();
     }

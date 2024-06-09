@@ -1,4 +1,5 @@
 ﻿using Model.Core;
+using Model.Tectonics.Solver;
 
 namespace Model.Tectonics;
 

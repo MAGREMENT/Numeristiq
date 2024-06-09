@@ -3,11 +3,10 @@ using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Tectonics.Strategies;
+namespace Model.Tectonics.Solver.Strategies;
 
 public class ZoneInteractionStrategy : TectonicStrategy
 {

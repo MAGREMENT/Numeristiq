@@ -3,11 +3,11 @@ using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
-using Model.Tectonics.Utility;
+using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Tectonics;
+namespace Model.Tectonics.Solver;
 
 public class TectonicSolver : StrategySolver<TectonicStrategy, IUpdatableTectonicSolvingState,
     ITectonicHighlighter, object>, ITectonicStrategyUser, ISolvingState

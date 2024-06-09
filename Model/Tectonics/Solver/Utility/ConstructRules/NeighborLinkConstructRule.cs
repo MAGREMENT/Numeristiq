@@ -4,7 +4,7 @@ using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Tectonics.Utility.ConstructRules;
+namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
 public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITectonicElement>
 {

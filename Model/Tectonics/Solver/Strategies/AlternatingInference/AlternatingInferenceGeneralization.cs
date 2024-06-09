@@ -4,12 +4,11 @@ using Model.Core;
 using Model.Helpers;
 using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Utility.Graphs;
-using Model.Tectonics.Utility;
+using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 
-namespace Model.Tectonics.Strategies.AlternatingInference;
+namespace Model.Tectonics.Solver.Strategies.AlternatingInference;
 
 public class AlternatingInferenceGeneralization : TectonicStrategy //TODO manage loops
 {

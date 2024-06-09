@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
 
-namespace Model.Tectonics.Utility;
+namespace Model.Tectonics.Solver.Utility;
 
 public class ZoneGroup : ITectonicElement
 {

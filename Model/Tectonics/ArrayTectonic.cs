@@ -228,7 +228,7 @@ public class ArrayTectonic : ITectonic
 
     public ITectonic Copy()
     {
-        var result = CopyNumberLess();
+        var result = CopyWithoutDigits();
 
         for (int row = 0; row < RowCount; row++)
         {
@@ -242,7 +242,7 @@ public class ArrayTectonic : ITectonic
         return result;
     }
 
-    public ITectonic CopyNumberLess()
+    public ITectonic CopyWithoutDigits()
     {
         var result = new ArrayTectonic(RowCount, ColumnCount);
         foreach (var zone in _zones)

@@ -2,11 +2,11 @@
 using Model.Helpers;
 using Model.Helpers.Graphs;
 using Model.Helpers.Highlighting;
-using Model.Tectonics.Utility;
+using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
-namespace Model.Tectonics;
+namespace Model.Tectonics.Solver;
 
 public interface ITectonicStrategyUser : IPossibilitiesGiver
 {

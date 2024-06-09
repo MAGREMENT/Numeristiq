@@ -1,8 +1,9 @@
 ﻿using Model.Sudokus.Solver;
 using Model.Tectonics;
-using Model.Tectonics.Strategies;
-using Model.Tectonics.Strategies.AlternatingInference;
-using Model.Tectonics.Strategies.AlternatingInference.Types;
+using Model.Tectonics.Solver;
+using Model.Tectonics.Solver.Strategies;
+using Model.Tectonics.Solver.Strategies.AlternatingInference;
+using Model.Tectonics.Solver.Strategies.AlternatingInference.Types;
 using Repository;
 
 namespace ConsoleApplication;
