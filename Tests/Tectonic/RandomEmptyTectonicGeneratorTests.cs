@@ -1,4 +1,5 @@
 ﻿using Model.Tectonics.Generator;
+using Model.Utility;
 
 namespace Tests.Tectonic;
 
@@ -9,7 +10,12 @@ public class RandomEmptyTectonicGeneratorTests
     {
         var generator = new RandomEmptyTectonicGenerator();
 
-        var t = generator.Generate();
-        Console.WriteLine(t);
+        for (int i = 0; i < 3; i++)
+        {
+            var t = generator.Generate();
+            Console.WriteLine(t);
+            
+            Assert.That(BackTracking.Fill(t, new TectonicPossibilitiesGiver(t), 1), Has.Count.EqualTo(1));
+        }
     }
 }

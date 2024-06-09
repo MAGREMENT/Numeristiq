@@ -21,6 +21,7 @@ public interface ITectonic : IReadOnlyTectonic, ICellsAndDigitsPuzzle
 
     public void AddZone(IReadOnlyList<Cell> cells);
     public void AddZoneUnchecked(IReadOnlyList<Cell> cells);
+    public void ClearZones();
 }
 
 public interface IReadOnlyTectonic : ISolvingState

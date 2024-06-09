@@ -6,7 +6,12 @@ namespace Model.Tectonics.Generator;
 
 public class BackTrackingFilledTectonicGenerator : IFilledPuzzleGenerator<ITectonic>
 {
-    private readonly IEmptyTectonicGenerator _emptyGenerator = new RandomEmptyTectonicGenerator();
+    private readonly IEmptyTectonicGenerator _emptyGenerator;
+
+    public BackTrackingFilledTectonicGenerator(IEmptyTectonicGenerator emptyGenerator)
+    {
+        _emptyGenerator = emptyGenerator;
+    }
 
     public ITectonic Generate()
     {

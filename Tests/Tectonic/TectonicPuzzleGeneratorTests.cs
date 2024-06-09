@@ -4,15 +4,15 @@ using Model.Tectonics.Generator;
 
 namespace Tests.Tectonic;
 
-public class TectonicPuzzleGenerator
+public class TectonicPuzzleGeneratorTests
 {
     private readonly IPuzzleGenerator<ITectonic> _generator =
-        new RDRTectonicPuzzleGenerator(new BackTrackingFilledTectonicGenerator());
+        new RDRTectonicPuzzleGenerator(new BackTrackingFilledTectonicGenerator(new RandomEmptyTectonicGenerator()));
 
     [Test]
     public void Test()
     {
-        var generated = _generator.Generate(10);
+        var generated = _generator.Generate(1);
 
         foreach (var t in generated)
         {

@@ -23,6 +23,7 @@
                     CursorBrush="{DynamicResource Secondary1}" CellSelected="OnCellSelection"
                     RowCountChanged="OnRowCountChange" ColumnCountChanged="OnColumnCountChange"
                     CellAddedToSelection="OnCellAddedToSelection" SelectionEnded="OnSelectionEnd"
+                    KeyDown="DoBoardInput"
                     SpecialNumberBrush="{DynamicResource Primary1}"/>
             </global:SizeOptimizedContentControl.OptimizableContent>
         </global:SizeOptimizedContentControl>

@@ -7,7 +7,7 @@ using Repository;
 
 namespace Tests.Sudoku;
 
-public class SudokuPuzzleGenerator
+public class SudokuPuzzleGeneratorTests
 {
     private const int SudokuCount = 25;
     

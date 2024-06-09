@@ -29,7 +29,8 @@ public static class Program
             .AddCommand(new HelpCommand(), true)
             .AddCommand(new TectonicSolveCommand())
             .AddCommand(new TectonicSolveBatchCommand())
-            .AddCommand(new TectonicSolutionCountCommand());
+            .AddCommand(new TectonicSolutionCountCommand())
+            .AddCommand(new TectonicGenerateBatchCommand());
 
         return instance;
     }

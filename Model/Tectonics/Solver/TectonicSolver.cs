@@ -142,7 +142,7 @@ public class TectonicSolver : StrategySolver<TectonicStrategy, IUpdatableTectoni
         }
     }
 
-    protected override bool RemovePossibility(int row, int col, int number)
+    protected override bool RemovePossibility(int number, int row, int col)
     {
         if (!_possibilities[row, col].Contains(number)) return false;
 
@@ -152,7 +152,7 @@ public class TectonicSolver : StrategySolver<TectonicStrategy, IUpdatableTectoni
         return true;
     }
 
-    protected override bool AddSolution(int row, int col, int number)
+    protected override bool AddSolution(int number, int row, int col)
     {
         if (_tectonic[row, col] != 0) return false;
 
