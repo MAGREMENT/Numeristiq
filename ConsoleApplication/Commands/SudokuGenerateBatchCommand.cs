@@ -39,8 +39,8 @@ public class SudokuGenerateBatchCommand : Command
             var ratings = new RatingTracker<SudokuStrategy, ISudokuSolveResult>();
             var hardest = new HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult>();
 
-            ratings.Attach(solver);
-            hardest.Attach(solver);
+            ratings.AttachTo(solver);
+            hardest.AttachTo(solver);
             
             Console.WriteLine("Started evaluating...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -55,8 +55,8 @@ public class SudokuGenerateBatchCommand : Command
             }
             Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
             
-            ratings.Detach(solver);
-            hardest.Detach(solver);
+            ratings.Detach();
+            hardest.Detach();
         }
         else
         {

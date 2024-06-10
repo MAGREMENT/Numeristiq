@@ -66,6 +66,7 @@ public static class BackTracking
                 if(bitSet.Contains(possibility) || IsOneNeighborSame(current, possibility, row, col)) continue;
 
                 current[row, col] = possibility;
+                //TODO non readonly bit set ?
                 zones[zone] = bitSet + possibility;
 
                 if (Search(result, current, giver, zones, position + 1, stopAt))
@@ -85,6 +86,7 @@ public static class BackTracking
         return result.Count >= stopAt;
     }
 
+    //TODO to bitmap
     private static bool IsOneNeighborSame(ITectonic current, int possibility, int row, int col)
     {
         foreach (var neighbor in TectonicCellUtility.GetNeighbors(row, col, current.RowCount,

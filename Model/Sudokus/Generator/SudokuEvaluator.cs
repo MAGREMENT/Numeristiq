@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using Model.Core;
 using Model.Core.Trackers;
 using Model.Helpers.Settings;
 using Model.Sudokus.Solver;
@@ -7,22 +8,24 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Generator;
 
-public class SudokuEvaluator : IStrategiesContext
+public class SudokuEvaluator
 {
     private readonly SudokuSolver _solver;
     private readonly RatingTracker<SudokuStrategy, ISudokuSolveResult> _rTracker = new();
     private readonly HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult> _hsTracker = new();
     private readonly UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> _usTracker = new();
+    
+    private UniqueList<EvaluationCriteria>? _snapshot;
 
-    private UniqueList<EvaluationCriteria> _criterias = new();
+    public UniqueList<EvaluationCriteria> Criterias { get; private set; } = new();
 
     public SudokuEvaluator(SudokuSolver solver)
     {
         _solver = solver;
 
-        _rTracker.Attach(solver);
-        _hsTracker.Attach(solver);
-        _usTracker.Attach(solver);
+        _rTracker.AttachTo(solver);
+        _hsTracker.AttachTo(solver);
+        _usTracker.AttachTo(solver);
     }
 
     public GeneratedSudokuPuzzle? Evaluate(GeneratedSudokuPuzzle puzzle)
@@ -31,7 +34,7 @@ public class SudokuEvaluator : IStrategiesContext
         _solver.Solve();
         
         puzzle.SetEvaluation(_rTracker.Rating, _hsTracker.Hardest);
-        foreach (var criteria in _criterias)
+        foreach (var criteria in Criterias)
         {
             if (!criteria.IsValid(puzzle, _usTracker)) return null;
         }
@@ -39,16 +42,19 @@ public class SudokuEvaluator : IStrategiesContext
         return puzzle;
     }
 
-    public UniqueList<EvaluationCriteria> GetCriteriasCopy()
+    public void TakeSnapShot()
     {
-        return _criterias.Copy();
+        _snapshot = Criterias.Copy();
     }
 
-    public void SetCriterias(UniqueList<EvaluationCriteria> criteriaList)
+    public void RestoreSnapShot()
     {
-        _criterias = criteriaList.Copy();
-    }
+        if (_snapshot is null) return;
 
+        Criterias = _snapshot;
+        _snapshot = null;
+    }
+    
     public IReadOnlyList<string> GetUsedStrategiesName()
     {
         string[] result = new string[_solver.StrategyManager.Strategies.Count];
@@ -76,7 +82,8 @@ public abstract class EvaluationCriteria : ISettingCollection
         _settings = settings;
     }
     
-    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> usedStrategiesTracker);
+    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle,
+        UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult> usedStrategiesTracker);
     public void Set(int index, SettingValue value, bool checkValidity)
     {
         if (index < 0 || index >= _settings.Length) return;

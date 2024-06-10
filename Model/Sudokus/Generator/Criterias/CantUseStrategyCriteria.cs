@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Core;
 using Model.Core.Trackers;
 using Model.Helpers.Settings;
 using Model.Helpers.Settings.Types;
@@ -12,8 +13,8 @@ public class CantUseStrategyCriteria : EvaluationCriteria
 {
     public const string OfficialName = "Can't Use Strategy";
     
-    public CantUseStrategyCriteria(IReadOnlyList<string> usedStrategies) : base(OfficialName, 
-        new StringSetting("StrategyName", new AutoFillingInteractionInterface(usedStrategies)
+    public CantUseStrategyCriteria(IReadOnlyList<string> strategies) : base(OfficialName, 
+        new StringSetting("StrategyName", new AutoFillingInteractionInterface(strategies)
             , NakedSingleStrategy.OfficialName))
     {
     }

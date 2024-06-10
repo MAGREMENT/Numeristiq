@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Core;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -135,27 +136,28 @@ public class CheckBoxInteractionInterface : ISettingInteractionInterface
 
 public class AutoFillingInteractionInterface : ISettingInteractionInterface
 {
-    private readonly IReadOnlyList<string> _allowed;
+    private readonly IReadOnlyList<string> _values;
 
-    public AutoFillingInteractionInterface(IReadOnlyList<string> allowed)
+    public AutoFillingInteractionInterface(IReadOnlyList<string> values)
     {
-        _allowed = allowed;
+        _values = values;
     }
 
     public string Fill(string s)
     {
-        if (string.IsNullOrWhiteSpace(s)) return _allowed[0];
+        if (string.IsNullOrWhiteSpace(s)) return _values[0];
         
-        foreach (var str in _allowed)
+        foreach (var str in _values)
         {
             if (str.Contains(s)) return str;
         }
 
-        return _allowed[0];
+        return _values[0];
     }
 
     public SettingValue Verify(SettingValue value)
     {
-        return _allowed.Contains(value.ToString()) ? value : new StringSettingValue(_allowed[0]);
+        var str = value.ToString();
+        return _values.Any(s => s.Equals(str)) ? value : new StringSettingValue(_values[0]);
     }
 }

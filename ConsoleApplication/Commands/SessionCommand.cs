@@ -23,7 +23,7 @@ public class SessionCommand : Command
             return;
         }
         
-        Console.WriteLine($"Session start. (Enter {StopCommandsToString()} to exit)");
+        Console.WriteLine($"Session started. (Enter {StopCommandsToString()} to exit)");
         _isRunning = true;
 
         while (true)

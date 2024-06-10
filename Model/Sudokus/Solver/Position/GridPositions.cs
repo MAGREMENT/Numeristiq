@@ -28,6 +28,17 @@ public class GridPositions : IReadOnlyGridPositions
         _second = 0;
     }
 
+    public GridPositions(IEnumerable<Cell> cells)
+    {
+        _first = 0;
+        _second = 0;
+
+        foreach (var cell in cells)
+        {
+            Add(cell);
+        }
+    }
+
     private GridPositions(ulong first, uint second)
     {
         _first = first;

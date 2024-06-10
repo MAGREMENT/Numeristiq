@@ -23,7 +23,7 @@ public class SudokuPuzzleGeneratorTests
         solver.StrategyManager.AddStrategies(repo.Download());
 
         var finder = new HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult>();
-        finder.Attach(solver);
+        finder.AttachTo(solver);
         
         var puzzles = generator.Generate(SudokuCount);
         

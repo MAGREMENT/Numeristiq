@@ -26,8 +26,8 @@ public class SudokuSolveBatchCommand : Command
         {
             new Option("--feedback", "Feedback for each Sudoku"),
             new Option("-u", "Set all strategies instance handling to unordered all"),
-            new Option("--listfails", "Lists all solver fails at the end"),
-            new Option("--listinstances", "List all Sudoku's that presented the strategy in their solution path",
+            new Option("--list-fails", "Lists all solver fails at the end"),
+            new Option("--list-instances", "List all Sudoku's that presented the strategy in their solution path",
                 ValueRequirement.Mandatory, ValueType.String)
         }) { }
     
@@ -44,7 +44,7 @@ public class SudokuSolveBatchCommand : Command
         }
         
         var statistics = new SudokuStatisticsTracker();
-        statistics.Attach(solver);
+        statistics.AttachTo(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
 
@@ -55,7 +55,7 @@ public class SudokuSolveBatchCommand : Command
         if (report.IsOptionUsed(InstancesIndex))
         {
             usedTracker = new UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult>();
-            usedTracker.Attach(solver);
+            usedTracker.AttachTo(solver);
         }
         
         using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);

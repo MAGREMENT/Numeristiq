@@ -19,7 +19,7 @@ public class SudokuBackdoorCheckCommand : Command
         },
         new[]
         {
-            new Option("--strategyset", "Sets the strategies used to determine the backdoor (singles or ssts)",
+            new Option("--strategy-set", "Sets the strategies used to determine the backdoor (singles or ssts)",
                 ValueRequirement.Mandatory, ValueType.String)
         }) { }
 

@@ -72,11 +72,11 @@ public class TectonicSolvePresenter
 
     public async void Solve(bool stopAtProgress)
     {
-        _tracker.Attach(_solver);
+        _tracker.AttachTo(_solver);
 
         await Task.Run(() => _solver.Solve(stopAtProgress));
 
-        _tracker.Detach(_solver);
+        _tracker.Detach();
     }
 
     public void Clear()
