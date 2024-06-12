@@ -24,10 +24,10 @@ public class SudokuSolveBatchCommand : Command
         },
         new []
         {
-            new Option("--feedback", "Feedback for each Sudoku"),
-            new Option("-u", "Set all strategies instance handling to unordered all"),
-            new Option("--listfails", "Lists all solver fails at the end"),
-            new Option("--listinstances", "List all Sudoku's that presented the strategy in their solution path",
+            new Option("--feedback", "Gives feedback for each Sudoku"),
+            new Option("-u", "Sets all strategies instance handling to unordered all"),
+            new Option("--listfails", "Lists all solver fails"),
+            new Option("--listinstances", "Lists all Sudoku's that presented the strategy in their solution path",
                 ValueRequirement.Mandatory, ValueType.String)
         }) { }
     

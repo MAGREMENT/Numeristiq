@@ -17,7 +17,7 @@ public class SudokuSolveCommand : Command
         },
         new[]
         {
-            new Option("-p", "Show solving path")
+            new Option("-p", "Shows solving path")
         }) { }
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
