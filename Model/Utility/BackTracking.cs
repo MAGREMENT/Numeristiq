@@ -22,6 +22,7 @@ public static class BackTracking
         return result.Count;
     }
 
+    //TODO count
     public static IReadOnlyList<ITectonic> Fill(ITectonic start, IPossibilitiesGiver giver, int stopAt)
     {
         var result = new List<ITectonic>();
@@ -53,8 +54,8 @@ public static class BackTracking
         var full = current.RowCount * current.ColumnCount;
         for (; position < full; position++)
         {
-            var row = position / current.RowCount;
-            var col = position % current.RowCount;
+            var row = position / current.ColumnCount;
+            var col = position % current.ColumnCount;
             
             if (current[row, col] != 0) continue;
 
@@ -65,6 +66,7 @@ public static class BackTracking
                 if(bitSet.Contains(possibility) || IsOneNeighborSame(current, possibility, row, col)) continue;
 
                 current[row, col] = possibility;
+                //TODO non readonly bit set ?
                 zones[zone] = bitSet + possibility;
 
                 if (Search(result, current, giver, zones, position + 1, stopAt))
@@ -84,6 +86,7 @@ public static class BackTracking
         return result.Count >= stopAt;
     }
 
+    //TODO to bitmap
     private static bool IsOneNeighborSame(ITectonic current, int possibility, int row, int col)
     {
         foreach (var neighbor in TectonicCellUtility.GetNeighbors(row, col, current.RowCount,
@@ -158,11 +161,11 @@ public interface IPossibilitiesGiver
     IEnumerable<int> EnumeratePossibilitiesAt(int row, int col);
 }
 
-public class ITectonicPossibilitiesGiver : IPossibilitiesGiver
+public class TectonicPossibilitiesGiver : IPossibilitiesGiver
 {
     private readonly ITectonic _tectonic;
 
-    public ITectonicPossibilitiesGiver(ITectonic tectonic)
+    public TectonicPossibilitiesGiver(ITectonic tectonic)
     {
         _tectonic = tectonic;
     }

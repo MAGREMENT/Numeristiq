@@ -1,36 +1,33 @@
 ﻿using Model.Helpers.Settings;
 using Model.Sudokus.Generator;
-using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Sudokus.Generate;
 
-public class ManageCriteriaPresenter
+public class ManageCriteriaPresenter //TODO fix criteria selection
 {
     private readonly IManageCriteriaView _view;
-    private readonly UniqueList<EvaluationCriteria> _criterias;
-    private readonly IManageCriteriaCallback _callback;
+    private readonly SudokuEvaluator _evaluator;
 
     private EvaluationCriteria? _currentlySelectedCriteria;
     private bool _isCurrentlySelectedCriteriaInEvaluator;
     
-    public ManageCriteriaPresenter(IManageCriteriaView view, UniqueList<EvaluationCriteria> criterias,
-        IManageCriteriaCallback callback)
+    public ManageCriteriaPresenter(IManageCriteriaView view, SudokuEvaluator evaluator)
     {
         _view = view;
-        _criterias = criterias;
-        _callback = callback;
+        _evaluator = evaluator;
+        _evaluator.TakeSnapShot();
 
         foreach (var criteria in CriteriaPool.EnumerateCriterias())
         {
             _view.AddSearchResult(criteria);
         }
 
-        _view.SetCriteriaList(_criterias);
+        _view.SetCriteriaList(_evaluator.Criterias);
     }
 
     public void SelectCriteriaFromSearch(string s)
     {
-        var criteria = CriteriaPool.CreateFrom(s, _callback);
+        var criteria = CriteriaPool.CreateFrom(s, _evaluator.GetUsedStrategiesName());
         if (criteria is null) return;
 
         if (_currentlySelectedCriteria is not null)
@@ -38,26 +35,26 @@ public class ManageCriteriaPresenter
         
         _currentlySelectedCriteria = criteria;
         _currentlySelectedCriteria.SettingUpdated += UpdateSettingOfCurrentCriteria;
-        _isCurrentlySelectedCriteriaInEvaluator = _criterias.Contains(criteria);
-
+        
+        UpdateCriteriaAction(_evaluator.Criterias.Contains(criteria));
+        
         _view.SetSelectedCriteria(criteria);
-        _view.SetButtonAction(!_isCurrentlySelectedCriteriaInEvaluator);
     }
 
     public void SelectCriteriaFromList(int index)
     {
-        if (index < 0 || index >= _criterias.Count) return;
-        var criteria = _criterias[index];
+        if (index < 0 || index >= _evaluator.Criterias.Count) return;
+        var criteria = _evaluator.Criterias[index];
         
         if (_currentlySelectedCriteria is not null)
             _currentlySelectedCriteria.SettingUpdated -= UpdateSettingOfCurrentCriteria;
         
         _currentlySelectedCriteria = criteria;
         _currentlySelectedCriteria.SettingUpdated += UpdateSettingOfCurrentCriteria;
-        _isCurrentlySelectedCriteriaInEvaluator = true;
+        
+        UpdateCriteriaAction(_evaluator.Criterias.Contains(criteria));
 
         _view.SetSelectedCriteria(criteria);
-        _view.SetButtonAction(!_isCurrentlySelectedCriteriaInEvaluator);
     }
 
     public void DoCriteriaAction()
@@ -66,31 +63,37 @@ public class ManageCriteriaPresenter
 
         if (_isCurrentlySelectedCriteriaInEvaluator)
         {
-            _criterias.Remove(_currentlySelectedCriteria);
+            _evaluator.Criterias.Remove(_currentlySelectedCriteria);
         }
         else
         {
-            _criterias.Add(_currentlySelectedCriteria);
+            _evaluator.Criterias.Add(_currentlySelectedCriteria);
         }
 
-        _isCurrentlySelectedCriteriaInEvaluator = !_isCurrentlySelectedCriteriaInEvaluator;
+        UpdateCriteriaAction(!_isCurrentlySelectedCriteriaInEvaluator);
         
-        _view.SetButtonAction(!_isCurrentlySelectedCriteriaInEvaluator);
-        _view.SetCriteriaList(_criterias);
+        _view.SetCriteriaList(_evaluator.Criterias);
     }
 
-    public void Save()
+    public void CancelChanges()
     {
-        _callback.SetCriterias(_criterias);
+        _evaluator.RestoreSnapShot();
     }
 
     private void UpdateSettingOfCurrentCriteria(IReadOnlySetting setting)
     {
         if (_currentlySelectedCriteria is null) return;
 
-        var index = _criterias.IndexOf(_currentlySelectedCriteria);
+        var index = _evaluator.Criterias.IndexOf(_currentlySelectedCriteria);
         if (index == -1) return;
         
         _view.UpdateCriteriaSettings(index, _currentlySelectedCriteria.Settings);
+        UpdateCriteriaAction(_evaluator.Criterias.Contains(_currentlySelectedCriteria));
+    }
+
+    private void UpdateCriteriaAction(bool isInEvaluator)
+    {
+        _isCurrentlySelectedCriteriaInEvaluator = isInEvaluator;
+        _view.SetButtonAction(!_isCurrentlySelectedCriteriaInEvaluator);
     }
 }

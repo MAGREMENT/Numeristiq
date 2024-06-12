@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Model.Tectonics.Solver;
 using Model.Utility;
 using Model.Utility.BitSets;
 

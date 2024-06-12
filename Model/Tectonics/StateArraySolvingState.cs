@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Model.Helpers;
 using Model.Helpers.Changes;
+using Model.Tectonics.Solver;
 using Model.Utility;
 using Model.Utility.BitSets;
 

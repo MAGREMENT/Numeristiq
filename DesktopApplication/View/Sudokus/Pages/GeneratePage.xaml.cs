@@ -145,6 +145,7 @@ public partial class GeneratePage : ISudokuGenerateView
     private void OpenManageCriteriaWindow()
     {
         var window = new ManageCriteriaWindow(_presenter.ManageCriteria());
+        window.Closed += (_, _) => _presenter.UpdateCriterias();
         window.Show();
     }
 

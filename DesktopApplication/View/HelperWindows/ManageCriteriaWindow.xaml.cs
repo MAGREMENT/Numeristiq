@@ -12,6 +12,7 @@ namespace DesktopApplication.View.HelperWindows;
 public partial class ManageCriteriaWindow : IManageCriteriaView
 {
     private readonly ManageCriteriaPresenter _presenter;
+    private bool _isSaved = false;
     
     public ManageCriteriaWindow(ManageCriteriaPresenterBuilder builder)
     {
@@ -21,6 +22,10 @@ public partial class ManageCriteriaWindow : IManageCriteriaView
         
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
+        Closed += (_, _) =>
+        {
+            if (!_isSaved) _presenter.CancelChanges();
+        };
     }
     
     private void Minimize()
@@ -104,7 +109,7 @@ public partial class ManageCriteriaWindow : IManageCriteriaView
 
     private void OnSave(object sender, RoutedEventArgs e)
     {
-        _presenter.Save();
+        _isSaved = true;
         Close();
     }
 

@@ -3,6 +3,7 @@ using Model.Core;
 using Model.Core.Trackers;
 using Model.Helpers;
 using Model.Tectonics;
+using Model.Tectonics.Solver;
 using Model.Utility;
 using Model.Utility.Collections;
 
@@ -71,11 +72,11 @@ public class TectonicSolvePresenter
 
     public async void Solve(bool stopAtProgress)
     {
-        _tracker.Attach(_solver);
+        _tracker.AttachTo(_solver);
 
         await Task.Run(() => _solver.Solve(stopAtProgress));
 
-        _tracker.Detach(_solver);
+        _tracker.Detach();
     }
 
     public void Clear()
@@ -86,7 +87,7 @@ public class TectonicSolvePresenter
 
     public void Reset()
     {
-        SetNewTectonic(_solver.Tectonic.CopyNumberLess(), false);
+        SetNewTectonic(_solver.Tectonic.CopyWithoutDigits(), false);
     }
     
     public void RequestLogOpening(int id)

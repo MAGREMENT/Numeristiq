@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Model.Core.Generators;
 using Model.Helpers;
 using Model.Utility;
 
 namespace Model.Tectonics;
 
-public interface ITectonic : IReadOnlyTectonic
+public interface ITectonic : IReadOnlyTectonic, ICellsAndDigitsPuzzle
 { 
     public int this[Cell cell]
     {
@@ -20,6 +21,7 @@ public interface ITectonic : IReadOnlyTectonic
 
     public void AddZone(IReadOnlyList<Cell> cells);
     public void AddZoneUnchecked(IReadOnlyList<Cell> cells);
+    public void ClearZones();
 }
 
 public interface IReadOnlyTectonic : ISolvingState
@@ -43,7 +45,7 @@ public interface IReadOnlyTectonic : ISolvingState
     public bool IsComplete();
 
     public ITectonic Copy();
-    public ITectonic CopyNumberLess();
+    public ITectonic CopyWithoutDigits();
     public ITectonic Transfer(int rowCount, int columnCount);
 }
 

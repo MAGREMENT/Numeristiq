@@ -1,4 +1,6 @@
-﻿using Model.Core.Trackers;
+﻿using Model.Core.Generators;
+using Model.Core.Trackers;
+using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
 
@@ -12,7 +14,7 @@ public class SudokuGenerateBatchCommand : Command
     
     public override string Description => "Generates a determined amount of Sudoku's";
     
-    private readonly ISudokuPuzzleGenerator _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
+    private readonly IPuzzleGenerator<Sudoku> _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
     public SudokuGenerateBatchCommand() : base("GenerateBatch", 
         new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),
@@ -37,8 +39,8 @@ public class SudokuGenerateBatchCommand : Command
             var ratings = new RatingTracker<SudokuStrategy, ISudokuSolveResult>();
             var hardest = new HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult>();
 
-            ratings.Attach(solver);
-            hardest.Attach(solver);
+            ratings.AttachTo(solver);
+            hardest.AttachTo(solver);
             
             Console.WriteLine("Started evaluating...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -53,8 +55,8 @@ public class SudokuGenerateBatchCommand : Command
             }
             Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
             
-            ratings.Detach(solver);
-            hardest.Detach(solver);
+            ratings.Detach();
+            hardest.Detach();
         }
         else
         {

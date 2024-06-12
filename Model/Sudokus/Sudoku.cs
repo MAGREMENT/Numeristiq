@@ -1,11 +1,12 @@
 ﻿using System;
+using Model.Core.Generators;
 using Model.Helpers;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus;
 
-public class Sudoku : IReadOnlySudoku
+public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle
 {
     private const int GridSize = 9;
 

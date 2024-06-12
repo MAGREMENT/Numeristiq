@@ -1,7 +1,7 @@
 ﻿using Model.Helpers.Changes;
 using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver.Utility.Graphs;
-using Model.Tectonics.Utility;
+using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;

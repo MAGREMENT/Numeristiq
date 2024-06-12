@@ -77,9 +77,9 @@ public class SudokuSolvePresenter : ICommitApplier
         
         _solveTracker ??= new UIUpdaterTracker(this, true);
         _solveTracker.UpdateLogs = true;
-        _solveTracker.Attach(_solver);
+        _solveTracker.AttachTo(_solver);
         await Task.Run(() => _solver.Solve(stopAtProgress));
-        _solveTracker.Detach(_solver);
+        _solveTracker.Detach();
 
         _enabler.EnableActions(1);
     }
@@ -90,9 +90,9 @@ public class SudokuSolvePresenter : ICommitApplier
         
         _solveTracker ??= new UIUpdaterTracker(this, false);
         _solveTracker.UpdateLogs = false;
-        _solveTracker.Attach(_solver);
+        _solveTracker.AttachTo(_solver);
         var commits = await Task.Run(() => _solver.EveryPossibleNextStep());
-        _solveTracker.Detach(_solver);
+        _solveTracker.Detach();
 
         return new ChooseStepPresenterBuilder(commits, _settings, _solver, this);
     }

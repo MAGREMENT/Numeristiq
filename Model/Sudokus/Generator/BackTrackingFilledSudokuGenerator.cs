@@ -1,23 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Core.Generators;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace Model.Sudokus.Generator;
 
-public class BackTrackingFilledSudokuGenerator : IFilledSudokuGenerator
+public class BackTrackingFilledSudokuGenerator : IFilledPuzzleGenerator<Sudoku>
 {
     public Sudoku Generate()
     {
         return BackTracking.Fill(new Sudoku(), new RandomPossibilitiesGiver(), 1)[0];
     }
 
-    public List<int> GetRemovableCells()
+    public Sudoku Generate(out List<Cell> removableCells)
     {
-        var list = new List<int>(81);
-        for (int i = 0; i < 81; i++)
+        removableCells = GetRemovableCells();
+        return Generate();
+    }
+
+    private static List<Cell> GetRemovableCells()
+    {
+        var list = new List<Cell>(81);
+        for (int row = 0; row < 9; row++)
         {
-            list.Add(i);
+            for (int col = 0; col < 9; col++)
+            {
+                list.Add(new Cell(row, col));
+            }
         }
 
         return list;

@@ -59,6 +59,18 @@ public class ArrayTectonic : ITectonic
         }
     }
 
+    public void ClearZones()
+    {
+        _zones.Clear();
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                _cells[row, col] += null;
+            }
+        }
+    }
+
     public ITectonic Transfer(int rowCount, int columnCount)
     {
         if (rowCount == 0 && columnCount == 0) return new BlankTectonic();
@@ -228,7 +240,7 @@ public class ArrayTectonic : ITectonic
 
     public ITectonic Copy()
     {
-        var result = CopyNumberLess();
+        var result = CopyWithoutDigits();
 
         for (int row = 0; row < RowCount; row++)
         {
@@ -242,7 +254,7 @@ public class ArrayTectonic : ITectonic
         return result;
     }
 
-    public ITectonic CopyNumberLess()
+    public ITectonic CopyWithoutDigits()
     {
         var result = new ArrayTectonic(RowCount, ColumnCount);
         foreach (var zone in _zones)

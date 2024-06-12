@@ -4,7 +4,7 @@ public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strateg
 {
     private ITrackerAttachable<TStrategy, TSolveResult>? _currentAttachable;
 
-    public void Attach(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    public void AttachTo(ITrackerAttachable<TStrategy, TSolveResult> attachable)
     {
         if (_currentAttachable is not null) return;
         
@@ -14,12 +14,12 @@ public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strateg
 
     protected abstract void OnAttach(ITrackerAttachable<TStrategy, TSolveResult> attachable);
 
-    public void Detach(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    public void Detach()
     {
         if (_currentAttachable is null) return;
 
-        OnDetach(attachable);
-        _currentAttachable = attachable;
+        OnDetach(_currentAttachable);
+        _currentAttachable = null;
     }
     
     protected abstract void OnDetach(ITrackerAttachable<TStrategy, TSolveResult> attachable);

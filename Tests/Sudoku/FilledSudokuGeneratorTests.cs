@@ -1,4 +1,5 @@
-﻿using Model.Sudokus.Generator;
+﻿using Model.Core.Generators;
+using Model.Sudokus.Generator;
 
 namespace Tests.Sudoku;
 
@@ -6,7 +7,7 @@ public class FilledSudokuGeneratorTests
 {
     private const int SudokuCount = 5;
 
-    private readonly IFilledSudokuGenerator _generator = new BackTrackingFilledSudokuGenerator();
+    private readonly IFilledPuzzleGenerator<Model.Sudokus.Sudoku> _generator = new BackTrackingFilledSudokuGenerator();
     
     [Test]
     public void GenerationTest()

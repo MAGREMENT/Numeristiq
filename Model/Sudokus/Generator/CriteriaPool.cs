@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Model.Core;
 using Model.Sudokus.Generator.Criterias;
 
 namespace Model.Sudokus.Generator;
@@ -11,8 +12,8 @@ public static class CriteriaPool
         {MaximumRatingCriteria.OfficialName, _ => new MaximumRatingCriteria()},
         {MinimumHardestDifficultyCriteria.OfficialName, _ => new MinimumHardestDifficultyCriteria()},
         {MaximumHardestDifficultyCriteria.OfficialName, _ => new MaximumHardestDifficultyCriteria()},
-        {MustUseStrategyCriteria.OfficialName, c => new MustUseStrategyCriteria(c.GetUsedStrategiesName())},
-        {CantUseStrategyCriteria.OfficialName, c => new CantUseStrategyCriteria(c.GetUsedStrategiesName())},
+        {MustUseStrategyCriteria.OfficialName, s => new MustUseStrategyCriteria(s)},
+        {CantUseStrategyCriteria.OfficialName, s => new CantUseStrategyCriteria(s)},
     };
     
     public static IEnumerable<string> EnumerateCriterias(string filter)
@@ -27,13 +28,8 @@ public static class CriteriaPool
 
     public static IEnumerable<string> EnumerateCriterias() => Pool.Keys;
 
-    public static EvaluationCriteria? CreateFrom(string s, IStrategiesContext context) 
-        => Pool.TryGetValue(s, out var giver) ? giver(context) : null;
+    public static EvaluationCriteria? CreateFrom(string s, IReadOnlyList<string> usedStrategies) 
+        => Pool.TryGetValue(s, out var giver) ? giver(usedStrategies) : null;
 }
 
-public delegate EvaluationCriteria GiveCriteria(IStrategiesContext context);
-
-public interface IStrategiesContext
-{
-    IReadOnlyList<string> GetUsedStrategiesName();
-}
+public delegate EvaluationCriteria GiveCriteria(IReadOnlyList<string> usedStrategies);

@@ -28,6 +28,17 @@ public class GridPositions : IReadOnlyGridPositions
         _second = 0;
     }
 
+    public GridPositions(IEnumerable<Cell> cells)
+    {
+        _first = 0;
+        _second = 0;
+
+        foreach (var cell in cells)
+        {
+            Add(cell);
+        }
+    }
+
     private GridPositions(ulong first, uint second)
     {
         _first = first;
@@ -491,7 +502,7 @@ public class GridPositions : IReadOnlyGridPositions
         }
     }
 
-    public Cell[] AllSeenCells()
+    public IEnumerable<Cell> AllSeenCells()
     {
         var result = new GridPositions();
 
@@ -555,7 +566,7 @@ public record CoveredGrid(GridPositions Remaining, House[] CoverHouses);
 
 public static class CoverHouseHelper
 {
-    public static int ToHash(IReadOnlyList<House> houses)
+    public static int ToHash(IEnumerable<House> houses)
     {
         int hash = 0;
         foreach (var house in houses)
