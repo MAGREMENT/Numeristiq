@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Model;
 using Model.Core;
 using Model.Core.Trackers;
 using Model.Sudokus;
@@ -26,8 +25,8 @@ public class SudokuSolveBatchCommand : Command
         {
             new Option("--feedback", "Gives feedback for each Sudoku"),
             new Option("-u", "Sets all strategies instance handling to unordered all"),
-            new Option("--listfails", "Lists all solver fails"),
-            new Option("--listinstances", "Lists all Sudoku's that presented the strategy in their solution path",
+            new Option("--list-fails", "Lists all solver fails"),
+            new Option("--list-instances", "Lists all Sudoku's that presented the strategy in their solution path",
                 ValueRequirement.Mandatory, ValueType.String)
         }) { }
     
