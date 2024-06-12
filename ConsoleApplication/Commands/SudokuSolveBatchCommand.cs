@@ -44,7 +44,7 @@ public class SudokuSolveBatchCommand : Command
         }
         
         var statistics = new SudokuStatisticsTracker();
-        statistics.Attach(solver);
+        statistics.AttachTo(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
 
@@ -55,7 +55,7 @@ public class SudokuSolveBatchCommand : Command
         if (report.IsOptionUsed(InstancesIndex))
         {
             usedTracker = new UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult>();
-            usedTracker.Attach(solver);
+            usedTracker.AttachTo(solver);
         }
         
         using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
