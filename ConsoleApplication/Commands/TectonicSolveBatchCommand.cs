@@ -17,7 +17,7 @@ public class TectonicSolveBatchCommand : Command
         },
         new[]
         {
-            new Option("--feedback", "Feedback for each Tectonic")
+            new Option("--feedback", "Gives feedback for each Tectonic")
         }) { }
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)

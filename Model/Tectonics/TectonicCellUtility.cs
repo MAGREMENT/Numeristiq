@@ -11,6 +11,9 @@ public static class TectonicCellUtility
 {
     public static bool AreNeighbors(Cell c1, Cell c2)
         => c1 != c2 && Math.Abs(c1.Row - c2.Row) <= 1 && Math.Abs(c1.Column - c2.Column) <= 1;
+    
+    public static bool AreNeighborsOrSame(Cell c1, Cell c2)
+        => Math.Abs(c1.Row - c2.Row) <= 1 && Math.Abs(c1.Column - c2.Column) <= 1;
 
     public static bool AreAdjacent(Cell c1, Cell c2)
     {

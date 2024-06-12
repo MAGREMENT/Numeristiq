@@ -56,9 +56,43 @@ public class InfiniteBitmapTests
     }
 
     [Test]
+    public void HasNeighborTest()
+    {
+        var bitmap = new TectonicBitmap(11, 12);
+        
+        for (int row = 0; row < bitmap.RowCount; row++)
+        {
+            for (int col = 0; col < bitmap.ColumnCount; col++)
+            {
+                bitmap.Add(row, col);
+                    
+                if (row > 0)
+                {
+                    if (col > 0) Assert.That(bitmap.HasNeighbor(row - 1, col - 1), Is.True);
+                    if (col < bitmap.ColumnCount - 1) Assert.That(bitmap.HasNeighbor(row - 1, col + 1), Is.True);
+                    Assert.That(bitmap.HasNeighbor(row - 1, col), Is.True);
+                }
+        
+                if (col > 0) Assert.That(bitmap.HasNeighbor(row, col - 1), Is.True);
+                if (col < bitmap.ColumnCount - 1) Assert.That(bitmap.HasNeighbor(row, col + 1), Is.True);
+                Assert.That(bitmap.HasNeighbor(row, col), Is.True);
+        
+                if (row < bitmap.RowCount - 1)
+                {
+                    if (col > 0) Assert.That(bitmap.HasNeighbor(row + 1, col - 1), Is.True);
+                    if (col < bitmap.ColumnCount - 1) Assert.That(bitmap.HasNeighbor(row + 1, col + 1), Is.True);
+                    Assert.That(bitmap.HasNeighbor(row + 1, col), Is.True);
+                }
+                        
+                bitmap.Clear();
+            }
+        }
+    }
+
+    [Test]
     public void Add3x3Test()
     {
-        ImplementationSpeedComparator.Compare<Add3x3ToBitmap>((impl) =>
+        ImplementationSpeedComparator.Compare<Add3x3ToBitmap>(impl =>
         {
             var bitmap = new TectonicBitmap(11, 12);
 
@@ -89,8 +123,10 @@ public class InfiniteBitmapTests
                     bitmap.Clear();
                 }
             }
-        }, 1, Add3x3ToBitmapNaively, Add3x3ToBitmapWithMethod);
+        }, 100, Add3x3ToBitmapNaively, Add3x3ToBitmapWithMethod);
     }
+    
+    private delegate void Add3x3ToBitmap(TectonicBitmap bitmap, int row, int col);
 
     private static void Add3x3ToBitmapWithMethod(TectonicBitmap bitmap, int row, int col)
     {
@@ -119,4 +155,3 @@ public class InfiniteBitmapTests
     }
 }
 
-public delegate void Add3x3ToBitmap(TectonicBitmap bitmap, int row, int col);

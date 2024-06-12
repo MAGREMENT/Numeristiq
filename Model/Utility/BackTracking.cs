@@ -33,6 +33,14 @@ public static class BackTracking
     private static void Start(ICollection<ITectonic> result, ITectonic start, IPossibilitiesGiver giver, int stopAt)
     {
         Dictionary<IZone, ReadOnlyBitSet8> zones = new();
+        var neighbors = new[]
+        {
+            new TectonicBitmap(start.RowCount, start.ColumnCount),
+            new TectonicBitmap(start.RowCount, start.ColumnCount),
+            new TectonicBitmap(start.RowCount, start.ColumnCount),
+            new TectonicBitmap(start.RowCount, start.ColumnCount),
+            new TectonicBitmap(start.RowCount, start.ColumnCount)
+        };
 
         for (int row = 0; row < start.RowCount; row++)
         {
@@ -40,16 +48,22 @@ public static class BackTracking
             {
                 var zone = start.GetZone(row, col);
                 var bitSet = zones.TryGetValue(zone, out var bs) ? bs : new ReadOnlyBitSet8();
-                if (start[row, col] != 0) bitSet += start[row, col];
+                var number = start[row, col];
+                if (number != 0)
+                {
+                    neighbors[number - 1].Add(row, col);
+                    bitSet += number;
+                }
+                
                 zones[zone] = bitSet;
             }
         }
 
-        Search(result, start, giver, zones, 0, stopAt);
+        Search(result, start, giver, zones, neighbors, 0, stopAt);
     }
 
     private static bool Search(ICollection<ITectonic> result, ITectonic current, IPossibilitiesGiver giver,
-        IDictionary<IZone, ReadOnlyBitSet8> zones, int position, int stopAt)
+        IDictionary<IZone, ReadOnlyBitSet8> zones, TectonicBitmap[] neighbors, int position, int stopAt)
     {
         var full = current.RowCount * current.ColumnCount;
         for (; position < full; position++)
@@ -63,13 +77,15 @@ public static class BackTracking
             var bitSet = zones.TryGetValue(zone, out var bs) ? bs : new ReadOnlyBitSet8();
             foreach (var possibility in giver.EnumeratePossibilitiesAt(row, col))
             {
-                if(bitSet.Contains(possibility) || IsOneNeighborSame(current, possibility, row, col)) continue;
+                var n = neighbors[possibility - 1];
+                if(bitSet.Contains(possibility) || n.HasNeighbor(row, col)) continue;
 
                 current[row, col] = possibility;
                 //TODO non readonly bit set ?
                 zones[zone] = bitSet + possibility;
+                n.Add(row, col);
 
-                if (Search(result, current, giver, zones, position + 1, stopAt))
+                if (Search(result, current, giver, zones, neighbors, position + 1, stopAt))
                 {
                     current[row, col] = 0;
                     return true;
@@ -77,6 +93,7 @@ public static class BackTracking
                 
                 current[row, col] = 0;
                 zones[zone] = bitSet;
+                n.Remove(row, col);
             }
 
             return false;
@@ -84,18 +101,6 @@ public static class BackTracking
         
         result.Add(current.Copy());
         return result.Count >= stopAt;
-    }
-
-    //TODO to bitmap
-    private static bool IsOneNeighborSame(ITectonic current, int possibility, int row, int col)
-    {
-        foreach (var neighbor in TectonicCellUtility.GetNeighbors(row, col, current.RowCount,
-                     current.ColumnCount))
-        {
-            if (current[neighbor.Row, neighbor.Column] == possibility) return true;
-        }
-
-        return false;
     }
     
     private static void Start(ISudokuBackTrackingResult result, Sudoku start, IPossibilitiesGiver giver, int stopAt)

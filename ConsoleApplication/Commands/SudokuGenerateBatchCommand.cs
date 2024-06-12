@@ -12,14 +12,14 @@ public class SudokuGenerateBatchCommand : Command
     private const int EvaluateIndex = 1;
     private const int SortIndex = 2;
     
-    public override string Description => "Generate a determined amount of Sudoku's";
+    public override string Description => "Generates a determined amount of Sudoku's";
     
     private readonly IPuzzleGenerator<Sudoku> _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
 
     public SudokuGenerateBatchCommand() : base("GenerateBatch", 
         new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),
-        new Option("-e", "Evaluate puzzles"),
-        new Option("-s", "Sort puzzles")) { }
+        new Option("-e", "Evaluates puzzles"),
+        new Option("-s", "Sorts puzzles")) { }
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
