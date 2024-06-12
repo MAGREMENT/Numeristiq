@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using DesktopApplication.Presenter.Sudokus.Generate;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Settings;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Model.Sudokus.Generator;
 
 namespace DesktopApplication.View.HelperWindows;

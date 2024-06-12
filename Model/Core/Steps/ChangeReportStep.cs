@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Explanation;
+using Model.Core.Changes;
+using Model.Core.Explanation;
+using Model.Core.Highlighting;
 
 namespace Model.Core.Steps;
 

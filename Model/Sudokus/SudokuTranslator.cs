@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using Model.Helpers;
+using Model.Core;
 using Model.Sudokus.Solver.States;
 using Model.Utility;
 using Model.Utility.BitSets;

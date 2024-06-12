@@ -1,9 +1,9 @@
-﻿using Model.Helpers.Settings;
+﻿using Model.Core.Settings;
 using Model.Sudokus.Generator;
 
 namespace DesktopApplication.Presenter.Sudokus.Generate;
 
-public class ManageCriteriaPresenter //TODO fix criteria selection
+public class ManageCriteriaPresenter
 {
     private readonly IManageCriteriaView _view;
     private readonly SudokuEvaluator _evaluator;
@@ -84,11 +84,11 @@ public class ManageCriteriaPresenter //TODO fix criteria selection
     {
         if (_currentlySelectedCriteria is null) return;
 
+        UpdateCriteriaAction(_evaluator.Criterias.Contains(_currentlySelectedCriteria));
         var index = _evaluator.Criterias.IndexOf(_currentlySelectedCriteria);
         if (index == -1) return;
         
         _view.UpdateCriteriaSettings(index, _currentlySelectedCriteria.Settings);
-        UpdateCriteriaAction(_evaluator.Criterias.Contains(_currentlySelectedCriteria));
     }
 
     private void UpdateCriteriaAction(bool isInEvaluator)

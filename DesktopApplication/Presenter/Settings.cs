@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model;
-using Model.Helpers.Settings;
-using Model.Helpers.Settings.Types;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus;
 using Model.Sudokus.Player;
 using Model.Utility;

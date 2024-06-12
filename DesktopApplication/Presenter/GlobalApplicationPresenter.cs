@@ -4,7 +4,7 @@ using DesktopApplication.Presenter.Kakuros;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Tectonics;
 using Model;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Repository;
 
 namespace DesktopApplication.Presenter;

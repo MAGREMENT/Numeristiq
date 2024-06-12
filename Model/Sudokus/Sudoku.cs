@@ -1,6 +1,6 @@
 ﻿using System;
+using Model.Core;
 using Model.Core.Generators;
-using Model.Helpers;
 using Model.Utility;
 using Model.Utility.BitSets;
 

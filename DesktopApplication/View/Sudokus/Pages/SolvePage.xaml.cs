@@ -11,8 +11,8 @@ using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.HelperWindows.Dialog;
 using DesktopApplication.View.Sudokus.Controls;
 using Microsoft.Win32;
+using Model.Core.Highlighting;
 using Model.Core.Steps;
-using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;

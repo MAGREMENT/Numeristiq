@@ -2,9 +2,8 @@
 using System.Linq;
 using System.Text;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility.BitSets;

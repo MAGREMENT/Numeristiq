@@ -4,8 +4,8 @@ using DesktopApplication.Presenter.Tectonics;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Tectonics.Controls;
+using Model.Core.Highlighting;
 using Model.Core.Steps;
-using Model.Helpers.Highlighting;
 using Model.Utility;
 
 namespace DesktopApplication.View.Tectonics.Pages;

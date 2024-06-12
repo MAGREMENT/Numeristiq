@@ -1,5 +1,5 @@
-﻿using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
+﻿using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Sudokus.Solver.Utility.Graphs;

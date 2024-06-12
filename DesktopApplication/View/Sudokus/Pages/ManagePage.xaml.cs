@@ -9,7 +9,8 @@ using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.View.Settings;
 using DesktopApplication.View.Utility;
 using Microsoft.Win32;
-using Model.Helpers.Descriptions;
+using Model.Core;
+using Model.Core.Descriptions;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.View.Sudokus.Pages;

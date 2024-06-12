@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Helpers;
+using Model.Core;
 using Model.Utility;
 using Model.Utility.BitSets;
 

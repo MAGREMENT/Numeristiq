@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers.Settings.Types;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 

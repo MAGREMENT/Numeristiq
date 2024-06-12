@@ -1,5 +1,5 @@
-﻿using Model.Core.Steps;
-using Model.Helpers.Highlighting;
+﻿using Model.Core.Highlighting;
+using Model.Core.Steps;
 
 namespace DesktopApplication.Presenter.Tectonics.Solve;
 

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
-using Model.Helpers.Settings;
-using Model.Helpers.Settings.Types;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;

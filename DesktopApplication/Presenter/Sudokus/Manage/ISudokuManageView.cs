@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Model.Helpers.Descriptions;
+using Model.Core.Descriptions;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.Presenter.Sudokus.Manage;

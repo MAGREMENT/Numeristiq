@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Model.Helpers;
-using Model.Helpers.Changes;
+using Model.Core;
+using Model.Core.Changes;
 using Model.Sudokus.Solver.Position;
 using Model.Utility.BitSets;
 

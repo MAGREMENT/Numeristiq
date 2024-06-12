@@ -1,4 +1,4 @@
-﻿using Model.Sudokus.Solver.Explanation;
+﻿using Model.Core.Explanation;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.Explanation;
 

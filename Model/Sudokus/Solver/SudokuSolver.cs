@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.States;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;

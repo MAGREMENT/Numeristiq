@@ -1,6 +1,6 @@
 ﻿using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Highlighting;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace Model.Kakuros;
 

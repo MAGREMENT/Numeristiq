@@ -1,6 +1,6 @@
 ﻿using Model.Core;
+using Model.Core.Settings.Types;
 using Model.Core.Trackers;
-using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver;
 using Model.Utility;
 

@@ -7,7 +7,7 @@ using System.Windows.Media;
 using DesktopApplication.Presenter.Tectonics.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Utility;
-using Model.Helpers.Changes;
+using Model.Core.Changes;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.Collections;

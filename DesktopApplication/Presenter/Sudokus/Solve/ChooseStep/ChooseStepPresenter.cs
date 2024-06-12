@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
+using Model.Core;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.ChooseStep;

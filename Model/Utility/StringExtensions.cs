@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.CodeDom;
+using System.Text;
 
 namespace Model.Utility;
 
@@ -13,6 +14,28 @@ public static class StringExtensions
         }
 
         return true;
+    }
+
+    public static bool ContainsCaseInsensitive(this string s, string other)
+    {
+        for (int i = 0; i < s.Length - other.Length; i++)
+        {
+            if (char.ToLower(s[i]) != char.ToLower(other[0])) continue;
+
+            bool ok = true;
+            for (int j = 1; j < other.Length; j++)
+            {
+                if (char.ToLower(s[i + j]) != char.ToLower(other[j]))
+                {
+                    ok = false;
+                    break;
+                }
+
+                if (ok) return true;
+            }
+        }
+        
+        return false;
     }
     
     public static string Repeat(this string s, int number)

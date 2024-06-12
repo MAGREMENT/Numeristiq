@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Model.Core;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Core.Trackers;
-using Model.Helpers.Settings;
-using Model.Helpers.Settings.Types;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Strategies;
 

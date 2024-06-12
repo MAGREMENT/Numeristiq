@@ -1,9 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Graphs;
-using Model.Helpers.Highlighting;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;
 using Model.Sudokus.Solver.Utility.CellColoring.ColoringResults;

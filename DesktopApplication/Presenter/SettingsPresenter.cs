@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Model.Utility;
 using Model.Utility.Collections;
 

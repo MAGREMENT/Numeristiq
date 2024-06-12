@@ -1,6 +1,6 @@
-﻿using Model.Core.Steps;
-using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Explanation;
+﻿using Model.Core.Explanation;
+using Model.Core.Highlighting;
+using Model.Core.Steps;
 using Model.Utility.BitSets;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve.Explanation;

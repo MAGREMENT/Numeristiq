@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Graphs;
-using Model.Helpers.Highlighting;
+using Model.Core.Graphs;
+using Model.Core.Highlighting;
 using Model.Tectonics.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;

@@ -1,6 +1,5 @@
 ﻿using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Highlighting;
+using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 

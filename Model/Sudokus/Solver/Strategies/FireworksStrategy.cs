@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;

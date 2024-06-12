@@ -1,4 +1,4 @@
-﻿using Model.Helpers.Settings;
+﻿using Model.Core.Settings;
 
 namespace DesktopApplication.View.Settings;
 

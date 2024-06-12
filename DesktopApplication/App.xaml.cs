@@ -3,10 +3,10 @@ using System.Windows.Media;
 using DesktopApplication.Presenter;
 using Model;
 using Model.Core;
-using Model.Helpers.Changes;
+using Model.Core.Changes;
+using Model.Core.Explanation;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver;
-using Model.Sudokus.Solver.Explanation;
 using Model.Utility;
 
 namespace DesktopApplication;

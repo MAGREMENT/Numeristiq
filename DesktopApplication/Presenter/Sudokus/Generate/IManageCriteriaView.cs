@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Model.Sudokus.Generator;
 
 namespace DesktopApplication.Presenter.Sudokus.Generate;

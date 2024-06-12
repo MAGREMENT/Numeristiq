@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Controls;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 
 namespace DesktopApplication.View.Settings;
 
@@ -30,7 +30,11 @@ public partial class AutoFillingControl
 
     private void OnSearchChanged(object sender, TextChangedEventArgs e)
     {
-        Actual.Text = _i.Fill(Search.Text);
-        if(AutoSet && _raiseEvent) Set();
+        var filled = _i.Fill(Search.Text);
+        if (!filled.Equals(Actual.Text))
+        {
+            Actual.Text = filled;
+            if(AutoSet && _raiseEvent) Set();
+        }
     }
 }

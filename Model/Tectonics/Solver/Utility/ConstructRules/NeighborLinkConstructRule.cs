@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers.Graphs;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;

@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Model.Sudokus.Generator;
 
 namespace DesktopApplication.View.Controls;

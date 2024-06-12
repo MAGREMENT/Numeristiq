@@ -3,13 +3,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
 namespace DesktopApplication.View.Utility;
 
 public static class Extensions
-{
+{ 
     public static bool IsUnderHalfHeight(this TextBlock tb, MouseEventArgs args)
     {
         return args.GetPosition(tb).Y > tb.ActualHeight / 2;

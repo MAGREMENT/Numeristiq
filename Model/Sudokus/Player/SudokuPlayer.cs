@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Helpers;
+using Model.Core;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Player.HistoricEvents;
 using Model.Sudokus.Solver.Utility;

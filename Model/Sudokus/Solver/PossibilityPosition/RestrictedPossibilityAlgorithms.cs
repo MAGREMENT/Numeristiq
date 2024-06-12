@@ -1,4 +1,4 @@
-﻿using Model.Helpers;
+﻿using Model.Core;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 

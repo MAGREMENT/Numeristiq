@@ -13,7 +13,7 @@ public class TectonicBitmap : InfiniteBitmap
         _3HighMask = 1UL | (1UL << columnCount) | (1UL << (2 * columnCount));
     }
 
-    public void Add3x3(int row, int col) //TODO fix
+    public void Add3x3(int row, int col)
     {
         var maxEntry = (row + 1) / _rowsPerEntry;
         if (maxEntry == 0)

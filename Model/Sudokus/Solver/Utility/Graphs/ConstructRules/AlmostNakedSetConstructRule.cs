@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers;
-using Model.Helpers.Graphs;
+using Model.Core.Graphs;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;

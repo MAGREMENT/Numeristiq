@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Core.Steps;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver;
 using Model.Utility;
 

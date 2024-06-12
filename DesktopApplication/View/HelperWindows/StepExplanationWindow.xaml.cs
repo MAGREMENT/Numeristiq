@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.Presenter.Sudokus.Solve.Explanation;
-using Model.Sudokus.Solver.Explanation;
+using Model.Core.Explanation;
 
 namespace DesktopApplication.View.HelperWindows;
 

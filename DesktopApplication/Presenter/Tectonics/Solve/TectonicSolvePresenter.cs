@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Model.Core;
 using Model.Core.Trackers;
-using Model.Helpers;
 using Model.Tectonics;
 using Model.Tectonics.Solver;
 using Model.Utility;

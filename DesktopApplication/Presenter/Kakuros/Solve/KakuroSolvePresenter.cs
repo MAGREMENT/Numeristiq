@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Model.Helpers;
+using Model.Core;
 using Model.Kakuros;
 using Model.Kakuros.Strategies;
 using Model.Utility;

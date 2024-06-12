@@ -1,4 +1,4 @@
-﻿using Model.Helpers.Changes;
+﻿using Model.Core.Changes;
 
 namespace Tests;
 

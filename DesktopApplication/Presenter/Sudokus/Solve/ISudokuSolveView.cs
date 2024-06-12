@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using Model.Core.Highlighting;
 using Model.Core.Steps;
-using Model.Helpers.Highlighting;
 using Model.Sudokus.Solver;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;

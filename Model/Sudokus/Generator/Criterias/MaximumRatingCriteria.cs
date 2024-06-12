@@ -1,6 +1,6 @@
-﻿using Model.Core.Trackers;
-using Model.Helpers.Settings;
-using Model.Helpers.Settings.Types;
+﻿using Model.Core.Settings;
+using Model.Core.Settings.Types;
+using Model.Core.Trackers;
 using Model.Sudokus.Solver;
 
 namespace Model.Sudokus.Generator.Criterias;

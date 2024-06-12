@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Model.Helpers;
+using Model.Core;
 using Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 using Model.Utility;
 using Model.Utility.BitSets;

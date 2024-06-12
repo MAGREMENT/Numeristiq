@@ -1,4 +1,4 @@
-﻿using Model.Helpers.Graphs;
+﻿using Model.Core.Graphs;
 using Model.Tectonics.Solver.Utility.ConstructRules;
 
 namespace Model.Tectonics.Solver.Utility;

@@ -1,5 +1,5 @@
 ﻿using Model.Core;
-using Model.Helpers.Changes;
+using Model.Core.Changes;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Sudokus.Solver.Strategies;

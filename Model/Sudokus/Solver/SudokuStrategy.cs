@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 
 namespace Model.Sudokus.Solver;
 

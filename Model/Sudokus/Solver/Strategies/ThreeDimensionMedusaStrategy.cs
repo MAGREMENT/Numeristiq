@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
-using Model.Helpers;
-using Model.Helpers.Graphs;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.CellColoring;

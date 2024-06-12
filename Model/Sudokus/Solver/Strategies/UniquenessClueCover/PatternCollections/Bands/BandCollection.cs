@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text;
-using Model.Helpers;
-using Model.Helpers.Changes;
-using Model.Helpers.Highlighting;
-using Model.Sudokus.Solver.Explanation;
+using Model.Core;
+using Model.Core.Changes;
+using Model.Core.Explanation;
+using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 

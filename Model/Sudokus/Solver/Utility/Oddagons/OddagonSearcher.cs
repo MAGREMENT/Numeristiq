@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Model.Helpers;
-using Model.Helpers.Graphs;
+using Model.Core;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Sudokus.Solver.Utility.Oddagons.Algorithms;
 using Model.Utility;

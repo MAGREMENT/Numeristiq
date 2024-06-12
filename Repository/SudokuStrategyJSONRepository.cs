@@ -1,6 +1,6 @@
 using Model;
 using Model.Core;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Model.Sudokus.Solver;
 
 namespace Repository;

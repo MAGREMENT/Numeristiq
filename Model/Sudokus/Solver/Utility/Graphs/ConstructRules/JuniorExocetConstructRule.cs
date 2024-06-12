@@ -1,5 +1,4 @@
-using Model.Helpers;
-using Model.Helpers.Graphs;
+using Model.Core.Graphs;
 using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;

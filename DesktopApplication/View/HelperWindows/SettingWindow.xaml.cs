@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.Settings;
-using Model.Helpers.Settings;
+using Model.Core.Settings;
 using Model.Utility;
 using Model.Utility.Collections;
 
