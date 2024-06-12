@@ -502,7 +502,7 @@ public class GridPositions : IReadOnlyGridPositions
         }
     }
 
-    public Cell[] AllSeenCells()
+    public IEnumerable<Cell> AllSeenCells()
     {
         var result = new GridPositions();
 
@@ -566,7 +566,7 @@ public record CoveredGrid(GridPositions Remaining, House[] CoverHouses);
 
 public static class CoverHouseHelper
 {
-    public static int ToHash(IReadOnlyList<House> houses)
+    public static int ToHash(IEnumerable<House> houses)
     {
         int hash = 0;
         foreach (var house in houses)
