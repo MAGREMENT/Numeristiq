@@ -51,6 +51,7 @@ public interface IKakuroSum : IEnumerable<Cell>
     int GetFarthestColumn();
     Cell GetAmountCell();
     Cell GetStartCell();
+    bool Contains(Cell cell);
     
     Cell this[int index] { get; }
 

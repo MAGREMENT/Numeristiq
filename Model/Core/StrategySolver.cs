@@ -28,6 +28,9 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
     }
 
     public TSolvingState? StartState { get; protected set; }
+    /// <summary>
+    /// Disables steps & instance handling
+    /// </summary>
     public bool FastMode { get; set; }
     public ChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
     public IReadOnlyList<IStep<THighlighter>> Steps => _steps;

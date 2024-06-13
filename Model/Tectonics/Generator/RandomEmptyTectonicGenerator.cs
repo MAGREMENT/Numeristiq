@@ -90,7 +90,7 @@ public class RandomEmptyTectonicGenerator : IEmptyTectonicGenerator
                     }
                 }
             }
-        } while (BackTracking.Fill(result, new TectonicPossibilitiesGiver(result), 1).Count == 0);
+        } while (BackTracking.Count(result, new TectonicPossibilitiesGiver(result), 1) == 0);
 
         return result;
     }

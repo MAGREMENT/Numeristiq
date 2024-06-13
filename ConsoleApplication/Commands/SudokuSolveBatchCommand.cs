@@ -33,6 +33,7 @@ public class SudokuSolveBatchCommand : Command
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = interpreter.Instantiator.InstantiateSudokuSolver();
+        //solver.FastMode = true; TODO test
 
         if (report.IsOptionUsed(UnorderedIndex))
         {

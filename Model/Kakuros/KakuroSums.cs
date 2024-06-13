@@ -25,6 +25,10 @@ public class VerticalKakuroSum : IKakuroSum
     public int GetFarthestColumn() => _start.Column;
     public Cell GetAmountCell() => new(_start.Row - 1, _start.Column);
     public Cell GetStartCell() => _start;
+    public bool Contains(Cell cell)
+    {
+        return cell.Column == _start.Column && cell.Row >= _start.Row && cell.Row < _start.Row + Length;
+    }
 
     public Cell this[int index] => new(_start.Row + index, _start.Column);
     
@@ -83,6 +87,10 @@ public class HorizontalKakuroSum : IKakuroSum
     public int GetFarthestColumn() => _start.Column + Length - 1;
     public Cell GetAmountCell() => new(_start.Row, _start.Column - 1);
     public Cell GetStartCell() => _start;
+    public bool Contains(Cell cell)
+    {
+        return cell.Row == _start.Row && cell.Column >= _start.Column && cell.Column < _start.Column + Length;
+    }
 
     public Cell this[int index] => new(_start.Row, _start.Column + index);
     public IKakuroSum WithLength(int length)

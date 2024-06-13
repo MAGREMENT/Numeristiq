@@ -11,7 +11,7 @@ public class RDRTectonicPuzzleGenerator : RDRPuzzleGenerator<ITectonic>
 
     protected override int GetSolutionCount(ITectonic puzzle, int stopAt)
     {
-        return BackTracking.Fill(puzzle, new TectonicPossibilitiesGiver(puzzle), stopAt).Count;
+        return BackTracking.Count(puzzle, new TectonicPossibilitiesGiver(puzzle), stopAt);
     }
 
     protected override Cell GetSymmetricCell(ITectonic puzzle, Cell cell)

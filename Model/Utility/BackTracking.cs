@@ -10,27 +10,33 @@ public static class BackTracking
 {
     public static IReadOnlyList<Sudoku> Fill(Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
-        var result = new SudokuBackTrackingListResult();
+        var result = new BackTrackingListResult<Sudoku>();
         Start(result, start, giver, stopAt);
         return result;
     }
 
     public static int Count(Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
-        var result = new SudokuBackTrackingCountResult();
+        var result = new BackTrackingCountResult<Sudoku>();
+        Start(result, start, giver, stopAt);
+        return result.Count;
+    }
+    
+    public static IReadOnlyList<ITectonic> Fill(ITectonic start, IPossibilitiesGiver giver, int stopAt)
+    {
+        var result = new BackTrackingListResult<ITectonic>();
+        Start(result, start, giver, stopAt);
+        return result;
+    }
+    
+    public static int Count(ITectonic start, IPossibilitiesGiver giver, int stopAt)
+    {
+        var result = new BackTrackingCountResult<ITectonic>();
         Start(result, start, giver, stopAt);
         return result.Count;
     }
 
-    //TODO count
-    public static IReadOnlyList<ITectonic> Fill(ITectonic start, IPossibilitiesGiver giver, int stopAt)
-    {
-        var result = new List<ITectonic>();
-        Start(result, start, giver, stopAt);
-        return result;
-    }
-
-    private static void Start(ICollection<ITectonic> result, ITectonic start, IPossibilitiesGiver giver, int stopAt)
+    private static void Start(IBackTrackingResult<ITectonic> result, ITectonic start, IPossibilitiesGiver giver, int stopAt)
     {
         Dictionary<IZone, ReadOnlyBitSet8> zones = new();
         var neighbors = new[]
@@ -62,7 +68,7 @@ public static class BackTracking
         Search(result, start, giver, zones, neighbors, 0, stopAt);
     }
 
-    private static bool Search(ICollection<ITectonic> result, ITectonic current, IPossibilitiesGiver giver,
+    private static bool Search(IBackTrackingResult<ITectonic> result, ITectonic current, IPossibilitiesGiver giver,
         IDictionary<IZone, ReadOnlyBitSet8> zones, TectonicBitmap[] neighbors, int position, int stopAt)
     {
         var full = current.RowCount * current.ColumnCount;
@@ -98,12 +104,12 @@ public static class BackTracking
 
             return false;
         }
-        
-        result.Add(current.Copy());
+
+        result.AddNewResult(current);
         return result.Count >= stopAt;
     }
     
-    private static void Start(ISudokuBackTrackingResult result, Sudoku start, IPossibilitiesGiver giver, int stopAt)
+    private static void Start(IBackTrackingResult<Sudoku> result, Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
         var positions = new GridPositions[]
         {
@@ -125,7 +131,7 @@ public static class BackTracking
     }
 
 
-    private static bool Search(ISudokuBackTrackingResult result, Sudoku current, IPossibilitiesGiver giver,
+    private static bool Search(IBackTrackingResult<Sudoku> result, Sudoku current, IPossibilitiesGiver giver,
         IReadOnlyList<GridPositions> positions, int position, int stopAt)
     {
         for (; position < 81; position++)
@@ -185,27 +191,32 @@ public class TectonicPossibilitiesGiver : IPossibilitiesGiver
     }
 }
 
-public interface ISudokuBackTrackingResult
+public interface IBackTrackingResult<in T> where T : ICopyable<T>
 {
-    void AddNewResult(Sudoku sudoku);
+    void AddNewResult(T sudoku);
     int Count { get; }
 }
 
-public class SudokuBackTrackingListResult : List<Sudoku>, ISudokuBackTrackingResult
+public class BackTrackingListResult<T> : List<T>, IBackTrackingResult<T> where T : ICopyable<T>
 {
-    public void AddNewResult(Sudoku sudoku)
+    public void AddNewResult(T sudoku)
     {
         Add(sudoku.Copy());
     }
 }
 
-public class SudokuBackTrackingCountResult : ISudokuBackTrackingResult
+public class BackTrackingCountResult<T> : IBackTrackingResult<T> where T : ICopyable<T>
 {
-    public void AddNewResult(Sudoku sudoku)
+    public void AddNewResult(T sudoku)
     {
         Count++;
     }
 
     public int Count { get; private set; }
+}
+
+public interface ICopyable<out T>
+{
+    T Copy();
 }
 

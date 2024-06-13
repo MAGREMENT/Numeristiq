@@ -15,7 +15,7 @@ public class RandomEmptyTectonicGeneratorTests
             var t = generator.Generate();
             Console.WriteLine(t);
             
-            Assert.That(BackTracking.Fill(t, new TectonicPossibilitiesGiver(t), 1), Has.Count.EqualTo(1));
+            Assert.That(BackTracking.Count(t, new TectonicPossibilitiesGiver(t), 1), Is.EqualTo(1));
         }
     }
 }

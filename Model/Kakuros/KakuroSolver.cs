@@ -10,13 +10,13 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
 {
     private IKakuro _kakuro = new ArrayKakuro();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];
-    private readonly IKakuroCombinationCalculator _combinationCalculator;
     
+    public IKakuroCombinationCalculator CombinationCalculator { get; }
     public IReadOnlyKakuro Kakuro => _kakuro;
 
     public KakuroSolver(IKakuroCombinationCalculator combinationCalculator)
     {
-        _combinationCalculator = combinationCalculator;
+        CombinationCalculator = combinationCalculator;
     }
 
     public void SetKakuro(IKakuro kakuro)
@@ -38,7 +38,7 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
 
     protected override IUpdatableSolvingState GetSolvingState()
     {
-        return new KakuroSolvingState();
+        return new KakuroSolvingState(this);
     }
 
     protected override object GetSolveResult()
@@ -62,7 +62,7 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
 
         foreach (var sum in _kakuro.Sums)
         {
-            var pos = _combinationCalculator.CalculatePossibilities(sum.Amount, sum.Length);
+            var pos = CombinationCalculator.CalculatePossibilities(sum.Amount, sum.Length);
             foreach (var cell in sum)
             {
                 _possibilities[cell.Row, cell.Column] &= pos;
@@ -72,10 +72,15 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
 
     protected override bool RemoveSolution(int row, int col)
     {
-        throw new System.NotImplementedException();
+        if (_kakuro[row, col] == 0) return false;
+        
+        _currentState = null;
+        _kakuro[row, col] = 0;
+        InitPossibilities();
+        return true;
     }
 
-    protected override bool RemovePossibility(int row, int col, int n)
+    protected override bool RemovePossibility(int n, int row, int col)
     {
         if (!_possibilities[row, col].Contains(n)) return false;
 
@@ -94,23 +99,23 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
         strategy.Apply(this);
     }
 
-    protected override bool AddSolution(int row, int col, int n)
+    protected override bool AddSolution(int n, int row, int col)
     {
         if (_kakuro[row, col] != 0) return false;
 
         _currentState = null;
         _possibilities[row, col] = new ReadOnlyBitSet16();
         _kakuro[row, col] = n;
-        UpdatePossibilitiesAfterSolutionAdded(row, col, n);
+        UpdatePossibilitiesAfterSolutionAdded(row, col);
 
         return true;
     }
 
-    private void UpdatePossibilitiesAfterSolutionAdded(int row, int col, int n)
+    private void UpdatePossibilitiesAfterSolutionAdded(int row, int col)
     {
         foreach (var sum in _kakuro.SumsFor(new Cell(row, col)))
         {
-            var pos = _combinationCalculator.CalculatePossibilities(sum.Amount,
+            var pos = CombinationCalculator.CalculatePossibilities(sum.Amount,
                 sum.Length, _kakuro.GetSolutions(sum));
 
             foreach (var cell in sum)
@@ -118,7 +123,6 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
                 if (cell.Row == row && cell.Column == col) continue;
 
                 _possibilities[cell.Row, cell.Column] &= pos;
-                _possibilities[cell.Row, cell.Column] -= n;
             }
         }
     }

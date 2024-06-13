@@ -6,7 +6,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus;
 
-public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle
+public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
 {
     private const int GridSize = 9;
 
