@@ -12,17 +12,18 @@ public partial class SolvePage : IKakuroSolveView
     private readonly KakuroSolvePresenter _presenter;
 
     public IKakuroSolverDrawer Drawer => (KakuroBoard)ContentControl.OptimizableContent!;
-    
-    public void SetKakuroAsString(string s)
-    {
-        KakuroAsString.SetText(s);
-    }
 
     public SolvePage(KakuroApplicationPresenter presenter)
     {
         InitializeComponent();
 
         _presenter = presenter.Initialize(this);
+        DefaultMode.IsChecked = true;
+    }
+    
+    public void SetKakuroAsString(string s)
+    {
+        KakuroAsString.SetText(s);
     }
 
     private void OnNewKakuro(string s)
@@ -50,10 +51,6 @@ public partial class SolvePage : IKakuroSolveView
     {
         switch (e.Key)
         {
-            case Key.A : _presenter.AddCell();
-                break;
-            case Key.Z : _presenter.RemoveCell();
-                break;
             case Key.NumPad1 : _presenter.AddDigitToAmount(1);
                 break;
             case Key.NumPad2 : _presenter.AddDigitToAmount(2);
@@ -87,5 +84,15 @@ public partial class SolvePage : IKakuroSolveView
     private void OnKakuroAsStringShowed()
     {
         _presenter.OnKakuroAsStringBoxShowed();
+    }
+
+    private void ModeToDefault(object sender, RoutedEventArgs e)
+    {
+        _presenter.SetEditMode(EditMode.Default);
+    }
+
+    private void ModeToEdit(object sender, RoutedEventArgs e)
+    {
+        _presenter.SetEditMode(EditMode.Edit);
     }
 }

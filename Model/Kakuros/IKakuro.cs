@@ -16,7 +16,7 @@ public interface IKakuro : IReadOnlyKakuro
     }
     
     bool AddCellTo(IKakuroSum sum);
-    bool RemoveCellFrom(IKakuroSum sum);
+    bool RemoveCell(Cell cell);
     bool ReplaceAmount(IKakuroSum sum, int amount);
 }
 
@@ -32,6 +32,7 @@ public interface IReadOnlyKakuro
     IEnumerable<IKakuroSum> SumsFor(Cell cell);
     IKakuroSum? VerticalSumFor(Cell cell);
     IKakuroSum? HorizontalSumFor(Cell cell);
+    IKakuroSum? FindSum(Cell amountCell);
     List<int> GetSolutions(IKakuroSum sum);
 
     int this[int row, int col] { get; }
@@ -52,11 +53,14 @@ public interface IKakuroSum : IEnumerable<Cell>
     Cell GetAmountCell();
     Cell GetStartCell();
     bool Contains(Cell cell);
+    (Cell, Cell) GetFarthestCellPerpendicularNeighbors();
     
     Cell this[int index] { get; }
 
-    IKakuroSum WithLength(int length);
-    IKakuroSum WithAmount(int amount);
+    IKakuroSum WithLength(int length); //TODO check amount validity
+    IKakuroSum MoveBack(int count); //TODO check amount validity
+    IKakuroSum WithAmount(int amount); //TODO check amount validity
+    (IKakuroSum?, IKakuroSum?) DivideAround(Cell cell); //TODO check amount validity
 }
 
 public enum Orientation

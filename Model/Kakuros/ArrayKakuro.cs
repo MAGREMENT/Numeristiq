@@ -112,7 +112,22 @@ public class ArrayKakuro : IKakuro, ISolvingState
     public void AddSumUnchecked(IKakuroSum sum)
     {
         _sums.Add(sum);
-        UpdateArrayAfterAddition(sum);
+        UpdateAfterAddition(sum);
+    }
+
+    public IKakuroSum? FindSum(Cell amountCell)
+    {
+        var cell = new Cell(amountCell.Row + 1, amountCell.Column);
+        if (cell is { Row: >= 0, Column: >= 0 } && cell.Row < RowCount && cell.Column < ColumnCount)
+        {
+            var sum = _cells[cell.Row, cell.Column].VerticalSum;
+            if (sum is not null) return sum;
+        }
+
+        cell = new Cell(amountCell.Row, amountCell.Column + 1);
+        if (cell.Row < 0 || cell.Column < 0 || cell.Row >= RowCount || cell.Column <= ColumnCount) return null;
+
+        return _cells[cell.Row, cell.Column].HorizontalSum;
     }
 
     public int this[int row, int col]
@@ -148,53 +163,96 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
         var newSum = sum.WithLength(sum.Length + 1);
         _sums[index] = newSum;
-        UpdateArrayAfterAddition(newSum);
+        UpdateAfterAddition(newSum);
+
+        var (c1, c2) = newSum.GetFarthestCellPerpendicularNeighbors();
+        IKakuroSum? s1 = null, s2 = null;
+
+        if (c1.Row >= 0 && c1.Row < RowCount && c1.Column >= 0 && c1.Column <= ColumnCount)
+        {
+            s1 = newSum.Orientation == Orientation.Horizontal
+                ? _cells[c1.Row, c1.Column].VerticalSum
+                : _cells[c1.Row, c1.Column].HorizontalSum;
+        }
+        
+        if (c2.Row >= 0 && c2.Row < RowCount && c2.Column >= 0 && c2.Column <= ColumnCount)
+        {
+            s2 = newSum.Orientation == Orientation.Horizontal
+                ? _cells[c2.Row, c2.Column].VerticalSum
+                : _cells[c2.Row, c2.Column].HorizontalSum;
+        }
+
+        if (s1 is not null)
+        {
+            var additionalLength = 0;
+            if (s2 is not null)
+            {
+                additionalLength = s2.Length;
+                _sums.Remove(s2);
+            }
+            
+            var newS1 = s1.WithLength(s1.Length + 1 + additionalLength);
+            _sums[_sums.IndexOf(s1)] = newS1;
+            ReplaceCellSums(newS1);
+        }
+        else if (s2 is not null)
+        {
+            var newS2 = s2.MoveBack(1);
+            _sums[_sums.IndexOf(s2)] = newS2;
+            ReplaceCellSums(newS2);
+        }
 
         return true;
     }
 
-    public bool RemoveCellFrom(IKakuroSum sum)
+    public bool RemoveCell(Cell cell)
     {
-        if (sum.Length == 1) return false;
+        if (!_cells[cell.Row, cell.Column].IsRemovable) return false;
         
-        var index = _sums.IndexOf(sum);
-        if (index == -1) return false;
+        foreach (var sum in SumsFor(cell))
+        {
+            var index = _sums.IndexOf(sum);
+            if (index == -1) continue;
+
+            var sums = sum.DivideAround(cell);
+
+            if (sums.Item1 is not null)
+            {
+                _sums[index] = sums.Item1;
+                ReplaceCellSums(sums.Item1);
+            }
+            else _sums.RemoveAt(index);
+
+            if (sums.Item2 is null)
+            {
+                var fr = 0;
+                var fc = 0;
+                foreach (var s in _sums) //TODO only do in the sum direction
+                {
+                    fr = Math.Max(s.GetFarthestRow(), fr);
+                    fc = Math.Max(s.GetFarthestColumn(), fc);
+                }
+
+                if (fr != RowCount || fc != ColumnCount)
+                {
+                    ResizeTo(fr + 1, fc + 1);
+                }
+            }
+            else
+            {
+                _sums.Add(sums.Item2);
+                ReplaceCellSums(sums.Item2);
+            }
+        }
         
-        var newSum = sum.WithLength(sum.Length -1);
-        _sums[index] = newSum;
-
-        var fr = 0;
-        var fc = 0;
-        foreach (var s in _sums)
-        {
-            fr = Math.Max(s.GetFarthestRow(), fr);
-            fc = Math.Max(s.GetFarthestColumn(), fc);
-        }
-
-        if (fr != RowCount || fc != ColumnCount)
-        {
-            ResizeTo(fr + 1, fc + 1);
-        }
-
-        foreach (var cell in newSum)
-        {
-            if (newSum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += newSum;
-            else _cells[cell.Row, cell.Column] -= newSum;
-        }
-        var toRemove = sum[^1];
-        if (toRemove.Row < RowCount && toRemove.Column < ColumnCount)
-        {
-            if (sum.Orientation == Orientation.Vertical) _cells[toRemove.Row, toRemove.Column] += null;
-            else _cells[toRemove.Row, toRemove.Column] -= null;
-        }
+        _cells[cell.Row, cell.Column] += null;
+        _cells[cell.Row, cell.Column] -= null;
 
         return true;
     }
 
     public bool ReplaceAmount(IKakuroSum sum, int amount)
     {
-        if (amount < 1 || amount > KakuroCellUtility.MaxAmountFor(sum.Length)) return false;
-        
         var index = _sums.IndexOf(sum);
         if (index == -1) return false;
 
@@ -218,7 +276,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
         }
     }
 
-    private void UpdateArrayAfterAddition(IKakuroSum sum)
+    private void UpdateAfterAddition(IKakuroSum sum)
     {
         var fr = sum.GetFarthestRow();
         var fc = sum.GetFarthestColumn();
@@ -227,7 +285,12 @@ public class ArrayKakuro : IKakuro, ISolvingState
         {
             ResizeTo(Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1));
         }
-        
+
+        ReplaceCellSums(sum);
+    }
+
+    private void ReplaceCellSums(IKakuroSum sum)
+    {
         foreach (var cell in sum)
         {
             if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += sum;
@@ -266,6 +329,9 @@ public readonly struct KakuroCell
     }
 
     public bool IsUsed() => VerticalSum is not null || HorizontalSum is not null;
+
+    public bool IsRemovable => (VerticalSum is not null && VerticalSum.Length > 1) || (HorizontalSum is not null
+        && HorizontalSum.Length > 1);
 
     public int Number { get; }
     public IKakuroSum? VerticalSum { get; }

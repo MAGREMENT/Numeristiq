@@ -352,7 +352,7 @@ public class TectonicBoard : DrawingBoard, IAddChild, ITectonicDrawer, ISizeOpti
         list.Add(new FilledRectangleComponent(new Rect(left + _cellSize - CursorWidth, top, CursorWidth, _cellSize), CursorBrush));
     }
     
-    public void PutCursorOn(IContainingEnumerable<Cell> cells)
+    public void PutCursorOn(IContainingEnumerable<Cell> cells) //TODO fix when on only one cell
     {
         ClearCursor();
 

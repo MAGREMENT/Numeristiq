@@ -25,6 +25,19 @@
         </controls:SizeOptimizedContentControl>
         
         <StackPanel Grid.Column="1" Margin="10" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock FontSize="18" Margin="0, 20, 0, 0" Foreground="{DynamicResource Text}">
+                Edit Mode
+            </TextBlock>
+            
+            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}" 
+                         x:Name="DefaultMode" Checked="ModeToDefault" Style="{StaticResource ArrowRadioButton}">
+                Default
+            </RadioButton>
+            
+            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                         Checked="ModeToEdit" Style="{StaticResource ArrowRadioButton}">
+                Edit
+            </RadioButton>
             <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
                     Click="Solve">Solve</Button>
             <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"

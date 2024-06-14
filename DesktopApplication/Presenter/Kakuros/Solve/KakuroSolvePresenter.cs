@@ -15,6 +15,7 @@ public class KakuroSolvePresenter
     private Cell? _selectedCell;
     private IKakuroSum? _selectedSum;
     private int _bufferedAmount = -1;
+    private EditMode _mode = EditMode.Default;
 
     public KakuroSolvePresenter(IKakuroSolveView view)
     {
@@ -44,71 +45,69 @@ public class KakuroSolvePresenter
         _solver.StrategyEnded -= OnProgressMade;
     }
 
+    public void SetEditMode(EditMode mode)
+    {
+        _mode = mode;
+    }
+
     public void SelectCell(int row, int col)
     {
-        EnterAmount();
-        
-        var cell = new Cell(row, col);
-        if (cell == _selectedCell)
+        if (_mode == EditMode.Default)
         {
-            _selectedCell = null;
-            _view.Drawer.ClearCursor();
+            EnterAmount();
+        
+            var cell = new Cell(row, col);
+            if (cell == _selectedCell)
+            {
+                _selectedCell = null;
+                _view.Drawer.ClearCursor();
+            }
+            else
+            {
+                _selectedCell = cell;
+                _view.Drawer.PutCursorOnNumberCell(row, col);
+            }
+        
+            _view.Drawer.Refresh();
         }
         else
         {
-            _selectedCell = cell;
-            _view.Drawer.PutCursorOnNumberCell(row, col);
-        }
+            var copy = _solver.Kakuro.Copy();
+            if(!copy.RemoveCell(new Cell(row, col))) return;
         
-        _view.Drawer.Refresh();
+            _solver.SetKakuro(copy);
+            ShowNewKakuro(copy);
+        }
     }
 
     public void SelectSum(int row, int col)
     {
         _selectedCell = null;
-        
-        IKakuroSum? sum = null;
-        foreach (var s in _solver.Kakuro.Sums)
-        {
-            var cell = s.GetAmountCell();
-            if (cell.Row == row && cell.Column == col)
-            {
-                sum = s;
-                break;
-            }
-        }
 
-        if (sum is null || sum.Equals(_selectedSum)) EnterAmount();
+        var sum = _solver.Kakuro.FindSum(new Cell(row, col));
+
+        if (_mode == EditMode.Default)
+        {
+            if (sum is null || sum.Equals(_selectedSum)) EnterAmount();
+            else
+            {
+                _selectedSum = sum;
+                _bufferedAmount = sum.Amount;
+                _view.Drawer.PutCursorOnAmountCell(row, col, sum.Orientation);
+            }
+            
+            _view.Drawer.Refresh();
+        }
         else
         {
-            _selectedSum = sum;
-            _bufferedAmount = sum.Amount;
-            _view.Drawer.PutCursorOnAmountCell(row, col, sum.Orientation);
+            if (sum is null) return;
+            
+            var copy = _solver.Kakuro.Copy();
+            if (!copy.AddCellTo(sum)) return;
+        
+            _solver.SetKakuro(copy);
+            ShowNewKakuro(copy);
         }
-        
-        _view.Drawer.Refresh();
-    }
-
-    public void AddCell()
-    {
-        if (_selectedSum is null) return;
-
-        var copy = _solver.Kakuro.Copy();
-        if (!copy.AddCellTo(_selectedSum)) return;
-        
-        _solver.SetKakuro(copy);
-        ShowNewKakuro(copy);
-    }
-
-    public void RemoveCell()
-    {
-        if (_selectedSum is null) return;
-
-        var copy = _solver.Kakuro.Copy();
-        if(!copy.RemoveCellFrom(_selectedSum)) return;
-        
-        _solver.SetKakuro(copy);
-        ShowNewKakuro(copy);
     }
 
     public void AddDigitToAmount(int n)
@@ -203,4 +202,9 @@ public class KakuroSolvePresenter
         
         drawer.Refresh();
     }
+}
+
+public enum EditMode
+{
+    Default, Edit
 }
