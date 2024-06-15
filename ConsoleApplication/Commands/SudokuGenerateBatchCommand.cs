@@ -89,7 +89,7 @@ public class SudokuGenerateBatchCommand : Command
             if (s.Evaluated)
             {
                 Console.Write($" - {Math.Round(s.Rating, 2)}");
-                Console.Write($" - {s.Hardest}");
+                Console.Write($" - {s.Hardest!.Name}");
             }
             Console.WriteLine();
         }

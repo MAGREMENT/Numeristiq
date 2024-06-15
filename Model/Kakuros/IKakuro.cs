@@ -50,10 +50,11 @@ public interface IKakuroSum : IEnumerable<Cell>
 
     int GetFarthestRow();
     int GetFarthestColumn();
+    Cell GetFarthestCell(int additionalLength);
     Cell GetAmountCell();
     Cell GetStartCell();
     bool Contains(Cell cell);
-    (Cell, Cell) GetFarthestCellPerpendicularNeighbors();
+    (Cell, Cell) GetPerpendicularNeighbors(int length);
     
     Cell this[int index] { get; }
 

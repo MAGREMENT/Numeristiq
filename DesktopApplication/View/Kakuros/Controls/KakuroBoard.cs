@@ -403,6 +403,8 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
                     layer.Add(new LineComponent(new Point(xTl, yTr),
                         new Point(xBl, yBr), new Pen(brush, _lineWidth)));
                 }
+
+                xTl -= _lineWidth / 2;
             }
                 
             layer.Add(new LineComponent(new Point(xTl, yTr),
@@ -420,7 +422,7 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
             var yTl = GetTop(cell.Row) - half;
             if (cell.Column < 0 || cell.Row <= 0 || !_numberPresence[cell.Row - 1, cell.Column])
             {
-                yTl -= _amountWidth;
+                yTl -= _amountWidth + _lineWidth / 2;
             }
                 
             layer.Add(new LineComponent(new Point(xBl, yBl),

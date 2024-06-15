@@ -175,7 +175,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         }
     }
 
-    public bool FastPossibilityDisplay { get; set; } = false; //TODO
+    public bool FastPossibilityDisplay { get; set; }
     
     private bool _isSelecting;
 
@@ -275,8 +275,8 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
                 for (int j = 0; j < 3; j++)
                 {
                     var n = i + j + 1;
-                    builder.Append(possibilities.Contains(n) ? (char)('0' + n) : ' ');
-                    if(j < 2) builder.Append(' ');
+                    builder.Append(possibilities.Contains(n) ? (char)('0' + n) : ' ');
+                    if (j < 2) builder.Append(' ');
                 }
 
                 if (i < 6) builder.Append('\n');
@@ -284,7 +284,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             
             Dispatcher.Invoke(() =>
             {
-                Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _cellSize / 5,
+                Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _cellSize / 10 * 2.8,
                     DefaultNumberBrush, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
                     ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
             });

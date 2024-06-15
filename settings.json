@@ -12,5 +12,6 @@
   "Line format empty cell representation": "2",
   "Convert solo candidate to given for grid format": "True",
   "Main possibilities location": "9",
-  "Test solution count for clue": "False"
+  "Test solution count for clue": "False",
+  "Fast possibility display": "True"
 }

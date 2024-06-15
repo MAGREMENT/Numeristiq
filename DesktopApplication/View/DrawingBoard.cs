@@ -277,7 +277,7 @@ public class TextInRectangleComponent : IDrawableComponent
 {
     protected static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
     protected const FlowDirection Flow = FlowDirection.LeftToRight;
-    protected static readonly Typeface Typeface = new("Microsoft Sans Serif");
+    protected static readonly Typeface Typeface = new("Lucida Sans Typewriter");
     
     protected FormattedText _text;
     private readonly Rect _rect;

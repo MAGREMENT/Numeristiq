@@ -33,7 +33,8 @@ public class Settings
             new EnumSetting<SudokuLineFormatEmptyCellRepresentation>("Line format empty cell representation", SpaceConverter.Instance, SudokuLineFormatEmptyCellRepresentation.Shortcuts),
             new BooleanSetting("Convert solo candidate to given for grid format"),
             new EnumSetting<PossibilitiesLocation>("Main possibilities location", SpaceConverter.Instance, PossibilitiesLocation.Middle),
-            new BooleanSetting("Test solution count for clue")
+            new BooleanSetting("Test solution count for clue"),
+            new BooleanSetting("Fast possibility display")
         };
         _collections = new[]
         {
@@ -45,7 +46,7 @@ public class Settings
             {
                 new NamedListSpan<ISetting>("Themes", _settings, 0),
                 new NamedListSpan<ISetting>("Board", _settings, 1, 2),
-                new NamedListSpan<ISetting>("Solver", _settings, 3),
+                new NamedListSpan<ISetting>("Solver", _settings, 3, 14),
                 new NamedListSpan<ISetting>("Editing", _settings, 6, 7, 8, 9, 10, 11)
             },
             new[] //SudokuPlayerView
@@ -125,6 +126,7 @@ public class Settings
     public bool SoloToGiven => _settings[11].Get().ToBool();
     public PossibilitiesLocation MainLocation => ((EnumSetting<PossibilitiesLocation>)_settings[12]).Value;
     public bool TestSolutionCount => _settings[13].Get().ToBool();
+    public bool FastPossibilityDisplay => _settings[14].Get().ToBool();
     
     #region Private
 
@@ -155,7 +157,8 @@ public enum SpecificSettings
     AllowUniqueness = 3,
     StartAngle = 4,
     RotationDirection = 5,
-    MainLocation = 12
+    MainLocation = 12,
+    FastPossibilityDisplay = 14
 }
 
 public delegate void OnSettingChange(SettingValue setting);

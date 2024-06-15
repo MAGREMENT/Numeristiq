@@ -154,18 +154,26 @@ public class ArrayKakuro : IKakuro, ISolvingState
         return new ArrayKakuro(buffer, new List<IKakuroSum>(_sums));
     }
 
-    public bool AddCellTo(IKakuroSum sum) //TODO case where there is a sum below
+    public bool AddCellTo(IKakuroSum sum)
     {
         if (sum.Length >= 9) return false;
 
         var index = _sums.IndexOf(sum);
         if (index == -1) return false;
 
-        var newSum = sum.WithLength(sum.Length + 1);
+        var lengthAdded = 1;
+        var cellForSumBelow = sum.GetFarthestCell(2);
+        if (cellForSumBelow.Row < RowCount && cellForSumBelow.Column < ColumnCount)
+        {
+            var sumBelow = _cells[cellForSumBelow.Row, cellForSumBelow.Column].GetSum(sum.Orientation);
+            if (sumBelow is not null) lengthAdded += sumBelow.Length;
+        }
+
+        var newSum = sum.WithLength(sum.Length + lengthAdded);
         _sums[index] = newSum;
         UpdateAfterAddition(newSum);
 
-        var (c1, c2) = newSum.GetFarthestCellPerpendicularNeighbors();
+        var (c1, c2) = newSum.GetPerpendicularNeighbors(sum.Length);
         IKakuroSum? s1 = null, s2 = null;
 
         if (c1.Row >= 0 && c1.Row < RowCount && c1.Column >= 0 && c1.Column < ColumnCount)
@@ -207,7 +215,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
     public bool RemoveCell(Cell cell)
     {
-        if (!_cells[cell.Row, cell.Column].IsRemovable) return false;
+        if (!_cells[cell.Row, cell.Column].IsRemovable()) return false;
         
         foreach (var sum in SumsFor(cell))
         {
@@ -331,9 +339,13 @@ public readonly struct KakuroCell
     }
 
     public bool IsUsed() => VerticalSum is not null || HorizontalSum is not null;
-
-    public bool IsRemovable => (VerticalSum is not null && VerticalSum.Length > 1) || (HorizontalSum is not null
+    public bool IsRemovable() => (VerticalSum is not null && VerticalSum.Length > 1) || (HorizontalSum is not null
         && HorizontalSum.Length > 1);
+
+    public IKakuroSum? GetSum(Orientation orientation)
+    {
+        return orientation == Orientation.Horizontal ? HorizontalSum : VerticalSum;
+    }
 
     public int Number { get; }
     public IKakuroSum? VerticalSum { get; }

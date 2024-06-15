@@ -44,6 +44,13 @@ public class SudokuSolvePresenter : ICommitApplier
         _settings = settings;
         _updater = updater;
 
+        _view.Drawer.FastPossibilityDisplay = _settings.FastPossibilityDisplay;
+
+        _settings.AddEvent(SpecificSettings.FastPossibilityDisplay, v =>
+        {
+            _view.Drawer.FastPossibilityDisplay = v.ToBool();
+            RedrawBoard();
+        });
         _settings.AddEvent(SpecificSettings.LinkOffsetSidePriority, _ => RedrawBoard());
         _settings.AddEvent(SpecificSettings.ShowSameCellLinks, _ => RedrawBoard());
         _settings.AddEvent(SpecificSettings.AllowUniqueness, AllowUniqueness);

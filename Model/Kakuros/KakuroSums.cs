@@ -21,8 +21,8 @@ public class VerticalKakuroSum : IKakuroSum
     }
     
     public int GetFarthestRow() => _start.Row + Length - 1;
-
     public int GetFarthestColumn() => _start.Column;
+    public Cell GetFarthestCell(int additionalLength) => new(_start.Row + Length - 1 + additionalLength, _start.Column);
     public Cell GetAmountCell() => new(_start.Row - 1, _start.Column);
     public Cell GetStartCell() => _start;
     public bool Contains(Cell cell)
@@ -30,9 +30,9 @@ public class VerticalKakuroSum : IKakuroSum
         return cell.Column == _start.Column && cell.Row >= _start.Row && cell.Row < _start.Row + Length;
     }
 
-    public (Cell, Cell) GetFarthestCellPerpendicularNeighbors()
+    public (Cell, Cell) GetPerpendicularNeighbors(int length)
     {
-        var row = GetFarthestRow();
+        var row = _start.Row + length;
         return (new Cell(row, _start.Column - 1), new Cell(row, _start.Column + 1));
     }
 
@@ -107,17 +107,17 @@ public class HorizontalKakuroSum : IKakuroSum
     }
     
     public int GetFarthestRow() => _start.Row;
-
     public int GetFarthestColumn() => _start.Column + Length - 1;
+    public Cell GetFarthestCell(int additionalLength) => new(_start.Row, _start.Column + Length - 1 + additionalLength);
     public Cell GetAmountCell() => new(_start.Row, _start.Column - 1);
     public Cell GetStartCell() => _start;
     public bool Contains(Cell cell)
     {
         return cell.Row == _start.Row && cell.Column >= _start.Column && cell.Column < _start.Column + Length;
     }
-    public (Cell, Cell) GetFarthestCellPerpendicularNeighbors()
+    public (Cell, Cell) GetPerpendicularNeighbors(int length)
     {
-        var col = GetFarthestColumn();
+        var col = _start.Column + length;
         return (new Cell(_start.Row - 1, col), new Cell(_start.Row + 1, col));
     }
 

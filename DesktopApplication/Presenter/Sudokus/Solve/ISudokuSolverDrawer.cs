@@ -8,6 +8,7 @@ namespace DesktopApplication.Presenter.Sudokus.Solve;
 
 public interface ISudokuSolverDrawer : ISudokuDrawer
 {
+    bool FastPossibilityDisplay { set; }
     void ShowPossibilities(int row, int col, IEnumerable<int> possibilities);
     void FillPossibility(int row, int col, int possibility, ChangeColoration coloration);
     void FillCell(int row, int col, ChangeColoration coloration);
