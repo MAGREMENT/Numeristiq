@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -7,7 +8,6 @@ using System.Windows.Media;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
 using DesktopApplication.View.Utility;
-using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Explanation;
 using Model.Sudokus.Player;
@@ -174,6 +174,8 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             UpdateSize();
         }
     }
+
+    public bool FastPossibilityDisplay { get; set; } = false; //TODO
     
     private bool _isSelecting;
 
@@ -206,11 +208,6 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             var cell = ComputeSelectedCell(args.GetPosition(this));
             if(cell is not null) CellAddedToSelection?.Invoke(cell[0], cell[1]);
         };
-    }
-
-    public void SetOptimalCellSize(double space)
-    {
-        PossibilitySize = (int)((space - 4 * BigLineWidth - 6 * SmallLineWidth) / 27);
     }
 
     #region ISudokuDrawer
@@ -270,14 +267,39 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
 
     public void ShowPossibilities(int row, int col, IEnumerable<int> possibilities)
     {
-        foreach (var possibility in possibilities)
+        if (FastPossibilityDisplay)
+        {
+            StringBuilder builder = new();
+            for (int i = 0; i < 9; i += 3)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    var n = i + j + 1;
+                    builder.Append(possibilities.Contains(n) ? (char)('0' + n) : ' ');
+                    if(j < 2) builder.Append(' ');
+                }
+
+                if (i < 6) builder.Append('\n');
+            }
+            
+            Dispatcher.Invoke(() =>
+            {
+                Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _cellSize / 5,
+                    DefaultNumberBrush, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
+                    ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+            });
+        }
+        else
         {
             Dispatcher.Invoke(() =>
             {
-                Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
-                    DefaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
-                        _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
-            });
+                foreach (var possibility in possibilities)
+                {
+                    Layers[NumbersIndex].Add(new TextInRectangleComponent(possibility.ToString(), _possibilitySize * 3 / 4,
+                        DefaultNumberBrush, new Rect(GetLeft(col, possibility), GetTop(row, possibility), _possibilitySize,
+                            _possibilitySize), ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
+                }
+            }); 
         }
     }
 

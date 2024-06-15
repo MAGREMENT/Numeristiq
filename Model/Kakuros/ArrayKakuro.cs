@@ -154,7 +154,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
         return new ArrayKakuro(buffer, new List<IKakuroSum>(_sums));
     }
 
-    public bool AddCellTo(IKakuroSum sum)
+    public bool AddCellTo(IKakuroSum sum) //TODO case where there is a sum below
     {
         if (sum.Length >= 9) return false;
 
@@ -168,14 +168,14 @@ public class ArrayKakuro : IKakuro, ISolvingState
         var (c1, c2) = newSum.GetFarthestCellPerpendicularNeighbors();
         IKakuroSum? s1 = null, s2 = null;
 
-        if (c1.Row >= 0 && c1.Row < RowCount && c1.Column >= 0 && c1.Column <= ColumnCount)
+        if (c1.Row >= 0 && c1.Row < RowCount && c1.Column >= 0 && c1.Column < ColumnCount)
         {
             s1 = newSum.Orientation == Orientation.Horizontal
                 ? _cells[c1.Row, c1.Column].VerticalSum
                 : _cells[c1.Row, c1.Column].HorizontalSum;
         }
         
-        if (c2.Row >= 0 && c2.Row < RowCount && c2.Column >= 0 && c2.Column <= ColumnCount)
+        if (c2.Row >= 0 && c2.Row < RowCount && c2.Column >= 0 && c2.Column < ColumnCount)
         {
             s2 = newSum.Orientation == Orientation.Horizontal
                 ? _cells[c2.Row, c2.Column].VerticalSum
@@ -236,6 +236,8 @@ public class ArrayKakuro : IKakuro, ISolvingState
                 if (fr != RowCount || fc != ColumnCount)
                 {
                     ResizeTo(fr + 1, fc + 1);
+                    //Resize done, no need to remove the cell manually
+                    return true;
                 }
             }
             else

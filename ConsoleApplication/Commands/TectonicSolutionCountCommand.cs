@@ -17,7 +17,7 @@ public class TectonicSolutionCountCommand : Command
     {
         var tectonic = TectonicTranslator.TranslateRdFormat((string)report.GetArgumentValue(SudokuIndex));
 
-        var result = BackTracking.Fill(tectonic, new TectonicPossibilitiesGiver(tectonic),
+        var result = BackTracking.Solutions(tectonic, new TectonicPossibilitiesGiver(tectonic),
             int.MaxValue);
         
         Console.WriteLine($"Number of solutions : {result.Count}\n");

@@ -18,7 +18,7 @@ public class SudokuSolutionCountCommand : Command
     {
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(SudokuIndex));
 
-        var result = BackTracking.Fill(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+        var result = BackTracking.Solutions(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
         
         Console.WriteLine($"Number of solutions : {result.Count}\n");
 

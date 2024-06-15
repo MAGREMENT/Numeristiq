@@ -6,9 +6,9 @@ using Model.Utility.BitSets;
 
 namespace Model.Utility;
 
-public static class BackTracking
+public static class BackTracking //TODO simple fill ?
 {
-    public static IReadOnlyList<Sudoku> Fill(Sudoku start, IPossibilitiesGiver giver, int stopAt)
+    public static IReadOnlyList<Sudoku> Solutions(Sudoku start, IPossibilitiesGiver giver, int stopAt)
     {
         var result = new BackTrackingListResult<Sudoku>();
         Start(result, start, giver, stopAt);
@@ -22,7 +22,7 @@ public static class BackTracking
         return result.Count;
     }
     
-    public static IReadOnlyList<ITectonic> Fill(ITectonic start, IPossibilitiesGiver giver, int stopAt)
+    public static IReadOnlyList<ITectonic> Solutions(ITectonic start, IPossibilitiesGiver giver, int stopAt)
     {
         var result = new BackTrackingListResult<ITectonic>();
         Start(result, start, giver, stopAt);
@@ -69,7 +69,7 @@ public static class BackTracking
     }
 
     private static bool Search(IBackTrackingResult<ITectonic> result, ITectonic current, IPossibilitiesGiver giver,
-        IDictionary<IZone, ReadOnlyBitSet8> zones, TectonicBitmap[] neighbors, int position, int stopAt)
+        IDictionary<IZone, ReadOnlyBitSet8> zones, IReadOnlyList<TectonicBitmap> neighbors, int position, int stopAt)
     {
         var full = current.RowCount * current.ColumnCount;
         for (; position < full; position++)

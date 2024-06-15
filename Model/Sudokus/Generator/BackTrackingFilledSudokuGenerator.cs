@@ -10,7 +10,7 @@ public class BackTrackingFilledSudokuGenerator : IFilledPuzzleGenerator<Sudoku>
 {
     public Sudoku Generate()
     {
-        return BackTracking.Fill(new Sudoku(), new RandomPossibilitiesGiver(), 1)[0];
+        return BackTracking.Solutions(new Sudoku(), new RandomPossibilitiesGiver(), 1)[0];
     }
 
     public Sudoku Generate(out List<Cell> removableCells)

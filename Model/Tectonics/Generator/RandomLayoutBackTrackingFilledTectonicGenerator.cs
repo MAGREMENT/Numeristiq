@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Generic;
+using Model.Core.Generators;
 using Model.Utility;
 
 namespace Model.Tectonics.Generator;
 
-public class RandomEmptyTectonicGenerator : IEmptyTectonicGenerator
+public class RandomLayoutBackTrackingFilledTectonicGenerator : IFilledPuzzleGenerator<ITectonic>
 {
     private const int MinDimensionCount = 2;
     private const int MaxDimensionCount = 10;
@@ -13,7 +14,7 @@ public class RandomEmptyTectonicGenerator : IEmptyTectonicGenerator
     private int _minColumnCount = MinDimensionCount;
     private int _maxRowCount = MaxDimensionCount;
     private int _maxColumnCount = MaxDimensionCount;
-    private Random _random = new();
+    private readonly Random _random = new();
 
     public int MinRowCount
     {
@@ -56,7 +57,7 @@ public class RandomEmptyTectonicGenerator : IEmptyTectonicGenerator
         ITectonic result = new ArrayTectonic(_random.Next(_minRowCount, _maxRowCount),
             _random.Next(_minColumnCount, _maxColumnCount));
 
-        do
+        while(true)
         {
             if (result.Zones.Count > 0) result.ClearZones();
 
@@ -90,9 +91,37 @@ public class RandomEmptyTectonicGenerator : IEmptyTectonicGenerator
                     }
                 }
             }
-        } while (BackTracking.Count(result, new TectonicPossibilitiesGiver(result), 1) == 0);
+
+            var buffer = BackTracking.Solutions(result, new TectonicPossibilitiesGiver(result), 1);
+            if (buffer.Count > 0)
+            {
+                result = buffer[0];
+                break;
+            }
+        }
 
         return result;
+    }
+    
+    public ITectonic Generate(out List<Cell> removableCells)
+    {
+        var t = Generate();
+        removableCells = GetRemovableCells(t);
+        return t;
+    }
+
+    private static List<Cell> GetRemovableCells(ITectonic tectonic)
+    {
+        var list = new List<Cell>(tectonic.RowCount * tectonic.ColumnCount);
+        for (int row = 0; row < tectonic.RowCount; row++)
+        {
+            for (int c = 0; c < tectonic.ColumnCount; c++)
+            {
+                list.Add(new Cell(row, c));
+            }
+        }
+
+        return list;
     }
 
     private static int Enclose(int n)

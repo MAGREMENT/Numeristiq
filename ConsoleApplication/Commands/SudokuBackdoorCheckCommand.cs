@@ -46,7 +46,7 @@ public class SudokuBackdoorCheckCommand : Command
 
         var sudoku = SudokuTranslator.TranslateLineFormat((string)report.GetArgumentValue(StringIndex));
 
-        var solutions = BackTracking.Fill(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
+        var solutions = BackTracking.Solutions(sudoku, ConstantPossibilitiesGiver.Instance, int.MaxValue);
         if (solutions.Count == 0)
         {
             Console.WriteLine("The sudoku has no solution");

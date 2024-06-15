@@ -7,7 +7,7 @@ namespace Tests.Tectonic;
 public class TectonicPuzzleGeneratorTests
 {
     private readonly IPuzzleGenerator<ITectonic> _generator =
-        new RDRTectonicPuzzleGenerator(new BackTrackingFilledTectonicGenerator(new RandomEmptyTectonicGenerator()));
+        new RDRTectonicPuzzleGenerator(new RandomLayoutBackTrackingFilledTectonicGenerator());
 
     [Test]
     public void Test()

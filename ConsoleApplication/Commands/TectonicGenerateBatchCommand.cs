@@ -16,7 +16,7 @@ public class TectonicGenerateBatchCommand : Command
     
     public override string Description => "Generate a determined amount of Sudoku's";
 
-    private readonly RandomEmptyTectonicGenerator _emptyGenerator = new();
+    private readonly RandomLayoutBackTrackingFilledTectonicGenerator _filledGenerator = new();
     private readonly IPuzzleGenerator<ITectonic> _generator;
     
     public TectonicGenerateBatchCommand() : base("GenerateBatch",
@@ -28,7 +28,7 @@ public class TectonicGenerateBatchCommand : Command
         new Option("--min-cc", "Minimum column count", ValueRequirement.Mandatory, ValueType.Int),
         new Option("--max-cc", "Maximum column count", ValueRequirement.Mandatory, ValueType.Int))
     {
-        _generator = new RDRTectonicPuzzleGenerator(new BackTrackingFilledTectonicGenerator(_emptyGenerator));
+        _generator = new RDRTectonicPuzzleGenerator(_filledGenerator);
     }
     
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
@@ -38,29 +38,29 @@ public class TectonicGenerateBatchCommand : Command
         if (report.IsOptionUsed(RowCountIndex))
         {
             var value = (int)report.GetOptionValue(RowCountIndex)!;
-            _emptyGenerator.MinRowCount = value;
-            _emptyGenerator.MaxRowCount = value;
+            _filledGenerator.MinRowCount = value;
+            _filledGenerator.MaxRowCount = value;
         }
         else
         {
             var value = report.GetOptionValue(MinRowCountIndex);
-            if (value is not null) _emptyGenerator.MinRowCount = (int)value;
+            if (value is not null) _filledGenerator.MinRowCount = (int)value;
             value = report.GetOptionValue(MaxRowCountIndex);
-            if (value is not null) _emptyGenerator.MaxRowCount = (int)value;
+            if (value is not null) _filledGenerator.MaxRowCount = (int)value;
         }
         
         if (report.IsOptionUsed(ColumnCountIndex))
         {
             var value = (int)report.GetOptionValue(ColumnCountIndex)!;
-            _emptyGenerator.MinColumnCount = value;
-            _emptyGenerator.MaxColumnCount = value;
+            _filledGenerator.MinColumnCount = value;
+            _filledGenerator.MaxColumnCount = value;
         }
         else
         {
             var value = report.GetOptionValue(MinColumnCountIndex);
-            if (value is not null) _emptyGenerator.MinColumnCount = (int)value;
+            if (value is not null) _filledGenerator.MinColumnCount = (int)value;
             value = report.GetOptionValue(MaxColumnCountIndex);
-            if (value is not null) _emptyGenerator.MaxColumnCount = (int)value;
+            if (value is not null) _filledGenerator.MaxColumnCount = (int)value;
         }
         
         Console.WriteLine("Started generating...");
