@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Player.Actions;
 
-public class PossibilityChangeAction : IPlayerAction
+public class PossibilityChangeAction : ICellAction
 {
     private readonly int _number;
     private readonly PossibilitiesLocation _location;

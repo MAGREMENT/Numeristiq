@@ -3,13 +3,13 @@ using Model.Utility;
 
 namespace Model.Sudokus.Player.Actions;
 
-public class HighlightChangeAction : IPlayerAction
+public class CellHighlightChangeAction : ICellAction
 {
-    private readonly int _color;
+    private readonly HighlightColor _color;
 
-    public HighlightChangeAction(HighlightColor color)
+    public CellHighlightChangeAction(HighlightColor color)
     {
-        _color = (int)color;
+        _color = color;
     }
 
     public bool CanExecute(IReadOnlyPlayerData data, Cell cell)
@@ -17,10 +17,10 @@ public class HighlightChangeAction : IPlayerAction
         return true;
     }
 
-    public IHistoricEvent? Execute(IPlayerData data, Cell cell)
+    public IHistoricEvent Execute(IPlayerData data, Cell cell)
     {
         var old = data.GetHighlightsFor(cell);
-        var newH = old.Contains(_color) ? old - _color : old + _color;
+        var newH = old.ApplyColorToCell(_color);
         data.SetHighlightsFor(cell, newH);
 
         return new HighlightChangeEvent(old, newH, cell);

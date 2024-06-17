@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Model.Core;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Player.HistoricEvents;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -12,7 +11,7 @@ namespace Model.Sudokus.Player;
 public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
 {
     private readonly PlayerCell[,] _cells = new PlayerCell[9, 9];
-    private readonly Dictionary<Cell, ReadOnlyBitSet16> _highlights = new();
+    private readonly Dictionary<Cell, HighlightData> _highlights = new();
     private readonly ActionHistory _actionHistory = new();
     private readonly PlayerTimer _timer = new();
 
@@ -30,7 +29,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
         }
     }
 
-    public bool Execute(IPlayerAction action, IEnumerable<Cell> on)
+    public bool Execute(ICellAction action, IEnumerable<Cell> on)
     {
         var collection = new EventCollection();
         bool changeMade = false;
@@ -48,7 +47,34 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
         return changeMade;
     }
 
-    public bool Execute(IPlayerAction action, Cell on)
+    public bool Execute(ICellAction action, Cell on)
+    {
+        if (!action.CanExecute(this, on)) return false;
+        
+        var e = action.Execute(this, on);
+        if (e is not null) _actionHistory.AddNewEvent(e);
+        return true;
+    }
+    
+    public bool Execute(ICellPossibilityAction action, IEnumerable<CellPossibility> on)
+    {
+        var collection = new EventCollection();
+        bool changeMade = false;
+
+        foreach (var cell in on)
+        {
+            if (action.CanExecute(this, cell))
+            {
+                collection.Add(action.Execute(this, cell));
+                changeMade = true;
+            }
+        }
+        
+        _actionHistory.AddNewEvent(collection);
+        return changeMade;
+    }
+    
+    public bool Execute(ICellPossibilityAction action, CellPossibility on)
     {
         if (!action.CanExecute(this, on)) return false;
         
@@ -57,7 +83,7 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
         return true;
     }
 
-    public bool Execute(IPlayerGlobalAction action)
+    public bool Execute(IGlobalAction action)
     {
         if (!action.CanExecute(this)) return false;
         var e = action.Execute(this);
@@ -120,10 +146,10 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
 
     public void SetCellDataFor(Cell cell, PlayerCell data) => _cells[cell.Row, cell.Column] = data;
 
-    public void SetHighlightsFor(Cell cell, ReadOnlyBitSet16 collection)
+    public void SetHighlightsFor(Cell cell, HighlightData data)
     {
-        if (collection.Count == 0) _highlights.Remove(cell);
-        _highlights[cell] = collection;
+        if (data.Count == 0) _highlights.Remove(cell);
+        _highlights[cell] = data;
     }
 
     public PlayerCell GetCellDataFor(int row, int col) => _cells[row, col];
@@ -136,12 +162,12 @@ public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
         return result;
     }
 
-    public ReadOnlyBitSet16 GetHighlightsFor(Cell cell)
+    public HighlightData GetHighlightsFor(Cell cell)
     {
-        return _highlights.TryGetValue(cell, out var result) ? result : new ReadOnlyBitSet16();
+        return _highlights.TryGetValue(cell, out var result) ? result : new HighlightData();
     }
 
-    public IEnumerable<KeyValuePair<Cell, ReadOnlyBitSet16>> EnumerateHighlights()
+    public IEnumerable<KeyValuePair<Cell, HighlightData>> EnumerateHighlights()
     {
         return _highlights;
     }
@@ -173,7 +199,7 @@ public interface IPlayerData : IReadOnlyPlayerData
 {
     public void SetCellDataFor(int row, int col, PlayerCell data);
     public void SetCellDataFor(Cell cell, PlayerCell data);
-    public void SetHighlightsFor(Cell cell, ReadOnlyBitSet16 collection);
+    public void SetHighlightsFor(Cell cell, HighlightData collection);
 }
 
 public interface IReadOnlyPlayerData
@@ -181,26 +207,5 @@ public interface IReadOnlyPlayerData
     public PlayerCell GetCellDataFor(int row, int col);
     public PlayerCell GetCellDataFor(Cell cell);
     public PlayerCell[,] CopyCellData();
-    public ReadOnlyBitSet16 GetHighlightsFor(Cell cell);
-}
-
-public enum HighlightColor
-{
-    First, Second, Third, Fourth, Fifth, Sixth, Seventh
-}
-
-public static class HighlightColorExtensions
-{
-    public static HighlightColor[] ToColorArray(this ReadOnlyBitSet16 bitSet)
-    {
-        var result = new HighlightColor[bitSet.Count];
-        var cursor = 0;
-        
-        foreach (var i in bitSet.Enumerate(0, 6))
-        {
-            result[cursor++] = (HighlightColor)i;
-        }
-
-        return result;
-    }
+    public HighlightData GetHighlightsFor(Cell cell);
 }

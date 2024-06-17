@@ -3,7 +3,7 @@ using Model.Sudokus.Player;
 
 namespace DesktopApplication.Presenter.Sudokus.Play;
 
-public interface ISudokuPlayView
+public interface ISudokuPlayView : ICanBeDisabled
 {
     ISudokuPlayerDrawer Drawer { get; }
     ISudokuSolverDrawer ClueShower { get; }

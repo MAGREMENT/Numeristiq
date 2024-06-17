@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
@@ -20,6 +19,8 @@ namespace DesktopApplication.View.Sudokus.Pages;
 public partial class SolvePage : ISudokuSolveView
 {
     private readonly SudokuSolvePresenter _presenter;
+
+    private bool _disabled;
     
     public SolvePage(SudokuApplicationPresenter appPresenter)
     {
@@ -36,20 +37,22 @@ public partial class SolvePage : ISudokuSolveView
         SudokuAsString.SetText(s);
     }
 
-    public void DisableSolveActions()
+    public void Disable()
     {
         SolveButton.IsEnabled = false;
         AdvanceButton.IsEnabled = false;
         ChooseStepButton.IsEnabled = false;
         ClearButton.IsEnabled = false;
+        _disabled = true;
     }
 
-    public void EnableSolveActions()
+    public void Enable()
     {
         SolveButton.IsEnabled = true;
         AdvanceButton.IsEnabled = true;
         ChooseStepButton.IsEnabled = true;
         ClearButton.IsEnabled = true;
+        _disabled = false;
     }
 
     public void AddLog(IStep<ISudokuHighlighter> step, StateShown stateShown)
@@ -212,6 +215,8 @@ public partial class SolvePage : ISudokuSolveView
 
     private void DoBoardInput(object sender, KeyEventArgs e)
     {
+        if (_disabled) return;
+        
         if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
         {
             switch (e.Key)

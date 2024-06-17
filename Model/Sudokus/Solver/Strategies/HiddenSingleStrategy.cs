@@ -99,7 +99,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         {
             Unit.Row => new House(_unit, change.Row),
             Unit.Column => new House(_unit, change.Column),
-            Unit.MiniGrid => new House(_unit, change.Row * 3 + change.Column),
+            Unit.MiniGrid => new House(_unit, change.Row / 3 * 3 + change.Column / 3),
             _ => throw new ArgumentOutOfRangeException(nameof(_unit))
         };
 

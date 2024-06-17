@@ -3,7 +3,7 @@ using Model.Sudokus.Solver.Position;
 
 namespace Model.Sudokus.Player.Actions;
 
-public class ComputePossibilitiesAction : IPlayerGlobalAction
+public class ComputePossibilitiesAction : IGlobalAction
 {
     private readonly PossibilitiesLocation _location;
     private GridPositions[]? _buffer;

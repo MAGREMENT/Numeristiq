@@ -5,11 +5,11 @@ namespace Model.Sudokus.Player.HistoricEvents;
 
 public class HighlightChangeEvent : IHistoricEvent
 {
-    private readonly ReadOnlyBitSet16 _from;
-    private readonly ReadOnlyBitSet16 _to;
+    private readonly HighlightData _from;
+    private readonly HighlightData _to;
     private readonly Cell _cell;
 
-    public HighlightChangeEvent(ReadOnlyBitSet16 from, ReadOnlyBitSet16 to, Cell cell)
+    public HighlightChangeEvent(HighlightData from, HighlightData to, Cell cell)
     {
         _from = from;
         _to = to;

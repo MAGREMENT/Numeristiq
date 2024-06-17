@@ -496,43 +496,20 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
 
     #region ISudokuPlayerDrawer
 
-    public void ShowLinePossibilities(int row, int col, IEnumerable<int> possibilities, PossibilitiesLocation location)
+    public void ShowLinePossibilities(int row, int col, IEnumerable<int> possibilities, PossibilitiesLocation location,
+        IEnumerable<(int, HighlightColor)> colors)
     {
-        var builder = new StringBuilder();
-        foreach (var p in possibilities) builder.Append(p);
-
-        var left = GetLeft(col);
-        var width = _cellSize;
-        ComponentHorizontalAlignment ha;
-        int n;
-
-        switch (location)
-        {
-            case PossibilitiesLocation.Bottom :
-                ha = ComponentHorizontalAlignment.Right;
-                n = 7;
-                width -= PossibilityPadding;
-                break;
-            case PossibilitiesLocation.Middle :
-                ha = ComponentHorizontalAlignment.Center;
-                n = 4;
-                break;
-            case PossibilitiesLocation.Top :
-                ha = ComponentHorizontalAlignment.Left;
-                n = 1;
-                width -= PossibilityPadding;
-                left += PossibilityPadding;
-                break;
-            default:
-                ha = ComponentHorizontalAlignment.Center;
-                n = 3;
-                break;
-        }
-
-        Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, DefaultNumberBrush,
-            new Rect(left, GetTop(row, n), width, _possibilitySize), ha, ComponentVerticalAlignment.Center));
+        Layers[NumbersIndex].Add(TextComponentForLinePossibilities(row, col, possibilities, location, colors));
     }
-    
+
+    public void ShowLinePossibilities(int row, int col, IEnumerable<int> possibilities, PossibilitiesLocation location,
+        IEnumerable<(int, HighlightColor)> colors, int outlinePossibility)
+    {
+        var component = TextComponentForLinePossibilities(row, col, possibilities, location, colors);
+        Layers[NumbersIndex].Add(new OutlinedTextInRectangleComponent(component, CursorBrush, 1,
+            (char)('0' + outlinePossibility)));
+    }
+
     public void FillCell(int row, int col, double startAngle, int rotationFactor, params HighlightColor[] colors)
     {
         if (colors.Length == 0) return;
@@ -628,6 +605,51 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     #endregion
 
     #region Private
+    
+    private TextInRectangleComponent TextComponentForLinePossibilities(int row, int col, IEnumerable<int> possibilities,
+        PossibilitiesLocation location, IEnumerable<(int, HighlightColor)> colors)
+    {
+        var builder = new StringBuilder();
+        foreach (var p in possibilities) builder.Append(p);
+
+        var left = GetLeft(col);
+        var width = _cellSize;
+        ComponentHorizontalAlignment ha;
+        int n;
+
+        switch (location)
+        {
+            case PossibilitiesLocation.Bottom :
+                ha = ComponentHorizontalAlignment.Right;
+                n = 7;
+                width -= PossibilityPadding;
+                break;
+            case PossibilitiesLocation.Middle :
+                ha = ComponentHorizontalAlignment.Center;
+                n = 4;
+                break;
+            case PossibilitiesLocation.Top :
+                ha = ComponentHorizontalAlignment.Left;
+                n = 1;
+                width -= PossibilityPadding;
+                left += PossibilityPadding;
+                break;
+            default:
+                ha = ComponentHorizontalAlignment.Center;
+                n = 3;
+                break;
+        }
+
+        var component = new TextInRectangleComponent(builder.ToString(), _possibilitySize / 2, DefaultNumberBrush,
+            new Rect(left, GetTop(row, n), width, _possibilitySize), ha, ComponentVerticalAlignment.Center);
+        
+        foreach (var entry in colors)
+        {
+            component.SetForegroundFor(App.Current.ThemeInformation.ToBrush(entry.Item2), (char)('0' + entry.Item1));
+        }
+
+        return component;
+    }
 
     private void AddShortenedLine(Point from, Point to, bool isWeak)
     {

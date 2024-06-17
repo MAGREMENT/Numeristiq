@@ -33,9 +33,13 @@ public partial class App : IGlobalApplicationView
         Resources["Background2"] = ThemeInformation.ToBrush(t.Background2);
         Resources["Background3"] = ThemeInformation.ToBrush(t.Background3);
         Resources["Primary1"] = ThemeInformation.ToBrush(t.Primary1);
+        Resources["Primary1Color"] = ThemeInformation.ToColor(t.Primary1);
         Resources["Primary2"] = ThemeInformation.ToBrush(t.Primary2);
+        Resources["Primary2Color"] = ThemeInformation.ToColor(t.Primary2);
         Resources["Secondary1"] = ThemeInformation.ToBrush(t.Secondary1);
+        Resources["Secondary1Color"] = ThemeInformation.ToColor(t.Secondary1);
         Resources["Secondary2"] = ThemeInformation.ToBrush(t.Secondary2);
+        Resources["Secondary2Color"] = ThemeInformation.ToColor(t.Secondary2);
         Resources["Accent"] = ThemeInformation.ToBrush(t.Accent);
         Resources["Text"] = ThemeInformation.ToBrush(t.Text);
         Resources["ThumbColor"] = ThemeInformation.ToColor(t.Text);

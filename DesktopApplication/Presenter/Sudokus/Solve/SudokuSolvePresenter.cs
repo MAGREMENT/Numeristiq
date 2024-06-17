@@ -19,7 +19,7 @@ namespace DesktopApplication.Presenter.Sudokus.Solve;
 public class SudokuSolvePresenter : ICommitApplier
 {
     private readonly ISudokuSolveView _view;
-    private readonly SolveActionEnabler _enabler;
+    private readonly Disabler _enabler;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly Settings _settings;
     private readonly IStrategyRepositoryUpdater _updater;
@@ -38,7 +38,7 @@ public class SudokuSolvePresenter : ICommitApplier
     public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings, IStrategyRepositoryUpdater updater)
     {
         _view = view;
-        _enabler = new SolveActionEnabler(_view);
+        _enabler = new Disabler(_view);
         _translator = new SudokuHighlighterTranslator(_view.Drawer, settings);
         _solver = solver;
         _settings = settings;
@@ -79,7 +79,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public async void Solve(bool stopAtProgress)
     {
-        _enabler.DisableActions(1);
+        _enabler.Disable(1);
         
         _solveTracker ??= new UIUpdaterTracker(this, true);
         _solveTracker.UpdateLogs = true;
@@ -87,12 +87,12 @@ public class SudokuSolvePresenter : ICommitApplier
         await Task.Run(() => _solver.Solve(stopAtProgress));
         _solveTracker.Detach();
 
-        _enabler.EnableActions(1);
+        _enabler.Enable(1);
     }
 
     public async Task<ChooseStepPresenterBuilder> ChooseStep()
     {
-        _enabler.DisableActions(2);
+        _enabler.Disable(2);
         
         _solveTracker ??= new UIUpdaterTracker(this, false);
         _solveTracker.UpdateLogs = false;
@@ -105,7 +105,7 @@ public class SudokuSolvePresenter : ICommitApplier
 
     public void OnStoppedChoosingStep()
     {
-        _enabler.EnableActions(2);
+        _enabler.Enable(2);
     }
 
     public void Clear()

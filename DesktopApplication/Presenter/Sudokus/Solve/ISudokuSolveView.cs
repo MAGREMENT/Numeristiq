@@ -6,13 +6,11 @@ using Model.Sudokus.Solver;
 
 namespace DesktopApplication.Presenter.Sudokus.Solve;
 
-public interface ISudokuSolveView
+public interface ISudokuSolveView : ICanBeDisabled
 {
     ISudokuSolverDrawer Drawer { get; }
     
     void SetSudokuAsString(string s);
-    void DisableSolveActions();
-    void EnableSolveActions();
     void AddLog(IStep<ISudokuHighlighter> step, StateShown _shown);
     void ClearLogs();
     void OpenLog(int index);

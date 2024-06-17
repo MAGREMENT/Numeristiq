@@ -7,9 +7,13 @@
         <Brush x:Key="Background2">#1C1C2C</Brush>
         <Brush x:Key="Background3">#272742</Brush>
         <Brush x:Key="Primary1">#FC880B</Brush>
+	    <Color x:Key="Primary1Color">#FC880B</Color>
         <Brush x:Key="Primary2">#EE810C</Brush>
+	    <Color x:Key="Primary2Color">#EE810C</Color>
         <Brush x:Key="Secondary1">#F52A0A</Brush>
+	    <Color x:Key="Secondary1Color">#F52A0A</Color>
         <Brush x:Key="Secondary2">#E8280B</Brush>
+	    <Color x:Key="Secondary2Color">#E8280B</Color>
         <Brush x:Key="Accent">#F50EE2</Brush>
 	    <Brush x:Key="Text">White</Brush>
 	    <Color x:Key="ThumbColor">White</Color>
@@ -24,6 +28,40 @@
 	    <Brush x:Key="DifficultyExtreme">Purple</Brush>
 	    <Brush x:Key="DifficultyInhuman">SlateBlue</Brush>
 	    <Brush x:Key="DifficultyByTrial">White</Brush>
+	    
+	    <Style TargetType="Button" x:Key="PrimaryGradientButton">
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="Button">
+					    <Border CornerRadius="3" Padding="12, 8,12,8" x:Name="Border">
+						    <Border.Background>
+							    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+								    <GradientStop Color="{DynamicResource Primary1Color}" Offset="0.0"/>
+								    <GradientStop Color="{DynamicResource Secondary2Color}" Offset="1.0"/>
+							    </LinearGradientBrush>
+						    </Border.Background>
+						    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False"/>
+					    </Border>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsEnabled" Value="False">
+							    <Setter TargetName="Border" Property="Background" Value="{DynamicResource Disabled}"/>
+						    </Trigger>
+						    <MultiTrigger>
+							    <MultiTrigger.Conditions>
+								    <Condition Property="IsEnabled" Value="True"/>
+								    <Condition Property="IsMouseOver" Value="True"/>
+							    </MultiTrigger.Conditions>
+							    <MultiTrigger.Setters>
+								    <!--TODO-->
+							    </MultiTrigger.Setters>
+						    </MultiTrigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
 	    
 	    <Style TargetType="Button" x:Key="BorderButton">
 		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>

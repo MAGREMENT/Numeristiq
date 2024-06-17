@@ -277,12 +277,14 @@ public class TextInRectangleComponent : IDrawableComponent
 {
     protected static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
     protected const FlowDirection Flow = FlowDirection.LeftToRight;
-    protected static readonly Typeface Typeface = new("Lucida Sans Typewriter");
+    protected static readonly Typeface Typeface = new("Lucida Sans Typewriter"); //TODO to setting (lockable)
     
     protected FormattedText _text;
-    private readonly Rect _rect;
-    private readonly ComponentHorizontalAlignment _horizontalAlignment;
-    private readonly ComponentVerticalAlignment _verticalAlignment;
+    protected readonly Rect _rect;
+    protected readonly ComponentHorizontalAlignment _horizontalAlignment;
+    protected readonly ComponentVerticalAlignment _verticalAlignment;
+
+    public string Text => _text.Text;
 
     public TextInRectangleComponent(string text, double size, Brush foreground, Rect rect,
         ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment)
@@ -291,6 +293,22 @@ public class TextInRectangleComponent : IDrawableComponent
         _rect = rect;
         _horizontalAlignment = horizontalAlignment;
         _verticalAlignment = verticalAlignment;
+    }
+
+    protected TextInRectangleComponent(TextInRectangleComponent component)
+    {
+        _text = component._text;
+        _rect = component._rect;
+        _horizontalAlignment = component._horizontalAlignment;
+        _verticalAlignment = component._verticalAlignment;
+    }
+
+    public void SetForegroundFor(Brush brush, char letter)
+    {
+        for (int i = 0; i < _text.Text.Length; i++)
+        {
+            if(_text.Text[i] == letter) _text.SetForegroundBrush(brush, i, 1);
+        }
     }
 
     public virtual void Draw(DrawingContext context, bool withGuidelines)
@@ -305,6 +323,55 @@ public class TextInRectangleComponent : IDrawableComponent
     public void SetBrush(Brush brush)
     {
         _text.SetForegroundBrush(brush);
+    }
+}
+
+public class OutlinedTextInRectangleComponent : TextInRectangleComponent
+{
+    private readonly Brush _borderBrush;
+    private readonly double _strokeWidth;
+    private readonly List<int> _indexes = new();
+    
+    public OutlinedTextInRectangleComponent(string text, double size, Brush foreground, Rect rect,
+        ComponentHorizontalAlignment horizontalAlignment, ComponentVerticalAlignment verticalAlignment,
+        Brush borderBrush, double strokeWidth, char letter)
+        : base(text, size, foreground, rect, horizontalAlignment, verticalAlignment)
+    {
+        _borderBrush = borderBrush;
+        _strokeWidth = strokeWidth;
+        
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (text[i] == letter) _indexes.Add(i);
+        }
+    }
+
+    public OutlinedTextInRectangleComponent(TextInRectangleComponent baseComponent, Brush borderBrush,
+        double strokeWidth, char letter) : base(baseComponent)
+    {
+        _borderBrush = borderBrush;
+        _strokeWidth = strokeWidth;
+        
+        for (int i = 0; i < baseComponent.Text.Length; i++)
+        {
+            if (baseComponent.Text[i] == letter) _indexes.Add(i);
+        }
+    }
+
+    public override void Draw(DrawingContext context, bool withGuidelines)
+    {
+        var deltaX = (_rect.Width - _text.Width) / 2;
+        var deltaY = (_rect.Height - _text.Height) / 2;
+
+        base.Draw(context, withGuidelines);
+        
+        var point = new Point(_rect.X + deltaX * (int)_horizontalAlignment,
+            _rect.Y + deltaY * (int)_verticalAlignment);
+        foreach (var index in _indexes)
+        {
+            var geometry = _text.BuildHighlightGeometry(point, index, 1);
+            context.DrawGeometry(null, new Pen(_borderBrush, _strokeWidth), geometry);
+        }
     }
 }
 

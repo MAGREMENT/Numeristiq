@@ -20,6 +20,9 @@ public partial class PlayPage : ISudokuPlayView
     private static readonly Geometry PlayGeometry = Geometry.Parse("M 17,5 33,15 17,25 Z");
     
     private readonly SudokuPlayPresenter _presenter;
+
+    private bool _disabled;
+    
     public PlayPage(SudokuApplicationPresenter appPresenter)
     {
         InitializeComponent();
@@ -64,7 +67,7 @@ public partial class PlayPage : ISudokuPlayView
 
     public void ShowClueState(bool isShowing)
     {
-        ClueButton.Dispatcher.Invoke(() => ClueButton.Content = isShowing ? "Hide" : "Show");
+        ClueButton.Dispatcher.Invoke(() => ClueButton.Content = isShowing ? "Hide Clue" : "Show Clue");
     }
 
     public void ShowClueText(string text)
@@ -114,6 +117,8 @@ public partial class PlayPage : ISudokuPlayView
     
     private void DoBoardInput(object sender, KeyEventArgs e)
     {
+        if (_disabled) return;
+        
         if (e.KeyboardDevice.Modifiers == ModifierKeys.Control)
         {
             switch (e.Key)
@@ -246,5 +251,72 @@ public partial class PlayPage : ISudokuPlayView
     private void ComputePossibilities(object sender, RoutedEventArgs e)
     {
         _presenter.ComputePossibilities();
+    }
+
+    private void Select1s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(1);
+    }
+    
+    private void Select2s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(2);
+    }
+    
+    private void Select3s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(3);
+    }
+    
+    private void Select4s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(4);
+    }
+    
+    private void Select5s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(5);
+    }
+    
+    private void Select6s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(6);
+    }
+    
+    private void Select7s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(7);
+    }
+    
+    private void Select8s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(8);
+    }
+    
+    private void Select9s(object sender, RoutedEventArgs e)
+    {
+        _presenter.SelectAllPossibilities(9);
+    }
+
+    public void Enable()
+    {
+        ComputePossibilitiesButton.IsEnabled = true;
+        ClueButton.IsEnabled = true;
+        TimerGrid.IsEnabled = true;
+        ColorGrid.IsEnabled = true;
+        ForwardButton.IsEnabled = true;
+        BackButton.IsEnabled = true;
+        _disabled = false;
+    }
+
+    public void Disable()
+    {
+        ComputePossibilitiesButton.IsEnabled = false;
+        ClueButton.IsEnabled = false;
+        TimerGrid.IsEnabled = false;
+        ColorGrid.IsEnabled = false;
+        ForwardButton.IsEnabled = false;
+        BackButton.IsEnabled = false;
+        _disabled = true;
     }
 }

@@ -3,7 +3,7 @@ using Model.Sudokus.Player.HistoricEvents;
 
 namespace Model.Sudokus.Player.Actions;
 
-public class PasteAction : IPlayerGlobalAction
+public class PasteAction : IGlobalAction
 {
     private readonly PossibilitiesLocation _location;
     private readonly ISolvingState _state;

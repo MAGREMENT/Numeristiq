@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Player.Actions;
 
-public class SolutionChangeAction : IPlayerAction
+public class SolutionChangeAction : ICellAction
 {
     private readonly int _number;
 

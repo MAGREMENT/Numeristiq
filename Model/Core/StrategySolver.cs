@@ -144,6 +144,8 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
                 result = commit.Builder.BuildClue(commit.Changes, state);
             }
             StrategyEnded?.Invoke(current, i, 0, 0);
+
+            if (result is not null) break;
         }
         
         ChangeBuffer.Commits.Clear();

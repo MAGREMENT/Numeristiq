@@ -58,10 +58,10 @@ public interface IKakuroSum : IEnumerable<Cell>
     
     Cell this[int index] { get; }
 
-    IKakuroSum WithLength(int length); //TODO check amount validity
-    IKakuroSum MoveBack(int count); //TODO check amount validity
-    IKakuroSum WithAmount(int amount); //TODO check amount validity
-    (IKakuroSum?, IKakuroSum?) DivideAround(Cell cell); //TODO check amount validity
+    IKakuroSum WithLength(int length);
+    IKakuroSum MoveBack(int count);
+    IKakuroSum WithAmount(int amount);
+    (IKakuroSum?, IKakuroSum?) DivideAround(Cell cell);
 }
 
 public enum Orientation
