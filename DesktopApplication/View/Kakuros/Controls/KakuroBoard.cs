@@ -191,6 +191,8 @@ public class KakuroBoard : DrawingBoard, ISizeOptimizable, IKakuroSolverDrawer
             {
                 CellSelected?.Invoke(result.Item1.Value, result.Item2);
             }
+
+            args.Handled = true;
         };
     }
 

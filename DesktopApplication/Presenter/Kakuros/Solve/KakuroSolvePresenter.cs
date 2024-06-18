@@ -50,33 +50,50 @@ public class KakuroSolvePresenter
         _mode = mode;
     }
 
+    public void AddDefault()
+    {
+        if (_mode != EditMode.Create || _solver.Kakuro is { RowCount: > 0, ColumnCount: > 0 }) return;
+
+        var k = IKakuro.Default(Orientation.Horizontal);
+        _solver.SetKakuro(k);
+        ShowNewKakuro(k);
+    }
+
     public void SelectCell(int row, int col)
     {
-        if (_mode == EditMode.Default)
+        switch (_mode)
         {
-            EnterAmount();
+            case EditMode.Default :
+                EnterAmount();
         
-            var cell = new Cell(row, col);
-            if (cell == _selectedCell)
-            {
-                _selectedCell = null;
-                _view.Drawer.ClearCursor();
-            }
-            else
-            {
-                _selectedCell = cell;
-                _view.Drawer.PutCursorOnNumberCell(row, col);
-            }
+                var cell = new Cell(row, col);
+                if (cell == _selectedCell)
+                {
+                    _selectedCell = null;
+                    _view.Drawer.ClearCursor();
+                }
+                else
+                {
+                    _selectedCell = cell;
+                    _view.Drawer.PutCursorOnNumberCell(row, col);
+                }
         
-            _view.Drawer.Refresh();
-        }
-        else
-        {
-            var copy = _solver.Kakuro.Copy();
-            if(!copy.RemoveCell(new Cell(row, col))) return;
+                _view.Drawer.Refresh();
+                break;
+            case EditMode.Edit :
+                var copy = _solver.Kakuro.Copy();
+                if(!copy.RemoveCell(new Cell(row, col))) return;
         
-            _solver.SetKakuro(copy);
-            ShowNewKakuro(copy);
+                _solver.SetKakuro(copy);
+                ShowNewKakuro(copy);
+                break;
+            case EditMode.Create :
+                var k = _solver.Kakuro.Copy();
+                if (!k.AddSumTo(new Cell(row, col))) return;
+                
+                _solver.SetKakuro(k);
+                ShowNewKakuro(k);
+                break;
         }
     }
 
@@ -86,27 +103,29 @@ public class KakuroSolvePresenter
 
         var sum = _solver.Kakuro.FindSum(new Cell(row, col));
 
-        if (_mode == EditMode.Default)
+        switch (_mode)
         {
-            if (sum is null || sum.Equals(_selectedSum)) EnterAmount();
-            else
-            {
-                _selectedSum = sum;
-                _bufferedAmount = sum.Amount;
-                _view.Drawer.PutCursorOnAmountCell(row, col, sum.Orientation);
-            }
+            case EditMode.Default :
+                if (sum is null || sum.Equals(_selectedSum)) EnterAmount();
+                else
+                {
+                    _selectedSum = sum;
+                    _bufferedAmount = sum.Amount;
+                    _view.Drawer.PutCursorOnAmountCell(row, col, sum.Orientation);
+                }
             
-            _view.Drawer.Refresh();
-        }
-        else
-        {
-            if (sum is null) return;
+                _view.Drawer.Refresh();
+                break;
+            case EditMode.Edit :
+                if (sum is null) return;
             
-            var copy = _solver.Kakuro.Copy();
-            if (!copy.AddCellTo(sum)) return;
+                var copy = _solver.Kakuro.Copy();
+                if (!copy.AddCellTo(sum)) return;
         
-            _solver.SetKakuro(copy);
-            ShowNewKakuro(copy);
+                _solver.SetKakuro(copy);
+                ShowNewKakuro(copy);
+                break;
+            case EditMode.Create : break;
         }
     }
 
@@ -206,5 +225,5 @@ public class KakuroSolvePresenter
 
 public enum EditMode
 {
-    Default, Edit
+    Default, Edit, Create
 }

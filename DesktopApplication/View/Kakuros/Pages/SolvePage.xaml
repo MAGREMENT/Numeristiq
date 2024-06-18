@@ -14,7 +14,7 @@
         </Grid.ColumnDefinitions>
         
         <controls:SizeOptimizedContentControl Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                              Width="740" Height="740" x:Name="ContentControl">
+                                              Width="740" Height="740" x:Name="ContentControl" MouseDown="CreateDefault">
             <controls:SizeOptimizedContentControl.OptimizableContent>
                 <c:KakuroBoard NumberLineBrush="{DynamicResource Text}" BackgroundBrush="Transparent"
                                DefaultNumberBrush="{DynamicResource Text}" AmountLineBrush="{DynamicResource Accent}"
@@ -37,6 +37,11 @@
             <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
                          Checked="ModeToEdit" Style="{StaticResource ArrowRadioButton}">
                 Edit
+            </RadioButton>
+            
+            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
+                         Checked="ModeToCreate" Style="{StaticResource ArrowRadioButton}">
+                Create
             </RadioButton>
             <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
                     Click="Solve">Solve</Button>

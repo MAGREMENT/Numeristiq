@@ -16,8 +16,19 @@ public interface IKakuro : IReadOnlyKakuro
     }
     
     bool AddCellTo(IKakuroSum sum);
+    bool AddSumTo(Cell cell);
     bool RemoveCell(Cell cell);
     bool ReplaceAmount(IKakuroSum sum, int amount);
+
+    static IKakuro Default(Orientation orientation)
+    {
+        var result = new ArrayKakuro();
+        result.AddSum(orientation == Orientation.Horizontal
+            ? new HorizontalKakuroSum(new Cell(0, 0), 1, 1)
+            : new VerticalKakuroSum(new Cell(0, 0), 1, 1));
+
+        return result;
+    }
 }
 
 public interface IReadOnlyKakuro
@@ -58,10 +69,10 @@ public interface IKakuroSum : IEnumerable<Cell>
     
     Cell this[int index] { get; }
 
-    IKakuroSum WithLength(int length);
-    IKakuroSum MoveBack(int count);
-    IKakuroSum WithAmount(int amount);
-    (IKakuroSum?, IKakuroSum?) DivideAround(Cell cell);
+    static bool AreSame(IKakuroSum sum, IKakuroSum s) => s.Length == sum.Length 
+                                                         && s.Orientation == sum.Orientation 
+                                                         && s.Amount == sum.Amount
+                                                         && s.GetStartCell() == sum.GetStartCell();
 }
 
 public enum Orientation
