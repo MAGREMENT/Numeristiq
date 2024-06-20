@@ -85,7 +85,7 @@ public static class KakuroTranslator
                     : new VerticalKakuroSum(new Cell(valuesArray[0], valuesArray[1]),
                         valuesArray[2], buffer);
 
-                result.AddSum(toAdd);
+                result.ForceSum(toAdd);
             }
             
             if(index == -1) return result;

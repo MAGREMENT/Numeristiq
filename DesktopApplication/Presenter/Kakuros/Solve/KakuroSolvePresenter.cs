@@ -52,7 +52,7 @@ public class KakuroSolvePresenter
 
     public void AddDefault()
     {
-        if (_mode != EditMode.Create || _solver.Kakuro is { RowCount: > 0, ColumnCount: > 0 }) return;
+        if (_mode != EditMode.Edit || _solver.Kakuro is { RowCount: > 0, ColumnCount: > 0 }) return;
 
         var k = IKakuro.Default(Orientation.Horizontal);
         _solver.SetKakuro(k);
@@ -87,13 +87,6 @@ public class KakuroSolvePresenter
                 _solver.SetKakuro(copy);
                 ShowNewKakuro(copy);
                 break;
-            case EditMode.Create :
-                var k = _solver.Kakuro.Copy();
-                if (!k.AddSumTo(new Cell(row, col))) return;
-                
-                _solver.SetKakuro(k);
-                ShowNewKakuro(k);
-                break;
         }
     }
 
@@ -125,7 +118,6 @@ public class KakuroSolvePresenter
                 _solver.SetKakuro(copy);
                 ShowNewKakuro(copy);
                 break;
-            case EditMode.Create : break;
         }
     }
 
@@ -225,5 +217,5 @@ public class KakuroSolvePresenter
 
 public enum EditMode
 {
-    Default, Edit, Create
+    Default, Edit
 }

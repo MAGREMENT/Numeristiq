@@ -34,7 +34,9 @@ public class ArrayKakuro : IKakuro, ISolvingState
         _cells = cells;
         _sums = sums;
     }
-    
+
+    #region Gettings
+
     public int GetSolutionCount()
     {
         int total = 0;
@@ -63,7 +65,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
         if (c.VerticalSum is not null) yield return c.VerticalSum;
         if (c.HorizontalSum is not null) yield return c.HorizontalSum;
     }
-
+    
     public IKakuroSum? VerticalSumFor(Cell cell)
     {
         return _cells[cell.Row, cell.Column].VerticalSum;
@@ -85,46 +87,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
         return result;
     }
-
-    public bool AddSum(IKakuroSum sum)
-    {
-        if (KakuroCellUtility.MaxAmountFor(sum.Length) < sum.Amount) return false;
-        
-        var amountCell = sum.GetAmountCell();
-        if (amountCell is { Row: >= 0, Column: >= 0 } && amountCell.Row < RowCount &&
-            amountCell.Column < ColumnCount && _cells[amountCell.Row, amountCell.Column].IsUsed()) return false;
-        
-        foreach (var cell in sum)
-        {
-            if (cell.Row < 0 || cell.Column < 0) return false;
-        }
-
-        AddSumUnchecked(sum);
-        return true;
-    }
-
-    public void AddSumUnchecked(IKakuroSum sum)
-    {
-        var kc = _cells[sum.GetStartCell().Row, sum.GetStartCell().Column];
-        if (sum.Orientation == Orientation.Horizontal)
-        {
-            if (kc.HorizontalSum is not null && IKakuroSum.AreSame(kc.HorizontalSum, sum))
-            {
-                kc.HorizontalSum.SetAmount(sum.Amount);
-                return;
-            }
-        }
-        else if (kc.VerticalSum is not null && IKakuroSum.AreSame(kc.VerticalSum, sum))
-        {
-            kc.VerticalSum.SetAmount(sum.Amount);
-            return;
-        }
-        
-        var s = Cast(sum);
-        _sums.Add(s);
-        UpdateAfterAddition(s);
-    }
-
+    
     public IKakuroSum? FindSum(Cell amountCell)
     {
         var cell = new Cell(amountCell.Row + 1, amountCell.Column);
@@ -163,7 +126,128 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
         return new ArrayKakuro(buffer, new List<IArrayKakuroSum>(_sums));
     }
+    
+    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
+    {
+        return new ReadOnlyBitSet16();
+    }
 
+    public IEnumerable<Cell> EnumerateCells()
+    {
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                if (_cells[row, col].IsUsed()) yield return new Cell(row, col);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Setting
+
+    public bool AddSum(IKakuroSum sum)
+    {
+        for (int i = 0; i < sum.Length; i++)
+        {
+            var c = sum[i];
+            if (c.Row < 0 || c.Column < 0) return false;
+            
+            if (c.Row >= RowCount || c.Column >= ColumnCount) continue;
+            
+            //if (FindSum(c) is not null) return false; TODO check for amount cell
+
+            var kc = _cells[c.Row, c.Column];
+            if (i == 0)
+            {
+                if (sum.Orientation == Orientation.Horizontal)
+                {
+                    if (kc.HorizontalSum is not null && IKakuroSum.AreSame(kc.HorizontalSum, sum))
+                    {
+                        kc.HorizontalSum.SetAmount(sum.Amount);
+                        return true;
+                    }
+                }
+                else if (kc.VerticalSum is not null && IKakuroSum.AreSame(kc.VerticalSum, sum))
+                {
+                    kc.VerticalSum.SetAmount(sum.Amount);
+                    return true;
+                }
+            }
+
+            if (kc.GetSum(sum.Orientation) is not null) return false;
+        }
+        
+        AddSumUnchecked(Cast(sum));
+        return true;
+    }
+
+    public void ForceSum(IKakuroSum sum)
+    {
+        for (int i = 0; i < sum.Length; i++)
+        {
+            var c = sum[i];
+            if (c.Row < 0 || c.Column < 0) return;
+            
+            if (c.Row >= RowCount || c.Column >= ColumnCount) continue;
+            
+            /*var s = FindSum(c);
+            if (s is not null) RemoveSum(s); TODO check for amount cell*/
+
+            var kc = _cells[c.Row, c.Column];
+            if (i == 0)
+            {
+                if (sum.Orientation == Orientation.Horizontal)
+                {
+                    if (kc.HorizontalSum is not null && IKakuroSum.AreSame(kc.HorizontalSum, sum))
+                    {
+                        kc.HorizontalSum.SetAmount(sum.Amount);
+                        return;
+                    }
+                }
+                else if (kc.VerticalSum is not null && IKakuroSum.AreSame(kc.VerticalSum, sum))
+                {
+                    kc.VerticalSum.SetAmount(sum.Amount);
+                    return;
+                }
+            }
+
+            var s = kc.GetSum(sum.Orientation);
+            if (s is not null) RemoveSum(s);
+        }
+        
+        AddSumUnchecked(Cast(sum));
+    }
+    
+    public bool RemoveSum(IKakuroSum sum)
+    {
+        var index = IndexOf(sum);
+        if (index == -1) return false;
+
+        _sums.RemoveAt(index);
+        if (sum.Orientation == Orientation.Horizontal)
+        {
+            foreach (var cell in sum)
+            {
+                _cells[cell.Row, cell.Column] -= null;
+                var s = _cells[cell.Row, cell.Column].VerticalSum;
+                if(s is not null) RemoveCellFromSum(cell, s);
+            }
+        }
+        else
+        {
+            foreach (var cell in sum)
+            {
+                _cells[cell.Row, cell.Column] |= null;
+                var s = _cells[cell.Row, cell.Column].HorizontalSum;
+                if(s is not null) RemoveCellFromSum(cell, s);
+            }
+        }
+
+        return true;
+    }
+    
     public bool AddCellTo(IKakuroSum sum)
     {
         if (sum.Length >= 9) return false;
@@ -183,23 +267,23 @@ public class ArrayKakuro : IKakuro, ISolvingState
             }
         }
 
-        var newSum = _sums[index].WithLength(sum.Length + lengthAdded);
-        _sums[index] = newSum;
-        UpdateAfterAddition(newSum);
+        var newSum = _sums[index];
+        newSum.AddToLength(lengthAdded);
+        ReplaceCellSums(newSum, newSum.Length - lengthAdded, newSum.Length); 
 
         var (c1, c2) = newSum.GetPerpendicularNeighbors(sum.Length);
         IArrayKakuroSum? s1 = null, s2 = null;
 
         if (c1.Row >= 0 && c1.Row < RowCount && c1.Column >= 0 && c1.Column < ColumnCount)
         {
-            s1 = newSum.Orientation == Orientation.Horizontal
+            s1 = sum.Orientation == Orientation.Horizontal
                 ? _cells[c1.Row, c1.Column].VerticalSum
                 : _cells[c1.Row, c1.Column].HorizontalSum;
         }
         
         if (c2.Row >= 0 && c2.Row < RowCount && c2.Column >= 0 && c2.Column < ColumnCount)
         {
-            s2 = newSum.Orientation == Orientation.Horizontal
+            s2 = sum.Orientation == Orientation.Horizontal
                 ? _cells[c2.Row, c2.Column].VerticalSum
                 : _cells[c2.Row, c2.Column].HorizontalSum;
         }
@@ -213,57 +297,63 @@ public class ArrayKakuro : IKakuro, ISolvingState
                 _sums.Remove(s2);
             }
             
-            var newS1 = s1.WithLength(s1.Length + 1 + additionalLength);
-            _sums[_sums.IndexOf(s1)] = newS1;
-            ReplaceCellSums(newS1);
+            s1.AddToLength(1 + additionalLength);
+            ReplaceCellSums(s1, s1.Length - additionalLength, s1.Length);
         }
         else if (s2 is not null)
         {
-            var newS2 = s2.MoveBack(1);
-            _sums[_sums.IndexOf(s2)] = newS2;
-            ReplaceCellSums(newS2);
+            s2.MoveBack(1);
+            ReplaceCellSums(s2, 0, 1);
+        }
+        else
+        {
+            IArrayKakuroSum s;
+            var fc = newSum.GetFarthestCell(0);
+            if (sum.Orientation == Orientation.Horizontal)
+            {
+                s = new HorizontalKakuroSum(fc, 1, 1);
+                _sums.Add(s);
+                _cells[fc.Row, fc.Column] -= s;
+            }
+            else
+            {
+                s = new VerticalKakuroSum(fc, 1, 1);
+                _sums.Add(s);
+                _cells[fc.Row, fc.Column] |= s;
+            }
         }
 
         return true;
     }
 
-    public bool AddSumTo(Cell cell) //TODO fix when bottom
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="cell"></param>
+    /// <param name="sum"></param>
+    /// <returns>True if the cell was totally removed</returns>
+    private bool RemoveCellFromSum(Cell cell, IKakuroSum sum)
     {
-        var kc = _cells[cell.Row, cell.Column];
-        if (kc.HorizontalSum is null)
+        var index = IndexOf(sum);
+        if (index == -1) return false;
+
+        var sums = _sums[index].DivideAround(cell);
+
+        if (sums.Item1 is not null)
         {
-            if (kc.VerticalSum is not null)
-            {
-                if (cell.Column > 0 && _cells[cell.Row, cell.Column - 1].IsUsed()) return false;
-
-                var length = 1;
-                while (cell.Column + length < ColumnCount && _cells[cell.Row, cell.Column + length].IsUsed())
-                {
-                    length++;
-                }
-
-                var sum = new HorizontalKakuroSum(cell, KakuroCellUtility.MinAmountFor(length), length);
-                _sums.Add(sum);
-                ReplaceCellSums(sum);
-
-                return true;
-            }
+            _sums[index] = sums.Item1;
+            ReplaceCellSums(sums.Item1);
         }
-        else if (kc.VerticalSum is null)
+        else _sums.RemoveAt(index);
+
+        if (sums.Item2 is null) 
+        { 
+            if (ResizeIfNeeded()) return true;
+        }
+        else
         {
-            if (cell.Row > 0 && _cells[cell.Row - 1, cell.Row].IsUsed()) return false;
-
-            var length = 1;
-            while (cell.Row + length < RowCount && _cells[cell.Row + length, cell.Column].IsUsed())
-            {
-                length++;
-            }
-
-            var sum = new VerticalKakuroSum(cell, KakuroCellUtility.MinAmountFor(length), length);
-            _sums.Add(sum);
-            ReplaceCellSums(sum);
-
-            return true;
+            _sums.Add(sums.Item2);
+            ReplaceCellSums(sums.Item2);
         }
 
         return false;
@@ -277,32 +367,12 @@ public class ArrayKakuro : IKakuro, ISolvingState
         
         foreach (var sum in SumsFor(cell))
         {
-            var index = IndexOf(sum);
-            if (index == -1) continue;
-
-            var sums = _sums[index].DivideAround(cell);
-
-            if (sums.Item1 is not null)
-            {
-                _sums[index] = sums.Item1;
-                ReplaceCellSums(sums.Item1);
-            }
-            else _sums.RemoveAt(index);
-
-            if (sums.Item2 is null) 
-            { 
-                if (ResizeIfNeeded()) stillNeedRemoval = false;
-            }
-            else
-            {
-                _sums.Add(sums.Item2);
-                ReplaceCellSums(sums.Item2);
-            }
+            if (RemoveCellFromSum(cell, sum)) stillNeedRemoval = false;
         }
 
         if (stillNeedRemoval)
         {
-            _cells[cell.Row, cell.Column] += null;
+            _cells[cell.Row, cell.Column] |= null;
             _cells[cell.Row, cell.Column] -= null; 
         }
 
@@ -318,18 +388,96 @@ public class ArrayKakuro : IKakuro, ISolvingState
         return true;
     }
 
-    public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
-    {
-        return new ReadOnlyBitSet16();
-    }
+    #endregion
 
-    public IEnumerable<Cell> EnumerateCells()
+
+    #region Private
+
+    private void AddSumUnchecked(IArrayKakuroSum sum)
     {
-        for (int row = 0; row < RowCount; row++)
+        _sums.Add(sum);
+        var fr = sum.GetFarthestRow();
+        var fc = sum.GetFarthestColumn();
+
+        if (fr >= RowCount || fc >= ColumnCount)
         {
-            for (int col = 0; col < ColumnCount; col++)
+            ResizeTo(Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1));
+        }
+
+        if (sum.Orientation == Orientation.Vertical)
+        {
+            foreach (var cell in sum)
             {
-                if (_cells[row, col].IsUsed()) yield return new Cell(row, col);
+                _cells[cell.Row, cell.Column] |= sum;
+                IArrayKakuroSum? leftSum = null;
+                IArrayKakuroSum? rightSum = null;
+                
+                if (cell.Column > 0) leftSum = _cells[cell.Row, cell.Column - 1].HorizontalSum;
+                if (cell.Column < ColumnCount - 1) rightSum = _cells[cell.Row, cell.Column + 1].HorizontalSum;
+
+                if (leftSum is not null)
+                {
+                    if (rightSum is not null)
+                    {
+                        leftSum.AddToLength(rightSum.Length + 1);
+                        _sums.Remove(rightSum);
+                        ReplaceCellSums(leftSum);
+                    }
+                    else
+                    {
+                        leftSum.AddToLength(1);
+                        _cells[cell.Row, cell.Column] -= rightSum;
+                    }
+                }
+                else if (rightSum is not null)
+                {
+                    rightSum.MoveBack(1);
+                    _cells[cell.Row, cell.Column] -= rightSum;
+                }
+                else
+                {
+                    var hs = new HorizontalKakuroSum(cell, 1, 1);
+                    _sums.Add(hs);
+                    _cells[cell.Row, cell.Column] -= hs;
+                }
+            }
+        }
+        else
+        {
+            foreach (var cell in sum)
+            {
+                _cells[cell.Row, cell.Column] -= sum;
+                IArrayKakuroSum? upSum = null;
+                IArrayKakuroSum? downSum = null;
+                
+                if (cell.Row > 0) upSum = _cells[cell.Row - 1, cell.Column].VerticalSum;
+                if (cell.Row < RowCount - 1) downSum = _cells[cell.Row + 1, cell.Column].VerticalSum;
+
+                if (upSum is not null)
+                {
+                    if (downSum is not null)
+                    {
+                        upSum.AddToLength(downSum.Length + 1);
+                        _sums.Remove(downSum);
+                        ReplaceCellSums(upSum);
+                    }
+                    else
+                    {
+                        upSum.AddToLength(1);
+                        _cells[cell.Row, cell.Column] |= upSum;
+                    }
+                }
+                else if (downSum is not null)
+                {
+                    downSum.MoveBack(1);
+                    _cells[cell.Row, cell.Column] |= downSum;
+                }
+                else
+                {
+                    var vs = new VerticalKakuroSum(cell, 1, 1);
+                    _sums.Add(vs);
+                    _cells[cell.Row, cell.Column] |= vs;
+                }
             }
         }
     }
@@ -354,25 +502,22 @@ public class ArrayKakuro : IKakuro, ISolvingState
 
         return -1;
     }
-
-    private void UpdateAfterAddition(IArrayKakuroSum sum)
+    
+    private void ReplaceCellSums(IArrayKakuroSum sum, int start, int end)
     {
-        var fr = sum.GetFarthestRow();
-        var fc = sum.GetFarthestColumn();
-
-        if (fr >= RowCount || fc >= ColumnCount)
+        for(int i = start; i < end; i++)
         {
-            ResizeTo(Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1));
+            var cell = sum[i];
+            if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] |= sum;
+            else _cells[cell.Row, cell.Column] -= sum;
         }
-
-        ReplaceCellSums(sum);
     }
 
     private void ReplaceCellSums(IArrayKakuroSum sum)
     {
         foreach (var cell in sum)
         {
-            if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] += sum;
+            if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] |= sum;
             else _cells[cell.Row, cell.Column] -= sum;
         }
     }
@@ -411,6 +556,8 @@ public class ArrayKakuro : IKakuro, ISolvingState
         }
         _cells = buffer;
     }
+
+    #endregion
 }
 
 public readonly struct KakuroCell
@@ -443,15 +590,15 @@ public readonly struct KakuroCell
     public IArrayKakuroSum? HorizontalSum { get; }
 
     public static KakuroCell operator +(KakuroCell cell, int n) => new(n, cell.VerticalSum, cell.HorizontalSum);
-    public static KakuroCell operator +(KakuroCell cell, IArrayKakuroSum? v) => new(cell.Number, v, cell.HorizontalSum);
+    public static KakuroCell operator |(KakuroCell cell, IArrayKakuroSum? v) => new(cell.Number, v, cell.HorizontalSum);
     public static KakuroCell operator -(KakuroCell cell, IArrayKakuroSum? h) => new(cell.Number, cell.VerticalSum, h);
 }
 
 public interface IArrayKakuroSum : IKakuroSum
 {
     void SetAmount(int value);
-    IArrayKakuroSum WithLength(int length);
-    IArrayKakuroSum MoveBack(int count);
+    void AddToLength(int value);
+    void MoveBack(int count);
     (IArrayKakuroSum?, IArrayKakuroSum?) DivideAround(Cell cell);
 }
 
@@ -459,9 +606,9 @@ public class VerticalKakuroSum : IArrayKakuroSum
 {
     public Orientation Orientation => Orientation.Vertical;
     public int Amount { get; private set; }
-    public int Length { get; }
+    public int Length { get; private set; }
 
-    private readonly Cell _start;
+    private Cell _start;
     
     public VerticalKakuroSum(Cell start, int amount, int length)
     {
@@ -493,19 +640,20 @@ public class VerticalKakuroSum : IArrayKakuroSum
         Amount = value;
     }
 
+    public void AddToLength(int value)
+    {
+        Length += value;
+    }
+
     public IArrayKakuroSum WithLength(int length)
     {
         return new VerticalKakuroSum(_start, Amount, length);
     }
 
-    public IArrayKakuroSum MoveBack(int count)
+    public void MoveBack(int count)
     {
-        return new VerticalKakuroSum(new Cell(_start.Row - count, _start.Column), Amount, Length + count);
-    }
-
-    public IArrayKakuroSum WithAmount(int amount)
-    {
-        return new VerticalKakuroSum(_start, amount, Length);
+        _start = new Cell(_start.Row - count, _start.Column);
+        Length += count;
     }
 
     public (IArrayKakuroSum?, IArrayKakuroSum?) DivideAround(Cell cell)
@@ -550,9 +698,9 @@ public class HorizontalKakuroSum : IArrayKakuroSum
 {
     public Orientation Orientation => Orientation.Horizontal;
     public int Amount { get; private set; }
-    public int Length { get; }
+    public int Length { get; private set; }
 
-    private readonly Cell _start;
+    private Cell _start;
     
     public HorizontalKakuroSum(Cell start, int amount, int length)
     {
@@ -582,19 +730,20 @@ public class HorizontalKakuroSum : IArrayKakuroSum
         Amount = value;
     }
 
+    public void AddToLength(int value)
+    {
+        Length += value;
+    }
+
     public IArrayKakuroSum WithLength(int length)
     {
         return new HorizontalKakuroSum(_start, Amount, length);
     }
 
-    public IArrayKakuroSum MoveBack(int count)
+    public void MoveBack(int count)
     {
-        return new HorizontalKakuroSum(new Cell(_start.Row, _start.Column - count), Amount, Length + count);
-    }
-
-    public IArrayKakuroSum WithAmount(int amount)
-    {
-        return new HorizontalKakuroSum(_start, amount, Length);
+        _start = new Cell(_start.Row, _start.Column - count);
+        Length += count;
     }
     
     public (IArrayKakuroSum?, IArrayKakuroSum?) DivideAround(Cell cell)

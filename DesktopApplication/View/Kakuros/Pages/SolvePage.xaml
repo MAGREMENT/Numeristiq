@@ -39,10 +39,6 @@
                 Edit
             </RadioButton>
             
-            <RadioButton FontSize="15" Margin="0, 5, 0, 0" Foreground="{DynamicResource Text}"
-                         Checked="ModeToCreate" Style="{StaticResource ArrowRadioButton}">
-                Create
-            </RadioButton>
             <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
                     Click="Solve">Solve</Button>
             <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"

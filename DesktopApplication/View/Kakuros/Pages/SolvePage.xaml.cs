@@ -95,11 +95,6 @@ public partial class SolvePage : IKakuroSolveView
     {
         _presenter.SetEditMode(EditMode.Edit);
     }
-    
-    private void ModeToCreate(object sender, RoutedEventArgs e)
-    {
-        _presenter.SetEditMode(EditMode.Create);
-    }
 
     private void CreateDefault(object sender, MouseButtonEventArgs e)
     {
