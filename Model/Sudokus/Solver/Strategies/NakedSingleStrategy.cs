@@ -15,16 +15,16 @@ public class NakedSingleStrategy : SudokuStrategy
 
     public NakedSingleStrategy() : base(OfficialName, StepDifficulty.Basic, DefaultInstanceHandling) {}
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyUser.PossibilitiesAt(row, col).Count != 1) continue;
+                if (solverData.PossibilitiesAt(row, col).Count != 1) continue;
                 
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(strategyUser.PossibilitiesAt(row, col).FirstPossibility(), row, col);
-                strategyUser.ChangeBuffer.Commit( new NakedSingleReportBuilder());
+                solverData.ChangeBuffer.ProposeSolutionAddition(solverData.PossibilitiesAt(row, col).FirstPossibility(), row, col);
+                solverData.ChangeBuffer.Commit( new NakedSingleReportBuilder());
                 if (StopOnFirstPush) return;
             }
         }

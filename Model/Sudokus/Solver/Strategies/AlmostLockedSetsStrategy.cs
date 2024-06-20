@@ -18,9 +18,9 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var linked in strategyUser.PreComputer.ConstructAlmostLockedSetGraph())
+        foreach (var linked in solverData.PreComputer.ConstructAlmostLockedSetGraph())
         {
             if (linked.RestrictedCommons.Count > 2) continue;
 
@@ -40,7 +40,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
 
                     foreach (var coord in SudokuCellUtility.SharedSeenCells(coords))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
             }
@@ -53,7 +53,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
 
                     foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
                     
@@ -63,12 +63,12 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
 
                     foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
                 }
             }
 
-            if(strategyUser.ChangeBuffer.Commit( new AlmostLockedSetsReportBuilder(one,
+            if(solverData.ChangeBuffer.Commit( new AlmostLockedSetsReportBuilder(one,
                    two, restrictedCommons)) && StopOnFirstPush) return;
         }
     }

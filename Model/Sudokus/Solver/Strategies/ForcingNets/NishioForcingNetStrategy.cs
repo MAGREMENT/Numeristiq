@@ -20,17 +20,17 @@ public class NishioForcingNetStrategy : SudokuStrategy
     public NishioForcingNetStrategy() : base(OfficialName, StepDifficulty.Inhuman, DefaultInstanceHandling)
     { }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        ContradictionSearcher cs = new ContradictionSearcher(strategyUser);
+        ContradictionSearcher cs = new ContradictionSearcher(solverData);
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+                foreach (var possibility in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
-                    var coloring = strategyUser.PreComputer.OnColoring(row, col, possibility);
+                    var coloring = solverData.PreComputer.OnColoring(row, col, possibility);
                     foreach (var entry in coloring)
                     {
                         if (entry.Key is not CellPossibility cell) continue;
@@ -38,20 +38,20 @@ public class NishioForcingNetStrategy : SudokuStrategy
                         switch (entry.Value)
                         {
                             case Coloring.Off when cs.AddOff(cell):
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
-                                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
+                                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer
                                         .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
-                                            cs.Cause, cell, Coloring.Off, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
+                                            cs.Cause, cell, Coloring.Off, solverData.PreComputer.Graphs.ComplexLinkGraph)) && 
                                                 StopOnFirstPush) return;
                                 break;
                             
                             case Coloring.On when cs.AddOn(cell):
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                                 
-                                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
+                                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer
                                         .Commit(new NishioForcingNetReportBuilder(coloring, row, col, possibility,
-                                            cs.Cause, cell, Coloring.On, strategyUser.PreComputer.Graphs.ComplexLinkGraph)) && 
+                                            cs.Cause, cell, Coloring.On, solverData.PreComputer.Graphs.ComplexLinkGraph)) && 
                                                 StopOnFirstPush) return;
                                 break;
                         }
@@ -73,11 +73,11 @@ public class ContradictionSearcher
 
     private readonly Dictionary<int, GridPositions> _onPositions = new();
 
-    private readonly ISudokuStrategyUser _view;
+    private readonly ISudokuSolverData _view;
 
     public ContradictionCause Cause { get; private set; } = ContradictionCause.None;
 
-    public ContradictionSearcher(ISudokuStrategyUser view)
+    public ContradictionSearcher(ISudokuSolverData view)
     {
         _view = view;
     }

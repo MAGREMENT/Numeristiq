@@ -12,10 +12,10 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
 
     public int Count => _relations.Count;
 
-    public NRCZTChain(ISudokuStrategyUser strategyUser, CellPossibility from, CellPossibility to)
+    public NRCZTChain(ISudokuSolverData solverData, CellPossibility from, CellPossibility to)
     {
         _relations.Add(new ConjugateRelation(from, to));
-        PossibleTargets.UnionWith(SudokuCellUtility.SeenExistingPossibilities(strategyUser, from));
+        PossibleTargets.UnionWith(SudokuCellUtility.SeenExistingPossibilities(solverData, from));
         PossibleTargets.Remove(to);
     }
 

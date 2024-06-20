@@ -38,47 +38,47 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
         };
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var poss in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+                foreach (var poss in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
-                    if (Search(strategyUser, new CellPossibility(row, col, poss))) return;
+                    if (Search(solverData, new CellPossibility(row, col, poss))) return;
                 }
             }
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, CellPossibility start)
+    private bool Search(ISudokuSolverData solverData, CellPossibility start)
     {
         HashSet<CellPossibility> blockStartVisited = new();
         Queue<NRCZTChain> queue = new();
 
         blockStartVisited.Add(start);
-        foreach (var to in SudokuCellUtility.DefaultStrongLinks(strategyUser, start))
+        foreach (var to in SudokuCellUtility.DefaultStrongLinks(solverData, start))
         {
-            queue.Enqueue(new NRCZTChain(strategyUser, start, to));
+            queue.Enqueue(new NRCZTChain(solverData, start, to));
         }
 
         while (queue.Count > 0)
         {
             var current = queue.Dequeue();
 
-            foreach (var from in SudokuCellUtility.SeenExistingPossibilities(strategyUser,  current.Last()))
+            foreach (var from in SudokuCellUtility.SeenExistingPossibilities(solverData,  current.Last()))
             {
                 if (blockStartVisited.Contains(from) || current.Contains(from)) continue;
                 
-                var rowPoss = strategyUser.RowPositionsAt(from.Row, from.Possibility);
+                var rowPoss = solverData.RowPositionsAt(from.Row, from.Possibility);
                 if (rowPoss.Count == 2)
                 {
                     var cp = new CellPossibility(from.Row, rowPoss.First(from.Column), from.Possibility);
                     var chain = current.TryAdd(from, cp);
                     if (chain is not null)
                     {
-                        if (Process(strategyUser, chain)) return true;
+                        if (Process(solverData, chain)) return true;
                         queue.Enqueue(chain);
                     }
                 }
@@ -88,20 +88,20 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
                     {
                         foreach (var chain in condition.AnalyzeRow(current, from, rowPoss))
                         {
-                            if (Process(strategyUser, chain)) return true;
+                            if (Process(solverData, chain)) return true;
                             queue.Enqueue(chain);
                         }
                     }
                 }
 
-                var colPoss = strategyUser.ColumnPositionsAt(from.Column, from.Possibility);
+                var colPoss = solverData.ColumnPositionsAt(from.Column, from.Possibility);
                 if (colPoss.Count == 2)
                 {
                     var cp = new CellPossibility(colPoss.First(from.Row), from.Column, from.Possibility);
                     var chain = current.TryAdd(from, cp);
                     if (chain is not null)
                     {
-                        if (Process(strategyUser, chain)) return true;
+                        if (Process(solverData, chain)) return true;
                         queue.Enqueue(chain);
                     }
                 }
@@ -111,13 +111,13 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
                     {
                         foreach (var chain in condition.AnalyzeColumn(current, from, colPoss))
                         {
-                            if (Process(strategyUser, chain)) return true;
+                            if (Process(solverData, chain)) return true;
                             queue.Enqueue(chain);
                         }
                     }
                 }
 
-                var boxPoss = strategyUser.MiniGridPositionsAt(from.Row / 3,
+                var boxPoss = solverData.MiniGridPositionsAt(from.Row / 3,
                     from.Column / 3, from.Possibility);
                 if (boxPoss.Count == 2)
                 {
@@ -125,7 +125,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
                     var chain = current.TryAdd(from, cp);
                     if (chain is not null)
                     {
-                        if (Process(strategyUser, chain)) return true;
+                        if (Process(solverData, chain)) return true;
                         queue.Enqueue(chain);
                     }
                 }
@@ -135,20 +135,20 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
                     {
                         foreach (var chain in condition.AnalyzeMiniGrid(current, from, boxPoss))
                         {
-                            if (Process(strategyUser, chain)) return true;
+                            if (Process(solverData, chain)) return true;
                             queue.Enqueue(chain);
                         }
                     }
                 }
 
-                var poss = strategyUser.PossibilitiesAt(from.Row, from.Column);
+                var poss = solverData.PossibilitiesAt(from.Row, from.Column);
                 if (poss.Count == 2)
                 {
                     var cp = new CellPossibility(from.Row, from.Column, poss.FirstPossibility(from.Possibility));
                     var chain = current.TryAdd(from, cp);
                     if (chain is not null)
                     {
-                        if (Process(strategyUser, chain)) return true;
+                        if (Process(solverData, chain)) return true;
                         queue.Enqueue(chain);
                     }
                 }
@@ -158,7 +158,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
                     {
                         foreach (var chain in condition.AnalyzePossibilities(current, from, poss))
                         {
-                            if (Process(strategyUser, chain)) return true;
+                            if (Process(solverData, chain)) return true;
                             queue.Enqueue(chain);
                         }
                     }
@@ -171,15 +171,15 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, NRCZTChain chain)
+    private bool Process(ISudokuSolverData solverData, NRCZTChain chain)
     {
         var last = chain.Last();
         foreach (var target in chain.PossibleTargets)
         {
-            if (SudokuCellUtility.AreLinked(target, last)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (SudokuCellUtility.AreLinked(target, last)) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(new NRCZTChainReportBuilder(chain))
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(new NRCZTChainReportBuilder(chain))
                                                     && StopOnFirstPush;
     }
 

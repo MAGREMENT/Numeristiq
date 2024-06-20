@@ -3,14 +3,14 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class JuniorExocetConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement> //TODO
+public class JuniorExocetConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement> //TODO
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
         
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
     {
         
     }

@@ -17,18 +17,18 @@ public class TwoStringKiteStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var rowPositions = strategyUser.RowPositionsAt(row, number);
+                var rowPositions = solverData.RowPositionsAt(row, number);
                 if (rowPositions.Count != 2 || rowPositions.AreAllInSameMiniGrid()) continue;
 
                 for (int col = 0; col < 9; col++)
                 {
-                    var colPositions = strategyUser.ColumnPositionsAt(col, number);
+                    var colPositions = solverData.ColumnPositionsAt(col, number);
                     if (colPositions.Count != 2 || colPositions.AreAllInSameMiniGrid()) continue;
 
                     var rowCell = rowPositions.ToCellArray(Unit.Row, row);
@@ -48,10 +48,10 @@ public class TwoStringKiteStrategy : SudokuStrategy
 
                             foreach (var c in SudokuCellUtility.SharedSeenCells(rOther, cOther))
                             {
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, c);
+                                solverData.ChangeBuffer.ProposePossibilityRemoval(number, c);
                             }
 
-                            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                                     new TwoStringKiteReportBuilder(number, rCommon, cCommon, rOther,
                                         cOther)) && StopOnFirstPush) return;
                         }

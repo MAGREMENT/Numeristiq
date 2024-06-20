@@ -14,13 +14,13 @@ public class PositionsMap
         { new(2, 0), new(2, 1), new(2, 2) }
     };
     
-    public PositionsMap(ISudokuStrategyUser strategyUser, Filter filter)
+    public PositionsMap(ISudokuSolverData solverData, Filter filter)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (!filter(strategyUser.PossibilitiesAt(row, col))) continue;
+                if (!filter(solverData.PossibilitiesAt(row, col))) continue;
 
                 Rows[row].Add(col);
                 Columns[col].Add(row);

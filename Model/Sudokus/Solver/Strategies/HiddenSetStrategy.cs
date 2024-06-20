@@ -35,34 +35,34 @@ public class HiddenSetStrategy : SudokuStrategy
         }
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)
         {
-            if (RecursiveRowMashing(strategyUser, 1, new LinePositions(), new ReadOnlyBitSet16(), row)) return;
+            if (RecursiveRowMashing(solverData, 1, new LinePositions(), new ReadOnlyBitSet16(), row)) return;
         }
 
         for (int col = 0; col < 9; col++)
         {
-            if (RecursiveColumnMashing(strategyUser, 1, new LinePositions(), new ReadOnlyBitSet16(), col)) return;
+            if (RecursiveColumnMashing(solverData, 1, new LinePositions(), new ReadOnlyBitSet16(), col)) return;
         }
 
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                if (RecursiveMiniGridMashing(strategyUser, 1, new MiniGridPositions(miniRow, miniCol), 
+                if (RecursiveMiniGridMashing(solverData, 1, new MiniGridPositions(miniRow, miniCol), 
                         new ReadOnlyBitSet16(), miniRow, miniCol)) return;
             }
         }
     }
 
-    private bool RecursiveRowMashing(ISudokuStrategyUser strategyUser, int start, LinePositions mashed,
+    private bool RecursiveRowMashing(ISudokuSolverData solverData, int start, LinePositions mashed,
         ReadOnlyBitSet16 visited, int row)
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyUser.RowPositionsAt(row, i);
+            var pos = solverData.RowPositionsAt(row, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -75,26 +75,26 @@ public class HiddenSetStrategy : SudokuStrategy
             {
                 foreach (var col in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyUser);
+                    RemoveAllPossibilitiesExcept(row, col, newVisited, solverData);
                 }
 
-                if (strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.Commit(
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, row, Unit.Row))
                     && StopOnFirstPush) return true;
             }
             else if (newVisited.Count < _type &&
-                     RecursiveRowMashing(strategyUser, i + 1, newMashed, newVisited, row)) return true;
+                     RecursiveRowMashing(solverData, i + 1, newMashed, newVisited, row)) return true;
         }
 
         return false;
     }
     
-    private bool RecursiveColumnMashing(ISudokuStrategyUser strategyUser, int start, LinePositions mashed,
+    private bool RecursiveColumnMashing(ISudokuSolverData solverData, int start, LinePositions mashed,
         ReadOnlyBitSet16 visited, int col)
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyUser.ColumnPositionsAt(col, i);
+            var pos = solverData.ColumnPositionsAt(col, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -107,26 +107,26 @@ public class HiddenSetStrategy : SudokuStrategy
             {
                 foreach (var row in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(row, col, newVisited, strategyUser);
+                    RemoveAllPossibilitiesExcept(row, col, newVisited, solverData);
                 }
 
-                if (strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.Commit(
                         new LineHiddenPossibilitiesReportBuilder(newVisited, newMashed, col, Unit.Column))
                     && StopOnFirstPush) return true;
             }
             else if (newVisited.Count < _type &&
-                     RecursiveColumnMashing(strategyUser, i + 1, newMashed, newVisited, col)) return true;
+                     RecursiveColumnMashing(solverData, i + 1, newMashed, newVisited, col)) return true;
         }
 
         return false;
     }
     
-    private bool RecursiveMiniGridMashing(ISudokuStrategyUser strategyUser, int start, MiniGridPositions mashed,
+    private bool RecursiveMiniGridMashing(ISudokuSolverData solverData, int start, MiniGridPositions mashed,
         ReadOnlyBitSet16 visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
         {
-            var pos = strategyUser.MiniGridPositionsAt(miniRow, miniCol, i);
+            var pos = solverData.MiniGridPositionsAt(miniRow, miniCol, i);
             if (pos.Count > _type || pos.Count == 0) continue;
 
             var newMashed = mashed.Or(pos);
@@ -139,27 +139,27 @@ public class HiddenSetStrategy : SudokuStrategy
             {
                 foreach (var position in newMashed)
                 {
-                    RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, strategyUser);
+                    RemoveAllPossibilitiesExcept(position.Row, position.Column, newVisited, solverData);
                 }
 
-                if (strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.Commit(
                         new MiniGridHiddenPossibilitiesReportBuilder(newVisited, newMashed))
                     && StopOnFirstPush) return true;
             }
-            else if (newVisited.Count < _type && RecursiveMiniGridMashing(strategyUser, i + 1, newMashed,
+            else if (newVisited.Count < _type && RecursiveMiniGridMashing(solverData, i + 1, newMashed,
                          newVisited, miniRow, miniCol)) return true;
         }
 
         return false;
     }
 
-    private void RemoveAllPossibilitiesExcept(int row, int col, ReadOnlyBitSet16 except, ISudokuStrategyUser strategyUser)
+    private void RemoveAllPossibilitiesExcept(int row, int col, ReadOnlyBitSet16 except, ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             if (!except.Contains(number))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
     }

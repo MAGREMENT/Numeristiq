@@ -38,23 +38,23 @@ public class GridFormationStrategy : SudokuStrategy
         }
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     { 
         for (int number = 1; number <= 9; number++)
         {
-            if (Search(strategyUser, 0, Unit.Row, number, new LinePositions(), new LinePositions())) return;
-            if (Search(strategyUser, 0, Unit.Column, number, new LinePositions(), new LinePositions())) return;
+            if (Search(solverData, 0, Unit.Row, number, new LinePositions(), new LinePositions())) return;
+            if (Search(solverData, 0, Unit.Column, number, new LinePositions(), new LinePositions())) return;
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, int start, Unit unit, int number, LinePositions or,
+    private bool Search(ISudokuSolverData solverData, int start, Unit unit, int number, LinePositions or,
         LinePositions visited)
     {
         for (int i = start; i < 9; i++)
         {
             var current = unit == Unit.Row
-                ? strategyUser.RowPositionsAt(i, number)
-                : strategyUser.ColumnPositionsAt(i, number);
+                ? solverData.RowPositionsAt(i, number)
+                : solverData.ColumnPositionsAt(i, number);
             if (current.Count > _type || current.Count < 1) continue;
 
             var newOr = or.Or(current);
@@ -65,15 +65,15 @@ public class GridFormationStrategy : SudokuStrategy
 
             if (newVisited.Count == _type)
             {
-                if (newOr.Count == _type && Process(strategyUser, newVisited, newOr, number, unit)) return true;
+                if (newOr.Count == _type && Process(solverData, newVisited, newOr, number, unit)) return true;
             }
-            else Search(strategyUser, i + 1, unit, number, newOr, newVisited);
+            else Search(solverData, i + 1, unit, number, newOr, newVisited);
         }
 
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, LinePositions visited, LinePositions toRemove, int number, Unit unit)
+    private bool Process(ISudokuSolverData solverData, LinePositions visited, LinePositions toRemove, int number, Unit unit)
     {
         foreach (var first in toRemove)
         {
@@ -81,12 +81,12 @@ public class GridFormationStrategy : SudokuStrategy
             {
                 if (visited.Contains(other)) continue;
 
-                if (unit == Unit.Row) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
-                else strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, first, other);
+                if (unit == Unit.Row) solverData.ChangeBuffer.ProposePossibilityRemoval(number, other, first);
+                else solverData.ChangeBuffer.ProposePossibilityRemoval(number, first, other);
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit( unit == Unit.Row
+        return solverData.ChangeBuffer.Commit( unit == Unit.Row
                 ? new GridFormationReportBuilder(visited, toRemove, number)
                 : new GridFormationReportBuilder(toRemove, visited, number)) 
                && StopOnFirstPush;

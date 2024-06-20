@@ -38,13 +38,13 @@ public class ClaimingSetStrategy : SudokuStrategy
 
     public ClaimingSetStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyUser.RowPositionsAt(row, number);
+                var ppir = solverData.RowPositionsAt(row, number);
                 if (ppir.AreAllInSameMiniGrid())
                 {
                     int startRow = row / 3 * 3;
@@ -58,12 +58,12 @@ public class ClaimingSetStrategy : SudokuStrategy
                             int removeFromCol = startCol + c;
 
                             if (removedFromRow != row)
-                                strategyUser.ChangeBuffer
+                                solverData.ChangeBuffer
                                     .ProposePossibilityRemoval(number, removedFromRow, removeFromCol);
                         }
                     }
 
-                    if (strategyUser.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(row,
+                    if (solverData.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(row,
                             ppir, number, Unit.Row)) && StopOnFirstPush) return;
                 }
             }
@@ -71,7 +71,7 @@ public class ClaimingSetStrategy : SudokuStrategy
             for (int col = 0; col < 9; col++)
             {
 
-                var ppic = strategyUser.ColumnPositionsAt(col, number);
+                var ppic = solverData.ColumnPositionsAt(col, number);
                 if (ppic.AreAllInSameMiniGrid())
                 {
                     int startRow = ppic.First() / 3 * 3;
@@ -85,12 +85,12 @@ public class ClaimingSetStrategy : SudokuStrategy
                             int removedFromCol = startCol + c;
 
                             if (removedFromCol != col)
-                                strategyUser.ChangeBuffer
+                                solverData.ChangeBuffer
                                     .ProposePossibilityRemoval(number, removedFromRow, removedFromCol);
                         }
                     }
 
-                    if(strategyUser.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(col,
+                    if(solverData.ChangeBuffer.Commit( new BoxLineReductionReportBuilder(col,
                            ppic, number, Unit.Column)) && StopOnFirstPush) return;
                 }
             }

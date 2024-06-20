@@ -16,7 +16,7 @@ public class HiddenSingleStrategy : SudokuStrategy
 
     public HiddenSingleStrategy() : base(OfficialName, StepDifficulty.Basic, DefaultInstanceHandling){}
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
@@ -26,28 +26,28 @@ public class HiddenSingleStrategy : SudokuStrategy
                 {
                     var u = i * 3 + j;
                     
-                    var rp = strategyUser.RowPositionsAt(u, number);
+                    var rp = solverData.RowPositionsAt(u, number);
                     if (rp.Count == 1)
                     {
-                        strategyUser.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
-                        strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Row));
+                        solverData.ChangeBuffer.ProposeSolutionAddition(number, u, rp.First());
+                        solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Row));
                         if (StopOnFirstPush) return;
                     }
                     
-                    var cp = strategyUser.ColumnPositionsAt(u, number);
+                    var cp = solverData.ColumnPositionsAt(u, number);
                     if (cp.Count == 1)
                     {
-                        strategyUser.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
-                        strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Column));
+                        solverData.ChangeBuffer.ProposeSolutionAddition(number, cp.First(), u);
+                        solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Column));
                         if (StopOnFirstPush) return;
                     }
                     
-                    var mp = strategyUser.MiniGridPositionsAt(i, j, number);
+                    var mp = solverData.MiniGridPositionsAt(i, j, number);
                     if (mp.Count != 1) continue;
                     
                     var pos = mp.First();
-                    strategyUser.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
-                    strategyUser.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.MiniGrid));
+                    solverData.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
+                    solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.MiniGrid));
                     if (StopOnFirstPush) return;
                 }
             }

@@ -15,20 +15,20 @@ public class AILoopAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : 
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuSolverData solverData, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyUser);
+        var graph = type.GetGraph(solverData);
         
         Dictionary<T, HashSet<T>> globallySearched = new();
         Dictionary<T, HashSet<T>> locallySearched = new();
         foreach (var start in graph)
         {
-            if (Search(strategyUser, graph, type, new LinkGraphChainBuilder<T>(start), globallySearched, locallySearched)) return;
+            if (Search(solverData, graph, type, new LinkGraphChainBuilder<T>(start), globallySearched, locallySearched)) return;
             locallySearched.Clear();
         }
     }
 
-    private bool Search(ISudokuStrategyUser view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
+    private bool Search(ISudokuSolverData view, ILinkGraph<T> graph, IAlternatingInferenceType<T> inferenceType, LinkGraphChainBuilder<T> builder,
         Dictionary<T, HashSet<T>> globallySearched, Dictionary<T, HashSet<T>> locallySearched)
     {
         if (builder.Count > _maxLoopSize) return false;

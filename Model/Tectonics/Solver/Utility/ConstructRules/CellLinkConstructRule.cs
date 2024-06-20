@@ -5,15 +5,15 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
-public class CellLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITectonicElement>
+public class CellLinkConstructRule : IConstructRule<ITectonicSolverData, ITectonicElement>
 {
-    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
     {
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
+                var poss = solverData.PossibilitiesAt(row, col);
                 if (poss.Count == 2)
                 {
                     var a = poss.NextPossibility(0);
@@ -36,13 +36,13 @@ public class CellLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITect
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicSolverData solverData)
     {
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
+                var poss = solverData.PossibilitiesAt(row, col);
                 if (poss.Count == 2)
                 {
                     var a = poss.NextPossibility(0);

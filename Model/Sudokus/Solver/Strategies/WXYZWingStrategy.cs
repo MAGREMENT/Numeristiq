@@ -17,7 +17,7 @@ public class WXYZWingStrategy : SudokuStrategy
 
     public WXYZWingStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) {}
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -30,7 +30,7 @@ public class WXYZWingStrategy : SudokuStrategy
                 {
                     int iRow = startRow + i / 3;
                     int iCol = startCol + i % 3;
-                    var first = strategyUser.PossibilitiesAt(iRow, iCol);
+                    var first = solverData.PossibilitiesAt(iRow, iCol);
                     if (first.Count is > 4 or < 1) continue;
                     
                     var miniPositions = new MiniGridPositions(miniRow, miniCol);
@@ -40,7 +40,7 @@ public class WXYZWingStrategy : SudokuStrategy
                     {
                         int jRow = startRow + j / 3;
                         int jCol = startCol + j % 3;
-                        var second = strategyUser.PossibilitiesAt(jRow, jCol);
+                        var second = solverData.PossibilitiesAt(jRow, jCol);
                         if(second.Count is > 4 or < 1) continue;
 
                         second |= first;
@@ -51,15 +51,15 @@ public class WXYZWingStrategy : SudokuStrategy
 
                         foreach (var cell in miniPositions2)
                         {
-                            if(SearchRow(strategyUser, miniPositions2, second, cell)) return;
-                            if(SearchColumn(strategyUser, miniPositions2, second, cell)) return;
+                            if(SearchRow(solverData, miniPositions2, second, cell)) return;
+                            if(SearchColumn(solverData, miniPositions2, second, cell)) return;
                         }
 
                         for (int k = j + 1; k < 9; k++)
                         {
                             int kRow = startRow + j / 3;
                             int kCol = startCol + j % 3;
-                            var third = strategyUser.PossibilitiesAt(kRow, kCol);
+                            var third = solverData.PossibilitiesAt(kRow, kCol);
                             if(third.Count is > 4 or < 1) continue;
 
                             third |= second;
@@ -70,8 +70,8 @@ public class WXYZWingStrategy : SudokuStrategy
 
                             foreach (var cell in miniPositions3)
                             {
-                                if(SearchRow(strategyUser, miniPositions3, third, cell)) return;
-                                if(SearchColumn(strategyUser, miniPositions3, third, cell)) return;
+                                if(SearchRow(solverData, miniPositions3, third, cell)) return;
+                                if(SearchColumn(solverData, miniPositions3, third, cell)) return;
                             }
                         }
                     }
@@ -80,14 +80,14 @@ public class WXYZWingStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchRow(ISudokuStrategyUser strategyUser, MiniGridPositions miniPositions,
+    private bool SearchRow(ISudokuSolverData solverData, MiniGridPositions miniPositions,
         ReadOnlyBitSet16 possibilities, Cell hinge)
     {
         for (int col = 0; col < 9; col++)
         {
             if(col / 3 == hinge.Column / 3) continue;
 
-            var third = strategyUser.PossibilitiesAt(hinge.Row, col);
+            var third = solverData.PossibilitiesAt(hinge.Row, col);
             if(third.Count is > 4 or < 1) continue;
 
             third |= possibilities;
@@ -98,7 +98,7 @@ public class WXYZWingStrategy : SudokuStrategy
 
             if (miniPositions.Count + rowPositions.Count == 4)
             {
-                if(Process(strategyUser, miniPositions, rowPositions, Unit.Row, hinge.Row, third)) return true;
+                if(Process(solverData, miniPositions, rowPositions, Unit.Row, hinge.Row, third)) return true;
             }
             else
             {
@@ -106,7 +106,7 @@ public class WXYZWingStrategy : SudokuStrategy
                 {
                     if(otherCol / 3 == hinge.Column / 3) continue;
                     
-                    var fourth = strategyUser.PossibilitiesAt(hinge.Row, otherCol);
+                    var fourth = solverData.PossibilitiesAt(hinge.Row, otherCol);
                     if(fourth.Count is > 4 or < 1) continue;
 
                     fourth |= third;
@@ -115,7 +115,7 @@ public class WXYZWingStrategy : SudokuStrategy
                     var rowPositions2 = rowPositions.Copy();
                     rowPositions2.Add(otherCol);
 
-                    if (Process(strategyUser, miniPositions, rowPositions2, Unit.Row, hinge.Row, fourth))
+                    if (Process(solverData, miniPositions, rowPositions2, Unit.Row, hinge.Row, fourth))
                         return true;
                 }
             }
@@ -124,14 +124,14 @@ public class WXYZWingStrategy : SudokuStrategy
         return false;
     }
     
-    private bool SearchColumn(ISudokuStrategyUser strategyUser, MiniGridPositions miniPositions,
+    private bool SearchColumn(ISudokuSolverData solverData, MiniGridPositions miniPositions,
         ReadOnlyBitSet16 possibilities, Cell hinge)
     {
         for (int row = 0; row < 9; row++)
         {
             if(row / 3 == hinge.Row / 3) continue;
 
-            var third = strategyUser.PossibilitiesAt(row, hinge.Column);
+            var third = solverData.PossibilitiesAt(row, hinge.Column);
             if(third.Count is > 4 or < 1) continue;
 
             third |= possibilities;
@@ -142,7 +142,7 @@ public class WXYZWingStrategy : SudokuStrategy
 
             if (miniPositions.Count + rowPositions.Count == 4)
             {
-                if(Process(strategyUser, miniPositions, rowPositions, Unit.Column, hinge.Column, third)) return true;
+                if(Process(solverData, miniPositions, rowPositions, Unit.Column, hinge.Column, third)) return true;
             }
             else
             {
@@ -150,7 +150,7 @@ public class WXYZWingStrategy : SudokuStrategy
                 {
                     if(otherRow / 3 == hinge.Row / 3) continue;
                     
-                    var fourth = strategyUser.PossibilitiesAt(otherRow, hinge.Column);
+                    var fourth = solverData.PossibilitiesAt(otherRow, hinge.Column);
                     if(fourth.Count is > 4 or < 1) continue;
 
                     fourth |= third;
@@ -159,7 +159,7 @@ public class WXYZWingStrategy : SudokuStrategy
                     var rowPositions2 = rowPositions.Copy();
                     rowPositions2.Add(otherRow);
 
-                    if (Process(strategyUser, miniPositions, rowPositions2, Unit.Column, hinge.Column, fourth))
+                    if (Process(solverData, miniPositions, rowPositions2, Unit.Column, hinge.Column, fourth))
                         return true;
                 }
             }
@@ -168,7 +168,7 @@ public class WXYZWingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, MiniGridPositions miniPositions, LinePositions linePositions,
+    private bool Process(ISudokuSolverData solverData, MiniGridPositions miniPositions, LinePositions linePositions,
         Unit unit, int unitNumber, ReadOnlyBitSet16 possibilities)
     {
         if (possibilities.Count != 4) return false;
@@ -182,7 +182,7 @@ public class WXYZWingStrategy : SudokuStrategy
             
             foreach (var current in miniPositions)
             {
-                if (!strategyUser.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
+                if (!solverData.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
 
                 if (sharedUnits is null) sharedUnits = new SharedHouses(current);
                 else
@@ -209,7 +209,7 @@ public class WXYZWingStrategy : SudokuStrategy
                     _ => throw new Exception()
                 };
                 
-                if (!strategyUser.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
+                if (!solverData.PossibilitiesAt(current.Row, current.Column).Contains(possibility)) continue;
 
                 if (sharedUnits is null) sharedUnits = new SharedHouses(current);
                 else
@@ -231,7 +231,7 @@ public class WXYZWingStrategy : SudokuStrategy
         List<Cell> cells = new();
         foreach (var cell in miniPositions)
         {
-            if (strategyUser.PossibilitiesAt(cell.Row, cell.Column).Contains(buffer)) cells.Add(cell);
+            if (solverData.PossibilitiesAt(cell.Row, cell.Column).Contains(buffer)) cells.Add(cell);
         }
             
         foreach (var other in linePositions)
@@ -243,17 +243,17 @@ public class WXYZWingStrategy : SudokuStrategy
                 _ => throw new Exception()
             };
                 
-            if (strategyUser.PossibilitiesAt(cell.Row, cell.Column).Contains(buffer)) cells.Add(cell);
+            if (solverData.PossibilitiesAt(cell.Row, cell.Column).Contains(buffer)) cells.Add(cell);
         }
 
         if (cells.Count == 1) return false;
 
         foreach (var coord in SudokuCellUtility.SharedSeenCells(cells))
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Column);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(buffer, coord.Row, coord.Column);
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new WXYZWingReportBuilder(miniPositions, linePositions, unit, unitNumber))
             && StopOnFirstPush;
         

@@ -14,18 +14,18 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
     }
 
 
-    public List<AlmostOddagon> Search(ISudokuStrategyUser strategyUser, ILinkGraph<CellPossibility> graph)
+    public List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph)
     {
         List<AlmostOddagon> result = new();
         foreach (var start in graph)
         {
-            Search(strategyUser, new LinkGraphChainBuilder<CellPossibility>(start), graph, result);
+            Search(solverData, new LinkGraphChainBuilder<CellPossibility>(start), graph, result);
         }
 
         return result;
     }
 
-    private void Search(ISudokuStrategyUser strategyUser, LinkGraphChainBuilder<CellPossibility> builder,
+    private void Search(ISudokuSolverData solverData, LinkGraphChainBuilder<CellPossibility> builder,
         ILinkGraph<CellPossibility> graph, List<AlmostOddagon> result)
     {
         if (builder.Count > _maxLength) return;
@@ -41,12 +41,12 @@ public class OddagonSearchAlgorithmV2 : IOddagonSearchAlgorithm
             {
                 if (builder.Count < 5 || builder.Count % 2 != 1) continue;
 
-                result.Add(AlmostOddagon.FromBoard(strategyUser, builder.ToLoop(link)));
+                result.Add(AlmostOddagon.FromBoard(solverData, builder.ToLoop(link)));
             }
             else if (!builder.ContainsElement(friend))
             {
                 builder.Add(link, friend);
-                Search(strategyUser, builder, graph, result);
+                Search(solverData, builder, graph, result);
                 builder.RemoveLast();
             }
         }

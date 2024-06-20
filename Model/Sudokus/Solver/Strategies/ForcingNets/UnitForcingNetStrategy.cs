@@ -22,13 +22,13 @@ public class UnitForcingNetStrategy : SudokuStrategy
         _max = maxPossibilities;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyUser.RowPositionsAt(row, number);
+                var ppir = solverData.RowPositionsAt(row, number);
                 if (ppir.Count < 2 || ppir.Count > _max) continue;
                 
                 var colorings = new ColoringDictionary<ISudokuElement>[ppir.Count];
@@ -36,16 +36,16 @@ public class UnitForcingNetStrategy : SudokuStrategy
                 var cursor = 0;
                 foreach (var col in ppir)
                 {
-                    colorings[cursor] = strategyUser.PreComputer.OnColoring(row, col, number);
+                    colorings[cursor] = solverData.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
 
-                if (Process(strategyUser, colorings)) return;
+                if (Process(solverData, colorings)) return;
             }
 
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyUser.ColumnPositionsAt(col, number);
+                var ppic = solverData.ColumnPositionsAt(col, number);
                 if (ppic.Count < 2 || ppic.Count > _max) continue;
                 
                 var colorings = new ColoringDictionary<ISudokuElement>[ppic.Count];
@@ -53,18 +53,18 @@ public class UnitForcingNetStrategy : SudokuStrategy
                 var cursor = 0;
                 foreach (var row in ppic)
                 {
-                    colorings[cursor] = strategyUser.PreComputer.OnColoring(row, col, number);
+                    colorings[cursor] = solverData.PreComputer.OnColoring(row, col, number);
                     cursor++;
                 }
 
-                if (Process(strategyUser, colorings)) return;
+                if (Process(solverData, colorings)) return;
             }
 
             for (int miniRow = 0; miniRow < 3; miniRow++)
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count < 2 || ppimn.Count > _max) continue;
                 
                     var colorings = new ColoringDictionary<ISudokuElement>[ppimn.Count];
@@ -72,17 +72,17 @@ public class UnitForcingNetStrategy : SudokuStrategy
                     var cursor = 0;
                     foreach (var pos in ppimn)
                     {
-                        colorings[cursor] = strategyUser.PreComputer.OnColoring(pos.Row, pos.Column, number);
+                        colorings[cursor] = solverData.PreComputer.OnColoring(pos.Row, pos.Column, number);
                         cursor++;
                     }
 
-                    if (Process(strategyUser, colorings)) return;
+                    if (Process(solverData, colorings)) return;
                 }
             }
         }
     }
 
-    private bool Process(ISudokuStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings)
+    private bool Process(ISudokuSolverData view, ColoringDictionary<ISudokuElement>[] colorings)
     {
         foreach (var element in colorings[0])
         {

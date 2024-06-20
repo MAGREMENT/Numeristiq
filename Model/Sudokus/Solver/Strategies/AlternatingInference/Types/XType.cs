@@ -14,22 +14,22 @@ public class XType : IAlternatingInferenceType<CellPossibility>
     public string ChainName => OfficialChainName;
     public StepDifficulty Difficulty => StepDifficulty.Hard;
     public SudokuStrategy? Strategy { get; set; }
-    public ILinkGraph<CellPossibility> GetGraph(ISudokuStrategyUser strategyUser)
+    public ILinkGraph<CellPossibility> GetGraph(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-        return strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
+        return solverData.PreComputer.Graphs.SimpleLinkGraph;
     }
 
-    public bool ProcessFullLoop(ISudokuStrategyUser strategyUser, LinkGraphLoop<CellPossibility> loop)
+    public bool ProcessFullLoop(ISudokuSolverData solverData, LinkGraphLoop<CellPossibility> loop)
     {
         loop.ForEachLink((one, two)
-            => ProcessWeakLink(strategyUser, one, two), LinkStrength.Weak);
+            => ProcessWeakLink(solverData, one, two), LinkStrength.Weak);
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.NiceLoop));
     }
 
-    private void ProcessWeakLink(ISudokuStrategyUser view, CellPossibility one, CellPossibility two)
+    private void ProcessWeakLink(ISudokuSolverData view, CellPossibility one, CellPossibility two)
     {
         foreach (var coord in one.SharedSeenCells(two))
         {
@@ -37,23 +37,23 @@ public class XType : IAlternatingInferenceType<CellPossibility>
         }
     }
 
-    public bool ProcessWeakInferenceLoop(ISudokuStrategyUser strategyUser, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
+    public bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
-        strategyUser.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Column);
-        return strategyUser.ChangeBuffer.Commit(
+        solverData.ChangeBuffer.ProposePossibilityRemoval(inference.Possibility, inference.Row, inference.Column);
+        return solverData.ChangeBuffer.Commit(
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.WeakInference));
     }
 
-    public bool ProcessStrongInferenceLoop(ISudokuStrategyUser strategyUser, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
+    public bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, CellPossibility inference, LinkGraphLoop<CellPossibility> loop)
     {
-        strategyUser.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Column);
-        return strategyUser.ChangeBuffer.Commit(
+        solverData.ChangeBuffer.ProposeSolutionAddition(inference.Possibility, inference.Row, inference.Column);
+        return solverData.ChangeBuffer.Commit(
             new AlternatingInferenceLoopReportBuilder<CellPossibility>(loop, LoopType.StrongInference));
     }
 
-    public bool ProcessChain(ISudokuStrategyUser strategyUser, LinkGraphChain<CellPossibility> chain, ILinkGraph<CellPossibility> graph)
+    public bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<CellPossibility> chain, ILinkGraph<CellPossibility> graph)
     {
-        return IAlternatingInferenceType<CellPossibility>.ProcessChainWithSimpleGraph(strategyUser,
+        return IAlternatingInferenceType<CellPossibility>.ProcessChainWithSimpleGraph(solverData,
             chain, graph, Strategy!);
     }
 }

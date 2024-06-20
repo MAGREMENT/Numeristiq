@@ -15,15 +15,15 @@ public class XYZWingStrategy : SudokuStrategy
 
     public XYZWingStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling) {}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        var map = new PositionsMap(strategyUser, Only2Possibilities);
+        var map = new PositionsMap(solverData, Only2Possibilities);
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var hinge = strategyUser.PossibilitiesAt(row, col);
+                var hinge = solverData.PossibilitiesAt(row, col);
                 if(hinge.Count != 3) continue;
 
                 var miniRow = row / 3;
@@ -32,7 +32,7 @@ public class XYZWingStrategy : SudokuStrategy
                 {
                     if (mini.Row == row && mini.Column == col) continue;
 
-                    var firstCorner = strategyUser.PossibilitiesAt(mini.Row, mini.Column);
+                    var firstCorner = solverData.PossibilitiesAt(mini.Row, mini.Column);
                     ReadOnlyBitSet16 and;
                     if ((and = firstCorner & hinge).Count != 2) continue;
 
@@ -40,10 +40,10 @@ public class XYZWingStrategy : SudokuStrategy
                     {
                         if(otherCol / 3 == miniCol) continue;
 
-                        var secondCorner = strategyUser.PossibilitiesAt(row, otherCol);
+                        var secondCorner = solverData.PossibilitiesAt(row, otherCol);
                         if((secondCorner | firstCorner) != hinge) continue;
 
-                        if (Process(strategyUser, row, col, mini.Row, mini.Column, row,
+                        if (Process(solverData, row, col, mini.Row, mini.Column, row,
                                 otherCol, (and & secondCorner).FirstPossibility())) return;
                     }
 
@@ -51,10 +51,10 @@ public class XYZWingStrategy : SudokuStrategy
                     {
                         if(otherRow / 3 == miniRow) continue;
 
-                        var secondCorner = strategyUser.PossibilitiesAt(otherRow, col);
+                        var secondCorner = solverData.PossibilitiesAt(otherRow, col);
                         if((secondCorner | firstCorner) != hinge) continue;
 
-                        if (Process(strategyUser, row, col, mini.Row, mini.Column,
+                        if (Process(solverData, row, col, mini.Row, mini.Column,
                                 otherRow, col, (and & secondCorner).FirstPossibility())) return;
                     }
                 }
@@ -62,16 +62,16 @@ public class XYZWingStrategy : SudokuStrategy
         }
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, int hingeRow, int hingeCol, int row1, int col1, int row2,
+    private bool Process(ISudokuSolverData solverData, int hingeRow, int hingeCol, int row1, int col1, int row2,
         int col2, int number)
     {
         foreach (var cell in SudokuCellUtility.SharedSeenCells(new Cell(hingeRow, hingeCol),
                      new Cell(row1, col1), new Cell(row2, col2)))
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(number, cell.Row, cell.Column);
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new XYZWingReportBuilder(hingeRow, hingeCol, row1, col1, row2, col2)) && StopOnFirstPush;
     }
     

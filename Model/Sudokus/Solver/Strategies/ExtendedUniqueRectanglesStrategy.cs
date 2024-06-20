@@ -19,19 +19,19 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.UnitStrongLink,
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.UnitStrongLink,
             SudokuConstructRuleBank.CellWeakLink, SudokuConstructRuleBank.UnitWeakLink);
         
         for (int mini = 0; mini < 3; mini++)
         {
-            if (Search(strategyUser, mini, Unit.Row)) return;
-            if (Search(strategyUser, mini, Unit.Column)) return;
+            if (Search(solverData, mini, Unit.Row)) return;
+            if (Search(solverData, mini, Unit.Column)) return;
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, int mini, Unit unit)
+    private bool Search(ISudokuSolverData solverData, int mini, Unit unit)
     {
         for (int u = 0; u < 3; u++)
         {
@@ -39,17 +39,17 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
             {
                 var o1 = mini * 3 + miniO1;
                 var c1 = unit == Unit.Row ? new Cell(o1, u) : new Cell( u, o1);
-                var p1 = strategyUser.PossibilitiesAt(c1);
+                var p1 = solverData.PossibilitiesAt(c1);
                 if (p1.Count == 0) continue;
                 
                 for (int miniO2 = miniO1 + 1; miniO2 < 3; miniO2++)
                 {
                     var o2 = mini * 3 + miniO2;
                     var c2 = unit == Unit.Row ? new Cell(o2, u) : new Cell(u, o2);
-                    var p2 = strategyUser.PossibilitiesAt(c2);
+                    var p2 = solverData.PossibilitiesAt(c2);
                     if (p2.Count == 0 || !p1.ContainsAll(p2)) continue;
 
-                    if (ContinueSearch(strategyUser, unit, c1, c2, p1 | p2)) return true;
+                    if (ContinueSearch(solverData, unit, c1, c2, p1 | p2)) return true;
                 }
             }
         }
@@ -57,18 +57,18 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ContinueSearch(ISudokuStrategyUser strategyUser, Unit unit, Cell c1, Cell c2, ReadOnlyBitSet16 poss)
+    private bool ContinueSearch(ISudokuSolverData solverData, Unit unit, Cell c1, Cell c2, ReadOnlyBitSet16 poss)
     {
         var list = new List<Cell> { c1, c2 };
 
         for (int u = 3; u < 6; u++)
         {
             var c3 = unit == Unit.Row ? new Cell(c1.Row, u) : new Cell(u, c1.Column);
-            var p3 = strategyUser.PossibilitiesAt(c3);
+            var p3 = solverData.PossibilitiesAt(c3);
             if (p3.Count == 0 || !poss.ContainsAny(p3)) continue;
             
             var c4 = unit == Unit.Row ? new Cell(c2.Row, u) : new Cell(u, c2.Column);
-            var p4 = strategyUser.PossibilitiesAt(c4);
+            var p4 = solverData.PossibilitiesAt(c4);
             if (p4.Count == 0 || !poss.ContainsAny(p3) || !p4.ContainsAny(p3)) continue;
 
             list.Add(c3);
@@ -77,17 +77,17 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
             for (int w = 6; w < 9; w++)
             {
                 var c5 = unit == Unit.Row ? new Cell(c1.Row, w) : new Cell(w, c1.Column);
-                var p5 = strategyUser.PossibilitiesAt(c5);
+                var p5 = solverData.PossibilitiesAt(c5);
                 if (p5.Count == 0 || !poss.ContainsAny(p5)) continue;
             
                 var c6 = unit == Unit.Row ? new Cell(c2.Row, w) : new Cell(w, c2.Column);
-                var p6 = strategyUser.PossibilitiesAt(c6);
+                var p6 = solverData.PossibilitiesAt(c6);
                 if (p6.Count == 0 || !poss.ContainsAny(p6) || !p6.ContainsAny(p5)) continue;
 
                 list.Add(c5);
                 list.Add(c6);
 
-                if (ProcessCombinations(strategyUser, poss.OrMulti(p3, p4, p5, p6), list)) return true;
+                if (ProcessCombinations(solverData, poss.OrMulti(p3, p4, p5, p6), list)) return true;
                 list.RemoveRange(list.Count - 2, 2);
             }
 
@@ -97,28 +97,28 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ProcessCombinations(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss, List<Cell> cells)
+    private bool ProcessCombinations(ISudokuSolverData solverData, ReadOnlyBitSet16 poss, List<Cell> cells)
     {
         if (poss.Count < 3) return false;
         var array = poss.ToArray();
 
         foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, array))
         {
-            if (Process(strategyUser, new ReadOnlyBitSet16(combination), cells)) return true;
+            if (Process(solverData, new ReadOnlyBitSet16(combination), cells)) return true;
         }
         
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
+    private bool Process(ISudokuSolverData solverData, ReadOnlyBitSet16 poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
     {
         List<CellPossibility> pNotInPattern = new List<CellPossibility>();
         List<Cell> cNotInPattern = new List<Cell>();
-        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
         
         foreach (var cell in cells)
         {
-            var p = strategyUser.PossibilitiesAt(cell) - poss;
+            var p = solverData.PossibilitiesAt(cell) - poss;
             if (p.Count == 0) continue;
 
             cNotInPattern.Add(cell);
@@ -134,10 +134,10 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         {
             foreach (var p in poss.EnumeratePossibilities())
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cNotInPattern[0].Row, cNotInPattern[0].Column);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(p, cNotInPattern[0].Row, cNotInPattern[0].Column);
             }
             
-            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                        new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
                    StopOnFirstPush;
         }
@@ -154,8 +154,8 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
                 foreach (var elimination in poss.EnumeratePossibilities())
                 {
                     if (elimination == p) continue;
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[0]);
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[1]);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[0]);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(elimination, cNotInPattern[1]);
                 }
             }
         }
@@ -172,11 +172,11 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
                 }
             }
 
-            if (ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
+            if (ok) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
         
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                    new ExtendedUniqueRectanglesReportBuilder(poss, cells.ToArray())) &&
                         StopOnFirstPush;
     }

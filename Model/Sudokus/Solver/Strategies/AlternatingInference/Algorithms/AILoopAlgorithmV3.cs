@@ -10,9 +10,9 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
 {
     public AlgorithmType Type => AlgorithmType.Loop;
     
-    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuSolverData solverData, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyUser);
+        var graph = type.GetGraph(solverData);
         
         foreach (var start in graph)
         {
@@ -37,15 +37,15 @@ public class AILoopAlgorithmV3<T> : IAlternatingInferenceAlgorithm<T> where T : 
                     {
                         case (Coloring.On, Coloring.Off) :
                         case (Coloring.Off, Coloring.On) :
-                            if (type.ProcessFullLoop(strategyUser, loop) &&
+                            if (type.ProcessFullLoop(solverData, loop) &&
                                 type.Strategy!.StopOnFirstPush) return;
                             break;
                         case(Coloring.On, Coloring.On) :
-                            if (type.ProcessStrongInferenceLoop(strategyUser, entry.Key, loop) &&
+                            if (type.ProcessStrongInferenceLoop(solverData, entry.Key, loop) &&
                                 type.Strategy!.StopOnFirstPush) return;
                             break;
                         case (Coloring.Off, Coloring.Off) :
-                            if (type.ProcessWeakInferenceLoop(strategyUser, entry.Key, loop) &&
+                            if (type.ProcessWeakInferenceLoop(solverData, entry.Key, loop) &&
                                 type.Strategy!.StopOnFirstPush) return;
                             break;
                     }

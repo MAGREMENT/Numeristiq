@@ -16,22 +16,22 @@ public class XYChainsStrategy : SudokuStrategy
 
     public XYChainsStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) {}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.XYChainSpecific,
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.XYChainSpecific,
             SudokuConstructRuleBank.CellStrongLink);
-        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
         var route = new List<CellPossibility>();
         var visited = new HashSet<CellPossibility>();
 
         foreach (var start in graph)
         {
-            if (Search(strategyUser, graph, start, route, visited)) return;
+            if (Search(solverData, graph, start, route, visited)) return;
             visited.Clear();
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, ILinkGraph<CellPossibility> graph, CellPossibility current,
+    private bool Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph, CellPossibility current,
         List<CellPossibility> route, HashSet<CellPossibility> visited)
     {
         var friend = graph.Neighbors(current, LinkStrength.Strong).First();
@@ -41,13 +41,13 @@ public class XYChainsStrategy : SudokuStrategy
         visited.Add(current);
         visited.Add(friend);
         
-        if(friend.Possibility == route[0].Possibility && Process(strategyUser, route)) return true;
+        if(friend.Possibility == route[0].Possibility && Process(solverData, route)) return true;
 
         foreach (var next in graph.Neighbors(friend, LinkStrength.Weak))
         {
             if (!visited.Contains(next))
             {
-                if (Search(strategyUser, graph, next, route, visited)) return true;
+                if (Search(solverData, graph, next, route, visited)) return true;
             }
         }
 
@@ -57,14 +57,14 @@ public class XYChainsStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, List<CellPossibility> visited)
+    private bool Process(ISudokuSolverData solverData, List<CellPossibility> visited)
     {
         foreach (var coord in visited[0].SharedSeenCells(visited[^1]))
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(visited[0].Possibility, coord.Row, coord.Column);
         }
         
-        return strategyUser.ChangeBuffer.Commit( new XYChainReportBuilder(visited))
+        return solverData.ChangeBuffer.Commit( new XYChainReportBuilder(visited))
             && StopOnFirstPush;
     }
 }

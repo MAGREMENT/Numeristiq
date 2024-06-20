@@ -217,21 +217,21 @@ public static class TectonicCellUtility
         }
     }
 
-    public static IEnumerable<CellPossibility> SharedSeenPossibilities(ITectonicStrategyUser strategyUser,
+    public static IEnumerable<CellPossibility> SharedSeenPossibilities(ITectonicSolverData solverData,
         CellPossibility cp1, CellPossibility cp2)
     {
         var c1 = cp1.ToCell();
         var c2 = cp2.ToCell();
         if (cp1.Possibility == cp2.Possibility)
         {
-            foreach (var cell in SharedSeenCells(strategyUser.Tectonic, c1, c2))
+            foreach (var cell in SharedSeenCells(solverData.Tectonic, c1, c2))
             {
                 yield return new CellPossibility(cell, cp1.Possibility);
             }
         }
         else if (c1 == c2)
         {
-            foreach (var p in strategyUser.PossibilitiesAt(c1).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(c1).EnumeratePossibilities())
             {
                 if (p != cp1.Possibility && p != cp2.Possibility)
                     yield return new CellPossibility(c1, p);

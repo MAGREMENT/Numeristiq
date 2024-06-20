@@ -7,36 +7,36 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Strategies;
 
-public class ZoneInteractionStrategy : TectonicStrategy
+public class ZoneInteractionStrategy : Strategy<ITectonicSolverData>
 {
     public ZoneInteractionStrategy() : base("Zone Interaction", StepDifficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
     
-    public override void Apply(ITectonicStrategyUser strategyUser)
+    public override void Apply(ITectonicSolverData solverData)
     {
         List<Cell> buffer = new();
         
-        foreach (var zone in strategyUser.Tectonic.Zones)
+        foreach (var zone in solverData.Tectonic.Zones)
         {
             for (int n = 1; n <= zone.Count; n++)
             {
                 foreach (var cell in zone)
                 {
-                    if (strategyUser.PossibilitiesAt(cell).Contains(n)) buffer.Add(cell);
+                    if (solverData.PossibilitiesAt(cell).Contains(n)) buffer.Add(cell);
                 }
 
                 if (buffer.Count == 0) continue;
 
-                foreach (var neighbor in TectonicCellUtility.SharedNeighboringCells(strategyUser.Tectonic, buffer))
+                foreach (var neighbor in TectonicCellUtility.SharedNeighboringCells(solverData.Tectonic, buffer))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
                 }
                 
                 buffer.Clear();
             }
 
-            strategyUser.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
+            solverData.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
         }
     }
 }

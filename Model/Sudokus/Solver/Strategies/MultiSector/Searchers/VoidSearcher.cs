@@ -4,7 +4,7 @@ namespace Model.Sudokus.Solver.Strategies.MultiSector.Searchers;
 
 public class VoidSearcher : ISetEquivalenceSearcher
 {
-    public IEnumerable<SetEquivalence> Search(ISudokuStrategyUser strategyUser)
+    public IEnumerable<SetEquivalence> Search(ISudokuSolverData solverData)
     {
         yield break;
     }

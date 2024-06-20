@@ -19,44 +19,44 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int i = 0; i < 81; i++)
         {
             var row1 = i / 9;
             var col1 = i % 9;
 
-            if (strategyUser.Sudoku[row1, col1] == 0 || strategyUser.StartState[row1, col1] != 0) continue;
+            if (solverData.Sudoku[row1, col1] == 0 || solverData.StartState[row1, col1] != 0) continue;
             
             for (int j = i + 1; j < 81; j++)
             {
                 var row2 = j / 9;
                 var col2 = j % 9;
 
-                if (strategyUser.Sudoku[row2, col2] == 0 || strategyUser.StartState[row2, col2] != 0) continue;
+                if (solverData.Sudoku[row2, col2] == 0 || solverData.StartState[row2, col2] != 0) continue;
 
-                if (Search(strategyUser, new BiValue(strategyUser.Sudoku[row1, col1],
-                        strategyUser.Sudoku[row2, col2]), new Cell(row1, col1), new Cell(row2, col2))) return;
+                if (Search(solverData, new BiValue(solverData.Sudoku[row1, col1],
+                        solverData.Sudoku[row2, col2]), new Cell(row1, col1), new Cell(row2, col2))) return;
             }
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, BiValue values, params Cell[] floor)
+    private bool Search(ISudokuSolverData solverData, BiValue values, params Cell[] floor)
     {
         foreach (var roof in SudokuCellUtility.DeadlyPatternRoofs(floor))
         {
-            if (Try(strategyUser, values, floor, roof)) return true;
+            if (Try(solverData, values, floor, roof)) return true;
         }
         
         return false;
     }
 
-    private bool Try(ISudokuStrategyUser strategyUser, BiValue values, Cell[] floor, Cell[] roof)
+    private bool Try(ISudokuSolverData solverData, BiValue values, Cell[] floor, Cell[] roof)
     {
-        if (strategyUser.StartState[roof[0].Row, roof[0].Column] != 0 || strategyUser.StartState[roof[1].Row, roof[1].Column] != 0) return false;
+        if (solverData.StartState[roof[0].Row, roof[0].Column] != 0 || solverData.StartState[roof[1].Row, roof[1].Column] != 0) return false;
         
-        var solved1 = strategyUser.Sudoku[roof[0].Row, roof[0].Column];
-        var solved2 = strategyUser.Sudoku[roof[1].Row, roof[1].Column];
+        var solved1 = solverData.Sudoku[roof[0].Row, roof[0].Column];
+        var solved2 = solverData.Sudoku[roof[1].Row, roof[1].Column];
         
         switch (solved1, solved2)
         {
@@ -65,8 +65,8 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             case (0, not 0) :
                 if (solved2 == values.One)
                 {
-                   strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
-                   return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                   solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+                   return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                               new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
                 }
 
@@ -74,16 +74,16 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             case(not 0, 0) :
                 if (solved1 == values.Two)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
-                    return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+                    return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush;
                 }
                 
                 return false;
         }
 
-        var possibilitiesRoofOne = strategyUser.PossibilitiesAt(roof[0]);
-        var possibilitiesRoofTwo = strategyUser.PossibilitiesAt(roof[1]);
+        var possibilitiesRoofOne = solverData.PossibilitiesAt(roof[0]);
+        var possibilitiesRoofTwo = solverData.PossibilitiesAt(roof[1]);
 
         if (!possibilitiesRoofOne.Contains(values.Two) || !possibilitiesRoofTwo.Contains(values.One)) return false;
 
@@ -95,24 +95,24 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
                 var possibility = and.FirstPossibility();
                 foreach (var cell in SudokuCellUtility.SharedSeenCells(roof[0], roof[1]))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
         }
 
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new AvoidableRectanglesReportBuilder(floor, roof)) && StopOnFirstPush) return true;
 
         var notBiValuePossibilities = possibilitiesRoofOne | possibilitiesRoofTwo;
         notBiValuePossibilities -= values.One;
         notBiValuePossibilities -= values.Two;
         var ssc = new List<Cell>(SudokuCellUtility.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(ssc))
+        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 
-            ProcessArWithAls(strategyUser, roof, als);
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            ProcessArWithAls(solverData, roof, als);
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new AvoidableRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         StopOnFirstPush) return true;
         }
@@ -120,24 +120,24 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         return false;
     }
     
-    private void ProcessArWithAls(ISudokuStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessArWithAls(ISudokuSolverData solverData, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities.EnumeratePossibilities())
         {
             foreach (var cell in als.EachCell())
             {
-                if(strategyUser.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
+                if(solverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
 
             foreach (var r in roof)
             {
-                if (strategyUser.PossibilitiesAt(r).Contains(possibility)) buffer.Add(r);
+                if (solverData.PossibilitiesAt(r).Contains(possibility)) buffer.Add(r);
             }
 
             foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
             buffer.Clear();

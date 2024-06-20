@@ -12,25 +12,25 @@ public class BruteForceStrategy : SudokuStrategy
 
     public BruteForceStrategy() : base(OfficialName, StepDifficulty.ByTrial, DefaultInstanceHandling) { }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        var solution = BackTracking.Solutions(strategyUser.Sudoku.Copy(), strategyUser, 1);
+        var solution = BackTracking.Solutions(solverData.Sudoku.Copy(), solverData, 1);
 
-        if (solution.Count == 1) Process(strategyUser, solution[0]);
+        if (solution.Count == 1) Process(solverData, solution[0]);
     }
 
-    private void Process(ISudokuStrategyUser strategyUser, Sudoku s)
+    private void Process(ISudokuSolverData solverData, Sudoku s)
     {
         for (int r = 0; r < 9; r++)
         {
             for (int c = 0; c < 9; c++)
             {
-                if(strategyUser.Sudoku[r, c] != 0) continue;
+                if(solverData.Sudoku[r, c] != 0) continue;
                     
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(s[r, c], r, c);
+                solverData.ChangeBuffer.ProposeSolutionAddition(s[r, c], r, c);
             }
         }
 
-        strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>.Instance);
+        solverData.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>.Instance);
     }
 }

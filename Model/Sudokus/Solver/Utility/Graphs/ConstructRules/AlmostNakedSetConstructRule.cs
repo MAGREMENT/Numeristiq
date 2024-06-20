@@ -6,11 +6,11 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class AlmostNakedSetConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement>
+public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
-        foreach (var als in strategyUser.PreComputer.AlmostLockedSets())
+        foreach (var als in solverData.PreComputer.AlmostLockedSets())
         {
             foreach (var p in als.Possibilities.EnumeratePossibilities())
             {
@@ -61,7 +61,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuStrategyUser, I
 
                     foreach (var ssc in SudokuCellUtility.SharedSeenCells(notIn))
                     {
-                        if (strategyUser.PossibilitiesAt(ssc).Contains(p)) linkGraph.Add(new CellPossibility(ssc, p),
+                        if (solverData.PossibilitiesAt(ssc).Contains(p)) linkGraph.Add(new CellPossibility(ssc, p),
                                 element, LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -73,7 +73,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuStrategyUser, I
 
                     foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
                     {
-                        if(strategyUser.PossibilitiesAt(ssc).Contains(possibility)) linkGraph.Add(nakedSet,
+                        if(solverData.PossibilitiesAt(ssc).Contains(possibility)) linkGraph.Add(nakedSet,
                             new CellPossibility(ssc, possibility), LinkStrength.Weak, LinkType.MonoDirectional);
                     }
                 }
@@ -81,7 +81,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuStrategyUser, I
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
     {
         
     }

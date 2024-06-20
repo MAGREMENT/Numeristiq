@@ -30,6 +30,18 @@ public class InfiniteBitSet : IEnumerable<int>
         _bits[i / BitSize] &= ~(1ul << (i % BitSize));
     }
 
+    public bool IsFilledUntilLast()
+    {
+        foreach (var val in _bits)
+        {
+            if (val == ulong.MaxValue) continue;
+
+            return System.Numerics.BitOperations.IsPow2(val);
+        }
+
+        return true;
+    }
+
     public bool IsSet(int i)
     {
         if (i < 0 || i >= _bits.Length * BitSize) return false;

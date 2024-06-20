@@ -18,35 +18,35 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     {
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
-        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
+        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
 
-        foreach (var linked in strategyUser.PreComputer.ConstructAlmostHiddenSetGraph())
+        foreach (var linked in solverData.PreComputer.ConstructAlmostHiddenSetGraph())
         {
             if (linked.Cells.Length > 2) continue;
 
             var one = linked.One;
             var two = linked.Two;
             
-            if (Process1CommonCell(strategyUser, one, two, graph)) return;
-            if (linked.Cells.Length == 2 && Process2CommonCells(strategyUser, one, two)) return;
+            if (Process1CommonCell(solverData, one, two, graph)) return;
+            if (linked.Cells.Length == 2 && Process2CommonCells(solverData, one, two)) return;
         }
     }
 
-    private bool Process2CommonCells(ISudokuStrategyUser strategyUser, IPossibilitiesPositions one,
+    private bool Process2CommonCells(ISudokuSolverData solverData, IPossibilitiesPositions one,
         IPossibilitiesPositions two)
     {
         foreach (var cell in one.EachCell())
         {
             if (two.Positions.Contains(cell)) continue;
                     
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 if (one.Possibilities.Contains(possibility)) continue;
 
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
                     
@@ -54,27 +54,27 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
         {
             if (one.Positions.Contains(cell)) continue;
                     
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 if (two.Possibilities.Contains(possibility)) continue;
 
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, new List<Link<CellPossibility>>()))
                                                        && StopOnFirstPush;
     }
 
-    private bool Process1CommonCell(ISudokuStrategyUser strategyUser, IPossibilitiesPositions one,
+    private bool Process1CommonCell(ISudokuSolverData solverData, IPossibilitiesPositions one,
         IPossibilitiesPositions two, ILinkGraph<CellPossibility> graph)
     {
         List<Link<CellPossibility>> links = new();
 
         foreach (var cell in one.EachCell())
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 if (one.Possibilities.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
 
@@ -90,14 +90,14 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
                             links.Add(new Link<CellPossibility>(current, friend));
                             links.Add(new Link<CellPossibility>(friend, friendOfFriend));
 
-                            strategyUser.ChangeBuffer.ProposeSolutionAddition(friend);
+                            solverData.ChangeBuffer.ProposeSolutionAddition(friend);
                         }
                     }
                 }
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                    new AlmostHiddenSetsAndStrongLinksReportBuilder(one, two, links)) &&
                         StopOnFirstPush;
     }

@@ -17,37 +17,37 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
 
     public ThreeDimensionMedusaStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling) {}
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.CellStrongLink);
-        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.CellStrongLink);
+        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
-                     Coloring.On, !strategyUser.FastMode))
+                     Coloring.On, !solverData.FastMode))
         {
             if(coloredVertices.Count <= 1) continue;
             
             HashSet<CellPossibility> inGraph = new HashSet<CellPossibility>(coloredVertices.On);
             inGraph.UnionWith(coloredVertices.Off);
 
-            if (SearchColor(strategyUser, coloredVertices.On, coloredVertices.Off, inGraph) ||
-                SearchColor(strategyUser, coloredVertices.Off, coloredVertices.On, inGraph))
+            if (SearchColor(solverData, coloredVertices.On, coloredVertices.Off, inGraph) ||
+                SearchColor(solverData, coloredVertices.Off, coloredVertices.On, inGraph))
             {
-                if(strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if(solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                        new SimpleColoringReportBuilder(coloredVertices, true)) && 
                         StopOnFirstPush) return;
                 
                 continue;
             }
             
-            SearchMix(strategyUser, coloredVertices.On, coloredVertices.Off, inGraph);
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            SearchMix(solverData, coloredVertices.On, coloredVertices.Off, inGraph);
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstPush) return;
         }
     }
 
-    private bool SearchColor(ISudokuStrategyUser strategyUser, IReadOnlyList<CellPossibility> toSearch,
+    private bool SearchColor(ISudokuSolverData solverData, IReadOnlyList<CellPossibility> toSearch,
         IReadOnlyList<CellPossibility> other, HashSet<CellPossibility> inGraph)
     {
         GridPositions[] seen = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
@@ -66,7 +66,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyUser.ChangeBuffer.ProposeSolutionAddition(coord);
+                        solverData.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -83,7 +83,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyUser.PossibilitiesAt(row, col);
+                var possibilities = solverData.PossibilitiesAt(row, col);
                 if (possibilities.Count == 0) continue;
 
                 bool emptied = true;
@@ -101,7 +101,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyUser.ChangeBuffer.ProposeSolutionAddition(coord);
+                        solverData.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -112,7 +112,7 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
         return false;
     }
 
-    private void SearchMix(ISudokuStrategyUser strategyUser, IReadOnlyList<CellPossibility> one,
+    private void SearchMix(ISudokuSolverData solverData, IReadOnlyList<CellPossibility> one,
         IReadOnlyList<CellPossibility> two, HashSet<CellPossibility> inGraph)
     {
         foreach (var first in one)
@@ -125,35 +125,35 @@ public class ThreeDimensionMedusaStrategy : SudokuStrategy
                     {
                         var current = new CellPossibility(coord.Row, coord.Column, first.Possibility);
                         if(inGraph.Contains(current)) continue; 
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(current);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(current);
                     }
                 }
                 else
                 {
                     if (first.Row == second.Row && first.Column == second.Column)
-                        RemoveAllExcept(strategyUser, first.Row, first.Column, first.Possibility, second.Possibility);
+                        RemoveAllExcept(solverData, first.Row, first.Column, first.Possibility, second.Possibility);
                     else if(first.ShareAUnit(second))
                     {
-                        if(strategyUser.PossibilitiesAt(first.Row, first.Column).Contains(second.Possibility) &&
+                        if(solverData.PossibilitiesAt(first.Row, first.Column).Contains(second.Possibility) &&
                            !inGraph.Contains(new CellPossibility(first.Row, first.Column, second.Possibility)))
-                            strategyUser.ChangeBuffer.ProposePossibilityRemoval(second.Possibility, first.Row, first.Column);
+                            solverData.ChangeBuffer.ProposePossibilityRemoval(second.Possibility, first.Row, first.Column);
                         
-                        if(strategyUser.PossibilitiesAt(second.Row, second.Column).Contains(first.Possibility) &&
+                        if(solverData.PossibilitiesAt(second.Row, second.Column).Contains(first.Possibility) &&
                            !inGraph.Contains(new CellPossibility(second.Row, second.Column, first.Possibility)))
-                            strategyUser.ChangeBuffer.ProposePossibilityRemoval(first.Possibility, second.Row, second.Column);
+                            solverData.ChangeBuffer.ProposePossibilityRemoval(first.Possibility, second.Row, second.Column);
                     }
                 }
             }
         }
     }
     
-    private void RemoveAllExcept(ISudokuStrategyUser strategyUser, int row, int col, int exceptOne, int exceptTwo)
+    private void RemoveAllExcept(ISudokuSolverData solverData, int row, int col, int exceptOne, int exceptTwo)
     {
         for (int i = 1; i <= 9; i++)
         {
             if (i != exceptOne && i != exceptTwo)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(i, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(i, row, col);
             }
         }
     }

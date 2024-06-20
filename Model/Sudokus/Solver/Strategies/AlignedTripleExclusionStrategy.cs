@@ -25,7 +25,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         AddSetting(_minSharedSeenCells);
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int start1 = 0; start1 < 9; start1 += 3)
         {
@@ -40,15 +40,15 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                     var c2 = new Cell(start1 + i, start2 + 1);
                     var c3 = new Cell(start1 + i, start2 + 2);
                     
-                    if (strategyUser.Sudoku[c1.Row, c1.Column] == 0 && strategyUser.Sudoku[c2.Row, c2.Column] == 0 &&
-                        strategyUser.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyUser, c1, c2, c3)) return;
+                    if (solverData.Sudoku[c1.Row, c1.Column] == 0 && solverData.Sudoku[c2.Row, c2.Column] == 0 &&
+                        solverData.Sudoku[c3.Row, c3.Column] == 0 && Search(solverData, c1, c2, c3)) return;
 
                     c1 = new Cell(start1, start2 + i);
                     c2 = new Cell(start1 + 1, start2 + i);
                     c3 = new Cell(start1 + 2, start2 + i);
                     
-                    if (strategyUser.Sudoku[c1.Row, c1.Column] == 0 && strategyUser.Sudoku[c2.Row, c2.Column] == 0 &&
-                        strategyUser.Sudoku[c3.Row, c3.Column] == 0 && Search(strategyUser, c1, c2, c3)) return;
+                    if (solverData.Sudoku[c1.Row, c1.Column] == 0 && solverData.Sudoku[c2.Row, c2.Column] == 0 &&
+                        solverData.Sudoku[c3.Row, c3.Column] == 0 && Search(solverData, c1, c2, c3)) return;
                 }
             }
             
@@ -69,46 +69,46 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                         {
                             if (i == j) continue;
                             
-                            if (strategyUser.Sudoku[unit1, i] == 0 && strategyUser.Sudoku[unit1, j] == 0)
+                            if (solverData.Sudoku[unit1, i] == 0 && solverData.Sudoku[unit1, j] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyUser.Sudoku[unit2, k] != 0) continue;
+                                    if(k / 3 == i / 3 || solverData.Sudoku[unit2, k] != 0) continue;
 
-                                    if (Search(strategyUser, new Cell(unit1, i), new Cell(unit1, j),
+                                    if (Search(solverData, new Cell(unit1, i), new Cell(unit1, j),
                                             new Cell(unit2, k))) return;
                                 }
                             }
                             
-                            if (strategyUser.Sudoku[unit2, i] == 0 && strategyUser.Sudoku[unit2, j] == 0)
+                            if (solverData.Sudoku[unit2, i] == 0 && solverData.Sudoku[unit2, j] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyUser.Sudoku[unit1, k] != 0) continue;
+                                    if(k / 3 == i / 3 || solverData.Sudoku[unit1, k] != 0) continue;
 
-                                    if (Search(strategyUser, new Cell(unit2, i), new Cell(unit2, j),
+                                    if (Search(solverData, new Cell(unit2, i), new Cell(unit2, j),
                                             new Cell(unit1, k))) return;
                                 }
                             }
                             
-                            if (strategyUser.Sudoku[i, unit1] == 0 && strategyUser.Sudoku[j, unit1] == 0)
+                            if (solverData.Sudoku[i, unit1] == 0 && solverData.Sudoku[j, unit1] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyUser.Sudoku[k, unit2] != 0) continue;
+                                    if(k / 3 == i / 3 || solverData.Sudoku[k, unit2] != 0) continue;
 
-                                    if (Search(strategyUser, new Cell(i, unit1), new Cell(j, unit1),
+                                    if (Search(solverData, new Cell(i, unit1), new Cell(j, unit1),
                                             new Cell(k, unit2))) return;
                                 }
                             }
                             
-                            if (strategyUser.Sudoku[i, unit2] == 0 && strategyUser.Sudoku[j, unit2] == 0)
+                            if (solverData.Sudoku[i, unit2] == 0 && solverData.Sudoku[j, unit2] == 0)
                             {
                                 for (int k = 0; k < 9; k++)
                                 {
-                                    if(k / 3 == i / 3 || strategyUser.Sudoku[k, unit1] != 0) continue;
+                                    if(k / 3 == i / 3 || solverData.Sudoku[k, unit1] != 0) continue;
 
-                                    if (Search(strategyUser, new Cell(i, unit2), new Cell(j, unit2),
+                                    if (Search(solverData, new Cell(i, unit2), new Cell(j, unit2),
                                             new Cell(k, unit1))) return;
                                 }
                             }
@@ -137,7 +137,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                                 var other1 = start2 + i;
                                 var other2 = start2 + j;
 
-                                if (strategyUser.Sudoku[unit1, other1] == 0 & strategyUser.Sudoku[unit2, other2] == 0)
+                                if (solverData.Sudoku[unit1, other1] == 0 & solverData.Sudoku[unit2, other2] == 0)
                                 {
                                     for (int startOther = 0; startOther < 9; startOther += 3)
                                     {
@@ -146,15 +146,15 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                                         for (int k = 0; k < 3; k++)
                                         {
                                             var other3 = startOther + k;
-                                            if(strategyUser.Sudoku[unit3, other3] != 0) continue;
+                                            if(solverData.Sudoku[unit3, other3] != 0) continue;
                                             
-                                            if(Search(strategyUser, new Cell(unit1, other1),
+                                            if(Search(solverData, new Cell(unit1, other1),
                                                    new Cell(unit2, other2), new Cell(unit3, other3))) return;
                                         }
                                     }
                                 }
                                 
-                                if (strategyUser.Sudoku[other1, unit1] == 0 & strategyUser.Sudoku[other2, unit2] == 0)
+                                if (solverData.Sudoku[other1, unit1] == 0 & solverData.Sudoku[other2, unit2] == 0)
                                 {
                                     for (int startOther = 0; startOther < 3; startOther++)
                                     {
@@ -163,9 +163,9 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                                         for (int k = 0; k < 3; k++)
                                         {
                                             var other3 = startOther + k;
-                                            if(strategyUser.Sudoku[other3, unit3] != 0) continue;
+                                            if(solverData.Sudoku[other3, unit3] != 0) continue;
                                             
-                                            if(Search(strategyUser, new Cell(other1, unit1),
+                                            if(Search(solverData, new Cell(other1, unit1),
                                                    new Cell(other2, unit2), new Cell(other3, unit3))) return;
                                         }
                                     }
@@ -190,13 +190,13 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, Cell c1, Cell c2, Cell c3)
+    private bool Search(ISudokuSolverData solverData, Cell c1, Cell c2, Cell c3)
     {
-        var ssc = SudokuCellUtility.SharedSeenEmptyCells(strategyUser, c1, c2, c3);
+        var ssc = SudokuCellUtility.SharedSeenEmptyCells(solverData, c1, c2, c3);
 
-        var poss1 = strategyUser.PossibilitiesAt(c1);
-        var poss2 = strategyUser.PossibilitiesAt(c2);
-        var poss3 = strategyUser.PossibilitiesAt(c3);
+        var poss1 = solverData.PossibilitiesAt(c1);
+        var poss2 = solverData.PossibilitiesAt(c2);
+        var poss3 = solverData.PossibilitiesAt(c3);
         var or = poss1.OrMulti(poss2, poss3);
 
         if (ssc.Count < poss1.Count || ssc.Count < poss2.Count || ssc.Count < poss3.Count) return false;
@@ -205,7 +205,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
         HashSet<TriValue> forbiddenTri = new();
         HashSet<BiValue> forbiddenBi = new();
 
-        var searcher = strategyUser.AlmostNakedSetSearcher;
+        var searcher = solverData.AlmostNakedSetSearcher;
 
         searcher.Difference = 2;
         foreach (var aals in searcher.InCells(ssc))
@@ -255,15 +255,15 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
             if (useful) usefulThings.Add(als);
         }
         
-        SearchForElimination(strategyUser, poss1, poss2, poss3, c1, c2, c3, forbiddenTri, forbiddenBi);
-        SearchForElimination(strategyUser, poss2, poss1, poss3, c2, c1, c3, forbiddenTri, forbiddenBi);
-        SearchForElimination(strategyUser, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
+        SearchForElimination(solverData, poss1, poss2, poss3, c1, c2, c3, forbiddenTri, forbiddenBi);
+        SearchForElimination(solverData, poss2, poss1, poss3, c2, c1, c3, forbiddenTri, forbiddenBi);
+        SearchForElimination(solverData, poss3, poss2, poss1, c3, c2, c1, forbiddenTri, forbiddenBi);
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit( 
             new AlignedTripleExclusionReportBuilder(c1, c2, c3, usefulThings)) && StopOnFirstPush;
     }
 
-    private void SearchForElimination(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,
+    private void SearchForElimination(ISudokuSolverData solverData, ReadOnlyBitSet16 poss1, ReadOnlyBitSet16 poss2,
         ReadOnlyBitSet16 poss3, Cell c1, Cell c2, Cell c3, HashSet<TriValue> forbiddenTri, HashSet<BiValue> forbiddenBi)
     {
         foreach (var p1 in poss1.EnumeratePossibilities())
@@ -292,7 +292,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
                 if (!toDelete) break;
             }
 
-            if (toDelete) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p1, c1);
+            if (toDelete) solverData.ChangeBuffer.ProposePossibilityRemoval(p1, c1);
         }
     }
 }

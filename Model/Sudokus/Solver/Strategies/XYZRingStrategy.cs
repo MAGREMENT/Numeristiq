@@ -18,36 +18,36 @@ public class XYZRingStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructComplex(
+        solverData.PreComputer.Graphs.ConstructComplex(
             SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities);
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
-                if (poss.Count == 3 && SearchBaseWing(strategyUser, strategyUser.PreComputer.Graphs.ComplexLinkGraph,
+                var poss = solverData.PossibilitiesAt(row, col);
+                if (poss.Count == 3 && SearchBaseWing(solverData, solverData.PreComputer.Graphs.ComplexLinkGraph,
                         new Cell(row, col), poss)) return;
             }
         }
     }
 
-    private bool SearchBaseWing(ISudokuStrategyUser strategyUser, ILinkGraph<ISudokuElement> graph, Cell hinge, ReadOnlyBitSet16 possibilities)
+    private bool SearchBaseWing(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> graph, Cell hinge, ReadOnlyBitSet16 possibilities)
     {
         for (int col = 0; col < 9; col++)
         {
             if (col / 3 == hinge.Column / 3) continue;
-            var possC = strategyUser.PossibilitiesAt(hinge.Row, col);
+            var possC = solverData.PossibilitiesAt(hinge.Row, col);
             if (possC.Count != 2 || (possibilities | possC) != possibilities) continue;
 
             for (int row = 0; row < 9; row++)
             {
                 if (row / 3 == hinge.Row / 3) continue;
-                var possR = strategyUser.PossibilitiesAt(row, hinge.Column);
+                var possR = solverData.PossibilitiesAt(row, hinge.Column);
 
                 if (possR.Count == 2 && possR != possC && (possR | possC) == possibilities
-                    && SearchRing(strategyUser, graph, hinge, new Cell(hinge.Row, col), new Cell(row, hinge.Column),
+                    && SearchRing(solverData, graph, hinge, new Cell(hinge.Row, col), new Cell(row, hinge.Column),
                         possibilities.AndMulti(possC, possR).FirstPossibility())) return true;
             }
         }
@@ -55,7 +55,7 @@ public class XYZRingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool SearchRing(ISudokuStrategyUser strategyUser, ILinkGraph<ISudokuElement> graph, Cell hinge, Cell hingeRow, Cell hingeCol, int poss)
+    private bool SearchRing(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> graph, Cell hinge, Cell hingeRow, Cell hingeCol, int poss)
     {
         var cph = new CellPossibility(hinge, poss);
         var cpr = new CellPossibility(hingeRow, poss);
@@ -69,7 +69,7 @@ public class XYZRingStrategy : SudokuStrategy
             {
                 if (!CheckIntegrity(secondNeighbor, cph, cpc, cpr)) continue;
 
-                if (graph.AreNeighbors(secondNeighbor, cpc) && Process(strategyUser, hinge, hingeRow,
+                if (graph.AreNeighbors(secondNeighbor, cpc) && Process(solverData, hinge, hingeRow,
                         hingeCol, poss, neighbor, secondNeighbor)) return true;
             }
         }
@@ -77,25 +77,25 @@ public class XYZRingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, Cell hinge, Cell hingeRow, Cell hingeCol, int poss,
+    private bool Process(ISudokuSolverData solverData, Cell hinge, Cell hingeRow, Cell hingeCol, int poss,
         ISudokuElement rowFriend, ISudokuElement columnFriend)
     {
-        var p = strategyUser.PossibilitiesAt(hingeRow).FirstPossibility(poss);
+        var p = solverData.PossibilitiesAt(hingeRow).FirstPossibility(poss);
         for (int col = 0; col < 9; col++)
         {
             if (col == hinge.Column || col == hingeRow.Column) continue;
 
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, hinge.Row, col);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(p, hinge.Row, col);
         }
 
-        p = strategyUser.PossibilitiesAt(hingeCol).FirstPossibility(poss);
+        p = solverData.PossibilitiesAt(hingeCol).FirstPossibility(poss);
         for (int row = 0; row < 9; row++)
         {
             if(row == hinge.Row || row == hingeCol.Row) continue;
 
             if (p == poss && columnFriend.Contains(new Cell(row, hinge.Column))) continue;
 
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, hinge.Column);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, hinge.Column);
         }
 
         List<Cell> buffer = new() { hingeRow, hinge };
@@ -106,7 +106,7 @@ public class XYZRingStrategy : SudokuStrategy
             if (cell == hinge || cell == hingeCol ||
                 columnFriend.Contains(cell)) continue;
 
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(poss, cell);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(poss, cell);
         }
 
         buffer.Clear();
@@ -119,10 +119,10 @@ public class XYZRingStrategy : SudokuStrategy
             if (cell == hinge || cell == hingeRow ||
                 rowFriend.Contains(cell)) continue;
 
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(poss, cell);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(poss, cell);
         }
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(new XYZRingReportBuilder(hinge,
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(new XYZRingReportBuilder(hinge,
             hingeRow, hingeCol, rowFriend, columnFriend, poss)) && StopOnFirstPush;
     }
 

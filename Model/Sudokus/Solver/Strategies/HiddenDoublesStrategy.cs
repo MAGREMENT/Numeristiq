@@ -15,7 +15,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
 
     public HiddenDoublesStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         Dictionary<IReadOnlyLinePositions, int> lines = new();
         Dictionary<IReadOnlyMiniGridPositions, int> minis = new();
@@ -23,12 +23,12 @@ public class HiddenDoublesStrategy : SudokuStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var pos = strategyUser.RowPositionsAt(row, number);
+                var pos = solverData.RowPositionsAt(row, number);
                 if (pos.Count != 2) continue;
 
                 if (lines.TryGetValue(pos, out var n))
                 {
-                    if (ProcessRow(strategyUser, pos, row, number, n)) return;
+                    if (ProcessRow(solverData, pos, row, number, n)) return;
                 }
                 else lines.Add(pos, number);
             }
@@ -40,12 +40,12 @@ public class HiddenDoublesStrategy : SudokuStrategy
         {
             for (int number = 1; number <= 9; number++)
             {
-                var pos = strategyUser.ColumnPositionsAt(col, number);
+                var pos = solverData.ColumnPositionsAt(col, number);
                 if (pos.Count != 2) continue;
 
                 if (lines.TryGetValue(pos, out var n))
                 {
-                    if (ProcessColumn(strategyUser, pos, col, number, n)) return;
+                    if (ProcessColumn(solverData, pos, col, number, n)) return;
                 }
                 else lines.Add(pos, number);
             }
@@ -59,12 +59,12 @@ public class HiddenDoublesStrategy : SudokuStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var pos = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var pos = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (pos.Count != 2) continue;
 
                     if (minis.TryGetValue(pos, out var n))
                     {
-                        if (ProcessMiniGrid(strategyUser, pos, number, n)) return;
+                        if (ProcessMiniGrid(solverData, pos, number, n)) return;
                     }
                     else minis.Add(pos, number);
                 }
@@ -74,53 +74,53 @@ public class HiddenDoublesStrategy : SudokuStrategy
         }
     }
     
-    private bool ProcessRow(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions positions, int row, int n1,
+    private bool ProcessRow(ISudokuSolverData solverData, IReadOnlyLinePositions positions, int row, int n1,
         int n2)
     {
         foreach (var col in positions)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new LineHiddenDoublesReportBuilder(row, positions, n1, n2, Unit.Row)) && StopOnFirstPush;
     }
 
-    private bool ProcessColumn(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions positions, int col,
+    private bool ProcessColumn(ISudokuSolverData solverData, IReadOnlyLinePositions positions, int col,
         int n1, int n2)
     {
         foreach(var row in positions)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && StopOnFirstPush;
     }
 
-    private bool ProcessMiniGrid(ISudokuStrategyUser strategyUser, IReadOnlyMiniGridPositions positions, int n1, int n2)
+    private bool ProcessMiniGrid(ISudokuSolverData solverData, IReadOnlyMiniGridPositions positions, int n1, int n2)
     {
         foreach (var cell in positions)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cell.Row, cell.Column).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(cell.Row, cell.Column).EnumeratePossibilities())
             {
                 if(possibility == n1 || possibility == n2) continue;
 
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new MiniGridHiddenDoublesReportBuilder(positions, n1, n2)) && StopOnFirstPush;
     }
 }

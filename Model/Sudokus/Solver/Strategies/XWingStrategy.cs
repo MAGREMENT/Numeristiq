@@ -17,7 +17,7 @@ public class XWingStrategy : SudokuStrategy
 
     public XWingStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling){}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         Dictionary<IReadOnlyLinePositions, int> dict = new();
         for (int n = 1; n <= 9; n++)
@@ -25,12 +25,12 @@ public class XWingStrategy : SudokuStrategy
             //Rows
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyUser.RowPositionsAt(row, n);
+                var ppir = solverData.RowPositionsAt(row, n);
                 if (ppir.Count != 2) continue;
                 
                 if (!dict.TryAdd(ppir, row))
                 {
-                    if (RemoveFromColumns(strategyUser, ppir, dict[ppir], row, n)) return;
+                    if (RemoveFromColumns(solverData, ppir, dict[ppir], row, n)) return;
                 }
             }
             dict.Clear();
@@ -38,19 +38,19 @@ public class XWingStrategy : SudokuStrategy
             //Columns
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyUser.ColumnPositionsAt(col, n);
+                var ppic = solverData.ColumnPositionsAt(col, n);
                 if (ppic.Count != 2) continue;
                 
                 if (!dict.TryAdd(ppic, col))
                 {
-                    if (RemoveFromRows(strategyUser, ppic, dict[ppic], col, n)) return;
+                    if (RemoveFromRows(solverData, ppic, dict[ppic], col, n)) return;
                 }
             }
             dict.Clear();
         }
     }
 
-    private bool RemoveFromColumns(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions cols, int row1, int row2, int number)
+    private bool RemoveFromColumns(ISudokuSolverData solverData, IReadOnlyLinePositions cols, int row1, int row2, int number)
     {
         for (int row = 0; row < 9; row++)
         {
@@ -58,15 +58,15 @@ public class XWingStrategy : SudokuStrategy
             
             foreach (var col in cols)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit( new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
+        return solverData.ChangeBuffer.Commit( new XWingReportBuilder(cols, row1, row2, number, Unit.Row))
             && StopOnFirstPush;
     }
 
-    private bool RemoveFromRows(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions rows, int col1, int col2, int number)
+    private bool RemoveFromRows(ISudokuSolverData solverData, IReadOnlyLinePositions rows, int col1, int col2, int number)
     {
         for (int col = 0; col < 9; col++)
         {
@@ -74,11 +74,11 @@ public class XWingStrategy : SudokuStrategy
             
             foreach (var row in rows)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit( new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
+        return solverData.ChangeBuffer.Commit( new XWingReportBuilder(rows, col1, col2, number, Unit.Column))
             && StopOnFirstPush;
     }
 }

@@ -8,7 +8,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver;
 
-public interface ITectonicStrategyUser : IPossibilitiesGiver
+public interface ITectonicSolverData : IPossibilitiesGiver
 {
     IReadOnlyTectonic Tectonic { get; }
     ReadOnlyBitSet8 PossibilitiesAt(Cell cell);
@@ -19,5 +19,5 @@ public interface ITectonicStrategyUser : IPossibilitiesGiver
     ReadOnlyBitSet8 ZonePositionsFor(int zone, int n);
     ReadOnlyBitSet8 ZonePositionsFor(IZone zone, int n);
     ChangeBuffer<IUpdatableTectonicSolvingState, ITectonicHighlighter> ChangeBuffer { get; }
-    LinkGraphManager<ITectonicStrategyUser, ITectonicElement> Graphs { get; }
+    LinkGraphManager<ITectonicSolverData, ITectonicElement> Graphs { get; }
 }

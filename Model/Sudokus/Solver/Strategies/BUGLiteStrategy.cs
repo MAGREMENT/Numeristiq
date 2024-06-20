@@ -28,7 +28,7 @@ public class BUGLiteStrategy : SudokuStrategy
         AddSetting(_maxStructSize);
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         var structuresDone = new HashSet<GridPositions>();
         
@@ -36,7 +36,7 @@ public class BUGLiteStrategy : SudokuStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
+                var poss = solverData.PossibilitiesAt(row, col);
                 if (poss.Count != 2) continue;
 
                 var first = new Cell(row, col);
@@ -50,7 +50,7 @@ public class BUGLiteStrategy : SudokuStrategy
                     for (int c = col % 3; c < 3; c++)
                     {
                         var col2 = startC + c;
-                        if ((row2 == row && col2 == col) || !strategyUser.PossibilitiesAt(row2, col2).Equals(poss)) continue;
+                        if ((row2 == row && col2 == col) || !solverData.PossibilitiesAt(row2, col2).Equals(poss)) continue;
 
                         var second = new Cell(row2, col2);
                         var bcp = new BiCellPossibilities(first, second, poss);
@@ -71,7 +71,7 @@ public class BUGLiteStrategy : SudokuStrategy
                             }
                         }
                         
-                        if (Search(strategyUser, new HashSet<BiCellPossibilities> {bcp},
+                        if (Search(solverData, new HashSet<BiCellPossibilities> {bcp},
                             new GridPositions {first, second}, conditionsToMeet,
                             new HashSet<IBUGLiteCondition>(), structuresDone)) return;
                     }
@@ -80,14 +80,14 @@ public class BUGLiteStrategy : SudokuStrategy
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
+    private bool Search(ISudokuSolverData solverData, HashSet<BiCellPossibilities> bcp, GridPositions structure, 
         List<IBUGLiteCondition> conditionsToMeet, HashSet<IBUGLiteCondition> conditionsMet, HashSet<GridPositions> structuresDone)
     {
         var current = conditionsToMeet[0];
         conditionsToMeet.RemoveAt(0);
         conditionsMet.Add(current);
 
-        foreach (var match in current.ConditionMatches(strategyUser, structure))
+        foreach (var match in current.ConditionMatches(solverData, structure))
         {
             bool ok = true;
             foreach (var otherCondition in match.OtherConditions)
@@ -129,10 +129,10 @@ public class BUGLiteStrategy : SudokuStrategy
 
             if (conditionsToMeet.Count == 0)
             {
-                if (Process(strategyUser, bcp)) return true;
+                if (Process(solverData, bcp)) return true;
             }
             else if (structure.Count < _maxStructSize.Value &&
-                      Search(strategyUser, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
+                      Search(solverData, bcp, structure, conditionsToMeet, conditionsMet, structuresDone)) return true;
             
             structure.Remove(match.BiCellPossibilities.One);
             structure.Remove(match.BiCellPossibilities.Two);
@@ -152,21 +152,21 @@ public class BUGLiteStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, HashSet<BiCellPossibilities> bcp)
+    private bool Process(ISudokuSolverData solverData, HashSet<BiCellPossibilities> bcp)
     {
         var cellsNotInStructure = new List<Cell>();
         var possibilitiesNotInStructure = new ReadOnlyBitSet16();
 
         foreach (var b in bcp)
         {
-            var no1 = strategyUser.PossibilitiesAt(b.One) - b.Possibilities;
+            var no1 = solverData.PossibilitiesAt(b.One) - b.Possibilities;
             if (no1.Count > 0)
             {
                 cellsNotInStructure.Add(b.One);
                 possibilitiesNotInStructure |= no1;
             }
 
-            var no2 = strategyUser.PossibilitiesAt(b.Two) - b.Possibilities;
+            var no2 = solverData.PossibilitiesAt(b.Two) - b.Possibilities;
             if (no2.Count > 0)
             {
                 cellsNotInStructure.Add(b.Two);
@@ -179,7 +179,7 @@ public class BUGLiteStrategy : SudokuStrategy
             var c = cellsNotInStructure[0];
             foreach (var p in FindStructurePossibilitiesFor(c, bcp).EnumeratePossibilities())
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(p, c);
             }
         }
         else if (cellsNotInStructure.Count == 2)
@@ -193,11 +193,11 @@ public class BUGLiteStrategy : SudokuStrategy
                 {
                     var cp1 = new CellPossibility(cellsNotInStructure[0], asArray[i]);
                     var cp2 = new CellPossibility(cellsNotInStructure[1], asArray[i]);
-                    if (SudokuCellUtility.AreStronglyLinked(strategyUser, cp1, cp2))
+                    if (SudokuCellUtility.AreStronglyLinked(solverData, cp1, cp2))
                     {
                         var other = asArray[(i + 1) % 2];
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[1]);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[0]);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(other, cellsNotInStructure[1]);
                     }
                 }
             }
@@ -208,11 +208,11 @@ public class BUGLiteStrategy : SudokuStrategy
             var p = possibilitiesNotInStructure.FirstPossibility();
             foreach (var ssc in SudokuCellUtility.SharedSeenCells(cellsNotInStructure))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new BUGLiteReportBuilder(bcp)) && StopOnFirstPush;
     }
 
@@ -233,7 +233,7 @@ public record BUGLiteConditionMatch(BiCellPossibilities BiCellPossibilities, par
 
 public interface IBUGLiteCondition
 { 
-    IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuStrategyUser strategyUser, GridPositions done);
+    IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done);
 }
 
 public class RowBUGLiteCondition : IBUGLiteCondition
@@ -249,7 +249,7 @@ public class RowBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuStrategyUser strategyUser, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done)
     {
         var miniCol = _one.Column / 3;
 
@@ -260,14 +260,14 @@ public class RowBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(_one.Row, c * 3 + i);
-                if (done.Contains(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Contains(first) || solverData.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(_two.Row, c * 3 + j);
-                    if (done.Contains(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Contains(first) || solverData.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    var and = strategyUser.PossibilitiesAt(first) & strategyUser.PossibilitiesAt(second);
+                    var and = solverData.PossibilitiesAt(first) & solverData.PossibilitiesAt(second);
                     if (and.Count < 2 || !and.Contains(_possibility)) continue;
 
                     foreach (var p in and.EnumeratePossibilities())
@@ -318,7 +318,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
         _possibility = possibility;
     }
 
-    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuStrategyUser strategyUser, GridPositions done)
+    public IEnumerable<BUGLiteConditionMatch> ConditionMatches(ISudokuSolverData solverData, GridPositions done)
     {
         var miniRow = _one.Row / 3;
 
@@ -329,14 +329,14 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
             for (int i = 0; i < 3; i++)
             {
                 var first = new Cell(r * 3 + i, _one.Column);
-                if (done.Contains(first) || strategyUser.Sudoku[first.Row, first.Column] != 0) continue;
+                if (done.Contains(first) || solverData.Sudoku[first.Row, first.Column] != 0) continue;
 
                 for (int j = 0; j < 3; j++)
                 {
                     var second = new Cell(r * 3 + j, _two.Column);
-                    if (done.Contains(first) || strategyUser.Sudoku[second.Row, second.Column] != 0) continue;
+                    if (done.Contains(first) || solverData.Sudoku[second.Row, second.Column] != 0) continue;
 
-                    var and = strategyUser.PossibilitiesAt(first) & strategyUser.PossibilitiesAt(second);
+                    var and = solverData.PossibilitiesAt(first) & solverData.PossibilitiesAt(second);
                     if (and.Count < 2 || !and.Contains(_possibility)) continue;
 
                     foreach (var p in and.EnumeratePossibilities())

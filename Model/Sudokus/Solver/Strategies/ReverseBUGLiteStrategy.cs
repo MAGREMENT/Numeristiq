@@ -18,7 +18,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row1 = 0; row1 < 9; row1++)
         {
@@ -37,14 +37,14 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
 
                 for (int col = 0; col < 9; col++)
                 {
-                    var current = strategyUser.Sudoku[row1, col];
+                    var current = solverData.Sudoku[row1, col];
                     if (current != 0)
                     {
                         poss1 += current;
                         cols1.Add(col);
                     }
                     
-                    current = strategyUser.Sudoku[row2, col];
+                    current = solverData.Sudoku[row2, col];
                     if (current != 0)
                     {
                         poss2 += current;
@@ -63,18 +63,18 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
                 {
                     if (!cols1.Contains(col))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row1, col);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, row1, col);
                         break;
                     }
 
                     if (!cols2.Contains(col))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row2, col);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, row2, col);
                         break;
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(row1, row2, cols1, cols2, Unit.Row)) &&
                             StopOnFirstPush) return;
             }
@@ -97,14 +97,14 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
 
                 for (int row = 0; row < 9; row++)
                 {
-                    var current = strategyUser.Sudoku[row, col1];
+                    var current = solverData.Sudoku[row, col1];
                     if (current != 0)
                     {
                         poss1 += current;
                         rows1.Add(row);
                     }
                     
-                    current = strategyUser.Sudoku[row, col2];
+                    current = solverData.Sudoku[row, col2];
                     if (current != 0)
                     {
                         poss2 += current;
@@ -123,18 +123,18 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
                 {
                     if (!rows1.Contains(row))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col1);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, col1);
                         break;
                     }
 
                     if (!rows2.Contains(row))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col2);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, col2);
                         break;
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new ReverseBUGLiteChangeReport(col1, col2, rows1, rows2, Unit.Column)) &&
                             StopOnFirstPush) return;
             }

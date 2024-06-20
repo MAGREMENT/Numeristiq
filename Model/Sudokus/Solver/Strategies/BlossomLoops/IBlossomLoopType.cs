@@ -7,5 +7,5 @@ namespace Model.Sudokus.Solver.Strategies.BlossomLoops;
 public interface IBlossomLoopType
 {
     public string Name { get; }
-    public IEnumerable<CellPossibility[]> Candidates(ISudokuStrategyUser strategyUser);
+    public IEnumerable<CellPossibility[]> Candidates(ISudokuSolverData solverData);
 }

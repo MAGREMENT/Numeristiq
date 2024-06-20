@@ -22,15 +22,15 @@ public class UniquenessClueCoverStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         foreach (var c in _collections)
         {
             if (_needFilter)
             {
-                if (c.Filter(strategyUser)) return;
+                if (c.Filter(solverData)) return;
             }
-            else if (c.Apply(strategyUser)) return;
+            else if (c.Apply(solverData)) return;
         }
 
         _needFilter = false;

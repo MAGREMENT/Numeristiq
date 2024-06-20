@@ -3,7 +3,7 @@ using Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
 namespace Model.Sudokus.Solver.Utility.Graphs;
 
-public class SudokuConstructRuleBank : IConstructRuleBank<ISudokuStrategyUser, ISudokuElement>
+public class SudokuConstructRuleBank : IConstructRuleBank<ISudokuSolverData, ISudokuElement>
 {
     public const int UnitStrongLink = 0,
         CellStrongLink = 1,
@@ -14,7 +14,7 @@ public class SudokuConstructRuleBank : IConstructRuleBank<ISudokuStrategyUser, I
         XYChainSpecific = 6,
         JuniorExocet = 7;
     
-    private readonly IConstructRule<ISudokuStrategyUser, ISudokuElement>[] _rules =
+    private readonly IConstructRule<ISudokuSolverData, ISudokuElement>[] _rules =
     {
         new UnitStrongLinkConstructRule(),
         new CellStrongLinkConstructRule(),
@@ -26,5 +26,5 @@ public class SudokuConstructRuleBank : IConstructRuleBank<ISudokuStrategyUser, I
         new JuniorExocetConstructRule()
     };
 
-    public IConstructRule<ISudokuStrategyUser, ISudokuElement> this[int index] => _rules[index];
+    public IConstructRule<ISudokuSolverData, ISudokuElement> this[int index] => _rules[index];
 }

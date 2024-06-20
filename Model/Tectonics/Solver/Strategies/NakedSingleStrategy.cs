@@ -4,24 +4,24 @@ using Model.Core.Highlighting;
 
 namespace Model.Tectonics.Solver.Strategies;
 
-public class NakedSingleStrategy : TectonicStrategy
+public class NakedSingleStrategy : Strategy<ITectonicSolverData>
 {
     public NakedSingleStrategy() : base("Naked Single", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
     
-    public override void Apply(ITectonicStrategyUser strategyUser)
+    public override void Apply(ITectonicSolverData solverData)
     {
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                var p = strategyUser.PossibilitiesAt(row, col);
+                var p = solverData.PossibilitiesAt(row, col);
                 if (p.Count != 1) continue;
             
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(
-                    p.First(1, strategyUser.Tectonic.GetZone(row, col).Count), row, col);
-                strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+                solverData.ChangeBuffer.ProposeSolutionAddition(
+                    p.First(1, solverData.Tectonic.GetZone(row, col).Count), row, col);
+                solverData.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
             }
         }
     }

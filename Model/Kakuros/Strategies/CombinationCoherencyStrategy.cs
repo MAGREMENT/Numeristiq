@@ -7,21 +7,21 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros.Strategies;
 
-public class CombinationCoherencyStrategy : KakuroStrategy
+public class CombinationCoherencyStrategy : Strategy<IKakuroSolverData>
 {
     public CombinationCoherencyStrategy() : base("Combination Coherency", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
     {
     }
 
-    public override void Apply(IKakuroStrategyUser strategyUser)
+    public override void Apply(IKakuroSolverData solverData)
     {
-        foreach (var sum in strategyUser.Kakuro.Sums)
+        foreach (var sum in solverData.Kakuro.Sums)
         {
             var used = new ReadOnlyBitSet16();
             int total = 0;
             foreach (var cell in sum)
             {
-                var n = strategyUser[cell.Row, cell.Column];
+                var n = solverData[cell.Row, cell.Column];
                 if (n != 0)
                 {
                     used += n;
@@ -33,22 +33,22 @@ public class CombinationCoherencyStrategy : KakuroStrategy
 
             foreach (var cell in sum)
             {
-                var possibilities = strategyUser.PossibilitiesAt(cell);
+                var possibilities = solverData.PossibilitiesAt(cell);
                 if (possibilities.Count == 0) continue;
 
                 foreach (var p in possibilities.EnumeratePossibilities())
                 {
-                    if (IsPossible(strategyUser, used + p, cell, sum, total + p, 0)) continue;
+                    if (IsPossible(solverData, used + p, cell, sum, total + p, 0)) continue;
 
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
-                    strategyUser.ChangeBuffer.Commit(
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    solverData.ChangeBuffer.Commit(
                         DefaultChangeReportBuilder<IUpdatableSolvingState, ISolvingStateHighlighter>.Instance);
                 }
             }
         }
     }
 
-    private static bool IsPossible(IKakuroStrategyUser strategyUser, ReadOnlyBitSet16 used, 
+    private static bool IsPossible(IKakuroSolverData solverData, ReadOnlyBitSet16 used, 
         Cell cell, IKakuroSum sum, int total, int start)
     {
         for (; start < sum.Length; start++)
@@ -56,7 +56,7 @@ public class CombinationCoherencyStrategy : KakuroStrategy
             var c = sum[start];
             if (c == cell) continue;
 
-            var pos = strategyUser.PossibilitiesAt(c);
+            var pos = solverData.PossibilitiesAt(c);
             if (pos.Count == 0) continue;
 
             foreach (var p in pos.EnumeratePossibilities())
@@ -70,7 +70,7 @@ public class CombinationCoherencyStrategy : KakuroStrategy
                 {
                     if (newTotal == sum.Amount) return true;
                 }
-                else if (IsPossible(strategyUser, newUsed, cell, sum, newTotal, start + 1)) return true;
+                else if (IsPossible(solverData, newUsed, cell, sum, newTotal, start + 1)) return true;
             }
         }
 

@@ -37,19 +37,19 @@ public class NakedSetStrategy : SudokuStrategy
     }
     
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)
         {
-            var possibleCols = EveryRowCellWithLessPossibilities(strategyUser, row, _type + 1);
-            if (RecursiveRowMashing(strategyUser, new ReadOnlyBitSet16(), possibleCols, -1, row,
+            var possibleCols = EveryRowCellWithLessPossibilities(solverData, row, _type + 1);
+            if (RecursiveRowMashing(solverData, new ReadOnlyBitSet16(), possibleCols, -1, row,
                     new LinePositions())) return;
         }
         
         for (int col = 0; col < 9; col++)
         {
-            var possibleRows = EveryColumnCellWithLessPossibilities(strategyUser, col, _type + 1);
-            if (RecursiveColumnMashing(strategyUser, new ReadOnlyBitSet16(), possibleRows, -1, col,
+            var possibleRows = EveryColumnCellWithLessPossibilities(solverData, col, _type + 1);
+            if (RecursiveColumnMashing(solverData, new ReadOnlyBitSet16(), possibleRows, -1, col,
                     new LinePositions())) return;
         }
         
@@ -57,32 +57,32 @@ public class NakedSetStrategy : SudokuStrategy
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(strategyUser, miniRow, miniCol, _type + 1);
-                if (RecursiveMiniGridMashing(strategyUser, new ReadOnlyBitSet16(), possibleGridNumbers, -1,
+                var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(solverData, miniRow, miniCol, _type + 1);
+                if (RecursiveMiniGridMashing(solverData, new ReadOnlyBitSet16(), possibleGridNumbers, -1,
                         miniRow, miniCol, new MiniGridPositions(miniRow, miniCol))) return;
             }
         }
     }
 
-    private LinePositions EveryRowCellWithLessPossibilities(ISudokuStrategyUser strategyUser, int row, int than)
+    private LinePositions EveryRowCellWithLessPossibilities(ISudokuSolverData solverData, int row, int than)
     {
         LinePositions result = new();
         for (int col = 0; col < 9; col++)
         {
-            if (strategyUser.Sudoku[row, col] == 0 && strategyUser.PossibilitiesAt(row, col).Count < than)
+            if (solverData.Sudoku[row, col] == 0 && solverData.PossibilitiesAt(row, col).Count < than)
                 result.Add(col);
         }
 
         return result;
     }
 
-    private bool RecursiveRowMashing(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 current,
+    private bool RecursiveRowMashing(ISudokuSolverData solverData, ReadOnlyBitSet16 current,
         LinePositions possibleCols, int cursor, int row, LinePositions visited)
     {
         int col;
         while ((col = possibleCols.Next(ref cursor)) != -1)
         {
-            var possibilities = strategyUser.PossibilitiesAt(row, col);
+            var possibilities = solverData.PossibilitiesAt(row, col);
             if(possibilities.Count > _type) continue;
             
             var newCurrent = current | possibilities;
@@ -93,12 +93,12 @@ public class NakedSetStrategy : SudokuStrategy
 
             if (newVisited.Count == _type && newCurrent.Count == _type)
             {
-                if (RemovePossibilitiesFromRow(strategyUser, row, newCurrent, newVisited)) return true;
+                if (RemovePossibilitiesFromRow(solverData, row, newCurrent, newVisited)) return true;
             }
                
             else if (newVisited.Count < _type)
             {
-                if (RecursiveRowMashing(strategyUser, newCurrent, possibleCols, cursor, row, newVisited))
+                if (RecursiveRowMashing(solverData, newCurrent, possibleCols, cursor, row, newVisited))
                     return true;
             }
         }
@@ -106,39 +106,39 @@ public class NakedSetStrategy : SudokuStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromRow(ISudokuStrategyUser strategyUser, int row, ReadOnlyBitSet16 toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromRow(ISudokuSolverData solverData, int row, ReadOnlyBitSet16 toRemove, LinePositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())
         {
             for (int col = 0; col < 9; col++)
             {
-                if (!except.Contains(col)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
+                if (!except.Contains(col)) solverData.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove,
+        return solverData.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove,
             except, row, Unit.Row)) && StopOnFirstPush;
     }
     
-    private LinePositions EveryColumnCellWithLessPossibilities(ISudokuStrategyUser strategyUser, int col, int than)
+    private LinePositions EveryColumnCellWithLessPossibilities(ISudokuSolverData solverData, int col, int than)
     {
         LinePositions result = new();
         for (int row = 0; row < 9; row++)
         {
-            if (strategyUser.Sudoku[row, col] == 0 && strategyUser.PossibilitiesAt(row, col).Count < than) 
+            if (solverData.Sudoku[row, col] == 0 && solverData.PossibilitiesAt(row, col).Count < than) 
                 result.Add(row);
         }
 
         return result;
     }
     
-    private bool RecursiveColumnMashing(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 current,
+    private bool RecursiveColumnMashing(ISudokuSolverData solverData, ReadOnlyBitSet16 current,
         LinePositions possibleRows, int cursor, int col, LinePositions visited)
     {
         int row;
         while((row = possibleRows.Next(ref cursor)) != -1)
         {
-            var possibilities = strategyUser.PossibilitiesAt(row, col);
+            var possibilities = solverData.PossibilitiesAt(row, col);
             if(possibilities.Count > _type) continue;
             
             var newCurrent = current | possibilities;
@@ -149,11 +149,11 @@ public class NakedSetStrategy : SudokuStrategy
 
             if (newVisited.Count == _type && newCurrent.Count == _type)
             {
-                if (RemovePossibilitiesFromColumn(strategyUser, col, newCurrent, newVisited)) return true;
+                if (RemovePossibilitiesFromColumn(solverData, col, newCurrent, newVisited)) return true;
             }
             else if (newVisited.Count < _type)
             {
-                if (RecursiveColumnMashing(strategyUser, newCurrent, possibleRows, cursor, col, newVisited))
+                if (RecursiveColumnMashing(solverData, newCurrent, possibleRows, cursor, col, newVisited))
                     return true;
             }
         }
@@ -161,21 +161,21 @@ public class NakedSetStrategy : SudokuStrategy
         return false;
     }
 
-    private bool RemovePossibilitiesFromColumn(ISudokuStrategyUser strategyUser, int col, ReadOnlyBitSet16 toRemove, LinePositions except)
+    private bool RemovePossibilitiesFromColumn(ISudokuSolverData solverData, int col, ReadOnlyBitSet16 toRemove, LinePositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())
         {
             for (int row = 0; row < 9; row++)
             {
-                if (!except.Contains(row)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
+                if (!except.Contains(row)) solverData.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove, except,
+        return solverData.ChangeBuffer.Commit( new LineNakedPossibilitiesReportBuilder(toRemove, except,
             col, Unit.Column)) && StopOnFirstPush;
     }
     
-    private MiniGridPositions EveryMiniGridCellWithLessPossibilities(ISudokuStrategyUser strategyUser, int miniRow, int miniCol, int than)
+    private MiniGridPositions EveryMiniGridCellWithLessPossibilities(ISudokuSolverData solverData, int miniRow, int miniCol, int than)
     {
         MiniGridPositions result = new(miniRow, miniCol);
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -185,7 +185,7 @@ public class NakedSetStrategy : SudokuStrategy
                 int row = miniRow * 3 + gridRow;
                 int col = miniCol * 3 + gridCol;
             
-                if (strategyUser.Sudoku[row, col] == 0 && strategyUser.PossibilitiesAt(row, col).Count < than) 
+                if (solverData.Sudoku[row, col] == 0 && solverData.PossibilitiesAt(row, col).Count < than) 
                     result.Add(gridRow, gridCol);
             }
         }
@@ -193,13 +193,13 @@ public class NakedSetStrategy : SudokuStrategy
         return result;
     }
     
-    private bool RecursiveMiniGridMashing(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 current,
+    private bool RecursiveMiniGridMashing(ISudokuSolverData solverData, ReadOnlyBitSet16 current,
         MiniGridPositions possiblePos, int cursor, int miniRow, int miniCol, MiniGridPositions visited)
     {
         Cell pos;
         while((pos = possiblePos.Next(ref cursor)).Row != -1)
         {
-            var possibilities = strategyUser.PossibilitiesAt(pos.Row, pos.Column);
+            var possibilities = solverData.PossibilitiesAt(pos.Row, pos.Column);
             if(possibilities.Count > _type) continue;
             
             var newCurrent = current | possibilities;
@@ -210,12 +210,12 @@ public class NakedSetStrategy : SudokuStrategy
 
             if (newVisited.Count == _type && newCurrent.Count == _type)
             {
-                if (RemovePossibilitiesFromMiniGrid(strategyUser, miniRow, miniCol, newCurrent, newVisited))
+                if (RemovePossibilitiesFromMiniGrid(solverData, miniRow, miniCol, newCurrent, newVisited))
                     return true;
             }
             else if (newVisited.Count < _type)
             {
-                if (RecursiveMiniGridMashing(strategyUser, newCurrent, possiblePos, cursor, miniRow, miniCol,
+                if (RecursiveMiniGridMashing(solverData, newCurrent, possiblePos, cursor, miniRow, miniCol,
                         newVisited)) return true;
             }
         }
@@ -223,7 +223,7 @@ public class NakedSetStrategy : SudokuStrategy
         return false;
     }
     
-    private bool RemovePossibilitiesFromMiniGrid(ISudokuStrategyUser strategyUser, int miniRow, int miniCol, ReadOnlyBitSet16 toRemove,
+    private bool RemovePossibilitiesFromMiniGrid(ISudokuSolverData solverData, int miniRow, int miniCol, ReadOnlyBitSet16 toRemove,
         MiniGridPositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())
@@ -235,12 +235,12 @@ public class NakedSetStrategy : SudokuStrategy
                     int row = miniRow * 3 + gridRow;
                     int col = miniCol * 3 + gridCol;
                 
-                    if (!except.Contains(gridRow, gridCol)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
+                    if (!except.Contains(gridRow, gridCol)) solverData.ChangeBuffer.ProposePossibilityRemoval(n, row, col);
                 }
             }
         }
         
-        return strategyUser.ChangeBuffer.Commit( new MiniGridNakedPossibilitiesReportBuilder(toRemove,
+        return solverData.ChangeBuffer.Commit( new MiniGridNakedPossibilitiesReportBuilder(toRemove,
             except)) && StopOnFirstPush;
     }
 }

@@ -31,13 +31,13 @@ public class BlossomLoopStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.PointingPossibilities,
+        solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.PointingPossibilities,
             SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink, SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-        var graph = strategyUser.PreComputer.Graphs.ComplexLinkGraph;
+        var graph = solverData.PreComputer.Graphs.ComplexLinkGraph;
 
-        foreach (var cps in _type.Candidates(strategyUser))
+        foreach (var cps in _type.Candidates(solverData))
         {
             foreach (var loop in _loopFinder.Find(cps, graph))
             {
@@ -46,19 +46,19 @@ public class BlossomLoopStrategy : SudokuStrategy
 
                 var nope = SetUpNope(loop, branches);
                 
-                loop.ForEachLink((one, two) => HandleWeakLoopLink(strategyUser,
+                loop.ForEachLink((one, two) => HandleWeakLoopLink(solverData,
                     one, two, nope, branches), LinkStrength.Weak);
 
                 foreach (var b in branches)
                 {
                     for (int i = 0; i < b.Branch.Links.Length; i++)
                     {
-                        if(b.Branch.Links[i] == LinkStrength.Weak) HandleWeakBranchLink(strategyUser,
+                        if(b.Branch.Links[i] == LinkStrength.Weak) HandleWeakBranchLink(solverData,
                             b.Branch.Elements[i], b.Branch.Elements[i + 1], nope);
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new BlossomLoopReportBuilder(loop, branches, cps)) &&
                             StopOnFirstPush) return;
             }
@@ -85,7 +85,7 @@ public class BlossomLoopStrategy : SudokuStrategy
         return nope;
     }
 
-    private void HandleWeakLoopLink(ISudokuStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
+    private void HandleWeakLoopLink(ISudokuSolverData solverData, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope, BlossomLoopBranch[] branches)
     {
         List<ISudokuElement> toTakeIntoAccount = new();
@@ -94,7 +94,7 @@ public class BlossomLoopStrategy : SudokuStrategy
             if (one.Equals(b.Targets[0]) && two.Equals(b.Targets[1])) toTakeIntoAccount.Add(b.Branch.Elements[^1]);
         }
 
-        if (toTakeIntoAccount.Count == 0) HandleWeakBranchLink(strategyUser, one, two, nope);
+        if (toTakeIntoAccount.Count == 0) HandleWeakBranchLink(solverData, one, two, nope);
         else
         {
             var and = one.EveryPossibilities() & two.EveryPossibilities();
@@ -112,9 +112,9 @@ public class BlossomLoopStrategy : SudokuStrategy
             if (cells.Count == 1)
             {
                 var c = cells.First();
-                foreach (var p in strategyUser.PossibilitiesAt(c).EnumeratePossibilities())
+                foreach (var p in solverData.PossibilitiesAt(c).EnumeratePossibilities())
                 {
-                    if (!or.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, c);
+                    if (!or.Contains(p)) solverData.ChangeBuffer.ProposePossibilityRemoval(p, c);
                 }
             }
 
@@ -142,14 +142,14 @@ public class BlossomLoopStrategy : SudokuStrategy
 
                 foreach (var ssc in SudokuCellUtility.SharedSeenCells(c))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                 }
             }
         }
         
     }
 
-    private void HandleWeakBranchLink(ISudokuStrategyUser strategyUser, ISudokuElement one, ISudokuElement two,
+    private void HandleWeakBranchLink(ISudokuSolverData solverData, ISudokuElement one, ISudokuElement two,
         HashSet<CellPossibility> nope)
     {
         var cp1 = one.EveryCellPossibilities();
@@ -159,12 +159,12 @@ public class BlossomLoopStrategy : SudokuStrategy
 
         if (cp1.Length == 1 && cp2.Length == 1 && pos1.Count == 1 && pos2.Count == 1 && cp1[0].Cell == cp2[0].Cell)
         {
-            foreach (var possibility in strategyUser.PossibilitiesAt(cp1[0].Cell).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(cp1[0].Cell).EnumeratePossibilities())
             {
                 if (pos1.Contains(possibility) || pos2.Contains(possibility)) continue;
 
                 var cp = new CellPossibility(cp1[0].Cell.Row, cp1[0].Cell.Column, possibility);
-                if (!nope.Contains(cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                if (!nope.Contains(cp)) solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
             return;
@@ -189,7 +189,7 @@ public class BlossomLoopStrategy : SudokuStrategy
             foreach (var cell in SudokuCellUtility.SharedSeenCells(cells))
             {
                 var cp = new CellPossibility(cell.Row, cell.Column, possibility);
-                if (!nope.Contains(cp)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                if (!nope.Contains(cp)) solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
         }
     }

@@ -16,19 +16,19 @@ public class NakedDoublesStrategy : SudokuStrategy
 
     public NakedDoublesStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         Dictionary<ReadOnlyBitSet16, int> dict = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var pos = strategyUser.PossibilitiesAt(row, col);
+                var pos = solverData.PossibilitiesAt(row, col);
                 if (pos.Count != 2) continue;
 
                 if (dict.TryGetValue(pos, out var otherCol))
                 {
-                    if (ProcessRow(strategyUser, pos, row, col, otherCol)) return;
+                    if (ProcessRow(solverData, pos, row, col, otherCol)) return;
                 }
                 else dict.Add(pos, col);
             }
@@ -40,12 +40,12 @@ public class NakedDoublesStrategy : SudokuStrategy
         {
             for (int row = 0; row < 9; row++)
             {
-                var pos = strategyUser.PossibilitiesAt(row, col);
+                var pos = solverData.PossibilitiesAt(row, col);
                 if (pos.Count != 2) continue;
 
                 if (dict.TryGetValue(pos, out var otherRow))
                 {
-                    if (ProcessColumn(strategyUser, pos, col, row, otherRow)) return;
+                    if (ProcessColumn(solverData, pos, col, row, otherRow)) return;
                 }
                 else dict.Add(pos, row);
             }
@@ -67,13 +67,13 @@ public class NakedDoublesStrategy : SudokuStrategy
                         int row = startRow + gridRow;
                         int col = startCol + gridCol;
 
-                        var pos = strategyUser.PossibilitiesAt(row, col);
+                        var pos = solverData.PossibilitiesAt(row, col);
                         if (pos.Count != 2) continue;
 
                         var gridNumber = gridRow * 3 + gridCol;
                         if (dict.TryGetValue(pos, out var otherGridNumber))
                         {
-                            if (ProcessMiniGrid(strategyUser, pos, miniRow, miniCol, gridNumber, otherGridNumber))
+                            if (ProcessMiniGrid(solverData, pos, miniRow, miniCol, gridNumber, otherGridNumber))
                                 return;
                         }
                         else dict.Add(pos, gridNumber);
@@ -85,7 +85,7 @@ public class NakedDoublesStrategy : SudokuStrategy
         }
     }
 
-    private bool ProcessRow(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int row, int col1,
+    private bool ProcessRow(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities, int row, int col1,
         int col2)
     {
         for (int col = 0; col < 9; col++)
@@ -94,16 +94,16 @@ public class NakedDoublesStrategy : SudokuStrategy
 
             foreach (var possibility in possibilities.EnumeratePossibilities())
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, row, col1, col2, Unit.Row))
             && StopOnFirstPush;
     }
 
-    private bool ProcessColumn(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities, int col,
+    private bool ProcessColumn(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities, int col,
         int row1, int row2)
     {
         for (int row = 0; row < 9; row++)
@@ -112,16 +112,16 @@ public class NakedDoublesStrategy : SudokuStrategy
 
             foreach (var possibility in possibilities.EnumeratePossibilities())
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new LineNakedDoublesReportBuilder(possibilities, col, row1, row2, Unit.Column))
             && StopOnFirstPush;
     }
 
-    private bool ProcessMiniGrid(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private bool ProcessMiniGrid(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         int miniRow, int miniCol, int gridNumber1, int gridNumber2)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -135,12 +135,12 @@ public class NakedDoublesStrategy : SudokuStrategy
                 int col = miniCol * 3 + gridCol;
                 foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, row, col);
                 }
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.Commit(
             new MiniGridNakedDoublesReportBuilder(possibilities, miniRow, miniCol, gridNumber1, gridNumber2))
             && StopOnFirstPush;
     }

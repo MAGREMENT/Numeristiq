@@ -4,15 +4,15 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement> //TODO another rule with merged weak & strong links
+public class UnitStrongLinkConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement> //TODO another rule with merged weak & strong links
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyUser.RowPositionsAt(row, number);
+                var ppir = solverData.RowPositionsAt(row, number);
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
@@ -22,7 +22,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, I
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyUser.ColumnPositionsAt(col, number);
+                var ppic = solverData.ColumnPositionsAt(col, number);
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
@@ -34,7 +34,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, I
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();
@@ -45,13 +45,13 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, I
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppir = strategyUser.RowPositionsAt(row, number);
+                var ppir = solverData.RowPositionsAt(row, number);
                 if(ppir.Count != 2) continue;
 
                 var asArray = ppir.ToArray();
@@ -61,7 +61,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, I
             
             for (int col = 0; col < 9; col++)
             {
-                var ppic = strategyUser.ColumnPositionsAt(col, number);
+                var ppic = solverData.ColumnPositionsAt(col, number);
                 if(ppic.Count != 2) continue;
 
                 var asArray = ppic.ToArray();
@@ -73,7 +73,7 @@ public class UnitStrongLinkConstructRule : IConstructRule<ISudokuStrategyUser, I
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimn.Count != 2) continue;
 
                     var asArray = ppimn.ToArray();

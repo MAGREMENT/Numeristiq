@@ -33,7 +33,7 @@ public class BufferedSearcher : ISharedSeenCellSearcher
         return _buffer[val1, val2];
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
     {
         throw new System.NotImplementedException();
     }
@@ -43,7 +43,7 @@ public class BufferedSearcher : ISharedSeenCellSearcher
         throw new System.NotImplementedException();
     }
 
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         throw new System.NotImplementedException();

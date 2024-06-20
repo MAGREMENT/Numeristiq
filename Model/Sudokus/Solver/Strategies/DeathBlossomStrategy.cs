@@ -19,16 +19,16 @@ public class DeathBlossomStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        var allAls = strategyUser.PreComputer.AlmostLockedSets();
+        var allAls = solverData.PreComputer.AlmostLockedSets();
         Dictionary<int, List<IPossibilitiesPositions>> concernedAls = new();
 
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyUser.PossibilitiesAt(row, col);
+                var possibilities = solverData.PossibilitiesAt(row, col);
                 if (possibilities.Count == 0) continue;
 
                 var current = new Cell(row, col);
@@ -50,7 +50,7 @@ public class DeathBlossomStrategy : SudokuStrategy
 
                         foreach (var cell in als.EachCell())
                         {
-                            if (strategyUser.PossibilitiesAt(cell).Contains(possibilityInCommon) &&
+                            if (solverData.PossibilitiesAt(cell).Contains(possibilityInCommon) &&
                                 !SudokuCellUtility.ShareAUnit(cell, current))
                             {
                                 ok = false;
@@ -81,16 +81,16 @@ public class DeathBlossomStrategy : SudokuStrategy
 
                             foreach (var cell in als.EachCell())
                             {
-                                if (strategyUser.PossibilitiesAt(cell).Contains(alsPossibility)) buffer.Add(cell);
+                                if (solverData.PossibilitiesAt(cell).Contains(alsPossibility)) buffer.Add(cell);
                             }
 
                             foreach (var seenCell in SudokuCellUtility.SharedSeenCells(buffer))
                             {
-                                if (seenCell == current || strategyUser.Sudoku[seenCell.Row, seenCell.Column] != 0) continue;
+                                if (seenCell == current || solverData.Sudoku[seenCell.Row, seenCell.Column] != 0) continue;
 
                                 if (!eliminations.TryGetValue(seenCell, out var value))
                                 {
-                                    value = strategyUser.PossibilitiesAt(seenCell);
+                                    value = solverData.PossibilitiesAt(seenCell);
                                     eliminations[seenCell] = value;
                                     eliminationsCauses[seenCell] = new HashSet<IPossibilitiesPositions>();
                                 }
@@ -103,7 +103,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                                 }
                                 if (value.Count != 0) continue;
                                 
-                                Process(strategyUser, current, seenCell, eliminationsCauses[seenCell],
+                                Process(solverData, current, seenCell, eliminationsCauses[seenCell],
                                     possibility);
                                 if (StopOnFirstPush) return;
                             }
@@ -121,16 +121,16 @@ public class DeathBlossomStrategy : SudokuStrategy
         }
     }
 
-    private void Process(ISudokuStrategyUser strategyUser, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
+    private void Process(ISudokuSolverData solverData, Cell stem, Cell target, HashSet<IPossibilitiesPositions> sets, int possibility)
     {
         List<Cell> buffer = new();
-        strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
+        solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, stem.Row, stem.Column);
 
         foreach (var als in sets)
         {
             foreach (var cell in als.EachCell())
             {
-                if (strategyUser.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
+                if (solverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
         }
 
@@ -141,11 +141,11 @@ public class DeathBlossomStrategy : SudokuStrategy
             {
                 if (cell == stem) continue;
 
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
             }
         }
         
-        strategyUser.ChangeBuffer.Commit( new DeathBlossomReportBuilder(allStems, target, sets));
+        solverData.ChangeBuffer.Commit( new DeathBlossomReportBuilder(allStems, target, sets));
     }
 }
 

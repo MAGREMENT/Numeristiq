@@ -20,25 +20,25 @@ public class JuniorExocetStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.PartiallyDependent;
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        var jes = strategyUser.PreComputer.JuniorExocet();
+        var jes = solverData.PreComputer.JuniorExocet();
         
         foreach (var je in jes)
         {
-            if (Process(strategyUser, je)) return;
+            if (Process(solverData, je)) return;
         }
 
         for (int i = 0; i < jes.Count - 1; i++)
         {
             for (int j = i + 1; j < jes.Count; j++)
             {
-                if (ProcessDouble(strategyUser, jes[i], jes[j])) return;
+                if (ProcessDouble(solverData, jes[i], jes[j])) return;
             }
         }
     }
 
-    private bool ProcessDouble(ISudokuStrategyUser strategyUser, JuniorExocet je1, JuniorExocet je2) //TODO fix : ..........5724...98....947...9..3...5..9..12...3.1.9...6....25....56.....7......6
+    private bool ProcessDouble(ISudokuSolverData solverData, JuniorExocet je1, JuniorExocet je2) //TODO fix : ..........5724...98....947...9..3...5..9..12...3.1.9...6....25....56.....7......6
     {
         var unit = je1.GetUnit();
         if (unit != je2.GetUnit()) return false;
@@ -98,7 +98,7 @@ public class JuniorExocetStrategy : SudokuStrategy
             if (and.Count == 1)
             {
                 var cell = targetCommon ?? baseAndTargetCommon;
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(and.FirstPossibility(), cell!.Value);
+                solverData.ChangeBuffer.ProposeSolutionAddition(and.FirstPossibility(), cell!.Value);
             }
         }
 
@@ -110,12 +110,12 @@ public class JuniorExocetStrategy : SudokuStrategy
         {
             foreach (var cell in SudokuCellUtility.SharedSeenCells(bCells))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
             foreach (var cell in SudokuCellUtility.SharedSeenCells(tCells))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
         }
 
@@ -125,8 +125,8 @@ public class JuniorExocetStrategy : SudokuStrategy
         var crossLines = je1.SCellsLinePositions().Or(je2.SCellsLinePositions());
         if (crossLines.Count == 3)
         {
-            RemoveAllNonSCells(strategyUser, je1, cover1);
-            RemoveAllNonSCells(strategyUser, je2, cover2);
+            RemoveAllNonSCells(solverData, je1, cover1);
+            RemoveAllNonSCells(solverData, je2, cover2);
         }
         else
         {
@@ -148,18 +148,18 @@ public class JuniorExocetStrategy : SudokuStrategy
                                 : new Cell(other, house1.Number);
 
                             if (!totalMap.Contains(cell))
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                                solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                         }
                     }
                 }
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit( new DoubleJuniorExocetReportBuilder(je1, je2))
+        return solverData.ChangeBuffer.Commit( new DoubleJuniorExocetReportBuilder(je1, je2))
                && StopOnFirstPush;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, JuniorExocet je)
+    private bool Process(ISudokuSolverData solverData, JuniorExocet je)
     {
         ReadOnlyBitSet16[] removedBaseCandidates = { new(), new() };
 
@@ -173,11 +173,11 @@ public class JuniorExocetStrategy : SudokuStrategy
             
             if (computed.Count > 1) continue;
             
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base1);
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base2);
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.EscapeCell);
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base1);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Base2);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.EscapeCell);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
 
             removedBaseCandidates[0] += possibility;
             removedBaseCandidates[1] += possibility;
@@ -186,34 +186,34 @@ public class JuniorExocetStrategy : SudokuStrategy
         //Elimination 2
         foreach (var possibility in je.BaseCandidates.EnumeratePossibilities())
         {
-            if (!strategyUser.PossibilitiesAt(je.Target1).Contains(possibility))
+            if (!solverData.PossibilitiesAt(je.Target1).Contains(possibility))
             {
                 foreach (var cell in je.Target1MirrorNodes)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
             
-            if (!strategyUser.PossibilitiesAt(je.Target2).Contains(possibility))
+            if (!solverData.PossibilitiesAt(je.Target2).Contains(possibility))
             {
                 foreach (var cell in je.Target2MirrorNodes)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
         }
         
         //Elimination 3
-        foreach (var possibility in strategyUser.PossibilitiesAt(je.Target1).EnumeratePossibilities())
+        foreach (var possibility in solverData.PossibilitiesAt(je.Target1).EnumeratePossibilities())
         {
             if (!je.BaseCandidates.Contains(possibility))
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
         }
 
-        foreach (var possibility in strategyUser.PossibilitiesAt(je.Target2).EnumeratePossibilities())
+        foreach (var possibility in solverData.PossibilitiesAt(je.Target2).EnumeratePossibilities())
         {
             if (!je.BaseCandidates.Contains(possibility))
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
         
         //Elimination 4 => In LinkGraph
@@ -231,16 +231,16 @@ public class JuniorExocetStrategy : SudokuStrategy
                 if (coverHouse.Unit == Unit.Column)
                 {
                     if(je.Target1.Column == coverHouse.Number)
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
                     if (je.Target2.Column == coverHouse.Number)
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
                 }
                 else
                 {
                     if(je.Target1.Row == coverHouse.Number)
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target1);
                     if (je.Target2.Row == coverHouse.Number)
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, je.Target2);
                 }
             }
         }
@@ -251,22 +251,22 @@ public class JuniorExocetStrategy : SudokuStrategy
             bool ok = false;
             foreach (var cell in je.Target1MirrorNodes)
             {
-                if (strategyUser.Contains(cell.Row, cell.Column, possibility)) ok = true;
+                if (solverData.Contains(cell.Row, cell.Column, possibility)) ok = true;
             }
 
-            if (!ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+            if (!ok) solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
             
             ok = false;
             foreach (var cell in je.Target2MirrorNodes)
             {
-                if (strategyUser.Contains(cell.Row, cell.Column, possibility)) ok = true;
+                if (solverData.Contains(cell.Row, cell.Column, possibility)) ok = true;
             }
 
-            if (!ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+            if (!ok) solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
         }
 
         //Compatibility check
-        if (je.BaseCandidates.Count != 2 && strategyUser.UniquenessDependantStrategiesAllowed)
+        if (je.BaseCandidates.Count != 2 && solverData.UniquenessDependantStrategiesAllowed)
         {
             HashSet<BiValue> forbiddenPairs = new();
 
@@ -276,14 +276,14 @@ public class JuniorExocetStrategy : SudokuStrategy
                 int j = i;
                 while (je.BaseCandidates.HasNextPossibility(ref j))
                 {
-                    if (!je.CompatibilityCheck(strategyUser, i, j)) forbiddenPairs.Add(new BiValue(i, j));
+                    if (!je.CompatibilityCheck(solverData, i, j)) forbiddenPairs.Add(new BiValue(i, j));
                 }
             }
 
-            foreach (var p1 in strategyUser.PossibilitiesAt(je.Base1).EnumeratePossibilities())
+            foreach (var p1 in solverData.PossibilitiesAt(je.Base1).EnumeratePossibilities())
             {
                 bool ok = false;
-                foreach (var p2 in strategyUser.PossibilitiesAt(je.Base2).EnumeratePossibilities())
+                foreach (var p2 in solverData.PossibilitiesAt(je.Base2).EnumeratePossibilities())
                 {
                     if(p1 == p2) continue;
                 
@@ -296,15 +296,15 @@ public class JuniorExocetStrategy : SudokuStrategy
 
                 if (!ok)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Column);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p1, je.Base1.Row, je.Base1.Column);
                     removedBaseCandidates[0] += p1;
                 }
             }
         
-            foreach (var p2 in strategyUser.PossibilitiesAt(je.Base2).EnumeratePossibilities())
+            foreach (var p2 in solverData.PossibilitiesAt(je.Base2).EnumeratePossibilities())
             {
                 bool ok = false;
-                foreach (var p1 in strategyUser.PossibilitiesAt(je.Base1).EnumeratePossibilities())
+                foreach (var p1 in solverData.PossibilitiesAt(je.Base1).EnumeratePossibilities())
                 {
                     if(p1 == p2) continue;
 
@@ -317,64 +317,64 @@ public class JuniorExocetStrategy : SudokuStrategy
 
                 if (!ok)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Column);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p2, je.Base2.Row, je.Base2.Column);
                     removedBaseCandidates[1] += p2;
                 }
             }
         }
 
         //Known base digits eliminations
-        var revisedB1 = strategyUser.PossibilitiesAt(je.Base1) - removedBaseCandidates[0];
-        var revisedB2 = strategyUser.PossibilitiesAt(je.Base2) - removedBaseCandidates[1];
+        var revisedB1 = solverData.PossibilitiesAt(je.Base1) - removedBaseCandidates[0];
+        var revisedB2 = solverData.PossibilitiesAt(je.Base2) - removedBaseCandidates[1];
         var revisedBaseCandidates = revisedB1 | revisedB2;
 
         if (revisedBaseCandidates.Count == 2)
         {
             //Elimination 3 update
-            foreach (var possibility in strategyUser.PossibilitiesAt(je.Target1).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(je.Target1).EnumeratePossibilities())
             {
                 if (!revisedBaseCandidates.Contains(possibility))
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target1);
             }
 
-            foreach (var possibility in strategyUser.PossibilitiesAt(je.Target2).EnumeratePossibilities())
+            foreach (var possibility in solverData.PossibilitiesAt(je.Target2).EnumeratePossibilities())
             {
                 if (!revisedBaseCandidates.Contains(possibility))
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, je.Target2);
             }
             
             //Elimination 7
             for (int i = 0; i < 2; i++)
             {
-                if (!strategyUser.ContainsAny(je.Target1MirrorNodes[i], revisedBaseCandidates))
-                    RemoveAll(strategyUser, je.Target1MirrorNodes[(i + 1) % 2], strategyUser.PossibilitiesAt(je.Target2));
+                if (!solverData.ContainsAny(je.Target1MirrorNodes[i], revisedBaseCandidates))
+                    RemoveAll(solverData, je.Target1MirrorNodes[(i + 1) % 2], solverData.PossibilitiesAt(je.Target2));
                 
-                if(!strategyUser.ContainsAny(je.Target2MirrorNodes[i], revisedBaseCandidates))
-                    RemoveAll(strategyUser, je.Target2MirrorNodes[(i + 1) % 2], strategyUser.PossibilitiesAt(je.Target1));
+                if(!solverData.ContainsAny(je.Target2MirrorNodes[i], revisedBaseCandidates))
+                    RemoveAll(solverData, je.Target2MirrorNodes[(i + 1) % 2], solverData.PossibilitiesAt(je.Target1));
             }
             
             //Elimination 8
-            var or = strategyUser.PossibilitiesAt(je.Target1MirrorNodes[0])
-                | strategyUser.PossibilitiesAt(je.Target1MirrorNodes[1]);
+            var or = solverData.PossibilitiesAt(je.Target1MirrorNodes[0])
+                | solverData.PossibilitiesAt(je.Target1MirrorNodes[1]);
             var diff = or - revisedBaseCandidates;
             if (diff.Count == 1)
             {
                 var p = diff.FirstPossibility();
                 foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Target1MirrorNodes[0], je.Target1MirrorNodes[1]))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
                 
-            or = strategyUser.PossibilitiesAt(je.Target2MirrorNodes[0]) 
-                 | strategyUser.PossibilitiesAt(je.Target2MirrorNodes[1]);
+            or = solverData.PossibilitiesAt(je.Target2MirrorNodes[0]) 
+                 | solverData.PossibilitiesAt(je.Target2MirrorNodes[1]);
             diff = or - revisedBaseCandidates;
             if (diff.Count == 1)
             {
                 var p = diff.FirstPossibility();
                 foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Target2MirrorNodes[0], je.Target2MirrorNodes[1]))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
             
@@ -385,12 +385,12 @@ public class JuniorExocetStrategy : SudokuStrategy
             {
                 foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Base1, je.Base2))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
 
                 foreach (var cell in SudokuCellUtility.SharedSeenCells(je.Target1, je.Target2))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
             
@@ -412,7 +412,7 @@ public class JuniorExocetStrategy : SudokuStrategy
 
                         if (entry.Value.Contains(cell)) continue;
 
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                     }
                 }
             }
@@ -423,14 +423,14 @@ public class JuniorExocetStrategy : SudokuStrategy
                 var gp = je.SCells[possibility];
                 foreach (var cell in gp)
                 {
-                    if (strategyUser.Sudoku[cell.Row, cell.Column] != 0) continue;
+                    if (solverData.Sudoku[cell.Row, cell.Column] != 0) continue;
 
                     var copy = gp.Copy();
                     copy.VoidRow(cell.Row);
                     copy.VoidColumn(cell.Column);
                     copy.VoidMiniGrid(cell.Row / 3, cell.Column / 3);
 
-                    if (copy.Count == 0) strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    if (copy.Count == 0) solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
 
@@ -442,28 +442,28 @@ public class JuniorExocetStrategy : SudokuStrategy
             {
                 foreach (var cell in allSCells)
                 {
-                    foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+                    foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
                     {
-                        if(!revisedBaseCandidates.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                        if(!revisedBaseCandidates.Contains(p)) solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                     }
                 }
             }
         }
 
-        return strategyUser.ChangeBuffer.Commit(new DoubleTargetExocetReportBuilder(je)) && StopOnFirstPush;
+        return solverData.ChangeBuffer.Commit(new DoubleTargetExocetReportBuilder(je)) && StopOnFirstPush;
     }
 
-    private void RemoveAll(ISudokuStrategyUser strategyUser, Cell cell, ReadOnlyBitSet16 except)
+    private void RemoveAll(ISudokuSolverData solverData, Cell cell, ReadOnlyBitSet16 except)
     {
-        foreach (var possibility in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+        foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
         {
             if (except.Contains(possibility)) continue;
 
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
         }
     }
 
-    public static void RemoveAllNonSCells(ISudokuStrategyUser strategyUser, Exocet je,
+    public static void RemoveAllNonSCells(ISudokuSolverData solverData, Exocet je,
         Dictionary<int, List<House>> coverHouses)
     {
         foreach (var entry in je.SCells)
@@ -480,7 +480,7 @@ public class JuniorExocetStrategy : SudokuStrategy
 
                     if (entry.Value.Contains(cell)) continue;
 
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, cell);
                 }
             }
         }

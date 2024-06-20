@@ -10,10 +10,10 @@ public class AlternatingInferenceChainType : IAlternatingInferenceType
 
     public StepDifficulty Difficulty => StepDifficulty.Extreme;
     
-    public ILinkGraph<ITectonicElement> GetGraph(ITectonicStrategyUser strategyUser)
+    public ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData)
     {
-        strategyUser.Graphs.ConstructComplex(TectonicConstructRuleBank.ZoneLink,
+        solverData.Graphs.ConstructComplex(TectonicConstructRuleBank.ZoneLink,
             TectonicConstructRuleBank.CellLink, TectonicConstructRuleBank.NeighborLink);
-        return strategyUser.Graphs.ComplexLinkGraph;
+        return solverData.Graphs.ComplexLinkGraph;
     }
 }

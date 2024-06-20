@@ -51,11 +51,11 @@ public class FishStrategyV2 : SudokuStrategy
         AddSetting(_unitCount);
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
-            var positions = strategyUser.PositionsFor(number);
+            var positions = solverData.PositionsFor(number);
             List<int> possibleCoverHouses = new();
             
             for (int i = 0; i < CoverHouses.Length; i++)
@@ -78,13 +78,13 @@ public class FishStrategyV2 : SudokuStrategy
 
                     GridPositions coverSet = new();
                     methods.Fill(coverSet, house.Number);
-                    if (Search(strategyUser, possibleCoverHouses, j, baseSet.Copy(), coverSet, 1)) return;
+                    if (Search(solverData, possibleCoverHouses, j, baseSet.Copy(), coverSet, 1)) return;
                 }
             }
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, List<int> possibleCoverHouses, int start, GridPositions baseSet,
+    private bool Search(ISudokuSolverData solverData, List<int> possibleCoverHouses, int start, GridPositions baseSet,
         GridPositions coverSet, int count)
     {
         for (int i = start; i < possibleCoverHouses.Count; i++)
@@ -111,10 +111,10 @@ public class FishStrategyV2 : SudokuStrategy
 
                 var c = count + 1;
 
-                if (_unitCount.Value.IsInBetweenInclusive(c) && TryProcess(strategyUser, baseCopy, coverCopy))
+                if (_unitCount.Value.IsInBetweenInclusive(c) && TryProcess(solverData, baseCopy, coverCopy))
                     return true;
 
-                if (c < _unitCount.Value.Max && Search(strategyUser, possibleCoverHouses, start, baseCopy.Copy(),
+                if (c < _unitCount.Value.Max && Search(solverData, possibleCoverHouses, start, baseCopy.Copy(),
                         coverCopy, c)) return true;
             }
         }
@@ -122,7 +122,7 @@ public class FishStrategyV2 : SudokuStrategy
         return false;
     }
 
-    private bool TryProcess(ISudokuStrategyUser strategyUser, GridPositions baseSet,
+    private bool TryProcess(ISudokuSolverData solverData, GridPositions baseSet,
         GridPositions coverSet)
     {
         //TODO

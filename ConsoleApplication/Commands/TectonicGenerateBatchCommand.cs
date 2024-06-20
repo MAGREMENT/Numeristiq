@@ -1,7 +1,9 @@
-﻿using Model.Core.Generators;
+﻿using Model.Core;
+using Model.Core.Generators;
 using Model.Core.Trackers;
 using Model.Tectonics;
 using Model.Tectonics.Generator;
+using Model.Tectonics.Solver;
 
 namespace ConsoleApplication.Commands;
 
@@ -79,8 +81,8 @@ public class TectonicGenerateBatchCommand : Command
         {
             var solver = interpreter.Instantiator.InstantiateTectonicSolver();
 
-            var ratings = new RatingTracker<TectonicStrategy, object>();
-            var hardest = new HardestStrategyTracker<TectonicStrategy, object>();
+            var ratings = new RatingTracker<Strategy<ITectonicSolverData>, object>();
+            var hardest = new HardestStrategyTracker<Strategy<ITectonicSolverData>, object>();
 
             ratings.AttachTo(solver);
             hardest.AttachTo(solver);

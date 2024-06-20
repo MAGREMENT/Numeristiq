@@ -24,9 +24,9 @@ public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICommitComp
         _algorithm = algo;
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        _algorithm.Run(strategyUser, _type);
+        _algorithm.Run(solverData, _type);
     }
 
     public int Compare(IChangeCommit first, IChangeCommit second)
@@ -46,17 +46,17 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
     public StepDifficulty Difficulty { get; }
     SudokuStrategy? Strategy { set; get; }
     
-    ILinkGraph<T> GetGraph(ISudokuStrategyUser strategyUser);
+    ILinkGraph<T> GetGraph(ISudokuSolverData solverData);
 
-    bool ProcessFullLoop(ISudokuStrategyUser strategyUser, LinkGraphLoop<T> loop);
+    bool ProcessFullLoop(ISudokuSolverData solverData, LinkGraphLoop<T> loop);
 
-    bool ProcessWeakInferenceLoop(ISudokuStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
+    bool ProcessWeakInferenceLoop(ISudokuSolverData solverData, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessStrongInferenceLoop(ISudokuStrategyUser strategyUser, T inference, LinkGraphLoop<T> loop);
+    bool ProcessStrongInferenceLoop(ISudokuSolverData solverData, T inference, LinkGraphLoop<T> loop);
 
-    bool ProcessChain(ISudokuStrategyUser strategyUser, LinkGraphChain<T> chain, ILinkGraph<T> graph);
+    bool ProcessChain(ISudokuSolverData solverData, LinkGraphChain<T> chain, ILinkGraph<T> graph);
 
-    static bool ProcessChainWithSimpleGraph(ISudokuStrategyUser strategyUser, LinkGraphChain<CellPossibility> chain,
+    static bool ProcessChainWithSimpleGraph(ISudokuSolverData solverData, LinkGraphChain<CellPossibility> chain,
         ILinkGraph<CellPossibility> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -64,15 +64,15 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
         foreach (var target in graph.Neighbors(chain.Elements[0]))
         {
             if (graph.AreNeighbors(target, chain.Elements[^1]))
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(target);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<CellPossibility>(chain)) &&
                             strategy.StopOnFirstPush;
     }
     
-    static bool ProcessChainWithComplexGraph(ISudokuStrategyUser strategyUser, LinkGraphChain<ISudokuElement> chain,
+    static bool ProcessChainWithComplexGraph(ISudokuSolverData solverData, LinkGraphChain<ISudokuElement> chain,
         ILinkGraph<ISudokuElement> graph, SudokuStrategy strategy)
     {
         if (chain.Count < 3 || chain.Count % 2 == 1) return false;
@@ -82,10 +82,10 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
             if (target is not CellPossibility cp) continue;
             
             if (graph.AreNeighbors(target, chain.Elements[^1]))
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                    new AlternatingInferenceChainReportBuilder<ISudokuElement>(chain)) &&
                             strategy.StopOnFirstPush;
     }
@@ -94,7 +94,7 @@ public interface IAlternatingInferenceType<T> where T : ISudokuElement
 public interface IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     AlgorithmType Type { get; }
-    void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type);
+    void Run(ISudokuSolverData solverData, IAlternatingInferenceType<T> type);
 }
 
 public enum AlgorithmType

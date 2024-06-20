@@ -18,7 +18,7 @@ public abstract class SudokuStrategy : Strategy, ISettingCollection
         _settings.Add(s);
     }
     
-    public abstract void Apply(ISudokuStrategyUser strategyUser);
+    public abstract void Apply(ISudokuSolverData solverData);
     public virtual void OnNewSudoku(IReadOnlySudoku s) { }
     
     public void TrySetSetting(string name, SettingValue value)

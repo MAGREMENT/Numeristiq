@@ -66,11 +66,11 @@ public class FishStrategy : SudokuStrategy
         AddSetting(_allowCannibalism);
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
-            var positions = strategyUser.PositionsFor(number);
+            var positions = solverData.PositionsFor(number);
             List<int> possibleCoverHouses = new();
             
             for (int i = 0; i < CoverHouses.Length; i++)
@@ -83,7 +83,7 @@ public class FishStrategy : SudokuStrategy
             {
                 foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(unitCount, possibleCoverHouses))
                 {
-                    if (TryFind(strategyUser, number, combination)) return;
+                    if (TryFind(solverData, number, combination)) return;
                 }
             }
         }
@@ -94,12 +94,12 @@ public class FishStrategy : SudokuStrategy
     private readonly GridPositions _buffer = new();
     private readonly HashSet<Cell> _endoFins = new();
     
-    private bool TryFind(ISudokuStrategyUser strategyUser, int number, int[] combination)
+    private bool TryFind(ISudokuSolverData solverData, int number, int[] combination)
     {
         _toCover.Void();
         _baseSet.Clear();
         _endoFins.Clear();
-        var positions = strategyUser.PositionsFor(number);
+        var positions = solverData.PositionsFor(number);
         
         foreach (var n in combination)
         {
@@ -129,7 +129,7 @@ public class FishStrategy : SudokuStrategy
         {
             foreach (var coverSet in _toCover.PossibleCoverHouses(combination.Length, _baseSet, UnitMethods.All))
             {
-                if (Process(strategyUser, number, coverSet, _buffer)) return true;
+                if (Process(solverData, number, coverSet, _buffer)) return true;
             }
         }
         else
@@ -137,7 +137,7 @@ public class FishStrategy : SudokuStrategy
             foreach (var coveredGrid in _toCover.PossibleCoveredGrids(combination.Length, 3, _baseSet,
                          UnitMethods.All))
             {
-                if (Process(strategyUser, number, coveredGrid.CoverHouses, coveredGrid.Remaining)) return true;
+                if (Process(solverData, number, coveredGrid.CoverHouses, coveredGrid.Remaining)) return true;
             }
         }
         
@@ -146,7 +146,7 @@ public class FishStrategy : SudokuStrategy
 
     private readonly List<Cell> _fins = new();
 
-    private bool Process(ISudokuStrategyUser strategyUser, int number, House[] coverSet, IReadOnlyGridPositions exoFins)
+    private bool Process(ISudokuSolverData solverData, int number, House[] coverSet, IReadOnlyGridPositions exoFins)
     {
         _fins.Clear();
         var gpOfCoverSet = new GridPositions();
@@ -164,7 +164,7 @@ public class FishStrategy : SudokuStrategy
         {
             foreach (var cell in diff)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(number, cell);
             } 
         }
         else
@@ -173,18 +173,18 @@ public class FishStrategy : SudokuStrategy
             {
                 if (!diff.Contains(ssc)) continue;
                     
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, ssc);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(number, ssc);
             }
         }
 
-        if (_allowCannibalism.Value) ProcessCannibalism(strategyUser, number, coverSet);
+        if (_allowCannibalism.Value) ProcessCannibalism(solverData, number, coverSet);
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new FishReportBuilder(new HashSet<House>(_baseSet), coverSet, number,
                     _toCover.Copy(), new List<Cell>(_fins))) && StopOnFirstPush;
     }
 
-    private void ProcessCannibalism(ISudokuStrategyUser strategyUser, int number, House[] coverSet)
+    private void ProcessCannibalism(ISudokuSolverData solverData, int number, House[] coverSet)
     {
         foreach (var cell in _toCover)
         {
@@ -210,7 +210,7 @@ public class FishStrategy : SudokuStrategy
                 }
             }
             
-            if(ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, cell);
+            if(ok) solverData.ChangeBuffer.ProposePossibilityRemoval(number, cell);
         }
     }
 }

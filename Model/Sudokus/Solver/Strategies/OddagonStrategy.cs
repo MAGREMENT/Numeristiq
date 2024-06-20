@@ -17,20 +17,20 @@ public class OddagonStrategy : SudokuStrategy
     {
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var ao in strategyUser.PreComputer.AlmostOddagons())
+        foreach (var ao in solverData.PreComputer.AlmostOddagons())
         {
-            if (ao.Guardians.Length == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
+            if (ao.Guardians.Length == 1) solverData.ChangeBuffer.ProposeSolutionAddition(ao.Guardians[0]);
             else
             {
-                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(strategyUser, ao.Guardians))
+                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, ao.Guardians))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new OddagonReportBuilder(ao)) && StopOnFirstPush) return;
         }
     }

@@ -12,26 +12,26 @@ public class SeniorExocetStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var exo in ExocetSearcher.SearchSeniors(strategyUser))
+        foreach (var exo in ExocetSearcher.SearchSeniors(solverData))
         {
-            foreach (var p in strategyUser.PossibilitiesAt(exo.Target1).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(exo.Target1).EnumeratePossibilities())
             {
-                if(!exo.BaseCandidates.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target1);
+                if(!exo.BaseCandidates.Contains(p)) solverData.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target1);
             }
             
-            foreach (var p in strategyUser.PossibilitiesAt(exo.Target2).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(exo.Target2).EnumeratePossibilities())
             {
-                if(!exo.BaseCandidates.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target2);
+                if(!exo.BaseCandidates.Contains(p)) solverData.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target2);
             }
 
             if (exo.BaseCandidates.Count == 2)
             {
-                JuniorExocetStrategy.RemoveAllNonSCells(strategyUser, exo, exo.ComputeAllCoverHouses());
+                JuniorExocetStrategy.RemoveAllNonSCells(solverData, exo, exo.ComputeAllCoverHouses());
             }
             
-            if(strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer
+            if(solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer
                    .Commit(new DoubleTargetExocetReportBuilder(exo)) && StopOnFirstPush) return;
         }
     }

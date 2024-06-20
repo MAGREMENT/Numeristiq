@@ -8,21 +8,21 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver;
 
-public class TectonicSolver : StrategySolver<TectonicStrategy, IUpdatableTectonicSolvingState,
-    ITectonicHighlighter, object>, ITectonicStrategyUser, ISolvingState
+public class TectonicSolver : StrategySolver<Strategy<ITectonicSolverData>, IUpdatableTectonicSolvingState,
+    ITectonicHighlighter, object>, ITectonicSolverData, ISolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet8[,] _possibilities;
 
     public IReadOnlyTectonic Tectonic => _tectonic;
-    public LinkGraphManager<ITectonicStrategyUser, ITectonicElement> Graphs { get; }
+    public LinkGraphManager<ITectonicSolverData, ITectonicElement> Graphs { get; }
 
     public TectonicSolver()
     {
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet8[0, 0];
         
-        Graphs = new LinkGraphManager<ITectonicStrategyUser, ITectonicElement>(this, new TectonicConstructRuleBank());
+        Graphs = new LinkGraphManager<ITectonicSolverData, ITectonicElement>(this, new TectonicConstructRuleBank());
     }
 
     public void SetTectonic(ITectonic tectonic)
@@ -178,7 +178,7 @@ public class TectonicSolver : StrategySolver<TectonicStrategy, IUpdatableTectoni
         Graphs.Clear();
     }
 
-    protected override void ApplyStrategy(TectonicStrategy strategy)
+    protected override void ApplyStrategy(Strategy<ITectonicSolverData> strategy)
     {
         strategy.Apply(this);
     }

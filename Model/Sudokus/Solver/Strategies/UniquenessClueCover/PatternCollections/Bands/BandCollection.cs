@@ -29,33 +29,33 @@ public class BandCollection : IPatternCollection
             new BrokenLTripleClueBandPattern());
     }
 
-    public bool Filter(ISudokuStrategyUser strategyUser)
+    public bool Filter(ISudokuSolverData solverData)
     {
         _candidates.Clear();
         for (int mini = 0; mini < 3; mini++)
         {
-            if(CheckForCandidates(strategyUser, mini, Unit.Row)) return true;
-            if(CheckForCandidates(strategyUser, mini, Unit.Column)) return true;
+            if(CheckForCandidates(solverData, mini, Unit.Row)) return true;
+            if(CheckForCandidates(solverData, mini, Unit.Column)) return true;
         }
 
         return false;
     }
 
-    public bool Apply(ISudokuStrategyUser strategyUser)
+    public bool Apply(ISudokuSolverData solverData)
     {
         foreach (var candidate in _candidates)
         {
-            if (Try(strategyUser, candidate)) return true;
+            if (Try(solverData, candidate)) return true;
         }
 
         return false;
     }
 
-    private bool CheckForCandidates(ISudokuStrategyUser strategyUser, int mini, Unit unit)
+    private bool CheckForCandidates(ISudokuSolverData solverData, int mini, Unit unit)
     {
         foreach (var pattern in _collection)
         {
-            if (!DoesClueNumbersMatch(strategyUser, mini, unit, pattern.ClueCount, pattern.DifferentClueCount)) continue;
+            if (!DoesClueNumbersMatch(solverData, mini, unit, pattern.ClueCount, pattern.DifferentClueCount)) continue;
 
             foreach (var boxKey in OrderKeyGenerator.GenerateAll())
             {
@@ -63,17 +63,17 @@ public class BandCollection : IPatternCollection
                 {
                     foreach (var lengthKey1 in OrderKeyGenerator.GenerateAll())
                     {
-                        if(!AreCluesMatching(strategyUser, pattern, boxKey, widthKey, lengthKey1, mini, unit, 0)) continue;
+                        if(!AreCluesMatching(solverData, pattern, boxKey, widthKey, lengthKey1, mini, unit, 0)) continue;
                         
                         foreach (var lengthKey2 in OrderKeyGenerator.GenerateAll())
                         {
-                            if(!AreCluesMatching(strategyUser, pattern, boxKey, widthKey, lengthKey2, mini, unit, 1)) continue;
+                            if(!AreCluesMatching(solverData, pattern, boxKey, widthKey, lengthKey2, mini, unit, 1)) continue;
                             
                             foreach (var lengthKey3 in OrderKeyGenerator.GenerateAll())
                             {
-                                if(!AreCluesMatching(strategyUser, pattern, boxKey, widthKey, lengthKey3, mini, unit, 2)) continue;
+                                if(!AreCluesMatching(solverData, pattern, boxKey, widthKey, lengthKey3, mini, unit, 2)) continue;
                                 
-                                if (TryAndAddToCandidates(strategyUser, pattern, boxKey, widthKey, new []
+                                if (TryAndAddToCandidates(solverData, pattern, boxKey, widthKey, new []
                                     {
                                         lengthKey1, lengthKey2, lengthKey3
                                     }, mini, unit)) return true;
@@ -87,7 +87,7 @@ public class BandCollection : IPatternCollection
         return false;
     }
     
-    private bool DoesClueNumbersMatch(ISudokuStrategyUser strategyUser, int mini, Unit unit, int[] maxClueCount,
+    private bool DoesClueNumbersMatch(ISudokuSolverData solverData, int mini, Unit unit, int[] maxClueCount,
         int maxDifferentClueCount)
     {
         int[] ccs = { 0, 0, 0 }; 
@@ -101,7 +101,7 @@ public class BandCollection : IPatternCollection
                 for (int l = start; l < end; l++)
                 {
                     var cell = unit == Unit.Row ? new Cell(mini * 3 + w, l) : new Cell(l, mini * 3 + w);
-                    var clue = strategyUser.StartState[cell.Row, cell.Column];
+                    var clue = solverData.StartState[cell.Row, cell.Column];
                     if (clue == 0) continue;
 
                     ccs[cc]++;
@@ -114,7 +114,7 @@ public class BandCollection : IPatternCollection
         return true;
     }
 
-    private bool AreCluesMatching(ISudokuStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
+    private bool AreCluesMatching(ISudokuSolverData solverData, BandPattern pattern, int[] boxKey, int[] widthKey,
         int[] lengthKey, int mini, Unit unit, int boxNumber)
     {
         var box = pattern.PlacementsWithKey(boxKey)[boxNumber];
@@ -125,7 +125,7 @@ public class BandCollection : IPatternCollection
                 var cell = unit == Unit.Row 
                     ? new Cell(mini * 3 + w, boxNumber * 3 + l)
                     : new Cell(boxNumber * 3 + l, mini * 3 + w);
-                if (strategyUser.StartState[cell.Row, cell.Column] == 0) continue;
+                if (solverData.StartState[cell.Row, cell.Column] == 0) continue;
 
                 var bp = new BoxPosition(w, l).UnTransform(widthKey, lengthKey);
                 if(!box.ContainsKey(bp)) return false;
@@ -135,7 +135,7 @@ public class BandCollection : IPatternCollection
         return true;
     }
 
-    private bool TryAndAddToCandidates(ISudokuStrategyUser strategyUser, BandPattern pattern, int[] boxKey, int[] widthKey,
+    private bool TryAndAddToCandidates(ISudokuSolverData solverData, BandPattern pattern, int[] boxKey, int[] widthKey,
         int[][] lengthKeys, int mini, Unit unit)
     {
         var boxes = pattern.PlacementsWithKey(boxKey);
@@ -148,7 +148,7 @@ public class BandCollection : IPatternCollection
             {
                 var cell = entry.Key.Transform(widthKey, lengthKeys[i]).ToCell(mini, i, unit);
 
-                var solved = strategyUser.Sudoku[cell.Row, cell.Column];
+                var solved = solverData.Sudoku[cell.Row, cell.Column];
                 if (solved == 0) ok = false;
 
                 if (numberEquivalence[entry.Value] == 0) numberEquivalence[entry.Value] = solved;
@@ -159,10 +159,10 @@ public class BandCollection : IPatternCollection
         var candidate = new BandPatternCandidate(pattern, boxKey, widthKey, lengthKeys, mini, unit);
         _candidates.Add(candidate);
 
-        return ok && Process(strategyUser, candidate, numberEquivalence);
+        return ok && Process(solverData, candidate, numberEquivalence);
     }
     
-    private bool Try(ISudokuStrategyUser strategyUser, BandPatternCandidate candidate)
+    private bool Try(ISudokuSolverData solverData, BandPatternCandidate candidate)
     {
         var boxes = candidate.Pattern.PlacementsWithKey(candidate.BoxKey);
         int[] numberEquivalence = new int[candidate.Pattern.DifferentClueCount];
@@ -174,7 +174,7 @@ public class BandCollection : IPatternCollection
                 var cell = entry.Key.Transform(candidate.WidthKey, candidate.LengthKeys[i]).ToCell(candidate.Mini,
                     i, candidate.Unit);
 
-                var solved = strategyUser.Sudoku[cell.Row, cell.Column];
+                var solved = solverData.Sudoku[cell.Row, cell.Column];
                 if (solved == 0) return false;
 
                 if (numberEquivalence[entry.Value] == 0) numberEquivalence[entry.Value] = solved;
@@ -182,10 +182,10 @@ public class BandCollection : IPatternCollection
             }
         }
         
-        return Process(strategyUser, candidate, numberEquivalence);
+        return Process(solverData, candidate, numberEquivalence);
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, BandPatternCandidate candidate, int[] numberEquivalence)
+    private bool Process(ISudokuSolverData solverData, BandPatternCandidate candidate, int[] numberEquivalence)
     {
         var eliminations = candidate.Pattern.EliminationsWithKey(candidate.BoxKey);
 
@@ -198,18 +198,18 @@ public class BandCollection : IPatternCollection
 
                 foreach (var p in entry.Value.EveryElimination(numberEquivalence))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                 }
             }
         }
 
         //Debug
-        if (strategyUser.ChangeBuffer.NotEmpty())
+        if (solverData.ChangeBuffer.NotEmpty())
         {
             int a = 0;
         }
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new BandUniquenessClueCoverReportBuilder(candidate)) && Strategy!.StopOnFirstPush;
     }
 }

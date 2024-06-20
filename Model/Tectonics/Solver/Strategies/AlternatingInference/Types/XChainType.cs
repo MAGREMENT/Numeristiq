@@ -10,10 +10,10 @@ public class XChainType : IAlternatingInferenceType
 
     public StepDifficulty Difficulty => StepDifficulty.Hard;
     
-    public ILinkGraph<ITectonicElement> GetGraph(ITectonicStrategyUser strategyUser)
+    public ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData)
     {
-        strategyUser.Graphs.ConstructComplex(TectonicConstructRuleBank.ZoneLink,
+        solverData.Graphs.ConstructComplex(TectonicConstructRuleBank.ZoneLink,
             TectonicConstructRuleBank.NeighborLink);
-        return strategyUser.Graphs.ComplexLinkGraph;
+        return solverData.Graphs.ComplexLinkGraph;
     }
 }

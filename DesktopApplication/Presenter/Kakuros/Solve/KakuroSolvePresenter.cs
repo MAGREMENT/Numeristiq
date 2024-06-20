@@ -201,7 +201,7 @@ public class KakuroSolvePresenter
         drawer.Refresh();
     }
 
-    private void OnProgressMade(KakuroStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnProgressMade(Strategy<IKakuroSolverData> strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         if(solutionAdded + possibilitiesRemoved > 0) ShowState(_solver);
     } 

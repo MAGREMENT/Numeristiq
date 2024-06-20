@@ -30,7 +30,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -55,82 +55,82 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
 
                     foreach (var cell in rowCenterCells)
                     {
-                        rowPossibilities += strategyUser.PossibilitiesAt(cell);
+                        rowPossibilities += solverData.PossibilitiesAt(cell);
                     }
 
                     foreach (var cell in colCenterCells)
                     {
-                        colPossibilities += strategyUser.PossibilitiesAt(cell);
+                        colPossibilities += solverData.PossibilitiesAt(cell);
                     }
                     
-                    foreach (var als in SearchRowForAls(strategyUser, miniRow * 3 + u, miniCol))
+                    foreach (var als in SearchRowForAls(solverData, miniRow * 3 + u, miniCol))
                     {
                         if(!rowPossibilities.ContainsAll(als.Possibilities)) continue;
                         
-                        var correspondence = MiniGridCorrespondence(strategyUser, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(solverData, als.Possibilities,
                             u, Unit.Row, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(strategyUser, als.Possibilities, correspondence);
-                        HandleAls(strategyUser, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(solverData, als.Possibilities, correspondence);
+                        HandleAls(solverData, als.Possibilities, rowCenterCells, als);
 
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, rowCenterCells)) &&
                             StopOnFirstPush) return;
                     }
 
-                    foreach (var als in SearchColumnForAls(strategyUser, miniCol * 3 + u, miniRow))
+                    foreach (var als in SearchColumnForAls(solverData, miniCol * 3 + u, miniRow))
                     {
                         if(!colPossibilities.ContainsAll(als.Possibilities)) continue;
                         
-                        var correspondence = MiniGridCorrespondence(strategyUser, als.Possibilities,
+                        var correspondence = MiniGridCorrespondence(solverData, als.Possibilities,
                             u, Unit.Column, miniRow, miniCol);
                         if (correspondence.Count != als.PositionsCount) continue;
 
-                        HandleCorrespondence(strategyUser, als.Possibilities, correspondence);
-                        HandleAls(strategyUser, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(solverData, als.Possibilities, correspondence);
+                        HandleAls(solverData, als.Possibilities, colCenterCells, als);
                         
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, correspondence, colCenterCells)) &&
                             StopOnFirstPush) return;
                     }
 
-                    foreach (var als in SearchMiniGridForAls(strategyUser, miniRow, miniCol,
+                    foreach (var als in SearchMiniGridForAls(solverData, miniRow, miniCol,
                                  u, Unit.Row))
                     {
                         if(!rowPossibilities.ContainsAll(als.Possibilities)) continue;
                         
                         var row = miniRow * 3 + u;
                         
-                        var correspondence = RowCorrespondence(strategyUser, als.Possibilities, miniCol,
+                        var correspondence = RowCorrespondence(solverData, als.Possibilities, miniCol,
                             row);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Row, row);
-                        HandleCorrespondence(strategyUser, als.Possibilities, cells);
-                        HandleAls(strategyUser, als.Possibilities, rowCenterCells, als);
+                        HandleCorrespondence(solverData, als.Possibilities, cells);
+                        HandleAls(solverData, als.Possibilities, rowCenterCells, als);
                         
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, cells, rowCenterCells)) &&
                             StopOnFirstPush) return;
                     }
                     
-                    foreach (var als in SearchMiniGridForAls(strategyUser, miniRow, miniCol,
+                    foreach (var als in SearchMiniGridForAls(solverData, miniRow, miniCol,
                                  u, Unit.Column))
                     {
                         if(!colPossibilities.ContainsAll(als.Possibilities)) continue;
                         
                         var col = miniCol * 3 + u;
                         
-                        var correspondence = ColumnCorrespondence(strategyUser, als.Possibilities, miniRow,
+                        var correspondence = ColumnCorrespondence(solverData, als.Possibilities, miniRow,
                             col);
                         if (correspondence.Count != als.PositionsCount) continue;
 
                         var cells = correspondence.ToCellArray(Unit.Column, col);
-                        HandleCorrespondence(strategyUser, als.Possibilities, cells);
-                        HandleAls(strategyUser, als.Possibilities, colCenterCells, als);
+                        HandleCorrespondence(solverData, als.Possibilities, cells);
+                        HandleAls(solverData, als.Possibilities, colCenterCells, als);
                         
-                        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                                 new AlmostLockedCandidatesReportBuilder(als, cells, colCenterCells)) &&
                             StopOnFirstPush) return;
                     }
@@ -139,40 +139,40 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         }
     }
 
-    private void HandleCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private void HandleCorrespondence(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         IEnumerable<Cell> cells)
     {
         foreach (var cell in cells)
         {
-            foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
-                if (!possibilities.Contains(p)) strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                if (!possibilities.Contains(p)) solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
             }
         }
     }
 
-    private void HandleAls(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private void HandleAls(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         Cell[] centerCells, IPossibilitiesPositions als)
     {
         List<Cell> total = new List<Cell>(centerCells);
         total.AddRange(als.EachCell());
-        foreach (var ssc in SudokuCellUtility.SharedSeenEmptyCells(strategyUser, total))
+        foreach (var ssc in SudokuCellUtility.SharedSeenEmptyCells(solverData, total))
         {
             foreach (var p in possibilities.EnumeratePossibilities())
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
             }
         }
     }
 
-    private LinePositions RowCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private LinePositions RowCorrespondence(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         int exceptMiniCol, int row)
     {
         LinePositions result = new LinePositions();
 
         foreach (var p in possibilities.EnumeratePossibilities())
         {
-            var pos = strategyUser.RowPositionsAt(row, p).Copy();
+            var pos = solverData.RowPositionsAt(row, p).Copy();
             pos.VoidMiniGrid(exceptMiniCol);
 
             result = result.Or(pos);
@@ -181,14 +181,14 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
     
-    private LinePositions ColumnCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private LinePositions ColumnCorrespondence(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         int exceptMiniRow, int col)
     {
         LinePositions result = new LinePositions();
 
         foreach (var p in possibilities.EnumeratePossibilities())
         {
-            var pos = strategyUser.ColumnPositionsAt(col, p).Copy();
+            var pos = solverData.ColumnPositionsAt(col, p).Copy();
             pos.VoidMiniGrid(exceptMiniRow);
 
             result = result.Or(pos);
@@ -197,14 +197,14 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private MiniGridPositions MiniGridCorrespondence(ISudokuStrategyUser strategyUser, ReadOnlyBitSet16 possibilities,
+    private MiniGridPositions MiniGridCorrespondence(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         int exceptNumber, Unit unitExcept, int miniRow, int miniCol)
     {
         MiniGridPositions result = new(miniRow, miniCol);
 
         foreach (var p in possibilities.EnumeratePossibilities())
         {
-            var pos = strategyUser.MiniGridPositionsAt(miniRow, miniCol, p).Copy();
+            var pos = solverData.MiniGridPositionsAt(miniRow, miniCol, p).Copy();
             if (unitExcept == Unit.Row) pos.VoidGridRow(exceptNumber);
             else pos.VoidGridColumn(exceptNumber);
 
@@ -214,24 +214,24 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private List<IPossibilitiesPositions> SearchRowForAls(ISudokuStrategyUser strategyUser, int row,
+    private List<IPossibilitiesPositions> SearchRowForAls(ISudokuSolverData solverData, int row,
         int miniColExcept)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        SearchRowForAls(strategyUser, row, miniColExcept, 0, new ReadOnlyBitSet16(), new LinePositions(), result);
+        SearchRowForAls(solverData, row, miniColExcept, 0, new ReadOnlyBitSet16(), new LinePositions(), result);
         
         return result;
     }
 
-    private void SearchRowForAls(ISudokuStrategyUser strategyUser, int row, int miniColExcept, int start,
+    private void SearchRowForAls(ISudokuSolverData solverData, int row, int miniColExcept, int start,
         ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int col = start; col < 9; col++)
         {
             if (col / 3 == miniColExcept) continue;
 
-            var poss = strategyUser.PossibilitiesAt(row, col);
+            var poss = solverData.PossibilitiesAt(row, col);
             if (poss.Count == 0) continue;
             
             var newPossibilities = currentPossibilities | poss;
@@ -240,33 +240,33 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(col);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, strategyUser));
-            else if (currentPositions.Count < _type - 1) SearchRowForAls(strategyUser, row, miniColExcept, col + 1,
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, solverData));
+            else if (currentPositions.Count < _type - 1) SearchRowForAls(solverData, row, miniColExcept, col + 1,
                     newPossibilities, currentPositions, result);
 
             currentPositions.Remove(col);
         }
     }
     
-    private List<IPossibilitiesPositions> SearchColumnForAls(ISudokuStrategyUser strategyUser, int col,
+    private List<IPossibilitiesPositions> SearchColumnForAls(ISudokuSolverData solverData, int col,
         int miniRowExcept)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        SearchColumnForAls(strategyUser, col, miniRowExcept, 0, new ReadOnlyBitSet16(),
+        SearchColumnForAls(solverData, col, miniRowExcept, 0, new ReadOnlyBitSet16(),
             new LinePositions(), result);
 
         return result;
     }
     
-    private void SearchColumnForAls(ISudokuStrategyUser strategyUser, int col, int miniRowExcept, int start,
+    private void SearchColumnForAls(ISudokuSolverData solverData, int col, int miniRowExcept, int start,
         ReadOnlyBitSet16 currentPossibilities, LinePositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int row = start; row < 9; row++)
         {
             if (row / 3 == miniRowExcept) continue;
 
-            var poss = strategyUser.PossibilitiesAt(row, col);
+            var poss = solverData.PossibilitiesAt(row, col);
             if (poss.Count == 0) continue;
             
             var newPossibilities = currentPossibilities | poss;
@@ -275,26 +275,26 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(row);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, strategyUser));
-            else if (currentPositions.Count < _type - 1) SearchColumnForAls(strategyUser, col, miniRowExcept, row + 1,
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, solverData));
+            else if (currentPositions.Count < _type - 1) SearchColumnForAls(solverData, col, miniRowExcept, row + 1,
                 newPossibilities, currentPositions, result);
 
             currentPositions.Remove(row);
         }
     }
 
-    private List<IPossibilitiesPositions> SearchMiniGridForAls(ISudokuStrategyUser strategyUser, int miniRow,
+    private List<IPossibilitiesPositions> SearchMiniGridForAls(ISudokuSolverData solverData, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit)
     {
         var result = new List<IPossibilitiesPositions>();
 
-        SearchMiniGridForAls(strategyUser, miniRow, miniCol, exceptNumber, exceptUnit, 0, new ReadOnlyBitSet16(),
+        SearchMiniGridForAls(solverData, miniRow, miniCol, exceptNumber, exceptUnit, 0, new ReadOnlyBitSet16(),
             new MiniGridPositions(miniRow, miniCol), result);
 
         return result;
     }
 
-    private void SearchMiniGridForAls(ISudokuStrategyUser strategyUser, int miniRow,
+    private void SearchMiniGridForAls(ISudokuSolverData solverData, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit, int start, ReadOnlyBitSet16 currentPossibilities,
         MiniGridPositions currentPositions, List<IPossibilitiesPositions> result)
     {
@@ -312,7 +312,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
                     break;
             }
 
-            var poss = strategyUser.PossibilitiesAt(r, c);
+            var poss = solverData.PossibilitiesAt(r, c);
             if (poss.Count == 0) continue;
             
             var newPossibilities = currentPossibilities | poss;
@@ -321,8 +321,8 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(number);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, strategyUser));
-            else if (currentPositions.Count < _type - 1) SearchMiniGridForAls(strategyUser, miniRow, miniCol,
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, solverData));
+            else if (currentPositions.Count < _type - 1) SearchMiniGridForAls(solverData, miniRow, miniCol,
                     exceptNumber, exceptUnit, number + 1, newPossibilities, currentPositions, result);
 
             currentPositions.Remove(number);

@@ -29,7 +29,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         List<Cell> perfect = new();
         List<Cell> notPerfect = new();
@@ -43,7 +43,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
                 {
                     for (int col = 0; col < 9; col++)
                     {
-                        var p = strategyUser.PossibilitiesAt(row, col);
+                        var p = solverData.PossibilitiesAt(row, col);
                         if (p.Count == 0) continue;
 
                         var cell = new Cell(row, col);
@@ -56,10 +56,10 @@ public class NonColorablePatternStrategy : SudokuStrategy
                     }
                 }
 
-                if (perfect.Count > possCount && Try(strategyUser, perfect, notPerfect, poss)) return;
+                if (perfect.Count > possCount && Try(solverData, perfect, notPerfect, poss)) return;
                 foreach (var cell in multiNotPerfect)
                 {
-                    if (Try(strategyUser, perfect, cell, poss)) return;
+                    if (Try(solverData, perfect, cell, poss)) return;
                 }
                 
                 perfect.Clear();
@@ -69,22 +69,22 @@ public class NonColorablePatternStrategy : SudokuStrategy
         }
     }
 
-    private bool Try(ISudokuStrategyUser strategyUser, List<Cell> perfect, Cell multiNotPerfect, ReadOnlyBitSet16 poss)
+    private bool Try(ISudokuSolverData solverData, List<Cell> perfect, Cell multiNotPerfect, ReadOnlyBitSet16 poss)
     {
         var list = new List<Cell>(1) { multiNotPerfect };
         if (IsPatternValid(perfect, list, poss.Count)) return false;
 
         foreach (var p in poss.EnumeratePossibilities())
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, multiNotPerfect);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(p, multiNotPerfect);
         }
         
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new NonColorablePatternReportBuilder(perfect.ToArray(), list, poss)) &&
                 StopOnFirstPush;
     }
 
-    private bool Try(ISudokuStrategyUser strategyUser, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
+    private bool Try(ISudokuSolverData solverData, List<Cell> perfect, List<Cell> notPerfect, ReadOnlyBitSet16 poss)
     {
         List<CellPossibility> outPossibilities = new();
         foreach (var combination in
@@ -92,7 +92,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
         {
             foreach (var cell in combination)
             {
-                foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+                foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
                     if (!poss.Contains(p)) outPossibilities.Add(new CellPossibility(cell, p));
                 }
@@ -100,7 +100,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
             var targets = outPossibilities.Count == 1 
                 ? outPossibilities 
-                : SudokuCellUtility.SharedSeenExistingPossibilities(strategyUser, outPossibilities);
+                : SudokuCellUtility.SharedSeenExistingPossibilities(solverData, outPossibilities);
             if (targets.Count == 0 || IsPatternValid(perfect, combination, poss.Count))
             {
                 outPossibilities.Clear();
@@ -109,11 +109,11 @@ public class NonColorablePatternStrategy : SudokuStrategy
 
             foreach (var cp in targets)
             {
-                if(outPossibilities.Count == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(outPossibilities[0]);
-                else strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                if(outPossibilities.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(outPossibilities[0]);
+                else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new NonColorablePatternReportBuilder(perfect.ToArray(), combination, poss)) &&
                         StopOnFirstPush) return true;
         }

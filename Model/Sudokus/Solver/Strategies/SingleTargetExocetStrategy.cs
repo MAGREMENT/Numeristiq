@@ -18,14 +18,14 @@ public class SingleTargetExocetStrategy : SudokuStrategy
     {
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var exo in ExocetSearcher.SearchSingleTargets(strategyUser))
+        foreach (var exo in ExocetSearcher.SearchSingleTargets(solverData))
         {
             //Single target specific elimination
             foreach (var cell in SudokuCellUtility.SharedSeenCells(exo.Base1, exo.Base2))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(exo.WildCard, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(exo.WildCard, cell);
             }
             
             //Elimination 1
@@ -34,22 +34,22 @@ public class SingleTargetExocetStrategy : SudokuStrategy
                 if (p == exo.WildCard) continue;
                 if (exo.ComputeCoverHouses(p).Count == 1)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target);
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, exo.Base1);
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, exo.Base2);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, exo.Base1);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, exo.Base2);
                 }
             }
 
             //Elimination 3
-            foreach (var p in strategyUser.PossibilitiesAt(exo.Target).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(exo.Target).EnumeratePossibilities())
             {
                 if (!exo.BaseCandidates.Contains(p))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, exo.Target);
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new SingleTargetExocetReportBuilder(exo)) && StopOnFirstPush) return;
         }
     }

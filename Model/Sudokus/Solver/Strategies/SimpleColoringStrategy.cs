@@ -17,41 +17,41 @@ public class SimpleColoringStrategy : SudokuStrategy
 
     public SimpleColoringStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling){}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
-        var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
+        var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
 
         foreach (var coloredVertices in ColorHelper.ColorAll<CellPossibility,
                      ColoringListCollection<CellPossibility>>(ColorHelper.Algorithm.ColorWithoutRules, graph,
-                     Coloring.On, !strategyUser.FastMode))
+                     Coloring.On, !solverData.FastMode))
         {
             if(coloredVertices.Count <= 1) continue;
 
-            if (SearchForTwiceInTheSameUnit(strategyUser, coloredVertices))
+            if (SearchForTwiceInTheSameUnit(solverData, coloredVertices))
             {
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new SimpleColoringReportBuilder(coloredVertices, true)) &&
                             StopOnFirstPush) return;
                 
                 continue;
             }
             
-            SearchForTwoColorsElsewhere(strategyUser, coloredVertices);
+            SearchForTwoColorsElsewhere(solverData, coloredVertices);
             
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new SimpleColoringReportBuilder(coloredVertices)) && StopOnFirstPush) return;
         }
     }
 
-    private bool SearchForTwiceInTheSameUnit(ISudokuStrategyUser strategyUser,
+    private bool SearchForTwiceInTheSameUnit(ISudokuSolverData solverData,
         ColoringList<CellPossibility> cv)
     {
-        return SearchColorForTwiceInTheSameUnit(strategyUser, cv.On, cv.Off) ||
-               SearchColorForTwiceInTheSameUnit(strategyUser, cv.Off, cv.On);
+        return SearchColorForTwiceInTheSameUnit(solverData, cv.On, cv.Off) ||
+               SearchColorForTwiceInTheSameUnit(solverData, cv.Off, cv.On);
     }
 
-    private bool SearchColorForTwiceInTheSameUnit(ISudokuStrategyUser strategyUser,
+    private bool SearchColorForTwiceInTheSameUnit(ISudokuSolverData solverData,
         IReadOnlyList<CellPossibility> toSearch, IReadOnlyList<CellPossibility> other)
     {
         for (int i = 0; i < toSearch.Count; i++)
@@ -62,7 +62,7 @@ public class SimpleColoringStrategy : SudokuStrategy
                 {
                     foreach (var coord in other)
                     {
-                        strategyUser.ChangeBuffer.ProposeSolutionAddition(coord);
+                        solverData.ChangeBuffer.ProposeSolutionAddition(coord);
                     }
 
                     return true;
@@ -73,7 +73,7 @@ public class SimpleColoringStrategy : SudokuStrategy
         return false;
     }
 
-    private void SearchForTwoColorsElsewhere(ISudokuStrategyUser strategyUser,
+    private void SearchForTwoColorsElsewhere(ISudokuSolverData solverData,
         ColoringList<CellPossibility> cv)
     {
         HashSet<CellPossibility> inGraph = new(cv.On);
@@ -88,7 +88,7 @@ public class SimpleColoringStrategy : SudokuStrategy
                     var current = new CellPossibility(coord, on.Possibility);
                     if (inGraph.Contains(current)) continue;
                     
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Column);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(on.Possibility, coord.Row, coord.Column);
                 }
             }
         }

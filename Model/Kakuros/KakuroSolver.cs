@@ -5,8 +5,8 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingState, ISolvingStateHighlighter, object>,
-    IKakuroStrategyUser
+public class KakuroSolver : StrategySolver<Strategy<IKakuroSolverData>, IUpdatableSolvingState, ISolvingStateHighlighter, object>,
+    IKakuroSolverData
 {
     private IKakuro _kakuro = new ArrayKakuro();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];
@@ -94,7 +94,7 @@ public class KakuroSolver : StrategySolver<KakuroStrategy, IUpdatableSolvingStat
         
     }
 
-    protected override void ApplyStrategy(KakuroStrategy strategy)
+    protected override void ApplyStrategy(Strategy<IKakuroSolverData> strategy)
     {
         strategy.Apply(this);
     }

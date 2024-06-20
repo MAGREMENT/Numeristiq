@@ -70,7 +70,7 @@ public class JuniorExocet : DoubleTargetExocet
         return sCells;
     }
 
-    public bool CompatibilityCheck(ISudokuStrategyUser strategyUser, int poss1, int poss2)
+    public bool CompatibilityCheck(ISudokuSolverData solverData, int poss1, int poss2)
     {
         if (!BaseCandidates.Contains(poss1) || !BaseCandidates.Contains(poss2))
             throw new ArgumentException("Possibility not in base candidates");
@@ -78,11 +78,11 @@ public class JuniorExocet : DoubleTargetExocet
         if (poss1 == poss2) return false;
 
         return GetUnit() == Unit.Row
-            ? RowCompatibilityCheck(strategyUser, poss1, poss2)
-            : ColumnCompatibilityCheck(strategyUser, poss1, poss2);
+            ? RowCompatibilityCheck(solverData, poss1, poss2)
+            : ColumnCompatibilityCheck(solverData, poss1, poss2);
     }
 
-    private bool RowCompatibilityCheck(ISudokuStrategyUser strategyUser, int poss1, int poss2)
+    private bool RowCompatibilityCheck(ISudokuSolverData solverData, int poss1, int poss2)
     {
         int urThreatCount = 0;
         var possibilities = new ReadOnlyBitSet16(poss1, poss2);
@@ -95,12 +95,12 @@ public class JuniorExocet : DoubleTargetExocet
             {
                 int row = miniRow * 3 + r;
                 
-                if (strategyUser.Contains(row, EscapeCell.Column, poss1) || strategyUser.Contains(row, EscapeCell.Column, poss2) ||
-                    strategyUser.Contains(row, Target1.Column, poss1) || strategyUser.Contains(row, Target1.Column, poss2) ||
-                    strategyUser.Contains(row, Target2.Column, poss1) || strategyUser.Contains(row, Target2.Column, poss2)) continue;
+                if (solverData.Contains(row, EscapeCell.Column, poss1) || solverData.Contains(row, EscapeCell.Column, poss2) ||
+                    solverData.Contains(row, Target1.Column, poss1) || solverData.Contains(row, Target1.Column, poss2) ||
+                    solverData.Contains(row, Target2.Column, poss1) || solverData.Contains(row, Target2.Column, poss2)) continue;
 
-                if (!strategyUser.PossibilitiesAt(row, Base1.Column).ContainsAll(possibilities) ||
-                    !strategyUser.PossibilitiesAt(row, Base2.Column).ContainsAll(possibilities)) continue;
+                if (!solverData.PossibilitiesAt(row, Base1.Column).ContainsAll(possibilities) ||
+                    !solverData.PossibilitiesAt(row, Base2.Column).ContainsAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;
@@ -121,7 +121,7 @@ public class JuniorExocet : DoubleTargetExocet
         return false;
     }
     
-    private bool ColumnCompatibilityCheck(ISudokuStrategyUser strategyUser, int poss1, int poss2)
+    private bool ColumnCompatibilityCheck(ISudokuSolverData solverData, int poss1, int poss2)
     {
         int urThreatCount = 0;
         var possibilities = new ReadOnlyBitSet16(poss1, poss2);
@@ -134,12 +134,12 @@ public class JuniorExocet : DoubleTargetExocet
             {
                 int col = miniCol * 3 + c;
                 
-                if (strategyUser.Contains(EscapeCell.Row, col, poss1) || strategyUser.Contains(EscapeCell.Row, col, poss2) ||
-                    strategyUser.Contains(Target1.Row, col, poss1) || strategyUser.Contains(Target1.Row, col, poss2) ||
-                    strategyUser.Contains(Target2.Row, col, poss1) || strategyUser.Contains(Target2.Row, col, poss2)) continue;
+                if (solverData.Contains(EscapeCell.Row, col, poss1) || solverData.Contains(EscapeCell.Row, col, poss2) ||
+                    solverData.Contains(Target1.Row, col, poss1) || solverData.Contains(Target1.Row, col, poss2) ||
+                    solverData.Contains(Target2.Row, col, poss1) || solverData.Contains(Target2.Row, col, poss2)) continue;
 
-                if (!strategyUser.PossibilitiesAt(Base1.Row, col).ContainsAll(possibilities) ||
-                    !strategyUser.PossibilitiesAt(Base2.Row, col).ContainsAll(possibilities)) continue;
+                if (!solverData.PossibilitiesAt(Base1.Row, col).ContainsAll(possibilities) ||
+                    !solverData.PossibilitiesAt(Base2.Row, col).ContainsAll(possibilities)) continue;
                 
                 urThreatCount++;
                 break;

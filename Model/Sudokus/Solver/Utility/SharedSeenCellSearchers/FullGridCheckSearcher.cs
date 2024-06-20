@@ -22,13 +22,13 @@ public class FullGridCheckSearcher : ISharedSeenCellSearcher
         }
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyUser.Sudoku[row, col] != 0 ||
+                if (solverData.Sudoku[row, col] != 0 ||
                     (row == row1 && col == col1) || (row == row2 && col == col2)) continue;
                 
                 if (SudokuCellUtility.ShareAUnit(row, col, row1, col1)
@@ -45,7 +45,7 @@ public class FullGridCheckSearcher : ISharedSeenCellSearcher
         throw new System.NotImplementedException();
     }
 
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         throw new System.NotImplementedException();

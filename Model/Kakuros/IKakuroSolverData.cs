@@ -4,7 +4,7 @@ using Model.Core.Highlighting;
 
 namespace Model.Kakuros;
 
-public interface IKakuroStrategyUser : ISolvingState
+public interface IKakuroSolverData : ISolvingState
 {
     IReadOnlyKakuro Kakuro { get; }
     ChangeBuffer<IUpdatableSolvingState, ISolvingStateHighlighter> ChangeBuffer { get; }

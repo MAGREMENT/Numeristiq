@@ -1,5 +1,15 @@
 namespace Model.Core;
 
+public abstract class Strategy<T> : Strategy
+{
+    protected Strategy(string name, StepDifficulty difficulty, InstanceHandling defaultHandling) 
+        : base(name, difficulty, defaultHandling)
+    {
+    }
+
+    public abstract void Apply(T user);
+}
+
 public abstract class Strategy
 {
     private bool _enabled = true;

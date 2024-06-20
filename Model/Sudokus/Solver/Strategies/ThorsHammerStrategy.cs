@@ -26,7 +26,7 @@ public class ThorsHammerStrategy : SudokuStrategy
     }
 
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         Dictionary<int, MiniGridPositions> boxCandidates = new();
         foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, CombinationCalculator.NumbersSample))
@@ -35,13 +35,13 @@ public class ThorsHammerStrategy : SudokuStrategy
             {
                 for (int c = 0; c < 3; c++)
                 {
-                    var pos1 = strategyUser.MiniGridPositionsAt(r, c, combination[0]);
+                    var pos1 = solverData.MiniGridPositionsAt(r, c, combination[0]);
                     if (pos1.Count == 0) continue;
                     
-                    var pos2 = strategyUser.MiniGridPositionsAt(r, c, combination[1]);
+                    var pos2 = solverData.MiniGridPositionsAt(r, c, combination[1]);
                     if (pos2.Count == 0) continue;
 
-                    var pos3 = strategyUser.MiniGridPositionsAt(r, c, combination[2]);
+                    var pos3 = solverData.MiniGridPositionsAt(r, c, combination[2]);
                     if (pos3.Count == 0) continue;
 
                     var total = pos1.Or(pos2).Or(pos3);
@@ -51,13 +51,13 @@ public class ThorsHammerStrategy : SudokuStrategy
                 }
             }
 
-            if (boxCandidates.Count >= 4 && TryEveryLoop(strategyUser, combination, boxCandidates)) return;
+            if (boxCandidates.Count >= 4 && TryEveryLoop(solverData, combination, boxCandidates)) return;
             
             boxCandidates.Clear();
         }
     }
 
-    private bool TryEveryLoop(ISudokuStrategyUser strategyUser, int[] possibilities,
+    private bool TryEveryLoop(ISudokuSolverData solverData, int[] possibilities,
         Dictionary<int, MiniGridPositions> boxCandidates)
     {
         var graph = new BoxGraph();
@@ -72,29 +72,29 @@ public class ThorsHammerStrategy : SudokuStrategy
 
         foreach (var loop in _finder.FindLoops(graph))
         {
-            if (TryEveryPattern(strategyUser, possibilities, loop, boxCandidates,
+            if (TryEveryPattern(solverData, possibilities, loop, boxCandidates,
                     new Dictionary<int, MiniGridPositions>(), 0)) return true;
         }
 
         return false;
     }
     
-    private bool TryEveryPattern(ISudokuStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
+    private bool TryEveryPattern(ISudokuSolverData solverData, int[] possibilities, BoxLoop loop,
         Dictionary<int, MiniGridPositions> boxCandidates, Dictionary<int, MiniGridPositions> current, int n)
     {
-        if (n == loop.Length) return Search(strategyUser, possibilities, loop, current);
+        if (n == loop.Length) return Search(solverData, possibilities, loop, current);
 
         foreach (var mgp in boxCandidates[loop[n]].EveryDiagonalPattern())
         {
             current.Add(loop[n], mgp);
-            if (TryEveryPattern(strategyUser, possibilities, loop, boxCandidates, current, n + 1)) return true;
+            if (TryEveryPattern(solverData, possibilities, loop, boxCandidates, current, n + 1)) return true;
             current.Remove(loop[n]);
         }
         
         return false;
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, int[] possibilities, BoxLoop loop,
+    private bool Search(ISudokuSolverData solverData, int[] possibilities, BoxLoop loop,
         Dictionary<int, MiniGridPositions> boxCandidates)
     {
         var pp = new ParityPair[loop.Length];
@@ -140,7 +140,7 @@ public class ThorsHammerStrategy : SudokuStrategy
             foreach (var cell in mgp)
             {
                 cells.Add(cell);
-                foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+                foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
                 {
                     if(!possibilities.Contains(p)) notInPattern.Add(new CellPossibility(cell, p));
                 }
@@ -148,12 +148,12 @@ public class ThorsHammerStrategy : SudokuStrategy
         }
 
         if (notInPattern.Count == 0) return false; //Should never happen
-        if (notInPattern.Count == 1) strategyUser.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
+        if (notInPattern.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
         else
         {
-            strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+            solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
                 SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-            var linkGraph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+            var linkGraph = solverData.PreComputer.Graphs.SimpleLinkGraph;
 
             foreach (var target in linkGraph.Neighbors(notInPattern[0]))
             {
@@ -167,11 +167,11 @@ public class ThorsHammerStrategy : SudokuStrategy
                     }
                 }
 
-                if (ok) strategyUser.ChangeBuffer.ProposePossibilityRemoval(target);
+                if (ok) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
             }
         }
 
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new ThorsHammerReportBuilder(cells, notInPattern)) && StopOnFirstPush) return true;
 
         return false;

@@ -6,28 +6,28 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
-public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITectonicElement>
+public class NeighborLinkConstructRule : IConstructRule<ITectonicSolverData, ITectonicElement>
 {
-    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
     {
         Dictionary<IZone, List<Cell>> zoneBuffer = new();
         
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
+                var poss = solverData.PossibilitiesAt(row, col);
                 if (poss.Count == 0) continue;
 
                 foreach (var p in poss.EnumeratePossibilities())
                 {
                     foreach (var cell in TectonicCellUtility.GetNeighbors(row, col,
-                                 strategyUser.Tectonic.RowCount, strategyUser.Tectonic.ColumnCount))
+                                 solverData.Tectonic.RowCount, solverData.Tectonic.ColumnCount))
                     {
-                        if (strategyUser.PossibilitiesAt(cell).Contains(p))
+                        if (solverData.PossibilitiesAt(cell).Contains(p))
                         {
                             linkGraph.Add(new CellPossibility(row, col, p), new CellPossibility(cell, p), LinkStrength.Weak);
-                            var zone = strategyUser.Tectonic.GetZone(cell);
+                            var zone = solverData.Tectonic.GetZone(cell);
                             if (!zoneBuffer.TryGetValue(zone, out var list))
                             {
                                 list = new List<Cell>();
@@ -42,7 +42,7 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, I
                     {
                         if (entry.Value.Count <= 1) continue;
                         
-                        var pos = strategyUser.ZonePositionsFor(entry.Key, p);
+                        var pos = solverData.ZonePositionsFor(entry.Key, p);
                         if (pos.Count == entry.Value.Count + 1)
                         {
                             Cell? buffer = null;
@@ -71,21 +71,21 @@ public class NeighborLinkConstructRule : IConstructRule<ITectonicStrategyUser, I
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicSolverData solverData)
     {
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
+                var poss = solverData.PossibilitiesAt(row, col);
                 if (poss.Count == 0) continue;
 
                 foreach (var p in poss.EnumeratePossibilities())
                 {
                     foreach (var cell in TectonicCellUtility.GetNeighbors(row, col,
-                                 strategyUser.Tectonic.RowCount, strategyUser.Tectonic.ColumnCount))
+                                 solverData.Tectonic.RowCount, solverData.Tectonic.ColumnCount))
                     {
-                        if (strategyUser.PossibilitiesAt(cell).Contains(p)) linkGraph.Add(
+                        if (solverData.PossibilitiesAt(cell).Contains(p)) linkGraph.Add(
                             new CellPossibility(row, col, p), new CellPossibility(cell, p), LinkStrength.Weak);
                     }
                 }

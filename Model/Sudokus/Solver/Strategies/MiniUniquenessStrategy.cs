@@ -22,7 +22,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int mini = 0; mini < 3; mini++)
         {
@@ -37,7 +37,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
                 for (int r = 0; r < 3; r++)
                 {
                     var row = mini * 3 + r;
-                    var solved = strategyUser.Sudoku[row, col];
+                    var solved = solverData.Sudoku[row, col];
                     
                     if (solved == 0) availabilityCount++;
                     else presence += solved;
@@ -57,16 +57,16 @@ public class MiniUniquenessStrategy : SudokuStrategy
                     for (int r = 0; r < 3; r++)
                     {
                         var row = mini * 3 + r;
-                        if (strategyUser.Sudoku[row, col] != 0) continue;
+                        if (solverData.Sudoku[row, col] != 0) continue;
 
                         foreach (var p in presence.EnumeratePossibilities())
                         {
-                            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
+                            solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                         }
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                             StopOnFirstPush) return;
             }
@@ -81,7 +81,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
                 for (int c = 0; c < 3; c++)
                 {
                     var col = mini * 3 + c;
-                    var solved = strategyUser.Sudoku[row, col];
+                    var solved = solverData.Sudoku[row, col];
                     
                     if (solved == 0) availabilityCount++;
                     else presence += solved;
@@ -101,16 +101,16 @@ public class MiniUniquenessStrategy : SudokuStrategy
                     for (int c = 0; c < 3; c++)
                     {
                         var col = mini * 3 + c;
-                        if (strategyUser.Sudoku[row, col] != 0) continue;
+                        if (solverData.Sudoku[row, col] != 0) continue;
 
                         foreach (var p in presence.EnumeratePossibilities())
                         {
-                            strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
+                            solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
                         }
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new MiniUniquenessReportBuilder(mini, Unit.Row, presence)) &&
                     StopOnFirstPush) return;
             }

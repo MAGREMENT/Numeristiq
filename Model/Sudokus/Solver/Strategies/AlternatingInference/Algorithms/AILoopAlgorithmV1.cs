@@ -15,17 +15,17 @@ public class AILoopAlgorithmV1<T> : IAlternatingInferenceAlgorithm<T> where T : 
         _maxLoopSize = maxLoopSize;
     }
 
-    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuSolverData solverData, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyUser);
+        var graph = type.GetGraph(solverData);
         _loopsProcessed.Clear();
         foreach (var start in graph)
         {
-            Search(graph, new LinkGraphChainBuilder<T>(start), type, strategyUser);
+            Search(graph, new LinkGraphChainBuilder<T>(start), type, solverData);
         }
     }
 
-    private void Search(ILinkGraph<T> graph, LinkGraphChainBuilder<T> path, IAlternatingInferenceType<T> inferenceType, ISudokuStrategyUser view)
+    private void Search(ILinkGraph<T> graph, LinkGraphChainBuilder<T> path, IAlternatingInferenceType<T> inferenceType, ISudokuSolverData view)
     {
         if (path.Count > _maxLoopSize) return;
         var last = path.LastElement();

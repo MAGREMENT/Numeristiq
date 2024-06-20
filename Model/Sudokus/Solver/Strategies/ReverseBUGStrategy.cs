@@ -17,7 +17,7 @@ public class ReverseBUGStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         GridPositions[] positions = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
 
@@ -25,7 +25,7 @@ public class ReverseBUGStrategy : SudokuStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var solution = strategyUser.Sudoku[row, col];
+                var solution = solverData.Sudoku[row, col];
                 if (solution != 0) positions[solution - 1].Add(row, col);
             }
         }
@@ -54,11 +54,11 @@ public class ReverseBUGStrategy : SudokuStrategy
 
                 if (soloRow / 3 == miniRow && soloCol / 3 == miniCol)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(n1, soloRow, soloCol);
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(n2, soloRow, soloCol);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(n1, soloRow, soloCol);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(n2, soloRow, soloCol);
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new ReverseBugReportBuilder(or, n1)) && StopOnFirstPush) return;
             }
         }

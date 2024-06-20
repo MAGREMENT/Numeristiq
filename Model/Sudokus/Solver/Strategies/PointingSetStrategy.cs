@@ -37,7 +37,7 @@ public class PointingSetStrategy : SudokuStrategy
 
     public PointingSetStrategy() : base(OfficialName, StepDifficulty.Easy, DefaultInstanceHandling){}
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int miniRow = 0; miniRow < 3; miniRow++)
         {
@@ -45,16 +45,16 @@ public class PointingSetStrategy : SudokuStrategy
             {
                 for (int number = 1; number <= 9; number++)
                 {
-                    var ppimg = strategyUser.MiniGridPositionsAt(miniRow, miniCol, number);
+                    var ppimg = solverData.MiniGridPositionsAt(miniRow, miniCol, number);
                     if (ppimg.AreAllInSameRow())
                     {
                         int row = ppimg.First().Row;
                         for (int col = 0; col < 9; col++)
                         {
-                            if (col / 3 != miniCol) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                            if (col / 3 != miniCol) solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
                         
-                        if(strategyUser.ChangeBuffer.Commit(
+                        if(solverData.ChangeBuffer.Commit(
                             new PointingPossibilitiesReportBuilder(number, ppimg)) &&
                                 StopOnFirstPush) return;
                     }
@@ -63,10 +63,10 @@ public class PointingSetStrategy : SudokuStrategy
                         int col = ppimg.First().Column;
                         for (int row = 0; row < 9; row++)
                         {
-                            if (row / 3 != miniRow) strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
+                            if (row / 3 != miniRow) solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, col);
                         }
 
-                        if (strategyUser.ChangeBuffer.Commit(
+                        if (solverData.ChangeBuffer.Commit(
                                 new PointingPossibilitiesReportBuilder(number, ppimg)) &&
                                     StopOnFirstPush) return;
                     }

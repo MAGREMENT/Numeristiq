@@ -26,38 +26,38 @@ public class FinnedGridFormationStrategy : SudokuStrategy
             _ => throw new ArgumentException("Type not valid")
         };
     }
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int number = 1; number <= 9; number++)
         {
             for (int row = 0; row < 9; row++)
             {
-                var ppic = strategyUser.RowPositionsAt(row, number);
+                var ppic = solverData.RowPositionsAt(row, number);
                 if (ppic.Count == 0) continue;
 
                 var here = new LinePositions { row };
 
-                if(SearchRowCandidate(strategyUser, row + 1, ppic, here, number)) return;
+                if(SearchRowCandidate(solverData, row + 1, ppic, here, number)) return;
             }
             
             for (int col = 0; col < 9; col++)
             {
-                var ppir = strategyUser.ColumnPositionsAt(col, number);
+                var ppir = solverData.ColumnPositionsAt(col, number);
                 if (ppir.Count == 0) continue;
 
                 var here = new LinePositions { col };
 
-                if (SearchColumnCandidate(strategyUser, col + 1, ppir, here, number)) return;
+                if (SearchColumnCandidate(solverData, col + 1, ppir, here, number)) return;
             }
         }
     }
 
-    private bool SearchRowCandidate(ISudokuStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
+    private bool SearchRowCandidate(ISudokuSolverData solverData, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int row = start; row < 9; row++)
         {
-            var ppic = strategyUser.RowPositionsAt(row, number);
+            var ppic = solverData.RowPositionsAt(row, number);
             if (ppic.Count > _type) continue;
 
             var newMashed = mashed.Or(ppic);
@@ -68,22 +68,22 @@ public class FinnedGridFormationStrategy : SudokuStrategy
 
             if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
             {
-                if (SearchRowFinned(strategyUser, newMashed, newVisited, number)) return true;
+                if (SearchRowFinned(solverData, newMashed, newVisited, number)) return true;
             }
-            else if(newVisited.Count < _type) SearchRowCandidate(strategyUser, row + 1, newMashed, newVisited, number);
+            else if(newVisited.Count < _type) SearchRowCandidate(solverData, row + 1, newMashed, newVisited, number);
         }
 
         return false;
     }
 
-    private bool SearchRowFinned(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchRowFinned(ISudokuSolverData solverData, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int row = 0; row < 9; row++)
         {
             if (visited.Contains(row)) continue;
 
-            var ppic = strategyUser.RowPositionsAt(row, number);
+            var ppic = solverData.RowPositionsAt(row, number);
 
             int miniCol = -1;
 
@@ -110,11 +110,11 @@ public class FinnedGridFormationStrategy : SudokuStrategy
                     int eliminationRow = startRow + gridRow;
                     if (visited.Contains(eliminationRow) || row == eliminationRow) continue;
 
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, eliminationRow, col);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(number, eliminationRow, col);
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new FinnedGridFormationReportBuilder(mashed, visited, row, number, Unit.Row)) &&
                     StopOnFirstPush) return true;
         }
@@ -122,12 +122,12 @@ public class FinnedGridFormationStrategy : SudokuStrategy
         return false;
     }
     
-    private bool SearchColumnCandidate(ISudokuStrategyUser strategyUser, int start, IReadOnlyLinePositions mashed,
+    private bool SearchColumnCandidate(ISudokuSolverData solverData, int start, IReadOnlyLinePositions mashed,
         LinePositions visited, int number)
     {
         for (int col = start; col < 9; col++)
         {
-            var ppir = strategyUser.ColumnPositionsAt(col, number);
+            var ppir = solverData.ColumnPositionsAt(col, number);
             if(ppir.Count > _type) continue;
 
             var newMashed = mashed.Or(ppir);
@@ -138,22 +138,22 @@ public class FinnedGridFormationStrategy : SudokuStrategy
 
             if (newVisited.Count == newMashed.Count - 1 && newMashed.Count == _type)
             {
-                if (SearchColumnFinned(strategyUser, newMashed, newVisited, number)) return true;
+                if (SearchColumnFinned(solverData, newMashed, newVisited, number)) return true;
             }
-            else if(newVisited.Count < _type) SearchColumnCandidate(strategyUser, col + 1, newMashed, newVisited, number);
+            else if(newVisited.Count < _type) SearchColumnCandidate(solverData, col + 1, newMashed, newVisited, number);
         }
 
         return false;
     }
     
-    private bool SearchColumnFinned(ISudokuStrategyUser strategyUser, IReadOnlyLinePositions mashed, LinePositions visited,
+    private bool SearchColumnFinned(ISudokuSolverData solverData, IReadOnlyLinePositions mashed, LinePositions visited,
         int number)
     {
         for (int col = 0; col < 9; col++)
         {
             if (visited.Contains(col)) continue;
 
-            var ppic = strategyUser.ColumnPositionsAt(col, number);
+            var ppic = solverData.ColumnPositionsAt(col, number);
 
             int miniRow = -1;
 
@@ -180,11 +180,11 @@ public class FinnedGridFormationStrategy : SudokuStrategy
                     int eliminationCol = startCol + gridCol;
                     if (visited.Contains(eliminationCol) || col == eliminationCol) continue;
 
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(number, row, eliminationCol);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(number, row, eliminationCol);
                 }
             }
 
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new FinnedGridFormationReportBuilder(mashed, visited, col, number, Unit.Column))
                     && StopOnFirstPush) return true;
         }

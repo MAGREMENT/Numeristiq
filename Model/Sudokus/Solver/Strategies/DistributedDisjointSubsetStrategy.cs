@@ -18,7 +18,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     {
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         HashSet<GridPositions> alreadyExplored = new();
         
@@ -26,30 +26,30 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyUser.Sudoku[row, col] != 0) continue;
+                if (solverData.Sudoku[row, col] != 0) continue;
 
                 var current = new Cell(row, col);
                 
                 GridPositions positions = new GridPositions();
                 positions.Add(row, col);
                 Dictionary<int, List<Cell>> possibilitiesCells = new();
-                foreach (var p in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+                foreach (var p in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
                     possibilitiesCells.Add(p, new List<Cell>{current});
                 }
 
-                if (Search(strategyUser, possibilitiesCells, positions, alreadyExplored)) return;
+                if (Search(solverData, possibilitiesCells, positions, alreadyExplored)) return;
             }
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells,
+    private bool Search(ISudokuSolverData solverData, Dictionary<int, List<Cell>> possibilitiesCells,
         GridPositions positions, HashSet<GridPositions> alreadyExplored)
     {
         foreach (var cell in positions.AllSeenCells())
         {
-            if (strategyUser.Sudoku[cell.Row, cell.Column] != 0 ||
-                !ShareAUnitWithAll(strategyUser, cell, possibilitiesCells)) continue;
+            if (solverData.Sudoku[cell.Row, cell.Column] != 0 ||
+                !ShareAUnitWithAll(solverData, cell, possibilitiesCells)) continue;
             
             positions.Add(cell);
             if (alreadyExplored.Contains(positions))
@@ -60,7 +60,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
 
             alreadyExplored.Add(positions.Copy());
             
-            foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 if (!possibilitiesCells.TryGetValue(p, out var list))
                 {
@@ -73,13 +73,13 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
 
             if (positions.Count == possibilitiesCells.Count)
             {
-                if (Process(strategyUser, possibilitiesCells)) return true;
+                if (Process(solverData, possibilitiesCells)) return true;
             }
             
-            if (Search(strategyUser, possibilitiesCells, positions, alreadyExplored)) return true;
+            if (Search(solverData, possibilitiesCells, positions, alreadyExplored)) return true;
 
             positions.Remove(cell);
-            foreach (var p in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+            foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
                 var list = possibilitiesCells[p];
 
@@ -91,17 +91,17 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool Process(ISudokuSolverData solverData, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         foreach (var entry in possibilitiesCells)
         {
             foreach (var ssc in SudokuCellUtility.SharedSeenCells(entry.Value))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(entry.Key, ssc);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(entry.Key, ssc);
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                    new DistributedDisjointSubsetReportBuilder(PossibilitiesCellsDeepCopy(possibilitiesCells))) &&
                StopOnFirstPush;
     }
@@ -118,10 +118,10 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
         return result;
     }
 
-    private bool ShareAUnitWithAll(ISudokuStrategyUser strategyUser, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
+    private bool ShareAUnitWithAll(ISudokuSolverData solverData, Cell cell, Dictionary<int, List<Cell>> possibilitiesCells)
     {
         bool ok = false;
-        foreach (var poss in strategyUser.PossibilitiesAt(cell).EnumeratePossibilities())
+        foreach (var poss in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
         {
             if (!possibilitiesCells.TryGetValue(poss, out var toShareAUnitWith)) continue;
 

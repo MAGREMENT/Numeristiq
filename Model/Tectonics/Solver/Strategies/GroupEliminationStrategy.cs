@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Strategies;
 
-public class GroupEliminationStrategy : TectonicStrategy, ICommitComparer
+public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitComparer
 {
     private const int Limit = 4;
     
@@ -15,20 +15,20 @@ public class GroupEliminationStrategy : TectonicStrategy, ICommitComparer
     {
     }
 
-    public override void Apply(ITectonicStrategyUser strategyUser)
+    public override void Apply(ITectonicSolverData solverData)
     {
         HashSet<Cell> done = new();
         List<Cell> cells = new();
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                var poss = strategyUser.PossibilitiesAt(row, col);
+                var poss = solverData.PossibilitiesAt(row, col);
                 if (poss.Count == 0) continue;
 
                 var cell = new Cell(row, col);
                 cells.Add(cell);
-                if (SearchForGroup(strategyUser, cells, poss, done)) return;
+                if (SearchForGroup(solverData, cells, poss, done)) return;
 
                 done.Add(cell);
                 cells.Clear();
@@ -36,24 +36,24 @@ public class GroupEliminationStrategy : TectonicStrategy, ICommitComparer
         }
     }
 
-    private bool SearchForGroup(ITectonicStrategyUser tectonicStrategyUser, List<Cell> cells, ReadOnlyBitSet8 possibilities, HashSet<Cell> done)
+    private bool SearchForGroup(ITectonicSolverData tectonicSolverData, List<Cell> cells, ReadOnlyBitSet8 possibilities, HashSet<Cell> done)
     {
-        if (cells.Count == possibilities.Count && ProcessGroup(tectonicStrategyUser, cells, possibilities)) return true;
+        if (cells.Count == possibilities.Count && ProcessGroup(tectonicSolverData, cells, possibilities)) return true;
 
         if (cells.Count == Limit) return false;
 
-        foreach (var cell in TectonicCellUtility.SharedNeighboringCells(tectonicStrategyUser.Tectonic, cells))
+        foreach (var cell in TectonicCellUtility.SharedNeighboringCells(tectonicSolverData.Tectonic, cells))
         {
             if (done.Contains(cell)) continue;
 
-            var poss = tectonicStrategyUser.PossibilitiesAt(cell);
+            var poss = tectonicSolverData.PossibilitiesAt(cell);
             if (poss.Count == 0) continue;
 
             var newPoss = possibilities | poss;
             if (newPoss.Count > Limit) continue;
 
             cells.Add(cell);
-            SearchForGroup(tectonicStrategyUser, cells, newPoss, done);
+            SearchForGroup(tectonicSolverData, cells, newPoss, done);
 
             cells.RemoveAt(cells.Count - 1);
         }
@@ -61,25 +61,25 @@ public class GroupEliminationStrategy : TectonicStrategy, ICommitComparer
         return false;
     }
 
-    private bool ProcessGroup(ITectonicStrategyUser tectonicStrategyUser, List<Cell> cells, ReadOnlyBitSet8 possibilities)
+    private bool ProcessGroup(ITectonicSolverData tectonicSolverData, List<Cell> cells, ReadOnlyBitSet8 possibilities)
     {
         List<Cell> buffer = new();
         foreach (var possibility in possibilities.EnumeratePossibilities())
         {
             foreach (var cell in cells)
             {
-                if (tectonicStrategyUser.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
+                if (tectonicSolverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
 
-            foreach (var target in TectonicCellUtility.SharedSeenCells(tectonicStrategyUser.Tectonic, buffer))
+            foreach (var target in TectonicCellUtility.SharedSeenCells(tectonicSolverData.Tectonic, buffer))
             {
-                tectonicStrategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, target);
+                tectonicSolverData.ChangeBuffer.ProposePossibilityRemoval(possibility, target);
             }
             
             buffer.Clear();
         }
         
-        return tectonicStrategyUser.ChangeBuffer.Commit(new GroupEliminationReportBuilder(cells.ToArray()))
+        return tectonicSolverData.ChangeBuffer.Commit(new GroupEliminationReportBuilder(cells.ToArray()))
             && StopOnFirstPush;
     }
 

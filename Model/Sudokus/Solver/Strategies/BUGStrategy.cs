@@ -24,12 +24,12 @@ public class BUGStrategy : SudokuStrategy
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         List<CellPossibility> additionalCandidates = new(_maxAdditionalCandidates.Value);
         for (int number = 1; number <= 9; number++)
         {
-            var pos = strategyUser.PositionsFor(number);
+            var pos = solverData.PositionsFor(number);
             if (pos.Count == 0) continue;
 
             var copy = pos.Copy();
@@ -52,19 +52,19 @@ public class BUGStrategy : SudokuStrategy
         {
             case 0 : return;
             case 1 : 
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(additionalCandidates[0]);
+                solverData.ChangeBuffer.ProposeSolutionAddition(additionalCandidates[0]);
                 break;
             default:
-                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(strategyUser, additionalCandidates))
+                foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, additionalCandidates))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
                 }
 
                 break;
         }
 
         
-        if(strategyUser.ChangeBuffer.NotEmpty()) strategyUser.ChangeBuffer.Commit(
+        if(solverData.ChangeBuffer.NotEmpty()) solverData.ChangeBuffer.Commit(
             new BUGStrategyReportBuilder(additionalCandidates));
     }
 }

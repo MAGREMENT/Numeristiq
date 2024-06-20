@@ -21,26 +21,26 @@ public class DigitForcingNetStrategy : SudokuStrategy
         
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                foreach (var possibility in strategyUser.PossibilitiesAt(row, col).EnumeratePossibilities())
+                foreach (var possibility in solverData.PossibilitiesAt(row, col).EnumeratePossibilities())
                 {
-                    var onColoring = strategyUser.PreComputer.OnColoring(row, col, possibility);
-                    var offColoring = strategyUser.PreComputer.OffColoring(row, col, possibility);
+                    var onColoring = solverData.PreComputer.OnColoring(row, col, possibility);
+                    var offColoring = solverData.PreComputer.OffColoring(row, col, possibility);
 
                     if(onColoring.Count == 1 || offColoring.Count == 1) continue;
 
-                    if (Process(strategyUser, onColoring, offColoring)) return;
+                    if (Process(solverData, onColoring, offColoring)) return;
                 }
             }
         }
     }
 
-    private bool Process(ISudokuStrategyUser view, ColoringDictionary<ISudokuElement> onColoring,
+    private bool Process(ISudokuSolverData view, ColoringDictionary<ISudokuElement> onColoring,
         ColoringDictionary<ISudokuElement> offColoring)
     {
         foreach (var on in onColoring)
@@ -93,7 +93,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
         return false;
     }
 
-    private void RemoveAll(ISudokuStrategyUser view, int row, int col, int except1, int except2)
+    private void RemoveAll(ISudokuSolverData view, int row, int col, int except1, int except2)
     {
         foreach (var possibility in view.PossibilitiesAt(row, col).EnumeratePossibilities())
         {

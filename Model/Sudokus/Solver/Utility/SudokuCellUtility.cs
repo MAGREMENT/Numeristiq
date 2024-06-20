@@ -189,18 +189,18 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
     {
-        return Searcher.SharedSeenEmptyCells(strategyUser, row1, col1, row2, col2);
+        return Searcher.SharedSeenEmptyCells(solverData, row1, col1, row2, col2);
     }
     
-    public static List<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, IReadOnlyList<Cell> list)
+    public static List<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, IReadOnlyList<Cell> list)
     {
         if (list.Count == 0) return new List<Cell>();
-        if (list.Count == 1) return SeenEmptyCells(strategyUser, list[^1]);
+        if (list.Count == 1) return SeenEmptyCells(solverData, list[^1]);
 
         var result = new List<Cell>();
-        foreach (var coord in Searcher.SharedSeenEmptyCells(strategyUser, list[0].Row, list[0].Column,
+        foreach (var coord in Searcher.SharedSeenEmptyCells(solverData, list[0].Row, list[0].Column,
                      list[1].Row, list[1].Column))
         {
             bool ok = true;
@@ -219,11 +219,11 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static List<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, Cell one, Cell two,
+    public static List<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, Cell one, Cell two,
         params Cell[] others)
     {
         List<Cell> result = new List<Cell>();
-        foreach (var coord in SharedSeenEmptyCells(strategyUser, one.Row, one.Column, two.Row, two.Column))
+        foreach (var coord in SharedSeenEmptyCells(solverData, one.Row, one.Column, two.Row, two.Column))
         {
             bool ok = true;
             foreach (var other in others)
@@ -253,32 +253,32 @@ public static class SudokuCellUtility
                (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
     }
 
-    public static List<CellPossibility> SeenExistingPossibilities(ISudokuStrategyUser strategyUser, CellPossibility cp)
+    public static List<CellPossibility> SeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility cp)
     {
         var result = new List<CellPossibility>();
 
-        foreach (var poss in strategyUser.PossibilitiesAt(cp.Row, cp.Column).EnumeratePossibilities())
+        foreach (var poss in solverData.PossibilitiesAt(cp.Row, cp.Column).EnumeratePossibilities())
         {
             if (poss == cp.Possibility) continue;
             
             result.Add(new CellPossibility(cp.Row, cp.Column, poss));
         }
 
-        foreach (var col in strategyUser.RowPositionsAt(cp.Row, cp.Possibility))
+        foreach (var col in solverData.RowPositionsAt(cp.Row, cp.Possibility))
         {
             if (col == cp.Column) continue;
 
             result.Add(new CellPossibility(cp.Row, col, cp.Possibility));
         }
         
-        foreach (var row in strategyUser.ColumnPositionsAt(cp.Column, cp.Possibility))
+        foreach (var row in solverData.ColumnPositionsAt(cp.Column, cp.Possibility))
         {
             if (row == cp.Row) continue;
 
             result.Add(new CellPossibility(row, cp.Column, cp.Possibility));
         }
         
-        foreach (var pos in strategyUser.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility))
+        foreach (var pos in solverData.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility))
         {
             if (pos == cp.ToCell()) continue;
 
@@ -288,21 +288,21 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, CellPossibility first,
+    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility first,
         CellPossibility second)
     {
-        return Searcher.SharedSeenExistingPossibilities(strategyUser, first.Row, first.Column, first.Possibility,
+        return Searcher.SharedSeenExistingPossibilities(solverData, first.Row, first.Column, first.Possibility,
             second.Row, second.Column, second.Possibility);
     }
 
-    public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser,
+    public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData,
         IReadOnlyList<CellPossibility> list) //TODO USE THIS + to enumerable
     {
         if (list.Count == 0) return new List<CellPossibility>();
-        if (list.Count == 1) return SeenExistingPossibilities(strategyUser, list[0]);
+        if (list.Count == 1) return SeenExistingPossibilities(solverData, list[0]);
 
         var result = new List<CellPossibility>();
-        foreach (var cp in SharedSeenExistingPossibilities(strategyUser, list[0], list[1]))
+        foreach (var cp in SharedSeenExistingPossibilities(solverData, list[0], list[1]))
         {
             bool ok = true;
             for (int i = 2; i < list.Count; i++)
@@ -320,32 +320,32 @@ public static class SudokuCellUtility
         return result;
     }
 
-    public static IEnumerable<CellPossibility> DefaultStrongLinks(ISudokuStrategyUser strategyUser, CellPossibility cp)
+    public static IEnumerable<CellPossibility> DefaultStrongLinks(ISudokuSolverData solverData, CellPossibility cp)
     {
-        var poss = strategyUser.PossibilitiesAt(cp.Row, cp.Column);
+        var poss = solverData.PossibilitiesAt(cp.Row, cp.Column);
         if (poss.Count == 2) yield return new CellPossibility(cp.Row, cp.Column, poss.FirstPossibility(cp.Possibility));
 
-        var rPos = strategyUser.RowPositionsAt(cp.Row, cp.Possibility);
+        var rPos = solverData.RowPositionsAt(cp.Row, cp.Possibility);
         if (rPos.Count == 2) yield return new CellPossibility(cp.Row, rPos.First(cp.Column), cp.Possibility);
 
-        var cPos = strategyUser.ColumnPositionsAt(cp.Column, cp.Possibility);
+        var cPos = solverData.ColumnPositionsAt(cp.Column, cp.Possibility);
         if (cPos.Count == 2) yield return new CellPossibility(cPos.First(cp.Row), cp.Column, cp.Possibility);
 
-        var mPos = strategyUser.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility);
+        var mPos = solverData.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility);
         if (mPos.Count == 2) yield return new CellPossibility(mPos.First(cp.ToCell()), cp.Possibility);
     }
 
-    public static bool AreStronglyLinked(ISudokuStrategyUser strategyUser, CellPossibility cp1, CellPossibility cp2)
+    public static bool AreStronglyLinked(ISudokuSolverData solverData, CellPossibility cp1, CellPossibility cp2)
     {
         if (cp1.Row == cp2.Row && cp1.Column == cp2.Column)
-            return strategyUser.PossibilitiesAt(cp1.Row, cp2.Column).Count == 2;
+            return solverData.PossibilitiesAt(cp1.Row, cp2.Column).Count == 2;
 
         if (cp1.Possibility == cp2.Possibility)
         {
-            return (cp1.Row == cp2.Row && strategyUser.RowPositionsAt(cp1.Row, cp1.Possibility).Count == 2) ||
+            return (cp1.Row == cp2.Row && solverData.RowPositionsAt(cp1.Row, cp1.Possibility).Count == 2) ||
                    (cp1.Column == cp2.Column &&
-                    strategyUser.ColumnPositionsAt(cp1.Column, cp1.Possibility).Count == 2) ||
-                   (cp1.Row / 3 == cp2.Row / 3 && cp1.Column / 3 == cp2.Column / 3 && strategyUser
+                    solverData.ColumnPositionsAt(cp1.Column, cp1.Possibility).Count == 2) ||
+                   (cp1.Row / 3 == cp2.Row / 3 && cp1.Column / 3 == cp2.Column / 3 && solverData
                        .MiniGridPositionsAt(cp1.Row / 3, cp1.Column / 3, cp1.Possibility).Count == 2);
         }
 

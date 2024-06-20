@@ -9,7 +9,7 @@ using Model.Utility;
 
 namespace Model.Tectonics.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization : TectonicStrategy //TODO manage loops
+public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData> //TODO manage loops
 {
     private readonly IAlternatingInferenceType _type;
     
@@ -19,17 +19,17 @@ public class AlternatingInferenceGeneralization : TectonicStrategy //TODO manage
         _type = type;
     }
 
-    public override void Apply(ITectonicStrategyUser strategyUser)
+    public override void Apply(ITectonicSolverData solverData)
     {
-        var graph = _type.GetGraph(strategyUser);
+        var graph = _type.GetGraph(solverData);
         foreach (var element in graph)
         {
             if (element is not CellPossibility cp) continue;
-            if (Search(strategyUser, graph, cp)) return;
+            if (Search(solverData, graph, cp)) return;
         }
     }
 
-    private bool Search(ITectonicStrategyUser strategyUser, ILinkGraph<ITectonicElement> graph, CellPossibility start)
+    private bool Search(ITectonicSolverData solverData, ILinkGraph<ITectonicElement> graph, CellPossibility start)
     {
         Dictionary<ITectonicElement, ITectonicElement> on = new();
         Dictionary<ITectonicElement, ITectonicElement> off = new();
@@ -45,7 +45,7 @@ public class AlternatingInferenceGeneralization : TectonicStrategy //TODO manage
             {
                 if (!on.TryAdd(eOn, current)) continue;
 
-                if (TryProcess(strategyUser, start, eOn, on, off)) return true;
+                if (TryProcess(solverData, start, eOn, on, off)) return true;
 
                 foreach (var eOff in graph.Neighbors(eOn))
                 {
@@ -59,17 +59,17 @@ public class AlternatingInferenceGeneralization : TectonicStrategy //TODO manage
         return false;
     }
 
-    private bool TryProcess(ITectonicStrategyUser strategyUser, CellPossibility start, ITectonicElement current,
+    private bool TryProcess(ITectonicSolverData solverData, CellPossibility start, ITectonicElement current,
         Dictionary<ITectonicElement, ITectonicElement> on, Dictionary<ITectonicElement, ITectonicElement> off)
     {
         if (current is not CellPossibility end) return false;
 
-        foreach (var cp in TectonicCellUtility.SharedSeenPossibilities(strategyUser, start, end))
+        foreach (var cp in TectonicCellUtility.SharedSeenPossibilities(solverData, start, end))
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new AlternatingInferenceReportBuilder(end, on, off)) && StopOnFirstPush;
     }
 }
@@ -80,7 +80,7 @@ public interface IAlternatingInferenceType
     
     StepDifficulty Difficulty { get; }
 
-    ILinkGraph<ITectonicElement> GetGraph(ITectonicStrategyUser strategyUser);
+    ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData);
 }
 
 public class AlternatingInferenceReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>

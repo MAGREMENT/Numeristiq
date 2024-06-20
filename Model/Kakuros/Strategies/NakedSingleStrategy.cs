@@ -6,21 +6,21 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros.Strategies;
 
-public class NakedSingleStrategy : KakuroStrategy
+public class NakedSingleStrategy : Strategy<IKakuroSolverData>
 {
     public NakedSingleStrategy() : base("Naked Single", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 
-    public override void Apply(IKakuroStrategyUser strategyUser)
+    public override void Apply(IKakuroSolverData solverData)
     {
-        foreach (var cell in strategyUser.Kakuro.EnumerateCells())
+        foreach (var cell in solverData.Kakuro.EnumerateCells())
         {
-            var pos = strategyUser.PossibilitiesAt(cell);
+            var pos = solverData.PossibilitiesAt(cell);
             if (pos.Count != 1) continue;
             
-            strategyUser.ChangeBuffer.ProposeSolutionAddition(pos.FirstPossibility(), cell);
-            strategyUser.ChangeBuffer.Commit(
+            solverData.ChangeBuffer.ProposeSolutionAddition(pos.FirstPossibility(), cell);
+            solverData.ChangeBuffer.Commit(
                 DefaultChangeReportBuilder<IUpdatableSolvingState, ISolvingStateHighlighter>.Instance);
         }
     }

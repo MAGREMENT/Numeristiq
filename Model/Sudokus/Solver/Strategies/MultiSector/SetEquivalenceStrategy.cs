@@ -21,11 +21,11 @@ public class SetEquivalenceStrategy : SudokuStrategy
         _searchers = searchers;
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         foreach (var searcher in _searchers)
         {
-            foreach (var equivalence in searcher.Search(strategyUser))
+            foreach (var equivalence in searcher.Search(solverData))
             {
                 int[] solved1 = new int[9];
                 int[] solved2 = new int[9];
@@ -35,7 +35,7 @@ public class SetEquivalenceStrategy : SudokuStrategy
 
                 foreach (var cell in equivalence.FirstSet)
                 {
-                    var solved = strategyUser.Sudoku[cell.Row, cell.Column];
+                    var solved = solverData.Sudoku[cell.Row, cell.Column];
                     if (solved == 0) continue;
                 
                     solved1[solved - 1]++;
@@ -44,7 +44,7 @@ public class SetEquivalenceStrategy : SudokuStrategy
 
                 foreach (var cell in equivalence.SecondSet)
                 {
-                    var solved = strategyUser.Sudoku[cell.Row, cell.Column];
+                    var solved = solverData.Sudoku[cell.Row, cell.Column];
                     if (solved == 0) continue;
                 
                     solved2[solved - 1]++;
@@ -74,13 +74,13 @@ public class SetEquivalenceStrategy : SudokuStrategy
                 {
                     foreach (var cell in equivalence.SecondSet)
                     {
-                        var possibilities = strategyUser.PossibilitiesAt(cell);
+                        var possibilities = solverData.PossibilitiesAt(cell);
                         if(possibilities.Count == 0) continue;
 
                         foreach (var possibility in possibilities.EnumeratePossibilities())
                         {
                             if (solved1[possibility - 1] == 0)
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                         }
                     }
                 }
@@ -89,18 +89,18 @@ public class SetEquivalenceStrategy : SudokuStrategy
                 {
                     foreach (var cell in equivalence.FirstSet)
                     {
-                        var possibilities = strategyUser.PossibilitiesAt(cell);
+                        var possibilities = solverData.PossibilitiesAt(cell);
                         if(possibilities.Count == 0) continue;
 
                         foreach (var possibility in possibilities.EnumeratePossibilities())
                         {
                             if (solved2[possibility - 1] == 0)
-                                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
+                                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell.Row, cell.Column);
                         }
                     }
                 }
 
-                if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+                if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                         new GeometricEquivalenceReportBuilder(equivalence)) &&
                             StopOnFirstPush) return;
             }

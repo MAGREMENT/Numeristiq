@@ -23,18 +23,18 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
         _cellsSearchers = searchers;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         List<PossibilityCovers> covers = new();
         foreach (var searcher in _cellsSearchers)
         {
-            foreach (var grid in searcher.SearchGrids(strategyUser))
+            foreach (var grid in searcher.SearchGrids(solverData))
             {
                 var count = 0;
                 
                 for (int number = 1; number <= 9; number++)
                 {
-                    var positions = strategyUser.PositionsFor(number);
+                    var positions = solverData.PositionsFor(number);
                     var and = grid.And(positions);
                     if (and.Count == 0) continue;
 
@@ -43,20 +43,20 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
                     covers.Add(new PossibilityCovers(number, coverHouses.ToArray()));
                 }
 
-                if (count == grid.Count && Process(strategyUser, grid, covers)) return;
+                if (count == grid.Count && Process(solverData, grid, covers)) return;
                 covers.Clear();
             }
         }
     }
 
-    private bool Process(ISudokuStrategyUser strategyUser, GridPositions grid, List<PossibilityCovers> covers)
+    private bool Process(ISudokuSolverData solverData, GridPositions grid, List<PossibilityCovers> covers)
     {
         List<PossibilityCovers> alternativesTotal = new();
         HashSet<House> emptyForbidden = new();
         
         foreach (var cover in covers)
         {
-            var positions = strategyUser.PositionsFor(cover.Possibility);
+            var positions = solverData.PositionsFor(cover.Possibility);
             var and = grid.And(positions);
 
             var alternatives = and.PossibleCoverHouses(cover.CoverHouses.Length, emptyForbidden, UnitMethods.All);
@@ -71,13 +71,13 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
                     foreach (var cell in method.EveryCell(house.Number))
                     {
                         if (grid.Contains(cell)) continue;
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(cover.Possibility, cell);
                     }
                 }
             } 
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new MultiSectorLockedSetsReportBuilder(grid, covers.ToArray(), alternativesTotal)) && StopOnFirstPush;
     }
 
@@ -96,7 +96,7 @@ public class MultiSectorLockedSetsStrategy : SudokuStrategy
 
 public interface IMultiSectorCellsSearcher
 {
-    public IEnumerable<GridPositions> SearchGrids(ISudokuStrategyUser strategyUser);
+    public IEnumerable<GridPositions> SearchGrids(ISudokuSolverData solverData);
 }
 
 public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>

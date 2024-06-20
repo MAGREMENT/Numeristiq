@@ -6,5 +6,5 @@ namespace Model.Sudokus.Solver.Utility.Oddagons;
 
 public interface IOddagonSearchAlgorithm
 {
-    List<AlmostOddagon> Search(ISudokuStrategyUser strategyUser, ILinkGraph<CellPossibility> graph);
+    List<AlmostOddagon> Search(ISudokuSolverData solverData, ILinkGraph<CellPossibility> graph);
 }

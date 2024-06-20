@@ -6,21 +6,21 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros.Strategies;
 
-public class AmountCoherencyStrategy : KakuroStrategy
+public class AmountCoherencyStrategy : Strategy<IKakuroSolverData>
 {
     public AmountCoherencyStrategy() : base("Amount Coherency", StepDifficulty.Easy, InstanceHandling.UnorderedAll)
     {
     }
 
-    public override void Apply(IKakuroStrategyUser strategyUser)
+    public override void Apply(IKakuroSolverData solverData)
     {
-        foreach (var sum in strategyUser.Kakuro.Sums)
+        foreach (var sum in solverData.Kakuro.Sums)
         {
             var total = 0;
             int withSolutions = 1;
             foreach (var cell in sum)
             {
-                var n = strategyUser[cell.Row, cell.Column];
+                var n = solverData[cell.Row, cell.Column];
                 if (n != 0)
                 {
                     total += n;
@@ -34,15 +34,15 @@ public class AmountCoherencyStrategy : KakuroStrategy
             var max = KakuroCellUtility.MaxAmountFor(sum.Length - withSolutions);
             foreach (var cell in sum)
             {
-                if (strategyUser[cell.Row, cell.Column] != 0) continue;
+                if (solverData[cell.Row, cell.Column] != 0) continue;
 
-                var possibilities = strategyUser.PossibilitiesAt(cell);
+                var possibilities = solverData.PossibilitiesAt(cell);
                 foreach (var p in possibilities.EnumeratePossibilities())
                 {
                     if (total + p + min > sum.Amount || total + p + max < sum.Amount)
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, cell);
-                        strategyUser.ChangeBuffer.Commit(
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                        solverData.ChangeBuffer.Commit(
                             DefaultChangeReportBuilder<IUpdatableSolvingState, ISolvingStateHighlighter>.Instance);
                     }
                 }

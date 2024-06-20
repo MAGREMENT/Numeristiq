@@ -5,9 +5,9 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Utility.Graphs.ConstructRules;
 
-public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuStrategyUser, ISudokuElement>
+public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverData, ISudokuElement>
 {
-    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ISudokuElement> linkGraph, ISudokuSolverData solverData)
     {
         for (int n = 1; n <= 9; n++)
         {
@@ -15,20 +15,20 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuStrategy
             {
                 for (int miniCol = 0; miniCol < 3; miniCol++)
                 {
-                    var ppimn = strategyUser.MiniGridPositionsAt(miniRow, miniCol, n);
+                    var ppimn = solverData.MiniGridPositionsAt(miniRow, miniCol, n);
                     if (ppimn.Count < 2) continue;
-                    SearchForPointingInMiniGrid(strategyUser, linkGraph, ppimn, miniRow, miniCol, n);
+                    SearchForPointingInMiniGrid(solverData, linkGraph, ppimn, miniRow, miniCol, n);
                 }
             }
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ISudokuSolverData solverData)
     {
         
     }
 
-    private void SearchForPointingInMiniGrid(ISudokuStrategyUser strategyUser, ILinkGraph<ISudokuElement> linkGraph,
+    private void SearchForPointingInMiniGrid(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> linkGraph,
         IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -81,7 +81,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuStrategy
                         int row = miniRow * 3 + gridRow;
                         int col = miniCol2 * 3 + gridCol;
 
-                        if (strategyUser.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (solverData.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);
@@ -153,7 +153,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuStrategy
                         int row = miniRow2 * 3 + gridRow;
                         int col = miniCol * 3 + gridCol;
 
-                        if (strategyUser.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
+                        if (solverData.PossibilitiesAt(row, col).Contains(numba)) aligned.Add(new CellPossibility(row, col, numba));
                     }
                     
                     singles.AddRange(aligned);

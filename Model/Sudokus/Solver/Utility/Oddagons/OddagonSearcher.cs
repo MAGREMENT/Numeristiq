@@ -12,11 +12,11 @@ public static class OddagonSearcher
 {
     private static readonly IOddagonSearchAlgorithm Algorithm = new OddagonSearchAlgorithmV3(7, 3);
 
-    public static List<AlmostOddagon> Search(ISudokuStrategyUser strategyUser)
+    public static List<AlmostOddagon> Search(ISudokuSolverData solverData)
     {
-        strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+        solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
             SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-        return Algorithm.Search(strategyUser, strategyUser.PreComputer.Graphs.SimpleLinkGraph);
+        return Algorithm.Search(solverData, solverData.PreComputer.Graphs.SimpleLinkGraph);
     }
 
     public static IEnumerable<CellPossibility> FindGuardians(ISudokuSolvingState holder, CellPossibility one, CellPossibility two)

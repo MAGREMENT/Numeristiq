@@ -23,18 +23,18 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         _checkLength2 = checkLength2;
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        var graph = strategyUser.PreComputer.AlmostLockedSetGraph();
+        var graph = solverData.PreComputer.AlmostLockedSetGraph();
 
         foreach (var start in graph)
         {
-            if(Search(strategyUser, graph, start.Positions, new HashSet<IPossibilitiesPositions> {start},
+            if(Search(solverData, graph, start.Positions, new HashSet<IPossibilitiesPositions> {start},
                    new ChainBuilder<IPossibilitiesPositions, int>(start))) return;
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, PossibilitiesGraph<IPossibilitiesPositions> graph,
+    private bool Search(ISudokuSolverData solverData, PossibilitiesGraph<IPossibilitiesPositions> graph,
         GridPositions occupied, HashSet<IPossibilitiesPositions> explored, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         foreach (var friend in graph.GetLinks(chain.LastElement()))
@@ -53,8 +53,8 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
                 explored.Add(friend.To);
                 var occupiedCopy = occupied.Or(friend.To.Positions);
 
-                if (CheckForChain(strategyUser, chain)) return true;
-                if (Search(strategyUser, graph, occupiedCopy, explored, chain)) return true;
+                if (CheckForChain(solverData, chain)) return true;
+                if (Search(solverData, graph, occupiedCopy, explored, chain)) return true;
                 
                 chain.RemoveLast();
             }
@@ -63,7 +63,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
         return false;
     }
 
-    private bool CheckForLoop(ISudokuStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> builder,
+    private bool CheckForLoop(ISudokuSolverData solverData, ChainBuilder<IPossibilitiesPositions, int> builder,
         ReadOnlyBitSet16 possibleLastLinks, GridPositions occupied)
     {
         foreach (var ll in possibleLastLinks.EnumeratePossibilities())
@@ -90,19 +90,19 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
                     {
                         if (occupied.Contains(ssc)) continue;
 
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, ssc);
                     }
                 }
             }
 
-            return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new AlmostLockedSetsChainReportBuilder(chain, ll)) && StopOnFirstPush;
         }
         
         return false;
     }
 
-    private bool CheckForChain(ISudokuStrategyUser strategyUser, ChainBuilder<IPossibilitiesPositions, int> chain)
+    private bool CheckForChain(ISudokuSolverData solverData, ChainBuilder<IPossibilitiesPositions, int> chain)
     {
         if (!_checkLength2 && chain.Count == 2) return false;
 
@@ -121,11 +121,11 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
 
             foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, ssc);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, ssc);
             }
         }
 
-        return strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
             new AlmostLockedSetsChainReportBuilder(chain.ToChain())) && StopOnFirstPush;
     }
 }

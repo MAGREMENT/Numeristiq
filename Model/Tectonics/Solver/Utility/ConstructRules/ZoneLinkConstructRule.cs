@@ -5,16 +5,16 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Utility.ConstructRules;
 
-public class ZoneLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITectonicElement>
+public class ZoneLinkConstructRule : IConstructRule<ITectonicSolverData, ITectonicElement>
 {
-    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicStrategyUser strategyUser)
+    public void Apply(ILinkGraph<ITectonicElement> linkGraph, ITectonicSolverData solverData)
     {
-        for (int i = 0; i < strategyUser.Tectonic.Zones.Count; i++)
+        for (int i = 0; i < solverData.Tectonic.Zones.Count; i++)
         {
-            var zone = strategyUser.Tectonic.Zones[i];
+            var zone = solverData.Tectonic.Zones[i];
             for (int n = 1; n <= zone.Count; n++)
             {
-                var pos = strategyUser.ZonePositionsFor(i, n);
+                var pos = solverData.ZonePositionsFor(i, n);
                 if (pos.Count == 2)
                 {
                     var a = pos.NextPosition(-1);
@@ -36,14 +36,14 @@ public class ZoneLinkConstructRule : IConstructRule<ITectonicStrategyUser, ITect
         }
     }
 
-    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicStrategyUser strategyUser)
+    public void Apply(ILinkGraph<CellPossibility> linkGraph, ITectonicSolverData solverData)
     {
-        for (int i = 0; i < strategyUser.Tectonic.Zones.Count; i++)
+        for (int i = 0; i < solverData.Tectonic.Zones.Count; i++)
         {
-            var zone = strategyUser.Tectonic.Zones[i];
+            var zone = solverData.Tectonic.Zones[i];
             for (int n = 1; n <= zone.Count; n++)
             {
-                var pos = strategyUser.ZonePositionsFor(i, n);
+                var pos = solverData.ZonePositionsFor(i, n);
                 if (pos.Count == 2)
                 {
                     var a = pos.NextPosition(-1);

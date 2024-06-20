@@ -6,20 +6,20 @@ namespace Model.Sudokus.Solver.Strategies.AlternatingInference.Algorithms;
 public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T : ISudokuElement
 {
     public AlgorithmType Type => AlgorithmType.Chain;
-    public void Run(ISudokuStrategyUser strategyUser, IAlternatingInferenceType<T> type)
+    public void Run(ISudokuSolverData solverData, IAlternatingInferenceType<T> type)
     {
-        var graph = type.GetGraph(strategyUser);
+        var graph = type.GetGraph(solverData);
         HashSet<T> processed = new();
 
         foreach (var start in graph)
         {
-            if (Search(strategyUser, graph, type, new LinkGraphChainBuilder<T>(start),
+            if (Search(solverData, graph, type, new LinkGraphChainBuilder<T>(start),
                     new HashSet<T> { start }, new HashSet<T>(), new HashSet<T> {start}, processed)) return;
             processed.Add(start);
         }
     }
 
-    private bool Search(ISudokuStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Search(ISudokuSolverData user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChainBuilder<T> builder, HashSet<T> current, HashSet<T> onExplored, HashSet<T> offExplored, HashSet<T> processed)
     {
         var next = builder.LastLink() == LinkStrength.Strong ? LinkStrength.Weak : LinkStrength.Strong;
@@ -62,7 +62,7 @@ public class AIChainAlgorithmV2<T> : IAlternatingInferenceAlgorithm<T> where T :
         return false;
     }
 
-    private bool Check(ISudokuStrategyUser user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
+    private bool Check(ISudokuSolverData user, ILinkGraph<T> graph, IAlternatingInferenceType<T> type,
         LinkGraphChain<T> chain)
     {
         return type.ProcessChain(user, chain, graph);

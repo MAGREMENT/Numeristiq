@@ -27,9 +27,9 @@ public class OddagonForcingNetStrategy : SudokuStrategy
         AddSetting(_maxNumberOfGuardians);
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
-        foreach (var oddagon in strategyUser.PreComputer.AlmostOddagons())
+        foreach (var oddagon in solverData.PreComputer.AlmostOddagons())
         {
             if (oddagon.Guardians.Length > _maxNumberOfGuardians.Value) continue;
 
@@ -37,7 +37,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
             for (int i = 0; i < oddagon.Guardians.Length; i++)
             {
                 var current = oddagon.Guardians[i];
-                colorings[i] = strategyUser.PreComputer.OnColoring(current.Row, current.Column, current.Possibility);
+                colorings[i] = solverData.PreComputer.OnColoring(current.Row, current.Column, current.Possibility);
             }
 
             foreach (var element in colorings[0])
@@ -57,12 +57,12 @@ public class OddagonForcingNetStrategy : SudokuStrategy
 
                 if (ok)
                 {
-                    if (element.Value == Coloring.On) strategyUser.ChangeBuffer.ProposeSolutionAddition(cp);
-                    else strategyUser.ChangeBuffer.ProposePossibilityRemoval(cp);
+                    if (element.Value == Coloring.On) solverData.ChangeBuffer.ProposeSolutionAddition(cp);
+                    else solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
 
-                    if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit( 
+                    if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit( 
                             new OddagonForcingNetReportBuilder(colorings, element.Value, oddagon,
-                                strategyUser.PreComputer.Graphs.ComplexLinkGraph, cp)) && StopOnFirstPush) return;
+                                solverData.PreComputer.Graphs.ComplexLinkGraph, cp)) && StopOnFirstPush) return;
                 }
             }
         }

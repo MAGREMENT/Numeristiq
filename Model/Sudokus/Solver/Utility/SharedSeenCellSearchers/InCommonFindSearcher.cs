@@ -117,7 +117,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         yield return new Cell(row2, col1);
     }
 
-    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuStrategyUser strategyUser, int row1, int col1, int row2, int col2)
+    public IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
     {
         int miniRow1 = row1 / 3;
         int miniCol1 = col1 / 3;
@@ -137,7 +137,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     var col = startCol + gridCol;
                     
                     if((row == row1 && col == col1) || (row == row2 && col == col2)) continue;
-                    if(strategyUser.Sudoku[row, col] == 0) yield return new Cell(row, col);
+                    if(solverData.Sudoku[row, col] == 0) yield return new Cell(row, col);
                 }
             }
 
@@ -150,7 +150,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     var sc = miniCol * 3;
                     for (int gridCol = 0; gridCol < 3; gridCol++)
                     {
-                        if(strategyUser.Sudoku[row1, sc + gridCol] == 0) yield return new Cell(row1, sc + gridCol);
+                        if(solverData.Sudoku[row1, sc + gridCol] == 0) yield return new Cell(row1, sc + gridCol);
                     }
                 }
             }
@@ -164,7 +164,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
                     var sr = miniRow * 3;
                     for (int gridRow = 0; gridRow < 3; gridRow++)
                     {
-                        if(strategyUser.Sudoku[sr + gridRow, col1] == 0) yield return new Cell(sr + gridRow, col1);
+                        if(solverData.Sudoku[sr + gridRow, col1] == 0) yield return new Cell(sr + gridRow, col1);
                     }
                 }
             }
@@ -178,7 +178,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             {
                 if(col == col1 || col == col2) continue;
 
-                if(strategyUser.Sudoku[row1, col] == 0) yield return new Cell(row1, col);
+                if(solverData.Sudoku[row1, col] == 0) yield return new Cell(row1, col);
             }
             
             yield break;
@@ -190,7 +190,7 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             {
                 if(row == row1 || row == row2) continue;
 
-                if(strategyUser.Sudoku[row, col1] == 0) yield return new Cell(row, col1);
+                if(solverData.Sudoku[row, col1] == 0) yield return new Cell(row, col1);
             }
 
             yield break;
@@ -203,8 +203,8 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
 
             for (int gridCol = 0; gridCol < 3; gridCol++)
             {
-                if(strategyUser.Sudoku[row2, start1 + gridCol] == 0) yield return new Cell(row2, start1 + gridCol);
-                if(strategyUser.Sudoku[row1, start2 + gridCol] == 0) yield return new Cell(row1, start2 + gridCol);
+                if(solverData.Sudoku[row2, start1 + gridCol] == 0) yield return new Cell(row2, start1 + gridCol);
+                if(solverData.Sudoku[row1, start2 + gridCol] == 0) yield return new Cell(row1, start2 + gridCol);
             }
 
             yield break;
@@ -217,15 +217,15 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
 
             for (int gridRow = 0; gridRow < 3; gridRow++)
             {
-                if(strategyUser.Sudoku[start1 + gridRow, col2] == 0) yield return new Cell(start1 + gridRow, col2);
-                if(strategyUser.Sudoku[start2 + gridRow, col1] == 0) yield return new Cell(start2 + gridRow, col1);
+                if(solverData.Sudoku[start1 + gridRow, col2] == 0) yield return new Cell(start1 + gridRow, col2);
+                if(solverData.Sudoku[start2 + gridRow, col1] == 0) yield return new Cell(start2 + gridRow, col1);
             }
 
             yield break;
         }
 
-        if(strategyUser.Sudoku[row1, col2] == 0) yield return new Cell(row1, col2);
-        if(strategyUser.Sudoku[row2, col1] == 0) yield return new Cell(row2, col1);
+        if(solverData.Sudoku[row1, col2] == 0) yield return new Cell(row1, col2);
+        if(solverData.Sudoku[row2, col1] == 0) yield return new Cell(row2, col1);
     }
 
     public IEnumerable<CellPossibility> SharedSeenPossibilities(int row1, int col1, int pos1, int row2, int col2, int pos2)
@@ -243,21 +243,21 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
         }
     }
 
-    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuStrategyUser strategyUser, int row1, int col1, int pos1, int row2,
+    public IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, int row1, int col1, int pos1, int row2,
         int col2, int pos2)
     {
         if (pos1 == pos2)
         {
             foreach (var cell in SharedSeenCells(row1, col1, row2, col2))
             {
-                if(strategyUser.PossibilitiesAt(cell).Contains(pos1)) yield return new CellPossibility(cell, pos1);
+                if(solverData.PossibilitiesAt(cell).Contains(pos1)) yield return new CellPossibility(cell, pos1);
             }
         }
         else
         {
             if (row1 == row2 && col1 == col2)
             {
-                foreach (var p in strategyUser.PossibilitiesAt(row1, col1).EnumeratePossibilities())
+                foreach (var p in solverData.PossibilitiesAt(row1, col1).EnumeratePossibilities())
                 {
                     if (p == pos1 || p == pos2) continue;
                     yield return new CellPossibility(row1, col1, p);
@@ -265,8 +265,8 @@ public class InCommonFindSearcher : ISharedSeenCellSearcher
             }
             else if(SudokuCellUtility.ShareAUnit(row1, col1, row2, col2))
             {
-                if(strategyUser.PossibilitiesAt(row1, col1).Contains(pos2)) yield return new CellPossibility(row1, col1, pos2);
-                if(strategyUser.PossibilitiesAt(row2, col2).Contains(pos1)) yield return new CellPossibility(row2, col2, pos1);
+                if(solverData.PossibilitiesAt(row1, col1).Contains(pos2)) yield return new CellPossibility(row1, col1, pos2);
+                if(solverData.PossibilitiesAt(row2, col2).Contains(pos1)) yield return new CellPossibility(row2, col2, pos1);
             }
         }
     }

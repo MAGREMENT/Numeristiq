@@ -22,29 +22,29 @@ public class CellForcingNetStrategy : SudokuStrategy
         _max = maxPossibilities;
     }
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                if (strategyUser.PossibilitiesAt(row, col).Count < 2 ||
-                    strategyUser.PossibilitiesAt(row, col).Count > _max) continue;
-                var possAsArray = strategyUser.PossibilitiesAt(row, col).ToArray();
+                if (solverData.PossibilitiesAt(row, col).Count < 2 ||
+                    solverData.PossibilitiesAt(row, col).Count > _max) continue;
+                var possAsArray = solverData.PossibilitiesAt(row, col).ToArray();
 
                 var colorings = new ColoringDictionary<ISudokuElement>[possAsArray.Length];
 
                 for (int i = 0; i < possAsArray.Length; i++)
                 {
-                    colorings[i] = strategyUser.PreComputer.OnColoring(row, col, possAsArray[i]);
+                    colorings[i] = solverData.PreComputer.OnColoring(row, col, possAsArray[i]);
                 }
 
-                if (Process(strategyUser, colorings, new Cell(row, col))) return;
+                if (Process(solverData, colorings, new Cell(row, col))) return;
             }
         }
     }
 
-    private bool Process(ISudokuStrategyUser view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
+    private bool Process(ISudokuSolverData view, ColoringDictionary<ISudokuElement>[] colorings, Cell current)
     {
         foreach (var element in colorings[0])
         {

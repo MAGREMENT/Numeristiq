@@ -13,7 +13,7 @@ namespace Model.Sudokus.Solver;
 
 public class PreComputer
 {
-    private readonly ISudokuStrategyUser _strategyUser;
+    private readonly ISudokuSolverData _solverData;
 
     private List<IPossibilitiesPositions>? _als;
 
@@ -28,12 +28,12 @@ public class PreComputer
     private PossibilitiesGraph<IPossibilitiesPositions>? _alsGraph;
     private PositionsGraph<IPossibilitiesPositions>? _ahsGraph;
     
-    public LinkGraphManager<ISudokuStrategyUser, ISudokuElement> Graphs { get; }
+    public LinkGraphManager<ISudokuSolverData, ISudokuElement> Graphs { get; }
 
-    public PreComputer(ISudokuStrategyUser strategyUser)
+    public PreComputer(ISudokuSolverData solverData)
     {
-        _strategyUser = strategyUser;
-        Graphs = new LinkGraphManager<ISudokuStrategyUser, ISudokuElement>(strategyUser, new SudokuConstructRuleBank());
+        _solverData = solverData;
+        Graphs = new LinkGraphManager<ISudokuSolverData, ISudokuElement>(solverData, new SudokuConstructRuleBank());
     }
 
     public void Reset()
@@ -124,15 +124,15 @@ public class PreComputer
 
     private List<IPossibilitiesPositions> DoAlmostLockedSets()
     {
-        return _strategyUser.AlmostNakedSetSearcher.FullGrid();
+        return _solverData.AlmostNakedSetSearcher.FullGrid();
     }
 
     private ColoringDictionary<ISudokuElement> DoColor(ISudokuElement start, Coloring firstColor)
     {
-        _strategyUser.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
+        _solverData.PreComputer.Graphs.ConstructComplex(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
             SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink, SudokuConstructRuleBank.PointingPossibilities,
             SudokuConstructRuleBank.AlmostNakedPossibilities);
-        var graph = _strategyUser.PreComputer.Graphs.ComplexLinkGraph;
+        var graph = _solverData.PreComputer.Graphs.ComplexLinkGraph;
 
         return ColorHelper.ColorFromStart<ISudokuElement, ColoringDictionary<ISudokuElement>>(
             ColorHelper.Algorithm.ColorWithRulesAndLinksJump, graph, start, firstColor, true);
@@ -140,12 +140,12 @@ public class PreComputer
 
     private List<JuniorExocet> DoJuniorExocet()
     {
-        return ExocetSearcher.SearchJuniors(_strategyUser);
+        return ExocetSearcher.SearchJuniors(_solverData);
     }
 
     private List<AlmostOddagon> DoAlmostOddagons()
     {
-        return OddagonSearcher.Search(_strategyUser);
+        return OddagonSearcher.Search(_solverData);
     }
 
     private PossibilitiesGraph<IPossibilitiesPositions> DoAlmostLockedSetGraph()
@@ -194,7 +194,7 @@ public class PreComputer
     private PositionsGraph<IPossibilitiesPositions> DoAlmostHiddenSetGraph()
     {
         var graph = new PositionsGraph<IPossibilitiesPositions>();
-        var allAhs = _strategyUser.AlmostHiddenSetSearcher.FullGrid();
+        var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid();
 
         for (int i = 0; i < allAhs.Count; i++)
         {
@@ -215,7 +215,7 @@ public class PreComputer
     
     private IEnumerable<LinkedAlmostHiddenSets> DoAlmostHiddenSetGraph(PositionsGraph<IPossibilitiesPositions> graph)
     {
-        var allAhs = _strategyUser.AlmostHiddenSetSearcher.FullGrid();
+        var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid();
 
         for (int i = 0; i < allAhs.Count; i++)
         {

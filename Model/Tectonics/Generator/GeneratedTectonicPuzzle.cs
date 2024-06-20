@@ -1,4 +1,7 @@
-﻿namespace Model.Tectonics.Generator;
+﻿using Model.Core;
+using Model.Tectonics.Solver;
+
+namespace Model.Tectonics.Generator;
 
 public class GeneratedTectonicPuzzle
 {
@@ -8,14 +11,14 @@ public class GeneratedTectonicPuzzle
     
     public double Rating { get; private set; }
     
-    public TectonicStrategy? Hardest { get; private set; }
+    public Strategy<ITectonicSolverData>? Hardest { get; private set; }
     
     public GeneratedTectonicPuzzle(ITectonic tectonic)
     {
         Tectonic = tectonic;
     }
 
-    public void SetEvaluation(double rating, TectonicStrategy? hardest)
+    public void SetEvaluation(double rating, Strategy<ITectonicSolverData>? hardest)
     {
         Hardest = hardest;
         Rating = rating;

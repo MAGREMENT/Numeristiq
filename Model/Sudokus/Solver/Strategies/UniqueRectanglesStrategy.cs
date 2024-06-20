@@ -25,14 +25,14 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         AddSetting(_allowMissingCandidates);
     }
     
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         Dictionary<BiValue, List<Cell>> biValueMap = new();
         for (int row = 0; row < 9; row++)
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyUser.PossibilitiesAt(row, col);
+                var possibilities = solverData.PossibilitiesAt(row, col);
                 if (possibilities.Count != 2) continue;
 
                 var asArray = possibilities.ToArray();
@@ -48,7 +48,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                 {
                     foreach (var cell in list)
                     {
-                        if (Search(strategyUser, biValue, cell, current)) return;
+                        if (Search(solverData, biValue, cell, current)) return;
                     }
                 }
 
@@ -60,42 +60,42 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         {
             foreach (var cell in entry.Value)
             {
-                if (SearchHidden(strategyUser, entry.Key, cell)) return;
+                if (SearchHidden(solverData, entry.Key, cell)) return;
             }
         }
     }
 
-    private bool Search(ISudokuStrategyUser strategyUser, BiValue values, params Cell[] floor)
+    private bool Search(ISudokuSolverData solverData, BiValue values, params Cell[] floor)
     {
         foreach (var roof in SudokuCellUtility.DeadlyPatternRoofs(floor))
         {
-            if (Try(strategyUser, values, floor, roof)) return true;
+            if (Try(solverData, values, floor, roof)) return true;
         }
 
         return false;
     }
 
-    private bool Try(ISudokuStrategyUser strategyUser, BiValue values, Cell[] floor, params Cell[] roof)
+    private bool Try(ISudokuSolverData solverData, BiValue values, Cell[] floor, params Cell[] roof)
     {
-        var roofOnePossibilities = strategyUser.PossibilitiesAt(roof[0]);
-        var roofTwoPossibilities = strategyUser.PossibilitiesAt(roof[1]);
+        var roofOnePossibilities = solverData.PossibilitiesAt(roof[0]);
+        var roofTwoPossibilities = solverData.PossibilitiesAt(roof[1]);
 
-        if (!ValidateRoof(strategyUser, values, roof[0], ref roofOnePossibilities) ||
-            !ValidateRoof(strategyUser, values, roof[1], ref roofTwoPossibilities)) return false;
+        if (!ValidateRoof(solverData, values, roof[0], ref roofOnePossibilities) ||
+            !ValidateRoof(solverData, values, roof[1], ref roofTwoPossibilities)) return false;
         
         //Type 1
         if (values == roofOnePossibilities)
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
         }
         else if (values == roofTwoPossibilities)
         {
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
-            strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
+            solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
         }
 
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     StopOnFirstPush) return true;
         
@@ -109,12 +109,12 @@ public class UniqueRectanglesStrategy : SudokuStrategy
 
                 foreach (var cell in SudokuCellUtility.SharedSeenCells(roof[0], roof[1]))
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
                 }
             }
         }
         
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     StopOnFirstPush) return true;
         
@@ -124,12 +124,12 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         notBiValuePossibilities -= values.Two;
 
         var ssc = new List<Cell>(SudokuCellUtility.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in strategyUser.AlmostNakedSetSearcher.InCells(ssc))
+        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc))
         {
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 
-            ProcessUrWithAls(strategyUser, roof, als);
-            if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+            ProcessUrWithAls(solverData, roof, als);
+            if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                     new UniqueRectanglesWithAlmostLockedSetReportBuilder(floor, roof, als)) &&
                         StopOnFirstPush) return true;
         }
@@ -142,21 +142,21 @@ public class UniqueRectanglesStrategy : SudokuStrategy
             //Type 4
             foreach (var cell in SudokuCellUtility.SharedSeenCells(roof[0], roof[1]))
             {
-                if (strategyUser.PossibilitiesAt(cell).Contains(values.One)) oneOk = true;
-                if (strategyUser.PossibilitiesAt(cell).Contains(values.Two)) twoOke = true;
+                if (solverData.PossibilitiesAt(cell).Contains(values.One)) oneOk = true;
+                if (solverData.PossibilitiesAt(cell).Contains(values.Two)) twoOke = true;
 
                 if (oneOk && twoOke) break;
             }
             
             if (!oneOk)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[0]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[1]);
             }
             else if (!twoOke)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[0]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[1]);
             }
         }
         else
@@ -166,20 +166,20 @@ public class UniqueRectanglesStrategy : SudokuStrategy
             {
                 if (unit != roof[0].Column && unit != roof[1].Column)
                 {
-                    if (strategyUser.PossibilitiesAt(roof[0].Row, unit).Contains(values.One)) oneOk = true;
-                    if (strategyUser.PossibilitiesAt(roof[0].Row, unit).Contains(values.Two)) twoOke = true;
+                    if (solverData.PossibilitiesAt(roof[0].Row, unit).Contains(values.One)) oneOk = true;
+                    if (solverData.PossibilitiesAt(roof[0].Row, unit).Contains(values.Two)) twoOke = true;
                     
-                    if (strategyUser.PossibilitiesAt(roof[1].Row, unit).Contains(values.One)) oneOk = true;
-                    if (strategyUser.PossibilitiesAt(roof[1].Row, unit).Contains(values.Two)) twoOke = true;
+                    if (solverData.PossibilitiesAt(roof[1].Row, unit).Contains(values.One)) oneOk = true;
+                    if (solverData.PossibilitiesAt(roof[1].Row, unit).Contains(values.Two)) twoOke = true;
                 }
                 
                 if (unit != roof[0].Row && unit != roof[1].Row)
                 {
-                    if (strategyUser.PossibilitiesAt(unit, roof[0].Column).Contains(values.One)) oneOk = true;
-                    if (strategyUser.PossibilitiesAt(unit, roof[0].Column).Contains(values.Two)) twoOke = true;
+                    if (solverData.PossibilitiesAt(unit, roof[0].Column).Contains(values.One)) oneOk = true;
+                    if (solverData.PossibilitiesAt(unit, roof[0].Column).Contains(values.Two)) twoOke = true;
                     
-                    if (strategyUser.PossibilitiesAt(unit, roof[1].Column).Contains(values.One)) oneOk = true;
-                    if (strategyUser.PossibilitiesAt(unit, roof[1].Column).Contains(values.Two)) twoOke = true;
+                    if (solverData.PossibilitiesAt(unit, roof[1].Column).Contains(values.One)) oneOk = true;
+                    if (solverData.PossibilitiesAt(unit, roof[1].Column).Contains(values.Two)) twoOke = true;
                 }
                 
                 if (oneOk && twoOke) break;
@@ -187,25 +187,25 @@ public class UniqueRectanglesStrategy : SudokuStrategy
             
             if (!oneOk)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[0]);
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[1]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[0]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, floor[1]);
             }
             else if (!twoOke)
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[0]);
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[1]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[0]);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, floor[1]);
             }
         }
         
-        if (strategyUser.ChangeBuffer.NotEmpty() && strategyUser.ChangeBuffer.Commit(
+        if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
                 new UniqueRectanglesReportBuilder(floor, roof)) &&
                     StopOnFirstPush) return true;
         
         //Type 6 (aka hidden type 2)
         if (roof[0].Row == roof[1].Row || roof[0].Column == roof[1].Column)
         {
-            strategyUser.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
-            var graph = strategyUser.PreComputer.Graphs.SimpleLinkGraph;
+            solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.UnitStrongLink);
+            var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
 
             for (int i = 0; i < 2; i++)
             {
@@ -219,16 +219,16 @@ public class UniqueRectanglesStrategy : SudokuStrategy
                 
                     if (graph.AreNeighbors(cpr1, cpf1, LinkStrength.Strong))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
-                        if (strategyUser.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, roof[(j + 1) % 2]);
+                        if (solverData.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr1, cpf1)))
                                     && StopOnFirstPush) return true;
                     }
                 
                     if (graph.AreNeighbors(cpr2, cpf2, LinkStrength.Strong))
                     {
-                        strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
-                        if (strategyUser.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
+                        solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, roof[(j + 1) % 2]);
+                        if (solverData.ChangeBuffer.Commit( new UniqueRectanglesWithStrongLinkReportBuilder(
                                 floor, roof, new Link<CellPossibility>(cpr2, cpf2)))
                                     && StopOnFirstPush) return true;
                     }
@@ -239,70 +239,70 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private void ProcessUrWithAls(ISudokuStrategyUser strategyUser, Cell[] roof, IPossibilitiesPositions als)
+    private void ProcessUrWithAls(ISudokuSolverData solverData, Cell[] roof, IPossibilitiesPositions als)
     {
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities.EnumeratePossibilities())
         {
             foreach (var cell in als.EachCell())
             {
-                if(strategyUser.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
+                if(solverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
 
             foreach (var r in roof)
             {
-                if (strategyUser.PossibilitiesAt(r).Contains(possibility)) buffer.Add(r);
+                if (solverData.PossibilitiesAt(r).Contains(possibility)) buffer.Add(r);
             }
 
             foreach (var cell in SudokuCellUtility.SharedSeenCells(buffer))
             {
-                strategyUser.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, cell);
             }
             
             buffer.Clear();
         }
     }
 
-    private bool SearchHidden(ISudokuStrategyUser strategyUser, BiValue values, Cell cell)
+    private bool SearchHidden(ISudokuSolverData solverData, BiValue values, Cell cell)
     {
         for (int row = 0; row < 9; row++)
         {
             if(row == cell.Row) continue;
-            var rowPossibilities = strategyUser.PossibilitiesAt(row, cell.Column);
+            var rowPossibilities = solverData.PossibilitiesAt(row, cell.Column);
 
             var oneWasChanged = false;
             var twoWasChanged = false;
-            if (!ValidateRoof(strategyUser, values, new Cell(row, cell.Column), ref rowPossibilities,
+            if (!ValidateRoof(solverData, values, new Cell(row, cell.Column), ref rowPossibilities,
                     ref oneWasChanged, ref twoWasChanged) || (oneWasChanged && twoWasChanged)) continue;
 
             for (int col = 0; col < 9; col++)
             {
                 if (col == cell.Column || !SudokuCellUtility.AreSpreadOverTwoBoxes(row, col, cell.Row, cell.Column)) continue;
-                var colPossibilities = strategyUser.PossibilitiesAt(cell.Row, col);
+                var colPossibilities = solverData.PossibilitiesAt(cell.Row, col);
 
                 var oneWasChangedCopy = oneWasChanged;
                 var twoWasChangedCopy = twoWasChanged;
-                if (!ValidateRoof(strategyUser, values, new Cell(cell.Row, col), ref colPossibilities,
+                if (!ValidateRoof(solverData, values, new Cell(cell.Row, col), ref colPossibilities,
                         ref oneWasChangedCopy, ref twoWasChangedCopy)) continue;
 
                 var opposite = new Cell(row, col);
-                var oppositePossibilities = strategyUser.PossibilitiesAt(opposite);
+                var oppositePossibilities = solverData.PossibilitiesAt(opposite);
                 
                 if (!oppositePossibilities.Contains(values.One) || !oppositePossibilities.Contains(values.Two)) continue;
 
-                if (!oneWasChangedCopy && strategyUser.RowPositionsAt(row, values.One).Count == 2 &&
-                    strategyUser.ColumnPositionsAt(col, values.One).Count == 2)
+                if (!oneWasChangedCopy && solverData.RowPositionsAt(row, values.One).Count == 2 &&
+                    solverData.ColumnPositionsAt(col, values.One).Count == 2)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
-                    if (strategyUser.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(values.Two, opposite);
+                    if (solverData.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
                             cell, opposite, values.One)) && StopOnFirstPush) return true;
                 }
                 
-                if (!twoWasChangedCopy && strategyUser.RowPositionsAt(row, values.Two).Count == 2 &&
-                    strategyUser.ColumnPositionsAt(col, values.Two).Count == 2)
+                if (!twoWasChangedCopy && solverData.RowPositionsAt(row, values.Two).Count == 2 &&
+                    solverData.ColumnPositionsAt(col, values.Two).Count == 2)
                 {
-                    strategyUser.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
-                    if (strategyUser.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
+                    solverData.ChangeBuffer.ProposePossibilityRemoval(values.One, opposite);
+                    if (solverData.ChangeBuffer.Commit( new HiddenUniqueRectanglesReportBuilder(
                             cell, opposite, values.One)) && StopOnFirstPush) return true;
                 }
             }
@@ -311,11 +311,11 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ValidateRoof(ISudokuStrategyUser strategyUser, BiValue biValue, Cell cell, ref ReadOnlyBitSet16 possibilities)
+    private bool ValidateRoof(ISudokuSolverData solverData, BiValue biValue, Cell cell, ref ReadOnlyBitSet16 possibilities)
     {
         if (!possibilities.Contains(biValue.One))
         {
-            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.One))
+            if (_allowMissingCandidates.Value && solverData.RawPossibilitiesAt(cell).Contains(biValue.One))
             {
                 possibilities += biValue.One;
             }
@@ -324,7 +324,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         
         if (!possibilities.Contains(biValue.Two))
         {
-            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.Two))
+            if (_allowMissingCandidates.Value && solverData.RawPossibilitiesAt(cell).Contains(biValue.Two))
             {
                 possibilities += biValue.Two;
             }
@@ -334,12 +334,12 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         return true;
     }
     
-    private bool ValidateRoof(ISudokuStrategyUser strategyUser, BiValue biValue, Cell cell,
+    private bool ValidateRoof(ISudokuSolverData solverData, BiValue biValue, Cell cell,
         ref ReadOnlyBitSet16 possibilities, ref bool oneWasChanged, ref bool twoWasChanged)
     {
         if (!possibilities.Contains(biValue.One))
         {
-            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.One))
+            if (_allowMissingCandidates.Value && solverData.RawPossibilitiesAt(cell).Contains(biValue.One))
             {
                 possibilities += biValue.One;
                 oneWasChanged = true;
@@ -349,7 +349,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         
         if (!possibilities.Contains(biValue.Two))
         {
-            if (_allowMissingCandidates.Value && strategyUser.RawPossibilitiesAt(cell).Contains(biValue.Two))
+            if (_allowMissingCandidates.Value && solverData.RawPossibilitiesAt(cell).Contains(biValue.Two))
             {
                 possibilities += biValue.Two;
                 twoWasChanged = true;

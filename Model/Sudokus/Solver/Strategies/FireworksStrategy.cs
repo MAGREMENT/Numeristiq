@@ -21,7 +21,7 @@ public class FireworksStrategy : SudokuStrategy
     }
 
 
-    public override void Apply(ISudokuStrategyUser strategyUser)
+    public override void Apply(ISudokuSolverData solverData)
     {
         Span<int> rowCandidates = stackalloc int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
         Span<int> columnCandidates = stackalloc int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1};
@@ -31,13 +31,13 @@ public class FireworksStrategy : SudokuStrategy
         {
             for (int col = 0; col < 9; col++)
             {
-                var possibilities = strategyUser.PossibilitiesAt(row, col);
+                var possibilities = solverData.PossibilitiesAt(row, col);
                 if (possibilities.Count == 0) continue;
 
                 foreach (var possibility in possibilities.EnumeratePossibilities())
                 {
-                    var rowPositions = strategyUser.RowPositionsAt(row, possibility);
-                    var colPositions = strategyUser.ColumnPositionsAt(col, possibility);
+                    var rowPositions = solverData.RowPositionsAt(row, possibility);
+                    var colPositions = solverData.ColumnPositionsAt(col, possibility);
 
                     var miniRow = row / 3;
                     var miniCol = col / 3;
@@ -126,7 +126,7 @@ public class FireworksStrategy : SudokuStrategy
                                 
                             var poss = new ReadOnlyBitSet16(i, j, k);
                                     
-                            if(ProcessTripleFireworks(strategyUser, new Fireworks(new Cell(row, col),
+                            if(ProcessTripleFireworks(solverData, new Fireworks(new Cell(row, col),
                                    new Cell(row, rFinal), new Cell(cFinal, col), poss)) &&
                                StopOnFirstPush) return;
                         }
@@ -138,7 +138,7 @@ public class FireworksStrategy : SudokuStrategy
             }
         }
 
-        ProcessDualFireworks(strategyUser, dualFireworks);
+        ProcessDualFireworks(solverData, dualFireworks);
     }
 
     private static bool TryGetCandidate(int one, int two, bool allowNegative, out int result)
@@ -161,7 +161,7 @@ public class FireworksStrategy : SudokuStrategy
         return false;
     }
 
-    private bool ProcessTripleFireworks(ISudokuStrategyUser user, Fireworks fireworks)
+    private bool ProcessTripleFireworks(ISudokuSolverData user, Fireworks fireworks)
     {
         foreach (var possibility in user.PossibilitiesAt(fireworks.Cross).EnumeratePossibilities())
         {
@@ -184,7 +184,7 @@ public class FireworksStrategy : SudokuStrategy
         return user.ChangeBuffer.Commit(new FireworksReportBuilder(fireworks));
     }
 
-    private void ProcessDualFireworks(ISudokuStrategyUser user, List<Fireworks> fireworksList)
+    private void ProcessDualFireworks(ISudokuSolverData user, List<Fireworks> fireworksList)
     {
         //Quad
         for (int i = 0; i < fireworksList.Count; i++)

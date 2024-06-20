@@ -5,25 +5,25 @@ using Model.Utility;
 
 namespace Model.Tectonics.Solver.Strategies;
 
-public class BruteForceStrategy : TectonicStrategy
+public class BruteForceStrategy : Strategy<ITectonicSolverData>
 {
     public BruteForceStrategy() : base("Brute Force", StepDifficulty.ByTrial, InstanceHandling.FirstOnly)
     {
     }
 
-    public override void Apply(ITectonicStrategyUser strategyUser)
+    public override void Apply(ITectonicSolverData solverData)
     {
-        var solution = BackTracking.Solutions(strategyUser.Tectonic.Copy(), strategyUser, 1);
+        var solution = BackTracking.Solutions(solverData.Tectonic.Copy(), solverData, 1);
         if (solution.Count != 1) return;
 
-        for (int row = 0; row < strategyUser.Tectonic.RowCount; row++)
+        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < strategyUser.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
             {
-                strategyUser.ChangeBuffer.ProposeSolutionAddition(solution[0][row, col], row, col);
+                solverData.ChangeBuffer.ProposeSolutionAddition(solution[0][row, col], row, col);
             }
         }
         
-        strategyUser.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+        solverData.ChangeBuffer.Commit(DefaultChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
     }
 }
