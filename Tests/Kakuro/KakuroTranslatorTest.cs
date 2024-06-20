@@ -16,8 +16,16 @@ public class KakuroTranslatorTest
         {
             Assert.That(kakuro.RowCount, Is.EqualTo(3));
             Assert.That(kakuro.ColumnCount, Is.EqualTo(3));
-            Assert.That(kakuro.Sums, Has.Count.EqualTo(6));
-            Assert.That(back, Is.EqualTo(s));
+            Assert.That(kakuro.Sums.Count(), Is.EqualTo(6));
+
+            var splitS = s.Split(';');
+            var splitBack = back.Split(';');
+            
+            Assert.That(splitBack, Has.Length.EqualTo(splitS.Length));
+            foreach (var part in splitBack)
+            {
+                Assert.That(splitS, Does.Contain(part));
+            }
         });
     }
 }

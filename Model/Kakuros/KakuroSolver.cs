@@ -8,7 +8,7 @@ namespace Model.Kakuros;
 public class KakuroSolver : StrategySolver<Strategy<IKakuroSolverData>, IUpdatableSolvingState, ISolvingStateHighlighter, object>,
     IKakuroSolverData
 {
-    private IKakuro _kakuro = new ArrayKakuro();
+    private IKakuro _kakuro = new SumListKakuro();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];
     
     public IKakuroCombinationCalculator CombinationCalculator { get; }

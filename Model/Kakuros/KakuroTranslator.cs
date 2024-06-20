@@ -52,9 +52,11 @@ public static class KakuroTranslator
 
         try
         {
-            var result = new ArrayKakuro();
+            var result = new SumListKakuro();
             foreach (var sum in sums.Split(';'))
             {
+                if (sum.Length == 0) continue;
+                
                 var buffer = 0;
                 var cursor = 0;
                 var orientation = Orientation.Horizontal;
@@ -115,7 +117,7 @@ public static class KakuroTranslator
         }
         catch (Exception)
         {
-            return new ArrayKakuro();
+            return new SumListKakuro();
         }
     }
 }

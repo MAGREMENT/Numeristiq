@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class ArrayKakuro : IKakuro, ISolvingState
+public class SumListKakuro : IKakuro, ISolvingState
 {
     private KakuroCell[,] _cells;
     private readonly List<IArrayKakuroSum> _sums;
@@ -15,21 +15,21 @@ public class ArrayKakuro : IKakuro, ISolvingState
     public int RowCount => _cells.GetLength(0);
     public int ColumnCount => _cells.GetLength(1);
 
-    public IReadOnlyList<IKakuroSum> Sums => _sums;
+    public IEnumerable<IKakuroSum> Sums => _sums;
 
-    public ArrayKakuro()
+    public SumListKakuro()
     {
         _cells = new KakuroCell[0, 0];
         _sums = new List<IArrayKakuroSum>();
     }
 
-    public ArrayKakuro(int rowCount, int colCount)
+    public SumListKakuro(int rowCount, int colCount)
     {
         _cells = new KakuroCell[rowCount, colCount];
         _sums = new List<IArrayKakuroSum>();
     }
 
-    private ArrayKakuro(KakuroCell[,] cells, List<IArrayKakuroSum> sums)
+    private SumListKakuro(KakuroCell[,] cells, List<IArrayKakuroSum> sums)
     {
         _cells = cells;
         _sums = sums;
@@ -124,7 +124,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
         var buffer = new KakuroCell[RowCount, ColumnCount];
         Array.Copy(_cells, buffer, _cells.Length);
 
-        return new ArrayKakuro(buffer, new List<IArrayKakuroSum>(_sums));
+        return new SumListKakuro(buffer, new List<IArrayKakuroSum>(_sums));
     }
     
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
@@ -426,7 +426,7 @@ public class ArrayKakuro : IKakuro, ISolvingState
                     else
                     {
                         leftSum.AddToLength(1);
-                        _cells[cell.Row, cell.Column] -= rightSum;
+                        _cells[cell.Row, cell.Column] -= leftSum;
                     }
                 }
                 else if (rightSum is not null)
@@ -685,7 +685,7 @@ public class VerticalKakuroSum : IArrayKakuroSum
     
     public override bool Equals(object? obj)
     {
-        return obj is VerticalKakuroSum s && s._start == _start && s.Length == Length;
+        return obj is VerticalKakuroSum s && s._start == _start && s.Length == Length && s.Amount == Amount;
     }
 
     public override int GetHashCode()
@@ -775,7 +775,7 @@ public class HorizontalKakuroSum : IArrayKakuroSum
 
     public override bool Equals(object? obj)
     {
-        return obj is HorizontalKakuroSum s && s._start == _start && s.Length == Length;
+        return obj is HorizontalKakuroSum s && s._start == _start && s.Length == Length && s.Amount == Amount;
     }
 
     public override int GetHashCode()
