@@ -5,8 +5,21 @@ namespace Model.Kakuros;
 
 public interface IKakuro : IReadOnlyKakuro
 {
+    /// <summary>
+    /// Adds the sum if it doesn't interfere with any already present sum.
+    /// The only exception is when the sum to be added correspond exactly to an already
+    /// existing sum, in which case its amount will be replaced
+    /// </summary>
+    /// <param name="sum"></param>
+    /// <returns></returns>
     bool AddSum(IKakuroSum sum);
-    void AddSumUnchecked(IKakuroSum sum);
+    /// <summary>
+    /// Forcibly adds the sum, deleting existing sums in the path
+    /// </summary>
+    /// <param name="sum"></param>
+    void ForceSum(IKakuroSum sum);
+
+    bool RemoveSum(IKakuroSum sum);
     
     new int this[int row, int col] { get; set; }
     int this[Cell cell]
@@ -16,7 +29,6 @@ public interface IKakuro : IReadOnlyKakuro
     }
     
     bool AddCellTo(IKakuroSum sum);
-    bool AddSumTo(Cell cell);
     bool RemoveCell(Cell cell);
     bool ReplaceAmount(IKakuroSum sum, int amount);
 
@@ -71,7 +83,6 @@ public interface IKakuroSum : IEnumerable<Cell>
 
     static bool AreSame(IKakuroSum sum, IKakuroSum s) => s.Length == sum.Length 
                                                          && s.Orientation == sum.Orientation 
-                                                         && s.Amount == sum.Amount
                                                          && s.GetStartCell() == sum.GetStartCell();
 }
 
