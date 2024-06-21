@@ -2,7 +2,7 @@
 using Model.Tectonics;
 using Model.Tectonics.Generator;
 
-namespace Tests.Tectonic;
+namespace Tests.Tectonics;
 
 public class TectonicPuzzleGeneratorTests
 {

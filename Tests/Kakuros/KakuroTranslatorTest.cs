@@ -1,6 +1,6 @@
 ﻿using Model.Kakuros;
 
-namespace Tests.Kakuro;
+namespace Tests.Kakuros;
 
 public class KakuroTranslatorTest
 {

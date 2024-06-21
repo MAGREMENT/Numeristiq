@@ -14,7 +14,7 @@ public static class NonogramTranslator
 
             List<IEnumerable<int>> hValues = new();
             List<IEnumerable<int>> vValues = new();
-            var currentCollection = hValues;
+            var currentCollection = vValues;
             var currentValues = new List<int>();
             int buffer = 0;
             
@@ -29,12 +29,16 @@ public static class NonogramTranslator
                         break;
                     case '-' :
                         currentValues.Add(buffer);
-                        buffer = 0;
                         currentCollection.Add(currentValues.ToArray());
+                        buffer = 0;
                         currentValues.Clear();
                         break;
                     case ':' :
-                        currentCollection = vValues;
+                        currentValues.Add(buffer);
+                        currentCollection.Add(currentValues.ToArray());
+                        buffer = 0;
+                        currentValues.Clear();
+                        currentCollection = hValues;
                         i++;
                         break;
                     default:
@@ -42,6 +46,12 @@ public static class NonogramTranslator
                         buffer += c - '0';
                         break;
                 }
+            }
+
+            if (buffer != 0)
+            {
+                currentValues.Add(buffer);
+                currentCollection.Add(currentValues.ToArray());
             }
 
             result.Add(hValues, vValues);
@@ -60,8 +70,8 @@ public static class NonogramTranslator
         for (int i = 0; i < 2; i++)
         {
             var data = i == 0 
-                ? nonogram.HorizontalLineCollection 
-                : nonogram.VerticalLineCollection;
+                ? nonogram.VerticalLineCollection 
+                : nonogram.HorizontalLineCollection;
 
             for (int j = 0; j < data.Count; j++)
             {
@@ -74,7 +84,7 @@ public static class NonogramTranslator
                 }
                 
                 if (j != data.Count - 1) builder.Append('-');
-                else if(i == 1) builder.Append("::");
+                else if(i == 0) builder.Append("::");
             }
         }
         

@@ -1,7 +1,7 @@
 ﻿using Model.Kakuros;
 using Model.Utility.BitSets;
 
-namespace Tests.Kakuro;
+namespace Tests.Kakuros;
 
 public class RecursiveKakuroCombinationCalculatorTests
 {

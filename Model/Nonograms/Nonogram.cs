@@ -153,16 +153,52 @@ public class Nonogram : IReadOnlyNonogram
 
         var builder = new StringBuilder();
 
-        for (int vRow = 0; vRow < maxDepth; vRow++)
+        for (int vRow = maxDepth - 1; vRow >= 0; vRow--)
         {
             builder.Append(' '.Repeat(maxTotalWidth + 1));
-            
-            //TODO
+
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var val = _verticalCollection.TryGetValue(col, vRow);
+                if (val >= 0) val = _verticalCollection.TryGetValue(col, _verticalCollection.CountAt(col) - vRow - 1);
+                var s = val < 0 ? " " : val.ToString();
+                builder.Append(s.FillEvenlyWith(' ', maxWidth) + ' ');
+            }
 
             builder.Append('\n');
         }
+
+        builder.Append(ToStringHorizontalLine(maxTotalWidth, maxWidth) + '\n');
+        for (int row = 0; row < RowCount; row++)
+        {
+            var secondBuilder = new StringBuilder();
+            bool first = true;
+            foreach (var val in _horizontalCollection[row])
+            {
+                if (first) first = false;
+                else secondBuilder.Append(' ');
+
+                secondBuilder.Append(val);
+            }
+
+            var valAsString = secondBuilder.ToString();
+            builder.Append(' '.Repeat(maxTotalWidth - valAsString.Length) + valAsString + '|');
+
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var s = _cells[row, col] ? "0" : " ";
+                builder.Append(s.FillEvenlyWith(' ', maxWidth) + '|');
+            }
+
+            builder.Append('\n' + ToStringHorizontalLine(maxTotalWidth, maxWidth) + '\n');
+        }
         
         return builder.ToString();
+    }
+
+    private string ToStringHorizontalLine(int maxTotalWidth, int maxWidth)
+    {
+        return ' '.Repeat(maxTotalWidth) + ("+" + '-'.Repeat(maxWidth)).Repeat(ColumnCount) + '+';
     }
 
     private void ResizeTo(int rowCount, int colCount)
@@ -208,6 +244,8 @@ public interface IReadOnlyNonogramLineCollection
 {
     int Count { get; }
     IEnumerable<int> this[int index] { get; }
+    int TryGetValue(int lineIndex, int valueIndex);
+    int CountAt(int index);
     int SpaceNeeded(int index);
     INonogramLineCollection Copy();
 }
@@ -247,6 +285,21 @@ public class ListListNonogramLineCollection : INonogramLineCollection
     }
 
     public IEnumerable<int> this[int index] => _list[index];
+
+    public int TryGetValue(int lineIndex, int valueIndex)
+    {
+        if (lineIndex < 0 || lineIndex >= _list.Count) return -1;
+
+        var l = _list[lineIndex];
+        if (valueIndex < 0 || valueIndex >= l.Count) return -1;
+
+        return l[valueIndex];
+    }
+
+    public int CountAt(int index)
+    {
+        return _list[index].Count;
+    }
 
     public int SpaceNeeded(int index)
     {

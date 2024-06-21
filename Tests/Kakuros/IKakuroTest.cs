@@ -1,7 +1,7 @@
 using Model.Kakuros;
 using Model.Utility;
 
-namespace Tests.Kakuro;
+namespace Tests.Kakuros;
 
 public class IKakuroTest
 {

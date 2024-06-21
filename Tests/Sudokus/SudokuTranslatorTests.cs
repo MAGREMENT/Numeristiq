@@ -1,6 +1,6 @@
 ﻿using Model.Sudokus;
 
-namespace Tests.Sudoku;
+namespace Tests.Sudokus;
 
 public class SudokuTranslatorTests
 {

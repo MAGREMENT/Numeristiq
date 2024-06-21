@@ -2,7 +2,7 @@
 using Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 using Tests.Utility;
 
-namespace Tests.Sudoku;
+namespace Tests.Sudokus;
 
 public class SharedSeenCellsSearcherTest
 {
