@@ -10,7 +10,7 @@ namespace Model.Kakuros;
 public class KakuroSolvingState : IUpdatableSolvingState
 {
     private readonly ushort[,] _bits;
-    private readonly IReadOnlyList<IKakuroSum> _sums;
+    private readonly IEnumerable<IKakuroSum> _sums;
     private readonly IKakuroCombinationCalculator _calculator;
 
     public KakuroSolvingState(KakuroSolver solver)
@@ -27,7 +27,7 @@ public class KakuroSolvingState : IUpdatableSolvingState
         _calculator = solver.CombinationCalculator;
     }
 
-    private KakuroSolvingState(ushort[,] bits, IReadOnlyList<IKakuroSum> sums, IKakuroCombinationCalculator calculator)
+    private KakuroSolvingState(ushort[,] bits, IEnumerable<IKakuroSum> sums, IKakuroCombinationCalculator calculator)
     {
         _bits = bits;
         _sums = sums;

@@ -8,7 +8,7 @@ public class IKakuroTest
     [Test]
     public void Test()
     {
-        TestInstance(new ArrayKakuro());
+        TestInstance(new SumListKakuro());
     }
     
     private void TestInstance(IKakuro kakuro)
@@ -36,7 +36,7 @@ public class IKakuroTest
         {
             Assert.That(kakuro.RowCount, Is.EqualTo(4));
             Assert.That(kakuro.ColumnCount, Is.EqualTo(2));
-            Assert.That(kakuro.Sums, Has.Count.EqualTo(6));
+            Assert.That(kakuro.Sums.Count(), Is.EqualTo(6));
         });
         
         kakuro.ForceSum(new HorizontalKakuroSum(new Cell(0, 0), 10, 3));
@@ -44,7 +44,7 @@ public class IKakuroTest
         {
             Assert.That(kakuro.RowCount, Is.EqualTo(4));
             Assert.That(kakuro.ColumnCount, Is.EqualTo(3));
-            Assert.That(kakuro.Sums, Has.Count.EqualTo(7));
+            Assert.That(kakuro.Sums.Count(), Is.EqualTo(7));
         });
         
         kakuro.ForceSum(new HorizontalKakuroSum(new Cell(1, 0), 10, 3));
@@ -52,7 +52,11 @@ public class IKakuroTest
         {
             Assert.That(kakuro.RowCount, Is.EqualTo(4));
             Assert.That(kakuro.ColumnCount, Is.EqualTo(3));
-            Assert.That(kakuro.Sums, Has.Count.EqualTo(7));
+            Assert.That(kakuro.Sums.Count(), Is.EqualTo(7));
+
+            var hs = kakuro.HorizontalSumFor(new Cell(0, 0));
+            Assert.That(hs, Is.Not.Null);
+            Assert.That(hs, Is.EqualTo(new HorizontalKakuroSum(new Cell(0, 0), 10, 3)));
         });
     }
 
@@ -62,7 +66,7 @@ public class IKakuroTest
         {
             Assert.That(kakuro.RowCount, Is.EqualTo(3));
             Assert.That(kakuro.ColumnCount, Is.EqualTo(1));
-            Assert.That(kakuro.Sums, Has.Count.EqualTo(4));
+            Assert.That(kakuro.Sums.Count(), Is.EqualTo(4));
             int count = 0;
             foreach (var cell in kakuro.EnumerateCells())
             {

@@ -34,7 +34,7 @@ public interface IKakuro : IReadOnlyKakuro
 
     static IKakuro Default(Orientation orientation)
     {
-        var result = new ArrayKakuro();
+        var result = new SumListKakuro();
         result.AddSum(orientation == Orientation.Horizontal
             ? new HorizontalKakuroSum(new Cell(0, 0), 1, 1)
             : new VerticalKakuroSum(new Cell(0, 0), 1, 1));
@@ -49,7 +49,7 @@ public interface IReadOnlyKakuro
     int ColumnCount { get; }
     int GetSolutionCount();
     int GetCellCount();
-    IReadOnlyList<IKakuroSum> Sums { get; }
+    IEnumerable<IKakuroSum> Sums { get; }
     IEnumerable<Cell> EnumerateCells();
     
     IEnumerable<IKakuroSum> SumsFor(Cell cell);
