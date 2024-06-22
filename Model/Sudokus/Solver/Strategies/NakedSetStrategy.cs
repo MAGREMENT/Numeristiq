@@ -245,7 +245,7 @@ public class NakedSetStrategy : SudokuStrategy
     }
 }
 
-public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
@@ -299,7 +299,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatab
     }
 }
 
-public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;

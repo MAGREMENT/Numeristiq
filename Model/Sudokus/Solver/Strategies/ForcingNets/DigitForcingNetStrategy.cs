@@ -103,7 +103,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class DigitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement> _on;
     private readonly ColoringDictionary<ISudokuElement> _off;

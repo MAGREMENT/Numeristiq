@@ -55,7 +55,7 @@ public class HiddenSingleStrategy : SudokuStrategy
     }
 }
 
-public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Unit _unit;
 

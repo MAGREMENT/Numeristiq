@@ -330,7 +330,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _als;
     private readonly IEnumerable<Cell> _correspondence;

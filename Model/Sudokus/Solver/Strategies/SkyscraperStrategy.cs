@@ -95,7 +95,7 @@ public class SkyscraperStrategy : SudokuStrategy
     }
 }
 
-public class SkyscraperReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SkyscraperReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Unit _unit;
     private readonly int _unit1;

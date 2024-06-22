@@ -99,7 +99,7 @@ public interface IMultiSectorCellsSearcher
     public IEnumerable<GridPositions> SearchGrids(ISudokuSolverData solverData);
 }
 
-public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly GridPositions _grid;
     private readonly IReadOnlyList<PossibilityCovers> _covers;

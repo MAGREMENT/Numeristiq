@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class SumListKakuro : IKakuro, ISolvingState
+public class SumListKakuro : IKakuro, INumericSolvingState
 {
     private KakuroCell[,] _cells;
     private readonly List<IArrayKakuroSum> _sums;

@@ -151,7 +151,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     }
 }
 
-public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Chain<IPossibilitiesPositions, Cell> _chain;
     private readonly List<Link<CellPossibility>> _links;

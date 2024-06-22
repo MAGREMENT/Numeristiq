@@ -98,7 +98,7 @@ public class ClaimingSetStrategy : SudokuStrategy
     }
 }
 
-public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _linePos;

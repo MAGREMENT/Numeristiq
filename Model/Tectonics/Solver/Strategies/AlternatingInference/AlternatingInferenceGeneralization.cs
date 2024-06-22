@@ -83,7 +83,7 @@ public interface IAlternatingInferenceType
     ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData);
 }
 
-public class AlternatingInferenceReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>
+public class AlternatingInferenceReportBuilder : IChangeReportBuilder<NumericChange, ITectonicSolvingState, ITectonicHighlighter>
 {
     private readonly CellPossibility _end;
     private readonly Dictionary<ITectonicElement, ITectonicElement> _on;

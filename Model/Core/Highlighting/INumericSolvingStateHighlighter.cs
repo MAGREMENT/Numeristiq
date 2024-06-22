@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Core.Highlighting;
 
-public interface ISolvingStateHighlighter
+public interface INumericSolvingStateHighlighter
 {
     public void HighlightPossibility(int possibility, int row, int col, ChangeColoration coloration);
 
@@ -30,7 +30,7 @@ public interface ISolvingStateHighlighter
     public void CreateLink(CellPossibility from, CellPossibility to, LinkStrength linkStrength);
 }
 
-public interface ISudokuHighlighter : ISolvingStateHighlighter
+public interface ISudokuHighlighter : INumericSolvingStateHighlighter
 {
     public void EncirclePossibility(int possibility, int row, int col);
 
@@ -53,7 +53,7 @@ public interface ISudokuHighlighter : ISolvingStateHighlighter
     public void CreateLink(ISudokuElement from, ISudokuElement to, LinkStrength linkStrength);
 }
 
-public interface ITectonicHighlighter : ISolvingStateHighlighter
+public interface ITectonicHighlighter : INumericSolvingStateHighlighter
 {
     public void HighlightElement(ITectonicElement element, ChangeColoration coloration);
     public void CreateLink(ITectonicElement from, ITectonicElement to, LinkStrength linkStrength);

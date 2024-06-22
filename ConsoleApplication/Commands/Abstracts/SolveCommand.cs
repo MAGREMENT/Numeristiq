@@ -5,7 +5,7 @@ using Model.Core.Highlighting;
 namespace ConsoleApplication.Commands.Abstracts;
 
 public abstract class SolveCommand<TStrategy, TSolvingState, THighlighter> : Command
-    where TStrategy : Strategy where TSolvingState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+    where TStrategy : Strategy where TSolvingState : IUpdatableNumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
     private const int StringIndex = 0;
     private const int PathIndex = 0;

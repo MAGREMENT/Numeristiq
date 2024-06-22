@@ -74,7 +74,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _one;
     private readonly IPossibilitiesPositions _two;

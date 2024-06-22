@@ -55,7 +55,7 @@ public class SingleTargetExocetStrategy : SudokuStrategy
     }
 }
 
-public class SingleTargetExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SingleTargetExocetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly SingleTargetExocet _e;
 

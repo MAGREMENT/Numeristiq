@@ -108,7 +108,7 @@ public interface IReportBuilderWithChain
     public int Length();
 }
 
-public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphLoop<T> _loop;
     private readonly LoopType _type;
@@ -177,7 +177,7 @@ public enum LoopType
     NiceLoop, WeakInference, StrongInference
 }
 
-public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphChain<T> _chain;
 

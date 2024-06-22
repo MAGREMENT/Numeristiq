@@ -65,7 +65,7 @@ public class ReverseBUGStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBugReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ReverseBugReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly GridPositions _gp;
     private readonly int _n1;

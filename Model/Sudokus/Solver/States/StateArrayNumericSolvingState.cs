@@ -11,7 +11,7 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
 {
     private readonly CellState[,] _cellStates;
 
-    public StateArraySolvingState(ISolvingState solver)
+    public StateArraySolvingState(INumericSolvingState solver)
     {
         _cellStates = new CellState[9, 9];
         for (int row = 0; row < 9; row++)
@@ -53,7 +53,7 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
         return _cellStates[row, col].AsPossibilities;
     }
 
-    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> changes)
+    public IUpdatableNumericSolvingState Apply(IEnumerable<NumericChange> changes)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);
@@ -66,7 +66,7 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
         return new StateArraySolvingState(buffer);
     }
 
-    public IUpdatableSolvingState Apply(NumericChange progress)
+    public IUpdatableNumericSolvingState Apply(NumericChange progress)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);

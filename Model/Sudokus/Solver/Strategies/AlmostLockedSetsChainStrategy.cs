@@ -130,7 +130,7 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Chain<IPossibilitiesPositions, int> _chain;
     private readonly int _possibleLastLink;

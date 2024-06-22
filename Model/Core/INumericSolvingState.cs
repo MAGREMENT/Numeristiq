@@ -6,20 +6,32 @@ using Model.Utility.BitSets;
 
 namespace Model.Core;
 
-public interface ISolvingState
+public interface IDichotomousSolvingState
+{
+    bool this[int row, int col] { get; }
+    bool IsAvailable(int row, int col);
+}
+
+public interface IUpdatableDichotomousSolvingState : IDichotomousSolvingState
+{
+    public IUpdatableNumericSolvingState Apply(IEnumerable<DichotomousChange> progresses);
+    public IUpdatableNumericSolvingState Apply(DichotomousChange progress);
+}
+
+public interface INumericSolvingState
 {
     int this[int row, int col] { get; }
     ReadOnlyBitSet16 PossibilitiesAt(int row, int col);
     ReadOnlyBitSet16 PossibilitiesAt(Cell cell) => PossibilitiesAt(cell.Row, cell.Column);
 }
 
-public interface IUpdatableSolvingState : ISolvingState
+public interface IUpdatableNumericSolvingState : INumericSolvingState
 {
-    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> progresses);
-    public IUpdatableSolvingState Apply(NumericChange progress);
+    public IUpdatableNumericSolvingState Apply(IEnumerable<NumericChange> progresses);
+    public IUpdatableNumericSolvingState Apply(NumericChange progress);
 }
 
-public interface ISudokuSolvingState : ISolvingState
+public interface ISudokuSolvingState : INumericSolvingState
 {
     public bool ContainsAny(int row, int col, ReadOnlyBitSet16 possibilities)
     {
@@ -47,17 +59,17 @@ public interface ISudokuSolvingState : ISolvingState
     IReadOnlyGridPositions PositionsFor(int number);
 }
 
-public interface IUpdatableSudokuSolvingState : ISudokuSolvingState, IUpdatableSolvingState
+public interface IUpdatableSudokuSolvingState : ISudokuSolvingState, IUpdatableNumericSolvingState
 {
     
 }
 
-public interface ITectonicSolvingState : ISolvingState
+public interface ITectonicSolvingState : INumericSolvingState
 {
     
 }
 
-public interface IUpdatableTectonicSolvingState : ITectonicSolvingState, IUpdatableSolvingState
+public interface IUpdatableTectonicSolvingState : ITectonicSolvingState, IUpdatableNumericSolvingState
 {
     
 }

@@ -4,13 +4,18 @@ using Model.Utility;
 
 namespace Model.Core.Changes;
 
+public interface IChangeBuffer<TChange, TVerifier, THighlighter>
+{
+    
+}
+
 /// <summary>
 /// Strategies are most often dependant on the fact that the board stay the same through the search. It is then
 /// important that no change are executed outside of the Push() method, which signals that a strategy has stopped
 /// searching.
 /// </summary>
-public class NumericChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
-    where THighlighter : ISolvingStateHighlighter
+public class NumericChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableNumericSolvingState
+    where THighlighter : INumericSolvingStateHighlighter
 {
     private readonly HashSet<CellPossibility> _possibilitiesRemoved = new();
     private readonly HashSet<CellPossibility> _solutionsAdded = new();
@@ -59,7 +64,7 @@ public class NumericChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpd
         return _possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0;
     }
 
-    public bool Commit(IChangeReportBuilder<TVerifier, THighlighter> builder)
+    public bool Commit(IChangeReportBuilder<NumericChange, TVerifier, THighlighter> builder)
     {
         if (_producer.FastMode ||
             (_possibilitiesRemoved.Count == 0 && _solutionsAdded.Count == 0)) return false;
@@ -112,3 +117,5 @@ public interface INumericChangeProducer
     public bool CanRemovePossibility(CellPossibility cp);
     public bool CanAddSolution(CellPossibility cp);
 }
+
+//TODO DICHOTOMOUS

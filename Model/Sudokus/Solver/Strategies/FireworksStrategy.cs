@@ -439,7 +439,7 @@ public static class FireworksHighlightUtils
     }
 }
 
-public class FireworksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks[] _fireworks;
 
@@ -469,7 +469,7 @@ public class FireworksReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvi
     }
 }
 
-public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
     private readonly IPossibilitiesPositions[] _als;
@@ -508,7 +508,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<I
     }
 }
 
-public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
     private readonly CellPossibility[] _cells;
@@ -543,7 +543,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdata
     }
 }
 
-public class FireworksWithCellReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksWithCellReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks[] _fireworks;
     private readonly Cell _cell;

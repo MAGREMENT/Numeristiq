@@ -198,7 +198,7 @@ public class KakuroSolvePresenter
         if(solutionAdded + possibilitiesRemoved > 0) ShowState(_solver);
     } 
 
-    private void ShowState(ISolvingState state)
+    private void ShowState(INumericSolvingState state)
     {
         var drawer = _view.Drawer;
         

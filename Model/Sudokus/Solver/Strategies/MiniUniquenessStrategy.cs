@@ -118,7 +118,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
     }
 }
 
-public class MiniUniquenessReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _mini;
     private readonly Unit _unit;

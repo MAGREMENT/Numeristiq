@@ -4,22 +4,24 @@ using Model.Core.Highlighting;
 
 namespace Model.Core.Changes;
 
-public interface IChangeReportBuilder<in TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
+public interface IChangeReportBuilder<in TChange, in TVerifier, THighlighter> 
+    where TVerifier : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
-    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<NumericChange> changes, TVerifier snapshot);
+    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<TChange> changes, TVerifier snapshot);
     
-    public Clue<THighlighter> BuildClue(IReadOnlyList<NumericChange> changes, TVerifier snapshot);
+    public Clue<THighlighter> BuildClue(IReadOnlyList<TChange> changes, TVerifier snapshot);
 }
 
-public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReportBuilder<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
+public class DefaultNumericChangeReportBuilder<TVerifier, THighlighter> : IChangeReportBuilder<NumericChange, TVerifier, THighlighter>
+    where TVerifier : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
-    private static DefaultChangeReportBuilder<TVerifier, THighlighter>? _instance;
+    private static DefaultNumericChangeReportBuilder<TVerifier, THighlighter>? _instance;
 
-    public static DefaultChangeReportBuilder<TVerifier, THighlighter> Instance
+    public static DefaultNumericChangeReportBuilder<TVerifier, THighlighter> Instance
     {
         get
         {
-            _instance ??= new DefaultChangeReportBuilder<TVerifier, THighlighter>();
+            _instance ??= new DefaultNumericChangeReportBuilder<TVerifier, THighlighter>();
             return _instance;
         }
     }
@@ -38,7 +40,7 @@ public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReport
 
 public static class ChangeReportHelper
 {
-    public static void HighlightChanges(ISolvingStateHighlighter highlightable, IReadOnlyList<NumericChange> changes)
+    public static void HighlightChanges(INumericSolvingStateHighlighter highlightable, IReadOnlyList<NumericChange> changes)
     {
         foreach (var change in changes)
         {
@@ -46,7 +48,7 @@ public static class ChangeReportHelper
         }
     }
     
-    public static void HighlightChange(ISolvingStateHighlighter highlightable, NumericChange progress)
+    public static void HighlightChange(INumericSolvingStateHighlighter highlightable, NumericChange progress)
     {
         if(progress.Type == ChangeType.PossibilityRemoval)
             highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);
@@ -70,7 +72,7 @@ public static class ChangeReportHelper
     }
 }
 
-public class Clue<T> : IHighlightable<T> where T : ISolvingStateHighlighter
+public class Clue<T> : IHighlightable<T> where T : INumericSolvingStateHighlighter
 {
     private readonly IHighlightable<T>? _highlightable;
     public string Text { get; }

@@ -136,7 +136,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     }
 }
 
-public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Dictionary<int, List<Cell>> _possibilitiesCells;
 

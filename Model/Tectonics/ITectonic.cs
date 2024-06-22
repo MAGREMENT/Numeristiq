@@ -24,7 +24,7 @@ public interface ITectonic : IReadOnlyTectonic, ICellsAndDigitsPuzzle
     public void ClearZones();
 }
 
-public interface IReadOnlyTectonic : ISolvingState, ICopyable<ITectonic>
+public interface IReadOnlyTectonic : INumericSolvingState, ICopyable<ITectonic>
 {
     public int RowCount { get; }
     public int ColumnCount { get; }

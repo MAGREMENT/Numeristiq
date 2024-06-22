@@ -193,7 +193,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
     }
 }
 
-public class FinnedGridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FinnedGridFormationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _mashed;
     private readonly IReadOnlyLinePositions _visited;

@@ -182,7 +182,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _poss;
     private readonly Cell[] _cells;

@@ -81,7 +81,7 @@ public class XYZWingStrategy : SudokuStrategy
     }
 }
 
-public class XYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XYZWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _hingeRow;
     private readonly int _hingeCol;

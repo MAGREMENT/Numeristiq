@@ -69,7 +69,7 @@ public class BUGStrategy : SudokuStrategy
     }
 }
 
-public class BUGStrategyReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<CellPossibility> _additionalCandidates;
 

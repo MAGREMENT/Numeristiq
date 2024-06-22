@@ -62,7 +62,7 @@ public class TwoStringKiteStrategy : SudokuStrategy
     }
 }
 
-public class TwoStringKiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class TwoStringKiteReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _possibility;
     private readonly Cell _inCommon1;

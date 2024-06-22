@@ -157,7 +157,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     }
 }
 
-public class NonColorablePatternReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyList<Cell> _perfect;
     private readonly IReadOnlyList<Cell> _notPerfect;

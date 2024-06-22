@@ -42,7 +42,7 @@ public class CombinationCoherencyStrategy : Strategy<IKakuroSolverData>
 
                     solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                     solverData.ChangeBuffer.Commit(
-                        DefaultChangeReportBuilder<IUpdatableSolvingState, ISolvingStateHighlighter>.Instance);
+                        DefaultNumericChangeReportBuilder<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>.Instance);
                 }
             }
         }

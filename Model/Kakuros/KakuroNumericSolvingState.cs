@@ -7,13 +7,13 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class KakuroSolvingState : IUpdatableSolvingState
+public class KakuroNumericSolvingState : IUpdatableNumericSolvingState
 {
     private readonly ushort[,] _bits;
     private readonly IEnumerable<IKakuroSum> _sums;
     private readonly IKakuroCombinationCalculator _calculator;
 
-    public KakuroSolvingState(KakuroSolver solver)
+    public KakuroNumericSolvingState(KakuroSolver solver)
     {
         _bits = new ushort[solver.Kakuro.RowCount, solver.Kakuro.ColumnCount];
         foreach (var cell in solver.Kakuro.EnumerateCells())
@@ -27,7 +27,7 @@ public class KakuroSolvingState : IUpdatableSolvingState
         _calculator = solver.CombinationCalculator;
     }
 
-    private KakuroSolvingState(ushort[,] bits, IEnumerable<IKakuroSum> sums, IKakuroCombinationCalculator calculator)
+    private KakuroNumericSolvingState(ushort[,] bits, IEnumerable<IKakuroSum> sums, IKakuroCombinationCalculator calculator)
     {
         _bits = bits;
         _sums = sums;
@@ -49,7 +49,7 @@ public class KakuroSolvingState : IUpdatableSolvingState
         return (b & 1) > 0 ? new ReadOnlyBitSet16() : ReadOnlyBitSet16.FromBits(b);
     }
 
-    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> progresses)
+    public IUpdatableNumericSolvingState Apply(IEnumerable<NumericChange> progresses)
     {
         var buffer = new ushort[_bits.GetLength(0), _bits.GetLength(1)];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
@@ -59,17 +59,17 @@ public class KakuroSolvingState : IUpdatableSolvingState
             ApplyToBuffer(buffer, progress);
         }
 
-        return new KakuroSolvingState(buffer, _sums, _calculator);
+        return new KakuroNumericSolvingState(buffer, _sums, _calculator);
     }
 
-    public IUpdatableSolvingState Apply(NumericChange progress)
+    public IUpdatableNumericSolvingState Apply(NumericChange progress)
     {
         var buffer = new ushort[_bits.GetLength(0), _bits.GetLength(1)];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
 
         ApplyToBuffer(buffer, progress);
 
-        return new KakuroSolvingState(buffer, _sums, _calculator);
+        return new KakuroNumericSolvingState(buffer, _sums, _calculator);
     }
 
     private void ApplyToBuffer(ushort[,] buffer, NumericChange progress)

@@ -92,7 +92,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
     }
 }
 
-public class GroupEliminationReportBuilder : IChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>
+public class GroupEliminationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableTectonicSolvingState, ITectonicHighlighter>
 {
     public Cell[] Cells { get; }
 

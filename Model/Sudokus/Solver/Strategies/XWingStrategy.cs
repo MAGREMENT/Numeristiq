@@ -83,7 +83,7 @@ public class XWingStrategy : SudokuStrategy
     }
 }
 
-public class XWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _linePos;
     private readonly int _unit1;

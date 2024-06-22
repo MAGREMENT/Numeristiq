@@ -133,7 +133,7 @@ public class FinnedXWingStrategy : SudokuStrategy
     }
 }
 
-public class FinnedXWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FinnedXWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _normal;
     private readonly int _normalUnit;

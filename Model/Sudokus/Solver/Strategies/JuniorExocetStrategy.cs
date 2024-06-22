@@ -488,7 +488,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     
 }
 
-public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly DoubleTargetExocet _e;
 
@@ -575,7 +575,7 @@ public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<IUpdatableSu
     }
 }
 
-public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly JuniorExocet _je1;
     private readonly JuniorExocet _je2;

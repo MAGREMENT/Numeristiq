@@ -245,7 +245,7 @@ public class SudokuPlayPresenter
     
     private void Paste(string s, SudokuStringFormat format)
     {
-        ISolvingState state = format switch
+        INumericSolvingState state = format switch
         {
             SudokuStringFormat.Line => SudokuTranslator.TranslateLineFormat(s),
             SudokuStringFormat.Grid => SudokuTranslator.TranslateGridFormat(s, _settings.SoloToGiven),

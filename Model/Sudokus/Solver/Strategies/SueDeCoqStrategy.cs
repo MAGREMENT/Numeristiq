@@ -234,7 +234,7 @@ public class SueDeCoqStrategy : SudokuStrategy
     }
 }
 
-public class SueDeCoqReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _boxPP;
     private readonly IPossibilitiesPositions _unitPP;

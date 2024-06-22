@@ -50,7 +50,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         return (b & 1) > 0 ? new ReadOnlyBitSet16() : ReadOnlyBitSet16.FromBits(b);
     }
 
-    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> progresses)
+    public IUpdatableNumericSolvingState Apply(IEnumerable<NumericChange> progresses)
     {
         var buffer = new ushort[_bits.GetLength(0), _bits.GetLength(1)];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
@@ -63,7 +63,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         return new StateArraySolvingState(buffer, _zones);
     }
 
-    public IUpdatableSolvingState Apply(NumericChange progress)
+    public IUpdatableNumericSolvingState Apply(NumericChange progress)
     {
         var buffer = new ushort[_bits.GetLength(0), _bits.GetLength(1)];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);

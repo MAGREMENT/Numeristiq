@@ -273,7 +273,7 @@ public class PatternCombinationEnumerator : IEnumerator<GridPositions>
     }
 }
 
-public class PatternOverlayReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class PatternOverlayReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<GridPositions> _patterns;
     private readonly int _number;

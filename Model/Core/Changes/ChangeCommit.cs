@@ -10,13 +10,13 @@ public interface IChangeCommit<out T>
 }
 
 public class ChangeCommit<TChange, TVerifier, THighlighter> : IChangeCommit<TChange>
-    where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
+    where TVerifier : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
     public TChange[] Changes { get; }
 
-    public IChangeReportBuilder<TVerifier, THighlighter> Builder { get; }
+    public IChangeReportBuilder<TChange, TVerifier, THighlighter> Builder { get; }
 
-    public ChangeCommit(TChange[] changes, IChangeReportBuilder<TVerifier, THighlighter> builder)
+    public ChangeCommit(TChange[] changes, IChangeReportBuilder<TChange, TVerifier, THighlighter> builder)
     {
         Changes = changes;
         Builder = builder;

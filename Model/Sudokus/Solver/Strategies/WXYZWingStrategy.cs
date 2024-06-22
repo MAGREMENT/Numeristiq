@@ -260,7 +260,7 @@ public class WXYZWingStrategy : SudokuStrategy
     }
 }
 
-public class WXYZWingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly MiniGridPositions _mini;
     private readonly LinePositions _line;

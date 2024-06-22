@@ -399,7 +399,7 @@ public readonly struct BiValue
     }
 }
 
-public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class UniqueRectanglesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -435,7 +435,7 @@ public class UniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudo
     }
 }
 
-public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -474,7 +474,7 @@ public class UniqueRectanglesWithStrongLinkReportBuilder : IChangeReportBuilder<
     }
 }
 
-public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -516,7 +516,7 @@ public class UniqueRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBui
     }
 }
 
-public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class HiddenUniqueRectanglesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell _initial;
     private readonly Cell _opposite;

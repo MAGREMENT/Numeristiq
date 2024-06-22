@@ -103,7 +103,7 @@ public class EmptyRectangleStrategy : SudokuStrategy
     }
 }
 
-public class RectangleEliminationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class RectangleEliminationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _possibility;
     private readonly Cell _hinge;

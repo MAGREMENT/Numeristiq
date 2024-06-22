@@ -123,7 +123,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class UnitForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;

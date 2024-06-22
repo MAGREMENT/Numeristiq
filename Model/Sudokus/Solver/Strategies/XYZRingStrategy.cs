@@ -137,7 +137,7 @@ public class XYZRingStrategy : SudokuStrategy
     }
 }
 
-public class XYZRingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell _hinge;
     private readonly Cell _hingeRow;

@@ -8,7 +8,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Player;
 
-public class SudokuPlayer : IPlayerData, ISolvingState, IPossibilitiesGiver
+public class SudokuPlayer : IPlayerData, INumericSolvingState, IPossibilitiesGiver
 {
     private readonly PlayerCell[,] _cells = new PlayerCell[9, 9];
     private readonly Dictionary<Cell, HighlightData> _highlights = new();

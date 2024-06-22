@@ -165,7 +165,7 @@ public class HiddenSetStrategy : SudokuStrategy
     }
 }
 
-public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly LinePositions _linePos;
@@ -219,7 +219,7 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdata
     }
 }
 
-public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
     private readonly MiniGridPositions _miniPos;

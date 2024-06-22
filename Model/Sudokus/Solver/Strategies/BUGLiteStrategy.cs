@@ -376,7 +376,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
     }
 }
 
-public class BUGLiteReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IEnumerable<BiCellPossibilities> _bcp;
 

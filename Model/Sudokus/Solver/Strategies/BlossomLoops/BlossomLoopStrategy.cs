@@ -195,7 +195,7 @@ public class BlossomLoopStrategy : SudokuStrategy
     }
 }
 
-public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly LinkGraphLoop<ISudokuElement> _loop;
     private readonly BlossomLoopBranch[] _branches;

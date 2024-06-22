@@ -210,7 +210,7 @@ public enum ContradictionCause
     None, Row, Column, MiniGrid, Cell
 }
 
-public class NishioForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class NishioForcingNetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement> _coloring;
     private readonly int _row;

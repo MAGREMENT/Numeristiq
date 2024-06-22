@@ -192,7 +192,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
     }
 }
 
-public class NRCZTChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain
+public class NRCZTChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain
 {
     private readonly NRCZTChain _chain;
 

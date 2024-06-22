@@ -76,7 +76,7 @@ public class PointingSetStrategy : SudokuStrategy
     }
 }
 
-public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _number;
     private readonly IReadOnlyMiniGridPositions _miniPos;

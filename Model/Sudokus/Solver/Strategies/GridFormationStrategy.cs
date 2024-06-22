@@ -93,7 +93,7 @@ public class GridFormationStrategy : SudokuStrategy
     }
 }
 
-public class GridFormationReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class GridFormationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly LinePositions _rows;
     private readonly LinePositions _cols;

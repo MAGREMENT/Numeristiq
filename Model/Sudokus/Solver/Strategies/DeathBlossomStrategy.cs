@@ -149,7 +149,7 @@ public class DeathBlossomStrategy : SudokuStrategy
     }
 }
 
-public class DeathBlossomReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<Cell> _stems;
     private readonly Cell _target;

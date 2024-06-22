@@ -36,7 +36,7 @@ public class OddagonStrategy : SudokuStrategy
     }
 }
 
-public class OddagonReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class OddagonReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly AlmostOddagon _oddagon;
 

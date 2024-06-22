@@ -336,7 +336,7 @@ public readonly struct TriValue
     }
 }
 
-public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell _c1;
     private readonly Cell _c2;

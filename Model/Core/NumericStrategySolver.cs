@@ -10,7 +10,7 @@ namespace Model.Core;
 
 public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlighter> : INumericChangeProducer,
     ITrackerAttachable<TStrategy, TSolvingState>, ISolveResult<TSolvingState>
-    where TStrategy : Strategy where TSolvingState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
+    where TStrategy : Strategy where TSolvingState : IUpdatableNumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
     protected int _solutionCount;
     protected TSolvingState? _currentState;
@@ -97,8 +97,7 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
             StrategyEnded?.Invoke(current, i, solutionAdded, possibilityRemoved);
 
             if (solutionAdded + possibilityRemoved == 0) continue;
-
-            _solutionCount += solutionAdded;
+            
             OnChangeMade();
             i = -1;
             solutionAdded = 0;
@@ -196,9 +195,13 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
 
     private bool ExecuteChange(NumericChange progress)
     {
-        return progress.Type == ChangeType.SolutionAddition 
-            ? AddSolution(progress.Number, progress.Row, progress.Column) 
-            : RemovePossibility(progress.Number, progress.Row, progress.Column);
+        if (progress.Type == ChangeType.PossibilityRemoval)
+            return RemovePossibility(progress.Number, progress.Row, progress.Column);
+        
+        if (!AddSolution(progress.Number, progress.Row, progress.Column)) return false;
+        
+        _solutionCount++;
+        return true;
     }
     
     private bool ExecuteChange(NumericChange progress, ref int solutionAdded, ref int possibilitiesRemoved)
@@ -208,6 +211,7 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
             if (AddSolution(progress.Number, progress.Row, progress.Column))
             {
                 solutionAdded++;
+                _solutionCount++;
                 return true;
             }
         }
@@ -221,13 +225,13 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
     }
     
     private void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<NumericChange> changes,
-        Strategy maker, IUpdatableSolvingState stateBefore)
+        Strategy maker, IUpdatableNumericSolvingState stateBefore)
     {
         _steps.Add(new ChangeReportNumericStep<THighlighter>(_steps.Count + 1, maker, changes, report, stateBefore));
     }
 
     private void AddStepByHand(int possibility, int row, int col, ChangeType changeType,
-        IUpdatableSolvingState stateBefore)
+        IUpdatableNumericSolvingState stateBefore)
     {
         _steps.Add(new ByHandNumericStep<THighlighter>(_steps.Count + 1, possibility, row, col, changeType, stateBefore));
     }
@@ -374,4 +378,4 @@ public delegate void OnStrategyEnd<in TStrategy>(TStrategy strategy, int index, 
 public delegate void OnSolveDone<in TResult>(TResult result);
 public delegate void HandleCommits<TSolvingState, THighlighter>(Strategy pusher, List<ChangeCommit<NumericChange, TSolvingState,
     THighlighter>> commits, ref int solutionAdded, ref int possibilitiesRemoved)
-    where TSolvingState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter;
+    where TSolvingState : IUpdatableNumericSolvingState where THighlighter : INumericSolvingStateHighlighter;

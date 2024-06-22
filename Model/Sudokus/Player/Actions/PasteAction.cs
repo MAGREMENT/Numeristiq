@@ -6,9 +6,9 @@ namespace Model.Sudokus.Player.Actions;
 public class PasteAction : IGlobalAction
 {
     private readonly PossibilitiesLocation _location;
-    private readonly ISolvingState _state;
+    private readonly INumericSolvingState _state;
 
-    public PasteAction(ISolvingState state, PossibilitiesLocation location)
+    public PasteAction(INumericSolvingState state, PossibilitiesLocation location)
     {
         _location = location;
         _state = state;

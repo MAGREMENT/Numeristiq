@@ -243,7 +243,7 @@ public class TectonicSolvePresenter
         ClearLogs();
     }
 
-    private void SetShownState(ISolvingState state, bool asClue, bool showPossibilities)
+    private void SetShownState(INumericSolvingState state, bool asClue, bool showPossibilities)
     {
         var drawer = _view.Drawer;
 

@@ -25,7 +25,7 @@ public class SudokuSolvePresenter : ICommitApplier
     private readonly IStrategyRepositoryUpdater _updater;
     private readonly SudokuSolver _solver;
     
-    private ISolvingState? _currentlyDisplayedState;
+    private INumericSolvingState? _currentlyDisplayedState;
     private int _currentlyOpenedStep = -1;
     private Cell? _selectedCell;
     private UIUpdaterTracker? _solveTracker;
@@ -274,7 +274,7 @@ public class SudokuSolvePresenter : ICommitApplier
         _view.InitializeStrategies(_solver.StrategyManager.Strategies);
     }
 
-    private void Copy(ISolvingState state, SudokuStringFormat format)
+    private void Copy(INumericSolvingState state, SudokuStringFormat format)
     {
         _view.CopyToClipBoard(format switch
         {
@@ -307,9 +307,9 @@ public class SudokuSolvePresenter : ICommitApplier
         _stepCount = 0;
     }
 
-    private void SetShownState(ISolvingState solvingState, bool solutionAsClues, bool showPossibilities)
+    private void SetShownState(INumericSolvingState numericSolvingState, bool solutionAsClues, bool showPossibilities)
     {
-        _currentlyDisplayedState = solvingState;
+        _currentlyDisplayedState = numericSolvingState;
         var drawer = _view.Drawer;
         
         drawer.ClearNumbers();
@@ -318,11 +318,11 @@ public class SudokuSolvePresenter : ICommitApplier
         {
             for (int col = 0; col < 9; col++)
             {
-                var number = solvingState[row, col];
+                var number = numericSolvingState[row, col];
                 if (number == 0)
                 {
                     if(solutionAsClues) drawer.SetClue(row, col, false);
-                    if(showPossibilities) drawer.ShowPossibilities(row, col, solvingState.PossibilitiesAt(row, col).EnumeratePossibilities());
+                    if(showPossibilities) drawer.ShowPossibilities(row, col, numericSolvingState.PossibilitiesAt(row, col).EnumeratePossibilities());
                 }
                 else
                 {
@@ -342,9 +342,9 @@ public class SudokuSolvePresenter : ICommitApplier
         ClearLogs();
     }
 
-    private void SetNewState(ISolvingState solvingState)
+    private void SetNewState(INumericSolvingState numericSolvingState)
     {
-        _solver.SetState(solvingState);
+        _solver.SetState(numericSolvingState);
         SetShownState(_solver, true, true);
         ClearLogs();
     }
@@ -435,12 +435,12 @@ public class UIUpdaterTracker : Tracker<SudokuStrategy, IUpdatableSudokuSolvingS
 public class ChooseStepPresenterBuilder
 {
     private readonly IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> _commits;
-    private readonly ISolvingState _currentState;
+    private readonly INumericSolvingState _currentState;
     private readonly Settings _settings;
     private readonly ICommitApplier _applier;
 
     public ChooseStepPresenterBuilder(IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> commits, Settings settings,
-        ISolvingState currentState, ICommitApplier applier)
+        INumericSolvingState currentState, ICommitApplier applier)
     {
         _commits = commits;
         _settings = settings;

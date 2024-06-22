@@ -215,7 +215,7 @@ public class FishStrategy : SudokuStrategy
     }
 }
 
-public class FishReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FishReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly HashSet<House> _baseSet;
     private readonly House[] _coveredSet;

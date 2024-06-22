@@ -142,7 +142,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBUGLiteChangeReport : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ReverseBUGLiteChangeReport : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unit1;
     private readonly int _unit2;

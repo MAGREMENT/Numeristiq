@@ -217,7 +217,7 @@ public class BandCollection : IPatternCollection
 public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[][] LengthKeys, int Mini,
     Unit Unit);
 
-public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly BandPatternCandidate _candidate;
 

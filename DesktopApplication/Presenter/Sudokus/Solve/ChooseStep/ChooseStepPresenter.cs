@@ -13,13 +13,13 @@ public class ChooseStepPresenter
     private readonly IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> _commits;
     private readonly IChooseStepView _view;
     private readonly SudokuHighlighterTranslator _translator;
-    private readonly ISolvingState _currentState;
+    private readonly INumericSolvingState _currentState;
     private readonly ICommitApplier _applier;
 
     private int _currentPage;
     private int _shownStep = -1;
     
-    public ChooseStepPresenter(IChooseStepView view, ISolvingState currentState,
+    public ChooseStepPresenter(IChooseStepView view, INumericSolvingState currentState,
         IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> commits, ICommitApplier applier, Settings settings)
     {
         _view = view;

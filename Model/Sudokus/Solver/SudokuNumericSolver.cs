@@ -53,7 +53,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
         OnNewSolvable(_sudoku.GetSolutionCount());
     }
 
-    public void SetState(ISolvingState state)
+    public void SetState(INumericSolvingState state)
     {
         _sudoku = SudokuTranslator.TranslateSolvingState(state);
         

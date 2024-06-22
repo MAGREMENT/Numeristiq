@@ -308,7 +308,7 @@ public class PossibilitiesAndNumber
     public int Number { get; }
 }
 
-public class SKLoopsReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _cells;
     private readonly ReadOnlyBitSet16[] _links;

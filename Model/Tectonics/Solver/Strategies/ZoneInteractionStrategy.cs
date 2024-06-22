@@ -41,7 +41,7 @@ public class ZoneInteractionStrategy : Strategy<ITectonicSolverData>
     }
 }
 
-public class ZoneInteractionReportBuilder : IChangeReportBuilder<ITectonicSolvingState, ITectonicHighlighter>
+public class ZoneInteractionReportBuilder : IChangeReportBuilder<NumericChange, ITectonicSolvingState, ITectonicHighlighter>
 {
     private readonly IZone _zone;
 

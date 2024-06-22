@@ -125,7 +125,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
     }
 }
 
-public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _pos;
@@ -172,7 +172,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
     }
 }
 
-public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyMiniGridPositions _pos;
     private readonly int _n1;

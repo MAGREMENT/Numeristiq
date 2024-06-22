@@ -201,7 +201,7 @@ public enum Unit
     Row, Column, MiniGrid
 }
 
-public interface IReadOnlySudoku : ISolvingState
+public interface IReadOnlySudoku : INumericSolvingState
 {
     public bool IsCorrect();
     public int RowCount(int row, int number);

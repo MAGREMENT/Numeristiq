@@ -449,7 +449,7 @@ public enum ParityTransfer
     Same, Opposite
 }
 
-public class ThorsHammerReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ThorsHammerReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<Cell> _cells;
     private readonly List<CellPossibility> _notInPattern;

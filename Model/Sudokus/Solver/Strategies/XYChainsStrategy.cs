@@ -69,7 +69,7 @@ public class XYChainsStrategy : SudokuStrategy
     }
 }
 
-public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly CellPossibility[] _visited;
 

@@ -125,7 +125,7 @@ public class SetEquivalence
     public int SecondOrder { get; }
 }
 
-public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly SetEquivalence _equivalence;
 

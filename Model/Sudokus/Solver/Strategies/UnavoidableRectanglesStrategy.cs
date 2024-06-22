@@ -26,7 +26,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
             var row1 = i / 9;
             var col1 = i % 9;
 
-            if (solverData.Sudoku[row1, col1] == 0 || solverData.StartState[row1, col1] != 0) continue;
+            if (solverData.Sudoku[row1, col1] == 0 || solverData.StartState![row1, col1] != 0) continue;
             
             for (int j = i + 1; j < 81; j++)
             {
@@ -53,7 +53,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
 
     private bool Try(ISudokuSolverData solverData, BiValue values, Cell[] floor, Cell[] roof)
     {
-        if (solverData.StartState[roof[0].Row, roof[0].Column] != 0 || solverData.StartState[roof[1].Row, roof[1].Column] != 0) return false;
+        if (solverData.StartState![roof[0].Row, roof[0].Column] != 0 || solverData.StartState[roof[1].Row, roof[1].Column] != 0) return false;
         
         var solved1 = solverData.Sudoku[roof[0].Row, roof[0].Column];
         var solved2 = solverData.Sudoku[roof[1].Row, roof[1].Column];
@@ -145,7 +145,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;
@@ -181,7 +181,7 @@ public class AvoidableRectanglesReportBuilder : IChangeReportBuilder<IUpdatableS
     }
 }
 
-public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _floor;
     private readonly Cell[] _roof;

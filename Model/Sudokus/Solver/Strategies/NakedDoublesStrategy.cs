@@ -147,7 +147,7 @@ public class NakedDoublesStrategy : SudokuStrategy
 
 }
 
-public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class LineNakedDoublesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _pos;
     private readonly int _unitNumber;
@@ -203,7 +203,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
     }
 }
 
-public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _pos;
     private readonly int _miniRow;

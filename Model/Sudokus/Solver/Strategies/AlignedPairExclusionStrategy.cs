@@ -144,7 +144,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     }
 }
 
-public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<IPossibilitiesPositions> _als;
     private readonly int _row1;

@@ -6,7 +6,7 @@ using Model.Core.Highlighting;
 
 namespace Model.Core.Steps;
 
-public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where THighlighter : ISolvingStateHighlighter
+public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where THighlighter : INumericSolvingStateHighlighter
 {
     public int Id { get; }
     public string Title { get; }
@@ -14,13 +14,13 @@ public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where 
     public IReadOnlyList<NumericChange> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
-    public IUpdatableSolvingState From { get; }
-    public IUpdatableSolvingState To { get; }
+    public IUpdatableNumericSolvingState From { get; }
+    public IUpdatableNumericSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager => new(new DelegateHighlightable<THighlighter>(HighLight));
 
     private readonly NumericChange _progress;
 
-    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, IUpdatableSolvingState stateBefore)
+    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, IUpdatableNumericSolvingState stateBefore)
     {
         Id = id;
         From = stateBefore;
@@ -42,7 +42,7 @@ public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where 
         To = stateBefore.Apply(_progress);
     }
 
-    private void HighLight<TH>(TH highlighter) where TH : ISolvingStateHighlighter
+    private void HighLight<TH>(TH highlighter) where TH : INumericSolvingStateHighlighter
     {
         ChangeReportHelper.HighlightChange(highlighter, _progress);
     }

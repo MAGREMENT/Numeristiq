@@ -9,7 +9,7 @@ using Model.Utility.BitSets;
 namespace Model.Tectonics.Solver;
 
 public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData>, IUpdatableTectonicSolvingState,
-    ITectonicHighlighter>, ITectonicSolverData, ISolvingState
+    ITectonicHighlighter>, ITectonicSolverData, INumericSolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet8[,] _possibilities;
@@ -35,7 +35,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
         Graphs.Clear();
     }
 
-    ReadOnlyBitSet16 ISolvingState.PossibilitiesAt(int row, int col)
+    ReadOnlyBitSet16 INumericSolvingState.PossibilitiesAt(int row, int col)
     {
         return ReadOnlyBitSet16.FromBitSet(PossibilitiesAt(row, col));
     }

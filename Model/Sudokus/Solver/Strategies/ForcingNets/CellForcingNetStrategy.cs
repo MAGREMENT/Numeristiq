@@ -220,7 +220,7 @@ public class CellForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class CellForcingNetBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class CellForcingNetBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly int _row;

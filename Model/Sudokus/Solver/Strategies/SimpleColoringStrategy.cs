@@ -95,7 +95,7 @@ public class SimpleColoringStrategy : SudokuStrategy
     }
 }
 
-public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SimpleColoringReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringList<CellPossibility> _vertices;
     private readonly bool _isInvalidColoring;

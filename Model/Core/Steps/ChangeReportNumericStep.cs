@@ -13,13 +13,13 @@ public class ChangeReportNumericStep<THighlighter> : INumericStep<THighlighter>
     public IReadOnlyList<NumericChange> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
-    public IUpdatableSolvingState From { get; }
-    public IUpdatableSolvingState To { get; }
+    public IUpdatableNumericSolvingState From { get; }
+    public IUpdatableNumericSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager  { get; }
 
 
     public ChangeReportNumericStep(int id, Strategy maker, IReadOnlyList<NumericChange> changes, ChangeReport<THighlighter> report,
-        IUpdatableSolvingState stateBefore)
+        IUpdatableNumericSolvingState stateBefore)
     {
         Id = id;
         Title = maker.Name;

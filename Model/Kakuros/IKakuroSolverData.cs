@@ -4,8 +4,8 @@ using Model.Core.Highlighting;
 
 namespace Model.Kakuros;
 
-public interface IKakuroSolverData : ISolvingState
+public interface IKakuroSolverData : INumericSolvingState
 {
     IReadOnlyKakuro Kakuro { get; }
-    NumericChangeBuffer<IUpdatableSolvingState, ISolvingStateHighlighter> ChangeBuffer { get; }
+    NumericChangeBuffer<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter> ChangeBuffer { get; }
 }

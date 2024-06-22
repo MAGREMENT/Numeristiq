@@ -69,7 +69,7 @@ public class OddagonForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class OddagonForcingNetReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class OddagonForcingNetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly Coloring _changeColoring;

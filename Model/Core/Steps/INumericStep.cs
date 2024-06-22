@@ -15,11 +15,24 @@ public interface IStep
     string GetCursorPosition();
 }
 
+public interface IDichotomousStep<THighlighter> : IStep
+{
+    IReadOnlyList<DichotomousChange> Changes { get; }
+    IUpdatableDichotomousSolvingState From { get; }
+    IUpdatableDichotomousSolvingState To { get; }
+    HighlightManager<THighlighter> HighlightManager { get; }
+
+    string IStep.GetCursorPosition()
+    {
+        return HighlightManager.CursorPosition();
+    }
+}
+
 public interface INumericStep<THighlighter> : IStep
 { 
     IReadOnlyList<NumericChange> Changes { get; }
-    IUpdatableSolvingState From { get; }
-    IUpdatableSolvingState To { get; }
+    IUpdatableNumericSolvingState From { get; }
+    IUpdatableNumericSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
 
     string IStep.GetCursorPosition()
