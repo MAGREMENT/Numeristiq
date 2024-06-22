@@ -11,7 +11,7 @@ public interface ISudokuSolveView : ICanBeDisabled
     ISudokuSolverDrawer Drawer { get; }
     
     void SetSudokuAsString(string s);
-    void AddLog(IStep<ISudokuHighlighter> step, StateShown _shown);
+    void AddLog(INumericStep<ISudokuHighlighter> numericStep, StateShown _shown);
     void ClearLogs();
     void OpenLog(int index);
     void CloseLog(int index);

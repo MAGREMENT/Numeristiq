@@ -4,7 +4,7 @@ namespace ConsoleApplication.Commands;
 
 public class SessionCommand : Command
 {
-    private static readonly string[] StopCommands = { "Stop", "s" };
+    private static readonly string[] StopCommands = { "Stop", "stop", "s" };
     
     public override string Description =>
         "Starts a session allowing you to enter multiple commands without exiting the application";

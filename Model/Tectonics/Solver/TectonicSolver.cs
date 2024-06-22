@@ -8,8 +8,8 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver;
 
-public class TectonicSolver : StrategySolver<Strategy<ITectonicSolverData>, IUpdatableTectonicSolvingState,
-    ITectonicHighlighter, object>, ITectonicSolverData, ISolvingState
+public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData>, IUpdatableTectonicSolvingState,
+    ITectonicHighlighter>, ITectonicSolverData, ISolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet8[,] _possibilities;
@@ -94,9 +94,14 @@ public class TectonicSolver : StrategySolver<Strategy<ITectonicSolverData>, IUpd
         return new StateArraySolvingState(this);
     }
 
-    protected override object GetSolveResult()
+    public override bool IsResultCorrect()
     {
-        return this;
+        return _tectonic.IsCorrect();
+    }
+
+    public override bool HasSolverFailed()
+    {
+        return false; //TODO
     }
 
     protected override bool IsComplete()

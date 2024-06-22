@@ -9,17 +9,17 @@ namespace Model.Core.Changes;
 /// important that no change are executed outside of the Push() method, which signals that a strategy has stopped
 /// searching.
 /// </summary>
-public class ChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
+public class NumericChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableSolvingState
     where THighlighter : ISolvingStateHighlighter
 {
     private readonly HashSet<CellPossibility> _possibilitiesRemoved = new();
     private readonly HashSet<CellPossibility> _solutionsAdded = new();
 
-    public List<ChangeCommit<TVerifier, THighlighter>> Commits { get; } = new();
+    public List<ChangeCommit<NumericChange, TVerifier, THighlighter>> Commits { get; } = new();
 
-    private readonly IChangeProducer _producer;
+    private readonly INumericChangeProducer _producer;
 
-    public ChangeBuffer(IChangeProducer producer)
+    public NumericChangeBuffer(INumericChangeProducer producer)
     {
         _producer = producer;
     }
@@ -64,39 +64,39 @@ public class ChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableS
         if (_producer.FastMode ||
             (_possibilitiesRemoved.Count == 0 && _solutionsAdded.Count == 0)) return false;
 
-        Commits.Add(new ChangeCommit<TVerifier, THighlighter>(EstablishChangeList(), builder));
+        Commits.Add(new ChangeCommit<NumericChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
         return true;
     }
 
-    public IEnumerable<SolverProgress> DumpChanges()
+    public IEnumerable<NumericChange> DumpChanges()
     {
         foreach (var solution in _solutionsAdded)
         {
-            yield return new SolverProgress(ProgressType.SolutionAddition, solution);
+            yield return new NumericChange(ChangeType.SolutionAddition, solution);
         }
         
         foreach (var possibility in _possibilitiesRemoved)
         {
-            yield return new SolverProgress(ProgressType.PossibilityRemoval, possibility);
+            yield return new NumericChange(ChangeType.PossibilityRemoval, possibility);
         }
         
         _solutionsAdded.Clear();
         _possibilitiesRemoved.Clear();
     }
     
-    private SolverProgress[] EstablishChangeList()
+    private NumericChange[] EstablishChangeList()
     {
         var count = 0;
-        var changes = new SolverProgress[_solutionsAdded.Count + _possibilitiesRemoved.Count];
+        var changes = new NumericChange[_solutionsAdded.Count + _possibilitiesRemoved.Count];
         
         foreach (var solution in _solutionsAdded)
         {
-            changes[count++] = new SolverProgress(ProgressType.SolutionAddition, solution);
+            changes[count++] = new NumericChange(ChangeType.SolutionAddition, solution);
         }
         
         foreach (var possibility in _possibilitiesRemoved)
         {
-            changes[count++] = new SolverProgress(ProgressType.PossibilityRemoval, possibility);
+            changes[count++] = new NumericChange(ChangeType.PossibilityRemoval, possibility);
         }
         
         _solutionsAdded.Clear();
@@ -106,7 +106,7 @@ public class ChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableS
     }
 }
 
-public interface IChangeProducer
+public interface INumericChangeProducer
 {
     public bool FastMode { get; }
     public bool CanRemovePossibility(CellPossibility cp);

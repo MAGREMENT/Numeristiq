@@ -78,7 +78,7 @@ public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _visited = visited.ToArray();
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -94,7 +94,7 @@ public class XYChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

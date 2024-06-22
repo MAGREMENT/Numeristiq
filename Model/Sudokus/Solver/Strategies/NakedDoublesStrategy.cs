@@ -164,7 +164,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _unit switch
         {
@@ -197,7 +197,7 @@ public class LineNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatableSudo
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
@@ -220,7 +220,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatable
         _gn2 = gn2;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<CellPossibility> cells = new(4);
         
@@ -247,7 +247,7 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<IUpdatable
                $" mini grid {_miniRow * 3 + _miniCol + 1} cannot contain these possibilities";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

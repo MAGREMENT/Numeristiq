@@ -261,7 +261,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatab
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -293,7 +293,7 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatab
                $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
@@ -310,7 +310,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpd
         _miniPos = miniPos;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -333,7 +333,7 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<IUpd
                $" mini grid {_miniPos.MiniGridNumber() + 1} cannot contain these possibilities";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

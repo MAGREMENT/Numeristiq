@@ -29,7 +29,7 @@ public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICommitComp
         _algorithm.Run(solverData, _type);
     }
 
-    public int Compare(IChangeCommit first, IChangeCommit second)
+    public int Compare(IChangeCommit<NumericChange> first, IChangeCommit<NumericChange> second)
     {
         if (first.TryGetBuilder<IReportBuilderWithChain>(out var r1) ||
             second.TryGetBuilder<IReportBuilderWithChain>(out var r2)) return 0;
@@ -119,7 +119,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
         _type = type;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
@@ -166,7 +166,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<IUp
         return _loop.Count;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
@@ -186,7 +186,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
         _chain = chain;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
@@ -227,7 +227,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<IU
         return _chain.Count;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

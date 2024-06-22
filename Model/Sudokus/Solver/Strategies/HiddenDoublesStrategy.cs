@@ -142,7 +142,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
@@ -166,7 +166,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatableSud
                $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
@@ -185,7 +185,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatabl
         _n2 = n2;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cells = _pos.ToCellArray();
 
@@ -209,7 +209,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<IUpdatabl
                $" mini grid {_pos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

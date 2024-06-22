@@ -5,12 +5,12 @@ using Model.Core.Highlighting;
 
 namespace Model.Core.Steps;
 
-public class ChangeReportStep<THighlighter> : IStep<THighlighter>
+public class ChangeReportNumericStep<THighlighter> : INumericStep<THighlighter>
 {
     public int Id { get; }
     public string Title { get; }
     public StepDifficulty Difficulty { get; }
-    public IReadOnlyList<SolverProgress> Changes { get; }
+    public IReadOnlyList<NumericChange> Changes { get; }
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
     public IUpdatableSolvingState From { get; }
@@ -18,7 +18,7 @@ public class ChangeReportStep<THighlighter> : IStep<THighlighter>
     public HighlightManager<THighlighter> HighlightManager  { get; }
 
 
-    public ChangeReportStep(int id, Strategy maker, IReadOnlyList<SolverProgress> changes, ChangeReport<THighlighter> report,
+    public ChangeReportNumericStep(int id, Strategy maker, IReadOnlyList<NumericChange> changes, ChangeReport<THighlighter> report,
         IUpdatableSolvingState stateBefore)
     {
         Id = id;

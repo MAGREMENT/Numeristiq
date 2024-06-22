@@ -6,31 +6,31 @@ using Model.Core.Highlighting;
 
 namespace Model.Core.Steps;
 
-public class ByHandStep<THighlighter> : IStep<THighlighter> where THighlighter : ISolvingStateHighlighter
+public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where THighlighter : ISolvingStateHighlighter
 {
     public int Id { get; }
     public string Title { get; }
     public StepDifficulty Difficulty => StepDifficulty.None;
-    public IReadOnlyList<SolverProgress> Changes => new[] { _progress };
+    public IReadOnlyList<NumericChange> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
     public IUpdatableSolvingState From { get; }
     public IUpdatableSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager => new(new DelegateHighlightable<THighlighter>(HighLight));
 
-    private readonly SolverProgress _progress;
+    private readonly NumericChange _progress;
 
-    public ByHandStep(int id, int possibility, int row, int col, ProgressType progressType, IUpdatableSolvingState stateBefore)
+    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, IUpdatableSolvingState stateBefore)
     {
         Id = id;
         From = stateBefore;
-        switch (progressType)
+        switch (changeType)
         {
-            case ProgressType.PossibilityRemoval :
+            case ChangeType.PossibilityRemoval :
                 Title = "Removed by hand";
                 Description = "This possibility was removed by hand";
                 break;
-            case ProgressType.SolutionAddition :
+            case ChangeType.SolutionAddition :
                 Title = "Added by hand";
                 Description = "This solution was added by hand";
                 break;
@@ -38,7 +38,7 @@ public class ByHandStep<THighlighter> : IStep<THighlighter> where THighlighter :
         }
         
         
-        _progress = new SolverProgress(progressType, possibility, row, col);
+        _progress = new NumericChange(changeType, possibility, row, col);
         To = stateBefore.Apply(_progress);
     }
 

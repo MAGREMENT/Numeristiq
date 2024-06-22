@@ -1,4 +1,5 @@
-﻿using Model.Core.Generators;
+﻿using Model.Core;
+using Model.Core.Generators;
 using Model.Core.Trackers;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
@@ -36,8 +37,8 @@ public class SudokuGenerateBatchCommand : Command
         {
             var solver = interpreter.Instantiator.InstantiateSudokuSolver();
 
-            var ratings = new RatingTracker<SudokuStrategy, ISudokuSolveResult>();
-            var hardest = new HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult>();
+            var ratings = new RatingTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
+            var hardest = new HardestStrategyTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
 
             ratings.AttachTo(solver);
             hardest.AttachTo(solver);

@@ -208,7 +208,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         _cps = cps;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var branchesHighlight = new Highlight<ISudokuHighlighter>[_branches.Length];
 
@@ -280,7 +280,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<IUpdatableSudokuSol
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

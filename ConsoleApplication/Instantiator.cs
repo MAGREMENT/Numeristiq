@@ -1,10 +1,13 @@
-﻿using Model.Sudokus.Solver;
+﻿using Model.Kakuros;
+using Model.Kakuros.Strategies;
+using Model.Sudokus.Solver;
 using Model.Tectonics;
 using Model.Tectonics.Solver;
 using Model.Tectonics.Solver.Strategies;
 using Model.Tectonics.Solver.Strategies.AlternatingInference;
 using Model.Tectonics.Solver.Strategies.AlternatingInference.Types;
 using Repository;
+using NakedSingleStrategy = Model.Tectonics.Solver.Strategies.NakedSingleStrategy;
 
 namespace ConsoleApplication;
 
@@ -41,6 +44,17 @@ public class Instantiator
             new GroupEliminationStrategy(),
             new AlternatingInferenceGeneralization(new AlternatingInferenceChainType()),
             new BruteForceStrategy());
+        
+        return solver;
+    }
+
+    public KakuroSolver InstantiateKakuroSolver()
+    {
+        var solver = new KakuroSolver(new RecursiveKakuroCombinationCalculator());
+        solver.StrategyManager.AddStrategies(new Model.Kakuros.Strategies.NakedSingleStrategy(),
+            new AmountCoherencyStrategy(),
+            new CombinationCoherencyStrategy());
+        
         return solver;
     }
 }

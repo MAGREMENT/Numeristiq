@@ -64,20 +64,20 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
     }
 
-    private static string Description(IReadOnlyList<SolverProgress> changes)
+    private static string Description(IReadOnlyList<NumericChange> changes)
     {
         if (changes.Count != 1) return "";
 
         return $"Hidden Single in r{changes[0].Row + 1}c{changes[0].Column + 1}";
     }
 
-    private ExplanationElement? Explanation(IReadOnlyList<SolverProgress> changes)
+    private ExplanationElement? Explanation(IReadOnlyList<NumericChange> changes)
     {
         if (changes.Count != 1) return null;
 
@@ -90,7 +90,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<IUpdatableSudokuSo
         return start;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         if(changes.Count == 0) return Clue<ISudokuHighlighter>.Default();
 

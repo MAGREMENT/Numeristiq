@@ -6,9 +6,9 @@ namespace Model.Core.Changes;
 
 public interface IChangeReportBuilder<in TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
-    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
+    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<NumericChange> changes, TVerifier snapshot);
     
-    public Clue<THighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, TVerifier snapshot);
+    public Clue<THighlighter> BuildClue(IReadOnlyList<NumericChange> changes, TVerifier snapshot);
 }
 
 public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReportBuilder<TVerifier, THighlighter> where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
@@ -24,13 +24,13 @@ public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReport
         }
     }
     
-    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, TVerifier snapshot)
+    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<NumericChange> changes, TVerifier snapshot)
     {
         return new ChangeReport<THighlighter>("",
             lighter => { ChangeReportHelper.HighlightChanges(lighter, changes);});
     }
 
-    public Clue<THighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, TVerifier snapshot)
+    public Clue<THighlighter> BuildClue(IReadOnlyList<NumericChange> changes, TVerifier snapshot)
     {
         return Clue<THighlighter>.Default();
     }
@@ -38,7 +38,7 @@ public class DefaultChangeReportBuilder<TVerifier, THighlighter> : IChangeReport
 
 public static class ChangeReportHelper
 {
-    public static void HighlightChanges(ISolvingStateHighlighter highlightable, IReadOnlyList<SolverProgress> changes)
+    public static void HighlightChanges(ISolvingStateHighlighter highlightable, IReadOnlyList<NumericChange> changes)
     {
         foreach (var change in changes)
         {
@@ -46,21 +46,21 @@ public static class ChangeReportHelper
         }
     }
     
-    public static void HighlightChange(ISolvingStateHighlighter highlightable, SolverProgress progress)
+    public static void HighlightChange(ISolvingStateHighlighter highlightable, NumericChange progress)
     {
-        if(progress.ProgressType == ProgressType.PossibilityRemoval)
+        if(progress.Type == ChangeType.PossibilityRemoval)
             highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);
         else highlightable.HighlightCell(progress.Row, progress.Column, ChangeColoration.ChangeOne);
     }
 
-    public static string ChangesToString(IReadOnlyList<SolverProgress> changes)
+    public static string ChangesToString(IReadOnlyList<NumericChange> changes)
     {
         if (changes.Count == 0) return "";
         
         var builder = new StringBuilder();
         foreach (var change in changes)
         {
-            var action = change.ProgressType == ProgressType.PossibilityRemoval
+            var action = change.Type == ChangeType.PossibilityRemoval
                 ? "<>"
                 : "==";
             builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}, ");

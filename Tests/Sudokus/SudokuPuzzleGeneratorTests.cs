@@ -1,4 +1,5 @@
-﻿using Model.Core.Trackers;
+﻿using Model.Core;
+using Model.Core.Trackers;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
@@ -22,7 +23,7 @@ public class SudokuPuzzleGeneratorTests
         var solver = new SudokuSolver();
         solver.StrategyManager.AddStrategies(repo.Download());
 
-        var finder = new HardestStrategyTracker<SudokuStrategy, ISudokuSolveResult>();
+        var finder = new HardestStrategyTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
         finder.AttachTo(solver);
         
         var puzzles = generator.Generate(SudokuCount);

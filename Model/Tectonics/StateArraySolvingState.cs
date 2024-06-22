@@ -50,7 +50,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         return (b & 1) > 0 ? new ReadOnlyBitSet16() : ReadOnlyBitSet16.FromBits(b);
     }
 
-    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> progresses)
+    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> progresses)
     {
         var buffer = new ushort[_bits.GetLength(0), _bits.GetLength(1)];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
@@ -63,7 +63,7 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         return new StateArraySolvingState(buffer, _zones);
     }
 
-    public IUpdatableSolvingState Apply(SolverProgress progress)
+    public IUpdatableSolvingState Apply(NumericChange progress)
     {
         var buffer = new ushort[_bits.GetLength(0), _bits.GetLength(1)];
         Array.Copy(_bits, 0, buffer, 0, _bits.Length);
@@ -73,9 +73,9 @@ public class StateArraySolvingState : IUpdatableTectonicSolvingState
         return new StateArraySolvingState(buffer, _zones);
     }
 
-    private void ApplyToBuffer(ushort[,] buffer, SolverProgress progress)
+    private void ApplyToBuffer(ushort[,] buffer, NumericChange progress)
     {
-        if (progress.ProgressType == ProgressType.PossibilityRemoval)
+        if (progress.Type == ChangeType.PossibilityRemoval)
         {
             buffer[progress.Row, progress.Column] &= (ushort)~(1 << progress.Number);
         }

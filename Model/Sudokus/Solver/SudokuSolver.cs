@@ -11,8 +11,8 @@ namespace Model.Sudokus.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : StrategySolver<SudokuStrategy, IUpdatableSudokuSolvingState, ISudokuHighlighter,
-    ISudokuSolveResult>, ISudokuSolverData, ISudokuSolveResult
+public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudokuSolvingState, ISudokuHighlighter>,
+    ISudokuSolverData
 {
     private Sudoku _sudoku;
     private readonly ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[9, 9];
@@ -75,19 +75,6 @@ public class SudokuSolver : StrategySolver<SudokuStrategy, IUpdatableSudokuSolvi
 
         PreComputer.Reset();
         OnNewSolvable(_sudoku.GetSolutionCount());
-    }
-
-    public bool IsWrong()
-    {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (_sudoku[row, col] == 0 && _possibilities[row, col].Count == 0) return true;
-            }
-        }
-
-        return false;
     }
     
     public ReadOnlyBitSet16 RawPossibilitiesAt(int row, int col)
@@ -162,9 +149,22 @@ public class SudokuSolver : StrategySolver<SudokuStrategy, IUpdatableSudokuSolvi
         return new StateArraySolvingState(this);
     }
 
-    protected override ISudokuSolveResult GetSolveResult()
+    public override bool IsResultCorrect()
     {
-        return this;
+        return Sudoku.IsCorrect();
+    }
+
+    public override bool HasSolverFailed()
+    {
+        for (int row = 0; row < 9; row++)
+        {
+            for (int col = 0; col < 9; col++)
+            {
+                if (_sudoku[row, col] == 0 && _possibilities[row, col].Count == 0) return true;
+            }
+        }
+
+        return false;
     }
 
     protected override bool AddSolution(int number, int row, int col)
@@ -315,12 +315,5 @@ public class SudokuSolver : StrategySolver<SudokuStrategy, IUpdatableSudokuSolvi
     }
 
     #endregion
-}
-
-public interface ISudokuSolveResult
-{
-    public IReadOnlySudoku Sudoku { get; }
-    public IUpdatableSudokuSolvingState? StartState { get; }
-    public bool IsWrong();
 }
 

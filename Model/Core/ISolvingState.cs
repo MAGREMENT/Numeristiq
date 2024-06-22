@@ -15,8 +15,8 @@ public interface ISolvingState
 
 public interface IUpdatableSolvingState : ISolvingState
 {
-    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> progresses);
-    public IUpdatableSolvingState Apply(SolverProgress progress);
+    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> progresses);
+    public IUpdatableSolvingState Apply(NumericChange progress);
 }
 
 public interface ISudokuSolvingState : ISolvingState

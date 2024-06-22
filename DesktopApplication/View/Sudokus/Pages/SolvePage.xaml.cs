@@ -55,11 +55,11 @@ public partial class SolvePage : ISudokuSolveView
         _disabled = false;
     }
 
-    public void AddLog(IStep<ISudokuHighlighter> step, StateShown stateShown)
+    public void AddLog(INumericStep<ISudokuHighlighter> numericStep, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {
-            var lc = new StepControl(step, stateShown);
+            var lc = new StepControl(numericStep, stateShown);
             LogPanel.Children.Add(lc);
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;

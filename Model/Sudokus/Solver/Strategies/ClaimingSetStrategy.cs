@@ -113,7 +113,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
         _unit = unit;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)
@@ -143,7 +143,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
         });
     }
 
-    private string Explanation(IReadOnlyList<SolverProgress> changes)
+    private string Explanation(IReadOnlyList<NumericChange> changes)
     {
         var first = changes[0];
         var miniGirdNumber = first.Row / 3 * 3 + first.Column / 3 + 1;
@@ -152,7 +152,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<IUpdatableSudo
                $" box {miniGirdNumber}";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

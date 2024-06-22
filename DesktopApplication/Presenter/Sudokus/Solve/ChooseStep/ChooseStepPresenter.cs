@@ -10,7 +10,7 @@ public class ChooseStepPresenter
 {
     private const int PageCount = 20;
     
-    private readonly IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> _commits;
+    private readonly IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> _commits;
     private readonly IChooseStepView _view;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly ISolvingState _currentState;
@@ -20,7 +20,7 @@ public class ChooseStepPresenter
     private int _shownStep = -1;
     
     public ChooseStepPresenter(IChooseStepView view, ISolvingState currentState,
-        IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> commits, ICommitApplier applier, Settings settings)
+        IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> commits, ICommitApplier applier, Settings settings)
     {
         _view = view;
         _currentState = currentState;

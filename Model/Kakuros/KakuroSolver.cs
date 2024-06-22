@@ -5,7 +5,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class KakuroSolver : StrategySolver<Strategy<IKakuroSolverData>, IUpdatableSolvingState, ISolvingStateHighlighter, object>,
+public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, IUpdatableSolvingState, ISolvingStateHighlighter>,
     IKakuroSolverData
 {
     private IKakuro _kakuro = new SumListKakuro();
@@ -41,9 +41,14 @@ public class KakuroSolver : StrategySolver<Strategy<IKakuroSolverData>, IUpdatab
         return new KakuroSolvingState(this);
     }
 
-    protected override object GetSolveResult()
+    public override bool IsResultCorrect()
     {
-        return this;
+        return _kakuro.IsComplete(); //TODO
+    }
+
+    public override bool HasSolverFailed()
+    {
+        return false; //TODO
     }
 
     protected override bool IsComplete()

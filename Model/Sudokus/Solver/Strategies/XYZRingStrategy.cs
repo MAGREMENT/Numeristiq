@@ -156,7 +156,7 @@ public class XYZRingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
         _poss = poss;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
@@ -186,7 +186,7 @@ public class XYZRingReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolving
             $"XYZ-Ring in {_hinge}, {_hingeRow} & {_hingeColumn} + {new CellPossibility(_hingeRow, _poss)}" +
             $" - {_rowFriend} = {_columnFriend} - {new CellPossibility(_hingeColumn, _poss)}";
 
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

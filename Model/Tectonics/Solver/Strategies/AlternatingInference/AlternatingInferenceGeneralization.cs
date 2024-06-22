@@ -97,7 +97,7 @@ public class AlternatingInferenceReportBuilder : IChangeReportBuilder<ITectonicS
         _off = off;
     }
 
-    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ITectonicSolvingState snapshot)
     {
         var chain = ReconstructChain();
         return new ChangeReport<ITectonicHighlighter>(Description(chain), lighter =>
@@ -128,7 +128,7 @@ public class AlternatingInferenceReportBuilder : IChangeReportBuilder<ITectonicS
         return builder.ToString();
     }
 
-    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, ITectonicSolvingState snapshot)
+    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ITectonicSolvingState snapshot)
     {
         return Clue<ITectonicHighlighter>.Default();
     }

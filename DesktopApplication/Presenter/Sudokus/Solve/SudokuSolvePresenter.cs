@@ -263,7 +263,7 @@ public class SudokuSolvePresenter : ICommitApplier
         }, EnumConverter.ToStringArray<SudokuStringFormat>(SpaceConverter.Instance));
     }
     
-    public void Apply(BuiltChangeCommit<ISudokuHighlighter> commit)
+    public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit)
     {
         _solver.ApplyCommit(commit);
         UpdateLogs();
@@ -392,7 +392,7 @@ public class SudokuSolvePresenter : ICommitApplier
     }
 }
 
-public class UIUpdaterTracker : Tracker<SudokuStrategy, ISudokuSolveResult>
+public class UIUpdaterTracker : Tracker<SudokuStrategy, IUpdatableSudokuSolvingState>
 {
     private readonly SudokuSolvePresenter _presenter;
     
@@ -404,13 +404,13 @@ public class UIUpdaterTracker : Tracker<SudokuStrategy, ISudokuSolveResult>
         UpdateLogs = updateLogs;
     }
     
-    protected override void OnAttach(ITrackerAttachable<SudokuStrategy, ISudokuSolveResult> attachable)
+    protected override void OnAttach(ITrackerAttachable<SudokuStrategy, IUpdatableSudokuSolvingState> attachable)
     {
         attachable.StrategyStarted += OnStrategyStart;
         attachable.StrategyEnded += OnStrategyEnd;
     }
 
-    protected override void OnDetach(ITrackerAttachable<SudokuStrategy, ISudokuSolveResult> attachable)
+    protected override void OnDetach(ITrackerAttachable<SudokuStrategy, IUpdatableSudokuSolvingState> attachable)
     {
         attachable.StrategyStarted -= OnStrategyStart;
         attachable.StrategyEnded -= OnStrategyEnd;
@@ -434,12 +434,12 @@ public class UIUpdaterTracker : Tracker<SudokuStrategy, ISudokuSolveResult>
 
 public class ChooseStepPresenterBuilder
 {
-    private readonly IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> _commits;
+    private readonly IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> _commits;
     private readonly ISolvingState _currentState;
     private readonly Settings _settings;
     private readonly ICommitApplier _applier;
 
-    public ChooseStepPresenterBuilder(IReadOnlyList<BuiltChangeCommit<ISudokuHighlighter>> commits, Settings settings,
+    public ChooseStepPresenterBuilder(IReadOnlyList<BuiltChangeCommit<NumericChange, ISudokuHighlighter>> commits, Settings settings,
         ISolvingState currentState, ICommitApplier applier)
     {
         _commits = commits;
@@ -456,22 +456,22 @@ public class ChooseStepPresenterBuilder
 
 public class StepExplanationPresenterBuilder
 {
-    private readonly IStep<ISudokuHighlighter> _step;
+    private readonly INumericStep<ISudokuHighlighter> _numericStep;
     private readonly Settings _settings;
 
-    public StepExplanationPresenterBuilder(IStep<ISudokuHighlighter> step, Settings settings)
+    public StepExplanationPresenterBuilder(INumericStep<ISudokuHighlighter> numericStep, Settings settings)
     {
-        _step = step;
+        _numericStep = numericStep;
         _settings = settings;
     }
 
     public StepExplanationPresenter Build(IStepExplanationView view)
     {
-        return new StepExplanationPresenter(view, _step, _settings);
+        return new StepExplanationPresenter(view, _numericStep, _settings);
     }
 }
 
 public interface ICommitApplier
 {
-    public void Apply(BuiltChangeCommit<ISudokuHighlighter> commit);
+    public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit);
 }

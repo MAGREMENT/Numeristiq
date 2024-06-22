@@ -87,7 +87,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
         _miniPos = miniPos;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
         {
@@ -100,7 +100,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
         });
     }
 
-    private string Explanation(IReadOnlyList<SolverProgress> changes)
+    private string Explanation(IReadOnlyList<NumericChange> changes)
     {
         var firstChange = changes[0];
         var firstMini = _miniPos.First();
@@ -123,7 +123,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<IUpdatabl
                $" it can be removed from any other cells in {unit.ToString().ToLower()} {lineNumber}";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -53,7 +53,7 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
         return _cellStates[row, col].AsPossibilities;
     }
 
-    public IUpdatableSolvingState Apply(IReadOnlyList<SolverProgress> changes)
+    public IUpdatableSolvingState Apply(IReadOnlyList<NumericChange> changes)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);
@@ -66,7 +66,7 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
         return new StateArraySolvingState(buffer);
     }
 
-    public IUpdatableSolvingState Apply(SolverProgress progress)
+    public IUpdatableSolvingState Apply(NumericChange progress)
     {
         var buffer = new CellState[9, 9];
         Array.Copy(_cellStates, 0, buffer, 0, _cellStates.Length);
@@ -96,34 +96,34 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
         return _cellStates.GetHashCode();
     }
 
-    private void ApplyProgressToBuffer(CellState[,] buffer, SolverProgress change)
+    private void ApplyProgressToBuffer(CellState[,] buffer, NumericChange numericNumericChange)
     {
-        if (change.ProgressType == ProgressType.PossibilityRemoval)
+        if (numericNumericChange.Type == ChangeType.PossibilityRemoval)
         {
-            var poss = buffer[change.Row, change.Column].AsPossibilities;
-            poss -= change.Number;
-            buffer[change.Row, change.Column] = CellState.FromBits(poss.Bits);
+            var poss = buffer[numericNumericChange.Row, numericNumericChange.Column].AsPossibilities;
+            poss -= numericNumericChange.Number;
+            buffer[numericNumericChange.Row, numericNumericChange.Column] = CellState.FromBits(poss.Bits);
         }
         else
         {
-            buffer[change.Row, change.Column] = new CellState(change.Number);
+            buffer[numericNumericChange.Row, numericNumericChange.Column] = new CellState(numericNumericChange.Number);
                         
             for (int unit = 0; unit < 9; unit++)
             {
-                var current = buffer[unit, change.Column];
+                var current = buffer[unit, numericNumericChange.Column];
                 if (current.IsPossibilities)
                 {
                     var poss = current.AsPossibilities;
-                    poss -= change.Number;
-                    buffer[unit, change.Column] = CellState.FromBits(poss.Bits);
+                    poss -= numericNumericChange.Number;
+                    buffer[unit, numericNumericChange.Column] = CellState.FromBits(poss.Bits);
                 }
         
-                current = buffer[change.Row, unit];
+                current = buffer[numericNumericChange.Row, unit];
                 if (current.IsPossibilities)
                 {
                     var poss = current.AsPossibilities;
-                    poss -= change.Number;
-                    buffer[change.Row, unit] = CellState.FromBits(poss.Bits);
+                    poss -= numericNumericChange.Number;
+                    buffer[numericNumericChange.Row, unit] = CellState.FromBits(poss.Bits);
                 }
             }
         
@@ -131,14 +131,14 @@ public class StateArraySolvingState : IUpdatableSudokuSolvingState
             {
                 for (int mc = 0; mc < 3; mc++)
                 {
-                    var row = change.Row / 3 * 3 + mr;
-                    var col = change.Column / 3 * 3 + mc;
+                    var row = numericNumericChange.Row / 3 * 3 + mr;
+                    var col = numericNumericChange.Column / 3 * 3 + mc;
                                 
                     var current = buffer[row, col];
                     if (current.IsPossibilities)
                     {
                         var poss = current.AsPossibilities;
-                        poss -= change.Number;
+                        poss -= numericNumericChange.Number;
                         buffer[row, col] = CellState.FromBits(poss.Bits);
                     }
                 }

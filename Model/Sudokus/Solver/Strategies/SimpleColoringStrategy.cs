@@ -106,7 +106,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         _isInvalidColoring = isInvalidColoring;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var highlights = new Highlight<ISudokuHighlighter>[_isInvalidColoring ? 2 : 1];
         if (_isInvalidColoring)
@@ -152,7 +152,7 @@ public class SimpleColoringReportBuilder : IChangeReportBuilder<IUpdatableSudoku
         return new ChangeReport<ISudokuHighlighter>( "", highlights);
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

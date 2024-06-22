@@ -32,6 +32,10 @@ public static class Program
             .AddCommand(new TectonicSolutionCountCommand())
             .AddCommand(new TectonicGenerateBatchCommand());
 
+        instance.Root.AddDirectory(new Directory("Kakuro"))
+            .AddCommand(new HelpCommand(), true)
+            .AddCommand(new KakuroSolveCommand());
+
         return instance;
     }
 }

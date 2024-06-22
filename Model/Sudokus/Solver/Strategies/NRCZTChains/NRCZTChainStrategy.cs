@@ -183,7 +183,7 @@ public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
                                                     && StopOnFirstPush;
     }
 
-    public int Compare(IChangeCommit first, IChangeCommit second)
+    public int Compare(IChangeCommit<NumericChange> first, IChangeCommit<NumericChange> second)
     {
         if (first.TryGetBuilder<IReportBuilderWithChain>(out var f) ||
             second.TryGetBuilder<IReportBuilderWithChain>(out var s)) return 0;
@@ -201,7 +201,7 @@ public class NRCZTChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolv
         _chain = chain;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(_chain.ToString(), lighter =>
         {
@@ -216,7 +216,7 @@ public class NRCZTChainReportBuilder : IChangeReportBuilder<IUpdatableSudokuSolv
         });
     }
 
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

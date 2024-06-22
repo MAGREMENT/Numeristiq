@@ -241,7 +241,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
     }
 
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         Highlight<ISudokuHighlighter>[] highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
@@ -264,7 +264,7 @@ public class CellForcingNetBuilder : IChangeReportBuilder<IUpdatableSudokuSolvin
         return new ChangeReport<ISudokuHighlighter>( "", highlights);
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

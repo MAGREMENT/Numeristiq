@@ -2,21 +2,21 @@ using Model.Core.Highlighting;
 
 namespace Model.Core.Changes;
 
-public interface IChangeCommit
+public interface IChangeCommit<out T>
 {
-    SolverProgress[] Changes { get; }
+    T[] Changes { get; }
 
     bool TryGetBuilder<TBuilderType>(out TBuilderType builder) where TBuilderType : class;
 }
 
-public class ChangeCommit<TVerifier, THighlighter> : IChangeCommit 
+public class ChangeCommit<TChange, TVerifier, THighlighter> : IChangeCommit<TChange>
     where TVerifier : ISolvingState where THighlighter : ISolvingStateHighlighter
 {
-    public SolverProgress[] Changes { get; }
+    public TChange[] Changes { get; }
 
     public IChangeReportBuilder<TVerifier, THighlighter> Builder { get; }
 
-    public ChangeCommit(SolverProgress[] changes, IChangeReportBuilder<TVerifier, THighlighter> builder)
+    public ChangeCommit(TChange[] changes, IChangeReportBuilder<TVerifier, THighlighter> builder)
     {
         Changes = changes;
         Builder = builder;
@@ -29,9 +29,9 @@ public class ChangeCommit<TVerifier, THighlighter> : IChangeCommit
     }
 }
 
-public class BuiltChangeCommit<THighlighter>
+public class BuiltChangeCommit<TChange, THighlighter>
 {
-    public BuiltChangeCommit(Strategy maker, SolverProgress[] changes, ChangeReport<THighlighter> report)
+    public BuiltChangeCommit(Strategy maker, TChange[] changes, ChangeReport<THighlighter> report)
     {
         Maker = maker;
         Changes = changes;
@@ -39,6 +39,6 @@ public class BuiltChangeCommit<THighlighter>
     }
     
     public Strategy Maker { get; }
-    public SolverProgress[] Changes { get; }
+    public TChange[] Changes { get; }
     public ChangeReport<THighlighter> Report { get; }
 }

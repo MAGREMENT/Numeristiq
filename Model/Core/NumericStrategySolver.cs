@@ -8,12 +8,13 @@ using Model.Utility;
 
 namespace Model.Core;
 
-public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSolveResult> : IChangeProducer, ITrackerAttachable<TStrategy, TSolveResult>
+public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlighter> : INumericChangeProducer,
+    ITrackerAttachable<TStrategy, TSolvingState>, ISolveResult<TSolvingState>
     where TStrategy : Strategy where TSolvingState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter
 {
     protected int _solutionCount;
     protected TSolvingState? _currentState;
-    private readonly List<IStep<THighlighter>> _steps = new();
+    private readonly List<INumericStep<THighlighter>> _steps = new();
 
     public bool StartedSolving { get; private set; }
     public StrategyManager<TStrategy> StrategyManager { get; init; } = new();
@@ -28,21 +29,22 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
     }
 
     public TSolvingState? StartState { get; protected set; }
+
     /// <summary>
     /// Disables steps & instance handling
     /// </summary>
     public bool FastMode { get; set; }
-    public ChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
-    public IReadOnlyList<IStep<THighlighter>> Steps => _steps;
+    public NumericChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
+    public IReadOnlyList<INumericStep<THighlighter>> Steps => _steps;
 
     public event OnSolveStart? SolveStarted;
     public event OnStrategyStart<TStrategy>? StrategyStarted;
     public event OnStrategyEnd<TStrategy>? StrategyEnded;
-    public event OnSolveDone<TSolveResult>? SolveDone;
+    public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
 
-    protected StrategySolver()
+    protected NumericStrategySolver()
     {
-        ChangeBuffer = new ChangeBuffer<TSolvingState, THighlighter>(this);
+        ChangeBuffer = new NumericChangeBuffer<TSolvingState, THighlighter>(this);
     }
     
     public void SetSolutionByHand(int number, int row, int col)
@@ -53,7 +55,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         if (!AddSolution(number, row, col)) return;
 
         if (!StartedSolving) StartState = GetSolvingState();
-        else if (!FastMode) AddStepByHand(number, row, col, ProgressType.SolutionAddition, before);
+        else if (!FastMode) AddStepByHand(number, row, col, ChangeType.SolutionAddition, before);
     }
 
     public void RemoveSolutionByHand(int row, int col)
@@ -70,7 +72,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         {
             var stateBefore = CurrentState;
             if (!RemovePossibility(possibility, row, col)) return;
-            AddStepByHand(possibility, row, col, ProgressType.PossibilityRemoval, stateBefore);
+            AddStepByHand(possibility, row, col, ChangeType.PossibilityRemoval, stateBefore);
         }
         else if (!RemovePossibility(possibility, row, col)) return;
 
@@ -105,12 +107,12 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
             if (stopAtProgress || IsComplete()) break;
         }
 
-        SolveDone?.Invoke(GetSolveResult());
+        SolveDone?.Invoke(this);
     }
     
-    public IReadOnlyList<BuiltChangeCommit<THighlighter>> EveryPossibleNextStep()
+    public IReadOnlyList<BuiltChangeCommit<NumericChange, THighlighter>> EveryPossibleNextStep()
     {
-        List<BuiltChangeCommit<THighlighter>> result = new();
+        List<BuiltChangeCommit<NumericChange, THighlighter>> result = new();
         
         for (int i = 0; i < StrategyManager.Strategies.Count; i++)
         {
@@ -152,7 +154,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         return result;
     }
     
-    public void ApplyCommit(BuiltChangeCommit<THighlighter> commit)
+    public void ApplyCommit(BuiltChangeCommit<NumericChange, THighlighter> commit)
     {
         StartedSolving = true;
         var state = CurrentState;
@@ -183,7 +185,8 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
     }
 
     protected abstract TSolvingState GetSolvingState();
-    protected abstract TSolveResult GetSolveResult();
+    public abstract bool IsResultCorrect();
+    public abstract bool HasSolverFailed();
     protected abstract bool AddSolution(int number, int row, int col);
     protected abstract bool RemoveSolution(int row, int col);
     protected abstract bool RemovePossibility(int possibility, int row, int col);
@@ -191,16 +194,16 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
     protected abstract void ApplyStrategy(TStrategy strategy);
     protected abstract bool IsComplete();
 
-    private bool ExecuteChange(SolverProgress progress)
+    private bool ExecuteChange(NumericChange progress)
     {
-        return progress.ProgressType == ProgressType.SolutionAddition 
+        return progress.Type == ChangeType.SolutionAddition 
             ? AddSolution(progress.Number, progress.Row, progress.Column) 
             : RemovePossibility(progress.Number, progress.Row, progress.Column);
     }
     
-    private bool ExecuteChange(SolverProgress progress, ref int solutionAdded, ref int possibilitiesRemoved)
+    private bool ExecuteChange(NumericChange progress, ref int solutionAdded, ref int possibilitiesRemoved)
     {
-        if (progress.ProgressType == ProgressType.SolutionAddition)
+        if (progress.Type == ChangeType.SolutionAddition)
         {
             if (AddSolution(progress.Number, progress.Row, progress.Column))
             {
@@ -217,16 +220,16 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         return false;
     }
     
-    private void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<SolverProgress> changes,
+    private void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<NumericChange> changes,
         Strategy maker, IUpdatableSolvingState stateBefore)
     {
-        _steps.Add(new ChangeReportStep<THighlighter>(_steps.Count + 1, maker, changes, report, stateBefore));
+        _steps.Add(new ChangeReportNumericStep<THighlighter>(_steps.Count + 1, maker, changes, report, stateBefore));
     }
 
-    private void AddStepByHand(int possibility, int row, int col, ProgressType progressType,
+    private void AddStepByHand(int possibility, int row, int col, ChangeType changeType,
         IUpdatableSolvingState stateBefore)
     {
-        _steps.Add(new ByHandStep<THighlighter>(_steps.Count + 1, possibility, row, col, progressType, stateBefore));
+        _steps.Add(new ByHandNumericStep<THighlighter>(_steps.Count + 1, possibility, row, col, changeType, stateBefore));
     }
 
     private void OnStrategyEnd(Strategy strategy, ref int solutionAdded, ref int possibilitiesRemoved)
@@ -235,7 +238,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         {
             foreach (var change in ChangeBuffer.DumpChanges())
             {
-                ExecuteChange(change);
+                ExecuteChange(change, ref solutionAdded, ref possibilitiesRemoved);
             }
         }
         else
@@ -256,21 +259,21 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         }
     }
 
-    private IEnumerable<BuiltChangeCommit<THighlighter>> GetCommits(Strategy strategy)
+    private IEnumerable<BuiltChangeCommit<NumericChange, THighlighter>> GetCommits(Strategy strategy)
     {
         if (ChangeBuffer.Commits.Count == 0) yield break;
         
         var state = CurrentState;
         foreach (var commit in ChangeBuffer.Commits)
         {
-            yield return new BuiltChangeCommit<THighlighter>(strategy, commit.Changes,
+            yield return new BuiltChangeCommit<NumericChange, THighlighter>(strategy, commit.Changes,
                 commit.Builder.BuildReport(commit.Changes, state));
         }
 
         ChangeBuffer.Commits.Clear();
     }
     
-    private void HandleFirstOnly(Strategy pusher, List<ChangeCommit<TSolvingState, THighlighter>> commits,
+    private void HandleFirstOnly(Strategy pusher, List<ChangeCommit<NumericChange, TSolvingState, THighlighter>> commits,
         ref int solutionAdded, ref int possibilitiesRemoved)
     {
         var state = CurrentState;
@@ -284,14 +287,14 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         AddStepFromReport(commit.Builder.BuildReport(commit.Changes, state), commit.Changes, pusher, state);
     }
     
-    private void HandleUnorderedAll(Strategy pusher, List<ChangeCommit<TSolvingState, THighlighter>> commits,
+    private void HandleUnorderedAll(Strategy pusher, List<ChangeCommit<NumericChange, TSolvingState, THighlighter>> commits,
         ref int solutionAdded, ref int possibilitiesRemoved)
     {
         var state = CurrentState;
         
         foreach (var commit in commits)
         {
-            List<SolverProgress> impactfulChanges = new();
+            List<NumericChange> impactfulChanges = new();
             
             foreach (var change in commit.Changes)
             {
@@ -304,7 +307,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         }
     }
     
-    private void HandleBestOnly(Strategy pusher, List<ChangeCommit<TSolvingState, THighlighter>> commits,
+    private void HandleBestOnly(Strategy pusher, List<ChangeCommit<NumericChange, TSolvingState, THighlighter>> commits,
         ref int solutionAdded, ref int possibilitiesRemoved)
     {
         var state = CurrentState;
@@ -325,7 +328,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
         AddStepFromReport(best.Builder.BuildReport(best.Changes, state), best.Changes, pusher, state);
     }
     
-    private void HandleSortedAll(Strategy pusher, List<ChangeCommit<TSolvingState, THighlighter>> commits,
+    private void HandleSortedAll(Strategy pusher, List<ChangeCommit<NumericChange, TSolvingState, THighlighter>> commits,
         ref int solutionAdded, ref int possibilitiesRemoved)
     {
         var state = CurrentState;
@@ -334,7 +337,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
 
         foreach (var commit in commits)
         {
-            List<SolverProgress> impactfulChanges = new();
+            List<NumericChange> impactfulChanges = new();
             
             foreach (var change in commit.Changes)
             {
@@ -348,12 +351,19 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TSo
     }
 }
 
-public interface ITrackerAttachable<out TStrategy, out TSolveResult> where TStrategy : Strategy
+public interface ISolveResult<out TSolvingState>
+{ 
+    public TSolvingState? StartState { get; }
+    public bool IsResultCorrect();
+    public bool HasSolverFailed();
+}
+
+public interface ITrackerAttachable<out TStrategy, out TSolvingState> where TStrategy : Strategy
 {
     public event OnSolveStart? SolveStarted;
     public event OnStrategyStart<TStrategy>? StrategyStarted;
     public event OnStrategyEnd<TStrategy>? StrategyEnded;
-    public event OnSolveDone<TSolveResult>? SolveDone;
+    public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
 
     public IEnumerable<TStrategy> EnumerateStrategies();
 }
@@ -362,6 +372,6 @@ public delegate void OnSolveStart();
 public delegate void OnStrategyStart<in TStrategy>(TStrategy strategy, int index) where TStrategy : Strategy;
 public delegate void OnStrategyEnd<in TStrategy>(TStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved) where TStrategy : Strategy;
 public delegate void OnSolveDone<in TResult>(TResult result);
-public delegate void HandleCommits<TSolvingState, THighlighter>(Strategy pusher, List<ChangeCommit<TSolvingState,
+public delegate void HandleCommits<TSolvingState, THighlighter>(Strategy pusher, List<ChangeCommit<NumericChange, TSolvingState,
     THighlighter>> commits, ref int solutionAdded, ref int possibilitiesRemoved)
     where TSolvingState : IUpdatableSolvingState where THighlighter : ISolvingStateHighlighter;

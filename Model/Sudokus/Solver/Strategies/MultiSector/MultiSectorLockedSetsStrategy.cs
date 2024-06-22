@@ -112,7 +112,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatabl
         _alternatives = alternatives;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         var cu = new CoveringUnits(_covers);
         
@@ -152,7 +152,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<IUpdatabl
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<SolverProgress> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

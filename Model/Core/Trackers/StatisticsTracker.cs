@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using Model.Sudokus.Solver;
 using Model.Utility;
 
 namespace Model.Core.Trackers;
 
-public class SudokuStatisticsTracker : Tracker<SudokuStrategy, ISudokuSolveResult>
+public class StatisticsTracker<TStrategy, TSolvingState> : Tracker<TStrategy, TSolvingState> where TStrategy : Strategy
 {
     private readonly List<int> _retransmissions = new();
     private readonly List<StrategyStatistics> _statistics = new();
@@ -15,9 +14,9 @@ public class SudokuStatisticsTracker : Tracker<SudokuStrategy, ISudokuSolveResul
     private int _success;
     private int _solverFails;
 
-    public event OnSolveDone? SolveDone;
+    public event OnSolveDone<TSolvingState>? SolveDone;
     
-    protected override void OnAttach(ITrackerAttachable<SudokuStrategy, ISudokuSolveResult> attachable)
+    protected override void OnAttach(ITrackerAttachable<TStrategy, TSolvingState> attachable)
     {
         Prepare(attachable.EnumerateStrategies());
         attachable.StrategyStarted += OnStrategyStart;
@@ -25,14 +24,14 @@ public class SudokuStatisticsTracker : Tracker<SudokuStrategy, ISudokuSolveResul
         attachable.SolveDone += OnSolveDone;
     }
 
-    protected override void OnDetach(ITrackerAttachable<SudokuStrategy, ISudokuSolveResult> attachable)
+    protected override void OnDetach(ITrackerAttachable<TStrategy, TSolvingState> attachable)
     {
         attachable.StrategyStarted -= OnStrategyStart;
         attachable.StrategyEnded -= OnStrategyEnd;
         attachable.SolveDone -= OnSolveDone;
     }
 
-    private void Prepare(IEnumerable<SudokuStrategy> strategies)
+    private void Prepare(IEnumerable<Strategy> strategies)
     {
         foreach (var strategy in strategies)
         {
@@ -45,21 +44,21 @@ public class SudokuStatisticsTracker : Tracker<SudokuStrategy, ISudokuSolveResul
         }
     }
 
-    private void OnStrategyStart(SudokuStrategy strategy, int index)
+    private void OnStrategyStart(Strategy strategy, int index)
     {
         Get(index)?.StartUsing();
     }
 
-    private void OnStrategyEnd(SudokuStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         Get(index)?.StopUsing(solutionAdded, possibilitiesRemoved);
     }
 
-    private void OnSolveDone(ISudokuSolveResult result)
+    private void OnSolveDone(ISolveResult<TSolvingState> result)
     {
         _count++;
-        if (result.Sudoku.IsCorrect()) _success++;
-        else if (result.IsWrong()) _solverFails++;
+        if (result.IsResultCorrect()) _success++;
+        else if (result.HasSolverFailed()) _solverFails++;
         
         SolveDone?.Invoke(result, _count);
     }
@@ -206,4 +205,4 @@ public class StrategyStatistics
     }
 }
 
-public delegate void OnSolveDone(ISudokuSolveResult result, int count);
+public delegate void OnSolveDone<in TSolvingState>(ISolveResult<TSolvingState> result, int count);

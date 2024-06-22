@@ -33,7 +33,7 @@ public class SudokuSolveBatchCommand : Command
     public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
     {
         var solver = interpreter.Instantiator.InstantiateSudokuSolver();
-        //solver.FastMode = true; TODO test
+        solver.FastMode = true;
 
         if (report.IsOptionUsed(UnorderedIndex))
         {
@@ -43,18 +43,18 @@ public class SudokuSolveBatchCommand : Command
             }
         }
         
-        var statistics = new SudokuStatisticsTracker();
+        var statistics = new StatisticsTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
         statistics.AttachTo(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
 
         List<string> fails = new();
         List<string> instances = new();
-        UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult>? usedTracker = null;
+        UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState>? usedTracker = null;
 
         if (report.IsOptionUsed(InstancesIndex))
         {
-            usedTracker = new UsedStrategiesTracker<SudokuStrategy, ISudokuSolveResult>();
+            usedTracker = new UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
             usedTracker.AttachTo(solver);
         }
         
@@ -68,7 +68,7 @@ public class SudokuSolveBatchCommand : Command
             solver.SetSudoku(SudokuTranslator.TranslateLineFormat(s));
             solver.Solve();
 
-            if (report.IsOptionUsed(FailsIndex) && solver.IsWrong())
+            if (report.IsOptionUsed(FailsIndex) && solver.HasSolverFailed())
             {
                 fails.Add(s);
             }
@@ -108,14 +108,14 @@ public class SudokuSolveBatchCommand : Command
         }
     }
 
-    private static void OnSolveDone(ISudokuSolveResult result, int count)
+    private static void OnSolveDone(ISolveResult<IUpdatableSudokuSolvingState> result, int count)
     {
         Console.Write($"#{count} ");
-        if(result.Sudoku.IsCorrect()) Console.WriteLine("Ok !");
+        if(result.IsResultCorrect()) Console.WriteLine("Ok !");
         else
         {
-            Console.Write(result.IsWrong() ? "Solver failed" : "Solver did not find solution");
-            Console.WriteLine($" => {SudokuTranslator.TranslateLineFormat(result.StartState, SudokuLineFormatEmptyCellRepresentation.Points)}");
+            Console.Write(result.HasSolverFailed() ? "Solver failed" : "Solver did not find solution");
+            Console.WriteLine($" => {SudokuTranslator.TranslateLineFormat(result.StartState!, SudokuLineFormatEmptyCellRepresentation.Points)}");
         }
     }
 }

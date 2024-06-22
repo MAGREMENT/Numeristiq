@@ -15,9 +15,9 @@ public interface IStep
     string GetCursorPosition();
 }
 
-public interface IStep<THighlighter> : IStep
+public interface INumericStep<THighlighter> : IStep
 { 
-    IReadOnlyList<SolverProgress> Changes { get; }
+    IReadOnlyList<NumericChange> Changes { get; }
     IUpdatableSolvingState From { get; }
     IUpdatableSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
