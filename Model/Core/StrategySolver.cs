@@ -41,9 +41,9 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     public event OnStrategyEnd<TStrategy>? StrategyEnded;
     public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
 
-    protected StrategySolver(TChangeBuffer changeBuffer)
+    protected StrategySolver()
     {
-        ChangeBuffer = changeBuffer;
+        ChangeBuffer = GetChangeBuffer();
     }
     
     public void Solve(bool stopAtProgress = false)
@@ -158,6 +158,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     protected abstract void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<TChange> changes,
         Strategy maker, TSolvingState stateBefore);
     protected abstract ICommitComparer<TChange> GetDefaultCommitComparer();
+    protected abstract TChangeBuffer GetChangeBuffer();
     
     private void OnStrategyEnd(Strategy strategy, ref int solutionAdded, ref int possibilitiesRemoved)
     {
@@ -277,3 +278,13 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         }
     }
 }
+
+public interface ISolveResult<out TSolvingState>
+{ 
+    public TSolvingState? StartState { get; }
+    public bool IsResultCorrect();
+    public bool HasSolverFailed();
+}
+
+public delegate void HandleCommits<TSolvingState, THighlighter, TChange>(Strategy pusher, List<ChangeCommit<TChange, TSolvingState,
+    THighlighter>> commits, ref int solutionAdded, ref int possibilitiesRemoved);
