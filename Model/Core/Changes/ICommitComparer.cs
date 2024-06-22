@@ -1,6 +1,6 @@
 namespace Model.Core.Changes;
 
-public interface ICommitComparer
+public interface ICommitComparer<TChange>
 {
     /// <summary>
     /// Compare two commits
@@ -11,21 +11,21 @@ public interface ICommitComparer
     /// <param name="first"></param>
     /// <param name="second"></param>
     /// <returns></returns>
-    public int Compare(IChangeCommit<NumericChange> first, IChangeCommit<NumericChange> second);
+    public int Compare(IChangeCommit<TChange> first, IChangeCommit<TChange> second);
 }
 
-public class DefaultCommitComparer : ICommitComparer
+public class DefaultNumericCommitComparer : ICommitComparer<NumericChange>
 {
     private const int SolutionAddedValue = 3;
     private const int PossibilityRemovedValue = 1;
 
-    private static DefaultCommitComparer? _instance;
+    private static DefaultNumericCommitComparer? _instance;
 
-    public static DefaultCommitComparer Instance
+    public static DefaultNumericCommitComparer Instance
     {
         get
         {
-            _instance ??= new DefaultCommitComparer();
+            _instance ??= new DefaultNumericCommitComparer();
             return _instance;
         }
     }
@@ -45,5 +45,24 @@ public class DefaultCommitComparer : ICommitComparer
         }
 
         return score;
+    }
+}
+
+public class DefaultDichotomousCommitComparer : ICommitComparer<DichotomousChange>
+{
+    private static DefaultNumericCommitComparer? _instance;
+
+    public static DefaultNumericCommitComparer Instance
+    {
+        get
+        {
+            _instance ??= new DefaultNumericCommitComparer();
+            return _instance;
+        }
+    }
+
+    public int Compare(IChangeCommit<DichotomousChange> first, IChangeCommit<DichotomousChange> second)
+    {
+        return first.Changes.Length - second.Changes.Length;
     }
 }

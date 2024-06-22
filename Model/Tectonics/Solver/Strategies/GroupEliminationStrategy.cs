@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver.Strategies;
 
-public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitComparer
+public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitComparer<NumericChange>
 {
     private const int Limit = 4;
     

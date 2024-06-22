@@ -12,7 +12,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies.NRCZTChains;
 
-public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer
+public class NRCZTChainStrategy : SudokuStrategy, ICommitComparer<NumericChange>
 {
     public const string OfficialNameForDefault = "NRC-Chains";
     public const string OfficialNameForTCondition = "NRCT-Chains";

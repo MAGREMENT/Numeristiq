@@ -108,9 +108,9 @@ public class SudokuSolveBatchCommand : Command
         }
     }
 
-    private static void OnSolveDone(ISolveResult<IUpdatableSudokuSolvingState> result, int count)
+    private static void OnSolveDone(ISolveResult<IUpdatableSudokuSolvingState> result)
     {
-        Console.Write($"#{count} ");
+        Console.Write($"#{1} "); //TODO
         if(result.IsResultCorrect()) Console.WriteLine("Ok !");
         else
         {

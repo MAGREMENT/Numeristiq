@@ -5,7 +5,6 @@ using Model.Core.Highlighting;
 namespace Model.Core.Changes;
 
 public interface IChangeReportBuilder<in TChange, in TVerifier, THighlighter> 
-    where TVerifier : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
     public ChangeReport<THighlighter> BuildReport(IReadOnlyList<TChange> changes, TVerifier snapshot);
     
@@ -72,7 +71,7 @@ public static class ChangeReportHelper
     }
 }
 
-public class Clue<T> : IHighlightable<T> where T : INumericSolvingStateHighlighter
+public class Clue<T> : IHighlightable<T>
 {
     private readonly IHighlightable<T>? _highlightable;
     public string Text { get; }

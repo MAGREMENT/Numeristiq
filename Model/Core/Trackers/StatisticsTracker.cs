@@ -14,7 +14,7 @@ public class StatisticsTracker<TStrategy, TSolvingState> : Tracker<TStrategy, TS
     private int _success;
     private int _solverFails;
 
-    public event OnSolveDone<TSolvingState>? SolveDone;
+    public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
     
     protected override void OnAttach(ITrackerAttachable<TStrategy, TSolvingState> attachable)
     {
@@ -60,7 +60,7 @@ public class StatisticsTracker<TStrategy, TSolvingState> : Tracker<TStrategy, TS
         if (result.IsResultCorrect()) _success++;
         else if (result.HasSolverFailed()) _solverFails++;
         
-        SolveDone?.Invoke(result, _count);
+        SolveDone?.Invoke(result);
     }
     
     public override string ToString()
@@ -204,5 +204,3 @@ public class StrategyStatistics
         return Math.Round((double)TotalTime / 1000, 4);
     }
 }
-
-public delegate void OnSolveDone<in TSolvingState>(ISolveResult<TSolvingState> result, int count);

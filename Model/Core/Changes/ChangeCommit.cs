@@ -1,5 +1,3 @@
-using Model.Core.Highlighting;
-
 namespace Model.Core.Changes;
 
 public interface IChangeCommit<out T>
@@ -10,7 +8,6 @@ public interface IChangeCommit<out T>
 }
 
 public class ChangeCommit<TChange, TVerifier, THighlighter> : IChangeCommit<TChange>
-    where TVerifier : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter
 {
     public TChange[] Changes { get; }
 

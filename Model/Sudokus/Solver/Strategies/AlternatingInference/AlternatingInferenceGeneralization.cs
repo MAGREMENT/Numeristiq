@@ -8,7 +8,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies.AlternatingInference;
 
-public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICommitComparer where T : ISudokuElement
+public class AlternatingInferenceGeneralization<T> : SudokuStrategy, ICommitComparer<NumericChange> where T : ISudokuElement
 {
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.BestOnly;
 

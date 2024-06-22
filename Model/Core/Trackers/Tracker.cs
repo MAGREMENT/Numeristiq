@@ -1,4 +1,6 @@
-﻿namespace Model.Core.Trackers;
+﻿using System.Collections.Generic;
+
+namespace Model.Core.Trackers;
 
 public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strategy
 {
@@ -24,4 +26,19 @@ public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strateg
     
     protected abstract void OnDetach(ITrackerAttachable<TStrategy, TSolveResult> attachable);
 }
+
+public interface ITrackerAttachable<out TStrategy, out TSolvingState> where TStrategy : Strategy
+{
+    public event OnSolveStart? SolveStarted;
+    public event OnStrategyStart<TStrategy>? StrategyStarted;
+    public event OnStrategyEnd<TStrategy>? StrategyEnded;
+    public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
+
+    public IEnumerable<TStrategy> EnumerateStrategies();
+}
+
+public delegate void OnSolveStart();
+public delegate void OnStrategyStart<in TStrategy>(TStrategy strategy, int index) where TStrategy : Strategy;
+public delegate void OnStrategyEnd<in TStrategy>(TStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved) where TStrategy : Strategy;
+public delegate void OnSolveDone<in TResult>(TResult result);
 

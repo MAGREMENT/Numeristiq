@@ -4,17 +4,87 @@ using Model.Utility;
 
 namespace Model.Core.Changes;
 
-public interface IChangeBuffer<TChange, TVerifier, THighlighter>
-{
-    
-}
-
 /// <summary>
 /// Strategies are most often dependant on the fact that the board stay the same through the search. It is then
-/// important that no change are executed outside of the Push() method, which signals that a strategy has stopped
-/// searching.
+/// important that no change are executed outside during a search
 /// </summary>
-public class NumericChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpdatableNumericSolvingState
+public interface IChangeBuffer<TChange, TVerifier, THighlighter>
+{ 
+    List<ChangeCommit<TChange, TVerifier, THighlighter>> Commits { get; }
+
+    bool NotEmpty();
+    bool Commit(IChangeReportBuilder<TChange, TVerifier, THighlighter> builder);
+    IEnumerable<TChange> DumpChanges();
+}
+
+public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<DichotomousChange, TVerifier, THighlighter>
+{
+    private readonly HashSet<Cell> _possibilitiesRemoved = new();
+    private readonly HashSet<Cell> _solutionsAdded = new();
+    
+    public List<ChangeCommit<DichotomousChange, TVerifier, THighlighter>> Commits { get; } = new();
+
+    public DichotomousChangeBuffer(IDichotomousChangeProducer producer)
+    {
+        _producer = producer;
+    }
+
+    private readonly IDichotomousChangeProducer _producer;
+    
+    public bool NotEmpty()
+    {
+        return _possibilitiesRemoved.Count > 0 || _solutionsAdded.Count > 0;
+    }
+
+    public bool Commit(IChangeReportBuilder<DichotomousChange, TVerifier, THighlighter> builder)
+    {
+        if (_producer.FastMode ||
+            (_possibilitiesRemoved.Count == 0 && _solutionsAdded.Count == 0)) return false;
+
+        Commits.Add(new ChangeCommit<DichotomousChange, TVerifier, THighlighter>(EstablishChangeList(), builder));
+        return true;
+    }
+
+    public IEnumerable<DichotomousChange> DumpChanges()
+    {
+        foreach (var solution in _solutionsAdded)
+        {
+            yield return new DichotomousChange(ChangeType.SolutionAddition, solution);
+        }
+        
+        foreach (var possibility in _possibilitiesRemoved)
+        {
+            yield return new DichotomousChange(ChangeType.PossibilityRemoval, possibility);
+        }
+        
+        _solutionsAdded.Clear();
+        _possibilitiesRemoved.Clear();
+    }
+    
+    private DichotomousChange[] EstablishChangeList()
+    {
+        var count = 0;
+        var changes = new DichotomousChange[_solutionsAdded.Count + _possibilitiesRemoved.Count];
+        
+        foreach (var solution in _solutionsAdded)
+        {
+            changes[count++] = new DichotomousChange(ChangeType.SolutionAddition, solution);
+        }
+        
+        foreach (var possibility in _possibilitiesRemoved)
+        {
+            changes[count++] = new DichotomousChange(ChangeType.PossibilityRemoval, possibility);
+        }
+        
+        _solutionsAdded.Clear();
+        _possibilitiesRemoved.Clear();
+
+        return changes;
+    }
+}
+
+public class NumericChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChange, TVerifier, THighlighter>
+    where TVerifier : IUpdatableNumericSolvingState
     where THighlighter : INumericSolvingStateHighlighter
 {
     private readonly HashSet<CellPossibility> _possibilitiesRemoved = new();
@@ -111,11 +181,16 @@ public class NumericChangeBuffer<TVerifier, THighlighter> where TVerifier : IUpd
     }
 }
 
+public interface IDichotomousChangeProducer
+{
+    public bool FastMode { get; }
+    public bool CanRemovePossibility(Cell cell);
+    public bool CanAddSolution(Cell cell);
+}
+
 public interface INumericChangeProducer
 {
     public bool FastMode { get; }
     public bool CanRemovePossibility(CellPossibility cp);
     public bool CanAddSolution(CellPossibility cp);
 }
-
-//TODO DICHOTOMOUS
