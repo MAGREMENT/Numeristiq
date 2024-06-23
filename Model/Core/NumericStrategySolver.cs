@@ -13,6 +13,13 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
 {
     protected int _solutionCount;
 
+    public override NumericChangeBuffer<TSolvingState, THighlighter> ChangeBuffer { get; }
+
+    protected NumericStrategySolver()
+    {
+        ChangeBuffer = new NumericChangeBuffer<TSolvingState, THighlighter>(this);
+    }
+    
     public void SetSolutionByHand(int number, int row, int col)
     {
         if (!CanAddSolution(new CellPossibility(row, col, number))) RemoveSolution(row, col);
@@ -57,11 +64,6 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
     protected abstract bool AddSolution(int number, int row, int col);
     protected abstract bool RemoveSolution(int row, int col);
     protected abstract bool RemovePossibility(int possibility, int row, int col);
-
-    protected override NumericChangeBuffer<TSolvingState, THighlighter> GetChangeBuffer()
-    {
-        return new NumericChangeBuffer<TSolvingState, THighlighter>(this);
-    }
 
     protected override bool ExecuteChange(NumericChange progress)
     {

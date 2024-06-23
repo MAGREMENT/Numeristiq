@@ -50,13 +50,13 @@ public class DefaultNumericCommitComparer : ICommitComparer<NumericChange>
 
 public class DefaultDichotomousCommitComparer : ICommitComparer<DichotomousChange>
 {
-    private static DefaultNumericCommitComparer? _instance;
+    private static DefaultDichotomousCommitComparer? _instance;
 
-    public static DefaultNumericCommitComparer Instance
+    public static DefaultDichotomousCommitComparer Instance
     {
         get
         {
-            _instance ??= new DefaultNumericCommitComparer();
+            _instance ??= new DefaultDichotomousCommitComparer();
             return _instance;
         }
     }

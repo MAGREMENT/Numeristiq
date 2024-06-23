@@ -27,24 +27,19 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
         }
     }
 
-    public TSolvingState? StartState { get; protected set; }
+    public abstract TSolvingState StartState { get; protected set; }
 
     /// <summary>
     /// Disables steps & instance handling
     /// </summary>
     public bool FastMode { get; set; }
-    public TChangeBuffer ChangeBuffer { get; }
+    public abstract TChangeBuffer ChangeBuffer { get; }
     public IReadOnlyList<TStep> Steps => _steps;
 
     public event OnSolveStart? SolveStarted;
     public event OnStrategyStart<TStrategy>? StrategyStarted;
     public event OnStrategyEnd<TStrategy>? StrategyEnded;
     public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
-
-    protected StrategySolver()
-    {
-        ChangeBuffer = GetChangeBuffer();
-    }
     
     public void Solve(bool stopAtProgress = false)
     {
@@ -158,7 +153,6 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     protected abstract void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<TChange> changes,
         Strategy maker, TSolvingState stateBefore);
     protected abstract ICommitComparer<TChange> GetDefaultCommitComparer();
-    protected abstract TChangeBuffer GetChangeBuffer();
     
     private void OnStrategyEnd(Strategy strategy, ref int solutionAdded, ref int possibilitiesRemoved)
     {

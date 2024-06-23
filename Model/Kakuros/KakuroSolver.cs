@@ -10,13 +10,15 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
 {
     private IKakuro _kakuro = new SumListKakuro();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];
-    
+
+    public override IUpdatableNumericSolvingState StartState { get; protected set; }
     public IKakuroCombinationCalculator CombinationCalculator { get; }
     public IReadOnlyKakuro Kakuro => _kakuro;
 
     public KakuroSolver(IKakuroCombinationCalculator combinationCalculator)
     {
         CombinationCalculator = combinationCalculator;
+        StartState = new KakuroNumericSolvingState(this);
     }
 
     public void SetKakuro(IKakuro kakuro)

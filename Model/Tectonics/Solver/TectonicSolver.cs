@@ -14,6 +14,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
     private ITectonic _tectonic;
     private ReadOnlyBitSet8[,] _possibilities;
 
+    public override IUpdatableTectonicSolvingState StartState { get; protected set; }
     public IReadOnlyTectonic Tectonic => _tectonic;
     public LinkGraphManager<ITectonicSolverData, ITectonicElement> Graphs { get; }
 
@@ -21,7 +22,8 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
     {
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet8[0, 0];
-        
+
+        StartState = new StateArraySolvingState(this);
         Graphs = new LinkGraphManager<ITectonicSolverData, ITectonicElement>(this, new TectonicConstructRuleBank());
     }
 

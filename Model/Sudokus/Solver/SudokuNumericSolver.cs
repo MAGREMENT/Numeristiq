@@ -21,6 +21,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
     private readonly LinePositions[,] _colsPositions = new LinePositions[9, 9];
     private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
     
+    public override IUpdatableSudokuSolvingState StartState { get; protected set; }
     public IReadOnlySudoku Sudoku => _sudoku;
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public PreComputer PreComputer { get; }
