@@ -1,18 +1,17 @@
 ﻿using ConsoleApplication.Commands.Abstracts;
 using Model.Core;
-using Model.Core.Highlighting;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
 
 namespace ConsoleApplication.Commands;
 
-public class SudokuSolveCommand : SolveCommand<SudokuStrategy, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SudokuSolveCommand : SolveCommand
 {
     public SudokuSolveCommand() : base("Sudoku")
     {
     }
 
-    protected override NumericStrategySolver<SudokuStrategy, IUpdatableSudokuSolvingState, ISudokuHighlighter> GetSolverAndSetPuzzle(ArgumentInterpreter interpreter, string puzzle)
+    protected override ISolver GetSolverAndSetPuzzle(ArgumentInterpreter interpreter, string puzzle)
     {
         var solver = interpreter.Instantiator.InstantiateSudokuSolver();
         solver.SetSudoku(SudokuTranslator.TranslateLineFormat(puzzle));
@@ -20,7 +19,7 @@ public class SudokuSolveCommand : SolveCommand<SudokuStrategy, IUpdatableSudokuS
         return solver;
     }
 
-    protected override string PuzzleAsString(NumericStrategySolver<SudokuStrategy, IUpdatableSudokuSolvingState, ISudokuHighlighter> solver)
+    protected override string PuzzleAsString(ISolver solver)
     {
         return ((SudokuSolver)solver).Sudoku.ToString()!;
     }

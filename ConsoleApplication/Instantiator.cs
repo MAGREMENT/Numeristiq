@@ -1,5 +1,7 @@
 ﻿using Model.Kakuros;
 using Model.Kakuros.Strategies;
+using Model.Nonograms;
+using Model.Nonograms.Strategies;
 using Model.Sudokus.Solver;
 using Model.Tectonics;
 using Model.Tectonics.Solver;
@@ -54,6 +56,15 @@ public class Instantiator
         solver.StrategyManager.AddStrategies(new Model.Kakuros.Strategies.NakedSingleStrategy(),
             new AmountCoherencyStrategy(),
             new CombinationCoherencyStrategy());
+        
+        return solver;
+    }
+
+    public NonogramSolver InstantiateNonogramSolver()
+    {
+        var solver = new NonogramSolver();
+        solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(),
+            new NotEnoughSpaceStrategy());
         
         return solver;
     }

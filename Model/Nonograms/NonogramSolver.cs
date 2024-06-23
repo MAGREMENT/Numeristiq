@@ -13,11 +13,10 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
     private bool[,] _availability = new bool[0, 0]; //TODO infinite bitSet
     
     public override IUpdatableDichotomousSolvingState StartState { get; protected set; }
-    public IReadOnlyNonogram Nonogram { get; }
+    public IReadOnlyNonogram Nonogram => _nonogram;
 
     public NonogramSolver()
     {
-        Nonogram = new Nonogram();
         StartState = new NonogramSolvingState();
     }
 

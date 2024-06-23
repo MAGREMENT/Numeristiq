@@ -35,6 +35,10 @@ public static class Program
         instance.Root.AddDirectory(new Directory("Kakuro"))
             .AddCommand(new HelpCommand(), true)
             .AddCommand(new KakuroSolveCommand());
+        
+        instance.Root.AddDirectory(new Directory("Nonogram"))
+            .AddCommand(new HelpCommand(), true)
+            .AddCommand(new NonogramSolveCommand());
 
         return instance;
     }

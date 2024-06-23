@@ -21,7 +21,7 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
                 
                 foreach (var cell in space.EnumerateCells(Orientation.Horizontal, row))
                 {
-                    data.ChangeBuffer.ProposeSolutionAddition(cell);
+                    data.ChangeBuffer.ProposePossibilityRemoval(cell);
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<

@@ -21,7 +21,7 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
                 
                 foreach (var cell in space.EnumerateCells(Orientation.Horizontal, row))
                 {
-                    data.ChangeBuffer.ProposePossibilityRemoval(cell);
+                    data.ChangeBuffer.ProposeSolutionAddition(cell);
                 }
                     
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<

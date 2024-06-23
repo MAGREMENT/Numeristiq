@@ -8,7 +8,7 @@ using Model.Sudokus.Solver;
 namespace Model.Core;
 
 public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TChange, TChangeBuffer, TStep> 
-    : ITrackerAttachable<TStrategy, TSolvingState>, ISolveResult<TSolvingState>
+    : ITrackerAttachable<TStrategy, TSolvingState>, ISolveResult<TSolvingState>, ISolver
     where TStrategy : Strategy where TChangeBuffer : IChangeBuffer<TChange, TSolvingState, THighlighter>
     where TStep : IStep
 {
@@ -35,6 +35,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     public bool FastMode { get; set; }
     public abstract TChangeBuffer ChangeBuffer { get; }
     public IReadOnlyList<TStep> Steps => _steps;
+    IEnumerable<IStep> ISolver.Steps => (IEnumerable<IStep>)_steps;
 
     public event OnSolveStart? SolveStarted;
     public event OnStrategyStart<TStrategy>? StrategyStarted;
@@ -282,3 +283,10 @@ public interface ISolveResult<out TSolvingState>
 
 public delegate void HandleCommits<TSolvingState, THighlighter, TChange>(Strategy pusher, List<ChangeCommit<TChange, TSolvingState,
     THighlighter>> commits, ref int solutionAdded, ref int possibilitiesRemoved);
+
+public interface ISolver
+{
+    bool FastMode { set; }
+    IEnumerable<IStep> Steps { get; }
+    void Solve(bool stopAtProgress = false);
+}
