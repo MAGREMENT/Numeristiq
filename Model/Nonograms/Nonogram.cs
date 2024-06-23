@@ -121,6 +121,113 @@ public class Nonogram : IReadOnlyNonogram
         set => _cells[row, col] = value;
     }
 
+    public IEnumerable<LineSpace> EnumerateHorizontalSpaces(int index)
+    {
+        var col = 0;
+        while (col < ColumnCount && _cells[index, col])
+        {
+            col++;
+        }
+
+        var start = col;
+        col++;
+        for (; col <= ColumnCount; col++)
+        {
+            if (col == ColumnCount || _cells[index, col])
+            {
+                var s = new LineSpace(start, col - 1);
+                if (s.GetLength > 0) yield return s;
+                start = col - 1;
+            }
+        }
+    }
+
+    public IEnumerable<LineSpace> EnumerateVerticalSpaces(int index)
+    {
+        var row = 0;
+        while (row < RowCount && _cells[row, index])
+        {
+            row++;
+        }
+
+        var start = row;
+        row++;
+        for (; row <= RowCount; row++)
+        {
+            if (row == RowCount || _cells[row, index])
+            {
+                var s = new LineSpace(row - 1, start);
+                if (s.GetLength > 0) yield return s;
+                start = row - 1;
+            }
+        }
+    }
+
+    public bool IsHorizontalLineCorrect(int index)
+    {
+        var val = _horizontalCollection[index];
+        int cursor = 0;
+        foreach (var v in val)
+        {
+            while (!_cells[index, cursor])
+            {
+                if (cursor >= ColumnCount) return false;
+                cursor++;
+            }
+
+            for (; cursor < v; cursor++)
+            {
+                if (cursor >= ColumnCount || !_cells[index, cursor]) return false;
+            }
+
+            if (_cells[index, cursor]) return false;
+
+            cursor++;
+        }
+
+        return true;
+    }
+
+    public bool IsVerticalLineCorrect(int index)
+    {
+        var val = _verticalCollection[index];
+        int cursor = 0;
+        foreach (var v in val)
+        {
+            while (!_cells[cursor, index])
+            {
+                if (cursor >= RowCount) return false;
+                cursor++;
+            }
+
+            for (; cursor < v; cursor++)
+            {
+                if (cursor >= RowCount || !_cells[cursor, index]) return false;
+            }
+
+            if (_cells[cursor, index]) return false;
+
+            cursor++;
+        }
+
+        return true;
+    }
+
+    public bool IsCorrect()
+    {
+        for (int row = 0; row < RowCount; row++)
+        {
+            if (!IsHorizontalLineCorrect(row)) return false;
+        }
+
+        for (int col = 0; col < ColumnCount; col++)
+        {
+            if (!IsVerticalLineCorrect(col)) return false;
+        }
+
+        return true;
+    }
+
     public override string ToString()
     {
         var maxDepth = 0;
@@ -160,7 +267,7 @@ public class Nonogram : IReadOnlyNonogram
             for (int col = 0; col < ColumnCount; col++)
             {
                 var val = _verticalCollection.TryGetValue(col, vRow);
-                if (val >= 0) val = _verticalCollection.TryGetValue(col, _verticalCollection.CountAt(col) - vRow - 1);
+                if (val >= 0) val = _verticalCollection.TryGetValue(col, _verticalCollection.ValueCount(col) - vRow - 1);
                 var s = val < 0 ? " " : val.ToString();
                 builder.Append(s.FillEvenlyWith(' ', maxWidth) + ' ');
             }
@@ -224,6 +331,11 @@ public interface IReadOnlyNonogram
     IReadOnlyNonogramLineCollection HorizontalLineCollection { get; }
     IReadOnlyNonogramLineCollection VerticalLineCollection { get; }
     bool this[int row, int col] { get; }
+    IEnumerable<LineSpace> EnumerateHorizontalSpaces(int index);
+    IEnumerable<LineSpace> EnumerateVerticalSpaces(int index);
+    bool IsHorizontalLineCorrect(int index);
+    bool IsVerticalLineCorrect(int index);
+    bool IsCorrect();
 }
 
 public readonly struct NonogramLine
@@ -245,8 +357,9 @@ public interface IReadOnlyNonogramLineCollection
     int Count { get; }
     IEnumerable<int> this[int index] { get; }
     int TryGetValue(int lineIndex, int valueIndex);
-    int CountAt(int index);
+    int ValueCount(int index);
     int SpaceNeeded(int index);
+    int TotalExpected(int index);
     INonogramLineCollection Copy();
 }
 
@@ -296,7 +409,7 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         return l[valueIndex];
     }
 
-    public int CountAt(int index)
+    public int ValueCount(int index)
     {
         return _list[index].Count;
     }
@@ -315,6 +428,13 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         return total;
     }
 
+    public int TotalExpected(int index)
+    {
+        var total = 0;
+        foreach (var val in _list[index]) total += val;
+        return total;
+    }
+
     public INonogramLineCollection Copy()
     {
         var buffer = new List<List<int>>();
@@ -324,5 +444,29 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         }
 
         return new ListListNonogramLineCollection(buffer);
+    }
+}
+
+public readonly struct LineSpace
+{
+    public int Start { get; }
+    public int End { get; }
+    
+    public LineSpace(int start, int end)
+    {
+        Start = start;
+        End = end;
+    }
+
+    public int GetLength => End - Start + 1;
+
+    public IEnumerable<Cell> EnumerateCells(Orientation orientation, int unit)
+    {
+        for (int i = Start; i <= End; i++)
+        {
+            yield return orientation == Orientation.Horizontal
+                ? new Cell(unit, i)
+                : new Cell(i, unit);
+        }
     }
 }

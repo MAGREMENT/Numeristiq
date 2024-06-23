@@ -1,6 +1,6 @@
 namespace Model.Core.Changes;
 
-public interface ICommitComparer<TChange>
+public interface ICommitComparer<in TChange>
 {
     /// <summary>
     /// Compare two commits

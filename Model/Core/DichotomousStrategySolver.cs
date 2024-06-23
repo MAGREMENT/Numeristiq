@@ -1,4 +1,5 @@
-﻿using Model.Core.Changes;
+﻿using System.Collections.Generic;
+using Model.Core.Changes;
 using Model.Core.Steps;
 using Model.Utility;
 
@@ -51,5 +52,11 @@ public abstract class DichotomousStrategySolver<TStrategy, TSolvingState, THighl
     protected override ICommitComparer<DichotomousChange> GetDefaultCommitComparer()
     {
         return DefaultDichotomousCommitComparer.Instance;
+    }
+    
+    protected override void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<DichotomousChange> changes,
+        Strategy maker, TSolvingState stateBefore)
+    {
+        //TODO
     }
 }

@@ -22,6 +22,8 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
     private readonly HashSet<Cell> _possibilitiesRemoved = new();
     private readonly HashSet<Cell> _solutionsAdded = new();
     
+    private readonly IDichotomousChangeProducer _producer;
+    
     public List<ChangeCommit<DichotomousChange, TVerifier, THighlighter>> Commits { get; } = new();
 
     public DichotomousChangeBuffer(IDichotomousChangeProducer producer)
@@ -29,7 +31,15 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
         _producer = producer;
     }
 
-    private readonly IDichotomousChangeProducer _producer;
+    public void ProposePossibilityRemoval(Cell cell)
+    {
+        if (_producer.CanRemovePossibility(cell)) _possibilitiesRemoved.Add(cell);
+    }
+
+    public void ProposeSolutionAddition(Cell cell)
+    {
+        if (_producer.CanAddSolution(cell)) _solutionsAdded.Add(cell);
+    }
     
     public bool NotEmpty()
     {
@@ -83,7 +93,7 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
     }
 }
 
-public class NumericChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChange, TVerifier, THighlighter>
+public class IChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChange, TVerifier, THighlighter>
     where TVerifier : IUpdatableNumericSolvingState
     where THighlighter : INumericSolvingStateHighlighter
 {
@@ -94,7 +104,7 @@ public class NumericChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Numeri
 
     private readonly INumericChangeProducer _producer;
 
-    public NumericChangeBuffer(INumericChangeProducer producer)
+    public IChangeBuffer(INumericChangeProducer producer)
     {
         _producer = producer;
     }

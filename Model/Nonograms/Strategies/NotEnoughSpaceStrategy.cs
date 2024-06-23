@@ -1,4 +1,5 @@
 ﻿using Model.Core;
+using Model.Core.Changes;
 using Model.Kakuros;
 
 namespace Model.Nonograms.Strategies;
@@ -20,10 +21,11 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
                 
                 foreach (var cell in space.EnumerateCells(Orientation.Horizontal, row))
                 {
-                    //TODO propose
+                    data.ChangeBuffer.ProposeSolutionAddition(cell);
                 }
-                    
-                //TODO commit
+
+                if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
+                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
                 break;
             }
         }

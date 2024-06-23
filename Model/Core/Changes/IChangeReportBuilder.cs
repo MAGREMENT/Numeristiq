@@ -28,10 +28,36 @@ public class DefaultNumericChangeReportBuilder<TVerifier, THighlighter> : IChang
     public ChangeReport<THighlighter> BuildReport(IReadOnlyList<NumericChange> changes, TVerifier snapshot)
     {
         return new ChangeReport<THighlighter>("",
-            lighter => { ChangeReportHelper.HighlightChanges(lighter, changes);});
+            lighter => ChangeReportHelper.HighlightChanges(lighter, changes));
     }
 
     public Clue<THighlighter> BuildClue(IReadOnlyList<NumericChange> changes, TVerifier snapshot)
+    {
+        return Clue<THighlighter>.Default();
+    }
+}
+
+public class DefaultDichotomousChangeReportBuilder<TVerifier, THighlighter> : IChangeReportBuilder<DichotomousChange, TVerifier, THighlighter>
+    where TVerifier : IDichotomousSolvingState
+{
+    private static DefaultDichotomousChangeReportBuilder<TVerifier, THighlighter>? _instance;
+
+    public static DefaultDichotomousChangeReportBuilder<TVerifier, THighlighter> Instance
+    {
+        get
+        {
+            _instance ??= new DefaultDichotomousChangeReportBuilder<TVerifier, THighlighter>();
+            return _instance;
+        }
+    }
+    
+    public ChangeReport<THighlighter> BuildReport(IReadOnlyList<DichotomousChange> changes, TVerifier snapshot)
+    {
+        return new ChangeReport<THighlighter>("",
+            _ => {});
+    }
+
+    public Clue<THighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, TVerifier snapshot)
     {
         return Clue<THighlighter>.Default();
     }

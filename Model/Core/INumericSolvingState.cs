@@ -6,6 +6,8 @@ using Model.Utility.BitSets;
 
 namespace Model.Core;
 
+//TODO remove the principle of updatable solving state and just ask solver for state after emulating change
+
 public interface IDichotomousSolvingState
 {
     bool this[int row, int col] { get; }
@@ -14,8 +16,8 @@ public interface IDichotomousSolvingState
 
 public interface IUpdatableDichotomousSolvingState : IDichotomousSolvingState
 {
-    public IUpdatableNumericSolvingState Apply(IEnumerable<DichotomousChange> progresses);
-    public IUpdatableNumericSolvingState Apply(DichotomousChange progress);
+    public IUpdatableDichotomousSolvingState Apply(IEnumerable<DichotomousChange> progresses);
+    public IUpdatableDichotomousSolvingState Apply(DichotomousChange progress);
 }
 
 public interface INumericSolvingState
