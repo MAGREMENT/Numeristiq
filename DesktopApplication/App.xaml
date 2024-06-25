@@ -29,6 +29,38 @@
 	    <Brush x:Key="DifficultyInhuman">SlateBlue</Brush>
 	    <Brush x:Key="DifficultyByTrial">White</Brush>
 	    
+	    <Style TargetType="Button" x:Key="WelcomeButton">
+		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
+		    <Setter Property="FontSize" Value="20"/>
+		    <Setter Property="Template">
+			    <Setter.Value>
+				    <ControlTemplate TargetType="Button">
+					    <Grid>
+						    <Grid.RowDefinitions>
+							    <RowDefinition Height="*"/>
+							    <RowDefinition Height="Auto"/>
+						    </Grid.RowDefinitions>
+							    
+						    <Grid Grid.Row="0" Background="{DynamicResource Background2}">
+							    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Focusable="False"/>
+						    </Grid>
+							    
+						    <Grid Grid.Row="1" Background="{DynamicResource Background3}">
+							    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+							               Text="{TemplateBinding Name}" Margin="5"/>
+						    </Grid>
+					    </Grid>
+					    
+					    <ControlTemplate.Triggers>
+						    <Trigger Property="IsMouseOver" Value="True">
+							    <Setter Property="Foreground" Value="{DynamicResource Primary1}"/>
+						    </Trigger>
+					    </ControlTemplate.Triggers>
+				    </ControlTemplate>
+			    </Setter.Value>
+		    </Setter>
+	    </Style>
+	    
 	    <Style TargetType="Button" x:Key="PrimaryGradientButton">
 		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="Template">
@@ -432,35 +464,6 @@
 			    </Setter.Value>
 		    </Setter>
 	    </Style>
-        
-        <Style TargetType="Button" x:Key="WelcomeButtonStyle">
-	        <Setter Property="Foreground" Value="{DynamicResource Text}"></Setter>
-	        <Setter Property="Background" Value="{DynamicResource Background2}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource Background2}"/>
-            <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Width" Value="150"/>
-            <Setter Property="Height" Value="50"/>
-            <Setter Property="HorizontalAlignment" Value="Center"/>
-            <Setter Property="Margin" Value="7.5"/>
-            <Setter Property="TextElement.FontSize" Value="20"/>
-            <Setter Property="Template">
-	            <Setter.Value>
-		            <ControlTemplate TargetType="Button">
-			            <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
-			                    Background="{TemplateBinding Background}"
-			                    BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="2">
-				            <ContentPresenter Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-			            </Border>
-            
-			            <ControlTemplate.Triggers>
-				            <Trigger Property="IsMouseOver" Value="True">
-					            <Setter Property="BorderBrush" Value="{DynamicResource Primary1}"></Setter>
-				            </Trigger>
-			            </ControlTemplate.Triggers>
-		            </ControlTemplate>
-	            </Setter.Value>
-            </Setter>
-        </Style>
 	    
 	    <Style x:Key="BottomSelectionRadioButtonStyle" TargetType="RadioButton">
 		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>

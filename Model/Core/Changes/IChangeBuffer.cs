@@ -30,10 +30,20 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
     {
         _producer = producer;
     }
+    
+    public void ProposePossibilityRemoval(int row, int col)
+    {
+        ProposePossibilityRemoval(new Cell(row, col));
+    }
 
     public void ProposePossibilityRemoval(Cell cell)
     {
         if (_producer.CanRemovePossibility(cell)) _possibilitiesRemoved.Add(cell);
+    }
+    
+    public void ProposeSolutionAddition(int row, int col)
+    {
+        ProposeSolutionAddition(new Cell(row, col));
     }
 
     public void ProposeSolutionAddition(Cell cell)

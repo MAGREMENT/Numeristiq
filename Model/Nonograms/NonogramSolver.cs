@@ -29,6 +29,56 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         OnNewSolvable();
     }
     
+    public IReadOnlyList<LineSpace> HorizontalSpacesFor(int index)
+    {
+        var result = new List<LineSpace>();
+        
+        var col = 0;
+        while (col < _nonogram.ColumnCount && !_availability[index, col])
+        {
+            col++;
+        }
+
+        var start = col;
+        col++;
+        for (; col <= _nonogram.ColumnCount; col++)
+        {
+            if (col == _nonogram.ColumnCount || !_availability[index, col])
+            {
+                var s = new LineSpace(start, col - 1);
+                if (s.GetLength > 0) result.Add(s);
+                start = col - 1;
+            }
+        }
+
+        return result;
+    }
+
+    public IReadOnlyList<LineSpace> VerticalSpacesFor(int index)
+    {
+        var result = new List<LineSpace>();
+        
+        var row = 0;
+        while (row < _nonogram.RowCount && !_availability[row, index])
+        {
+            row++;
+        }
+
+        var start = row;
+        row++;
+        for (; row <= _nonogram.RowCount; row++)
+        {
+            if (row == _nonogram.RowCount || !_availability[row, index])
+            {
+                var s = new LineSpace(row - 1, start);
+                if (s.GetLength > 0) result.Add(s);
+                start = row - 1;
+            }
+        }
+
+        return result;
+    }
+    
     protected override IUpdatableDichotomousSolvingState GetSolvingState()
     {
         return new NonogramSolvingState();
@@ -98,7 +148,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
 
     protected override bool RemovePossibility(int row, int col)
     {
-        if (_availability[row, col]) return false;
+        if (!_availability[row, col]) return false;
 
         _currentState = null;
         _availability[row, col] = false;
@@ -107,13 +157,6 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
     }
 
     public bool IsAvailable(int row, int col) => _availability[row, col];
-
-    public IEnumerable<LineSpace> EnumerateSpaces(Orientation orientation, int index)
-    {
-        return orientation == Orientation.Horizontal
-            ? _nonogram.EnumerateHorizontalSpaces(index)
-            : _nonogram.EnumerateVerticalSpaces(index);
-    }
 
     private void InitAvailability()
     {

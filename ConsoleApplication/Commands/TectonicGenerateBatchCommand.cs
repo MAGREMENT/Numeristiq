@@ -45,29 +45,29 @@ public class TectonicGenerateBatchCommand : Command
         if (report.IsOptionUsed(RowCountIndex))
         {
             var value = (int)report.GetOptionValue(RowCountIndex)!;
-            _filledGenerator.MinRowCount = value;
-            _filledGenerator.MaxRowCount = value;
+            _filledGenerator.Randomizer.MinRowCount = value;
+            _filledGenerator.Randomizer.MaxRowCount = value;
         }
         else
         {
             var value = report.GetOptionValue(MinRowCountIndex);
-            if (value is not null) _filledGenerator.MinRowCount = (int)value;
+            if (value is not null) _filledGenerator.Randomizer.MinRowCount = (int)value;
             value = report.GetOptionValue(MaxRowCountIndex);
-            if (value is not null) _filledGenerator.MaxRowCount = (int)value;
+            if (value is not null) _filledGenerator.Randomizer.MaxRowCount = (int)value;
         }
         
         if (report.IsOptionUsed(ColumnCountIndex))
         {
             var value = (int)report.GetOptionValue(ColumnCountIndex)!;
-            _filledGenerator.MinColumnCount = value;
-            _filledGenerator.MaxColumnCount = value;
+            _filledGenerator.Randomizer.MinColumnCount = value;
+            _filledGenerator.Randomizer.MaxColumnCount = value;
         }
         else
         {
             var value = report.GetOptionValue(MinColumnCountIndex);
-            if (value is not null) _filledGenerator.MinColumnCount = (int)value;
+            if (value is not null) _filledGenerator.Randomizer.MinColumnCount = (int)value;
             value = report.GetOptionValue(MaxColumnCountIndex);
-            if (value is not null) _filledGenerator.MaxColumnCount = (int)value;
+            if (value is not null) _filledGenerator.Randomizer.MaxColumnCount = (int)value;
         }
         
         Console.WriteLine("Started generating...");

@@ -29,7 +29,18 @@ public interface IDichotomousStep<THighlighter> : IStep
         return HighlightManager.CursorPosition();
     }
 
-    string IStep.ChangesToString() => string.Empty; //TODO
+    string IStep.ChangesToString()
+    {
+        if (Changes.Count == 0) return "";
+
+        var builder = new StringBuilder(Changes[0].ToString());
+        for (int i = 1; i < Changes.Count; i++)
+        {
+            builder.Append($", {Changes[i].ToString()}");
+        }
+
+        return builder.ToString();
+    }
 }
 
 public interface INumericStep<THighlighter> : IStep
@@ -51,10 +62,7 @@ public interface INumericStep<THighlighter> : IStep
         var builder = new StringBuilder();
         foreach (var change in Changes)
         {
-            var action = change.Type == ChangeType.PossibilityRemoval
-                ? "<>"
-                : "==";
-            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}, ");
+            builder.Append($"{change.ToString()}, ");
         }
 
         return builder.ToString()[..^2];

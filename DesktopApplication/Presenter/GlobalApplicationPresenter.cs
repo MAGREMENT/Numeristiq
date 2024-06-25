@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DesktopApplication.Presenter.Kakuros;
+using DesktopApplication.Presenter.Nonograms;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Tectonics;
 using Model;
@@ -45,6 +46,11 @@ public class GlobalApplicationPresenter
     public KakuroApplicationPresenter InitializeKakuroApplicationPresenter()
     {
         return new KakuroApplicationPresenter();
+    }
+
+    public NonogramApplicationPresenter InitializeNonogramApplicationPresenter()
+    {
+        return new NonogramApplicationPresenter();
     }
     
     private void TrySetTheme()

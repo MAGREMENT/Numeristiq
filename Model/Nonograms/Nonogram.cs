@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Model.Kakuros;
@@ -119,48 +120,6 @@ public class Nonogram : IReadOnlyNonogram
     {
         get => _cells[row, col];
         set => _cells[row, col] = value;
-    }
-
-    public IEnumerable<LineSpace> EnumerateHorizontalSpaces(int index)
-    {
-        var col = 0;
-        while (col < ColumnCount && _cells[index, col])
-        {
-            col++;
-        }
-
-        var start = col;
-        col++;
-        for (; col <= ColumnCount; col++)
-        {
-            if (col == ColumnCount || _cells[index, col])
-            {
-                var s = new LineSpace(start, col - 1);
-                if (s.GetLength > 0) yield return s;
-                start = col - 1;
-            }
-        }
-    }
-
-    public IEnumerable<LineSpace> EnumerateVerticalSpaces(int index)
-    {
-        var row = 0;
-        while (row < RowCount && _cells[row, index])
-        {
-            row++;
-        }
-
-        var start = row;
-        row++;
-        for (; row <= RowCount; row++)
-        {
-            if (row == RowCount || _cells[row, index])
-            {
-                var s = new LineSpace(row - 1, start);
-                if (s.GetLength > 0) yield return s;
-                start = row - 1;
-            }
-        }
     }
 
     public bool IsHorizontalLineCorrect(int index)
@@ -331,8 +290,6 @@ public interface IReadOnlyNonogram
     IReadOnlyNonogramLineCollection HorizontalLineCollection { get; }
     IReadOnlyNonogramLineCollection VerticalLineCollection { get; }
     bool this[int row, int col] { get; }
-    IEnumerable<LineSpace> EnumerateHorizontalSpaces(int index);
-    IEnumerable<LineSpace> EnumerateVerticalSpaces(int index);
     bool IsHorizontalLineCorrect(int index);
     bool IsVerticalLineCorrect(int index);
     bool IsCorrect();
@@ -352,10 +309,11 @@ public readonly struct NonogramLine
     public int[] Values { get; }
 }
 
-public interface IReadOnlyNonogramLineCollection
+public interface IReadOnlyNonogramLineCollection : IEnumerable<IEnumerable<int>>
 {
     int Count { get; }
     IEnumerable<int> this[int index] { get; }
+    IReadOnlyList<int> AsList(int index);
     int TryGetValue(int lineIndex, int valueIndex);
     int ValueCount(int index);
     int SpaceNeeded(int index);
@@ -398,6 +356,11 @@ public class ListListNonogramLineCollection : INonogramLineCollection
     }
 
     public IEnumerable<int> this[int index] => _list[index];
+
+    public IReadOnlyList<int> AsList(int index)
+    {
+        return _list[index];
+    }
 
     public int TryGetValue(int lineIndex, int valueIndex)
     {
@@ -444,6 +407,16 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         }
 
         return new ListListNonogramLineCollection(buffer);
+    }
+
+    public IEnumerator<IEnumerable<int>> GetEnumerator()
+    {
+        return _list.GetEnumerator();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
     }
 }
 

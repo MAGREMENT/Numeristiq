@@ -24,7 +24,7 @@ public readonly struct NumericChange
     public override string ToString()
     {
         string action = Type == ChangeType.SolutionAddition ? "==" : "<>";
-        return $"[{Row + 1}, {Column + 1}] {action} {Number}";
+        return $"r{Row + 1}c{Column + 1} {action} {Number}";
     }
 }
 
@@ -49,7 +49,7 @@ public readonly struct DichotomousChange
     public override string ToString()
     {
         string action = Type == ChangeType.SolutionAddition ? "O" : "X";
-        return $"[{Row + 1}, {Column + 1}] == {action}";
+        return $"r{Row + 1}c{Column + 1} == {action}";
     }
 }
 

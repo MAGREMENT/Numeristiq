@@ -57,6 +57,7 @@ public abstract class DichotomousStrategySolver<TStrategy, TSolvingState, THighl
     protected override void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<DichotomousChange> changes,
         Strategy maker, TSolvingState stateBefore)
     {
-        //TODO
+        _steps.Add(new ChangeReportDichotomousStep<THighlighter>(_steps.Count + 1, maker, changes, report,
+            stateBefore));
     }
 }

@@ -79,10 +79,10 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Solve" x:Name="SolveButton">Solve</Button>
-                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
-                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 5, 10" Click="Reset" x:Name="ChooseStepButton">Reset</Button>
-                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 5, 10" Click="Clear" x:Name="ClearButton">Clear</Button>
+                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Solve">Solve</Button>
+                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Advance">Advance</Button>
+                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 5, 10" Click="Reset">Reset</Button>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5, 5, 5, 10" Click="Clear">Clear</Button>
             </Grid>
         </Grid>
         

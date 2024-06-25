@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:board="clr-namespace:DesktopApplication.View"
         mc:Ignorable="d"
-        Height="340" Width="450"
+        Height="440" Width="450"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -15,35 +15,43 @@
         <WindowChrome CaptionHeight="40"/>
     </WindowChrome.WindowChrome>
     
-    <DockPanel>
-        <controls:TitleBarControl DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
-                               AllowResize="False">
+    <Grid Background="{DynamicResource Background1}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <controls:TitleBarControl Grid.Row="0" DockPanel.Dock="Top" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
+                                  AllowResize="False">
             <controls:SettingsButton Clicked="ShowSettingWindow"/>
         </controls:TitleBarControl>
         
-        <Grid Background="{DynamicResource Background1}">
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0, 20, 0, 20" HorizontalAlignment="Center">
+            <Image Width="50" Height="50" VerticalAlignment="Center" x:Name="Image" Source="Images/appicon.png"/>
+            <TextBlock FontSize="25" FontWeight="Bold" Margin="10, 0, 0, 0"
+                       Foreground="{DynamicResource Text}" VerticalAlignment="Center">Numeristiq</TextBlock>
+        </StackPanel>
+        
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-        
-            <StackPanel Grid.Column="0">
-                <StackPanel Orientation="Horizontal" Margin="0, 20, 0, 20" HorizontalAlignment="Center">
-                    <Image Width="50" Height="50" VerticalAlignment="Center" x:Name="Image" Source="Images/appicon.png"/>
-                    <TextBlock FontSize="25" FontWeight="Bold" Margin="10, 0, 0, 0"
-                               Foreground="{DynamicResource Text}" VerticalAlignment="Center">Numeristiq</TextBlock>
-                </StackPanel>
-                
-                <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnSudokuClick">Sudoku</Button>
-                <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnTectonicClick">Tectonic</Button>
-                <Button Style="{StaticResource WelcomeButtonStyle}" Click="OnKakuroClick">Kakuro</Button>
-            </StackPanel>
-        
-            <board:WelcomeBoard Grid.Column="1" x:Name="Board" Height="250" Width="250"
-                                VerticalAlignment="Bottom"
-                                TextBrush="{DynamicResource Text}"
-                                PrimaryBrush="{DynamicResource Primary1}"
-                                SecondaryBrush="{DynamicResource Secondary1}"/>
+            
+            <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource WelcomeButton}"
+                    x:Name="Sudoku" Margin="10" Click="OnSudokuClick"/>
+            <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource WelcomeButton}"
+                    x:Name="Tectonic" Margin="10" Click="OnTectonicClick"/>
+            <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource WelcomeButton}"
+                    x:Name="Kakuro" Margin="10" Click="OnKakuroClick"/>
+            <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource WelcomeButton}"
+                    x:Name="Nonogram" Margin="10" Click="OnNonogramClick"/>
         </Grid>
-    </DockPanel>
+    </Grid>
 </Window>

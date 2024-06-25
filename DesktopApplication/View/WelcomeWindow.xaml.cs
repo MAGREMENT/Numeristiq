@@ -3,6 +3,7 @@ using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;
 using DesktopApplication.View.Kakuros;
+using DesktopApplication.View.Nonograms;
 using DesktopApplication.View.Sudokus;
 using DesktopApplication.View.Tectonics;
 
@@ -22,8 +23,6 @@ public partial class WelcomeWindow
         _presenter = GlobalApplicationPresenter.Instance.InitializeWelcomePresenter();
         
         RenderOptions.SetBitmapScalingMode(Image, BitmapScalingMode.Fant);
-        Board.DrawBase();
-        Board.Refresh();
             
         TitleBar.RefreshMaximizeRestoreButton(WindowState);
         StateChanged += (_, _) => TitleBar.RefreshMaximizeRestoreButton(WindowState);
@@ -56,6 +55,13 @@ public partial class WelcomeWindow
     private void OnKakuroClick(object sender, RoutedEventArgs e)
     {
         var window = new KakuroWindow();
+        window.Show();
+        Close();
+    }
+    
+    private void OnNonogramClick(object sender, RoutedEventArgs e)
+    {
+        var window = new NonogramWindow();
         window.Show();
         Close();
     }

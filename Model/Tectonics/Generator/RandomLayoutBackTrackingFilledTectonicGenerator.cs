@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Model.Core.Generators;
 using Model.Utility;
 
@@ -7,55 +6,12 @@ namespace Model.Tectonics.Generator;
 
 public class RandomLayoutBackTrackingFilledTectonicGenerator : IFilledPuzzleGenerator<ITectonic>
 {
-    private const int MinDimensionCount = 2;
-    private const int MaxDimensionCount = 10;
-
-    private int _minRowCount = MinDimensionCount;
-    private int _minColumnCount = MinDimensionCount;
-    private int _maxRowCount = MaxDimensionCount;
-    private int _maxColumnCount = MaxDimensionCount;
-    private readonly Random _random = new();
-
-    public int MinRowCount
-    {
-        set
-        {
-            _minRowCount = Enclose(value);
-            if (_minRowCount > _maxRowCount) _maxRowCount = _minRowCount;
-        }
-    }
-
-    public int MinColumnCount
-    {
-        set
-        {
-            _minColumnCount = Enclose(value);
-            if (_minColumnCount > _maxColumnCount) _maxColumnCount = _minColumnCount;
-        }
-    }
-
-    public int MaxRowCount
-    {
-        set
-        {
-            _maxRowCount = Enclose(value);
-            if (_maxRowCount < _minRowCount) _minRowCount = _maxRowCount;
-        }
-    }
-
-    public int MaxColumnCount
-    {
-        set
-        {
-            _maxColumnCount = Enclose(value);
-            if (_maxColumnCount < _minColumnCount) _minColumnCount = _maxColumnCount;
-        }
-    }
+    public GridSizeRandomizer Randomizer { get; } = new(2, 10);
 
     public ITectonic Generate()
     {
-        ITectonic result = new ArrayTectonic(_random.Next(_minRowCount, _maxRowCount),
-            _random.Next(_minColumnCount, _maxColumnCount));
+        var size = Randomizer.GenerateSize();
+        ITectonic result = new ArrayTectonic(size.RowCount, size.ColumnCount);
 
         while(true)
         {
@@ -69,10 +25,10 @@ public class RandomLayoutBackTrackingFilledTectonicGenerator : IFilledPuzzleGene
                     var zone = result.GetZone(current);
                     if (zone.Count == IZone.MaxCount) continue;
 
-                    if(r < result.RowCount - 1 && _random.Next(2) < 1)
+                    if(r < result.RowCount - 1 && Randomizer.GenerateChance(1, 2))
                         result.MergeZones(current, new Cell(r + 1, c));
                     
-                    if (c < result.ColumnCount - 1 && _random.Next(2) < 1)
+                    if (c < result.ColumnCount - 1 && Randomizer.GenerateChance(1, 2))
                         result.MergeZones(current, new Cell(r, c + 1));
                     
                     zone = result.GetZone(current);
@@ -122,11 +78,5 @@ public class RandomLayoutBackTrackingFilledTectonicGenerator : IFilledPuzzleGene
         }
 
         return list;
-    }
-
-    private static int Enclose(int n)
-    {
-        n = Math.Min(MaxDimensionCount, n);
-        return Math.Max(MinDimensionCount, n);
     }
 }
