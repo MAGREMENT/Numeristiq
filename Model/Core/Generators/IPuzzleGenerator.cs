@@ -1,6 +1,6 @@
 ﻿namespace Model.Core.Generators;
 
-public interface IPuzzleGenerator<T>
+public interface IPuzzleGenerator<out T>
 {
     public event OnNextStep? StepDone;
     

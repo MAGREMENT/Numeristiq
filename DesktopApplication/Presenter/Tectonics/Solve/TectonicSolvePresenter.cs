@@ -320,7 +320,7 @@ public class TectonicSolvePresenter
     #endregion
 }
 
-public class UIUpdateTracker : Tracker<Strategy<ITectonicSolverData>, object>
+public class UIUpdateTracker : Tracker<object>
 {
     private readonly TectonicSolvePresenter _presenter;
 
@@ -329,17 +329,17 @@ public class UIUpdateTracker : Tracker<Strategy<ITectonicSolverData>, object>
         _presenter = presenter;
     }
 
-    protected override void OnAttach(ITrackerAttachable<Strategy<ITectonicSolverData>, object> attachable)
+    protected override void OnAttach(ITrackerAttachable<object> attachable)
     {
         attachable.StrategyEnded += OnStrategyEnd;
     }
 
-    protected override void OnDetach(ITrackerAttachable<Strategy<ITectonicSolverData>, object> attachable)
+    protected override void OnDetach(ITrackerAttachable<object> attachable)
     {
         attachable.StrategyEnded -= OnStrategyEnd;
     }
     
-    private void OnStrategyEnd(Strategy<ITectonicSolverData> strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         if (possibilitiesRemoved == 0 && solutionAdded == 0) return;
         

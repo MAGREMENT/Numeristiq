@@ -2,7 +2,7 @@
 using Model.Core;
 using Model.Core.Changes;
 
-namespace Model.Nonograms;
+namespace Model.Nonograms.Solver;
 
 public class NonogramSolvingState : IUpdatableDichotomousSolvingState //TODO
 {

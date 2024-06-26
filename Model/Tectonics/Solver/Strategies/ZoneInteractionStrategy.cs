@@ -13,30 +13,30 @@ public class ZoneInteractionStrategy : Strategy<ITectonicSolverData>
     {
     }
     
-    public override void Apply(ITectonicSolverData solverData)
+    public override void Apply(ITectonicSolverData data)
     {
         List<Cell> buffer = new();
         
-        foreach (var zone in solverData.Tectonic.Zones)
+        foreach (var zone in data.Tectonic.Zones)
         {
             for (int n = 1; n <= zone.Count; n++)
             {
                 foreach (var cell in zone)
                 {
-                    if (solverData.PossibilitiesAt(cell).Contains(n)) buffer.Add(cell);
+                    if (data.PossibilitiesAt(cell).Contains(n)) buffer.Add(cell);
                 }
 
                 if (buffer.Count == 0) continue;
 
-                foreach (var neighbor in TectonicCellUtility.SharedNeighboringCells(solverData.Tectonic, buffer))
+                foreach (var neighbor in TectonicCellUtility.SharedNeighboringCells(data.Tectonic, buffer))
                 {
-                    solverData.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
+                    data.ChangeBuffer.ProposePossibilityRemoval(n, neighbor);
                 }
                 
                 buffer.Clear();
             }
 
-            solverData.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
+            data.ChangeBuffer.Commit(new ZoneInteractionReportBuilder(zone));
         }
     }
 }

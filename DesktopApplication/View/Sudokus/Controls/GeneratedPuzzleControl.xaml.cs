@@ -44,7 +44,7 @@ public partial class GeneratedPuzzleControl
 
     private void Show(object sender, RoutedEventArgs e)
     {
-        var dialog = new ShowSudokuDialog(_puzzle.Sudoku);
+        var dialog = new ShowSudokuDialog(_puzzle.Puzzle);
         dialog.Show();
     }
 }

@@ -16,7 +16,7 @@ public class MinimumRatingCriteria : EvaluationCriteria
     {
     }
 
-    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState> usedStrategiesTracker)
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
     {
         return puzzle.Rating >= _settings[0].Get().ToDouble();
     }

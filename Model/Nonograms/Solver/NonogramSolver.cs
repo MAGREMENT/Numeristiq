@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using Model.Core;
-using Model.Kakuros;
+﻿using Model.Core;
 using Model.Utility;
 
-namespace Model.Nonograms;
+namespace Model.Nonograms.Solver;
 
 public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolverData>, IUpdatableDichotomousSolvingState, object>,
     INonogramSolverData
@@ -14,10 +12,12 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
     
     public override IUpdatableDichotomousSolvingState StartState { get; protected set; }
     public IReadOnlyNonogram Nonogram => _nonogram;
+    public NonogramPreComputer PreComputer { get; }
 
     public NonogramSolver()
     {
         StartState = new NonogramSolvingState();
+        PreComputer = new NonogramPreComputer(this);
     }
 
     public void SetNonogram(Nonogram nonogram)
@@ -26,57 +26,9 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         _completedLines = 0;
         _availability = new bool[_nonogram.RowCount, _nonogram.ColumnCount];
         InitAvailability();
+        PreComputer.AdaptToNewSize(nonogram.RowCount, nonogram.ColumnCount);
+        PreComputer.Reset();
         OnNewSolvable();
-    }
-    
-    public IReadOnlyList<LineSpace> HorizontalSpacesFor(int index)
-    {
-        var result = new List<LineSpace>();
-        
-        var col = 0;
-        while (col < _nonogram.ColumnCount && !_availability[index, col])
-        {
-            col++;
-        }
-
-        var start = col;
-        col++;
-        for (; col <= _nonogram.ColumnCount; col++)
-        {
-            if (col == _nonogram.ColumnCount || !_availability[index, col])
-            {
-                var s = new LineSpace(start, col - 1);
-                if (s.GetLength > 0) result.Add(s);
-                start = col - 1;
-            }
-        }
-
-        return result;
-    }
-
-    public IReadOnlyList<LineSpace> VerticalSpacesFor(int index)
-    {
-        var result = new List<LineSpace>();
-        
-        var row = 0;
-        while (row < _nonogram.RowCount && !_availability[row, index])
-        {
-            row++;
-        }
-
-        var start = row;
-        row++;
-        for (; row <= _nonogram.RowCount; row++)
-        {
-            if (row == _nonogram.RowCount || !_availability[row, index])
-            {
-                var s = new LineSpace(row - 1, start);
-                if (s.GetLength > 0) result.Add(s);
-                start = row - 1;
-            }
-        }
-
-        return result;
     }
     
     protected override IUpdatableDichotomousSolvingState GetSolvingState()
@@ -96,7 +48,7 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
 
     protected override void OnChangeMade()
     {
-        
+        PreComputer.Reset();
     }
 
     protected override void ApplyStrategy(Strategy<INonogramSolverData> strategy)

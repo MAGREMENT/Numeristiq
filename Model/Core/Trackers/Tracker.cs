@@ -2,11 +2,11 @@
 
 namespace Model.Core.Trackers;
 
-public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strategy
+public abstract class Tracker<TSolveResult>
 {
-    private ITrackerAttachable<TStrategy, TSolveResult>? _currentAttachable;
+    private ITrackerAttachable<TSolveResult>? _currentAttachable;
 
-    public void AttachTo(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    public void AttachTo(ITrackerAttachable<TSolveResult> attachable)
     {
         if (_currentAttachable is not null) return;
         
@@ -14,7 +14,7 @@ public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strateg
         OnAttach(attachable);
     }
 
-    protected abstract void OnAttach(ITrackerAttachable<TStrategy, TSolveResult> attachable);
+    protected abstract void OnAttach(ITrackerAttachable<TSolveResult> attachable);
 
     public void Detach()
     {
@@ -24,21 +24,22 @@ public abstract class Tracker<TStrategy, TSolveResult> where TStrategy : Strateg
         _currentAttachable = null;
     }
     
-    protected abstract void OnDetach(ITrackerAttachable<TStrategy, TSolveResult> attachable);
+    protected abstract void OnDetach(ITrackerAttachable<TSolveResult> attachable);
 }
 
-public interface ITrackerAttachable<out TStrategy, out TSolvingState> where TStrategy : Strategy
+public interface ITrackerAttachable<out TSolvingState>
 {
     public event OnSolveStart? SolveStarted;
-    public event OnStrategyStart<TStrategy>? StrategyStarted;
-    public event OnStrategyEnd<TStrategy>? StrategyEnded;
+    public event OnStrategyStart? StrategyStarted;
+    public event OnStrategyEnd? StrategyEnded;
     public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
 
-    public IEnumerable<TStrategy> EnumerateStrategies();
+    public IEnumerable<Strategy> EnumerateStrategies();
 }
 
 public delegate void OnSolveStart();
-public delegate void OnStrategyStart<in TStrategy>(TStrategy strategy, int index) where TStrategy : Strategy;
-public delegate void OnStrategyEnd<in TStrategy>(TStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved) where TStrategy : Strategy;
+
+public delegate void OnStrategyStart(Strategy strategy, int index);
+public delegate void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved);
 public delegate void OnSolveDone<in TResult>(TResult result);
 

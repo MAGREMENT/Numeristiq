@@ -2,17 +2,17 @@
 
 namespace Model.Core.Trackers;
 
-public class UsedStrategiesTracker<TStrategy, TSolveResult> : Tracker<TStrategy, TSolveResult> where TStrategy : Strategy
+public class UsedStrategiesTracker : Tracker<object>
 {
     private readonly HashSet<string> _used = new();
     
-    protected override void OnAttach(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    protected override void OnAttach(ITrackerAttachable<object> attachable)
     {
         attachable.SolveStarted += OnSolveStart;
         attachable.StrategyEnded += OnStrategyEnd;
     }
 
-    protected override void OnDetach(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    protected override void OnDetach(ITrackerAttachable<object> attachable)
     {
         attachable.SolveStarted -= OnSolveStart;
         attachable.StrategyEnded -= OnStrategyEnd;
@@ -23,7 +23,7 @@ public class UsedStrategiesTracker<TStrategy, TSolveResult> : Tracker<TStrategy,
         _used.Clear();
     }
 
-    private void OnStrategyEnd(TStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         if (solutionAdded + possibilitiesRemoved == 0) return;
 

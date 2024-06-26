@@ -12,15 +12,15 @@ public class NakedSingleStrategy : Strategy<IKakuroSolverData>
     {
     }
 
-    public override void Apply(IKakuroSolverData solverData)
+    public override void Apply(IKakuroSolverData data)
     {
-        foreach (var cell in solverData.Kakuro.EnumerateCells())
+        foreach (var cell in data.Kakuro.EnumerateCells())
         {
-            var pos = solverData.PossibilitiesAt(cell);
+            var pos = data.PossibilitiesAt(cell);
             if (pos.Count != 1) continue;
             
-            solverData.ChangeBuffer.ProposeSolutionAddition(pos.FirstPossibility(), cell);
-            solverData.ChangeBuffer.Commit(
+            data.ChangeBuffer.ProposeSolutionAddition(pos.FirstPossibility(), cell);
+            data.ChangeBuffer.Commit(
                 DefaultNumericChangeReportBuilder<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>.Instance);
         }
     }

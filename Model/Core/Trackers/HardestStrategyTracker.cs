@@ -1,17 +1,17 @@
 namespace Model.Core.Trackers;
 
-public class HardestStrategyTracker<TStrategy, TSolveResult> : Tracker<TStrategy, TSolveResult> where TStrategy : Strategy
+public class HardestStrategyTracker : Tracker<object>, IHardestStrategyTracker
 {
     private int _hardestIndex = -1;
-    public TStrategy? Hardest { get; private set; }
+    public Strategy? Hardest { get; private set; }
     
-    protected override void OnAttach(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    protected override void OnAttach(ITrackerAttachable<object> attachable)
     {
         attachable.SolveStarted += OnSolveStart;
         attachable.StrategyEnded += OnStrategyEnd;
     }
 
-    protected override void OnDetach(ITrackerAttachable<TStrategy, TSolveResult> attachable)
+    protected override void OnDetach(ITrackerAttachable<object> attachable)
     {
         attachable.SolveStarted -= OnSolveStart;
         attachable.StrategyEnded -= OnStrategyEnd;
@@ -23,7 +23,7 @@ public class HardestStrategyTracker<TStrategy, TSolveResult> : Tracker<TStrategy
         _hardestIndex = -1;
     }
 
-    private void OnStrategyEnd(TStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         if (solutionAdded + possibilitiesRemoved == 0) return;
 
@@ -34,4 +34,10 @@ public class HardestStrategyTracker<TStrategy, TSolveResult> : Tracker<TStrategy
             _hardestIndex = index;
         }
     }
+}
+
+public interface IHardestStrategyTracker
+{
+    public Strategy? Hardest { get; }
+    void Detach();
 }

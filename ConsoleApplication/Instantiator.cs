@@ -1,7 +1,8 @@
 ﻿using Model.Kakuros;
 using Model.Kakuros.Strategies;
 using Model.Nonograms;
-using Model.Nonograms.Strategies;
+using Model.Nonograms.Solver;
+using Model.Nonograms.Solver.Strategies;
 using Model.Sudokus.Solver;
 using Model.Tectonics;
 using Model.Tectonics.Solver;
@@ -64,7 +65,8 @@ public class Instantiator
     {
         var solver = new NonogramSolver();
         solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(),
-            new NotEnoughSpaceStrategy());
+            new NotEnoughSpaceStrategy(),
+            new BridgingStrategy());
         
         return solver;
     }

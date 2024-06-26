@@ -11,9 +11,9 @@ namespace Model.Sudokus.Generator;
 public class SudokuEvaluator
 {
     private readonly SudokuSolver _solver;
-    private readonly RatingTracker<SudokuStrategy, IUpdatableSudokuSolvingState> _rTracker = new();
-    private readonly HardestStrategyTracker<SudokuStrategy, IUpdatableSudokuSolvingState> _hsTracker = new();
-    private readonly UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState> _usTracker = new();
+    private readonly RatingTracker _rTracker = new();
+    private readonly HardestStrategyTracker _hsTracker = new();
+    private readonly UsedStrategiesTracker _usTracker = new();
     
     private UniqueList<EvaluationCriteria>? _snapshot;
 
@@ -30,7 +30,7 @@ public class SudokuEvaluator
 
     public GeneratedSudokuPuzzle? Evaluate(GeneratedSudokuPuzzle puzzle)
     {
-        _solver.SetSudoku(puzzle.Sudoku.Copy());
+        _solver.SetSudoku(puzzle.Puzzle.Copy());
         _solver.Solve();
         
         puzzle.SetEvaluation(_rTracker.Rating, _hsTracker.Hardest);
@@ -82,8 +82,7 @@ public abstract class EvaluationCriteria : ISettingCollection
         _settings = settings;
     }
     
-    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle,
-        UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState> usedStrategiesTracker);
+    public abstract bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker);
     public void Set(int index, SettingValue value, bool checkValidity)
     {
         if (index < 0 || index >= _settings.Length) return;

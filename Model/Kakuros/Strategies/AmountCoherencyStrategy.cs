@@ -12,15 +12,15 @@ public class AmountCoherencyStrategy : Strategy<IKakuroSolverData>
     {
     }
 
-    public override void Apply(IKakuroSolverData solverData)
+    public override void Apply(IKakuroSolverData data)
     {
-        foreach (var sum in solverData.Kakuro.Sums)
+        foreach (var sum in data.Kakuro.Sums)
         {
             var total = 0;
             int withSolutions = 1;
             foreach (var cell in sum)
             {
-                var n = solverData[cell.Row, cell.Column];
+                var n = data[cell.Row, cell.Column];
                 if (n != 0)
                 {
                     total += n;
@@ -34,15 +34,15 @@ public class AmountCoherencyStrategy : Strategy<IKakuroSolverData>
             var max = KakuroCellUtility.MaxAmountFor(sum.Length - withSolutions);
             foreach (var cell in sum)
             {
-                if (solverData[cell.Row, cell.Column] != 0) continue;
+                if (data[cell.Row, cell.Column] != 0) continue;
 
-                var possibilities = solverData.PossibilitiesAt(cell);
+                var possibilities = data.PossibilitiesAt(cell);
                 foreach (var p in possibilities.EnumeratePossibilities())
                 {
                     if (total + p + min > sum.Amount || total + p + max < sum.Amount)
                     {
-                        solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
-                        solverData.ChangeBuffer.Commit(
+                        data.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                        data.ChangeBuffer.Commit(
                             DefaultNumericChangeReportBuilder<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>.Instance);
                     }
                 }

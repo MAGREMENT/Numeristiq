@@ -16,7 +16,7 @@ public interface ISudokuSolverData : ISudokuSolvingState, IPossibilitiesGiver
 
     IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     
-    PreComputer PreComputer { get; }
+    SudokuPreComputer PreComputer { get; }
     
     AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
     

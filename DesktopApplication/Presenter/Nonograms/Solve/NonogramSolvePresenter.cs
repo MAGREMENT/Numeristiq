@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Model.Nonograms;
-using Model.Nonograms.Strategies;
+using Model.Nonograms.Solver;
+using Model.Nonograms.Solver.Strategies;
 
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
@@ -13,7 +14,8 @@ public class NonogramSolvePresenter
     {
         _view = view;
         _solver = new NonogramSolver();
-        _solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(), new NotEnoughSpaceStrategy());
+        _solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(), new NotEnoughSpaceStrategy(),
+            new BridgingStrategy());
     }
 
     public void SetNewNonogram(string s)

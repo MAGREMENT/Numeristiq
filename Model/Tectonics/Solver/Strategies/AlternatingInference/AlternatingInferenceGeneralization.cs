@@ -19,13 +19,13 @@ public class AlternatingInferenceGeneralization : Strategy<ITectonicSolverData> 
         _type = type;
     }
 
-    public override void Apply(ITectonicSolverData solverData)
+    public override void Apply(ITectonicSolverData data)
     {
-        var graph = _type.GetGraph(solverData);
+        var graph = _type.GetGraph(data);
         foreach (var element in graph)
         {
             if (element is not CellPossibility cp) continue;
-            if (Search(solverData, graph, cp)) return;
+            if (Search(data, graph, cp)) return;
         }
     }
 

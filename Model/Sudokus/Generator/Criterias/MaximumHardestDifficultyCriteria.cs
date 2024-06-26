@@ -16,7 +16,7 @@ public class MaximumHardestDifficultyCriteria : EvaluationCriteria
     {
     }
 
-    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState> usedStrategiesTracker)
+    public override bool IsValid(GeneratedSudokuPuzzle puzzle, UsedStrategiesTracker usedStrategiesTracker)
     {
         return puzzle.Hardest is not null &&
                puzzle.Hardest.Difficulty <= ((EnumSetting<StepDifficulty>)_settings[0]).Value;

@@ -10,18 +10,18 @@ public class HiddenSingleStrategy : Strategy<ITectonicSolverData>
     {
     }
     
-    public override void Apply(ITectonicSolverData solverData)
+    public override void Apply(ITectonicSolverData data)
     {
-        for(int i = 0; i < solverData.Tectonic.Zones.Count; i++)
+        for(int i = 0; i < data.Tectonic.Zones.Count; i++)
         {
-            var zone = solverData.Tectonic.Zones[i];
+            var zone = data.Tectonic.Zones[i];
             for (int n = 1; n <= zone.Count; n++)
             {
-                var poss = solverData.ZonePositionsFor(i, n);
+                var poss = data.ZonePositionsFor(i, n);
                 if (poss.Count != 1) continue;
 
-                solverData.ChangeBuffer.ProposeSolutionAddition(n, zone[poss.First(0, zone.Count)]);
-                solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+                data.ChangeBuffer.ProposeSolutionAddition(n, zone[poss.First(0, zone.Count)]);
+                data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
             }
         }
     }

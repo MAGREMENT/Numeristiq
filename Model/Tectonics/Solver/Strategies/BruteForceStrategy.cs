@@ -11,19 +11,19 @@ public class BruteForceStrategy : Strategy<ITectonicSolverData>
     {
     }
 
-    public override void Apply(ITectonicSolverData solverData)
+    public override void Apply(ITectonicSolverData data)
     {
-        var solution = BackTracking.Solutions(solverData.Tectonic.Copy(), solverData, 1);
+        var solution = BackTracking.Solutions(data.Tectonic.Copy(), data, 1);
         if (solution.Count != 1) return;
 
-        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
+        for (int row = 0; row < data.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < data.Tectonic.ColumnCount; col++)
             {
-                solverData.ChangeBuffer.ProposeSolutionAddition(solution[0][row, col], row, col);
+                data.ChangeBuffer.ProposeSolutionAddition(solution[0][row, col], row, col);
             }
         }
         
-        solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+        data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
     }
 }

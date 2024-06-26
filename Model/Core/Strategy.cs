@@ -7,7 +7,7 @@ public abstract class Strategy<T> : Strategy
     {
     }
 
-    public abstract void Apply(T user);
+    public abstract void Apply(T data);
 }
 
 public abstract class Strategy

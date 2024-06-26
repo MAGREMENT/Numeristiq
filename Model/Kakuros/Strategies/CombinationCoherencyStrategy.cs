@@ -13,15 +13,15 @@ public class CombinationCoherencyStrategy : Strategy<IKakuroSolverData>
     {
     }
 
-    public override void Apply(IKakuroSolverData solverData)
+    public override void Apply(IKakuroSolverData data)
     {
-        foreach (var sum in solverData.Kakuro.Sums)
+        foreach (var sum in data.Kakuro.Sums)
         {
             var used = new ReadOnlyBitSet16();
             int total = 0;
             foreach (var cell in sum)
             {
-                var n = solverData[cell.Row, cell.Column];
+                var n = data[cell.Row, cell.Column];
                 if (n != 0)
                 {
                     used += n;
@@ -33,15 +33,15 @@ public class CombinationCoherencyStrategy : Strategy<IKakuroSolverData>
 
             foreach (var cell in sum)
             {
-                var possibilities = solverData.PossibilitiesAt(cell);
+                var possibilities = data.PossibilitiesAt(cell);
                 if (possibilities.Count == 0) continue;
 
                 foreach (var p in possibilities.EnumeratePossibilities())
                 {
-                    if (IsPossible(solverData, used + p, cell, sum, total + p, 0)) continue;
+                    if (IsPossible(data, used + p, cell, sum, total + p, 0)) continue;
 
-                    solverData.ChangeBuffer.ProposePossibilityRemoval(p, cell);
-                    solverData.ChangeBuffer.Commit(
+                    data.ChangeBuffer.ProposePossibilityRemoval(p, cell);
+                    data.ChangeBuffer.Commit(
                         DefaultNumericChangeReportBuilder<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>.Instance);
                 }
             }

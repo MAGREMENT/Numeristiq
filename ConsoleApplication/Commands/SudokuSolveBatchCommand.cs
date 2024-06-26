@@ -43,18 +43,18 @@ public class SudokuSolveBatchCommand : Command
             }
         }
         
-        var statistics = new StatisticsTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
+        var statistics = new StatisticsTracker<IUpdatableSudokuSolvingState>();
         statistics.AttachTo(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
 
         List<string> fails = new();
         List<string> instances = new();
-        UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState>? usedTracker = null;
+        UsedStrategiesTracker? usedTracker = null;
 
         if (report.IsOptionUsed(InstancesIndex))
         {
-            usedTracker = new UsedStrategiesTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
+            usedTracker = new UsedStrategiesTracker();
             usedTracker.AttachTo(solver);
         }
         

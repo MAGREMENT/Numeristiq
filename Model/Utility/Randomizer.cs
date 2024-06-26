@@ -10,4 +10,6 @@ public class Randomizer
     {
         return _random.Next(over) < n;
     }
+
+    public int GenerateBetween(int min, int max) => _random.Next(min, max);
 }

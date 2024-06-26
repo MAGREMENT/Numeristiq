@@ -6,7 +6,7 @@ using Model.Utility;
 
 namespace Model.Core.Trackers;
 
-public class StatisticsTracker<TStrategy, TSolvingState> : Tracker<TStrategy, TSolvingState> where TStrategy : Strategy
+public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 {
     private readonly List<int> _retransmissions = new();
     private readonly List<StrategyStatistics> _statistics = new();
@@ -16,7 +16,7 @@ public class StatisticsTracker<TStrategy, TSolvingState> : Tracker<TStrategy, TS
 
     public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
     
-    protected override void OnAttach(ITrackerAttachable<TStrategy, TSolvingState> attachable)
+    protected override void OnAttach(ITrackerAttachable<TSolvingState> attachable)
     {
         Prepare(attachable.EnumerateStrategies());
         attachable.StrategyStarted += OnStrategyStart;
@@ -24,7 +24,7 @@ public class StatisticsTracker<TStrategy, TSolvingState> : Tracker<TStrategy, TS
         attachable.SolveDone += OnSolveDone;
     }
 
-    protected override void OnDetach(ITrackerAttachable<TStrategy, TSolvingState> attachable)
+    protected override void OnDetach(ITrackerAttachable<TSolvingState> attachable)
     {
         attachable.StrategyStarted -= OnStrategyStart;
         attachable.StrategyEnded -= OnStrategyEnd;

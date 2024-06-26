@@ -316,7 +316,7 @@ public interface IReadOnlyNonogramLineCollection : IEnumerable<IEnumerable<int>>
     IReadOnlyList<int> AsList(int index);
     int TryGetValue(int lineIndex, int valueIndex);
     int ValueCount(int index);
-    int SpaceNeeded(int index);
+    int MinValue(int index);
     int TotalExpected(int index);
     INonogramLineCollection Copy();
 }
@@ -377,6 +377,18 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         return _list[index].Count;
     }
 
+    public int MinValue(int index)
+    {
+        var l = _list[index];
+        var result = l[0];
+        for (int i = 1; i < l.Count; i++)
+        {
+            result = Math.Min(l[i], result);
+        }
+
+        return result;
+    }
+
     public int SpaceNeeded(int index)
     {
         var l = _list[index];
@@ -417,29 +429,5 @@ public class ListListNonogramLineCollection : INonogramLineCollection
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
-    }
-}
-
-public readonly struct LineSpace
-{
-    public int Start { get; }
-    public int End { get; }
-    
-    public LineSpace(int start, int end)
-    {
-        Start = start;
-        End = end;
-    }
-
-    public int GetLength => End - Start + 1;
-
-    public IEnumerable<Cell> EnumerateCells(Orientation orientation, int unit)
-    {
-        for (int i = Start; i <= End; i++)
-        {
-            yield return orientation == Orientation.Horizontal
-                ? new Cell(unit, i)
-                : new Cell(i, unit);
-        }
     }
 }

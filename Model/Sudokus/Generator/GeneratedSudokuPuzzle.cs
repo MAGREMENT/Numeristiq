@@ -1,38 +1,22 @@
-﻿using Model.Sudokus.Solver;
+﻿using Model.Core;
+using Model.Core.Generators;
 
 namespace Model.Sudokus.Generator;
 
-public class GeneratedSudokuPuzzle
+public class GeneratedSudokuPuzzle : GeneratedPuzzle<Sudoku>
 {
     public int Id { get; }
-    
-    public Sudoku Sudoku { get;}
-    
-    public bool Evaluated { get; private set; }
-    
-    public double Rating { get; private set; }
-    
-    public SudokuStrategy? Hardest { get; private set; }
 
-    public GeneratedSudokuPuzzle(int id, Sudoku sudoku)
+    public GeneratedSudokuPuzzle(int id, Sudoku sudoku) : base(sudoku)
     {
         Id = id;
-        Sudoku = sudoku;
     }
     
-    public GeneratedSudokuPuzzle(Sudoku sudoku)
+    public GeneratedSudokuPuzzle(Sudoku sudoku) : base(sudoku)
     {
         Id = 0;
-        Sudoku = sudoku;
     }
 
-    public void SetEvaluation(double rating, SudokuStrategy? hardest)
-    {
-        Hardest = hardest;
-        Rating = rating;
-        Evaluated = true;
-    }
-
-    public string AsString() =>
-        SudokuTranslator.TranslateLineFormat(Sudoku, SudokuLineFormatEmptyCellRepresentation.Zeros);
+    public override string AsString() =>
+        SudokuTranslator.TranslateLineFormat(Puzzle, SudokuLineFormatEmptyCellRepresentation.Zeros);
 }

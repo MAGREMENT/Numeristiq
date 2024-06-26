@@ -38,7 +38,8 @@ public static class Program
         
         instance.Root.AddDirectory(new Directory("Nonogram"))
             .AddCommand(new HelpCommand(), true)
-            .AddCommand(new NonogramSolveCommand());
+            .AddCommand(new NonogramSolveCommand())
+            .AddCommand(new NonogramGenerateBatchCommand());
 
         return instance;
     }

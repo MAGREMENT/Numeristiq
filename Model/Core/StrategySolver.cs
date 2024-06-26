@@ -8,7 +8,7 @@ using Model.Sudokus.Solver;
 namespace Model.Core;
 
 public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TChange, TChangeBuffer, TStep> 
-    : ITrackerAttachable<TStrategy, TSolvingState>, ISolveResult<TSolvingState>, ISolver
+    : ITrackerAttachable<TSolvingState>, ISolveResult<TSolvingState>, ISolver
     where TStrategy : Strategy where TChangeBuffer : IChangeBuffer<TChange, TSolvingState, THighlighter>
     where TStep : IStep
 {
@@ -38,8 +38,8 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     IEnumerable<IStep> ISolver.Steps => (IEnumerable<IStep>)_steps;
 
     public event OnSolveStart? SolveStarted;
-    public event OnStrategyStart<TStrategy>? StrategyStarted;
-    public event OnStrategyEnd<TStrategy>? StrategyEnded;
+    public event OnStrategyStart? StrategyStarted;
+    public event OnStrategyEnd? StrategyEnded;
     public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
     
     public void Solve(bool stopAtProgress = false)
@@ -130,7 +130,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
             AddStepFromReport(commit.Report, commit.Changes, commit.Maker, state);
     }
     
-    public IEnumerable<TStrategy> EnumerateStrategies()
+    public IEnumerable<Strategy> EnumerateStrategies()
     {
         return StrategyManager.Strategies;
     }

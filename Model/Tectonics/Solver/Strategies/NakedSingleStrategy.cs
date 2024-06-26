@@ -10,18 +10,18 @@ public class NakedSingleStrategy : Strategy<ITectonicSolverData>
     {
     }
     
-    public override void Apply(ITectonicSolverData solverData)
+    public override void Apply(ITectonicSolverData data)
     {
-        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
+        for (int row = 0; row < data.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < data.Tectonic.ColumnCount; col++)
             {
-                var p = solverData.PossibilitiesAt(row, col);
+                var p = data.PossibilitiesAt(row, col);
                 if (p.Count != 1) continue;
             
-                solverData.ChangeBuffer.ProposeSolutionAddition(
-                    p.First(1, solverData.Tectonic.GetZone(row, col).Count), row, col);
-                solverData.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+                data.ChangeBuffer.ProposeSolutionAddition(
+                    p.First(1, data.Tectonic.GetZone(row, col).Count), row, col);
+                data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
             }
         }
     }

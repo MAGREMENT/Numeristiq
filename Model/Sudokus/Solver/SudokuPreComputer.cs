@@ -11,7 +11,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver;
 
-public class PreComputer
+public class SudokuPreComputer
 {
     private readonly ISudokuSolverData _solverData;
 
@@ -30,7 +30,7 @@ public class PreComputer
     
     public LinkGraphManager<ISudokuSolverData, ISudokuElement> Graphs { get; }
 
-    public PreComputer(ISudokuSolverData solverData)
+    public SudokuPreComputer(ISudokuSolverData solverData)
     {
         _solverData = solverData;
         Graphs = new LinkGraphManager<ISudokuSolverData, ISudokuElement>(solverData, new SudokuConstructRuleBank());

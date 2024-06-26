@@ -111,7 +111,7 @@ public class SudokuSolvePresenter : ICommitApplier
     public void Clear()
     {
         _solver.SetSudoku(new Sudoku());
-        SetShownState(_solver.StartState!, true, false);
+        SetShownState(_solver.StartState, true, false);
         ClearLogs();
     }
 
@@ -392,7 +392,7 @@ public class SudokuSolvePresenter : ICommitApplier
     }
 }
 
-public class UIUpdaterTracker : Tracker<SudokuStrategy, IUpdatableSudokuSolvingState>
+public class UIUpdaterTracker : Tracker<object>
 {
     private readonly SudokuSolvePresenter _presenter;
     
@@ -404,24 +404,24 @@ public class UIUpdaterTracker : Tracker<SudokuStrategy, IUpdatableSudokuSolvingS
         UpdateLogs = updateLogs;
     }
     
-    protected override void OnAttach(ITrackerAttachable<SudokuStrategy, IUpdatableSudokuSolvingState> attachable)
+    protected override void OnAttach(ITrackerAttachable<object> attachable)
     {
         attachable.StrategyStarted += OnStrategyStart;
         attachable.StrategyEnded += OnStrategyEnd;
     }
 
-    protected override void OnDetach(ITrackerAttachable<SudokuStrategy, IUpdatableSudokuSolvingState> attachable)
+    protected override void OnDetach(ITrackerAttachable<object> attachable)
     {
         attachable.StrategyStarted -= OnStrategyStart;
         attachable.StrategyEnded -= OnStrategyEnd;
     }
 
-    private void OnStrategyStart(SudokuStrategy strategy, int index)
+    private void OnStrategyStart(Strategy strategy, int index)
     {
         _presenter.HighlightStrategy(index);
     }
 
-    private void OnStrategyEnd(SudokuStrategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
+    private void OnStrategyEnd(Strategy strategy, int index, int solutionAdded, int possibilitiesRemoved)
     {
         _presenter.UnHighlightStrategy(index);
         if (UpdateLogs && solutionAdded + possibilitiesRemoved > 0)

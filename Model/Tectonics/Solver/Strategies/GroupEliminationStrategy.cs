@@ -15,20 +15,20 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
     {
     }
 
-    public override void Apply(ITectonicSolverData solverData)
+    public override void Apply(ITectonicSolverData data)
     {
         HashSet<Cell> done = new();
         List<Cell> cells = new();
-        for (int row = 0; row < solverData.Tectonic.RowCount; row++)
+        for (int row = 0; row < data.Tectonic.RowCount; row++)
         {
-            for (int col = 0; col < solverData.Tectonic.ColumnCount; col++)
+            for (int col = 0; col < data.Tectonic.ColumnCount; col++)
             {
-                var poss = solverData.PossibilitiesAt(row, col);
+                var poss = data.PossibilitiesAt(row, col);
                 if (poss.Count == 0) continue;
 
                 var cell = new Cell(row, col);
                 cells.Add(cell);
-                if (SearchForGroup(solverData, cells, poss, done)) return;
+                if (SearchForGroup(data, cells, poss, done)) return;
 
                 done.Add(cell);
                 cells.Clear();

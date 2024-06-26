@@ -1,6 +1,7 @@
 using ConsoleApplication.Commands.Abstracts;
 using Model.Core;
 using Model.Nonograms;
+using Model.Nonograms.Solver;
 
 namespace ConsoleApplication.Commands;
 

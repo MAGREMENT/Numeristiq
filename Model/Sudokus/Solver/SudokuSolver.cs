@@ -24,7 +24,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
     public override IUpdatableSudokuSolvingState StartState { get; protected set; }
     public IReadOnlySudoku Sudoku => _sudoku;
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
-    public PreComputer PreComputer { get; }
+    public SudokuPreComputer PreComputer { get; }
     public AlmostHiddenSetSearcher AlmostHiddenSetSearcher { get; }
     public AlmostNakedSetSearcher AlmostNakedSetSearcher { get; }
 
@@ -38,7 +38,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
         InitPossibilities();
         
         StartState = new StateArraySolvingState(this);
-        PreComputer = new PreComputer(this);
+        PreComputer = new SudokuPreComputer(this);
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
     }

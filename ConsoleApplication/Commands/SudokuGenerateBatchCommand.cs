@@ -1,4 +1,5 @@
-﻿using Model.Core;
+﻿using ConsoleApplication.Commands.Abstracts;
+using Model.Core;
 using Model.Core.Generators;
 using Model.Core.Trackers;
 using Model.Sudokus;
@@ -7,92 +8,31 @@ using Model.Sudokus.Solver;
 
 namespace ConsoleApplication.Commands;
 
-public class SudokuGenerateBatchCommand : Command
+public class SudokuGenerateBatchCommand : GenerateBatchCommand<Sudoku>
 {
-    private const int CountIndex = 0;
-    private const int EvaluateIndex = 1;
-    private const int SortIndex = 2;
-    
-    public override string Description => "Generates a determined amount of Sudoku's";
-    
-    private readonly IPuzzleGenerator<Sudoku> _generator = new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator());
-
-    public SudokuGenerateBatchCommand() : base("GenerateBatch", 
-        new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),
-        new Option("-e", "Evaluates puzzles"),
-        new Option("-s", "Sorts puzzles")) { }
-    
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public SudokuGenerateBatchCommand() : base("Sudoku", new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator()))
     {
-        var count = report.IsOptionUsed(CountIndex) ? (int)report.GetOptionValue(CountIndex)! : 1;
-        
-        Console.WriteLine("Started generating...");
-        var start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var generated = _generator.Generate(count);
-        Console.WriteLine($"Finished generating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
+    }
 
-        List<GeneratedSudokuPuzzle> result = new(count);
+    protected override (ISolver, IRatingTracker, IHardestStrategyTracker) GetSolverWithAttachedTracker(ArgumentInterpreter interpreter)
+    {
+        var solver = interpreter.Instantiator.InstantiateSudokuSolver();
+        var ratings = new RatingTracker();
+        var hardest = new HardestStrategyTracker();
 
-        if (report.IsOptionUsed(EvaluateIndex))
-        {
-            var solver = interpreter.Instantiator.InstantiateSudokuSolver();
+        ratings.AttachTo(solver);
+        hardest.AttachTo(solver);
 
-            var ratings = new RatingTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
-            var hardest = new HardestStrategyTracker<SudokuStrategy, IUpdatableSudokuSolvingState>();
+        return (solver, ratings, hardest);
+    }
 
-            ratings.AttachTo(solver);
-            hardest.AttachTo(solver);
-            
-            Console.WriteLine("Started evaluating...");
-            start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            foreach (var s in generated)
-            {
-                solver.SetSudoku(s.Copy());
-                solver.Solve();
+    protected override GeneratedPuzzle<Sudoku> CreateGeneratedPuzzle(Sudoku puzzle)
+    {
+        return new GeneratedSudokuPuzzle(puzzle);
+    }
 
-                var puzzle = new GeneratedSudokuPuzzle(s);
-                puzzle.SetEvaluation(ratings.Rating, hardest.Hardest!);
-                result.Add(puzzle);
-            }
-            Console.WriteLine($"Finished evaluating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
-            
-            ratings.Detach();
-            hardest.Detach();
-        }
-        else
-        {
-            foreach (var s in generated)
-            {
-                result.Add(new GeneratedSudokuPuzzle(s));
-            }
-        }
-
-        if (report.IsOptionUsed(SortIndex))
-        {
-            Console.WriteLine("Started sorting...");
-            start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-            result.Sort((s1, s2) =>
-            {
-                var r = (int)(s2.Rating * 1000 - s1.Rating * 1000);
-                if (r != 0) return r;
-
-                if (s1.Hardest is null || s2.Hardest is null) return 0;
-
-                return (int)s2.Hardest.Difficulty - (int)s1.Hardest.Difficulty;
-            });
-            Console.WriteLine($"Finished sorting in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
-        }
-        
-        var n = 1;
-        foreach (var s in result)
-        {
-            Console.Write($"#{n++} {s.AsString()}");
-            if (s.Evaluated)
-            {
-                Console.Write($" - {Math.Round(s.Rating, 2)}");
-                Console.Write($" - {s.Hardest!.Name}");
-            }
-            Console.WriteLine();
-        }
+    protected override void SetPuzzle(ISolver solver, Sudoku puzzle)
+    {
+        ((SudokuSolver)solver).SetSudoku(puzzle);
     }
 }

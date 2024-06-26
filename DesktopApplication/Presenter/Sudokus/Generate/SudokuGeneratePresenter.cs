@@ -139,7 +139,7 @@ public class SudokuGeneratePresenter
         var builder = new StringBuilder();
         foreach (var puzzle in _evaluatedList)
         {
-            builder.Append(SudokuTranslator.TranslateLineFormat(puzzle.Sudoku, _setting.EmptyCellRepresentation));
+            builder.Append(SudokuTranslator.TranslateLineFormat(puzzle.Puzzle, _setting.EmptyCellRepresentation));
             builder.Append('\n');
         }
         _view.CopyToClipboard(builder.ToString());
