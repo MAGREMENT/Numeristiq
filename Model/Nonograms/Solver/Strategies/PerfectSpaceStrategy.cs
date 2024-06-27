@@ -15,13 +15,13 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
             var space = data.PreComputer.HorizontalMainSpace(row);
-            if (space.IsInvalid() || GetNeededSpace(data.Nonogram.HorizontalLineCollection.AsList(row),
-                    space.ValueStart, space.ValueEnd) != space.End - space.Start + 1) continue;
+            if (space.IsInvalid() || data.Nonogram.HorizontalLineCollection.NeededSpace(row,
+                    space.FirstValueIndex, space.LastValueIndex) != space.End - space.Start + 1) continue;
 
             var cursor = space.Start;
-            foreach (var v in data.Nonogram.HorizontalLineCollection[row])
+            for(int index = space.FirstValueIndex; index <= space.LastValueIndex; index++)
             {
-                var limit = cursor + v;
+                var limit = cursor + data.Nonogram.HorizontalLineCollection.TryGetValue(row, index);
                 for (; cursor < limit; cursor++)
                 {
                     data.ChangeBuffer.ProposeSolutionAddition(row, cursor);
@@ -37,13 +37,13 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
             var space = data.PreComputer.VerticalMainSpace(col);
-            if (space.IsInvalid() || GetNeededSpace(data.Nonogram.VerticalLineCollection.AsList(col),
-                    space.ValueStart, space.ValueStart) != space.End - space.Start + 1) continue;
+            if (space.IsInvalid() || data.Nonogram.VerticalLineCollection.NeededSpace(col,
+                    space.FirstValueIndex, space.LastValueIndex) != space.End - space.Start + 1) continue;
 
             var cursor = space.Start;
-            foreach (var v in data.Nonogram.VerticalLineCollection[col])
+            for(int index = space.FirstValueIndex; index <= space.LastValueIndex; index++)
             {
-                var limit = cursor + v;
+                var limit = cursor + data.Nonogram.VerticalLineCollection.TryGetValue(col, index);
                 for (; cursor < limit; cursor++)
                 {
                     data.ChangeBuffer.ProposeSolutionAddition(cursor, col);
@@ -56,19 +56,5 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
                     IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
         }
     }
-
-    private int GetNeededSpace(IReadOnlyList<int> values, int start, int end)
-    {
-        var result = 0;
-        for (int i = start; i <= end; i++)
-        {
-            if (result > 0) result++;
-            result += values[i];
-        }
-
-        return result;
-    }
-
-    
 }
 

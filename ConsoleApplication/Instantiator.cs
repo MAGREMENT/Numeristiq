@@ -66,7 +66,9 @@ public class Instantiator
         var solver = new NonogramSolver();
         solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(),
             new NotEnoughSpaceStrategy(),
-            new BridgingStrategy());
+            new BridgingStrategy(),
+            new EdgeValueStrategy(),
+            new ValueOverlayStrategy());
         
         return solver;
     }

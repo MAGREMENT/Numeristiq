@@ -52,7 +52,7 @@ public class MultiZone : IZone
 
         foreach (var cell in _cells)
         {
-            _id.Set(cell.Row * columnCount + cell.Column);
+            _id.Add(cell.Row * columnCount + cell.Column);
         }
     }
 
@@ -78,7 +78,7 @@ public class MultiZone : IZone
 
     public bool Contains(Cell c)
     {
-        return _id.IsSet(c.Row * _columnCount + c.Column);
+        return _id.Contains(c.Row * _columnCount + c.Column);
     }
 
     public override bool Equals(object? obj)

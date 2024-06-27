@@ -21,7 +21,7 @@ public class ValueCompletionStrategy : Strategy<INonogramSolverData>
 
                 if (data.Nonogram[r, col])
                 {
-                    var target = data.Nonogram.VerticalLineCollection.TryGetValue(col, space.ValueStart);
+                    var target = data.Nonogram.VerticalLineCollection.TryGetValue(col, space.FirstValueIndex);
                     //TODO
                 }
             }

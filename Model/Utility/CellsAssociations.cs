@@ -29,14 +29,14 @@ public class CellsAssociations
         if (set1 is null)
         {
             set1 = new InfiniteBitSet();
-            set1.Set(i1);
+            set1.Add(i1);
         }
 
         var set2 = _sets[two.Row, two.Column];
         if (set2 is null)
         {
             set2 = new InfiniteBitSet();
-            set2.Set(i2);
+            set2.Add(i2);
         }
 
         set1.Or(set2);
@@ -47,8 +47,4 @@ public class CellsAssociations
     }
 
     public int CountAt(int row, int col) =>_sets[row, col]?.Count ?? 1;
-
-    public bool IsCreatedAt(int row, int col) => _sets[row, col] is not null;
-
-    public InfiniteBitSet SetAt(int row, int col) => _sets[row, col] ?? new InfiniteBitSet();
 }

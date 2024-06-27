@@ -15,7 +15,7 @@ public class NonogramSolvePresenter
         _view = view;
         _solver = new NonogramSolver();
         _solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(), new NotEnoughSpaceStrategy(),
-            new BridgingStrategy());
+            new BridgingStrategy(), new EdgeValueStrategy(), new ValueOverlayStrategy());
     }
 
     public void SetNewNonogram(string s)

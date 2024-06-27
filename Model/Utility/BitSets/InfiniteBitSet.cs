@@ -13,20 +13,20 @@ public class InfiniteBitSet : IEnumerable<int>
     
     public int Count { get; private set; }
 
-    public void Set(int i)
+    public void Add(int i)
     {
         if (i < 0) return;
         
         GrowIfNecessary(i / BitSize + 1);
-        if (!IsSet(i)) Count++;
+        if (!Contains(i)) Count++;
         _bits[i / BitSize] |= 1ul << (i % BitSize);
     }
 
-    public void Unset(int i)
+    public void Remove(int i)
     {
         if (i < 0 || i > _bits.Length * BitSize) return;
 
-        if (IsSet(i)) Count--;
+        if (Contains(i)) Count--;
         _bits[i / BitSize] &= ~(1ul << (i % BitSize));
     }
 
@@ -42,7 +42,7 @@ public class InfiniteBitSet : IEnumerable<int>
         return true;
     }
 
-    public bool IsSet(int i)
+    public bool Contains(int i)
     {
         if (i < 0 || i >= _bits.Length * BitSize) return false;
 

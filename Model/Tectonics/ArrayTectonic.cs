@@ -40,9 +40,9 @@ public class ArrayTectonic : ITectonic
         foreach (var cell in cells)
         {
             var n = cell.Row * ColumnCount + cell.Column;
-            if (bitSet.IsSet(n)) return;
+            if (bitSet.Contains(n)) return;
 
-            bitSet.Set(n);
+            bitSet.Add(n);
             if (_cells[cell.Row, cell.Column].Zone is null) return;
         }
 

@@ -74,11 +74,11 @@ public class Nonogram : IReadOnlyNonogram
         {
             if (line.Orientation == Orientation.Horizontal)
             {
-                if (line.Index >= RowCount) hBitSet.Set(line.Index - RowCount);
+                if (line.Index >= RowCount) hBitSet.Add(line.Index - RowCount);
             }
             else
             {
-                if (line.Index >= ColumnCount) vBitSet.Set(line.Index - ColumnCount);
+                if (line.Index >= ColumnCount) vBitSet.Add(line.Index - ColumnCount);
             }
         }
 
@@ -319,6 +319,7 @@ public interface IReadOnlyNonogramLineCollection : IEnumerable<IEnumerable<int>>
     int MinValue(int index);
     int TotalExpected(int index);
     INonogramLineCollection Copy();
+    int NeededSpace(int index, int start, int end);
 }
 
 public interface INonogramLineCollection : IReadOnlyNonogramLineCollection
@@ -419,6 +420,19 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         }
 
         return new ListListNonogramLineCollection(buffer);
+    }
+
+    public int NeededSpace(int index, int start, int end)
+    {
+        var l = _list[index];
+        var result = 0;
+        for (int i = start; i <= end; i++)
+        {
+            if (result > 0) result++;
+            result += l[i];
+        }
+
+        return result;    
     }
 
     public IEnumerator<IEnumerable<int>> GetEnumerator()

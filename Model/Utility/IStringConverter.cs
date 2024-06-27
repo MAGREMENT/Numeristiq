@@ -9,7 +9,7 @@ public interface IStringConverter
 
 public class SpaceConverter : IStringConverter
 {
-    private static readonly StringBuilder _builder = new();
+    private readonly StringBuilder _builder = new();
 
     public static SpaceConverter Instance { get; } = new();
     

@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using Model.Utility.BitSets;
 
 namespace Model.Nonograms.Solver;
 
 public class NonogramPreComputer
 {
-    private INonogramSolverData _data;
+    private readonly INonogramSolverData _data;
     
-    private LineSpace[] _horizontalMainSpace = Array.Empty<LineSpace>();
-    private LineSpace[] _verticalMainSpace = Array.Empty<LineSpace>();
+    private MainSpace[] _horizontalMainSpace = Array.Empty<MainSpace>();
+    private MainSpace[] _verticalMainSpace = Array.Empty<MainSpace>();
     private readonly InfiniteBitSet _hmsHits = new();
     private readonly InfiniteBitSet _vmsHits = new();
+
+    private List<ValueSpace>?[] _horizontalValueSpaces = Array.Empty<List<ValueSpace>>();
+    private List<ValueSpace>?[] _verticalValueSpaces = Array.Empty<List<ValueSpace>>();
 
     public NonogramPreComputer(INonogramSolverData data)
     {
@@ -19,29 +23,122 @@ public class NonogramPreComputer
 
     public void AdaptToNewSize(int rowCount, int colCount)
     {
-        _horizontalMainSpace = new LineSpace[rowCount];
-        _verticalMainSpace = new LineSpace[colCount];
+        _horizontalMainSpace = new MainSpace[rowCount];
+        _horizontalValueSpaces = new List<ValueSpace>?[rowCount];
+        
+        _verticalMainSpace = new MainSpace[colCount];
+        _verticalValueSpaces = new List<ValueSpace>?[colCount];
     }
 
-    public LineSpace HorizontalMainSpace(int row)
+    public MainSpace HorizontalMainSpace(int row)
     {
-        if (!_hmsHits.IsSet(row)) _horizontalMainSpace[row] = DoHorizontalMainSpace(row);
+        if (!_hmsHits.Contains(row)) _horizontalMainSpace[row] = DoHorizontalMainSpace(row);
         return _horizontalMainSpace[row];
     }
 
-    public LineSpace VerticalMainSpace(int col)
+    public MainSpace VerticalMainSpace(int col)
     {
-        if (!_vmsHits.IsSet(col)) _verticalMainSpace[col] = DoVerticalMainSpace(col);
+        if (!_vmsHits.Contains(col)) _verticalMainSpace[col] = DoVerticalMainSpace(col);
         return _verticalMainSpace[col];
+    }
+
+    public IReadOnlyList<ValueSpace> HorizontalValueSpaces(int row)
+    {
+        _horizontalValueSpaces[row] ??= DoHorizontalValueSpaces(row);
+        return _horizontalValueSpaces[row]!;
+    }
+
+    public IReadOnlyList<ValueSpace> VerticalValueSpaces(int col)
+    {
+        _verticalValueSpaces[col] ??= DoVerticalValueSpaces(col);
+        return _verticalValueSpaces[col]!;
     }
 
     public void Reset()
     {
         _hmsHits.Clear();
         _vmsHits.Clear();
+        Array.Fill(_horizontalValueSpaces, null);
+        Array.Fill(_verticalValueSpaces, null);
+    }
+
+    private List<ValueSpace> DoHorizontalValueSpaces(int row)
+    {
+        var list = new List<ValueSpace>();
+        var main = HorizontalMainSpace(row);
+        if (main.IsInvalid()) return list;
+
+        var spaceBefore = 0;
+        var spaceAfter = _data.Nonogram.HorizontalLineCollection.NeededSpace(row, main.FirstValueIndex, main.LastValueIndex);
+        for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
+        {
+            var v = _data.Nonogram.HorizontalLineCollection.TryGetValue(row, i);
+            spaceAfter -= Math.Min(v + 1, spaceAfter);
+            
+            var start = main.Start + spaceBefore;
+            var end = main.End - spaceAfter;
+
+            for (int pos = start; pos <= end; pos++)
+            {
+                if (_data.IsAvailable(row, pos)) continue;
+
+                if (_data.Nonogram[row, pos])
+                {
+                    //TODO
+                }
+                else
+                {
+                    if (pos - start < v) start = pos + 1;
+                    if (end - pos < v) end = pos - 1;
+                }
+            }
+
+            list.Add(new ValueSpace(start, end, v));
+            spaceBefore += v + 1;
+        }
+
+        return list;
     }
     
-    private LineSpace DoHorizontalMainSpace(int row)
+    private List<ValueSpace> DoVerticalValueSpaces(int col)
+    {
+        var list = new List<ValueSpace>();
+        var main = VerticalMainSpace(col);
+        if (main.IsInvalid()) return list;
+
+        var spaceBefore = 0;
+        var spaceAfter = _data.Nonogram.VerticalLineCollection.NeededSpace(col, main.FirstValueIndex, main.LastValueIndex);
+        for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
+        {
+            var v = _data.Nonogram.VerticalLineCollection.TryGetValue(col, i);
+            spaceAfter -= Math.Min(v + 1, spaceAfter);
+            
+            var start = main.Start + spaceBefore;
+            var end = main.End - spaceAfter;
+
+            for (int pos = start; pos <= end; pos++)
+            {
+                if (_data.IsAvailable(pos, col)) continue;
+
+                if (_data.Nonogram[pos, col])
+                {
+                    //TODO
+                }
+                else
+                {
+                    if (pos - start < v) start = pos + 1;
+                    if (end - pos < v) end = pos - 1;
+                }
+            }
+
+            list.Add(new ValueSpace(start, end, v));
+            spaceBefore += v + 1;
+        }
+
+        return list;
+    }
+    
+    private MainSpace DoHorizontalMainSpace(int row)
     {
         var list = _data.Nonogram.HorizontalLineCollection.AsList(row);
         int sCursor = 0;
@@ -70,7 +167,7 @@ public class NonogramPreComputer
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(row, start)) return LineSpace.Invalid;
+                if (_data.IsAvailable(row, start)) return MainSpace.Invalid;
 
                 mustBeUnavailable = false;
             }
@@ -110,12 +207,12 @@ public class NonogramPreComputer
                 {
                     mustBeUnavailable = true;
                     eCursor--;
-                    if (eCursor < sCursor) return LineSpace.Invalid;
+                    if (eCursor < sCursor) return MainSpace.Invalid;
                 }
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(row, end)) return LineSpace.Invalid;
+                if (_data.IsAvailable(row, end)) return MainSpace.Invalid;
 
                 mustBeUnavailable = false;
             }
@@ -130,24 +227,19 @@ public class NonogramPreComputer
                     {
                         mustBeUnavailable = true;
                         eCursor--;
-                        if (eCursor < sCursor) return LineSpace.Invalid;
+                        if (eCursor < sCursor) return MainSpace.Invalid;
                     } else buffer = start;
                 }
             }
 
             end--;
-            if (end < start) return LineSpace.Invalid;
+            if (end < start) return MainSpace.Invalid;
         }
 
-        for (int i = start; i <= end; i++)
-        {
-            if (!_data.Nonogram[row, i] && !_data.IsAvailable(row, i)) return LineSpace.Invalid;
-        }
-
-        return new LineSpace(start, end, sCursor, eCursor);
+        return new MainSpace(start, end, sCursor, eCursor);
     }
 
-    private LineSpace DoVerticalMainSpace(int col)
+    private MainSpace DoVerticalMainSpace(int col)
     {
         var list = _data.Nonogram.VerticalLineCollection.AsList(col);
         int sCursor = 0;
@@ -176,7 +268,7 @@ public class NonogramPreComputer
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(start, col)) return LineSpace.Invalid;
+                if (_data.IsAvailable(start, col)) return MainSpace.Invalid;
 
                 mustBeUnavailable = false;
             }
@@ -216,12 +308,12 @@ public class NonogramPreComputer
                 {
                     mustBeUnavailable = true;
                     eCursor--;
-                    if (eCursor < sCursor) return LineSpace.Invalid;
+                    if (eCursor < sCursor) return MainSpace.Invalid;
                 }
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(end, col)) return LineSpace.Invalid;
+                if (_data.IsAvailable(end, col)) return MainSpace.Invalid;
 
                 mustBeUnavailable = false;
             }
@@ -236,34 +328,51 @@ public class NonogramPreComputer
                     {
                         mustBeUnavailable = true;
                         eCursor--;
-                        if (eCursor < sCursor) return LineSpace.Invalid;
+                        if (eCursor < sCursor) return MainSpace.Invalid;
                     } else buffer = end;
                 }
             }
 
             end--;
-            if (end < start) return LineSpace.Invalid;
+            if (end < start) return MainSpace.Invalid;
         }
 
-        for (int i = start; i <= end; i++)
-        {
-            if (!_data.Nonogram[i, col] && !_data.IsAvailable(i, col)) return LineSpace.Invalid;
-        }
-
-        return new LineSpace(start, end, sCursor, eCursor);
+        return new MainSpace(start, end, sCursor, eCursor);
     }
 }
 
-public readonly struct LineSpace
+public readonly struct ValueSpace
 {
-    public static LineSpace Invalid = new(-1, -1, -1, -1);
-    
-    public LineSpace(int start, int end, int valueStart, int valueEnd)
+    public ValueSpace(int start, int end, int value)
     {
         Start = start;
         End = end;
-        ValueStart = valueStart;
-        ValueEnd = valueEnd;
+        Value = value;
+    }
+
+    public bool IsValid() => End - Start + 1 >= Value;
+
+    /// <summary>
+    /// Inclusive
+    /// </summary>
+    public int Start { get; }
+    /// <summary>
+    /// Inclusive
+    /// </summary>
+    public int End { get; }
+    public int Value { get; }
+}
+
+public readonly struct MainSpace
+{
+    public static MainSpace Invalid = new(-1, -1, -1, -1);
+    
+    public MainSpace(int start, int end, int firstValueIndex, int lastValueIndex)
+    {
+        Start = start;
+        End = end;
+        FirstValueIndex = firstValueIndex;
+        LastValueIndex = lastValueIndex;
     }
 
     public bool IsInvalid()
@@ -271,10 +380,16 @@ public readonly struct LineSpace
         return Start < 0;
     }
 
-    public int GetValueCount() => ValueEnd - ValueStart + 1;
+    public int GetValueCount() => LastValueIndex - FirstValueIndex + 1;
 
+    /// <summary>
+    /// Inclusive
+    /// </summary>
     public int Start { get; }
+    /// <summary>
+    /// Inclusive
+    /// </summary>
     public int End { get; }
-    public int ValueStart { get; }
-    public int ValueEnd { get; }
+    public int FirstValueIndex { get; }
+    public int LastValueIndex { get; }
 }
