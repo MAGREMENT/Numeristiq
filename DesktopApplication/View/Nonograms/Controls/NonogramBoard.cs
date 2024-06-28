@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 using DesktopApplication.Presenter.Nonograms.Solve;
 using DesktopApplication.View.Controls;
 
@@ -140,34 +141,40 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
 
     public void SetSolution(int row, int col)
     {
-        var size = _cellSize - FillingShift * 2;
-        Layers[FillingIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col) + FillingShift,
-            GetTop(row) + FillingShift, size, size), FillingBrush));
+        Dispatcher.Invoke(() =>
+        {
+            var size = _cellSize - FillingShift * 2;
+            Layers[FillingIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col) + FillingShift,
+                GetTop(row) + FillingShift, size, size), FillingBrush));
+        });
     }
 
     public void ClearSolutions()
     {
-        Layers[FillingIndex].Clear();
+        Dispatcher.Invoke(() => Layers[FillingIndex].Clear());
     }
 
     public void SetUnavailable(int row, int col)
     {
-        var layer = Layers[UnavailableIndex];
-        var shift = _cellSize / 4;
-        var minX = GetLeft(col) + shift;
-        var maxX = GetLeft(col) + _cellSize - shift;
-        var minY = GetTop(row) + shift;
-        var maxY = GetTop(row) + _cellSize - shift;
+        Dispatcher.Invoke(() =>
+        {
+            var layer = Layers[UnavailableIndex];
+            var shift = _cellSize / 4;
+            var minX = GetLeft(col) + shift;
+            var maxX = GetLeft(col) + _cellSize - shift;
+            var minY = GetTop(row) + shift;
+            var maxY = GetTop(row) + _cellSize - shift;
         
-        layer.Add(new LineComponent(new Point(minX, minY), new Point(maxX, maxY),
-            new Pen(UnavailableBrush, UnavailableThickness)));
-        layer.Add(new LineComponent(new Point(minX, maxY), new Point(maxX, minY),
-            new Pen(UnavailableBrush, UnavailableThickness)));
+            layer.Add(new LineComponent(new Point(minX, minY), new Point(maxX, maxY),
+                new Pen(UnavailableBrush, UnavailableThickness)));
+            layer.Add(new LineComponent(new Point(minX, maxY), new Point(maxX, minY),
+                new Pen(UnavailableBrush, UnavailableThickness)));
+        });
     }
 
     public void ClearUnavailable()
     {
-        Layers[UnavailableIndex].Clear();
+        Dispatcher.Invoke(() => Layers[UnavailableIndex].Clear());
     }
 
     private double GetTop(int row)

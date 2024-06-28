@@ -8,7 +8,7 @@ public interface ITectonicSolveView
     public ITectonicDrawer Drawer { get; }
 
     void SetTectonicString(string s);
-    void AddLog(INumericStep<ITectonicHighlighter> numericStep, StateShown _shown);
+    void AddLog(IStep step, StateShown _shown);
     void ClearLogs();
     void OpenLog(int index);
     void CloseLogs();

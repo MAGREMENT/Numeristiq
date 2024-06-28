@@ -84,7 +84,12 @@ public class NonogramPreComputer
 
                 if (_data.Nonogram[row, pos])
                 {
-                    //TODO
+                    var endPos = pos;
+                    while (_data.Nonogram[row, endPos + 1]) endPos++;
+
+                    var length = endPos - pos + 1;
+                    if (pos - start + 1 < v) start = Math.Max(pos - v + length, start);
+                    if (end - endPos + 1 < v) end = Math.Min(endPos + v - length, end);
                 }
                 else
                 {
@@ -122,7 +127,12 @@ public class NonogramPreComputer
 
                 if (_data.Nonogram[pos, col])
                 {
-                    //TODO
+                    var endPos = pos;
+                    while (_data.Nonogram[endPos + 1, col]) endPos++;
+
+                    var length = endPos - pos + 1;
+                    if (pos - start + 1 < v) start = Math.Max(pos - v + length, start);
+                    if (end - endPos + 1 < v) end = Math.Min(endPos + v - length, end);
                 }
                 else
                 {
@@ -351,6 +361,7 @@ public readonly struct ValueSpace
     }
 
     public bool IsValid() => End - Start + 1 >= Value;
+    public int GetLength() => End - Start + 1;
 
     /// <summary>
     /// Inclusive

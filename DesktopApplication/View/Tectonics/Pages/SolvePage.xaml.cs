@@ -32,11 +32,11 @@ public partial class SolvePage : ITectonicSolveView
         TextBox.SetText(s);
     }
 
-    public void AddLog(INumericStep<ITectonicHighlighter> numericStep, StateShown stateShown)
+    public void AddLog(IStep step, StateShown stateShown)
     {
         LogPanel.Dispatcher.Invoke(() =>
         {
-            var lc = new StepControl(numericStep, stateShown);
+            var lc = new StepControl(step, stateShown);
             LogPanel.Children.Add(lc);
             lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
