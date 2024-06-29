@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using System.Windows.Threading;
 using DesktopApplication.Presenter.Nonograms.Solve;
 using DesktopApplication.View.Controls;
+using Model.Core.Changes;
+using Model.Utility;
 
 namespace DesktopApplication.View.Nonograms.Controls;
 
@@ -13,9 +14,10 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
 {
     private const int BackgroundIndex = 0;
     private const int LineIndex = 1;
-    private const int NumberIndex = 2;
+    private const int HighlightIndex = 2;
     private const int FillingIndex = 3;
     private const int UnavailableIndex = 4;
+    private const int NumberIndex = 5;
 
     private const int FillingShift = 3;
     private const int UnavailableThickness = 3;
@@ -107,7 +109,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         }
     }
     
-    public NonogramBoard() : base(5)
+    public NonogramBoard() : base(6)
     {
     }
 
@@ -175,6 +177,50 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     public void ClearUnavailable()
     {
         Dispatcher.Invoke(() => Layers[UnavailableIndex].Clear());
+    }
+
+    public void ClearHighlights()
+    {
+        Layers[HighlightIndex].Clear();
+    }
+
+    public void EncircleCells(HashSet<Cell> cells, ChangeColoration color)
+    {
+        //TODO
+    }
+
+    public void HighlightHorizontalValues(int row, int startIndex, int endIndex, ChangeColoration color)
+    {
+        var left = (_maxWidth - _rows[row].Count + startIndex) * _cellSize / 2;
+        var right = left + (endIndex - startIndex + 1) * _cellSize / 2;
+        var top = GetTop(row);
+        var bottom = top + _cellSize;
+
+        var hShift = _cellSize / 4;
+        var wShift = _cellSize / 10;
+        Layers[HighlightIndex].Add(new FilledRectangleComponent(new Rect(new Point(left + wShift, top + hShift),
+            new Point(right - wShift, bottom - hShift)), App.Current.ThemeInformation.ToBrush(color)));
+    }
+
+    public void HighlightVerticalValues(int col, int startIndex, int endIndex, ChangeColoration color)
+    {
+        //TODO
+    }
+
+    public void EncircleRowSection(int row, int startIndex, int endIndex, ChangeColoration color)
+    {
+        var left = GetLeft(startIndex) - _lineWidth / 2;
+        var top = GetTop(row) - _lineWidth / 2;
+        var bottom = top + _lineWidth + _cellSize;
+        var right = left + (endIndex - startIndex + 1) * (_lineWidth + _cellSize);
+        
+        Layers[HighlightIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(left, top),
+            new Point(right, bottom)), new Pen(App.Current.ThemeInformation.ToBrush(color), _lineWidth)));
+    }
+
+    public void EncircleColumnSection(int col, int startIndex, int endIndex, ChangeColoration color)
+    {
+        //TODO
     }
 
     private double GetTop(int row)

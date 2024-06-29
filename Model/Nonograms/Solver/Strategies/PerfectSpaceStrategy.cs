@@ -32,8 +32,8 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
                 cursor++;
             }
 
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                    IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
+            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectSpaceStrategyReportBuilder(
+                    space, row, Orientation.Horizontal)) && StopOnFirstPush) return;
         }
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
@@ -54,8 +54,8 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
                 cursor++;
             }
             
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                    IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
+            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectSpaceStrategyReportBuilder(
+                    space, col, Orientation.Vertical)) && StopOnFirstPush) return;
         }
     }
 }
@@ -78,8 +78,8 @@ public class PerfectSpaceStrategyReportBuilder : IChangeReportBuilder<Dichotomou
     {
         return new ChangeReport<INonogramHighlighter>("Perfect Space", lighter =>
         {
-            lighter.EncircleCells(_space.EnumerateCells(_orientation, _unit), ChangeColoration.CauseOnOne);
-            lighter.EncircleValues(_orientation, _unit, _space.FirstValueIndex, _space.LastValueIndex, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, ChangeColoration.CauseOnOne);
+            lighter.HighlightValues(_orientation, _unit, _space.FirstValueIndex, _space.LastValueIndex, ChangeColoration.CauseOnOne);
         });
     }
 

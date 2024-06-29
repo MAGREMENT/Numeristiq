@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Model.Core.Changes;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Nonograms.Solve;
 
@@ -11,4 +13,10 @@ public interface INonogramDrawer
     void ClearSolutions();
     void SetUnavailable(int row, int col);
     void ClearUnavailable();
+    void ClearHighlights();
+    void EncircleCells(HashSet<Cell> cells, ChangeColoration color);
+    void HighlightHorizontalValues(int row, int startIndex, int endIndex, ChangeColoration color);
+    void HighlightVerticalValues(int col, int startIndex, int endIndex, ChangeColoration color);
+    void EncircleRowSection(int row, int startIndex, int endIndex, ChangeColoration color);
+    void EncircleColumnSection(int col, int startIndex, int endIndex, ChangeColoration color);
 }

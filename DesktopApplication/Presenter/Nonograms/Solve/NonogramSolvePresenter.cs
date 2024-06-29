@@ -10,6 +10,7 @@ public class NonogramSolvePresenter
 {
     private readonly INonogramSolveView _view;
     private readonly NonogramSolver _solver;
+    private readonly NonogramHighlightTranslator _translator;
     
     private int _stepCount;
     private StateShown _stateShown = StateShown.Before;
@@ -18,6 +19,7 @@ public class NonogramSolvePresenter
     public NonogramSolvePresenter(INonogramSolveView view)
     {
         _view = view;
+        _translator = new NonogramHighlightTranslator(_view.Drawer);
         _solver = new NonogramSolver();
         _solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(), new NotEnoughSpaceStrategy(),
             new BridgingStrategy(), new EdgeValueStrategy(), new ValueOverlayStrategy());
@@ -62,7 +64,7 @@ public class NonogramSolvePresenter
 
             var log = _solver.Steps[index];
             ShowState(_stateShown == StateShown.Before ? log.From : log.To); 
-            //_translator.Translate(log.HighlightManager); 
+            _translator.Translate(log.HighlightManager); 
         }
     }
 
@@ -74,7 +76,7 @@ public class NonogramSolvePresenter
         
         var log = _solver.Steps[_currentlyOpenedStep];
         ShowState(_stateShown == StateShown.Before ? log.From : log.To); 
-        //_translator.Translate(log.HighlightManager);
+        _translator.Translate(log.HighlightManager);
     }
 
     public void RequestHighlightShift(bool isLeft)
@@ -85,8 +87,8 @@ public class NonogramSolvePresenter
         if(isLeft) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
         
-        //_view.Drawer.ClearHighlights();
-        //_translator.Translate(log.HighlightManager);
+        _view.Drawer.ClearHighlights();
+        _translator.Translate(log.HighlightManager);
         _view.SetCursorPosition(_currentlyOpenedStep, log.HighlightManager.CursorPosition());
     }
 
@@ -136,6 +138,7 @@ public class NonogramSolvePresenter
         var drawer = _view.Drawer;
         drawer.ClearSolutions();
         drawer.ClearUnavailable();
+        drawer.ClearHighlights();
         
         for (int row = 0; row < state.RowCount; row++)
         {
