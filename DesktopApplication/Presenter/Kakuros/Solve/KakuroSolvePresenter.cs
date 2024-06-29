@@ -4,6 +4,7 @@ using Model.Kakuros;
 using Model.Kakuros.Strategies;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Orientation = Model.Utility.Orientation;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 

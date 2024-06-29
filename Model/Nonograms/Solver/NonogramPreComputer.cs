@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Nonograms.Solver;
@@ -384,6 +385,14 @@ public readonly struct MainSpace
         End = end;
         FirstValueIndex = firstValueIndex;
         LastValueIndex = lastValueIndex;
+    }
+
+    public IEnumerable<Cell> EnumerateCells(Orientation orientation, int unit)
+    {
+        for (int i = Start; i <= End; i++)
+        {
+            yield return orientation == Orientation.Vertical ? new Cell(i, unit) : new Cell(unit, i);
+        }
     }
 
     public bool IsInvalid()

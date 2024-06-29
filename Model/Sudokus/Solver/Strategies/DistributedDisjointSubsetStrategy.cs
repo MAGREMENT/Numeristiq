@@ -136,7 +136,7 @@ public class DistributedDisjointSubsetStrategy : SudokuStrategy
     }
 }
 
-public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Dictionary<int, List<Cell>> _possibilitiesCells;
 
@@ -145,7 +145,7 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<Numer
         _possibilitiesCells = possibilitiesCells;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -164,7 +164,7 @@ public class DistributedDisjointSubsetReportBuilder : IChangeReportBuilder<Numer
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

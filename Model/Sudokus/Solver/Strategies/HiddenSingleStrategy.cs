@@ -55,7 +55,7 @@ public class HiddenSingleStrategy : SudokuStrategy
     }
 }
 
-public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Unit _unit;
 
@@ -64,7 +64,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, IUp
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Description(changes),
             lighter => ChangeReportHelper.HighlightChanges(lighter, changes), Explanation(changes));
@@ -90,7 +90,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, IUp
         return start;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         if(changes.Count == 0) return Clue<ISudokuHighlighter>.Default();
 

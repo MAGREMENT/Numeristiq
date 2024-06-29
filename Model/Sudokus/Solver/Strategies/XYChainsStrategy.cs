@@ -69,7 +69,7 @@ public class XYChainsStrategy : SudokuStrategy
     }
 }
 
-public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly CellPossibility[] _visited;
 
@@ -78,7 +78,7 @@ public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         _visited = visited.ToArray();
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -94,7 +94,7 @@ public class XYChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

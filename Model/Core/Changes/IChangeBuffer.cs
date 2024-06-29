@@ -104,7 +104,7 @@ public class DichotomousChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<Di
 }
 
 public class IChangeBuffer<TVerifier, THighlighter> : IChangeBuffer<NumericChange, TVerifier, THighlighter>
-    where TVerifier : IUpdatableNumericSolvingState
+    where TVerifier : INumericSolvingState
     where THighlighter : INumericSolvingStateHighlighter
 {
     private readonly HashSet<CellPossibility> _possibilitiesRemoved = new();

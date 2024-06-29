@@ -12,9 +12,9 @@ public interface ISudokuSolverData : ISudokuSolvingState, IPossibilitiesGiver
 { 
     IReadOnlySudoku Sudoku { get; }
     
-    IUpdatableSudokuSolvingState? StartState { get; }
+    ISudokuSolvingState? StartState { get; }
 
-    IChangeBuffer<IUpdatableSudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
+    IChangeBuffer<ISudokuSolvingState, ISudokuHighlighter> ChangeBuffer { get; }
     
     SudokuPreComputer PreComputer { get; }
     

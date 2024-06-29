@@ -43,7 +43,7 @@ public class AmountCoherencyStrategy : Strategy<IKakuroSolverData>
                     {
                         data.ChangeBuffer.ProposePossibilityRemoval(p, cell);
                         data.ChangeBuffer.Commit(
-                            DefaultNumericChangeReportBuilder<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>.Instance);
+                            DefaultNumericChangeReportBuilder<INumericSolvingState, INumericSolvingStateHighlighter>.Instance);
                     }
                 }
             }

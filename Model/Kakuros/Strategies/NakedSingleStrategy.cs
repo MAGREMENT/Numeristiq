@@ -21,7 +21,7 @@ public class NakedSingleStrategy : Strategy<IKakuroSolverData>
             
             data.ChangeBuffer.ProposeSolutionAddition(pos.FirstPossibility(), cell);
             data.ChangeBuffer.Commit(
-                DefaultNumericChangeReportBuilder<IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>.Instance);
+                DefaultNumericChangeReportBuilder<INumericSolvingState, INumericSolvingStateHighlighter>.Instance);
         }
     }
 }

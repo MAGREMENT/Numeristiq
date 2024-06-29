@@ -185,6 +185,8 @@ public class SudokuPlayer : IPlayerData, INumericSolvingState, IPossibilitiesGiv
         }
     }
 
+    public int RowCount => 9;
+    public int ColumnCount => 9;
     public int this[int row, int col] => _cells[row, col].Number();
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col) => _cells[row, col].PossibilitiesCount(MainLocation) > 0

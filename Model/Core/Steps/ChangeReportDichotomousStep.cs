@@ -13,12 +13,12 @@ public class ChangeReportDichotomousStep<THighlighter> : IDichotomousStep<THighl
     public string Description { get; }
     public ExplanationElement? Explanation { get; }
     public IReadOnlyList<DichotomousChange> Changes { get; }
-    public IUpdatableDichotomousSolvingState From { get; }
-    public IUpdatableDichotomousSolvingState To { get; }
+    public IDichotomousSolvingState From { get; }
+    public IDichotomousSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager { get; }
 
     public ChangeReportDichotomousStep(int id, Strategy maker, IReadOnlyList<DichotomousChange> changes,
-        ChangeReport<THighlighter> report, IUpdatableDichotomousSolvingState stateBefore)
+        ChangeReport<THighlighter> report, IDichotomousSolvingState stateBefore, IDichotomousSolvingState stateAfter)
     {
         Id = id;
         Title = maker.Name;
@@ -27,7 +27,7 @@ public class ChangeReportDichotomousStep<THighlighter> : IDichotomousStep<THighl
         Explanation = report.Explanation;
         Changes = changes;
         From = stateBefore;
-        To = stateBefore.Apply(changes);
+        To = stateAfter;
         HighlightManager = report.HighlightManager;
     }
 }

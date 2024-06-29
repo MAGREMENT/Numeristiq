@@ -449,7 +449,7 @@ public enum ParityTransfer
     Same, Opposite
 }
 
-public class ThorsHammerReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ThorsHammerReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<Cell> _cells;
     private readonly List<CellPossibility> _notInPattern;
@@ -460,7 +460,7 @@ public class ThorsHammerReportBuilder : IChangeReportBuilder<NumericChange, IUpd
         _notInPattern = notInPattern;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -478,7 +478,7 @@ public class ThorsHammerReportBuilder : IChangeReportBuilder<NumericChange, IUpd
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

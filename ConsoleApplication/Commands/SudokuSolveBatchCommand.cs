@@ -43,7 +43,7 @@ public class SudokuSolveBatchCommand : Command
             }
         }
         
-        var statistics = new StatisticsTracker<IUpdatableSudokuSolvingState>();
+        var statistics = new StatisticsTracker<ISudokuSolvingState>();
         statistics.AttachTo(solver);
 
         if (report.IsOptionUsed(FeedbackIndex)) statistics.SolveDone += OnSolveDone;
@@ -108,7 +108,7 @@ public class SudokuSolveBatchCommand : Command
         }
     }
 
-    private static void OnSolveDone(ISolveResult<IUpdatableSudokuSolvingState> result)
+    private static void OnSolveDone(ISolveResult<ISudokuSolvingState> result)
     {
         Console.Write($"#{1} "); //TODO
         if(result.IsResultCorrect()) Console.WriteLine("Ok !");

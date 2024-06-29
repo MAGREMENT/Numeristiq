@@ -488,7 +488,7 @@ public class JuniorExocetStrategy : SudokuStrategy
     
 }
 
-public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly DoubleTargetExocet _e;
 
@@ -497,7 +497,7 @@ public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<NumericChang
         _e = e;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var sCells = _e.AllPossibleSCells();
 
@@ -569,13 +569,13 @@ public class DoubleTargetExocetReportBuilder : IChangeReportBuilder<NumericChang
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
 }
 
-public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly JuniorExocet _je1;
     private readonly JuniorExocet _je2;
@@ -586,7 +586,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<NumericChang
         _je2 = je2;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> sCells = _je1.AllPossibleSCells();
 
@@ -638,7 +638,7 @@ public class DoubleJuniorExocetReportBuilder : IChangeReportBuilder<NumericChang
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

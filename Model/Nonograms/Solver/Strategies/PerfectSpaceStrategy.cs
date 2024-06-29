@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Highlighting;
+using Model.Utility;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -31,7 +33,7 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
             }
 
             if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                    IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                    IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
         }
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
@@ -53,8 +55,37 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
             }
             
             if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                    IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                    IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
         }
+    }
+}
+
+public class PerfectSpaceStrategyReportBuilder : IChangeReportBuilder<DichotomousChange, INonogramSolvingState,
+        INonogramHighlighter>
+{
+    private readonly MainSpace _space;
+    private readonly int _unit;
+    private readonly Orientation _orientation;
+
+    public PerfectSpaceStrategyReportBuilder(MainSpace space, int unit, Orientation orientation)
+    {
+        _space = space;
+        _unit = unit;
+        _orientation = orientation;
+    }
+
+    public ChangeReport<INonogramHighlighter> BuildReport(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
+    {
+        return new ChangeReport<INonogramHighlighter>("Perfect Space", lighter =>
+        {
+            lighter.EncircleCells(_space.EnumerateCells(_orientation, _unit), ChangeColoration.CauseOnOne);
+            lighter.EncircleValues(_orientation, _unit, _space.FirstValueIndex, _space.LastValueIndex, ChangeColoration.CauseOnOne);
+        });
+    }
+
+    public Clue<INonogramHighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
+    {
+        throw new System.NotImplementedException();
     }
 }
 

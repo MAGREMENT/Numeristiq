@@ -125,7 +125,7 @@ public class SetEquivalence
     public int SecondOrder { get; }
 }
 
-public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly SetEquivalence _equivalence;
 
@@ -134,7 +134,7 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericCha
         _equivalence = equivalence;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -152,7 +152,7 @@ public class GeometricEquivalenceReportBuilder : IChangeReportBuilder<NumericCha
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

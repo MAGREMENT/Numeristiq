@@ -123,7 +123,7 @@ public class UnitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement>[] _colorings;
     private readonly CellPossibility _target;
@@ -138,7 +138,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, I
         _graph = graph;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var highlights = new Highlight<ISudokuHighlighter>[_colorings.Length];
         var paths = new List<LinkGraphChain<ISudokuElement>>[_colorings.Length];
@@ -161,7 +161,7 @@ public class UnitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, I
         return new ChangeReport<ISudokuHighlighter>( "", highlights);
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

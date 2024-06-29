@@ -1,5 +1,6 @@
 ﻿using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -29,7 +30,7 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
                     }
 
                     if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
-                            DefaultDichotomousChangeReportBuilder<IUpdatableDichotomousSolvingState, object>
+                            DefaultDichotomousChangeReportBuilder<IDichotomousSolvingState, INonogramHighlighter>
                                 .Instance) && StopOnFirstPush) return;
                 }
 
@@ -55,7 +56,7 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
                     }
 
                     if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
-                            DefaultDichotomousChangeReportBuilder<IUpdatableDichotomousSolvingState, object>
+                            DefaultDichotomousChangeReportBuilder<IDichotomousSolvingState, INonogramHighlighter>
                                 .Instance) && StopOnFirstPush) return;
                 }
 

@@ -217,7 +217,7 @@ public class BandCollection : IPatternCollection
 public record BandPatternCandidate(BandPattern Pattern, int[] BoxKey, int[] WidthKey, int[][] LengthKeys, int Mini,
     Unit Unit);
 
-public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly BandPatternCandidate _candidate;
 
@@ -226,7 +226,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<Numeric
         _candidate = candidate;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var cells = GetCells();
         
@@ -270,7 +270,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<Numeric
         return start;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var cells = GetCells();
 

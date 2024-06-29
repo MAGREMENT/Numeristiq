@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text;
 using Model.Core;
-using Model.Sudokus.Solver.States;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -130,7 +129,7 @@ public static class SudokuTranslator
                 for (int i = 0; i < 9; i++)
                 {
                     var first = i % 3 == 0 ? "+" : "-";
-                    builder.Append(first + StringExtensions.Repeat('-', maxWidth));
+                    builder.Append(first + '-'.Repeat(maxWidth));
                 }
 
                 builder.Append("+\n");
@@ -143,7 +142,7 @@ public static class SudokuTranslator
                 var toPut = numericSolvingState[row, col] == 0
                     ? numericSolvingState.PossibilitiesAt(row, col).ToValuesString()
                     : $"<{numericSolvingState[row, col]}>";
-                builder.Append(first + StringExtensions.FillRightWith(toPut, ' ', maxWidth));
+                builder.Append(first + toPut.FillRightWith(' ', maxWidth));
             }
 
             builder.Append("|\n");
@@ -152,7 +151,7 @@ public static class SudokuTranslator
         for (int i = 0; i < 9; i++)
         {
             var first = i % 3 == 0 ? "+" : "-";
-            builder.Append(first + StringExtensions.Repeat('-', maxWidth));
+            builder.Append(first + '-'.Repeat(maxWidth));
         }
 
         builder.Append("+\n");
@@ -160,10 +159,10 @@ public static class SudokuTranslator
         return builder.ToString();
     }
 
-    public static StateArraySolvingState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
+    public static INumericSolvingState TranslateGridFormat(string grid, bool soloPossibilityToGiven)
     {
         grid += ' ';
-        var result = new StateArraySolvingState();
+        var result = new DefaultNumericSolvingState(9, 9);
         
         try
         {
@@ -198,16 +197,16 @@ public static class SudokuTranslator
                         
                     if (isNumber && numberBuffer != -1)
                     {
-                        result.Set(row, col, new CellState(numberBuffer));
+                        result[row, col] = numberBuffer;
                         isNumber = false;
                         numberBuffer = -1;
                         pos++;
                     }
                     else if (possibilitiesBuffer is not null)
                     {
-                        result.Set(row, col, soloPossibilityToGiven && possibilitiesBuffer.Value.Count == 1 
-                            ? new CellState(possibilitiesBuffer.Value.FirstPossibility()) 
-                            : CellState.FromBits(possibilitiesBuffer.Value.Bits));
+                        if (soloPossibilityToGiven && possibilitiesBuffer.Value.Count == 1)
+                            result[row, col] = possibilitiesBuffer.Value.FirstPossibility();
+                        else result.SetPossibilitiesAt(row, col, possibilitiesBuffer.Value);
                         possibilitiesBuffer = null;
                         pos++;
                     }
@@ -225,9 +224,9 @@ public static class SudokuTranslator
         return result;
     }
 
-    public static StateArraySolvingState TranslateBase32Format(string s, IBase32Translator translator)
+    public static INumericSolvingState TranslateBase32Format(string s, IBase32Translator translator)
     {
-        var result = new StateArraySolvingState();
+        var result = new DefaultNumericSolvingState(9, 9);
 
         for (int i = 0; i < s.Length / 2 && i < 81; i++)
         {
@@ -236,10 +235,9 @@ public static class SudokuTranslator
 
             var bits = translator.ToInt(s[i * 2]) << 5 | translator.ToInt(s[i * 2 + 1]);
             var bitSet = ReadOnlyBitSet16.FromBits((ushort)(bits & ~1));
-            
-            result.Set(row, col, (bits & 1) > 0 
-                ? new CellState(bitSet.FirstPossibility()) 
-                : CellState.FromBits(bitSet.Bits));
+
+            if ((bits & 1) > 0) result[row, col] = bitSet.FirstPossibility();
+            else result.SetPossibilitiesAt(row, col, bitSet);
         }
 
         return result;

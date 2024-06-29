@@ -5,8 +5,8 @@ using System.Windows.Media;
 using DesktopApplication.Presenter.Kakuros.Solve;
 using DesktopApplication.View.Controls;
 using DesktopApplication.View.Tectonics.Controls;
-using Model.Kakuros;
 using Model.Utility;
+using Orientation = Model.Utility.Orientation;
 
 namespace DesktopApplication.View.Kakuros.Controls;
 

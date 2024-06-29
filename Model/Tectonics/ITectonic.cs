@@ -43,8 +43,7 @@ public interface IReadOnlyTectonic : INumericSolvingState, ICopyable<ITectonic>
 
     public bool IsCorrect();
     public bool IsComplete();
-
-    public ITectonic Copy();
+    
     public ITectonic CopyWithoutDigits();
     public ITectonic Transfer(int rowCount, int columnCount);
 }

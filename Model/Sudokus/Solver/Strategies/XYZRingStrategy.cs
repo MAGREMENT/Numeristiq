@@ -137,7 +137,7 @@ public class XYZRingStrategy : SudokuStrategy
     }
 }
 
-public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell _hinge;
     private readonly Cell _hingeRow;
@@ -156,7 +156,7 @@ public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         _poss = poss;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
@@ -186,7 +186,7 @@ public class XYZRingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
             $"XYZ-Ring in {_hinge}, {_hingeRow} & {_hingeColumn} + {new CellPossibility(_hingeRow, _poss)}" +
             $" - {_rowFriend} = {_columnFriend} - {new CellPossibility(_hingeColumn, _poss)}";
 
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -99,7 +99,7 @@ public interface IMultiSectorCellsSearcher
     public IEnumerable<GridPositions> SearchGrids(ISudokuSolverData solverData);
 }
 
-public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly GridPositions _grid;
     private readonly IReadOnlyList<PossibilityCovers> _covers;
@@ -112,7 +112,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<NumericCh
         _alternatives = alternatives;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var cu = new CoveringUnits(_covers);
         
@@ -152,7 +152,7 @@ public class MultiSectorLockedSetsReportBuilder : IChangeReportBuilder<NumericCh
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
@@ -178,7 +178,7 @@ public class CoveringUnits
         }
     }
 
-    public Highlight<ISudokuHighlighter>[] Highlight(IUpdatableSudokuSolvingState snapshot, GridPositions gp)
+    public Highlight<ISudokuHighlighter>[] Highlight(ISudokuSolvingState snapshot, GridPositions gp)
     {
         var n = (int)ChangeColoration.CauseOffOne;
         var i = 0;

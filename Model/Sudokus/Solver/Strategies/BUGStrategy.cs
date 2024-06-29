@@ -69,7 +69,7 @@ public class BUGStrategy : SudokuStrategy
     }
 }
 
-public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<CellPossibility> _additionalCandidates;
 
@@ -78,7 +78,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, IUpd
         _additionalCandidates = additionalCandidates;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -91,7 +91,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, IUpd
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

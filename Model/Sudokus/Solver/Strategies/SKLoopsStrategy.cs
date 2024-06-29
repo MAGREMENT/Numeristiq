@@ -308,7 +308,7 @@ public class PossibilitiesAndNumber
     public int Number { get; }
 }
 
-public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Cell[] _cells;
     private readonly ReadOnlyBitSet16[] _links;
@@ -319,7 +319,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         _links = links;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         List<CellPossibility> on = new();
         List<CellPossibility> off = new();
@@ -369,7 +369,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         });
     }
     
-    private IEnumerable<Cell> CrossRow(IUpdatableSudokuSolvingState snapshot, Cell cell)
+    private IEnumerable<Cell> CrossRow(ISudokuSolvingState snapshot, Cell cell)
     {
         int startCol = cell.Column / 3 * 3;
 
@@ -383,7 +383,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         }
     }
 
-    private IEnumerable<Cell> CrossCol(IUpdatableSudokuSolvingState snapshot, Cell cell)
+    private IEnumerable<Cell> CrossCol(ISudokuSolvingState snapshot, Cell cell)
     {
         int startRow = cell.Row / 3 * 3;
 
@@ -397,7 +397,7 @@ public class SKLoopsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         }
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

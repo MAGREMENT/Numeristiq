@@ -95,7 +95,7 @@ public class SkyscraperStrategy : SudokuStrategy
     }
 }
 
-public class SkyscraperReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SkyscraperReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Unit _unit;
     private readonly int _unit1;
@@ -115,7 +115,7 @@ public class SkyscraperReportBuilder : IChangeReportBuilder<NumericChange, IUpda
         _possibility = possibility;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -133,7 +133,7 @@ public class SkyscraperReportBuilder : IChangeReportBuilder<NumericChange, IUpda
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

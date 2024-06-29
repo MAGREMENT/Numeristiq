@@ -151,7 +151,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
     }
 }
 
-public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Chain<IPossibilitiesPositions, Cell> _chain;
     private readonly List<Link<CellPossibility>> _links;
@@ -171,7 +171,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
         _additionalLink = additionalLink;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
         {
@@ -204,7 +204,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

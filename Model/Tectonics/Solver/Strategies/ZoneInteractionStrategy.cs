@@ -41,7 +41,7 @@ public class ZoneInteractionStrategy : Strategy<ITectonicSolverData>
     }
 }
 
-public class ZoneInteractionReportBuilder : IChangeReportBuilder<NumericChange, ITectonicSolvingState, ITectonicHighlighter>
+public class ZoneInteractionReportBuilder : IChangeReportBuilder<NumericChange, INumericSolvingState, ITectonicHighlighter>
 {
     private readonly IZone _zone;
 
@@ -50,7 +50,7 @@ public class ZoneInteractionReportBuilder : IChangeReportBuilder<NumericChange, 
         _zone = zone;
     }
 
-    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ITectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         return new ChangeReport<ITectonicHighlighter>("", lighter =>
         {
@@ -73,7 +73,7 @@ public class ZoneInteractionReportBuilder : IChangeReportBuilder<NumericChange, 
         });
     }
 
-    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ITectonicSolvingState snapshot)
+    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         return Clue<ITectonicHighlighter>.Default();
     }

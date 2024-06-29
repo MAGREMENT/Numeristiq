@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
-using Model.Kakuros;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -187,6 +186,28 @@ public class Nonogram : IReadOnlyNonogram
         return true;
     }
 
+    public int GetRowSolutionCount(int row)
+    {
+        var current = 0;
+        for (int c = 0; c < RowCount; c++)
+        {
+            if (this[row, c]) current++;
+        }
+
+        return current;
+    }
+
+    public int GetColumnSolutionCount(int column)
+    {
+        var current = 0;
+        for (int r = 0; r < RowCount; r++)
+        {
+            if (this[r, column]) current++;
+        }
+
+        return current;
+    }
+
     public override string ToString()
     {
         var maxDepth = 0;
@@ -293,6 +314,8 @@ public interface IReadOnlyNonogram
     bool IsHorizontalLineCorrect(int index);
     bool IsVerticalLineCorrect(int index);
     bool IsCorrect();
+    public int GetRowSolutionCount(int row);
+    public int GetColumnSolutionCount(int column);
 }
 
 public readonly struct NonogramLine
@@ -388,20 +411,6 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         }
 
         return result;
-    }
-
-    public int SpaceNeeded(int index)
-    {
-        var l = _list[index];
-        if (l.Count == 0) return 0;
-
-        var total = l[0];
-        for (int i = 1; i < l.Count; i++)
-        {
-            total += 1 + l[i];
-        }
-
-        return total;
     }
 
     public int TotalExpected(int index)

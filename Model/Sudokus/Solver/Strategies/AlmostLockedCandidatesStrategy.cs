@@ -330,7 +330,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
     }
 }
 
-public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _als;
     private readonly IEnumerable<Cell> _correspondence;
@@ -343,7 +343,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
         _centerCells = centerCells;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -370,7 +370,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

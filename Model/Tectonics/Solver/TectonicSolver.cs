@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.Changes;
 using Model.Core.Graphs;
 using Model.Core.Highlighting;
 using Model.Tectonics.Solver.Utility;
@@ -8,13 +9,13 @@ using Model.Utility.BitSets;
 
 namespace Model.Tectonics.Solver;
 
-public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData>, IUpdatableTectonicSolvingState,
+public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData>, INumericSolvingState,
     ITectonicHighlighter>, ITectonicSolverData, INumericSolvingState
 {
     private ITectonic _tectonic;
     private ReadOnlyBitSet8[,] _possibilities;
 
-    public override IUpdatableTectonicSolvingState StartState { get; protected set; }
+    public override INumericSolvingState StartState { get; protected set; } = new DefaultNumericSolvingState(0, 0);
     public IReadOnlyTectonic Tectonic => _tectonic;
     public LinkGraphManager<ITectonicSolverData, ITectonicElement> Graphs { get; }
 
@@ -22,8 +23,7 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
     {
         _tectonic = new BlankTectonic();
         _possibilities = new ReadOnlyBitSet8[0, 0];
-
-        StartState = new StateArraySolvingState(this);
+        
         Graphs = new LinkGraphManager<ITectonicSolverData, ITectonicElement>(this, new TectonicConstructRuleBank());
     }
 
@@ -51,7 +51,9 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
     {
         return _possibilities[row, col];
     }
-    
+
+    public int RowCount => _tectonic.RowCount;
+    public int ColumnCount => _tectonic.ColumnCount;
     public int this[int row, int col] => _tectonic[row, col];
     
     public ReadOnlyBitSet8 ZonePositionsFor(int zone, int n) //TODO To buffer
@@ -91,9 +93,9 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
         return _tectonic[cp.Row, cp.Column] == 0;
     }
 
-    protected override IUpdatableTectonicSolvingState GetSolvingState()
+    protected override DefaultNumericSolvingState GetSolvingState()
     {
-        return new StateArraySolvingState(this);
+        return new DefaultNumericSolvingState(_tectonic.RowCount, _tectonic.ColumnCount, this);
     }
 
     public override bool IsResultCorrect()
@@ -110,7 +112,38 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
     {
         return _solutionCount == _tectonic.RowCount * _tectonic.ColumnCount;
     }
-    
+
+    protected override DefaultNumericSolvingState ApplyChangesToState(INumericSolvingState state, IEnumerable<NumericChange> changes)
+    {
+        var result = DefaultNumericSolvingState.Copy(state);
+
+        foreach (var progress in changes)
+        {
+            if (progress.Type == ChangeType.PossibilityRemoval)
+            {
+                result.RemovePossibility(progress.Number, progress.Row, progress.Column);
+            }
+            else
+            {
+                result[progress.Row, progress.Column] = progress.Number;
+
+                foreach (var neighbor in TectonicCellUtility.GetNeighbors(progress.Row, progress.Column,
+                             _tectonic.RowCount, _tectonic.ColumnCount))
+                {
+                    result.RemovePossibility(progress.Number, neighbor.Row, neighbor.Column);
+                }
+
+                var zone = _tectonic.GetZone(progress.Row, progress.Column);
+                foreach (var cell in zone)
+                {
+                    result.RemovePossibility(progress.Number, cell.Row,cell.Column);
+                }
+            }
+        }
+
+        return result;
+    }
+
     #region Private
     
     private void InitCandidates()

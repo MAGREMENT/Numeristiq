@@ -193,7 +193,7 @@ public class FinnedGridFormationStrategy : SudokuStrategy
     }
 }
 
-public class FinnedGridFormationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FinnedGridFormationReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyLinePositions _mashed;
     private readonly IReadOnlyLinePositions _visited;
@@ -210,7 +210,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder<NumericChan
         _number = number;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> normal = new();
         List<Cell> finned = new();
@@ -255,7 +255,7 @@ public class FinnedGridFormationReportBuilder : IChangeReportBuilder<NumericChan
             });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

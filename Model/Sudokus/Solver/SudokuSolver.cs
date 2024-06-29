@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
+using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.States;
 using Model.Sudokus.Solver.Utility.AlmostLockedSets;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -11,7 +11,7 @@ namespace Model.Sudokus.Solver;
 
 //TODO => Documentation + Explanation + Review highlighting for each strategy
 //TODO => For each strategy using old als, revamp
-public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudokuSolvingState, ISudokuHighlighter>,
+public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolvingState, ISudokuHighlighter>,
     ISudokuSolverData
 {
     private Sudoku _sudoku;
@@ -20,8 +20,8 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
     private readonly LinePositions[,] _rowsPositions = new LinePositions[9, 9];
     private readonly LinePositions[,] _colsPositions = new LinePositions[9, 9];
     private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
-    
-    public override IUpdatableSudokuSolvingState StartState { get; protected set; }
+
+    public override ISudokuSolvingState StartState { get; protected set; } = new DefaultNumericSolvingState(9, 9);
     public IReadOnlySudoku Sudoku => _sudoku;
     public bool UniquenessDependantStrategiesAllowed => StrategyManager.UniquenessDependantStrategiesAllowed;
     public SudokuPreComputer PreComputer { get; }
@@ -37,7 +37,6 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
         CallOnNewSudokuForEachStrategy();
         InitPossibilities();
         
-        StartState = new StateArraySolvingState(this);
         PreComputer = new SudokuPreComputer(this);
         AlmostHiddenSetSearcher = new AlmostHiddenSetSearcher(this);
         AlmostNakedSetSearcher = new AlmostNakedSetSearcher(this);
@@ -111,6 +110,8 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
 
     #region IStrategyUser
 
+    public int RowCount => 9;
+    public int ColumnCount => 9;
     public int this[int row, int col] => _sudoku[row, col];
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col)
@@ -145,9 +146,9 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
 
     #endregion
 
-    protected override IUpdatableSudokuSolvingState GetSolvingState()
+    protected override ISudokuSolvingState GetSolvingState()
     {
-        return new StateArraySolvingState(this);
+        return new DefaultNumericSolvingState(9, 9, this);
     }
 
     public override bool IsResultCorrect()
@@ -216,6 +217,42 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, IUpdatableSudo
     protected override bool IsComplete()
     {
         return _solutionCount == 81;
+    }
+
+    protected override DefaultNumericSolvingState ApplyChangesToState(ISudokuSolvingState state, IEnumerable<NumericChange> changes)
+    {
+        var result = DefaultNumericSolvingState.Copy(state);
+
+        foreach (var change in changes)
+        {
+            if (change.Type == ChangeType.PossibilityRemoval)
+            {
+                result.RemovePossibility(change.Number, change.Row, change.Column);
+            }
+            else
+            {
+                result[change.Row, change.Column] = change.Number;
+                        
+                for (int unit = 0; unit < 9; unit++)
+                {
+                    result.RemovePossibility(change.Number, unit, change.Column);
+                    result.RemovePossibility(change.Number, change.Row, unit);
+                }
+        
+                for (int mr = 0; mr < 3; mr++)
+                {
+                    for (int mc = 0; mc < 3; mc++)
+                    {
+                        var row = change.Row / 3 * 3 + mr;
+                        var col = change.Column / 3 * 3 + mc;
+                                
+                        result.RemovePossibility(change.Number, row, col);
+                    }
+                }
+            }
+        }
+
+        return result;
     }
 
     #region Private

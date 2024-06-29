@@ -92,7 +92,7 @@ public class GroupEliminationStrategy : Strategy<ITectonicSolverData>, ICommitCo
     }
 }
 
-public class GroupEliminationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableTectonicSolvingState, ITectonicHighlighter>
+public class GroupEliminationReportBuilder : IChangeReportBuilder<NumericChange, INumericSolvingState, ITectonicHighlighter>
 {
     public Cell[] Cells { get; }
 
@@ -101,7 +101,7 @@ public class GroupEliminationReportBuilder : IChangeReportBuilder<NumericChange,
         Cells = cells;
     }
 
-    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableTectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         return new ChangeReport<ITectonicHighlighter>("", lighter =>
         {
@@ -114,7 +114,7 @@ public class GroupEliminationReportBuilder : IChangeReportBuilder<NumericChange,
         });
     }
 
-    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableTectonicSolvingState snapshot)
+    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         return Clue<ITectonicHighlighter>.Default();
     }

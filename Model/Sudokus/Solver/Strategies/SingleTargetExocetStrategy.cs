@@ -55,7 +55,7 @@ public class SingleTargetExocetStrategy : SudokuStrategy
     }
 }
 
-public class SingleTargetExocetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SingleTargetExocetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly SingleTargetExocet _e;
 
@@ -64,7 +64,7 @@ public class SingleTargetExocetReportBuilder : IChangeReportBuilder<NumericChang
         _e = e;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var sCells = _e.AllPossibleSCells();
 
@@ -138,7 +138,7 @@ public class SingleTargetExocetReportBuilder : IChangeReportBuilder<NumericChang
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

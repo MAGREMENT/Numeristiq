@@ -1,22 +1,24 @@
-﻿using Model.Core;
+﻿using System.Collections.Generic;
+using Model.Core;
+using Model.Core.Changes;
+using Model.Core.Highlighting;
 using Model.Utility;
 
 namespace Model.Nonograms.Solver;
 
-public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolverData>, IUpdatableDichotomousSolvingState, object>,
-    INonogramSolverData
+public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolverData>, INonogramSolvingState, INonogramHighlighter>,
+    INonogramSolverData, IDichotomousSolvingState
 {
     private int _completedLines;
     private Nonogram _nonogram = new();
     private bool[,] _availability = new bool[0, 0]; //TODO infinite bitSet
     
-    public override IUpdatableDichotomousSolvingState StartState { get; protected set; }
+    public override INonogramSolvingState StartState { get; protected set; } = new DefaultDichotomousSolvingState(0, 0);
     public IReadOnlyNonogram Nonogram => _nonogram;
     public NonogramPreComputer PreComputer { get; }
 
     public NonogramSolver()
     {
-        StartState = new NonogramSolvingState();
         PreComputer = new NonogramPreComputer(this);
     }
 
@@ -31,9 +33,9 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         OnNewSolvable();
     }
     
-    protected override IUpdatableDichotomousSolvingState GetSolvingState()
+    protected override INonogramSolvingState GetSolvingState()
     {
-        return new NonogramSolvingState();
+        return new DefaultDichotomousSolvingState(_nonogram.RowCount, _nonogram.ColumnCount, this);
     }
 
     public override bool IsResultCorrect()
@@ -61,6 +63,39 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         return _completedLines == _nonogram.RowCount + _nonogram.ColumnCount;
     }
 
+    protected override INonogramSolvingState ApplyChangesToState(INonogramSolvingState state, IEnumerable<DichotomousChange> changes)
+    {
+        var result = DefaultDichotomousSolvingState.Copy(state);
+
+        foreach (var change in changes)
+        {
+            result.SetAvailability(change.Row, change.Column, false);
+            if (change.Type != ChangeType.SolutionAddition) continue;
+            
+            result[change.Row, change.Column] = true;
+            if (_nonogram.GetRowSolutionCount(change.Row) ==
+                _nonogram.HorizontalLineCollection.TotalExpected(change.Row))
+            {
+                for (int col = 0; col < state.ColumnCount; col++)
+                {
+                    result.SetAvailability(change.Row, col, false);
+                }
+            }
+
+
+            if (_nonogram.GetColumnSolutionCount(change.Column) ==
+                _nonogram.VerticalLineCollection.TotalExpected(change.Column))
+            {
+                for (int row = 0; row < state.RowCount; row++)
+                {
+                    result.SetAvailability(row, change.Column, false);
+                }
+            }
+        }
+
+        return result;
+    }
+
     public override bool CanRemovePossibility(Cell cell)
     {
         return _availability[cell.Row, cell.Column];
@@ -78,22 +113,12 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
         _currentState = null;
         _nonogram[row, col] = true;
         _availability[row, col] = false;
-
-        var current = 0;
-        for (int r = 0; r < _nonogram.RowCount; r++)
-        {
-            if (_nonogram[r, col]) current++;
-        }
-
-        if (current == _nonogram.VerticalLineCollection.TotalExpected(col)) OnVerticalLineCompletion(col);
         
-        current = 0;
-        for (int c = 0; c < _nonogram.RowCount; c++)
-        {
-            if (_nonogram[row, c]) current++;
-        }
+        if (_nonogram.GetRowSolutionCount(row) == _nonogram.HorizontalLineCollection.TotalExpected(row))
+            OnHorizontalLineCompletion(row);
 
-        if (current == _nonogram.HorizontalLineCollection.TotalExpected(row)) OnHorizontalLineCompletion(row);
+        if (_nonogram.GetColumnSolutionCount(col) == _nonogram.VerticalLineCollection.TotalExpected(col))
+            OnVerticalLineCompletion(col);
 
         return true;
     }
@@ -107,6 +132,11 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
 
         return true;
     }
+
+    public int RowCount => _nonogram.RowCount;
+    public int ColumnCount => _nonogram.ColumnCount;
+
+    public bool this[int row, int col] => _nonogram[row, col];
 
     public bool IsAvailable(int row, int col) => _availability[row, col];
 

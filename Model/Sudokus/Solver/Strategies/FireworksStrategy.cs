@@ -419,7 +419,7 @@ public class Fireworks
 
 public static class FireworksHighlightUtils
 {
-    public static void Highlight(ISudokuHighlighter lighter, Fireworks firework, IUpdatableSudokuSolvingState snapshot, ref int startColor)
+    public static void Highlight(ISudokuHighlighter lighter, Fireworks firework, ISudokuSolvingState snapshot, ref int startColor)
     {
         foreach (var possibility in firework.Possibilities.EnumeratePossibilities())
         {
@@ -439,7 +439,7 @@ public static class FireworksHighlightUtils
     }
 }
 
-public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks[] _fireworks;
 
@@ -448,7 +448,7 @@ public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, IUpdat
         _fireworks = fireworks;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -463,13 +463,13 @@ public class FireworksReportBuilder : IChangeReportBuilder<NumericChange, IUpdat
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
 }
 
-public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
     private readonly IPossibilitiesPositions[] _als;
@@ -480,7 +480,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<N
         _als = als;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -502,13 +502,13 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<N
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
 }
 
-public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks _fireworks;
     private readonly CellPossibility[] _cells;
@@ -519,7 +519,7 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<Numeric
         _cells = cells;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -537,13 +537,13 @@ public class FireworksWithStrongLinkReportBuilder : IChangeReportBuilder<Numeric
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
 }
 
-public class FireworksWithCellReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FireworksWithCellReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly Fireworks[] _fireworks;
     private readonly Cell _cell;
@@ -554,7 +554,7 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder<NumericChange
         _cell = cell;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -570,7 +570,7 @@ public class FireworksWithCellReportBuilder : IChangeReportBuilder<NumericChange
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

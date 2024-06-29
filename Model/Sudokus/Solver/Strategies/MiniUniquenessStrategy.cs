@@ -118,7 +118,7 @@ public class MiniUniquenessStrategy : SudokuStrategy
     }
 }
 
-public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _mini;
     private readonly Unit _unit;
@@ -131,7 +131,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, I
         _presence = presence;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -154,7 +154,7 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, I
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -108,7 +108,7 @@ public interface IReportBuilderWithChain
     public int Length();
 }
 
-public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphLoop<T> _loop;
     private readonly LoopType _type;
@@ -119,7 +119,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<Num
         _type = type;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
@@ -166,7 +166,7 @@ public class AlternatingInferenceLoopReportBuilder<T> : IChangeReportBuilder<Num
         return _loop.Count;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }
@@ -177,7 +177,7 @@ public enum LoopType
     NiceLoop, WeakInference, StrongInference
 }
 
-public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
+public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>, IReportBuilderWithChain where T : ISudokuElement
 {
     private readonly LinkGraphChain<T> _chain;
 
@@ -186,7 +186,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<Nu
         _chain = chain;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>(Explanation(),
             lighter =>
@@ -227,7 +227,7 @@ public class AlternatingInferenceChainReportBuilder<T> : IChangeReportBuilder<Nu
         return _chain.Count;
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

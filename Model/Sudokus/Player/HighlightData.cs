@@ -38,9 +38,9 @@ public readonly struct HighlightData
     public HighlightData ApplyColorToCell(HighlightColor color)
     {
         return ((_cellColors >> (int)color) & 1) > 0 
-            ? new HighlightData((ushort)(_cellColors | (1 << (int)color)), _bottomPossibilitiesColor,
+            ? new HighlightData((ushort)(_cellColors & ~(1 << (int)color)), _bottomPossibilitiesColor,
                 _middlePossibilitiesColor, _topPossibilitiesColor) 
-            : new HighlightData((ushort)(_cellColors & ~(1 << (int)color)), _bottomPossibilitiesColor,
+            : new HighlightData((ushort)(_cellColors | (1 << (int)color)), _bottomPossibilitiesColor,
                 _middlePossibilitiesColor, _topPossibilitiesColor);
     }
 

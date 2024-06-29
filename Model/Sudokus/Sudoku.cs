@@ -11,6 +11,9 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
     private const int GridSize = 9;
 
     private readonly int[,] _grid;
+    
+    public int RowCount => 9;
+    public int ColumnCount => 9;
 
     public Sudoku() => _grid = new int[GridSize, GridSize];
 
@@ -100,7 +103,7 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
         return total;
     }
 
-    public int RowCount(int row, int number)
+    public int GetRowSolutionCount(int row, int number)
     {
         int result = 0;
         for (int col = 0; col < 9; col++)
@@ -111,7 +114,7 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
         return result;
     }
 
-    public int ColumnCount(int col, int number)
+    public int GetColumnSolutionCount(int col, int number)
     {
         int result = 0;
         for (int row = 0; row < 9; row++)
@@ -122,7 +125,7 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
         return result;
     }
 
-    public int MiniGridCount(int miniRow, int miniCol, int number)
+    public int GetMiniGridSolutionCount(int miniRow, int miniCol, int number)
     {
         int result = 0;
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -130,20 +133,6 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
             for (int gridCol = 0; gridCol < 3; gridCol++)
             {
                 if (_grid[miniRow * 3 + gridRow, miniCol * 3 + gridCol] == number) result++;
-            }
-        }
-
-        return result;
-    }
-
-    public int NumberCount()
-    {
-        int result = 0;
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
-                if (this[row, col] != 0) result++;
             }
         }
 
@@ -204,8 +193,9 @@ public enum Unit
 public interface IReadOnlySudoku : INumericSolvingState
 {
     public bool IsCorrect();
-    public int RowCount(int row, int number);
-    public int ColumnCount(int column, int number);
-    public int MiniGridCount(int miniRow, int miniCol, int number);
+    public int GetSolutionCount();
+    public int GetRowSolutionCount(int row, int number);
+    public int GetColumnSolutionCount(int column, int number);
+    public int GetMiniGridSolutionCount(int miniRow, int miniCol, int number);
     public Sudoku Copy();
 }

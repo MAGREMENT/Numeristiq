@@ -85,8 +85,3 @@ public interface IKakuroSum : IEnumerable<Cell>
                                                          && s.Orientation == sum.Orientation 
                                                          && s.GetStartCell() == sum.GetStartCell();
 }
-
-public enum Orientation
-{
-    Vertical, Horizontal
-}

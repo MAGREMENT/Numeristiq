@@ -510,8 +510,7 @@
 			    <ContentPresenter
 				    Margin="0"
 				    HorizontalAlignment="Center"
-				    VerticalAlignment="Center"
-				    RecognizesAccessKey="True"/>
+				    VerticalAlignment="Center"/>
 		    </Border>
 					    
 		    <ControlTemplate.Triggers>
@@ -542,7 +541,7 @@
 	    <Style x:Key="SolvePageButtonStyle" TargetType="Button">
 		    <Setter Property="Foreground" Value="{DynamicResource Text}"/>
 		    <Setter Property="FontSize" Value="18"/>
-		    <Setter Property="Padding" Value="10"></Setter>
+		    <Setter Property="Padding" Value="10"/>
 		    <Setter Property="Template" Value="{StaticResource LightUpButtonTemplate}"/>
 		    <Setter Property="BorderBrush" Value="{DynamicResource Background3}"/>
 	    </Style>

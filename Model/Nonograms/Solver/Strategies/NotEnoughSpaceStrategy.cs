@@ -1,5 +1,6 @@
 ﻿using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -66,7 +67,7 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
         }
 
         return data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
-            DefaultDichotomousChangeReportBuilder<IUpdatableDichotomousSolvingState, object>
+            DefaultDichotomousChangeReportBuilder<IDichotomousSolvingState, INonogramHighlighter>
                 .Instance) && StopOnFirstPush;
     }
     
@@ -80,7 +81,7 @@ public class NotEnoughSpaceStrategy : Strategy<INonogramSolverData>
         }
 
         return data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
-            DefaultDichotomousChangeReportBuilder<IUpdatableDichotomousSolvingState, object>
+            DefaultDichotomousChangeReportBuilder<IDichotomousSolvingState, INonogramHighlighter>
                 .Instance) && StopOnFirstPush;
     }
 }

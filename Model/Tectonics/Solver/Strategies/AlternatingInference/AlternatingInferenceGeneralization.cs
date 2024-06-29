@@ -83,7 +83,7 @@ public interface IAlternatingInferenceType
     ILinkGraph<ITectonicElement> GetGraph(ITectonicSolverData solverData);
 }
 
-public class AlternatingInferenceReportBuilder : IChangeReportBuilder<NumericChange, ITectonicSolvingState, ITectonicHighlighter>
+public class AlternatingInferenceReportBuilder : IChangeReportBuilder<NumericChange, INumericSolvingState, ITectonicHighlighter>
 {
     private readonly CellPossibility _end;
     private readonly Dictionary<ITectonicElement, ITectonicElement> _on;
@@ -97,7 +97,7 @@ public class AlternatingInferenceReportBuilder : IChangeReportBuilder<NumericCha
         _off = off;
     }
 
-    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ITectonicSolvingState snapshot)
+    public ChangeReport<ITectonicHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         var chain = ReconstructChain();
         return new ChangeReport<ITectonicHighlighter>(Description(chain), lighter =>
@@ -128,7 +128,7 @@ public class AlternatingInferenceReportBuilder : IChangeReportBuilder<NumericCha
         return builder.ToString();
     }
 
-    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ITectonicSolvingState snapshot)
+    public Clue<ITectonicHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, INumericSolvingState snapshot)
     {
         return Clue<ITectonicHighlighter>.Default();
     }

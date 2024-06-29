@@ -376,7 +376,7 @@ public class ColumnBUGLiteCondition : IBUGLiteCondition
     }
 }
 
-public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IEnumerable<BiCellPossibilities> _bcp;
 
@@ -385,7 +385,7 @@ public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         _bcp = bcp;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -402,7 +402,7 @@ public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, IUpdatab
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

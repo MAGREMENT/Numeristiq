@@ -103,7 +103,7 @@ public class XYWingStrategy : SudokuStrategy
     }
 }
 
-public class XYWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class XYWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _hingeRow;
     private readonly int _hingeCol;
@@ -122,7 +122,7 @@ public class XYWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatabl
         _col2 = col2;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -134,7 +134,7 @@ public class XYWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatabl
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -234,7 +234,7 @@ public class SueDeCoqStrategy : SudokuStrategy
     }
 }
 
-public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IPossibilitiesPositions _boxPP;
     private readonly IPossibilitiesPositions _unitPP;
@@ -248,7 +248,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, IUpdata
         _centerCells = centerCells;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -280,7 +280,7 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, IUpdata
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

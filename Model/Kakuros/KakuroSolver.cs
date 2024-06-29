@@ -1,24 +1,25 @@
-﻿using Model.Core;
+﻿using System.Collections.Generic;
+using Model.Core;
+using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Kakuros;
 
-public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, IUpdatableNumericSolvingState, INumericSolvingStateHighlighter>,
+public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, INumericSolvingState, INumericSolvingStateHighlighter>,
     IKakuroSolverData
 {
     private IKakuro _kakuro = new SumListKakuro();
     private ReadOnlyBitSet16[,] _possibilities = new ReadOnlyBitSet16[0, 0];
 
-    public override IUpdatableNumericSolvingState StartState { get; protected set; }
+    public override INumericSolvingState StartState { get; protected set; } = new DefaultNumericSolvingState(0, 0);
     public IKakuroCombinationCalculator CombinationCalculator { get; }
     public IReadOnlyKakuro Kakuro => _kakuro;
 
     public KakuroSolver(IKakuroCombinationCalculator combinationCalculator)
     {
         CombinationCalculator = combinationCalculator;
-        StartState = new KakuroNumericSolvingState(this);
     }
 
     public void SetKakuro(IKakuro kakuro)
@@ -29,6 +30,8 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
         OnNewSolvable(_kakuro.GetSolutionCount());
     }
 
+    public int RowCount => _kakuro.RowCount;
+    public int ColumnCount => _kakuro.ColumnCount;
     public int this[int row, int col] => _kakuro[row, col];
 
     public ReadOnlyBitSet16 PossibilitiesAt(int row, int col) => _possibilities[row, col];
@@ -38,9 +41,9 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
     public override bool CanAddSolution(CellPossibility cp) => _possibilities[cp.Row, cp.Column].Contains(cp.Possibility)
                                                       && _kakuro[cp.Row, cp.Column] == 0;
 
-    protected override IUpdatableNumericSolvingState GetSolvingState()
+    protected override INumericSolvingState GetSolvingState()
     {
-        return new KakuroNumericSolvingState(this);
+        return new DefaultNumericSolvingState(_kakuro.RowCount, _kakuro.ColumnCount, this);
     }
 
     public override bool IsResultCorrect()
@@ -56,6 +59,11 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
     protected override bool IsComplete()
     {
         return _solutionCount == _kakuro.GetCellCount();
+    }
+
+    protected override INumericSolvingState ApplyChangesToState(INumericSolvingState state, IEnumerable<NumericChange> changes)
+    {
+        return state; //TODO
     }
 
     #region Private

@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Threading;
 using DesktopApplication.Presenter.Nonograms;
 using DesktopApplication.Presenter.Nonograms.Solve;
 using DesktopApplication.View.Controls;
@@ -28,9 +27,9 @@ public partial class SolvePage : INonogramSolveView
         {
             var lc = new StepControl(step, stateShown);
             LogPanel.Children.Add(lc);
-            /*lc.OpenRequested += _presenter.RequestLogOpening;
+            lc.OpenRequested += _presenter.RequestLogOpening;
             lc.StateShownChanged += _presenter.RequestStateShownChange;
-            lc.HighlightShifted += _presenter.RequestHighlightShift;*/
+            lc.HighlightShifted += _presenter.RequestHighlightShift;
         });
         LogViewer.Dispatcher.Invoke(() => LogViewer.ScrollToEnd());
     }

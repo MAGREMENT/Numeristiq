@@ -14,13 +14,14 @@ public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where 
     public IReadOnlyList<NumericChange> Changes => new[] { _progress };
     public string Description { get; }
     public ExplanationElement? Explanation => null;
-    public IUpdatableNumericSolvingState From { get; }
-    public IUpdatableNumericSolvingState To { get; }
+    public INumericSolvingState From { get; }
+    public INumericSolvingState To { get; }
     public HighlightManager<THighlighter> HighlightManager => new(new DelegateHighlightable<THighlighter>(HighLight));
 
     private readonly NumericChange _progress;
 
-    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, IUpdatableNumericSolvingState stateBefore)
+    public ByHandNumericStep(int id, int possibility, int row, int col, ChangeType changeType, INumericSolvingState stateBefore,
+        INumericSolvingState stateAfter)
     {
         Id = id;
         From = stateBefore;
@@ -39,7 +40,7 @@ public class ByHandNumericStep<THighlighter> : INumericStep<THighlighter> where 
         
         
         _progress = new NumericChange(changeType, possibility, row, col);
-        To = stateBefore.Apply(_progress);
+        To = stateAfter;
     }
 
     private void HighLight<TH>(TH highlighter) where TH : INumericSolvingStateHighlighter

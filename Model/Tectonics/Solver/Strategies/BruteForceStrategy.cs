@@ -24,6 +24,6 @@ public class BruteForceStrategy : Strategy<ITectonicSolverData>
             }
         }
         
-        data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+        data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState, ITectonicHighlighter>.Instance);
     }
 }

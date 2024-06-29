@@ -157,7 +157,7 @@ public class NonColorablePatternStrategy : SudokuStrategy
     }
 }
 
-public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly IReadOnlyList<Cell> _perfect;
     private readonly IReadOnlyList<Cell> _notPerfect;
@@ -170,7 +170,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChan
         _possibilities = possibilities;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -194,7 +194,7 @@ public class NonColorablePatternReportBuilder : IChangeReportBuilder<NumericChan
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

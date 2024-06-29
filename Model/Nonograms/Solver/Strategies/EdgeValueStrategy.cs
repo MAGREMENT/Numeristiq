@@ -1,5 +1,6 @@
 ﻿using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -25,7 +26,7 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                        IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
             }
 
             if (data.Nonogram[row, space.End])
@@ -37,7 +38,7 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
                 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                        IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
             }
         }
         
@@ -55,7 +56,7 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                        IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
             }
 
             if (data.Nonogram[space.End, col])
@@ -67,7 +68,7 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
                 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                        IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
             }
         }
     }

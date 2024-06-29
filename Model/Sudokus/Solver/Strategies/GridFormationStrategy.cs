@@ -93,7 +93,7 @@ public class GridFormationStrategy : SudokuStrategy
     }
 }
 
-public class GridFormationReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class GridFormationReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly LinePositions _rows;
     private readonly LinePositions _cols;
@@ -106,7 +106,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder<NumericChange, IU
         _number = number;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> coords = new();
         foreach (var row in _rows)
@@ -126,7 +126,7 @@ public class GridFormationReportBuilder : IChangeReportBuilder<NumericChange, IU
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

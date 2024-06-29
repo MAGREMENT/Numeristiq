@@ -21,7 +21,7 @@ public class HiddenSingleStrategy : Strategy<ITectonicSolverData>
                 if (poss.Count != 1) continue;
 
                 data.ChangeBuffer.ProposeSolutionAddition(n, zone[poss.First(0, zone.Count)]);
-                data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<IUpdatableTectonicSolvingState, ITectonicHighlighter>.Instance);
+                data.ChangeBuffer.Commit(DefaultNumericChangeReportBuilder<INumericSolvingState, ITectonicHighlighter>.Instance);
             }
         }
     }

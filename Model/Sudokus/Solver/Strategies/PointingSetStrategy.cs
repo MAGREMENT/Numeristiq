@@ -76,7 +76,7 @@ public class PointingSetStrategy : SudokuStrategy
     }
 }
 
-public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _number;
     private readonly IReadOnlyMiniGridPositions _miniPos;
@@ -87,7 +87,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericCh
         _miniPos = miniPos;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
         {
@@ -123,7 +123,7 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericCh
                $" it can be removed from any other cells in {unit.ToString().ToLower()} {lineNumber}";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -98,7 +98,7 @@ public class ClaimingSetStrategy : SudokuStrategy
     }
 }
 
-public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unitNumber;
     private readonly IReadOnlyLinePositions _linePos;
@@ -113,7 +113,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
         _unit = unit;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> causes = new();
         switch (_unit)
@@ -152,7 +152,7 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
                $" box {miniGirdNumber}";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

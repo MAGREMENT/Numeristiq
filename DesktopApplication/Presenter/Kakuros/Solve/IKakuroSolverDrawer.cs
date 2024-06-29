@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Model.Kakuros;
+using Model.Utility;
 
 namespace DesktopApplication.Presenter.Kakuros.Solve;
 

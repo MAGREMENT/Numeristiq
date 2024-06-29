@@ -1,5 +1,6 @@
 ﻿using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Highlighting;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -22,7 +23,7 @@ public class ValueCompletionStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposePossibilityRemoval(row, space.End + 1);
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                        IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
             }
         }
         
@@ -37,7 +38,7 @@ public class ValueCompletionStrategy : Strategy<INonogramSolverData>
                     data.ChangeBuffer.ProposePossibilityRemoval(space.End + 1, col);
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(DefaultDichotomousChangeReportBuilder<
-                        IUpdatableDichotomousSolvingState, object>.Instance) && StopOnFirstPush) return;
+                        IDichotomousSolvingState, INonogramHighlighter>.Instance) && StopOnFirstPush) return;
             }
         }
     }

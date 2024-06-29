@@ -195,7 +195,7 @@ public class BlossomLoopStrategy : SudokuStrategy
     }
 }
 
-public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly LinkGraphLoop<ISudokuElement> _loop;
     private readonly BlossomLoopBranch[] _branches;
@@ -208,7 +208,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, IUpd
         _cps = cps;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var branchesHighlight = new Highlight<ISudokuHighlighter>[_branches.Length];
 
@@ -280,7 +280,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, IUpd
         return builder.ToString();
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

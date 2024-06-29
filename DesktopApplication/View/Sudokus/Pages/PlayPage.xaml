@@ -67,7 +67,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                     
-                        <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Background3}"
+                        <Border Grid.Row="0" Grid.Column="0" BorderBrush="{DynamicResource Background3}" Background="Transparent"
                                 Margin="10" BorderThickness="1" Width="30" Height="30" MouseLeftButtonDown="ClearHighlights">
                             <Path Stroke="{DynamicResource Text}" StrokeThickness="3" Width="28" Height="28"
                                   Data="M 4,4 24,24 M 4,24 24,4"/>
@@ -78,23 +78,23 @@
                 <Border Margin="0,10,0,0" BorderBrush="{DynamicResource Text}" BorderThickness="1"
                         Padding="10" Background="{DynamicResource Background2}">
                     <StackPanel Orientation="Horizontal">
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Click="Select1s">1</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select2s">2</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select3s">3</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select4s">4</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select5s">5</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select6s">6</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select7s">7</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select8s">8</Button>
-                        <Button Style="{StaticResource TimerButton}" FontSize="20" Height="30" Width="30"
+                        <Button Style="{StaticResource TimerButton}" FontSize="20" Width="30"
                                 Margin="5,0,0,0" Click="Select9s">9</Button>
                     </StackPanel>
                 </Border>

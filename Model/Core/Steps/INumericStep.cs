@@ -20,8 +20,8 @@ public interface IStep
 public interface IDichotomousStep<THighlighter> : IStep
 {
     IReadOnlyList<DichotomousChange> Changes { get; }
-    IUpdatableDichotomousSolvingState From { get; }
-    IUpdatableDichotomousSolvingState To { get; }
+    IDichotomousSolvingState From { get; }
+    IDichotomousSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
 
     string IStep.GetCursorPosition()
@@ -46,8 +46,8 @@ public interface IDichotomousStep<THighlighter> : IStep
 public interface INumericStep<THighlighter> : IStep
 {
     IReadOnlyList<NumericChange> Changes { get; }
-    IUpdatableNumericSolvingState From { get; }
-    IUpdatableNumericSolvingState To { get; }
+    INumericSolvingState From { get; }
+    INumericSolvingState To { get; }
     HighlightManager<THighlighter> HighlightManager { get; }
 
     string IStep.GetCursorPosition()

@@ -9,7 +9,7 @@ namespace Model.Core;
 public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlighter> : 
     StrategySolver<TStrategy, TSolvingState, THighlighter, NumericChange,
         IChangeBuffer<TSolvingState, THighlighter>, INumericStep<THighlighter>>, INumericChangeProducer
-    where TSolvingState : IUpdatableNumericSolvingState where THighlighter : INumericSolvingStateHighlighter where TStrategy : Strategy
+    where TSolvingState : INumericSolvingState where THighlighter : INumericSolvingStateHighlighter where TStrategy : Strategy
 {
     protected int _solutionCount;
 
@@ -104,12 +104,14 @@ public abstract class NumericStrategySolver<TStrategy, TSolvingState, THighlight
     protected override void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<NumericChange> changes,
         Strategy maker, TSolvingState stateBefore)
     {
-        _steps.Add(new ChangeReportNumericStep<THighlighter>(_steps.Count + 1, maker, changes, report, stateBefore));
+        _steps.Add(new ChangeReportNumericStep<THighlighter>(_steps.Count + 1, maker, changes, report, stateBefore,
+            ApplyChangesToState(stateBefore, changes)));
     }
 
     private void AddStepByHand(int possibility, int row, int col, ChangeType changeType,
-        IUpdatableNumericSolvingState stateBefore)
+        TSolvingState stateBefore)
     {
-        _steps.Add(new ByHandNumericStep<THighlighter>(_steps.Count + 1, possibility, row, col, changeType, stateBefore));
+        _steps.Add(new ByHandNumericStep<THighlighter>(_steps.Count + 1, possibility, row, col, changeType, stateBefore,
+            ApplyChangesToState(stateBefore, new []{new NumericChange(changeType, possibility, row, col)})));
     }
 }

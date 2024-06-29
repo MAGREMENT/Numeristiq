@@ -234,13 +234,13 @@ public class SudokuPlayPresenter
         if (_cursor is CellsCursor s)
         {
             set = s;
-            return false;
+            return true;
         }
         
         set = new CellsCursor();
         _cursor = set;
         RefreshNumbers();
-        return true;
+        return false;
     }
     
     private void Paste(string s, SudokuStringFormat format)
@@ -266,7 +266,7 @@ public class SudokuPlayPresenter
     private async Task<Clue<ISudokuHighlighter>?> GetClue()
     {
         var sudoku = SudokuTranslator.TranslateSolvingState(_player);
-        if (sudoku.NumberCount() < 17) return new Clue<ISudokuHighlighter>("Not enough numbers in the Sudoku");
+        if (sudoku.GetSolutionCount() < 17) return new Clue<ISudokuHighlighter>("Not enough numbers in the Sudoku");
 
         _disabler.Disable(1);
         if (_settings.TestSolutionCount)

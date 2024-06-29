@@ -215,7 +215,7 @@ public class FishStrategy : SudokuStrategy
     }
 }
 
-public class FishReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class FishReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly HashSet<House> _baseSet;
     private readonly House[] _coveredSet;
@@ -233,7 +233,7 @@ public class FishReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableS
         _fins = fins;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
         {
@@ -289,7 +289,7 @@ public class FishReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableS
                $"\n{fins}";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -103,7 +103,7 @@ public class DigitForcingNetStrategy : SudokuStrategy
     }
 }
 
-public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ColoringDictionary<ISudokuElement> _on;
     private readonly ColoringDictionary<ISudokuElement> _off;
@@ -126,7 +126,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, 
         _graph = graph;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         var onPaths = ForcingNetsUtility.FindEveryNeededPaths(_on.History!.GetPathToRootWithGuessedLinks(_onPos, _onColoring),
             _on, _graph, snapshot);
@@ -157,7 +157,7 @@ public class DigitForcingNetReportBuilder : IChangeReportBuilder<NumericChange, 
                $"If {first} is off : \n{ForcingNetsUtility.AllPathsToString(offPaths)}";
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

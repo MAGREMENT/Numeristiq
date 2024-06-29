@@ -13,6 +13,7 @@ public class NonogramSolvePresenter
     
     private int _stepCount;
     private StateShown _stateShown = StateShown.Before;
+    private int _currentlyOpenedStep = -1;
 
     public NonogramSolvePresenter(INonogramSolveView view)
     {
@@ -42,7 +43,7 @@ public class NonogramSolvePresenter
         _solver.StrategyEnded -= OnStrategyEnd;
     }
     
-    /*public void RequestLogOpening(int id)
+    public void RequestLogOpening(int id)
     {
         var index = id - 1;
         if (index < 0 || index > _solver.Steps.Count) return;
@@ -52,7 +53,7 @@ public class NonogramSolvePresenter
         if (_currentlyOpenedStep == index)
         {
             _currentlyOpenedStep = -1;
-            SetShownState(_solver, false, true);
+            ShowState(_solver);
         }
         else
         {
@@ -60,8 +61,8 @@ public class NonogramSolvePresenter
             _currentlyOpenedStep = index;
 
             var log = _solver.Steps[index];
-            SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-            _translator.Translate(log.HighlightManager); 
+            ShowState(_stateShown == StateShown.Before ? log.From : log.To); 
+            //_translator.Translate(log.HighlightManager); 
         }
     }
 
@@ -72,8 +73,8 @@ public class NonogramSolvePresenter
         if (_currentlyOpenedStep < 0 || _currentlyOpenedStep > _solver.Steps.Count) return;
         
         var log = _solver.Steps[_currentlyOpenedStep];
-        SetShownState(_stateShown == StateShown.Before ? log.From : log.To, false, true); 
-        _translator.Translate(log.HighlightManager);
+        ShowState(_stateShown == StateShown.Before ? log.From : log.To); 
+        //_translator.Translate(log.HighlightManager);
     }
 
     public void RequestHighlightShift(bool isLeft)
@@ -84,10 +85,10 @@ public class NonogramSolvePresenter
         if(isLeft) log.HighlightManager.ShiftLeft();
         else log.HighlightManager.ShiftRight();
         
-        _view.Drawer.ClearHighlights();
-        _translator.Translate(log.HighlightManager);
+        //_view.Drawer.ClearHighlights();
+        //_translator.Translate(log.HighlightManager);
         _view.SetCursorPosition(_currentlyOpenedStep, log.HighlightManager.CursorPosition());
-    }*/
+    }
 
     private void OnStrategyEnd(Strategy strategy, int index, int p, int s)
     {
@@ -127,16 +128,21 @@ public class NonogramSolvePresenter
 
     private void ShowCurrentState()
     {
+        ShowState(_solver);
+    }
+
+    private void ShowState(IDichotomousSolvingState state)
+    {
         var drawer = _view.Drawer;
         drawer.ClearSolutions();
         drawer.ClearUnavailable();
         
-        for (int row = 0; row < _solver.Nonogram.RowCount; row++)
+        for (int row = 0; row < state.RowCount; row++)
         {
-            for (int col = 0; col < _solver.Nonogram.ColumnCount; col++)
+            for (int col = 0; col < state.ColumnCount; col++)
             {
-                if (_solver.Nonogram[row, col]) drawer.SetSolution(row, col);
-                else if (!_solver.IsAvailable(row, col)) drawer.SetUnavailable(row, col);
+                if (state[row, col]) drawer.SetSolution(row, col);
+                else if (!state.IsAvailable(row, col)) drawer.SetUnavailable(row, col);
             }
         }
         

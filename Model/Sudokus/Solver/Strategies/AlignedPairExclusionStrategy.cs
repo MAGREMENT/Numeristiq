@@ -144,7 +144,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     }
 }
 
-public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly List<IPossibilitiesPositions> _als;
     private readonly int _row1;
@@ -161,7 +161,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
         _col2 = col2;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>("", lighter =>
         {
@@ -187,7 +187,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

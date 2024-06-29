@@ -142,7 +142,7 @@ public class ReverseBUGLiteStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBUGLiteChangeReport : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ReverseBUGLiteChangeReport : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _unit1;
     private readonly int _unit2;
@@ -159,7 +159,7 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder<NumericChange, IU
         _unit = unit;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -179,7 +179,7 @@ public class ReverseBUGLiteChangeReport : IChangeReportBuilder<NumericChange, IU
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -65,7 +65,7 @@ public class ReverseBUGStrategy : SudokuStrategy
     }
 }
 
-public class ReverseBugReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ReverseBugReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly GridPositions _gp;
     private readonly int _n1;
@@ -76,7 +76,7 @@ public class ReverseBugReportBuilder : IChangeReportBuilder<NumericChange, IUpda
         _n1 = n1;
     }
     
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
@@ -91,7 +91,7 @@ public class ReverseBugReportBuilder : IChangeReportBuilder<NumericChange, IUpda
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

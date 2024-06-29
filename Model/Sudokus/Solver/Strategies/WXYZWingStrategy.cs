@@ -260,7 +260,7 @@ public class WXYZWingStrategy : SudokuStrategy
     }
 }
 
-public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly MiniGridPositions _mini;
     private readonly LinePositions _line;
@@ -276,7 +276,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdata
         _unitNumber = unitNumber;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         List<Cell> cells = new();
 
@@ -305,7 +305,7 @@ public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, IUpdata
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

@@ -182,7 +182,7 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
     }
 }
 
-public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<NumericChange, IUpdatableSudokuSolvingState, ISudokuHighlighter>
+public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _poss;
     private readonly Cell[] _cells;
@@ -193,7 +193,7 @@ public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<Numeri
         _cells = cells;
     }
 
-    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>("", lighter =>
         {
@@ -208,7 +208,7 @@ public class ExtendedUniqueRectanglesReportBuilder : IChangeReportBuilder<Numeri
         });
     }
     
-    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, IUpdatableSudokuSolvingState snapshot)
+    public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return Clue<ISudokuHighlighter>.Default();
     }

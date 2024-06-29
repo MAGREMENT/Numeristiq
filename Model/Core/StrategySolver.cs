@@ -154,6 +154,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     protected abstract void AddStepFromReport(ChangeReport<THighlighter> report, IReadOnlyList<TChange> changes,
         Strategy maker, TSolvingState stateBefore);
     protected abstract ICommitComparer<TChange> GetDefaultCommitComparer();
+    protected abstract TSolvingState ApplyChangesToState(TSolvingState state, IEnumerable<TChange> changes);
     
     private void OnStrategyEnd(Strategy strategy, ref int solutionAdded, ref int possibilitiesRemoved)
     {

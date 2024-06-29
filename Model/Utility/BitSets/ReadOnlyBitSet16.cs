@@ -266,15 +266,11 @@ public readonly struct ReadOnlyBitSet16
     public string ToValuesString()
     {
         var builder = new StringBuilder();
-
-        bool added = false;
+        
         for (int i = 15; i >= 0; i--)
         {
             if (!Contains(i)) continue;
-            
-            if (added) builder.Append(", ");
             builder.Append(i);
-            added = true;
         }
         
         return builder.ToString();
