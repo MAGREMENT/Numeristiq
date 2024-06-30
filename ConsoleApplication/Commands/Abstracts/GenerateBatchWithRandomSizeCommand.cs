@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace ConsoleApplication.Commands.Abstracts;
 
-public abstract class GenerateBatchWithRandomSizeCommand<T> : GenerateBatchCommand<T>
+public abstract class GenerateBatchWithRandomSizeCommand<TPuzzle, TState> : GenerateBatchCommand<TPuzzle, TState> where TState : class
 {
     private const int RowCountIndex = 3;
     private const int ColumnCountIndex = 4;
@@ -12,7 +12,7 @@ public abstract class GenerateBatchWithRandomSizeCommand<T> : GenerateBatchComma
     private const int MinColumnCountIndex = 7;
     private const int MaxColumnCountIndex = 8;
     
-    protected GenerateBatchWithRandomSizeCommand(string name, IPuzzleGenerator<T> generator) : base(name, generator, 
+    protected GenerateBatchWithRandomSizeCommand(string name, IPuzzleGenerator<TPuzzle> generator) : base(name, generator, 
         new Option("--rc", "Row count, has priority over min and max value", ValueRequirement.Mandatory, ValueType.Int),
         new Option("--cc", "Column count, has priority over min and max value", ValueRequirement.Mandatory, ValueType.Int),
         new Option("--min-rc", "Minimum row count", ValueRequirement.Mandatory, ValueType.Int),
@@ -22,7 +22,7 @@ public abstract class GenerateBatchWithRandomSizeCommand<T> : GenerateBatchComma
     {
     }
 
-    protected override void SetUpGenerator(IPuzzleGenerator<T> generator, IReadOnlyCallReport report)
+    protected override void SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)
     {
         var randomizer = GetRandomizer(generator);
         
@@ -55,5 +55,5 @@ public abstract class GenerateBatchWithRandomSizeCommand<T> : GenerateBatchComma
         }
     }
 
-    protected abstract GridSizeRandomizer GetRandomizer(IPuzzleGenerator<T> generator);
+    protected abstract GridSizeRandomizer GetRandomizer(IPuzzleGenerator<TPuzzle> generator);
 }

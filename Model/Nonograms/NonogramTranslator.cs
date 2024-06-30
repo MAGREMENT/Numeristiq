@@ -23,6 +23,7 @@ public static class NonogramTranslator
                 var c = s[i];
                 switch (c)
                 {
+                    case ' ' : break;
                     case '.' :
                         currentValues.Add(buffer);
                         buffer = 0;

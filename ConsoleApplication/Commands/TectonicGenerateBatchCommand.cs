@@ -9,23 +9,16 @@ using Model.Utility;
 
 namespace ConsoleApplication.Commands;
 
-public class TectonicGenerateBatchCommand : GenerateBatchWithRandomSizeCommand<ITectonic>
+public class TectonicGenerateBatchCommand : GenerateBatchWithRandomSizeCommand<ITectonic, INumericSolvingState>
 { 
     public TectonicGenerateBatchCommand() : base("Tectonic", new RDRTectonicPuzzleGenerator(
         new RandomLayoutBackTrackingFilledTectonicGenerator()))
     {
     }
 
-    protected override (ISolver, IRatingTracker, IHardestStrategyTracker) GetSolverWithAttachedTracker(ArgumentInterpreter interpreter)
+    protected override ITrackerAttachableSolver<INumericSolvingState> GetSolver(ArgumentInterpreter interpreter)
     {
-        var solver = interpreter.Instantiator.InstantiateTectonicSolver();
-        var ratings = new RatingTracker();
-        var hardest = new HardestStrategyTracker();
-
-        ratings.AttachTo(solver);
-        hardest.AttachTo(solver);
-
-        return (solver, ratings, hardest);
+        return interpreter.Instantiator.InstantiateTectonicSolver();
     }
 
     protected override GeneratedPuzzle<ITectonic> CreateGeneratedPuzzle(ITectonic puzzle)

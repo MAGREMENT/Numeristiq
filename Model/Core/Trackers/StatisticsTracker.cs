@@ -10,11 +10,9 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 {
     private readonly List<int> _retransmissions = new();
     private readonly List<StrategyStatistics> _statistics = new();
-    private int _count;
+    public int Count { get; private set; }
     private int _success;
     private int _solverFails;
-
-    public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
     
     protected override void OnAttach(ITrackerAttachable<TSolvingState> attachable)
     {
@@ -56,11 +54,9 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 
     private void OnSolveDone(ISolveResult<TSolvingState> result)
     {
-        _count++;
+        Count++;
         if (result.IsResultCorrect()) _success++;
         else if (result.HasSolverFailed()) _solverFails++;
-        
-        SolveDone?.Invoke(result);
     }
     
     public override string ToString()
@@ -98,7 +94,7 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 
         var result = new StringBuilder("Result".FillEvenlyWith('-', totalWidth) + "\n\n");
 
-        result.Append($"Completion rate : {_success} / {_count}\n");
+        result.Append($"Completion rate : {_success} / {Count}\n");
         result.Append($"Solver fails : {_solverFails}\n\n");
 
         result.Append(columnTitles[0].FillEvenlyWith(' ', widthCap[0]) + "|"

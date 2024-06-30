@@ -68,6 +68,7 @@ public class Instantiator
             new NotEnoughSpaceStrategy(),
             new BridgingStrategy(),
             new EdgeValueStrategy(),
+            new ValueCompletionStrategy(),
             new ValueOverlayStrategy());
         
         return solver;

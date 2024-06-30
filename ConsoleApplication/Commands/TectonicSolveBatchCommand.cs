@@ -1,63 +1,33 @@
-﻿using System.Text;
+﻿using ConsoleApplication.Commands.Abstracts;
+using Model.Core;
 using Model.Tectonics;
+using Model.Tectonics.Solver;
 
 namespace ConsoleApplication.Commands;
 
-public class TectonicSolveBatchCommand : Command
+public class TectonicSolveBatchCommand : SolveBatchCommand<INumericSolvingState>
 {
-    private const int FileIndex = 0;
-    private const int FeedbackIndex = 0;
-
-    public override string Description => "Solves all the Tectonic's in a text file";
-
-    public TectonicSolveBatchCommand() : base("SolveBatch", 
-        new[]
-        {
-            new Argument("Text file containing the Tectonic's", ValueType.File)
-        },
-        new[]
-        {
-            new Option("--feedback", "Gives feedback for each Tectonic")
-        }) { }
-    
-    public override void Execute(ArgumentInterpreter interpreter, IReadOnlyCallReport report)
+    public TectonicSolveBatchCommand() : base("Tectonic")
     {
-        var solver = interpreter.Instantiator.InstantiateTectonicSolver();
-        using TextReader reader = new StreamReader((string)report.GetArgumentValue(FileIndex), Encoding.UTF8);
+    }
 
-        int count = 1;
-        int success = 0;
-        while (reader.ReadLine() is { } line)
+    protected override ITrackerAttachableSolver<INumericSolvingState> GetSolver(Instantiator instantiator)
+    {
+        return instantiator.InstantiateTectonicSolver();
+    }
+
+    protected override bool Set(ISolver solver, string asString)
+    {
+        var tectonic = TectonicTranslator.GuessFormat(asString) switch
         {
-            int commentStart = line.IndexOf('#');
-            var s = commentStart == -1 ? line : line[..commentStart];
+            TectonicStringFormat.Code => TectonicTranslator.TranslateCodeFormat(asString),
+            TectonicStringFormat.Rd => TectonicTranslator.TranslateRdFormat(asString),
+            _ => null
+        };
 
-            var tectonic = TectonicTranslator.GuessFormat(s) switch
-            {
-                TectonicStringFormat.Code => TectonicTranslator.TranslateCodeFormat(s),
-                TectonicStringFormat.Rd => TectonicTranslator.TranslateRdFormat(s),
-                _ => null
-            };
-            if (tectonic is null)
-            {
-                Console.WriteLine($"Wrong format at line {count}");
-                return;
-            }
-            
-            solver.SetTectonic(tectonic);
-            solver.Solve();
+        if (tectonic is null) return false;
 
-            var succeeded = solver.Tectonic.IsCorrect();
-            if (succeeded) success++;
-            if (report.IsOptionUsed(FeedbackIndex))
-            {
-                var status = succeeded ? "Ok !" : "Wrong !";
-                Console.WriteLine($"#{count} {status}");
-            }
-
-            count++;
-        }
-        
-        Console.WriteLine($"\nSolve Rate : {success}/{count - 1}");
+        ((TectonicSolver)solver).SetTectonic(tectonic);
+        return true;
     }
 }

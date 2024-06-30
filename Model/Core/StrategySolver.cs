@@ -8,7 +8,7 @@ using Model.Sudokus.Solver;
 namespace Model.Core;
 
 public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TChange, TChangeBuffer, TStep> 
-    : ITrackerAttachable<TSolvingState>, ISolveResult<TSolvingState>, ISolver
+    : ISolveResult<TSolvingState>, ITrackerAttachableSolver<TSolvingState>
     where TStrategy : Strategy where TChangeBuffer : IChangeBuffer<TChange, TSolvingState, THighlighter>
     where TStep : IStep
 {
@@ -42,6 +42,14 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
     public event OnStrategyEnd? StrategyEnded;
     public event OnSolveDone<ISolveResult<TSolvingState>>? SolveDone;
     
+    public void SetAllStrategiesHandlingTo(InstanceHandling handling)
+    {
+        foreach (var s in StrategyManager.Strategies)
+        {
+            s.InstanceHandling = handling;
+        }
+    }
+    
     public void Solve(bool stopAtProgress = false)
     {
         StartedSolving = true;
@@ -71,7 +79,7 @@ public abstract class StrategySolver<TStrategy, TSolvingState, THighlighter, TCh
 
         SolveDone?.Invoke(this);
     }
-    
+
     public IReadOnlyList<BuiltChangeCommit<TChange, THighlighter>> EveryPossibleNextStep()
     {
         List<BuiltChangeCommit<TChange, THighlighter>> result = new();
@@ -290,4 +298,11 @@ public interface ISolver
     bool FastMode { set; }
     IEnumerable<IStep> Steps { get; }
     void Solve(bool stopAtProgress = false);
+    void SetAllStrategiesHandlingTo(InstanceHandling handling);
+    bool HasSolverFailed();
+}
+
+public interface ITrackerAttachableSolver<out T> : ISolver, ITrackerAttachable<T>
+{
+    
 }

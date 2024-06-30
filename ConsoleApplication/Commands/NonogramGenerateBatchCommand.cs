@@ -9,22 +9,15 @@ using Model.Utility;
 
 namespace ConsoleApplication.Commands;
 
-public class NonogramGenerateBatchCommand : GenerateBatchWithRandomSizeCommand<Nonogram>
+public class NonogramGenerateBatchCommand : GenerateBatchWithRandomSizeCommand<Nonogram, INonogramSolvingState>
 {
     public NonogramGenerateBatchCommand() : base("Nonogram", new RandomNonogramGenerator())
     {
     }
 
-    protected override (ISolver, IRatingTracker, IHardestStrategyTracker) GetSolverWithAttachedTracker(ArgumentInterpreter interpreter)
-    {
-        var solver = interpreter.Instantiator.InstantiateNonogramSolver();
-        var ratings = new RatingTracker();
-        var hardest = new HardestStrategyTracker();
-
-        ratings.AttachTo(solver);
-        hardest.AttachTo(solver);
-
-        return (solver, ratings, hardest);
+    protected override ITrackerAttachableSolver<INonogramSolvingState> GetSolver(ArgumentInterpreter interpreter)
+    { 
+        return interpreter.Instantiator.InstantiateNonogramSolver();
     }
 
     protected override GeneratedPuzzle<Nonogram> CreateGeneratedPuzzle(Nonogram puzzle)

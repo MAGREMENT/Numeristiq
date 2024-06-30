@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Explanation;
 using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
@@ -80,7 +82,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISud
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
             foreach (var cp in _additionalCandidates)
             {
@@ -88,11 +90,44 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISud
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        });
+        }, Explanation());
+    }
+
+    private string Description()
+    {
+        if (_additionalCandidates.Count == 0) return "BUG";
+        
+        var builder = new StringBuilder($"BUG prevented by {_additionalCandidates[0]}");
+        for (int i = 1; i < _additionalCandidates.Count; i++)
+        {
+            builder.Append($", {_additionalCandidates[i]}");
+        }
+
+        return builder.ToString();
+    }
+
+    private ExplanationElement? Explanation()
+    {
+        if (_additionalCandidates.Count == 0) return null;
+        var start = new StringExplanationElement("The possibilities ");
+        var current = start.Append(_additionalCandidates[0]);
+        for (int i = 1; i < _additionalCandidates.Count; i++)
+        {
+            current.Append(", ").Append(_additionalCandidates[i]);
+        }
+
+        current.Append(" prevents a BUG pattern");
+        return start;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return Clue<ISudokuHighlighter>.Default();
+        return new Clue<ISudokuHighlighter>(lighter =>
+        {
+            foreach (var cp in _additionalCandidates)
+            {
+                lighter.HighlightPossibility(cp, ChangeColoration.CauseOffOne);
+            }
+        }, "These possibilities prevents a deadly pattern");
     }
 }

@@ -4,17 +4,17 @@ using Model.Core.Trackers;
 
 namespace ConsoleApplication.Commands.Abstracts;
 
-public abstract class GenerateBatchCommand<T> : Command
+public abstract class GenerateBatchCommand<TPuzzle, TState> : Command where TState : class
 {
     private const int CountIndex = 0;
     private const int EvaluateIndex = 1;
     private const int SortIndex = 2;
 
-    private readonly IPuzzleGenerator<T> _generator;
+    private readonly IPuzzleGenerator<TPuzzle> _generator;
     
     public override string Description { get; }
 
-    protected GenerateBatchCommand(string name, IPuzzleGenerator<T> generator, params Option[] additionalOptions) 
+    protected GenerateBatchCommand(string name, IPuzzleGenerator<TPuzzle> generator, params Option[] additionalOptions) 
         : base("GenerateBatch", additionalOptions.MergeWithReverseOrder(
             new Option("-c", "Count", ValueRequirement.Mandatory, ValueType.Int),
             new Option("-e", "Evaluates puzzles"),
@@ -34,11 +34,16 @@ public abstract class GenerateBatchCommand<T> : Command
         var generated = _generator.Generate(count);
         Console.WriteLine($"Finished generating in {Math.Round((double)(DateTimeOffset.Now.ToUnixTimeMilliseconds() - start) / 1000, 4)}s");
 
-        List<GeneratedPuzzle<T>> result = new(count);
+        List<GeneratedPuzzle<TPuzzle>> result = new(count);
 
         if (report.IsOptionUsed(EvaluateIndex))
         {
-            var (solver, ratings, hardest) = GetSolverWithAttachedTracker(interpreter);
+            var solver = GetSolver(interpreter);
+            var ratings = new RatingTracker();
+            var hardest = new HardestStrategyTracker();
+
+            ratings.AttachTo(solver);
+            hardest.AttachTo(solver);
             
             Console.WriteLine("Started evaluating...");
             start = DateTimeOffset.Now.ToUnixTimeMilliseconds();
@@ -92,13 +97,13 @@ public abstract class GenerateBatchCommand<T> : Command
         }
     }
 
-    protected virtual void SetUpGenerator(IPuzzleGenerator<T> generator, IReadOnlyCallReport report)
+    protected virtual void SetUpGenerator(IPuzzleGenerator<TPuzzle> generator, IReadOnlyCallReport report)
     {
         
     }
-    protected abstract (ISolver, IRatingTracker, IHardestStrategyTracker) GetSolverWithAttachedTracker(ArgumentInterpreter interpreter);
-    protected abstract GeneratedPuzzle<T> CreateGeneratedPuzzle(T puzzle);
-    protected abstract void SetPuzzle(ISolver solver, T puzzle);
+    protected abstract ITrackerAttachableSolver<TState> GetSolver(ArgumentInterpreter interpreter);
+    protected abstract GeneratedPuzzle<TPuzzle> CreateGeneratedPuzzle(TPuzzle puzzle);
+    protected abstract void SetPuzzle(ISolver solver, TPuzzle puzzle);
 }
 
 public static class ArrayExtensions

@@ -123,52 +123,50 @@ public class Nonogram : IReadOnlyNonogram
 
     public bool IsHorizontalLineCorrect(int index)
     {
-        var val = _horizontalCollection[index];
-        int cursor = 0;
-        foreach (var v in val)
+        using var enumerator = _horizontalCollection[index].GetEnumerator();
+
+        var remaining = -1;
+        for (int col = 0; col < ColumnCount; col++)
         {
-            while (!_cells[index, cursor])
+            if (_cells[index, col])
             {
-                if (cursor >= ColumnCount) return false;
-                cursor++;
+                if (remaining == 0) return false;
+
+                if (remaining > 0) remaining--;
+                else
+                {
+                    if (!enumerator.MoveNext()) return false;
+                    remaining = enumerator.Current - 1; 
+                }
             }
-
-            for (; cursor < v; cursor++)
-            {
-                if (cursor >= ColumnCount || !_cells[index, cursor]) return false;
-            }
-
-            if (_cells[index, cursor]) return false;
-
-            cursor++;
+            else if (remaining == 0) remaining -= 1;
         }
 
-        return true;
+        return !enumerator.MoveNext();
     }
 
     public bool IsVerticalLineCorrect(int index)
     {
-        var val = _verticalCollection[index];
-        int cursor = 0;
-        foreach (var v in val)
+        using var enumerator = _verticalCollection[index].GetEnumerator();
+
+        var remaining = -1;
+        for (int row = 0; row < ColumnCount; row++)
         {
-            while (!_cells[cursor, index])
+            if (_cells[row, index])
             {
-                if (cursor >= RowCount) return false;
-                cursor++;
+                if (remaining == 0) return false;
+
+                if (remaining > 0) remaining--;
+                else
+                {
+                    if (!enumerator.MoveNext()) return false;
+                    remaining = enumerator.Current - 1;
+                }
             }
-
-            for (; cursor < v; cursor++)
-            {
-                if (cursor >= RowCount || !_cells[cursor, index]) return false;
-            }
-
-            if (_cells[cursor, index]) return false;
-
-            cursor++;
+            else if (remaining == 0) remaining -= 1;
         }
 
-        return true;
+        return !enumerator.MoveNext();
     }
 
     public bool IsCorrect()

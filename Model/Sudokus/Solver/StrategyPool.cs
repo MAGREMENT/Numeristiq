@@ -135,12 +135,18 @@ public static class StrategyPool
         " It consists a catalogue of pattern that will examine every clue and any solution in a designated area of the grid. These patterns" +
         " are generated beforehand by computers, making this strategy a bit controversial.");
 
+    private static readonly IDescription BUGDescription = new FullTextDescription("A Bi-value Universal Grave (BUG) is a pattern in" +
+        "which every candidates is found either 0 or 2 times in each unit (row, column and box). A Sudoku presenting this pattern" +
+        "has more than one solution. In the case of Sudoku with a unique solution, at least one possibility preventing the" +
+        "BUG must be true");
+
     private static readonly Dictionary<string, IDescription> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
         {HiddenSingleStrategy.OfficialName, HiddenSingleDescription},
         {JuniorExocetStrategy.OfficialName, JuniorExocetDescription},
-        {UniquenessClueCoverStrategy.OfficialName, UniquenessClueCoverDescription}
+        {UniquenessClueCoverStrategy.OfficialName, UniquenessClueCoverDescription},
+        {BUGStrategy.OfficialName, BUGDescription}
     };
     
     public static IEnumerable<string> EnumerateStrategies(string filter)

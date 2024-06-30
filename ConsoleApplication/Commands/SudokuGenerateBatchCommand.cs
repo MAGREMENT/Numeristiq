@@ -8,22 +8,15 @@ using Model.Sudokus.Solver;
 
 namespace ConsoleApplication.Commands;
 
-public class SudokuGenerateBatchCommand : GenerateBatchCommand<Sudoku>
+public class SudokuGenerateBatchCommand : GenerateBatchCommand<Sudoku, ISudokuSolvingState>
 {
     public SudokuGenerateBatchCommand() : base("Sudoku", new RDRSudokuPuzzleGenerator(new BackTrackingFilledSudokuGenerator()))
     {
     }
 
-    protected override (ISolver, IRatingTracker, IHardestStrategyTracker) GetSolverWithAttachedTracker(ArgumentInterpreter interpreter)
+    protected override ITrackerAttachableSolver<ISudokuSolvingState> GetSolver(ArgumentInterpreter interpreter)
     {
-        var solver = interpreter.Instantiator.InstantiateSudokuSolver();
-        var ratings = new RatingTracker();
-        var hardest = new HardestStrategyTracker();
-
-        ratings.AttachTo(solver);
-        hardest.AttachTo(solver);
-
-        return (solver, ratings, hardest);
+        return interpreter.Instantiator.InstantiateSudokuSolver();
     }
 
     protected override GeneratedPuzzle<Sudoku> CreateGeneratedPuzzle(Sudoku puzzle)
