@@ -1,6 +1,8 @@
-﻿using Model.Core;
+﻿using System.Collections.Generic;
+using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Utility;
 
 namespace Model.Nonograms.Solver.Strategies;
 
@@ -29,9 +31,8 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
                         data.ChangeBuffer.ProposeSolutionAddition(row, i);
                     }
 
-                    if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
-                            DefaultDichotomousChangeReportBuilder<IDichotomousSolvingState, INonogramHighlighter>
-                                .Instance) && StopOnFirstPush) return;
+                    if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new BridgingReportBuilder(
+                            Orientation.Horizontal, row, c, last, space.FirstValueIndex)) && StopOnFirstPush) return;
                 }
 
                 last = c;
@@ -55,13 +56,45 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
                         data.ChangeBuffer.ProposeSolutionAddition(i, col);
                     }
 
-                    if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(
-                            DefaultDichotomousChangeReportBuilder<IDichotomousSolvingState, INonogramHighlighter>
-                                .Instance) && StopOnFirstPush) return;
+                    if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new BridgingReportBuilder(
+                            Orientation.Vertical, col, r, last, space.FirstValueIndex)) && StopOnFirstPush) return;
                 }
 
                 last = r;
             }
         }
+    }
+}
+
+public class BridgingReportBuilder : IChangeReportBuilder<DichotomousChange, INonogramSolvingState, INonogramHighlighter>
+{
+    private readonly Orientation _orientation;
+    private readonly int _unit;
+    private readonly int _current;
+    private readonly int _last;
+    private readonly int _valueIndex;
+
+    public BridgingReportBuilder(Orientation orientation, int unit, int current, int last, int valueIndex)
+    {
+        _orientation = orientation;
+        _unit = unit;
+        _current = current;
+        _last = last;
+        _valueIndex = valueIndex;
+    }
+
+    public ChangeReport<INonogramHighlighter> BuildReport(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
+    {
+        return new ChangeReport<INonogramHighlighter>("Bridging", lighter =>
+        {
+            lighter.HighlightValues(_orientation, _unit, _valueIndex, _valueIndex, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _current, _current, ChangeColoration.CauseOnOne);
+            lighter.EncircleLineSection(_orientation, _unit, _last, _last, ChangeColoration.CauseOnOne);
+        });
+    }
+
+    public Clue<INonogramHighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
+    {
+        throw new System.NotImplementedException();
     }
 }

@@ -74,7 +74,7 @@ public class NonogramPreComputer
         for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
         {
             var v = _data.Nonogram.HorizontalLineCollection.TryGetValue(row, i);
-            spaceAfter -= Math.Min(v + 1, spaceAfter);
+            spaceAfter -= Math.Min(v, spaceAfter);
             
             var start = main.Start + spaceBefore;
             var end = main.End - spaceAfter;
@@ -86,11 +86,11 @@ public class NonogramPreComputer
                 if (_data.Nonogram[row, pos])
                 {
                     var endPos = pos;
-                    while (_data.Nonogram[row, endPos + 1]) endPos++;
+                    while (endPos < _data.Nonogram.ColumnCount - 1 && _data.Nonogram[row, endPos + 1]) endPos++;
 
                     var length = endPos - pos + 1;
-                    if (pos - start + 1 < v) start = Math.Max(pos - v + length, start);
-                    if (end - endPos + 1 < v) end = Math.Min(endPos + v - length, end);
+                    if (pos - start < v + 1) start = Math.Max(pos - v + length, start);
+                    if (end - endPos < v + 1) end = Math.Min(endPos + v - length, end);
                 }
                 else
                 {
@@ -101,6 +101,7 @@ public class NonogramPreComputer
 
             list.Add(new ValueSpace(start, end, v));
             spaceBefore += v + 1;
+            spaceAfter--;
         }
 
         return list;
@@ -117,7 +118,7 @@ public class NonogramPreComputer
         for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
         {
             var v = _data.Nonogram.VerticalLineCollection.TryGetValue(col, i);
-            spaceAfter -= Math.Min(v + 1, spaceAfter);
+            spaceAfter -= Math.Min(v, spaceAfter);
             
             var start = main.Start + spaceBefore;
             var end = main.End - spaceAfter;
@@ -129,11 +130,11 @@ public class NonogramPreComputer
                 if (_data.Nonogram[pos, col])
                 {
                     var endPos = pos;
-                    while (_data.Nonogram[endPos + 1, col]) endPos++;
+                    while (endPos < _data.Nonogram.RowCount - 1 && _data.Nonogram[endPos + 1, col]) endPos++;
 
                     var length = endPos - pos + 1;
-                    if (pos - start + 1 < v) start = Math.Max(pos - v + length, start);
-                    if (end - endPos + 1 < v) end = Math.Min(endPos + v - length, end);
+                    if (pos - start < v + 1) start = Math.Max(pos - v + length, start);
+                    if (end - endPos < v + 1) end = Math.Min(endPos + v - length, end);
                 }
                 else
                 {
@@ -144,6 +145,7 @@ public class NonogramPreComputer
 
             list.Add(new ValueSpace(start, end, v));
             spaceBefore += v + 1;
+            spaceAfter--;
         }
 
         return list;
@@ -373,6 +375,31 @@ public readonly struct ValueSpace
     /// </summary>
     public int End { get; }
     public int Value { get; }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is ValueSpace vs && vs == this;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Start, End, Value);
+    }
+
+    public override string ToString()
+    {
+        return $"{Value} : {Start} -> {End}";
+    }
+
+    public static bool operator ==(ValueSpace left, ValueSpace right)
+    {
+        return left.Start == right.Start && left.End == right.End && left.Value == right.Value;
+    }
+
+    public static bool operator !=(ValueSpace left, ValueSpace right)
+    {
+        return !(left == right);
+    }
 }
 
 public readonly struct MainSpace

@@ -204,7 +204,15 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
 
     public void HighlightVerticalValues(int col, int startIndex, int endIndex, ChangeColoration color)
     {
-        //TODO
+        var top = (_maxDepth - _columns[col].Count + startIndex) * _cellSize / 2;
+        var bottom = top + (endIndex - startIndex + 1) * _cellSize / 2;
+        var left = GetLeft(col);
+        var right = left + _cellSize;
+        
+        var hShift = _cellSize / 12;
+        var wShift = _cellSize / 3;
+        Layers[HighlightIndex].Add(new FilledRectangleComponent(new Rect(new Point(left + wShift, top + hShift),
+            new Point(right - wShift, bottom - hShift)), App.Current.ThemeInformation.ToBrush(color)));
     }
 
     public void EncircleRowSection(int row, int startIndex, int endIndex, ChangeColoration color)
@@ -220,7 +228,13 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
 
     public void EncircleColumnSection(int col, int startIndex, int endIndex, ChangeColoration color)
     {
-        //TODO
+        var left = GetLeft(col) - _lineWidth / 2;
+        var top = GetTop(startIndex) - _lineWidth / 2;
+        var bottom = top + (endIndex - startIndex + 1) * (_lineWidth + _cellSize);
+        var right = left + _lineWidth + _cellSize;
+        
+        Layers[HighlightIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(left, top),
+            new Point(right, bottom)), new Pen(App.Current.ThemeInformation.ToBrush(color), _lineWidth)));
     }
 
     private double GetTop(int row)

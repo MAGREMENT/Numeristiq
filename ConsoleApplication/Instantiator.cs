@@ -1,10 +1,8 @@
 ﻿using Model.Kakuros;
 using Model.Kakuros.Strategies;
-using Model.Nonograms;
 using Model.Nonograms.Solver;
 using Model.Nonograms.Solver.Strategies;
 using Model.Sudokus.Solver;
-using Model.Tectonics;
 using Model.Tectonics.Solver;
 using Model.Tectonics.Solver.Strategies;
 using Model.Tectonics.Solver.Strategies.AlternatingInference;
@@ -69,7 +67,8 @@ public class Instantiator
             new BridgingStrategy(),
             new EdgeValueStrategy(),
             new ValueCompletionStrategy(),
-            new ValueOverlayStrategy());
+            new ValueOverlayStrategy(),
+            new UnreachableSquareStrategy());
         
         return solver;
     }
