@@ -95,7 +95,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         set
         {
             _cellSize = value;
-            UpdateSize();
+            UpdateSize(true);
         }
     }
 
@@ -105,7 +105,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         set
         {
             _lineWidth = value;
-            UpdateSize();
+            UpdateSize(true);
         }
     }
     
@@ -124,7 +124,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
             _rows.Add(asArray);
         }
         
-        OptimizableSizeChanged?.Invoke();
+        UpdateSize(true);
     }
 
     public void SetColumns(IEnumerable<IEnumerable<int>> cols)
@@ -138,7 +138,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
             _columns.Add(asArray);
         }
         
-        OptimizableSizeChanged?.Invoke();
+        UpdateSize(true);
     }
 
     public void SetSolution(int row, int col)
@@ -247,7 +247,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         return _maxWidth * _cellSize / 2 + _lineWidth + col * (_lineWidth + _cellSize);
     }
 
-    private void UpdateSize()
+    private void UpdateSize(bool fireEvent)
     {
         Width = _lineWidth + (_lineWidth + _cellSize) * _columns.Count + _cellSize * _maxWidth / 2;
         Height = _lineWidth + (_lineWidth + _cellSize) * _rows.Count + _maxDepth * _cellSize / 2;
@@ -257,6 +257,8 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
         SetNumbers();
         SetLines();
         Refresh();
+        
+        if(fireEvent) OptimizableSizeChanged?.Invoke();
     }
 
     private void SetNumbers()
@@ -324,14 +326,15 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
     public event OnSizeChange? OptimizableSizeChanged;
     public int WidthSizeMetricCount => _columns.Count;
     public int HeightSizeMetricCount => _rows.Count;
+    
     public double GetHeightAdditionalSize()
     {
-        return _maxDepth * _cellSize / 2;
+        return _maxDepth * _cellSize / 2 + _lineWidth * (_rows.Count + 1);
     }
 
     public double GetWidthAdditionalSize()
     {
-        return _maxWidth * _cellSize / 2;
+        return _maxWidth * _cellSize / 2 + _lineWidth * (_columns.Count + 1);
     }
 
     public bool HasSize()
@@ -348,6 +351,7 @@ public class NonogramBoard : DrawingBoard, ISizeOptimizable, INonogramDrawer
 
     public void SetSizeMetric(int n)
     {
-        CellSize = n;
+        _cellSize = n;
+        UpdateSize(false);
     }
 }

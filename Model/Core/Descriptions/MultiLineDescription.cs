@@ -2,16 +2,16 @@
 
 namespace Model.Core.Descriptions;
 
-public class MultipleLineDescription : IDescription
+public class MultiLineDescription : IDescription
 {
-    private List<IDescriptionLine> _lines;
+    private readonly List<IDescriptionLine> _lines = new();
 
     public IEnumerable<IDescriptionLine> EnumerateLines()
     {
         return _lines;
     }
 
-    public MultipleLineDescription Add(IDescriptionLine line)
+    public MultiLineDescription Add(IDescriptionLine line)
     {
         _lines.Add(line);
         return this;

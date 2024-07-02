@@ -45,7 +45,39 @@ public class NonogramSolver : DichotomousStrategySolver<Strategy<INonogramSolver
 
     public override bool HasSolverFailed()
     {
-        return false; //TODO
+        for (int row = 0; row < _nonogram.RowCount; row++)
+        {
+            var expected = _nonogram.HorizontalLineCollection.TotalExpected(row);
+            var remaining = _nonogram.ColumnCount;
+            var current = 0;
+            for (int col = 0; col < _nonogram.ColumnCount; col++)
+            {
+                if(IsAvailable(row, col)) continue;
+
+                remaining--;
+                if (_nonogram[row, col]) current++;
+            }
+
+            if (current > expected || remaining < expected - current) return true;
+        }
+        
+        for (int col = 0; col < _nonogram.RowCount; col++)
+        {
+            var expected = _nonogram.VerticalLineCollection.TotalExpected(col);
+            var remaining = _nonogram.RowCount;
+            var current = 0;
+            for (int row = 0; row < _nonogram.RowCount; row++)
+            {
+                if(IsAvailable(row, col)) continue;
+
+                remaining--;
+                if (_nonogram[row, col]) current++;
+            }
+
+            if (current > expected || remaining < expected - current) return true;
+        }
+
+        return false;
     }
 
     protected override void OnChangeMade()

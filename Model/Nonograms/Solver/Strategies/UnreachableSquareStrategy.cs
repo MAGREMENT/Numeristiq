@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Nonograms.Solver.Strategies;
 
-public class UnreachableSquareStrategy : Strategy<INonogramSolverData>
+public class UnreachableSquareStrategy : Strategy<INonogramSolverData> //TODO fix
 {
     public UnreachableSquareStrategy() : base("Unreachable Square", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
     {

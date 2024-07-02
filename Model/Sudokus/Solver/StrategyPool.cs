@@ -140,13 +140,19 @@ public static class StrategyPool
         "has more than one solution. In the case of Sudoku with a unique solution, at least one possibility preventing the" +
         "BUG must be true");
 
+    private static readonly IDescription APEDescription = new MultiLineDescription().Add(
+        new TextDescriptionLine("An aligned pair exclusion is the removal of candidate(s) using the following logic :" +
+                                "Any two cells cannot have solutions that are candidates contained in an almost locked set they both see."))
+        .Add(new TextImageDescriptionLine("For example : the cells in pink are the targets for the exclusion", "ape.png", TextDisposition.Left));
+
     private static readonly Dictionary<string, IDescription> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
         {HiddenSingleStrategy.OfficialName, HiddenSingleDescription},
         {JuniorExocetStrategy.OfficialName, JuniorExocetDescription},
         {UniquenessClueCoverStrategy.OfficialName, UniquenessClueCoverDescription},
-        {BUGStrategy.OfficialName, BUGDescription}
+        {BUGStrategy.OfficialName, BUGDescription},
+        {AlignedPairExclusionStrategy.OfficialName, APEDescription}
     };
     
     public static IEnumerable<string> EnumerateStrategies(string filter)

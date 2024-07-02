@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using DesktopApplication.Presenter.Sudokus;
 using DesktopApplication.Presenter.Sudokus.Manage;
 using DesktopApplication.View.Settings;
 using DesktopApplication.View.Utility;
 using Microsoft.Win32;
-using Model.Core;
 using Model.Core.Descriptions;
 using Model.Sudokus.Solver;
 
@@ -224,10 +226,11 @@ public partial class ManagePage : ISudokuManageView
 
     private static FrameworkElement? TranslateDescriptionLine(IDescriptionLine line)
     {
+        TextBlock tb;
         switch (line)
         {
             case TextDescriptionLine tdl:
-                var tb = new TextBlock
+                tb = new TextBlock
                 {
                     FontSize = 14,
                     Text = tdl.Text,
@@ -240,7 +243,44 @@ public partial class ManagePage : ISudokuManageView
             
             case TextImageDescriptionLine tidl :
                 var grid = new Grid();
-                //TODO
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = new GridLength(1, GridUnitType.Star)
+                });
+                grid.ColumnDefinitions.Add(new ColumnDefinition
+                {
+                    Width = new GridLength(1, GridUnitType.Star)
+                });
+                
+                tb = new TextBlock
+                {
+                    FontSize = 14,
+                    Text = tidl.Text,
+                    TextWrapping = TextWrapping.Wrap,
+                    TextAlignment = TextAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                
+                tb.SetResourceReference(ForegroundProperty, "Text");
+                Grid.SetColumn(tb, tidl.Disposition == TextDisposition.Left ? 0 : 1);
+                grid.Children.Add(tb);
+                
+                var border = new Border
+                {
+                    BorderThickness = new Thickness(3),
+                    Child = new Image
+                    {
+                        Source = new BitmapImage(new Uri("pack://application:,,," +
+                                                         $"/{Assembly.GetExecutingAssembly().GetName().Name};component" +
+                                                         $"/View/Images/Descriptions/{tidl.ImagePath}")),
+                        VerticalAlignment = VerticalAlignment.Stretch,
+                        HorizontalAlignment = HorizontalAlignment.Stretch
+                    },
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                border.SetResourceReference(Border.BorderBrushProperty, "Background3");
+                Grid.SetColumn(border, tidl.Disposition == TextDisposition.Left ? 1 : 0);
+                grid.Children.Add(border);
                 
                 return grid;
             

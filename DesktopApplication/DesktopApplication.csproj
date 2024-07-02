@@ -14,16 +14,13 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="Images\SudokuImage.png" />
-      <None Remove="Images\TectonicImage.png" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Resource Include="View\Images\appicon.png" />
       <None Remove="View\Images\setting.png" />
       <Resource Include="View\Images\setting.png" />
       <None Remove="View\Images\bin.png" />
       <Resource Include="View\Images\bin.png" />
+      <None Remove="View\Images\Descriptions\ape.png" />
+      <Resource Include="View\Images\Descriptions\ape.png" />
 
 
 
