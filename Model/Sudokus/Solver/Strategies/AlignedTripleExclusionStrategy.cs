@@ -366,7 +366,7 @@ public class AlignedTripleExclusionReportBuilder : IChangeReportBuilder<NumericC
             foreach (var als in _useful)
             {
                 if (!removed.ContainsAny(als.Possibilities)) continue;
-                foreach (var coord in als.EachCell())
+                foreach (var coord in als.EnumerateCells())
                 {
                     lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);
                 }

@@ -80,11 +80,11 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
                     if (p == chain.Links[indexBefore]) continue;
 
                     var cells = new List<Cell>();
-                    cells.AddRange(element.EachCell());
+                    cells.AddRange(element.EnumerateCells());
                     
                     var linkAfter = i == chain.Elements.Length - 1 ? ll : chain.Links[i];
                     if (p == linkAfter) cells.AddRange(i == chain.Elements.Length - 1 
-                        ? chain.Elements[0].EachCell() : chain.Elements[i + 1].EachCell());
+                        ? chain.Elements[0].EnumerateCells() : chain.Elements[i + 1].EnumerateCells());
 
                     foreach (var ssc in cells)
                     {
@@ -116,8 +116,8 @@ public class AlmostLockedSetsChainStrategy : SudokuStrategy
             if (!last.Possibilities.Contains(possibility) || nope.Contains(possibility)) continue;
 
             var cells = new List<Cell>();
-            cells.AddRange(first.EachCell(possibility));
-            cells.AddRange(last.EachCell(possibility));
+            cells.AddRange(first.EnumerateCells(possibility));
+            cells.AddRange(last.EnumerateCells(possibility));
 
             foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
             {
@@ -154,7 +154,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var als in _chain.Elements)
             {
-                foreach (var cell in als.EachCell())
+                foreach (var cell in als.EnumerateCells())
                 {
                     lighter.HighlightCell(cell, (ChangeColoration)color);
                 }
@@ -176,12 +176,12 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
 
     private void HighlightLink(ISudokuHighlighter lighter, int link, IPossibilitiesPositions elementBefore, IPossibilitiesPositions elementAfter)
     {
-        foreach (var cell in elementBefore.EachCell(link))
+        foreach (var cell in elementBefore.EnumerateCells(link))
         {
             lighter.HighlightPossibility(link, cell.Row, cell.Column, ChangeColoration.Neutral);
         }
                 
-        foreach (var cell in elementAfter.EachCell(link))
+        foreach (var cell in elementAfter.EnumerateCells(link))
         {
             lighter.HighlightPossibility(link, cell.Row, cell.Column, ChangeColoration.Neutral);
         }
@@ -189,9 +189,9 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
         var minDistance = double.MaxValue;
         var minCells = new CellPossibility[2];
                 
-        foreach (var cell1 in elementBefore.EachCell(link))
+        foreach (var cell1 in elementBefore.EnumerateCells(link))
         {
-            foreach (var cell2 in elementAfter.EachCell(link))
+            foreach (var cell2 in elementAfter.EnumerateCells(link))
             {
                 var dist = CellUtility.Distance(cell1, link, cell2, link);
 

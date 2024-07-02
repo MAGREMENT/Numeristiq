@@ -115,7 +115,7 @@ public class SueDeCoqStrategy : SudokuStrategy
                 if(unitPP.Possibilities.Count + boxPossibilities.Count + notDrawnPossibilities.Count 
                    != cells.Length + boxCombination.Length + unitPP.PositionsCount) continue;
 
-                var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, solverData);
+                var boxPP = new CAPPossibilitiesPositions(boxCombination, boxPossibilities, solverData.CurrentState);
                 Process(solverData, boxPP, unitPP, cells, possibilities, cellsInBox, cellsInUnit);
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
@@ -225,7 +225,7 @@ public class SueDeCoqStrategy : SudokuStrategy
             currentCells.Add(c);
             var newPossibilities = poss | currentPossibilities;
             
-            result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, solverData)); 
+            result.Add(new CAPPossibilitiesPositions(currentCells.ToArray(), newPossibilities, solverData.CurrentState)); 
             if (currentCells.Count < max) Combinations(solverData, forbiddenPositions, forbiddenPossibilities, max,
                 i + 1, sample, result, currentCells, newPossibilities);
 
@@ -266,12 +266,12 @@ public class SueDeCoqReportBuilder : IChangeReportBuilder<NumericChange, ISudoku
                 }
             }
 
-            foreach (var cell in _boxPP.EachCell())
+            foreach (var cell in _boxPP.EnumerateCells())
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
             }
 
-            foreach (var cell in _unitPP.EachCell())
+            foreach (var cell in _unitPP.EnumerateCells())
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffTwo);
             }

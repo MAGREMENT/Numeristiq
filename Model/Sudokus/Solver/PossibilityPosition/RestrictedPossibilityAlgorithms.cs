@@ -10,9 +10,9 @@ public static class RestrictedPossibilityAlgorithms
     
     public static bool ForeachSearch(IPossibilitiesPositions first, IPossibilitiesPositions second, int possibility)
     {
-        foreach (var cell1 in first.EachCell(possibility))
+        foreach (var cell1 in first.EnumerateCells(possibility))
         {
-            foreach (var cell2 in second.EachCell(possibility))
+            foreach (var cell2 in second.EnumerateCells(possibility))
             {
                 if (!SudokuCellUtility.ShareAUnit(cell1, cell2)) return false;
             }

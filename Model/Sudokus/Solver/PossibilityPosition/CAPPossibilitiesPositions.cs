@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using Model.Core;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -38,16 +37,27 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
         return Possibilities.EnumeratePossibilities();
     }
 
-    public IEnumerable<Cell> EachCell()
+    public IEnumerable<Cell> EnumerateCells()
     {
         return _cells;
     }
 
-    public IEnumerable<Cell> EachCell(int possibility)
+    public IEnumerable<Cell> EnumerateCells(int possibility)
     {
         foreach(var cell in _cells)
         {
             if (_snapshot.PossibilitiesAt(cell.Row, cell.Column).Contains(possibility)) yield return cell;
+        }
+    }
+
+    public IEnumerable<CellPossibility> EnumeratePossibilities()
+    {
+        foreach (var cell in _cells)
+        {
+            foreach (var p in Possibilities.EnumeratePossibilities())
+            {
+                if (_snapshot.PossibilitiesAt(cell).Contains(p)) yield return new CellPossibility(cell, p);
+            }
         }
     }
 
@@ -111,7 +121,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
         }
 
         builder.Append("{ ");
-        foreach(var cell in EachCell())
+        foreach(var cell in EnumerateCells())
         {
             builder.Append(cell + " ");
         }

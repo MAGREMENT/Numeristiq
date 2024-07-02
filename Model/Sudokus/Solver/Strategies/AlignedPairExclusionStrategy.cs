@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
+using Model.Core.Explanation;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
@@ -163,7 +164,8 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
     
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>("", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"Aligned Pair Exclusion in r{_row1 + 1}c{_col1 + 1} and " +
+                                                    $"r{_row2 + 1}c{_col2 + 1}", lighter =>
         {
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);
@@ -175,7 +177,7 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
             foreach (var als in _als)
             {
                 if (!removed.ContainsAny(als.Possibilities)) continue;
-                foreach (var coord in als.EachCell())
+                foreach (var coord in als.EnumerateCells())
                 {
                     lighter.HighlightCell(coord.Row, coord.Column, (ChangeColoration) color);
                 }
@@ -184,12 +186,59 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
-        });
+        }, Explanation(changes, snapshot));
+    }
+
+    private ExplanationElement Explanation(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
+    {
+        ExplanationElement start = new CellExplanationElement(new Cell(_row1, _col1));
+        var current = start.Append(" and ").Append(new Cell(_row2, _col2))
+            .Append(" both see almost locked sets that prevents ").Append(SudokuCellUtility.Cast(changes))
+            .Append(" from being possible.\nThe almost locked sets are the following :");
+
+        foreach (var als in _als)
+        {
+            current = current.Append("\n - ").Append(als).Append(" prevents ");
+
+            bool firstDone = false;
+            int i = 0;
+            while (als.Possibilities.HasNextPossibility(ref i))
+            {
+                int j = i;
+                while (als.Possibilities.HasNextPossibility(ref j))
+                {
+                    if (snapshot.PossibilitiesAt(_row1, _col1).Contains(i)
+                        && snapshot.PossibilitiesAt(_row2, _col2).Contains(j))
+                    {
+                        if (firstDone) current = current.Append(" and ");
+                        else firstDone = true;
+                        current = current.Append(new CellPossibility(_row1, _col1, i),
+                            new CellPossibility(_row2, _col2, j));
+                    }
+
+
+                    if (snapshot.PossibilitiesAt(_row2, _col2).Contains(i)
+                        && snapshot.PossibilitiesAt(_row1, _col1).Contains(j))
+                    {
+                        if (firstDone) current = current.Append(" and ");
+                        else firstDone = true;
+                        current = current.Append(new CellPossibility(_row2, _col2, i),
+                            new CellPossibility(_row1, _col1, j));
+                    }
+                }
+            }
+        }
+        
+        return start;
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return Clue<ISudokuHighlighter>.Default();
+        return new Clue<ISudokuHighlighter>(lighter =>
+        {
+            lighter.EncircleCell(_row1, _col1);
+            lighter.EncircleCell(_row2, _col2);
+        }, "These 2 cells might have eliminations");
     }
 }
 

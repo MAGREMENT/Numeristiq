@@ -72,7 +72,7 @@ public class AlmostHiddenSetSearcher
             possibilities += i;
 
             if (or.Count == possibilities.Count + Difference) result.Add(new CAPPossibilitiesPositions(
-                or.ToCellArray(Unit.Row, row), possibilities, _solverData));
+                or.ToCellArray(Unit.Row, row), possibilities, _solverData.CurrentState));
             
             if (possibilities.Count < Max)
                 InRow(row, result, i + 1, or, possibilities);
@@ -102,7 +102,7 @@ public class AlmostHiddenSetSearcher
             possibilities += i;
 
             if (or.Count == possibilities.Count + Difference) result.Add(new CAPPossibilitiesPositions(
-                or.ToCellArray(Unit.Column, column), possibilities, _solverData));
+                or.ToCellArray(Unit.Column, column), possibilities, _solverData.CurrentState));
             
             if (possibilities.Count < Max)
                 InColumn(column, result, i + 1, or, possibilities);
@@ -136,7 +136,7 @@ public class AlmostHiddenSetSearcher
             {
                 if(!excludeSameLine || !(or.AreAllInSameColumn() || or.AreAllInSameColumn())) 
                     result.Add(new CAPPossibilitiesPositions(or.ToCellArray(),
-                        possibilities, _solverData));
+                        possibilities, _solverData.CurrentState));
             }
 
             if (possibilities.Count < Max)

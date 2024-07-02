@@ -35,8 +35,8 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                     if (!two.Possibilities.Contains(possibility) || possibility == restrictedCommon) continue;
 
                     List<Cell> coords = new();
-                    coords.AddRange(one.EachCell(possibility));
-                    coords.AddRange(two.EachCell(possibility));
+                    coords.AddRange(one.EnumerateCells(possibility));
+                    coords.AddRange(two.EnumerateCells(possibility));
 
                     foreach (var coord in SudokuCellUtility.SharedSeenCells(coords))
                     {
@@ -51,7 +51,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                 {
                     if (restrictedCommons.Contains(possibility) || two.Possibilities.Contains(possibility)) continue;
 
-                    foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(one.EachCell(possibility))))
+                    foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(one.EnumerateCells(possibility))))
                     {
                         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
@@ -61,7 +61,7 @@ public class AlmostLockedSetsStrategy : SudokuStrategy
                 {
                     if (restrictedCommons.Contains(possibility) || one.Possibilities.Contains(possibility)) continue;
 
-                    foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(two.EachCell(possibility))))
+                    foreach (var coord in SudokuCellUtility.SharedSeenCells(new List<Cell>(two.EnumerateCells(possibility))))
                     {
                         solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, coord.Row, coord.Column);
                     }
@@ -91,25 +91,25 @@ public class AlmostLockedSetsReportBuilder : IChangeReportBuilder<NumericChange,
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            foreach (var coord in _one.EachCell())
+            foreach (var coord in _one.EnumerateCells())
             {
                 lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffOne);
             }
 
-            foreach (var coord in _two.EachCell())
+            foreach (var coord in _two.EnumerateCells())
             {
                 lighter.HighlightCell(coord.Row, coord.Column, ChangeColoration.CauseOffTwo);
             }
 
             foreach (var possibility in _restrictedCommons.EnumeratePossibilities())
             {
-                foreach (var coord in _one.EachCell())
+                foreach (var coord in _one.EnumerateCells())
                 {
                     if(snapshot.PossibilitiesAt(coord).Contains(possibility))
                         lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);
                 }
                 
-                foreach (var coord in _two.EachCell())
+                foreach (var coord in _two.EnumerateCells())
                 {
                     if(snapshot.PossibilitiesAt(coord).Contains(possibility))
                         lighter.HighlightPossibility(possibility, coord.Row, coord.Column, ChangeColoration.Neutral);

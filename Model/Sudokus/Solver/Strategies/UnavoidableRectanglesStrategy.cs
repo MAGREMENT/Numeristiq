@@ -125,7 +125,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         List<Cell> buffer = new();
         foreach (var possibility in als.Possibilities.EnumeratePossibilities())
         {
-            foreach (var cell in als.EachCell())
+            foreach (var cell in als.EnumerateCells())
             {
                 if(solverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
@@ -208,7 +208,7 @@ public class AvoidableRectanglesWithAlmostLockedSetReportBuilder : IChangeReport
                 lighter.HighlightCell(roof, ChangeColoration.CauseOffOne);
             }
 
-            foreach (var cell in _als.EachCell())
+            foreach (var cell in _als.EnumerateCells())
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffThree);
             }

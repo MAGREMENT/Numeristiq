@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -20,7 +19,7 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
         return Possibilities.EnumeratePossibilities();
     }
 
-    public IEnumerable<Cell> EachCell()
+    public IEnumerable<Cell> EnumerateCells()
     {
         foreach (var cp in _cps)
         {
@@ -28,11 +27,22 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
         }
     }
 
-    public IEnumerable<Cell> EachCell(int possibility)
+    public IEnumerable<Cell> EnumerateCells(int possibility)
     {
         foreach (var cp in _cps)
         {
             if (cp.Possibilities.Contains(possibility)) yield return cp.Cell;
+        }
+    }
+
+    public IEnumerable<CellPossibility> EnumeratePossibilities()
+    {
+        foreach (var cp in _cps)
+        {
+            foreach (var p in cp.Possibilities.EnumeratePossibilities())
+            {
+                yield return new CellPossibility(cp.Cell, p); 
+            }
         }
     }
 

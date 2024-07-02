@@ -22,7 +22,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISu
                 List<Cell> notIn = new();
                 List<CellPossibilities> cps = new();
                 
-                foreach (var cell in als.EachCell())
+                foreach (var cell in als.EnumerateCells())
                 {
                     var possibilities = als.PossibilitiesInCell(cell);
                     if (possibilities.Contains(p))
@@ -69,7 +69,7 @@ public class AlmostNakedSetConstructRule : IConstructRule<ISudokuSolverData, ISu
                 foreach (var possibility in als.Possibilities.EnumeratePossibilities())
                 {
                     if (possibility == p) continue;
-                    var cells = new List<Cell>(als.EachCell(possibility));
+                    var cells = new List<Cell>(als.EnumerateCells(possibility));
 
                     foreach (var ssc in SudokuCellUtility.SharedSeenCells(cells))
                     {

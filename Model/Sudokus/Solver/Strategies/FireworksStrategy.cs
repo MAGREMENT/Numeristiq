@@ -239,7 +239,7 @@ public class FireworksStrategy : SudokuStrategy
                 bool one = true;
                 bool two = true;
 
-                foreach (var cell in als.EachCell())
+                foreach (var cell in als.EnumerateCells())
                 {
                     if (cell == df.Cross || cell == df.RowWing || cell == df.ColumnWing)
                     {
@@ -270,8 +270,8 @@ public class FireworksStrategy : SudokuStrategy
                 {
                     if (one.Equals(two)) continue;
 
-                    List<Cell> total = new(one.EachCell());
-                    total.AddRange(two.EachCell());
+                    List<Cell> total = new(one.EnumerateCells());
+                    total.AddRange(two.EnumerateCells());
 
                     foreach (var sharedSeenCell in SudokuCellUtility.SharedSeenCells(total))
                     {
@@ -490,7 +490,7 @@ public class FireworksWithAlmostLockedSetsReportBuilder : IChangeReportBuilder<N
 
             foreach (var als in _als)
             {
-                foreach (var cell in als.EachCell())
+                foreach (var cell in als.EnumerateCells())
                 {
                     lighter.HighlightCell(cell.Row, cell.Column, (ChangeColoration) color);
                 }

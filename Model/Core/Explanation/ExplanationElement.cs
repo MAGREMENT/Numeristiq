@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 
@@ -42,11 +43,17 @@ public abstract class ExplanationElement
 
     public ExplanationElement Append(Cell cell) => Append(new CellExplanationElement(cell));
 
+    public ExplanationElement Append(params CellPossibility[] cps) =>
+        Append(new MultiCellPossibilityExplanationElement(cps));
+
+    public ExplanationElement Append(IPossibilitiesPositions als) => Append(new AlmostLockedSetExplanationElement(als));
+
     public static ExplanationElement operator +(ExplanationElement element, ExplanationElement s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, Cell s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, CellPossibility s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, House s) => element.Append(s);
     public static ExplanationElement operator +(ExplanationElement element, string s) => element.Append(s);
+    public static ExplanationElement operator +(ExplanationElement element, CellPossibility[] s) => element.Append(s);
 }
 
 public enum ExplanationColor

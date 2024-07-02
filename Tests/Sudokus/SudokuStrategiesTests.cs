@@ -179,6 +179,14 @@ public class SudokuStrategiesTests
             "030h0581g11141210950o021054g09gg039050o00921034ggg90058121410305g1091g1g0911030h60608105g1g1050h110981214103214190091g0305g18g050990g13g2g038g410h03g1418105110921",
             "+ 485");
     }
+
+    [Test]
+    public void AlignedPairExclusionTest()
+    {
+        TestSudokuStrategyInstance(new AlignedPairExclusionStrategy(),
+            "b0g141039409a40h94b00996940hh441i6p69g0m962141h4o4g609054109g1030h118121g181211c1441030c0h03110h0c2181gcgc41410k949kg103as2c848g0mg14109218k11860921969k9414ok41o6",
+            "- 873");
+    }
     
     #region BlossomLoop
 

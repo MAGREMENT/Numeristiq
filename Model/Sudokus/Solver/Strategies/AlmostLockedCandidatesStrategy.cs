@@ -155,7 +155,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         Cell[] centerCells, IPossibilitiesPositions als)
     {
         List<Cell> total = new List<Cell>(centerCells);
-        total.AddRange(als.EachCell());
+        total.AddRange(als.EnumerateCells());
         foreach (var ssc in SudokuCellUtility.SharedSeenEmptyCells(solverData, total))
         {
             foreach (var p in possibilities.EnumeratePossibilities())
@@ -240,7 +240,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(col);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, solverData));
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Row, row), newPossibilities, solverData.CurrentState));
             else if (currentPositions.Count < _type - 1) SearchRowForAls(solverData, row, miniColExcept, col + 1,
                     newPossibilities, currentPositions, result);
 
@@ -275,7 +275,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(row);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, solverData));
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(Unit.Column, col), newPossibilities, solverData.CurrentState));
             else if (currentPositions.Count < _type - 1) SearchColumnForAls(solverData, col, miniRowExcept, row + 1,
                 newPossibilities, currentPositions, result);
 
@@ -321,7 +321,7 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
             currentPositions.Add(number);
             
             if(currentPositions.Count == _type - 1 && newPossibilities.Count == _type) result.Add(
-                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, solverData));
+                new CAPPossibilitiesPositions(currentPositions.ToCellArray(), newPossibilities, solverData.CurrentState));
             else if (currentPositions.Count < _type - 1) SearchMiniGridForAls(solverData, miniRow, miniCol,
                     exceptNumber, exceptUnit, number + 1, newPossibilities, currentPositions, result);
 
@@ -352,7 +352,7 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
                 lighter.HighlightCell(cell, ChangeColoration.Neutral);
             }
             
-            foreach (var cell in _als.EachCell())
+            foreach (var cell in _als.EnumerateCells())
             {
                 lighter.HighlightCell(cell, ChangeColoration.CauseOffOne);
             }

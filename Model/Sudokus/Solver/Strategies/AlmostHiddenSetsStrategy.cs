@@ -38,7 +38,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     private bool Process2CommonCells(ISudokuSolverData solverData, IPossibilitiesPositions one,
         IPossibilitiesPositions two)
     {
-        foreach (var cell in one.EachCell())
+        foreach (var cell in one.EnumerateCells())
         {
             if (two.Positions.Contains(cell)) continue;
                     
@@ -50,7 +50,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
             }
         }
                     
-        foreach (var cell in two.EachCell())
+        foreach (var cell in two.EnumerateCells())
         {
             if (one.Positions.Contains(cell)) continue;
                     
@@ -72,7 +72,7 @@ public class AlmostHiddenSetsStrategy : SudokuStrategy
     {
         List<Link<CellPossibility>> links = new();
 
-        foreach (var cell in one.EachCell())
+        foreach (var cell in one.EnumerateCells())
         {
             foreach (var possibility in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
             {
@@ -120,7 +120,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<
     {
         return new ChangeReport<ISudokuHighlighter>( "", lighter =>
         {
-            foreach (var cell in _one.EachCell())
+            foreach (var cell in _one.EnumerateCells())
             {
                 foreach (var possibility in _one.PossibilitiesInCell(cell).EnumeratePossibilities())
                 {
@@ -128,7 +128,7 @@ public class AlmostHiddenSetsAndStrongLinksReportBuilder : IChangeReportBuilder<
                 }
             }
             
-            foreach (var cell in _two.EachCell())
+            foreach (var cell in _two.EnumerateCells())
             {
                 foreach (var possibility in _two.PossibilitiesInCell(cell).EnumeratePossibilities())
                 {

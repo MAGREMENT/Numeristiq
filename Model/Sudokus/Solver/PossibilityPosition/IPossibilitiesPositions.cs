@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Model.Sudokus.Solver.Position;
-using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -13,11 +12,13 @@ public interface IPossibilitiesPositions
     int PossibilityCount { get; }
     int PositionsCount { get; }
     
-    IEnumerable<Cell> EachCell();
-    IEnumerable<Cell> EachCell(int with);
+    IEnumerable<Cell> EnumerateCells();
+    IEnumerable<Cell> EnumerateCells(int with);
+    IEnumerable<CellPossibility> EnumeratePossibilities();
+    
     ReadOnlyBitSet16 PossibilitiesInCell(Cell cell);
-
     CellPossibilities[] ToCellPossibilitiesArray();
+    
     bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility);
     
     public ReadOnlyBitSet16 RestrictedCommons(IPossibilitiesPositions other)

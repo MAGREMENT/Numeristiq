@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
+using Model.Core.Changes;
 using Model.Sudokus.Solver.Utility.SharedSeenCellSearchers;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -10,6 +12,18 @@ public static class SudokuCellUtility
 {
     private static readonly ISharedSeenCellSearcher Searcher = new InCommonFindSearcher();
 
+    public static CellPossibility[] Cast(IReadOnlyList<NumericChange> changes)
+    {
+        var result = new CellPossibility[changes.Count];
+        for (int i = 0; i < changes.Count; i++)
+        {
+            var c = changes[i];
+            result[i] = new CellPossibility(c.Row, c.Column, c.Number);
+        }
+
+        return result;
+    }
+    
     public static int SharedRow(IEnumerable<Cell> cells)
     {
         int r = -1;

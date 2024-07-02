@@ -77,7 +77,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
 
             foreach (var pp in chain.Elements)
             {
-                foreach (var cell in pp.EachCell())
+                foreach (var cell in pp.EnumerateCells())
                 {
                     foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
                     {
@@ -117,7 +117,7 @@ public class AlmostHiddenSetsChainStrategy : SudokuStrategy
         nope.Add(chain.FirstLink());
         nope.Add(chain.LastLink());
 
-        foreach (var cell in first.EachCell())
+        foreach (var cell in first.EnumerateCells())
         {
             if (nope.Contains(cell)) continue;
             
@@ -180,7 +180,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
             {
                 foreach (var possibility in ahs.Possibilities.EnumeratePossibilities())
                 {
-                    foreach (var cell in ahs.EachCell(possibility))
+                    foreach (var cell in ahs.EnumerateCells(possibility))
                     {
                         lighter.HighlightPossibility(possibility, cell.Row, cell.Column, (ChangeColoration)color);
                     }

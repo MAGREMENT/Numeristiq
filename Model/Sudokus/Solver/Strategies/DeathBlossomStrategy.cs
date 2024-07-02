@@ -48,7 +48,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                     {
                         var ok = true;
 
-                        foreach (var cell in als.EachCell())
+                        foreach (var cell in als.EnumerateCells())
                         {
                             if (solverData.PossibilitiesAt(cell).Contains(possibilityInCommon) &&
                                 !SudokuCellUtility.ShareAUnit(cell, current))
@@ -79,7 +79,7 @@ public class DeathBlossomStrategy : SudokuStrategy
                         {
                             if(alsPossibility == possibility) continue;
 
-                            foreach (var cell in als.EachCell())
+                            foreach (var cell in als.EnumerateCells())
                             {
                                 if (solverData.PossibilitiesAt(cell).Contains(alsPossibility)) buffer.Add(cell);
                             }
@@ -128,7 +128,7 @@ public class DeathBlossomStrategy : SudokuStrategy
 
         foreach (var als in sets)
         {
-            foreach (var cell in als.EachCell())
+            foreach (var cell in als.EnumerateCells())
             {
                 if (solverData.PossibilitiesAt(cell).Contains(possibility)) buffer.Add(cell);
             }
@@ -179,7 +179,7 @@ public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, ISu
             {
                 var coloration = (ChangeColoration)start;
 
-                foreach (var cell in als.EachCell())
+                foreach (var cell in als.EnumerateCells())
                 {
                     lighter.HighlightCell(cell, coloration);
                 }
