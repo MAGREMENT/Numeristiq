@@ -6,14 +6,15 @@ using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
 public class NakedSetStrategy : SudokuStrategy
 {
-    public const string OfficialNameForType2 = "Naked Double";
-    public const string OfficialNameForType3 = "Naked Triple";
-    public const string OfficialNameForType4 = "Naked Quad";
+    public const string OfficialNameForType2 = "Naked Doubles";
+    public const string OfficialNameForType3 = "Naked Triples";
+    public const string OfficialNameForType4 = "Naked Quads";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     private readonly int _type;
@@ -263,34 +264,22 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<NumericC
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
+        var cells = _linePos.ToCellArray(_unit, _unitNumber);
+        
+        return new ChangeReport<ISudokuHighlighter>(ChangeReportHelper.XSetStrategyDescription(cells, "Naked",
+            _linePos.Count, _possibilities.EnumeratePossibilities()), lighter =>
         {
-            foreach (var other in _linePos)
+            foreach (var possibility in _possibilities.EnumeratePossibilities())
             {
-                foreach (var possibility in _possibilities.EnumeratePossibilities())
+                foreach (var cell in cells)
                 {
-                    switch (_unit)
-                    {
-                        case Unit.Row :
-                            if(snapshot.PossibilitiesAt(_unitNumber, other).Contains(possibility))
-                                lighter.HighlightPossibility(possibility, _unitNumber, other, ChangeColoration.CauseOffOne);
-                            break;
-                        case Unit.Column :
-                            if(snapshot.PossibilitiesAt(other, _unitNumber).Contains(possibility))
-                                lighter.HighlightPossibility(possibility, other, _unitNumber, ChangeColoration.CauseOffOne);
-                            break;
-                    }
+                    if(snapshot.PossibilitiesAt(cell).Contains(possibility))
+                        lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
                 }
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
-    }
-
-    private string Explanation()
-    {
-        return $"The cells {_linePos.ToString(_unit, _unitNumber)} only contains the possibilities ({_possibilities})." +
-               $" Any other cell in {_unit.ToString().ToLower()} {_unitNumber + 1} cannot contain these possibilities";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
@@ -312,7 +301,10 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<Nume
     
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Explanation(), lighter =>
+        var cells = _miniPos.ToCellArray();
+        
+        return new ChangeReport<ISudokuHighlighter>(ChangeReportHelper.XSetStrategyDescription(cells, "Naked",
+            _miniPos.Count, _possibilities.EnumeratePossibilities()), lighter =>
         {
             foreach (var pos in _miniPos)
             {
@@ -325,12 +317,6 @@ public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<Nume
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
-    }
-    
-    private string Explanation()
-    {
-        return $"The cells {_miniPos} only contains the possibilities ({_possibilities}). Any other cell in" +
-               $" mini grid {_miniPos.MiniGridNumber() + 1} cannot contain these possibilities";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -257,6 +257,6 @@ public class BoxMethods : IUnitMethods
 
     public House ToCoverHouse(Cell cell)
     {
-        return new House(Unit.MiniGrid, cell.Row / 3 * 3 + cell.Column / 3);
+        return new House(Unit.Box, cell.Row / 3 * 3 + cell.Column / 3);
     }
 }

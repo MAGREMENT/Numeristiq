@@ -28,11 +28,11 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
 
     public Cell[] ToCellArray();
 
-    public int MiniGridNumber();
+    public int GetNumber();
     
     public static MiniGridPositions DefaultOr(IReadOnlyMiniGridPositions one, IReadOnlyMiniGridPositions two)
     {
-        var result = new MiniGridPositions(one.MiniGridNumber() / 3, one.MiniGridNumber() % 3);
+        var result = new MiniGridPositions(one.GetNumber() / 3, one.GetNumber() % 3);
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)

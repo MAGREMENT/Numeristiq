@@ -62,24 +62,6 @@ public class DefaultDichotomousChangeReportBuilder<TVerifier, THighlighter> : IC
     }
 }
 
-public static class ChangeReportHelper
-{
-    public static void HighlightChanges(INumericSolvingStateHighlighter highlightable, IReadOnlyList<NumericChange> changes)
-    {
-        foreach (var change in changes)
-        {
-            HighlightChange(highlightable, change);
-        }
-    }
-    
-    public static void HighlightChange(INumericSolvingStateHighlighter highlightable, NumericChange progress)
-    {
-        if(progress.Type == ChangeType.PossibilityRemoval)
-            highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);
-        else highlightable.HighlightCell(progress.Row, progress.Column, ChangeColoration.ChangeOne);
-    }
-}
-
 public class Clue<T> : IHighlightable<T>
 {
     private readonly IHighlightable<T>? _highlightable;

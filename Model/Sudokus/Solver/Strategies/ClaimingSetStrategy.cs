@@ -3,7 +3,6 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
-using Model.Utility;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -115,24 +114,9 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
     
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        List<Cell> causes = new();
-        switch (_unit)
-        {
-            case Unit.Row :
-                foreach (var col in _linePos)
-                {
-                    causes.Add(new Cell(_unitNumber, col));
-                }
-                break;
-            case Unit.Column :
-                foreach (var row in _linePos)
-                {
-                    causes.Add(new Cell(row, _unitNumber));
-                }
-                break;
-        }
+        var causes = _linePos.ToCellArray(_unit, _unitNumber);
 
-        return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(), lighter =>
         {
             foreach (var coord in causes)
             {
@@ -143,13 +127,15 @@ public class BoxLineReductionReportBuilder : IChangeReportBuilder<NumericChange,
         });
     }
 
-    private string Explanation(IReadOnlyList<NumericChange> changes)
+    private string Description()
     {
-        var first = changes[0];
-        var miniGirdNumber = first.Row / 3 * 3 + first.Column / 3 + 1;
-        return $"{_number} is present only in the cells {_linePos.ToString(_unit, _unitNumber)} in" +
-               $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so it can be removed from any other cells in" +
-               $" box {miniGirdNumber}";
+        var box = _unit switch
+        {
+            Unit.Row => _unitNumber / 3 * 3 + _linePos.First() / 3 + 1,
+            Unit.Column => _linePos.First() / 3 * 3 + _unitNumber / 3 + 1,
+            _ => 0
+        };
+        return $"Claiming Set in box {box} because of {_unit.ToString().ToLower()} {_unitNumber + 1}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

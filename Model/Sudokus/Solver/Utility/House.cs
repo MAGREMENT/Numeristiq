@@ -31,7 +31,7 @@ public readonly struct House
         {
             Unit.Row => "r",
             Unit.Column => "c",
-            Unit.MiniGrid => "b"
+            Unit.Box => "b"
         };
 
         return $"{s}{Number + 1}";
@@ -68,7 +68,7 @@ public readonly struct House
         {
             Unit.Row => cell.Row == Number,
             Unit.Column => cell.Column == Number,
-            Unit.MiniGrid => cell.Row / 3 * 3 + cell.Column == Number,
+            Unit.Box => cell.Row / 3 * 3 + cell.Column == Number,
             _ => false
         };
     }
@@ -80,16 +80,16 @@ public readonly struct House
             case (Unit.Row, Unit.Column) :
             case (Unit.Column, Unit.Row) :
                 return true;
-            case (Unit.Row, Unit.MiniGrid) :
-            case (Unit.MiniGrid, Unit.Row) :
+            case (Unit.Row, Unit.Box) :
+            case (Unit.Box, Unit.Row) :
                 return Number / 3 == house.Number / 3;
-            case (Unit.Column, Unit.MiniGrid) :
+            case (Unit.Column, Unit.Box) :
                 return Number / 3 == house.Number % 3;
-            case (Unit.MiniGrid, Unit.Column) :
+            case (Unit.Box, Unit.Column) :
                 return Number % 3 == Number / 3;
             case (Unit.Row, Unit.Row) :
             case (Unit.Column, Unit.Column) :
-            case (Unit.MiniGrid, Unit.MiniGrid) :
+            case (Unit.Box, Unit.Box) :
                 return Number == house.Number;
         }
 
@@ -104,7 +104,7 @@ public readonly struct House
                 return (new Cell(Number, 0), new Cell(Number, 8));
             case Unit.Column :
                 return (new Cell(0, Number), new Cell(8, Number));
-            case Unit.MiniGrid :
+            case Unit.Box :
                 var sRow = Number / 3 * 3;
                 var sCol = Number % 3 * 3;
                 return (new Cell(sRow, sCol), new Cell(sRow + 2, sCol + 2));

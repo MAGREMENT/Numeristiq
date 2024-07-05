@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -146,7 +147,7 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
     {
         var cells = _pos.ToCellArray(_unit, _unitNumber);
 
-        return new ChangeReport<ISudokuHighlighter>(Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -158,12 +159,17 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
         });
     }
 
-    private string Explanation(IReadOnlyList<Cell> cells)
+    private string Description(IReadOnlyList<Cell> cells)
     {
-        if (cells.Count < 2) return "";
+        var builder = new StringBuilder($"Hidden Doubles in {cells[0]}, {cells[1]} for ");
 
-        return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
-               $" {_unit.ToString().ToLower()} {_unitNumber + 1}, so any other candidates in those cells can be removed";
+        var n = 0;
+        _pos.Next(ref n);
+        var f = n;
+        _pos.Next(ref n);
+        builder.Append(f + ", " + n);
+
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
@@ -189,7 +195,7 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericCh
     {
         var cells = _pos.ToCellArray();
 
-        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(cells), lighter =>
         {
             foreach (var cell in cells)
             {
@@ -201,12 +207,17 @@ public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericCh
         });
     }
     
-    private string Explanation(Cell[] cells)
+    private string Description(IReadOnlyList<Cell> cells)
     {
-        if (cells.Length < 2) return "";
-        
-        return $"The possibilities ({_n1}, {_n2}) are limited to the cells {cells[0]}, {cells[1]} in" +
-               $" mini grid {_pos.MiniGridNumber() + 1}, so any other candidates in those cells can be removed";
+        var builder = new StringBuilder($"Hidden Doubles in {cells[0]}, {cells[1]} for ");
+
+        var n = 0;
+        _pos.Next(ref n);
+        var f = n;
+        _pos.Next(ref n);
+        builder.Append(f + ", " + n);
+
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

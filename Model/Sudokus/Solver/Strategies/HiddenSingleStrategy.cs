@@ -47,7 +47,7 @@ public class HiddenSingleStrategy : SudokuStrategy
                     
                     var pos = mp.First();
                     solverData.ChangeBuffer.ProposeSolutionAddition(number, pos.Row, pos.Column);
-                    solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.MiniGrid));
+                    solverData.ChangeBuffer.Commit(new HiddenSingleReportBuilder(Unit.Box));
                     if (StopOnFirstPush) return;
                 }
             }
@@ -99,7 +99,7 @@ public class HiddenSingleReportBuilder : IChangeReportBuilder<NumericChange, ISu
         {
             Unit.Row => new House(_unit, change.Row),
             Unit.Column => new House(_unit, change.Column),
-            Unit.MiniGrid => new House(_unit, change.Row / 3 * 3 + change.Column / 3),
+            Unit.Box => new House(_unit, change.Row / 3 * 3 + change.Column / 3),
             _ => throw new ArgumentOutOfRangeException(nameof(_unit))
         };
 

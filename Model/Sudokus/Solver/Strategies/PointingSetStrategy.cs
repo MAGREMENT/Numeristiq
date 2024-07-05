@@ -55,8 +55,7 @@ public class PointingSetStrategy : SudokuStrategy
                         }
                         
                         if(solverData.ChangeBuffer.Commit(
-                            new PointingPossibilitiesReportBuilder(number, ppimg)) &&
-                                StopOnFirstPush) return;
+                            new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Row)) && StopOnFirstPush) return;
                     }
                     else if (ppimg.AreAllInSameColumn())
                     {
@@ -67,8 +66,7 @@ public class PointingSetStrategy : SudokuStrategy
                         }
 
                         if (solverData.ChangeBuffer.Commit(
-                                new PointingPossibilitiesReportBuilder(number, ppimg)) &&
-                                    StopOnFirstPush) return;
+                                new PointingPossibilitiesReportBuilder(number, ppimg, Unit.Column)) && StopOnFirstPush) return;
                     }
                 }
             }
@@ -80,16 +78,18 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericCh
 {
     private readonly int _number;
     private readonly IReadOnlyMiniGridPositions _miniPos;
+    private readonly Unit _unit;
 
-    public PointingPossibilitiesReportBuilder(int number, IReadOnlyMiniGridPositions miniPos)
+    public PointingPossibilitiesReportBuilder(int number, IReadOnlyMiniGridPositions miniPos, Unit unit)
     {
         _number = number;
         _miniPos = miniPos;
+        _unit = unit;
     }
     
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( Explanation(changes), lighter =>
+        return new ChangeReport<ISudokuHighlighter>(Description(changes), lighter =>
         {
             foreach (var pos in _miniPos)
             {
@@ -100,27 +100,15 @@ public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericCh
         });
     }
 
-    private string Explanation(IReadOnlyList<NumericChange> changes)
+    private string Description(IReadOnlyList<NumericChange> changes)
     {
-        var firstChange = changes[0];
-        var firstMini = _miniPos.First();
-        int lineNumber;
-        Unit unit;
-
-        if (firstChange.Row == firstMini.Row)
+        var n = _unit switch
         {
-            lineNumber = firstChange.Row;
-            unit = Unit.Row;
-        }
-        else if (firstChange.Column == firstMini.Column)
-        {
-            lineNumber = firstChange.Column;
-            unit = Unit.Column;
-        }
-        else return "";
-
-        return $"{_number} is present only in the cells {_miniPos} in mini grid {_miniPos.MiniGridNumber() + 1}, so" +
-               $" it can be removed from any other cells in {unit.ToString().ToLower()} {lineNumber}";
+            Unit.Row => changes[0].Row,
+            Unit.Column => changes[0].Column,
+            _ => 0
+        };
+        return $"Pointing Set in {_unit.ToString().ToLower()} {n + 1} because of box {_miniPos.GetNumber() + 1}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

@@ -19,7 +19,7 @@ public class CoverHouseExplanationElement : ExplanationElement
         {
             Unit.Row => "row ",
             Unit.Column => "column ",
-            Unit.MiniGrid => "box ",
+            Unit.Box => "box ",
             _ => throw new ArgumentOutOfRangeException()
         };
 

@@ -125,7 +125,7 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
         return result;
     }
 
-    public int GetMiniGridSolutionCount(int miniRow, int miniCol, int number)
+    public int GetBoxSolutionCount(int miniRow, int miniCol, int number)
     {
         int result = 0;
         for (int gridRow = 0; gridRow < 3; gridRow++)
@@ -187,7 +187,7 @@ public class Sudoku : IReadOnlySudoku, ICellsAndDigitsPuzzle, ICopyable<Sudoku>
 
 public enum Unit
 {
-    Row, Column, MiniGrid
+    Row, Column, Box
 }
 
 public interface IReadOnlySudoku : INumericSolvingState
@@ -196,6 +196,6 @@ public interface IReadOnlySudoku : INumericSolvingState
     public int GetSolutionCount();
     public int GetRowSolutionCount(int row, int number);
     public int GetColumnSolutionCount(int column, int number);
-    public int GetMiniGridSolutionCount(int miniRow, int miniCol, int number);
+    public int GetBoxSolutionCount(int miniRow, int miniCol, int number);
     public Sudoku Copy();
 }

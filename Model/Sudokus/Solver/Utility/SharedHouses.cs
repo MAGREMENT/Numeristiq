@@ -91,7 +91,7 @@ public class SharedHouses : IEnumerable<House>
     {
         if (Peek(4)) yield return new House(Unit.Row, GetRow());
         if (Peek(9)) yield return new House(Unit.Column, GetColumn());
-        if (Peek(14)) yield return new House(Unit.MiniGrid, GetGridNumber());
+        if (Peek(14)) yield return new House(Unit.Box, GetGridNumber());
     }
 
     IEnumerator IEnumerable.GetEnumerator()

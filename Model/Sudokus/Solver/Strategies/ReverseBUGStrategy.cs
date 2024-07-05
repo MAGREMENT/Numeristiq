@@ -46,7 +46,7 @@ public class ReverseBUGStrategy : SudokuStrategy
                 var soloCol = UniquenessHelper.SearchExceptionInUnit(Unit.Column, 2, or);
                 if (soloCol == -1) continue;
 
-                var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.MiniGrid, 2, or);
+                var soloMini = UniquenessHelper.SearchExceptionInUnit(Unit.Box, 2, or);
                 if (soloMini == -1) continue;
 
                 var miniRow = soloMini / 3;

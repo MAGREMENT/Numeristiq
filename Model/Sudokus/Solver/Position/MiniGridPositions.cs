@@ -283,7 +283,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         }
     }
 
-    public int MiniGridNumber()
+    public int GetNumber()
     {
         return _startRow + _startCol / 3;
     }

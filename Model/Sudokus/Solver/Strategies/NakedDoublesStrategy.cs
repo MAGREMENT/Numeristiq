@@ -222,29 +222,34 @@ public class MiniGridNakedDoublesReportBuilder : IChangeReportBuilder<NumericCha
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        List<CellPossibility> cells = new(4);
-        
-        foreach (var possibility in _pos.EnumeratePossibilities())
+        List<Cell> cells = new(2)
         {
-            cells.Add(new CellPossibility(_miniRow * 3 + _gn1 / 3, _miniCol * 3 + _gn1 % 3, possibility));
-            cells.Add(new CellPossibility(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3, possibility));
-        }
-        
-        return new ChangeReport<ISudokuHighlighter>( Explanation(cells), lighter =>
+            new Cell(_miniRow * 3 + _gn1 / 3, _miniCol * 3 + _gn1 % 3),
+            new Cell(_miniRow * 3 + _gn2 / 3, _miniCol * 3 + _gn2 % 3)
+        };
+
+        return new ChangeReport<ISudokuHighlighter>(Description(cells), lighter =>
         {
-            foreach (var cell in cells)
+            foreach (var possibility in _pos.EnumeratePossibilities())
             {
-                lighter.HighlightPossibility(cell, ChangeColoration.CauseOffOne);
+                foreach (var cell in cells)
+                {
+                    lighter.HighlightPossibility(possibility, cell.Row, cell.Column, ChangeColoration.CauseOffOne);
+                } 
             }
 
             ChangeReportHelper.HighlightChanges(lighter, changes);
         });
     }
     
-    private string Explanation(IReadOnlyList<CellPossibility> cells)
+    private string Description(IReadOnlyList<Cell> cells)
     {
-        return $"The cells {cells[0]}, {cells[1]} only contains the possibilities ({_pos}). Any other cell in" +
-               $" mini grid {_miniRow * 3 + _miniCol + 1} cannot contain these possibilities";
+        var builder = new StringBuilder($"Naked Doubles in {cells[0]}, {cells[1]} for ");
+
+        var n = _pos.NextPossibility(0);
+        builder.Append(n + ", " + _pos.NextPossibility(n));
+
+        return builder.ToString();
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
