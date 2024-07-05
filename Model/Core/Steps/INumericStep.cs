@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Core.Changes;
 using Model.Core.Explanation;
 using Model.Core.Highlighting;
+using Model.Utility.Collections;
 
 namespace Model.Core.Steps;
 
@@ -31,15 +31,7 @@ public interface IDichotomousStep<THighlighter> : IStep
 
     string IStep.ChangesToString()
     {
-        if (Changes.Count == 0) return "";
-
-        var builder = new StringBuilder(Changes[0].ToString());
-        for (int i = 1; i < Changes.Count; i++)
-        {
-            builder.Append($", {Changes[i].ToString()}");
-        }
-
-        return builder.ToString();
+        return Changes.ToStringSequence(", ");
     }
 }
 
@@ -57,15 +49,7 @@ public interface INumericStep<THighlighter> : IStep
 
     string IStep.ChangesToString()
     {
-        if (Changes.Count == 0) return "";
-        
-        var builder = new StringBuilder();
-        foreach (var change in Changes)
-        {
-            builder.Append($"{change.ToString()}, ");
-        }
-
-        return builder.ToString()[..^2];
+        return Changes.ToStringSequence(", ");
     }
 
 }

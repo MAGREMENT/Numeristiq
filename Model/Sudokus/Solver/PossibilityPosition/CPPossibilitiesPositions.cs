@@ -14,11 +14,6 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
         _cps = cps;
     }
 
-    public IEnumerable<int> EachPossibility()
-    {
-        return Possibilities.EnumeratePossibilities();
-    }
-
     public IEnumerable<Cell> EnumerateCells()
     {
         foreach (var cp in _cps)
@@ -92,6 +87,11 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
     public bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
     {
         return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
+    }
+
+    public GridPositions PositionsFor(int p)
+    {
+        return new GridPositions(); //TODO
     }
 
     public int PossibilityCount => Possibilities.Count;

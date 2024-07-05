@@ -9,6 +9,7 @@ public interface IPossibilitiesPositions
 {
     ReadOnlyBitSet16 Possibilities { get; }
     GridPositions Positions { get; }
+    GridPositions PositionsFor(int p);
     int PossibilityCount { get; }
     int PositionsCount { get; }
     

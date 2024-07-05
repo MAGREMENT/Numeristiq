@@ -3,6 +3,8 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Explanation;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
@@ -15,7 +17,13 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
     public const string OfficialName = "Aligned Pair Exclusion";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public AlignedPairExclusionStrategy() : base(OfficialName,  StepDifficulty.Hard, DefaultInstanceHandling) { }
+    private readonly IntSetting _maxAlsSize;
+    
+    public AlignedPairExclusionStrategy(int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    {
+        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+        AddSetting(_maxAlsSize);
+    }
 
     public override void Apply(ISudokuSolverData solverData)
     {
@@ -96,7 +104,7 @@ public class AlignedPairExclusionStrategy : SudokuStrategy
         List<IPossibilitiesPositions> usefulAls = new();
         HashSet<BiValue> forbidden = new();
 
-        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(shared))
+        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(shared, _maxAlsSize.Value, 1))
         {
             int i = 0;
             bool useful = false;

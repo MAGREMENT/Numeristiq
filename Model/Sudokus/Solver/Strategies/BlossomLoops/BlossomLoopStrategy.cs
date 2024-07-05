@@ -8,6 +8,7 @@ using Model.Sudokus.Solver.Utility;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies.BlossomLoops;
 
@@ -271,13 +272,7 @@ public class BlossomLoopReportBuilder : IChangeReportBuilder<NumericChange, ISud
 
     private string Explanation()
     {
-        var builder = new StringBuilder($"Loop : {_loop}\nBranches :\n");
-        foreach (var b in _branches)
-        {
-            builder.Append(b + "\n");
-        }
-
-        return builder.ToString();
+        return $"Loop : {_loop}\nBranches :\n{_branches.ToStringSequence("\n")}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

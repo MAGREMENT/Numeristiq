@@ -98,12 +98,12 @@ public class EmptyRectangleStrategy : SudokuStrategy
         if (isTwoLinkStrong) solverData.ChangeBuffer.ProposePossibilityRemoval(possibility, one);
 
         return solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
-            new RectangleEliminationReportBuilder(hinge, one, two, isOneLinkStrong, isTwoLinkStrong,
+            new EmptyRectangleReportBuilder(hinge, one, two, isOneLinkStrong, isTwoLinkStrong,
                 miniRow, miniCol, possibility)) && StopOnFirstPush;
     }
 }
 
-public class RectangleEliminationReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
+public class EmptyRectangleReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _possibility;
     private readonly Cell _hinge;
@@ -114,7 +114,7 @@ public class RectangleEliminationReportBuilder : IChangeReportBuilder<NumericCha
     private readonly int _miniRow;
     private readonly int _miniCol;
 
-    public RectangleEliminationReportBuilder(Cell hinge, Cell one, Cell two, bool isOneLinkStrong, bool isTwoLinkStrong,
+    public EmptyRectangleReportBuilder(Cell hinge, Cell one, Cell two, bool isOneLinkStrong, bool isTwoLinkStrong,
         int miniRow, int miniCol, int possibility)
     {
         _hinge = hinge;

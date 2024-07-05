@@ -61,6 +61,10 @@ public partial class App : IGlobalApplicationView
 
 public class ThemeInformation
 {
+    private Brush Primary1Brush = Brushes.Orange;
+    private Brush Secondary1Brush = Brushes.Purple;
+    private Brush TextBrush = Brushes.Black;
+    
     private Brush ChangeColorationNeutral = Brushes.Silver;
     private Brush ChangeColorationChangeOne = Brushes.RoyalBlue;
     private Brush ChangeColorationChangeTwo = Brushes.CornflowerBlue;
@@ -88,6 +92,10 @@ public class ThemeInformation
 
     public void SetTheme(Theme theme)
     {
+        Primary1Brush = ToBrush(theme.Primary1);
+        Secondary1Brush = ToBrush(theme.Secondary1);
+        TextBrush = ToBrush(theme.Text);
+        
         ChangeColorationNeutral = ToBrush(theme.ChangeColorationNeutral);
         ChangeColorationChangeOne = ToBrush(theme.ChangeColorationChangeOne);
         ChangeColorationChangeTwo = ToBrush(theme.ChangeColorationChangeTwo);
@@ -148,6 +156,16 @@ public class ThemeInformation
             HighlightColor.Sixth => HighlightColorSixth,
             HighlightColor.Seventh => HighlightColorSeventh,
             _ => Brushes.Transparent
+        };
+    }
+    
+    public Brush ToBrush(ExplanationColor color)
+    {
+        return color switch
+        {
+            ExplanationColor.Primary => Primary1Brush,
+            ExplanationColor.Secondary => Secondary1Brush,
+            _ => TextBrush
         };
     }
 

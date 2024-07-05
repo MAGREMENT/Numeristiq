@@ -8,6 +8,7 @@ using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -95,15 +96,7 @@ public class BUGStrategyReportBuilder : IChangeReportBuilder<NumericChange, ISud
 
     private string Description()
     {
-        if (_additionalCandidates.Count == 0) return "BUG";
-        
-        var builder = new StringBuilder($"BUG prevented by {_additionalCandidates[0]}");
-        for (int i = 1; i < _additionalCandidates.Count; i++)
-        {
-            builder.Append($", {_additionalCandidates[i]}");
-        }
-
-        return builder.ToString();
+        return $"BUG prevented by {_additionalCandidates.ToStringSequence(", ")}";
     }
 
     private ExplanationElement? Explanation()

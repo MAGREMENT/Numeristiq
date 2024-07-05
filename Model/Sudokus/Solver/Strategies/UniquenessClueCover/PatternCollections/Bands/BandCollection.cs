@@ -6,6 +6,7 @@ using Model.Core.Explanation;
 using Model.Core.Highlighting;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies.UniquenessClueCover.PatternCollections.Bands;
 
@@ -243,15 +244,7 @@ public class BandUniquenessClueCoverReportBuilder : IChangeReportBuilder<Numeric
 
     private string Description(List<Cell> cells)
     {
-        if (cells.Count == 0) return "";
-        
-        var builder = new StringBuilder($"Uniqueness Clue Cover pattern match cells {cells[0]}");
-        for (int i = 1; i < cells.Count; i++)
-        {
-            builder.Append($", {cells[i]}");
-        }
-        
-        return builder.ToString();
+        return $"Uniqueness Clue Cover pattern match cells {cells.ToStringSequence(", ")}";
     }
 
     private ExplanationElement? Explanation(List<Cell> cells)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Tectonics.Solver.Utility;
 
@@ -58,13 +59,6 @@ public class ZoneGroup : ITectonicElement
 
     public override string ToString()
     {
-        var builder = new StringBuilder($"{Possibility}{_cells[0]}");
-
-        for (int i = 1; i < _cells.Count; i++)
-        {
-            builder.Append($", {_cells[i]}");
-        }
-
-        return builder.ToString();
+        return $"{Possibility}{_cells.ToStringSequence(", ")}";
     }
 }

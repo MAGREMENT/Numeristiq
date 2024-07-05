@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Position;
 
@@ -160,13 +161,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
 
     public override string ToString()
     {
-        var builder = new StringBuilder();
-        foreach (var coord in this)
-        {
-            builder.Append(coord + " ");
-        }
-
-        return builder.ToString();
+        return this.ToStringSequence(" ");
     }
 
     public LinePositions OnGridRow(int gridRow)

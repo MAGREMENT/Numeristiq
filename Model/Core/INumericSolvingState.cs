@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -12,6 +13,18 @@ public interface INumericSolvingState
     int this[int row, int col] { get; }
     ReadOnlyBitSet16 PossibilitiesAt(int row, int col);
     ReadOnlyBitSet16 PossibilitiesAt(Cell cell) => PossibilitiesAt(cell.Row, cell.Column);
+
+    List<int> GetSolutions(IEnumerable<Cell> cells)
+    {
+        List<int> result = new();
+        foreach (var cell in cells)
+        {
+            var n = this[cell.Row, cell.Column];
+            if (n != 0) result.Add(n);
+        }
+
+        return result;
+    }
 }
 
 

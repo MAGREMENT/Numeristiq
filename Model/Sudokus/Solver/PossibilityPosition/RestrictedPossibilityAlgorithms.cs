@@ -1,13 +1,12 @@
 ﻿using Model.Core;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
+using Model.Utility;
 
 namespace Model.Sudokus.Solver.PossibilityPosition;
 
 public static class RestrictedPossibilityAlgorithms
 {
-    private static readonly GridPositions _buffer = new();
-    
     public static bool ForeachSearch(IPossibilitiesPositions first, IPossibilitiesPositions second, int possibility)
     {
         foreach (var cell1 in first.EnumerateCells(possibility))
@@ -21,13 +20,35 @@ public static class RestrictedPossibilityAlgorithms
         return true;
     }
 
-    public static bool GridPositionsSearch(GridPositions first, GridPositions second, ISudokuSolvingState holder, int possibility)
+    public static bool GridPositionsSearch(IPossibilitiesPositions first, IPossibilitiesPositions second,
+        int possibility)
     {
-        _buffer.Void();
-        _buffer.ApplyOr(first);
-        _buffer.ApplyOr(second);
-        _buffer.ApplyAnd(holder.PositionsFor(possibility));
+        var result = first.PositionsFor(possibility);
+        result.ApplyOr(second.PositionsFor(possibility));
+        return result.CanBeCoveredByAUnit();
+    }
 
-        return _buffer.CanBeCoveredByAUnit();
+    public static bool CellEnumerationSearch(IPossibilitiesPositions first, IPossibilitiesPositions second,
+        int possibility)
+    {
+        SharedHouses? sh = null;
+
+        foreach (var cell in first.EnumerateCells(possibility))
+        {
+            if (sh is null) sh = new SharedHouses(cell);
+            else
+            {
+                sh.Share(cell);
+                if (sh.Count == 0) return false;
+            }
+        }
+
+        foreach (var cell in second.EnumerateCells(possibility))
+        {
+            sh!.Share(cell);
+            if (sh.Count == 0) return false;
+        }
+
+        return true;
     }
 }

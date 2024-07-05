@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Text;
 using Model.Core.Highlighting;
 
 namespace Model.Core.Changes;
@@ -78,22 +77,6 @@ public static class ChangeReportHelper
         if(progress.Type == ChangeType.PossibilityRemoval)
             highlightable.HighlightPossibility(progress.Number, progress.Row, progress.Column, ChangeColoration.ChangeTwo);
         else highlightable.HighlightCell(progress.Row, progress.Column, ChangeColoration.ChangeOne);
-    }
-
-    public static string ChangesToString(IReadOnlyList<NumericChange> changes)
-    {
-        if (changes.Count == 0) return "";
-        
-        var builder = new StringBuilder();
-        foreach (var change in changes)
-        {
-            var action = change.Type == ChangeType.PossibilityRemoval
-                ? "<>"
-                : "==";
-            builder.Append($"r{change.Row + 1}c{change.Column + 1} {action} {change.Number}, ");
-        }
-
-        return builder.ToString()[..^2];
     }
 }
 

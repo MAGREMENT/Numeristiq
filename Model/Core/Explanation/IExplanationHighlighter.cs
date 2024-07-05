@@ -5,7 +5,7 @@ namespace Model.Core.Explanation;
 
 public interface IExplanationHighlighter
 {
-    void ShowCell(Cell c);
-    void ShowCellPossibility(CellPossibility cp);
-    void ShowCoverHouse(House ch);
+    void ShowCell(Cell c, ExplanationColor color);
+    void ShowCellPossibility(CellPossibility cp, ExplanationColor color);
+    void ShowCoverHouse(House ch, ExplanationColor color);
 }

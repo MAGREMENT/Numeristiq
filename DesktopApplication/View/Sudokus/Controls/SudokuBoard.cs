@@ -310,14 +310,12 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
 
     public void FillPossibility(int row, int col, int possibility, ChangeColoration coloration)
     {
-        Layers[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility), GetTop(row, possibility),
-            _possibilitySize, _possibilitySize), App.Current.ThemeInformation.ToBrush(coloration)));
+        FillPossibility(row, col, possibility, App.Current.ThemeInformation.ToBrush(coloration));
     }
 
     public void FillCell(int row, int col, ChangeColoration coloration)
     {
-        Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
-            _cellSize, _cellSize), App.Current.ThemeInformation.ToBrush(coloration)));
+        FillCell(row, col, App.Current.ThemeInformation.ToBrush(coloration));
     }
 
     public void EncirclePossibility(int row, int col, int possibility)
@@ -375,40 +373,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
 
     public void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, ChangeColoration coloration)
     {
-        var delta = _bigLineWidth / 2;
-        
-        var xFrom = GetLeft(colFrom) - delta;
-        var yFrom = GetTop(rowFrom) - delta;
-        
-        var xTo = GetLeft(colTo) - delta;
-        var yTo = GetTop(rowTo) - delta;
-
-        double leftX, topY, rightX, bottomY;
-
-        if (xFrom < xTo)
-        {
-            leftX = xFrom;
-            rightX = xTo + _cellSize + _bigLineWidth;
-        }
-        else
-        {
-            leftX = xTo;
-            rightX = xFrom + _cellSize +  _bigLineWidth;
-        }
-
-        if (yFrom < yTo)
-        {
-            topY = yFrom;
-            bottomY = yTo + _cellSize + _bigLineWidth;
-        }
-        else
-        {
-            topY = yTo;
-            bottomY = yFrom + _cellSize +  _bigLineWidth;
-        }
-        
-        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY), new Point(rightX, bottomY)),
-            new Pen(App.Current.ThemeInformation.ToBrush(coloration), _bigLineWidth)));
+        EncircleRectangle(rowFrom, colFrom, rowTo, colTo, App.Current.ThemeInformation.ToBrush(coloration));
     }
 
     public void DelimitPossibilityPatch(CellPossibility[] cps, ChangeColoration coloration)
@@ -585,26 +550,76 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     
     #region IExplanationHighlighter
 
-    public void ShowCell(Cell c)
+    public void ShowCell(Cell c, ExplanationColor color)
     {
-        FillCell(c.Row, c.Column, ChangeColoration.CauseOffTwo);
+        FillCell(c.Row, c.Column, App.Current.ThemeInformation.ToBrush(color));
     }
 
-    public void ShowCellPossibility(CellPossibility cp)
+    public void ShowCellPossibility(CellPossibility cp, ExplanationColor color)
     {
-        FillPossibility(cp.Row, cp.Column, cp.Possibility, ChangeColoration.CauseOffTwo);
+        FillPossibility(cp.Row, cp.Column, cp.Possibility, App.Current.ThemeInformation.ToBrush(color));
     }
 
-    public void ShowCoverHouse(House ch)
+    public void ShowCoverHouse(House ch, ExplanationColor color)
     {
         var extremities = ch.GetExtremities();
         EncircleRectangle(extremities.Item1.Row, extremities.Item1.Column,
-            extremities.Item2.Row, extremities.Item2.Column, ChangeColoration.CauseOffTwo);
+            extremities.Item2.Row, extremities.Item2.Column, App.Current.ThemeInformation.ToBrush(color));
     }
 
     #endregion
 
     #region Private
+    
+    private void EncircleRectangle(int rowFrom, int colFrom, int rowTo, int colTo, Brush brush)
+    {
+        var delta = _bigLineWidth / 2;
+        
+        var xFrom = GetLeft(colFrom) - delta;
+        var yFrom = GetTop(rowFrom) - delta;
+        
+        var xTo = GetLeft(colTo) - delta;
+        var yTo = GetTop(rowTo) - delta;
+
+        double leftX, topY, rightX, bottomY;
+
+        if (xFrom < xTo)
+        {
+            leftX = xFrom;
+            rightX = xTo + _cellSize + _bigLineWidth;
+        }
+        else
+        {
+            leftX = xTo;
+            rightX = xFrom + _cellSize +  _bigLineWidth;
+        }
+
+        if (yFrom < yTo)
+        {
+            topY = yFrom;
+            bottomY = yTo + _cellSize + _bigLineWidth;
+        }
+        else
+        {
+            topY = yTo;
+            bottomY = yFrom + _cellSize +  _bigLineWidth;
+        }
+        
+        Layers[EncirclesIndex].Add(new OutlinedRectangleComponent(new Rect(new Point(leftX, topY),
+            new Point(rightX, bottomY)), new Pen(brush, _bigLineWidth)));
+    }
+    
+    private void FillPossibility(int row, int col, int possibility, Brush brush)
+    {
+        Layers[PossibilitiesHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col, possibility),
+            GetTop(row, possibility), _possibilitySize, _possibilitySize), brush));
+    }
+    
+    private void FillCell(int row, int col, Brush brush)
+    {
+        Layers[CellsHighlightIndex].Add(new FilledRectangleComponent(new Rect(GetLeft(col), GetTop(row),
+            _cellSize, _cellSize), brush));
+    }
     
     private TextInRectangleComponent TextComponentForLinePossibilities(int row, int col, IEnumerable<int> possibilities,
         PossibilitiesLocation location, IEnumerable<(int, HighlightColor)> colors)

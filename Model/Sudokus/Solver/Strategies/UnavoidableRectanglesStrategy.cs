@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
+using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
@@ -14,9 +16,13 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
     public const string OfficialName = "Unavoidable Rectangles";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
-    public UnavoidableRectanglesStrategy() : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    private readonly IntSetting _maxAlsSize;
+
+    public UnavoidableRectanglesStrategy(int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
+        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+        AddSetting(_maxAlsSize);
     }
     
     public override void Apply(ISudokuSolverData solverData)
@@ -107,7 +113,7 @@ public class UnavoidableRectanglesStrategy : SudokuStrategy
         notBiValuePossibilities -= values.One;
         notBiValuePossibilities -= values.Two;
         var ssc = new List<Cell>(SudokuCellUtility.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc))
+        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc, _maxAlsSize.Value, 1))
         {
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 

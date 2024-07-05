@@ -6,6 +6,7 @@ using Model.Core.Generators;
 using Model.Sudokus;
 using Model.Sudokus.Generator;
 using Model.Sudokus.Solver;
+using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter.Sudokus.Generate;
 
@@ -136,13 +137,8 @@ public class SudokuGeneratePresenter
 
     public void CopyAll()
     {
-        var builder = new StringBuilder();
-        foreach (var puzzle in _evaluatedList)
-        {
-            builder.Append(SudokuTranslator.TranslateLineFormat(puzzle.Puzzle, _setting.EmptyCellRepresentation));
-            builder.Append('\n');
-        }
-        _view.CopyToClipboard(builder.ToString());
+        _view.CopyToClipboard(_evaluatedList.ToStringSequence("\n", puzzle => 
+            SudokuTranslator.TranslateLineFormat(puzzle.Puzzle, _setting.EmptyCellRepresentation)));
     }
 }
 

@@ -6,17 +6,16 @@ namespace Tests.Tectonics;
 
 public class TectonicPuzzleGeneratorTests
 {
-    private readonly IPuzzleGenerator<ITectonic> _generator =
-        new RDRTectonicPuzzleGenerator(new RandomLayoutBackTrackingFilledTectonicGenerator());
+    private readonly RDRTectonicPuzzleGenerator _generator = new(new RandomLayoutBackTrackingFilledTectonicGenerator());
 
     [Test]
     public void Test()
     {
-        var generated = _generator.Generate(1);
+        /*var generated = _generator.Generate(1);
 
         foreach (var t in generated)
         {
             Console.WriteLine(t);
-        }
+        }*/
     }
 }

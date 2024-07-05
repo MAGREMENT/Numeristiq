@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -9,6 +8,7 @@ using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -260,33 +260,11 @@ public class FishReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolv
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        var baseSetBuilder = new StringBuilder();
-        foreach (var ch in _baseSet)
-        {
-            baseSetBuilder.Append(ch + ", ");
-        }
-
-        var coverSetBuilder = new StringBuilder(_coveredSet[0].ToString());
-        for (int i = 1; i < _coveredSet.Length; i++)
-        {
-            coverSetBuilder.Append(", " + _coveredSet[i]);
-        }
-
         string isFinned = _fins.Count > 0 ? "Finned " : "";
-        string fins = "Fins : ";
-        if (_fins.Count > 0)
-        {
-            var finsBuilder = new StringBuilder(_fins[0].ToString());
-            for (int i = 1; i < _fins.Count; i++)
-            {
-                finsBuilder.Append(", " + _fins[i]);
-            }
 
-            fins += finsBuilder.ToString();
-        }
-
-        return $"{isFinned}{type} found :\nBase set : {baseSetBuilder.ToString()[..^2]}\nCover set : {coverSetBuilder}" +
-               $"\n{fins}";
+        return $"{isFinned}{type} found :\nBase set : {_baseSet.ToStringSequence(", ")}" +
+               $"\nCover set : {_coveredSet.ToStringSequence(", ")}" +
+               $"\nFins : {_fins.ToStringSequence(", ")}";
     }
     
     public Clue<ISudokuHighlighter> BuildClue(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)

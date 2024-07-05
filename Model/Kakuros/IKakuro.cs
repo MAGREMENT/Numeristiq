@@ -18,7 +18,6 @@ public interface IKakuro : IReadOnlyKakuro
     /// </summary>
     /// <param name="sum"></param>
     void ForceSum(IKakuroSum sum);
-
     bool RemoveSum(IKakuroSum sum);
     
     new int this[int row, int col] { get; set; }
@@ -61,6 +60,7 @@ public interface IReadOnlyKakuro
     int this[int row, int col] { get; }
 
     bool IsComplete();
+    bool IsCorrect();
 
     IKakuro Copy();
 }

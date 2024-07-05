@@ -94,13 +94,16 @@ public class SumListKakuro : IKakuro, INumericSolvingState
         if (cell is { Row: >= 0, Column: >= 0 } && cell.Row < RowCount && cell.Column < ColumnCount)
         {
             var sum = _cells[cell.Row, cell.Column].VerticalSum;
-            if (sum is not null) return sum;
+            if (sum is not null && sum.GetAmountCell() == amountCell) return sum;
         }
 
-        cell = new Cell(amountCell.Row, amountCell.Column + 1);
-        if (cell.Row < 0 || cell.Column < 0 || cell.Row >= RowCount || cell.Column >= ColumnCount) return null;
+        if (cell is { Row: >= 0, Column: >= 0 } && cell.Row < RowCount && cell.Column < ColumnCount)
+        {
+            var sum = _cells[cell.Row, cell.Column].HorizontalSum;
+            if (sum is not null && sum.GetAmountCell() == amountCell) return sum;
+        }
 
-        return _cells[cell.Row, cell.Column].HorizontalSum;
+        return null;
     }
 
     public int this[int row, int col]
@@ -114,6 +117,29 @@ public class SumListKakuro : IKakuro, INumericSolvingState
         foreach (var cell in _cells)
         {
             if (cell.IsUsed() && cell.Number == 0) return false;
+        }
+
+        return true;
+    }
+
+    public bool IsCorrect()
+    {
+        foreach (var sum in _sums)
+        {
+            var total = 0;
+            var bitSet = new ReadOnlyBitSet16();
+            foreach (var cell in sum)
+            {
+                var n = _cells[cell.Row, cell.Column].Number;
+                if (n == 0) return false;
+
+                if (bitSet.Contains(n)) return false;
+
+                bitSet += n;
+                total += n;
+            }
+
+            if (total != sum.Amount) return false;
         }
 
         return true;
@@ -156,7 +182,7 @@ public class SumListKakuro : IKakuro, INumericSolvingState
             
             if (c.Row >= RowCount || c.Column >= ColumnCount) continue;
             
-            //if (FindSum(c) is not null) return false; TODO check for amount cell
+            //if (FindSum(c) is not null) return false; TODO
 
             var kc = _cells[c.Row, c.Column];
             if (i == 0)
@@ -192,8 +218,8 @@ public class SumListKakuro : IKakuro, INumericSolvingState
             
             if (c.Row >= RowCount || c.Column >= ColumnCount) continue;
             
-            /*var s = FindSum(c);
-            if (s is not null) RemoveSum(s); TODO check for amount cell*/
+            /*var s = FindSum(c); TODO
+            if (s is not null) RemoveSum(s);*/
 
             var kc = _cells[c.Row, c.Column];
             if (i == 0)
@@ -269,9 +295,10 @@ public class SumListKakuro : IKakuro, INumericSolvingState
 
         var newSum = _sums[index];
         newSum.AddToLength(lengthAdded);
+        ResizeIfNeeded(newSum);
         ReplaceCellSums(newSum, newSum.Length - lengthAdded, newSum.Length); 
 
-        var (c1, c2) = newSum.GetPerpendicularNeighbors(sum.Length);
+        var (c1, c2) = newSum.GetPerpendicularNeighbors(newSum.Length - 1);
         IArrayKakuroSum? s1 = null, s2 = null;
 
         if (c1.Row >= 0 && c1.Row < RowCount && c1.Column >= 0 && c1.Column < ColumnCount)
@@ -311,15 +338,15 @@ public class SumListKakuro : IKakuro, INumericSolvingState
             var fc = newSum.GetFarthestCell(0);
             if (sum.Orientation == Orientation.Horizontal)
             {
-                s = new HorizontalKakuroSum(fc, 1, 1);
-                _sums.Add(s);
-                _cells[fc.Row, fc.Column] -= s;
-            }
-            else
-            {
                 s = new VerticalKakuroSum(fc, 1, 1);
                 _sums.Add(s);
                 _cells[fc.Row, fc.Column] |= s;
+            }
+            else
+            {
+                s = new HorizontalKakuroSum(fc, 1, 1);
+                _sums.Add(s);
+                _cells[fc.Row, fc.Column] -= s;
             }
         }
 
@@ -396,13 +423,7 @@ public class SumListKakuro : IKakuro, INumericSolvingState
     private void AddSumUnchecked(IArrayKakuroSum sum)
     {
         _sums.Add(sum);
-        var fr = sum.GetFarthestRow();
-        var fc = sum.GetFarthestColumn();
-
-        if (fr >= RowCount || fc >= ColumnCount)
-        {
-            ResizeTo(Math.Max(RowCount, fr + 1), Math.Max(ColumnCount, fc + 1));
-        }
+        ResizeIfNeeded(sum);
 
         if (sum.Orientation == Orientation.Vertical)
         {
@@ -519,6 +540,16 @@ public class SumListKakuro : IKakuro, INumericSolvingState
         {
             if (sum.Orientation == Orientation.Vertical) _cells[cell.Row, cell.Column] |= sum;
             else _cells[cell.Row, cell.Column] -= sum;
+        }
+    }
+    
+    private void ResizeIfNeeded(IKakuroSum sum)
+    {
+        var fr = sum.GetFarthestRow() + 1;
+        var fc = sum.GetFarthestColumn() + 1;
+        if (fr > RowCount || fc > ColumnCount)
+        {
+            ResizeTo(Math.Max(RowCount, fr), Math.Max(ColumnCount, fc));
         }
     }
 

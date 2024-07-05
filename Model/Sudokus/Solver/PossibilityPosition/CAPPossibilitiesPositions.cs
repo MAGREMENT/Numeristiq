@@ -11,30 +11,30 @@ namespace Model.Sudokus.Solver.PossibilityPosition;
 public class CAPPossibilitiesPositions : IPossibilitiesPositions
 {
     private readonly Cell[] _cells;
-    private readonly ISudokuSolvingState _snapshot;
     private GridPositions? _gp;
     
     public ReadOnlyBitSet16 Possibilities { get; }
+    public GridPositions PositionsFor(int p)
+    {
+        return Positions.And(Snapshot.PositionsFor(p));
+    }
+
     public int PossibilityCount => Possibilities.Count;
     public int PositionsCount => _cells.Length;
+    public ISudokuSolvingState Snapshot { get; }
 
     public CAPPossibilitiesPositions(Cell[] cells, ReadOnlyBitSet16 possibilities, ISudokuSolvingState snapshot)
     {
         _cells = cells;
         Possibilities = possibilities;
-        _snapshot = snapshot;
+        Snapshot = snapshot;
     }
     
     public CAPPossibilitiesPositions(Cell cell, ReadOnlyBitSet16 possibilities, ISudokuSolvingState snapshot)
     {
         _cells = new[] { cell };
         Possibilities = possibilities;
-        _snapshot = snapshot;
-    }
-    
-    public IEnumerable<int> EachPossibility()
-    {
-        return Possibilities.EnumeratePossibilities();
+        Snapshot = snapshot;
     }
 
     public IEnumerable<Cell> EnumerateCells()
@@ -46,7 +46,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     {
         foreach(var cell in _cells)
         {
-            if (_snapshot.PossibilitiesAt(cell.Row, cell.Column).Contains(possibility)) yield return cell;
+            if (Snapshot.PossibilitiesAt(cell.Row, cell.Column).Contains(possibility)) yield return cell;
         }
     }
 
@@ -56,14 +56,14 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
         {
             foreach (var p in Possibilities.EnumeratePossibilities())
             {
-                if (_snapshot.PossibilitiesAt(cell).Contains(p)) yield return new CellPossibility(cell, p);
+                if (Snapshot.PossibilitiesAt(cell).Contains(p)) yield return new CellPossibility(cell, p);
             }
         }
     }
 
     public ReadOnlyBitSet16 PossibilitiesInCell(Cell cell)
     {
-        return Possibilities & _snapshot.PossibilitiesAt(cell);
+        return Possibilities & Snapshot.PossibilitiesAt(cell);
     }
 
     public GridPositions Positions
@@ -88,7 +88,7 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
         CellPossibilities[] result = new CellPossibilities[PositionsCount];
         for (int i = 0; i < _cells.Length; i++)
         {
-            result[i] = new CellPossibilities(_cells[i], _snapshot.PossibilitiesAt(_cells[i]) & Possibilities);
+            result[i] = new CellPossibilities(_cells[i], Snapshot.PossibilitiesAt(_cells[i]) & Possibilities);
         }
 
         return result;
@@ -96,8 +96,8 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
 
     public bool IsPossibilityRestricted(IPossibilitiesPositions other, int possibility)
     {
-        //return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
-        return RestrictedPossibilityAlgorithms.GridPositionsSearch(Positions, other.Positions, _snapshot, possibility);
+        return RestrictedPossibilityAlgorithms.ForeachSearch(this, other, possibility);
+        //return RestrictedPossibilityAlgorithms.GridPositionsSearch(Positions, other.Positions, Snapshot, possibility);
     }
 
     public override bool Equals(object? obj)

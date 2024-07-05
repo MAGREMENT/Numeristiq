@@ -144,16 +144,7 @@ public class UniqueList<T> : IReadOnlyList<T> where T : notnull
 
     public override string ToString()
     {
-        if (Count == 0) return "";
-
-        var builder = new StringBuilder(this[0].ToString());
-
-        for (int i = 1; i < Count; i++)
-        {
-            builder.Append($", {this[i]}");
-        }
-
-        return builder.ToString();
+        return this.ToStringSequence(", ");
     }
 
     public T this[int index] => _array[index];

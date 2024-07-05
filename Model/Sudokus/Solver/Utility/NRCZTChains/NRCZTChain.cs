@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility.NRCZTChains;
 
@@ -81,17 +82,7 @@ public class NRCZTChain : IEnumerable<ConjugateRelation> //TODO to interface wit
 
     public override string ToString()
     {
-        if (_relations.Count == 0) return "";
-        
-        var builder = new StringBuilder();
-        for (int i = 0; i < _relations.Count - 1; i++)
-        {
-            builder.Append(_relations[i] + " - ");
-        }
-
-        builder.Append(_relations[^1].ToString());
-
-        return builder.ToString();
+        return _relations.ToStringSequence(" - ");
     }
 
     IEnumerator IEnumerable.GetEnumerator()

@@ -124,7 +124,7 @@ public class SudokuPreComputer
 
     private List<IPossibilitiesPositions> DoAlmostLockedSets()
     {
-        return _solverData.AlmostNakedSetSearcher.FullGrid();
+        return _solverData.AlmostNakedSetSearcher.FullGrid(5, 1);
     }
 
     private ColoringDictionary<ISudokuElement> DoColor(ISudokuElement start, Coloring firstColor)
@@ -194,7 +194,7 @@ public class SudokuPreComputer
     private PositionsGraph<IPossibilitiesPositions> DoAlmostHiddenSetGraph()
     {
         var graph = new PositionsGraph<IPossibilitiesPositions>();
-        var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid();
+        var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid(5, 1);
 
         for (int i = 0; i < allAhs.Count; i++)
         {
@@ -215,7 +215,7 @@ public class SudokuPreComputer
     
     private IEnumerable<LinkedAlmostHiddenSets> DoAlmostHiddenSetGraph(PositionsGraph<IPossibilitiesPositions> graph)
     {
-        var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid();
+        var allAhs = _solverData.AlmostHiddenSetSearcher.FullGrid(5, 1);
 
         for (int i = 0; i < allAhs.Count; i++)
         {

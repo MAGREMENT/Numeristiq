@@ -21,7 +21,7 @@ public class CellPossibilityExplanationElement : ExplanationElement
 
     public override void Show(IExplanationHighlighter highlighter)
     {
-        highlighter.ShowCellPossibility(_cellPossibility);
+        highlighter.ShowCellPossibility(_cellPossibility, Color);
     }
 
     public override bool DoesShowSomething => true;

@@ -8,53 +8,32 @@ namespace Model.Sudokus.Solver.Utility.AlmostLockedSets;
 public class AlmostNakedSetSearcher
 {
     private readonly ISudokuSolverData _solverData;
-
-    public int Max { get; set; } = 5;
-    public int Difference { get; set; } = 1;
+    private int _maxSize = 5;
+    private int _difference = 1;
 
     public AlmostNakedSetSearcher(ISudokuSolverData solverData)
     {
         _solverData = solverData;
     }
     
-    public List<IPossibilitiesPositions> InCells(List<Cell> coords)
+    public List<IPossibilitiesPositions> InCells(List<Cell> coords, int maxSize, int difference)
     {
         List<IPossibilitiesPositions> result = new();
 
+        _maxSize = maxSize;
+        _difference = difference;
         InCells(coords, new List<Cell>(), new ReadOnlyBitSet16(), 0, result);
         
         return result;
     }
-
-    private void InCells(List<Cell> coords, List<Cell> visited,
-        ReadOnlyBitSet16 current, int start, List<IPossibilitiesPositions> result)
-    {
-        for (int i = start; i < coords.Count; i++)
-        {
-            if (!SudokuCellUtility.ShareAUnitWithAll(coords[i], visited)) continue;
-
-            var inspected = _solverData.PossibilitiesAt(coords[i].Row, coords[i].Column);
-            if(inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
-
-            var or = current | inspected;
-            visited.Add(coords[i]);
-
-            if (or.Count == visited.Count + Difference)
-            {
-                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), or, _solverData.CurrentState));
-            }
-
-            if (Max > visited.Count) InCells(coords, visited, or, i + 1, result);
-            
-            visited.RemoveAt(visited.Count - 1);
-        }
-    }
     
-    public List<IPossibilitiesPositions> FullGrid()
+    public List<IPossibilitiesPositions> FullGrid(int maxSize, int difference)
     {
         var result = new List<IPossibilitiesPositions>();
         var possibilities = new ReadOnlyBitSet16();
         var cells = new List<Cell>();
+        _maxSize = maxSize;
+        _difference = difference;
 
         for (int row = 0; row < 9; row++)
         {
@@ -83,31 +62,61 @@ public class AlmostNakedSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InRow(int row)
+    public List<IPossibilitiesPositions> InRow(int row, int maxSize, int difference)
     {
         var result = new List<IPossibilitiesPositions>();
 
+        _maxSize = maxSize;
+        _difference = difference;
         InRow(row, 0, new ReadOnlyBitSet16(), new List<Cell>(), result);
 
         return result;
     }
 
-    public List<IPossibilitiesPositions> InColumn(int col)
+    public List<IPossibilitiesPositions> InColumn(int col, int maxSize, int difference)
     {
         var result = new List<IPossibilitiesPositions>();
 
+        _maxSize = maxSize;
+        _difference = difference;
         InColumn(col, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
 
         return result;
     }
 
-    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol)
+    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
     {
         var result = new List<IPossibilitiesPositions>();
 
+        _maxSize = maxSize;
+        _difference = difference;
         InMiniGrid(miniRow, miniCol, 0, new ReadOnlyBitSet16(), new List<Cell>(), result, false);
 
         return result;
+    }
+    
+    private void InCells(List<Cell> coords, List<Cell> visited,
+        ReadOnlyBitSet16 current, int start, List<IPossibilitiesPositions> result)
+    {
+        for (int i = start; i < coords.Count; i++)
+        {
+            if (!SudokuCellUtility.ShareAUnitWithAll(coords[i], visited)) continue;
+
+            var inspected = _solverData.PossibilitiesAt(coords[i].Row, coords[i].Column);
+            if(inspected.Count == 0 || (current.Count != 0 && !current.ContainsAny(inspected))) continue;
+
+            var or = current | inspected;
+            visited.Add(coords[i]);
+
+            if (or.Count == visited.Count + _difference)
+            {
+                result.Add(new CAPPossibilitiesPositions(visited.ToArray(), or, _solverData.CurrentState));
+            }
+
+            if (_maxSize > visited.Count) InCells(coords, visited, or, i + 1, result);
+            
+            visited.RemoveAt(visited.Count - 1);
+        }
     }
     
     private void InRow(int row, int start, ReadOnlyBitSet16 current,
@@ -121,12 +130,12 @@ public class AlmostNakedSetSearcher
             var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + Difference)
+            if (mashed.Count == visited.Count + _difference)
             {
                 result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _solverData.CurrentState));
             }
 
-            if(Max > visited.Count) InRow(row, col + 1, mashed, visited, result);
+            if(_maxSize > visited.Count) InRow(row, col + 1, mashed, visited, result);
             
             visited.RemoveAt(visited.Count - 1);
         }
@@ -143,12 +152,12 @@ public class AlmostNakedSetSearcher
             var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + Difference && (!excludeSingles || visited.Count > 1))
+            if (mashed.Count == visited.Count + _difference && (!excludeSingles || visited.Count > 1))
             {
                 result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _solverData.CurrentState));
             }
 
-            if(Max > visited.Count) InColumn(col, row + 1, mashed, visited, result, excludeSingles);
+            if(_maxSize > visited.Count) InColumn(col, row + 1, mashed, visited, result, excludeSingles);
             
             visited.RemoveAt(visited.Count - 1);
         }
@@ -168,18 +177,18 @@ public class AlmostNakedSetSearcher
             var mashed = current | inspected;
             visited.Add(new Cell(row, col));
 
-            if (mashed.Count == visited.Count + Difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
+            if (mashed.Count == visited.Count + _difference && (!excludeSameLine || NotInSameRowOrColumn(visited)))
             {
                 result.Add(new CAPPossibilitiesPositions(visited.ToArray(), mashed, _solverData.CurrentState));
             }
 
-            if(Max > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);
+            if(_maxSize > visited.Count) InMiniGrid(miniRow, miniCol, n + 1, mashed, visited, result, excludeSameLine);
             
             visited.RemoveAt(visited.Count - 1);
         }
     }
 
-    private bool NotInSameRowOrColumn(List<Cell> cells)
+    private static bool NotInSameRowOrColumn(List<Cell> cells)
     {
         if (cells.Count <= 1) return false;
         

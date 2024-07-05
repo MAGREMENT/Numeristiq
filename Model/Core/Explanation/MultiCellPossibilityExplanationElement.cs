@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Core.Explanation;
 
@@ -14,15 +15,7 @@ public class MultiCellPossibilityExplanationElement : ExplanationElement
 
     public override string ToString()
     {
-        if (_cps.Length == 0) return "";
-
-        var builder = new StringBuilder(_cps[0].ToString());
-        for (int i = 1; i < _cps.Length; i++)
-        {
-            builder.Append($", {_cps[i].ToString()}");
-        }
-
-        return builder.ToString();
+        return _cps.ToStringSequence(", ");
     }
     
     public override bool ShouldBeBold => true;
@@ -32,7 +25,7 @@ public class MultiCellPossibilityExplanationElement : ExplanationElement
     {
         foreach (var cp in _cps)
         {
-            highlighter.ShowCellPossibility(cp);
+            highlighter.ShowCellPossibility(cp, Color);
         }
     }
 

@@ -275,7 +275,9 @@
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Max ALS Size": "5"
+    }
   },
   {
     "Name": "Unique Rectangles",
@@ -283,7 +285,8 @@
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {
-      "Missing candidates allowed": "True"
+      "Missing candidates allowed": "True",
+      "Max ALS Size": "5"
     }
   },
   {
@@ -335,7 +338,9 @@
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
-    "Settings": {}
+    "Settings": {
+      "Max ALS Size": "5"
+    }
   },
   {
     "Name": "Aligned Triple Exclusion",
@@ -343,7 +348,9 @@
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {
-      "Minimum shared seen cells": "5"
+      "Minimum shared seen cells": "5",
+      "Max ALS Size": "5",
+      "Max AALS Size": "5"
     }
   },
   {

@@ -18,11 +18,17 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly IntSetting _minSharedSeenCells;
+    private readonly IntSetting _maxAlsSize;
+    private readonly IntSetting _maxAalsSize;
     
-    public AlignedTripleExclusionStrategy(int minSharedSeenCells) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public AlignedTripleExclusionStrategy(int minSharedSeenCells, int maxAlsSize, int maxAalsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         _minSharedSeenCells = new IntSetting("Minimum shared seen cells", new SliderInteractionInterface(5, 12, 1), minSharedSeenCells);
         AddSetting(_minSharedSeenCells);
+        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
+        AddSetting(_maxAlsSize);
+        _maxAalsSize = new IntSetting("Max AALS Size", new SliderInteractionInterface(2, 5, 1), maxAalsSize);
+        AddSetting(_maxAalsSize);
     }
 
     public override void Apply(ISudokuSolverData solverData)
@@ -207,8 +213,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
 
         var searcher = solverData.AlmostNakedSetSearcher;
 
-        searcher.Difference = 2;
-        foreach (var aals in searcher.InCells(ssc))
+        foreach (var aals in searcher.InCells(ssc, _maxAalsSize.Value, 2))
         {
             int i = 0;
             bool useful = false;
@@ -234,8 +239,7 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
             if (useful) usefulThings.Add(aals);
         }
 
-        searcher.Difference = 1;
-        foreach (var als in searcher.InCells(ssc))
+        foreach (var als in searcher.InCells(ssc, _maxAlsSize.Value, 1))
         {
             int i = 0;
             bool useful = false;

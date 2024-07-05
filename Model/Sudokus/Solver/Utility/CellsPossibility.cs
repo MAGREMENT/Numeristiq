@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Utility;
 
@@ -114,13 +114,6 @@ public class CellsPossibility : ISudokuElement
 
     public override string ToString()
     {
-        var builder = new StringBuilder($"{_possibility}{_cells[0]}");
-
-        for (int i = 1; i < _cells.Length; i++)
-        {
-            builder.Append($", {_cells[i]}");
-        }
-
-        return builder.ToString();
+        return $"{_possibility}{_cells.ToStringSequence(", ")}";
     }
 }

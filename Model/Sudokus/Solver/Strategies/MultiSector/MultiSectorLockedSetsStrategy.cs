@@ -7,6 +7,7 @@ using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies.MultiSector;
 
@@ -215,18 +216,7 @@ public class CoveringUnits
 
     public override string ToString()
     {
-        var result = new StringBuilder();
-
-        foreach (var entry in _dictionary)
-        {
-            foreach (var p in entry.Value.EnumeratePossibilities())
-            {
-                result.Append(p);
-            }
-
-            result.Append(entry.Key + ", ");
-        }
-
-        return result.ToString()[..^2];
+        return _dictionary.ToStringSequence(", ", entry 
+            => entry.Value.EnumeratePossibilities().ToStringSequence(""));
     }
 }

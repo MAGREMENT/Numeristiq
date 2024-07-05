@@ -94,15 +94,7 @@ public abstract class EvaluationCriteria : ISettingCollection
 
     public override string ToString()
     {
-        if (_settings.Length == 0) return Name;
-        
-        var builder = new StringBuilder($"{Name} : {_settings[0]}");
-        for (int i = 1; i < _settings.Length; i++)
-        {
-            builder.Append($", {_settings[i]}");
-        }
-
-        return builder.ToString();
+        return $"{Name} : {_settings.ToStringSequence(", ")}";
     }
 }
 

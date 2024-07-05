@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using Model.Utility;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Position;
 
@@ -194,22 +195,10 @@ public class LinePositions : IReadOnlyLinePositions
 
     public string ToString(Unit unit, int unitNumber)
     {
-        var builder = new StringBuilder();
-        
-        foreach (var other in this)
-        {
-            switch (unit)
-            {
-                case Unit.Row :
-                    builder.Append(new Cell(unitNumber, other) + " ");
-                    break;
-                case Unit.Column :
-                    builder.Append(new Cell(other, unitNumber) + " ");
-                    break;
-            }
-        }
-
-        return builder.ToString();
+        return this.ToStringSequence(" ", other 
+            => unit == Unit.Row 
+                ? new Cell(unitNumber, other).ToString() 
+                : new Cell(other, unitNumber).ToString());
     }
 
     public Cell[] ToCellArray(Unit unit, int unitNumber)

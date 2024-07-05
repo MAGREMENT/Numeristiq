@@ -183,7 +183,7 @@ public class SudokuStrategiesTests
     [Test]
     public void AlignedPairExclusionTest()
     {
-        TestSudokuStrategyInstance(new AlignedPairExclusionStrategy(),
+        TestSudokuStrategyInstance(new AlignedPairExclusionStrategy(5),
             "b0g141039409a40h94b00996940hh441i6p69g0m962141h4o4g609054109g1030h118121g181211c1441030c0h03110h0c2181gcgc41410k949kg103as2c848g0mg14109218k11860921969k9414ok41o6",
             "- 873");
     }

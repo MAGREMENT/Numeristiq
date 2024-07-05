@@ -48,12 +48,17 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
 
     public override bool IsResultCorrect()
     {
-        return _kakuro.IsComplete(); //TODO
+        return _kakuro.IsCorrect();
     }
 
     public override bool HasSolverFailed()
     {
-        return false; //TODO
+        foreach (var cell in _kakuro.EnumerateCells())
+        {
+            if (_kakuro[cell.Row, cell.Column] == 0 && _possibilities[cell.Row, cell.Column].Count == 0) return true;
+        }
+
+        return false;
     }
 
     protected override bool IsComplete()
@@ -63,7 +68,31 @@ public class KakuroSolver : NumericStrategySolver<Strategy<IKakuroSolverData>, I
 
     protected override INumericSolvingState ApplyChangesToState(INumericSolvingState state, IEnumerable<NumericChange> changes)
     {
-        return state; //TODO
+        var result = DefaultNumericSolvingState.Copy(state);
+
+        foreach (var change in changes)
+        {
+            if (change.Type == ChangeType.PossibilityRemoval) 
+                result.RemovePossibility(change.Number, change.Row, change.Column);
+            else
+            {
+                result[change.Row, change.Column] = change.Number;
+                foreach (var sum in _kakuro.SumsFor(new Cell(change.Row, change.Column)))
+                {
+                    var pos = CombinationCalculator.CalculatePossibilities(sum.Amount,
+                        sum.Length, ((INumericSolvingState)result).GetSolutions(sum));
+
+                    foreach (var cell in sum)
+                    {
+                        if (cell.Row == change.Row && cell.Column == change.Column) continue;
+
+                        _possibilities[cell.Row, cell.Column] &= pos;
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
 
     #region Private

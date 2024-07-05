@@ -8,20 +8,20 @@ namespace Model.Sudokus.Solver.Utility.AlmostLockedSets;
 public class AlmostHiddenSetSearcher
 {
     private readonly ISudokuSolverData _solverData;
-
-    public int Max { get; set; } = 5;
-    public int Difference { get; set; } = 1;
+    private int _maxSize = 5;
+    private int _difference = 1;
 
     public AlmostHiddenSetSearcher(ISudokuSolverData solverData)
     {
         _solverData = solverData;
     }
 
-    public List<IPossibilitiesPositions> FullGrid()
+    public List<IPossibilitiesPositions> FullGrid(int maxSize, int difference)
     {
         List<IPossibilitiesPositions> result = new();
-
         var poss = new ReadOnlyBitSet16();
+        _maxSize = maxSize;
+        _difference = difference;
         
         var lp = new LinePositions();
         for (int row = 0; row < 9; row++)
@@ -51,15 +51,39 @@ public class AlmostHiddenSetSearcher
         return result;
     }
 
-    public List<IPossibilitiesPositions> InRow(int row)
+    public List<IPossibilitiesPositions> InRow(int row, int maxSize, int difference)
     {
         List<IPossibilitiesPositions> result = new();
         
+        _maxSize = maxSize;
+        _difference = difference;
         InRow(row, result, 1, new LinePositions(), new ReadOnlyBitSet16());
 
         return result;
     }
 
+    public List<IPossibilitiesPositions> InColumn(int column, int maxSize, int difference)
+    {
+        List<IPossibilitiesPositions> result = new();
+        
+        _maxSize = maxSize;
+        _difference = difference;
+        InColumn(column, result, 1, new LinePositions(), new ReadOnlyBitSet16());
+
+        return result;
+    }
+    
+    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol, int maxSize, int difference)
+    {
+        List<IPossibilitiesPositions> result = new();
+        
+        _maxSize = maxSize;
+        _difference = difference;
+        InMiniGrid(miniRow, miniCol, result, 1, new MiniGridPositions(miniRow, miniCol), new ReadOnlyBitSet16());
+
+        return result;
+    }
+    
     private void InRow(int row, 
         List<IPossibilitiesPositions> result, int start, LinePositions current, ReadOnlyBitSet16 possibilities)
     {
@@ -71,23 +95,14 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities += i;
 
-            if (or.Count == possibilities.Count + Difference) result.Add(new CAPPossibilitiesPositions(
+            if (or.Count == possibilities.Count + _difference) result.Add(new CAPPossibilitiesPositions(
                 or.ToCellArray(Unit.Row, row), possibilities, _solverData.CurrentState));
             
-            if (possibilities.Count < Max)
+            if (possibilities.Count < _maxSize)
                 InRow(row, result, i + 1, or, possibilities);
 
             possibilities -= i;
         }
-    }
-
-    public List<IPossibilitiesPositions> InColumn(int column)
-    {
-        List<IPossibilitiesPositions> result = new();
-        
-        InColumn(column, result, 1, new LinePositions(), new ReadOnlyBitSet16());
-
-        return result;
     }
     
     private void InColumn(int column, 
@@ -101,23 +116,14 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities += i;
 
-            if (or.Count == possibilities.Count + Difference) result.Add(new CAPPossibilitiesPositions(
+            if (or.Count == possibilities.Count + _difference) result.Add(new CAPPossibilitiesPositions(
                 or.ToCellArray(Unit.Column, column), possibilities, _solverData.CurrentState));
             
-            if (possibilities.Count < Max)
+            if (possibilities.Count < _maxSize)
                 InColumn(column, result, i + 1, or, possibilities);
 
             possibilities -= i;
         }
-    }
-    
-    public List<IPossibilitiesPositions> InMiniGrid(int miniRow, int miniCol)
-    {
-        List<IPossibilitiesPositions> result = new();
-        
-        InMiniGrid(miniRow, miniCol, result, 1, new MiniGridPositions(miniRow, miniCol), new ReadOnlyBitSet16());
-
-        return result;
     }
     
     private void InMiniGrid(int miniRow, int miniCol, 
@@ -132,14 +138,14 @@ public class AlmostHiddenSetSearcher
             var or = pos.Or(current);
             possibilities += i;
 
-            if (or.Count == possibilities.Count + Difference)
+            if (or.Count == possibilities.Count + _difference)
             {
                 if(!excludeSameLine || !(or.AreAllInSameColumn() || or.AreAllInSameColumn())) 
                     result.Add(new CAPPossibilitiesPositions(or.ToCellArray(),
                         possibilities, _solverData.CurrentState));
             }
 
-            if (possibilities.Count < Max)
+            if (possibilities.Count < _maxSize)
                 InMiniGrid(miniRow, miniCol, result, i + 1, or, possibilities);
 
             possibilities -= i;

@@ -25,7 +25,7 @@ public class FilledSudokuGeneratorTests
         {
             for (int i = 0; i < SudokuCount - 1; i++)
             {
-                Assert.That(suds[i].IsComplete, Is.True);
+                Assert.That(suds[i].IsComplete(), Is.True);
                 
                 for (int j = i + 1; j < SudokuCount; j++)
                 {

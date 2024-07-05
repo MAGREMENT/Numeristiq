@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
+using Model.Core.Settings;
 using Model.Core.Settings.Types;
 using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
@@ -17,12 +18,15 @@ public class UniqueRectanglesStrategy : SudokuStrategy
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.FirstOnly;
 
     private readonly BooleanSetting _allowMissingCandidates;
+    private readonly IntSetting _maxAlsSize;
     
-    public UniqueRectanglesStrategy(bool allowMissingCandidates) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
+    public UniqueRectanglesStrategy(bool allowMissingCandidates, int maxAlsSize) : base(OfficialName, StepDifficulty.Hard, DefaultInstanceHandling)
     {
         _allowMissingCandidates = new BooleanSetting("Missing candidates allowed", allowMissingCandidates);
+        _maxAlsSize = new IntSetting("Max ALS Size", new SliderInteractionInterface(2, 5, 1), maxAlsSize);
         UniquenessDependency = UniquenessDependency.FullyDependent;
         AddSetting(_allowMissingCandidates);
+        AddSetting(_maxAlsSize);
     }
     
     public override void Apply(ISudokuSolverData solverData)
@@ -124,7 +128,7 @@ public class UniqueRectanglesStrategy : SudokuStrategy
         notBiValuePossibilities -= values.Two;
 
         var ssc = new List<Cell>(SudokuCellUtility.SharedSeenCells(roof[0], roof[1]));
-        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc))
+        foreach (var als in solverData.AlmostNakedSetSearcher.InCells(ssc, _maxAlsSize.Value, 1))
         {
             if (!als.Possibilities.ContainsAll(notBiValuePossibilities)) continue;
 

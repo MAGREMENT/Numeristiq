@@ -31,7 +31,7 @@ public class CoverHouseExplanationElement : ExplanationElement
 
     public override void Show(IExplanationHighlighter highlighter)
     {
-        highlighter.ShowCoverHouse(_house);
+        highlighter.ShowCoverHouse(_house, Color);
     }
 
     public override bool DoesShowSomething => true;

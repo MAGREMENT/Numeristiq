@@ -17,7 +17,7 @@ public class AlmostLockedSetExplanationElement : ExplanationElement
     {
         foreach (var cp in _als.EnumeratePossibilities())
         {
-            highlighter.ShowCellPossibility(cp); 
+            highlighter.ShowCellPossibility(cp, Color); 
         }
     }
 
