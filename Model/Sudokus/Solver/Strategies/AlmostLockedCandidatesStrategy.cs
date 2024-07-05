@@ -197,10 +197,10 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         return result;
     }
 
-    private MiniGridPositions MiniGridCorrespondence(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
+    private BoxPositions MiniGridCorrespondence(ISudokuSolverData solverData, ReadOnlyBitSet16 possibilities,
         int exceptNumber, Unit unitExcept, int miniRow, int miniCol)
     {
-        MiniGridPositions result = new(miniRow, miniCol);
+        BoxPositions result = new(miniRow, miniCol);
 
         foreach (var p in possibilities.EnumeratePossibilities())
         {
@@ -289,14 +289,14 @@ public class AlmostLockedCandidatesStrategy : SudokuStrategy
         var result = new List<IPossibilitiesPositions>();
 
         SearchMiniGridForAls(solverData, miniRow, miniCol, exceptNumber, exceptUnit, 0, new ReadOnlyBitSet16(),
-            new MiniGridPositions(miniRow, miniCol), result);
+            new BoxPositions(miniRow, miniCol), result);
 
         return result;
     }
 
     private void SearchMiniGridForAls(ISudokuSolverData solverData, int miniRow,
         int miniCol, int exceptNumber, Unit exceptUnit, int start, ReadOnlyBitSet16 currentPossibilities,
-        MiniGridPositions currentPositions, List<IPossibilitiesPositions> result)
+        BoxPositions currentPositions, List<IPossibilitiesPositions> result)
     {
         for (int number = start; number < 9; number++)
         {

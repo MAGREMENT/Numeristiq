@@ -29,7 +29,7 @@ public class PointingPossibilitiesConstructRule : IConstructRule<ISudokuSolverDa
     }
 
     private void SearchForPointingInMiniGrid(ISudokuSolverData solverData, ILinkGraph<ISudokuElement> linkGraph,
-        IReadOnlyMiniGridPositions ppimn, int miniRow, int miniCol, int numba)
+        IReadOnlyBoxPositions ppimn, int miniRow, int miniCol, int numba)
     {
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {

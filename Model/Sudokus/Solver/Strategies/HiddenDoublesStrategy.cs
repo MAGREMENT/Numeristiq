@@ -19,7 +19,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
     public override void Apply(ISudokuSolverData solverData)
     {
         Dictionary<IReadOnlyLinePositions, int> lines = new();
-        Dictionary<IReadOnlyMiniGridPositions, int> minis = new();
+        Dictionary<IReadOnlyBoxPositions, int> minis = new();
         for (int row = 0; row < 9; row++)
         {
             for (int number = 1; number <= 9; number++)
@@ -109,7 +109,7 @@ public class HiddenDoublesStrategy : SudokuStrategy
             new LineHiddenDoublesReportBuilder(col, positions, n1, n2, Unit.Column)) && StopOnFirstPush;
     }
 
-    private bool ProcessMiniGrid(ISudokuSolverData solverData, IReadOnlyMiniGridPositions positions, int n1, int n2)
+    private bool ProcessMiniGrid(ISudokuSolverData solverData, IReadOnlyBoxPositions positions, int n1, int n2)
     {
         foreach (var cell in positions)
         {
@@ -180,11 +180,11 @@ public class LineHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange
 
 public class MiniGridHiddenDoublesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly IReadOnlyMiniGridPositions _pos;
+    private readonly IReadOnlyBoxPositions _pos;
     private readonly int _n1;
     private readonly int _n2;
 
-    public MiniGridHiddenDoublesReportBuilder(IReadOnlyMiniGridPositions pos, int n1, int n2)
+    public MiniGridHiddenDoublesReportBuilder(IReadOnlyBoxPositions pos, int n1, int n2)
     {
         _pos = pos;
         _n1 = n1;

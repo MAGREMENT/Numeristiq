@@ -77,10 +77,10 @@ public class PointingSetStrategy : SudokuStrategy
 public class PointingPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly int _number;
-    private readonly IReadOnlyMiniGridPositions _miniPos;
+    private readonly IReadOnlyBoxPositions _miniPos;
     private readonly Unit _unit;
 
-    public PointingPossibilitiesReportBuilder(int number, IReadOnlyMiniGridPositions miniPos, Unit unit)
+    public PointingPossibilitiesReportBuilder(int number, IReadOnlyBoxPositions miniPos, Unit unit)
     {
         _number = number;
         _miniPos = miniPos;

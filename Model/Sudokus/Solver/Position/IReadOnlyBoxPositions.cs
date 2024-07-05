@@ -3,7 +3,7 @@ using Model.Utility;
 
 namespace Model.Sudokus.Solver.Position;
 
-public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
+public interface IReadOnlyBoxPositions : IEnumerable<Cell>
 {
     public int Count { get; }
     public Cell First();
@@ -21,18 +21,18 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
     public bool Contains(int gridRow, int gridCol);
     public bool Contains(int gridNumber);
     
-    public MiniGridPositions Or(IReadOnlyMiniGridPositions pos);
-    public MiniGridPositions Difference(IReadOnlyMiniGridPositions pos);
+    public BoxPositions Or(IReadOnlyBoxPositions pos);
+    public BoxPositions Difference(IReadOnlyBoxPositions pos);
 
-    public MiniGridPositions Copy();
+    public BoxPositions Copy();
 
     public Cell[] ToCellArray();
 
     public int GetNumber();
     
-    public static MiniGridPositions DefaultOr(IReadOnlyMiniGridPositions one, IReadOnlyMiniGridPositions two)
+    public static BoxPositions DefaultOr(IReadOnlyBoxPositions one, IReadOnlyBoxPositions two)
     {
-        var result = new MiniGridPositions(one.GetNumber() / 3, one.GetNumber() % 3);
+        var result = new BoxPositions(one.GetNumber() / 3, one.GetNumber() % 3);
         for (int i = 0; i < 3; i++)
         {
             for (int j = 0; j < 3; j++)
@@ -44,7 +44,7 @@ public interface IReadOnlyMiniGridPositions : IEnumerable<Cell>
         return result;
     }
 
-    public static MiniGridPositions DefaultDifference(IReadOnlyMiniGridPositions one, IReadOnlyMiniGridPositions two)
+    public static BoxPositions DefaultDifference(IReadOnlyBoxPositions one, IReadOnlyBoxPositions two)
     {
         var result = one.Copy();
         foreach (var c in two)

@@ -69,7 +69,7 @@ public class ContradictionSearcher
     private readonly Dictionary<int, ReadOnlyBitSet16> _offCells = new();
     private readonly Dictionary<int, LinePositions> _offRows = new();
     private readonly Dictionary<int, LinePositions> _offCols = new();
-    private readonly Dictionary<int, MiniGridPositions> _offMinis = new();
+    private readonly Dictionary<int, BoxPositions> _offMinis = new();
 
     private readonly Dictionary<int, GridPositions> _onPositions = new();
 

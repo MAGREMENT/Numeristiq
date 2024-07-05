@@ -6,7 +6,7 @@ using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Position;
 
-public class MiniGridPositions : IReadOnlyMiniGridPositions
+public class BoxPositions : IReadOnlyBoxPositions
 {
     private readonly int _startRow;
     private readonly int _startCol;
@@ -15,13 +15,13 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     
     public int Count { get; private set; }
 
-    public MiniGridPositions(int miniRow, int miniCol)
+    public BoxPositions(int miniRow, int miniCol)
     {
         _startRow = miniRow * 3;
         _startCol = miniCol * 3;
     }
 
-    private MiniGridPositions(int pos, int count, int startRow, int startCol)
+    private BoxPositions(int pos, int count, int startRow, int startCol)
     {
         _pos = pos;
         Count = count;
@@ -29,14 +29,14 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         _startCol = startCol;
     }
     
-    public static MiniGridPositions Filled(int miniRow, int miniCol)
+    public static BoxPositions Filled(int miniRow, int miniCol)
     {
-        return new MiniGridPositions(0x1FF, 9, miniRow * 3, miniCol * 3);
+        return new BoxPositions(0x1FF, 9, miniRow * 3, miniCol * 3);
     }
 
-    public static MiniGridPositions FromBits(int miniRow, int miniCol, int bits)
+    public static BoxPositions FromBits(int miniRow, int miniCol, int bits)
     {
-        return new MiniGridPositions(bits, System.Numerics.BitOperations.PopCount((uint)bits), miniRow, miniCol);
+        return new BoxPositions(bits, System.Numerics.BitOperations.PopCount((uint)bits), miniRow, miniCol);
     }
 
     public void Add(int gridRow, int gridCol)
@@ -124,7 +124,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
                          && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b100100100)) > 0;
     }
 
-    public IEnumerable<MiniGridPositions> EveryDiagonalPattern()
+    public IEnumerable<BoxPositions> EveryDiagonalPattern()
     {
         for (int i = 0; i < 3; i++)
         {
@@ -136,7 +136,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
                 {
                     if (k == i || k == j || !Contains(k, 2)) continue;
 
-                    var mgp = new MiniGridPositions(_startRow / 3, _startCol / 3);
+                    var mgp = new BoxPositions(_startRow / 3, _startCol / 3);
                     mgp.Add(i, 0);
                     mgp.Add(j, 1);
                     mgp.Add(k, 2);
@@ -149,7 +149,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
     
     public override bool Equals(object? obj)
     {
-        if (obj is not MiniGridPositions pos) return false;
+        if (obj is not BoxPositions pos) return false;
         return _pos == pos._pos;
     }
 
@@ -239,20 +239,20 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return GetEnumerator();
     }
 
-    public MiniGridPositions Difference(IReadOnlyMiniGridPositions pos)
+    public BoxPositions Difference(IReadOnlyBoxPositions pos)
     {
-        if (pos is MiniGridPositions mgp)
+        if (pos is BoxPositions mgp)
         {
             var diff = _pos & ~mgp._pos;
-            return new MiniGridPositions(diff, System.Numerics.BitOperations.PopCount((uint)diff), _startRow, _startCol);
+            return new BoxPositions(diff, System.Numerics.BitOperations.PopCount((uint)diff), _startRow, _startCol);
         }
 
-        return IReadOnlyMiniGridPositions.DefaultDifference(this, pos);
+        return IReadOnlyBoxPositions.DefaultDifference(this, pos);
     }
 
-    public MiniGridPositions Copy()
+    public BoxPositions Copy()
     {
-        return new MiniGridPositions(_pos, Count, _startRow, _startCol);
+        return new BoxPositions(_pos, Count, _startRow, _startCol);
     }
 
     public Cell[] ToCellArray()
@@ -268,7 +268,7 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return result;
     }
 
-    public void ForEachCombination(IReadOnlyMiniGridPositions.HandleCombination handler)
+    public void ForEachCombination(IReadOnlyBoxPositions.HandleCombination handler)
     {
         for (int i = 0; i < 9; i++)
         {
@@ -288,11 +288,11 @@ public class MiniGridPositions : IReadOnlyMiniGridPositions
         return _startRow + _startCol / 3;
     }
     
-    public MiniGridPositions Or(IReadOnlyMiniGridPositions pos)
+    public BoxPositions Or(IReadOnlyBoxPositions pos)
     {
-        if (pos is not MiniGridPositions mini) return IReadOnlyMiniGridPositions.DefaultOr(pos, this);
+        if (pos is not BoxPositions mini) return IReadOnlyBoxPositions.DefaultOr(pos, this);
         int newPos = _pos | mini._pos;
-        return new MiniGridPositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos), _startRow,
+        return new BoxPositions(newPos, System.Numerics.BitOperations.PopCount((uint)newPos), _startRow,
             _startCol);
     }
     

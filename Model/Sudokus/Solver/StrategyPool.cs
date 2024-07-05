@@ -106,7 +106,7 @@ public static class StrategyPool
         {BlossomLoopStrategy.OfficialNameForUnit, () => new BlossomLoopStrategy(new BLLoopFinderV1(12), new BLBranchFinderV1(), new UnitType())},
         {ThorsHammerStrategy.OfficialName, () => new ThorsHammerStrategy(new TwoByTwoLoopFinder())},
         {ReverseBUGLiteStrategy.OfficialName, () => new ReverseBUGLiteStrategy()},
-        {MiniUniquenessStrategy.OfficialName, () => new MiniUniquenessStrategy()},
+        {BandUniquenessStrategy.OfficialName, () => new BandUniquenessStrategy()},
         {UniquenessClueCoverStrategy.OfficialName, () => new UniquenessClueCoverStrategy(BandCollection.FullCollection())},
         {ExtendedUniqueRectanglesStrategy.OfficialName, () => new ExtendedUniqueRectanglesStrategy()},
         {NonColorablePatternStrategy.OfficialName, () => new NonColorablePatternStrategy(3, 3, 3)},

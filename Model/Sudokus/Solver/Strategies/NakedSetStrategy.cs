@@ -60,7 +60,7 @@ public class NakedSetStrategy : SudokuStrategy
             {
                 var possibleGridNumbers = EveryMiniGridCellWithLessPossibilities(solverData, miniRow, miniCol, _type + 1);
                 if (RecursiveMiniGridMashing(solverData, new ReadOnlyBitSet16(), possibleGridNumbers, -1,
-                        miniRow, miniCol, new MiniGridPositions(miniRow, miniCol))) return;
+                        miniRow, miniCol, new BoxPositions(miniRow, miniCol))) return;
             }
         }
     }
@@ -176,9 +176,9 @@ public class NakedSetStrategy : SudokuStrategy
             col, Unit.Column)) && StopOnFirstPush;
     }
     
-    private MiniGridPositions EveryMiniGridCellWithLessPossibilities(ISudokuSolverData solverData, int miniRow, int miniCol, int than)
+    private BoxPositions EveryMiniGridCellWithLessPossibilities(ISudokuSolverData solverData, int miniRow, int miniCol, int than)
     {
-        MiniGridPositions result = new(miniRow, miniCol);
+        BoxPositions result = new(miniRow, miniCol);
         for (int gridRow = 0; gridRow < 3; gridRow++)
         {
             for (int gridCol = 0; gridCol < 3; gridCol++)
@@ -195,7 +195,7 @@ public class NakedSetStrategy : SudokuStrategy
     }
     
     private bool RecursiveMiniGridMashing(ISudokuSolverData solverData, ReadOnlyBitSet16 current,
-        MiniGridPositions possiblePos, int cursor, int miniRow, int miniCol, MiniGridPositions visited)
+        BoxPositions possiblePos, int cursor, int miniRow, int miniCol, BoxPositions visited)
     {
         Cell pos;
         while((pos = possiblePos.Next(ref cursor)).Row != -1)
@@ -225,7 +225,7 @@ public class NakedSetStrategy : SudokuStrategy
     }
     
     private bool RemovePossibilitiesFromMiniGrid(ISudokuSolverData solverData, int miniRow, int miniCol, ReadOnlyBitSet16 toRemove,
-        MiniGridPositions except)
+        BoxPositions except)
     {
         foreach (var n in toRemove.EnumeratePossibilities())
         {
@@ -291,9 +291,9 @@ public class LineNakedPossibilitiesReportBuilder : IChangeReportBuilder<NumericC
 public class MiniGridNakedPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
-    private readonly MiniGridPositions _miniPos;
+    private readonly BoxPositions _miniPos;
 
-    public MiniGridNakedPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, MiniGridPositions miniPos)
+    public MiniGridNakedPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, BoxPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;

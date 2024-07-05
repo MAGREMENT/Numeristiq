@@ -33,7 +33,7 @@ public class WXYZWingStrategy : SudokuStrategy
                     var first = solverData.PossibilitiesAt(iRow, iCol);
                     if (first.Count is > 4 or < 1) continue;
                     
-                    var miniPositions = new MiniGridPositions(miniRow, miniCol);
+                    var miniPositions = new BoxPositions(miniRow, miniCol);
                     miniPositions.Add(i / 3, i % 3);
 
                     for (int j = i + 1; j < 9; j++)
@@ -80,7 +80,7 @@ public class WXYZWingStrategy : SudokuStrategy
         }
     }
 
-    private bool SearchRow(ISudokuSolverData solverData, MiniGridPositions miniPositions,
+    private bool SearchRow(ISudokuSolverData solverData, BoxPositions miniPositions,
         ReadOnlyBitSet16 possibilities, Cell hinge)
     {
         for (int col = 0; col < 9; col++)
@@ -124,7 +124,7 @@ public class WXYZWingStrategy : SudokuStrategy
         return false;
     }
     
-    private bool SearchColumn(ISudokuSolverData solverData, MiniGridPositions miniPositions,
+    private bool SearchColumn(ISudokuSolverData solverData, BoxPositions miniPositions,
         ReadOnlyBitSet16 possibilities, Cell hinge)
     {
         for (int row = 0; row < 9; row++)
@@ -168,7 +168,7 @@ public class WXYZWingStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuSolverData solverData, MiniGridPositions miniPositions, LinePositions linePositions,
+    private bool Process(ISudokuSolverData solverData, BoxPositions miniPositions, LinePositions linePositions,
         Unit unit, int unitNumber, ReadOnlyBitSet16 possibilities)
     {
         if (possibilities.Count != 4) return false;
@@ -262,13 +262,13 @@ public class WXYZWingStrategy : SudokuStrategy
 
 public class WXYZWingReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly MiniGridPositions _mini;
+    private readonly BoxPositions _mini;
     private readonly LinePositions _line;
     private readonly Unit _unit;
     private readonly int _unitNumber;
 
 
-    public WXYZWingReportBuilder(MiniGridPositions mini, LinePositions line, Unit unit, int unitNumber)
+    public WXYZWingReportBuilder(BoxPositions mini, LinePositions line, Unit unit, int unitNumber)
     {
         _mini = mini;
         _line = line;

@@ -97,9 +97,9 @@ public class TCondition : INRCZTCondition
         }
     }
 
-    public IEnumerable<NRCZTChain> AnalyzeMiniGrid(NRCZTChain current, CellPossibility from, IReadOnlyMiniGridPositions miniPoss)
+    public IEnumerable<NRCZTChain> AnalyzeMiniGrid(NRCZTChain current, CellPossibility from, IReadOnlyBoxPositions miniPoss)
     {
-        var ignorable = new MiniGridPositions(from.Row / 3, from.Column / 3);
+        var ignorable = new BoxPositions(from.Row / 3, from.Column / 3);
 
         foreach (var cell in miniPoss)
         {

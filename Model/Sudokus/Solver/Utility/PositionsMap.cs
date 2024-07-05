@@ -7,7 +7,7 @@ public class PositionsMap
 {
     public LinePositions[] Rows { get; } = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
     public LinePositions[] Columns { get; } = { new(), new(), new(), new(), new(), new(), new(), new(), new() };
-    public MiniGridPositions[,] Minis { get; } =
+    public BoxPositions[,] Minis { get; } =
     {
         { new(0, 0), new(0, 1), new(0, 2) },
         { new(1, 0), new(1, 1), new(1, 2) },

@@ -43,7 +43,7 @@ public class AlmostHiddenSetSearcher
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
                 InMiniGrid(miniRow, miniCol, result, 1, 
-                    new MiniGridPositions(miniRow, miniCol), poss, true);
+                    new BoxPositions(miniRow, miniCol), poss, true);
                 poss = new ReadOnlyBitSet16();
             }
         }
@@ -79,7 +79,7 @@ public class AlmostHiddenSetSearcher
         
         _maxSize = maxSize;
         _difference = difference;
-        InMiniGrid(miniRow, miniCol, result, 1, new MiniGridPositions(miniRow, miniCol), new ReadOnlyBitSet16());
+        InMiniGrid(miniRow, miniCol, result, 1, new BoxPositions(miniRow, miniCol), new ReadOnlyBitSet16());
 
         return result;
     }
@@ -127,7 +127,7 @@ public class AlmostHiddenSetSearcher
     }
     
     private void InMiniGrid(int miniRow, int miniCol, 
-        List<IPossibilitiesPositions> result, int start, MiniGridPositions current, ReadOnlyBitSet16 possibilities,
+        List<IPossibilitiesPositions> result, int start, BoxPositions current, ReadOnlyBitSet16 possibilities,
         bool excludeSameLine = false)
     {
         for (int i = start; i <= 9; i++)

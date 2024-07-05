@@ -54,7 +54,7 @@ public class HiddenSetStrategy : SudokuStrategy
         {
             for (int miniCol = 0; miniCol < 3; miniCol++)
             {
-                if (RecursiveMiniGridMashing(solverData, 1, new MiniGridPositions(miniRow, miniCol), 
+                if (RecursiveMiniGridMashing(solverData, 1, new BoxPositions(miniRow, miniCol), 
                         new ReadOnlyBitSet16(), miniRow, miniCol)) return;
             }
         }
@@ -124,7 +124,7 @@ public class HiddenSetStrategy : SudokuStrategy
         return false;
     }
     
-    private bool RecursiveMiniGridMashing(ISudokuSolverData solverData, int start, MiniGridPositions mashed,
+    private bool RecursiveMiniGridMashing(ISudokuSolverData solverData, int start, BoxPositions mashed,
         ReadOnlyBitSet16 visited, int miniRow, int miniCol)
     {
         for (int i = start; i <= 9; i++)
@@ -213,9 +213,9 @@ public class LineHiddenPossibilitiesReportBuilder : IChangeReportBuilder<Numeric
 public class MiniGridHiddenPossibilitiesReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
     private readonly ReadOnlyBitSet16 _possibilities;
-    private readonly MiniGridPositions _miniPos;
+    private readonly BoxPositions _miniPos;
 
-    public MiniGridHiddenPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, MiniGridPositions miniPos)
+    public MiniGridHiddenPossibilitiesReportBuilder(ReadOnlyBitSet16 possibilities, BoxPositions miniPos)
     {
         _possibilities = possibilities;
         _miniPos = miniPos;

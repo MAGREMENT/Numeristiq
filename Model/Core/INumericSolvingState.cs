@@ -52,7 +52,7 @@ public interface ISudokuSolvingState : INumericSolvingState
 
     IReadOnlyLinePositions RowPositionsAt(int row, int number);
 
-    IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number);
+    IReadOnlyBoxPositions MiniGridPositionsAt(int miniRow, int miniCol, int number);
 
     IReadOnlyGridPositions PositionsFor(int number);
 }
@@ -149,9 +149,9 @@ public class DefaultNumericSolvingState : ISudokuSolvingState
         return result;
     }
 
-    public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
+    public IReadOnlyBoxPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
     {
-        MiniGridPositions result = new(miniRow, miniCol);
+        BoxPositions result = new(miniRow, miniCol);
 
         for (int r = 0; r < 3; r++)
         {

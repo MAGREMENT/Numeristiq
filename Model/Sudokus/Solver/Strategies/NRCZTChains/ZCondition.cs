@@ -49,7 +49,7 @@ public class ZCondition : INRCZTCondition
         if (chain is not null) yield return chain;
     }
 
-    public IEnumerable<NRCZTChain> AnalyzeMiniGrid(NRCZTChain current, CellPossibility from, IReadOnlyMiniGridPositions miniPoss)
+    public IEnumerable<NRCZTChain> AnalyzeMiniGrid(NRCZTChain current, CellPossibility from, IReadOnlyBoxPositions miniPoss)
     {
         if (miniPoss.Count != 3) yield break;
         

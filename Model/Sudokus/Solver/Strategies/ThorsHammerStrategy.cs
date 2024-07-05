@@ -28,7 +28,7 @@ public class ThorsHammerStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
-        Dictionary<int, MiniGridPositions> boxCandidates = new();
+        Dictionary<int, BoxPositions> boxCandidates = new();
         foreach (var combination in CombinationCalculator.EveryCombinationWithSpecificCount(3, CombinationCalculator.NumbersSample))
         {
             for (int r = 0; r < 3; r++)
@@ -58,7 +58,7 @@ public class ThorsHammerStrategy : SudokuStrategy
     }
 
     private bool TryEveryLoop(ISudokuSolverData solverData, int[] possibilities,
-        Dictionary<int, MiniGridPositions> boxCandidates)
+        Dictionary<int, BoxPositions> boxCandidates)
     {
         var graph = new BoxGraph();
         foreach (var n in boxCandidates.Keys)
@@ -73,14 +73,14 @@ public class ThorsHammerStrategy : SudokuStrategy
         foreach (var loop in _finder.FindLoops(graph))
         {
             if (TryEveryPattern(solverData, possibilities, loop, boxCandidates,
-                    new Dictionary<int, MiniGridPositions>(), 0)) return true;
+                    new Dictionary<int, BoxPositions>(), 0)) return true;
         }
 
         return false;
     }
     
     private bool TryEveryPattern(ISudokuSolverData solverData, int[] possibilities, BoxLoop loop,
-        Dictionary<int, MiniGridPositions> boxCandidates, Dictionary<int, MiniGridPositions> current, int n)
+        Dictionary<int, BoxPositions> boxCandidates, Dictionary<int, BoxPositions> current, int n)
     {
         if (n == loop.Length) return Search(solverData, possibilities, loop, current);
 
@@ -95,7 +95,7 @@ public class ThorsHammerStrategy : SudokuStrategy
     }
 
     private bool Search(ISudokuSolverData solverData, int[] possibilities, BoxLoop loop,
-        Dictionary<int, MiniGridPositions> boxCandidates)
+        Dictionary<int, BoxPositions> boxCandidates)
     {
         var pp = new ParityPair[loop.Length];
 
@@ -177,7 +177,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         return false;
     }
     
-    private ParityTransfer GetParityTransfer(MiniGridPositions mgp)
+    private ParityTransfer GetParityTransfer(BoxPositions mgp)
     {
         var first = -1;
         for (int i = 0; i < 3; i++)

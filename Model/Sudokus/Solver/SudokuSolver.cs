@@ -19,7 +19,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
     private readonly GridPositions[] _positions = new GridPositions[9];
     private readonly LinePositions[,] _rowsPositions = new LinePositions[9, 9];
     private readonly LinePositions[,] _colsPositions = new LinePositions[9, 9];
-    private readonly MiniGridPositions[,,] _minisPositions = new MiniGridPositions[3,3,9];
+    private readonly BoxPositions[,,] _minisPositions = new BoxPositions[3,3,9];
 
     public override ISudokuSolvingState StartState { get; protected set; } = new DefaultNumericSolvingState(9, 9);
     public IReadOnlySudoku Sudoku => _sudoku;
@@ -129,7 +129,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
         return _colsPositions[col, number - 1];
     }
     
-    public IReadOnlyMiniGridPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
+    public IReadOnlyBoxPositions MiniGridPositionsAt(int miniRow, int miniCol, int number)
     {
         return _minisPositions[miniRow, miniCol, number - 1];
     }
@@ -285,7 +285,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
                 _possibilities[i, j] = ReadOnlyBitSet16.Filled(1, 9);
                 _rowsPositions[i, j] = LinePositions.Filled();
                 _colsPositions[i, j] = LinePositions.Filled();
-                _minisPositions[i / 3, i % 3, j] = MiniGridPositions.Filled(i / 3, i % 3);
+                _minisPositions[i / 3, i % 3, j] = BoxPositions.Filled(i / 3, i % 3);
             }
             
             _positions[i] = GridPositions.Filled();

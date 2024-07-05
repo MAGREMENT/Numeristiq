@@ -12,12 +12,12 @@ namespace Model.Sudokus.Solver.Strategies;
 /// If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes)
 /// is spread over max N+1 mini-rows/-columns, then the group will contain at least one unavoidable set.
 /// </summary>
-public class MiniUniquenessStrategy : SudokuStrategy
+public class BandUniquenessStrategy : SudokuStrategy
 {
     public const string OfficialName = "Mini-Uniqueness";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
-    public MiniUniquenessStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
+    public BandUniquenessStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
     {
         UniquenessDependency = UniquenessDependency.FullyDependent;
     }
