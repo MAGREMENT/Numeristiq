@@ -95,6 +95,6 @@ public class BridgingReportBuilder : IChangeReportBuilder<DichotomousChange, INo
 
     public Clue<INonogramHighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
     {
-        throw new System.NotImplementedException();
+        return Clue<INonogramHighlighter>.Default();
     }
 }

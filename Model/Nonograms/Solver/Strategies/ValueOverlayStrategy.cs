@@ -90,6 +90,6 @@ public class ValueOverlayReportBuilder : IChangeReportBuilder<DichotomousChange,
 
     public Clue<INonogramHighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
     {
-        throw new System.NotImplementedException();
+        return Clue<INonogramHighlighter>.Default();
     }
 }

@@ -110,24 +110,4 @@ public class CAPPossibilitiesPositions : IPossibilitiesPositions
     {
         return HashCode.Combine(Possibilities.GetHashCode(), Positions.GetHashCode());
     }
-
-    public override string ToString()
-    {
-        var builder = new StringBuilder();
-
-        foreach (var pos in Possibilities.EnumeratePossibilities())
-        {
-            builder.Append(pos);
-        }
-
-        builder.Append("{ ");
-        foreach(var cell in EnumerateCells())
-        {
-            builder.Append(cell + " ");
-        }
-
-        builder.Append('}');
-
-        return builder.ToString();
-    }
 }

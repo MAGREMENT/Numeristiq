@@ -173,7 +173,7 @@ public class AlmostHiddenSetsChainReportBuilder : IChangeReportBuilder<NumericCh
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>("Almost Hidden Sets Chain : " +  _chain, lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var ahs in _chain.Elements)

@@ -7,7 +7,6 @@ using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
-using Model.Sudokus.Solver.Utility.Graphs;
 using Model.Utility;
 using Model.Utility.BitSets;
 
@@ -73,18 +72,18 @@ public class ThorsHammerStrategy : SudokuStrategy
         foreach (var loop in _finder.FindLoops(graph))
         {
             if (TryEveryPattern(solverData, possibilities, loop, boxCandidates,
-                    new Dictionary<int, BoxPositions>(), 0)) return true;
+                    new Dictionary<int, ThorsBox>(), 0)) return true;
         }
 
         return false;
     }
     
     private bool TryEveryPattern(ISudokuSolverData solverData, int[] possibilities, BoxLoop loop,
-        Dictionary<int, BoxPositions> boxCandidates, Dictionary<int, BoxPositions> current, int n)
+        Dictionary<int, BoxPositions> boxCandidates, Dictionary<int, ThorsBox> current, int n)
     {
         if (n == loop.Length) return Search(solverData, possibilities, loop, current);
 
-        foreach (var mgp in boxCandidates[loop[n]].EveryDiagonalPattern())
+        foreach (var mgp in EveryBoxPattern(boxCandidates[loop[n]]))
         {
             current.Add(loop[n], mgp);
             if (TryEveryPattern(solverData, possibilities, loop, boxCandidates, current, n + 1)) return true;
@@ -93,13 +92,62 @@ public class ThorsHammerStrategy : SudokuStrategy
         
         return false;
     }
+    
+    private IEnumerable<ThorsBox> EveryBoxPattern(BoxPositions b)
+    {
+        var (startRow, startCol) = b.GetStarts();
+        if (b.Contains(0, 0))
+        {
+            if(b.Contains(1, 1) && b.Contains(2, 2))
+                yield return new ThorsBox(ParityTransfer.Same, new Cell[]
+                {
+                    new(startRow, startCol), new(startRow + 1, startCol + 1), new(startRow + 2, startCol + 2)
+                });
+            
+            if(b.Contains(1, 2) && b.Contains(2, 1))
+                yield return new ThorsBox(ParityTransfer.Opposite, new Cell[]
+                {
+                    new(startRow, startCol), new(startRow + 1, startCol + 2), new(startRow + 2, startCol + 1)
+                });
+        }
+        
+        if (b.Contains(0, 1))
+        {
+            if(b.Contains(1, 2) && b.Contains(2, 0))
+                yield return new ThorsBox(ParityTransfer.Same, new Cell[]
+                {
+                    new(startRow, startCol + 1), new(startRow + 1, startCol + 2), new(startRow + 2, startCol)
+                });
+            
+            if(b.Contains(1, 0) && b.Contains(2, 2))
+                yield return new ThorsBox(ParityTransfer.Opposite, new Cell[]
+                {
+                    new(startRow, startCol + 1), new(startRow + 1, startCol), new(startRow + 2, startCol + 2)
+                });
+        }
+        
+        if (b.Contains(0, 2))
+        {
+            if(b.Contains(1, 0) && b.Contains(2, 1))
+                yield return new ThorsBox(ParityTransfer.Same, new Cell[]
+                {
+                    new(startRow, startCol + 2), new(startRow + 1, startCol), new(startRow + 2, startCol + 1)
+                });
+            
+            if(b.Contains(1, 1) && b.Contains(2, 0))
+                yield return new ThorsBox(ParityTransfer.Opposite, new Cell[]
+                {
+                    new(startRow, startCol + 2), new(startRow + 1, startCol + 1), new(startRow + 2, startCol)
+                });
+        }
+    }
 
     private bool Search(ISudokuSolverData solverData, int[] possibilities, BoxLoop loop,
-        Dictionary<int, BoxPositions> boxCandidates)
+        Dictionary<int, ThorsBox> boxCandidates)
     {
         var pp = new ParityPair[loop.Length];
 
-        pp[0] = new ParityPair(Parity.Up, GetParityTransfer(boxCandidates[loop[0]])
+        pp[0] = new ParityPair(Parity.Up, boxCandidates[loop[0]].ParityTransfer
                                           == ParityTransfer.Opposite ? Parity.Down : Parity.Up);
 
         for (int i = 1; i < pp.Length; i++)
@@ -107,17 +155,13 @@ public class ThorsHammerStrategy : SudokuStrategy
             if (loop[i] / 3 == loop[i - 1] / 3)
             {
                 var r = pp[i - 1].RowParity;
-                var c = GetParityTransfer(boxCandidates[loop[i]]) == ParityTransfer.Opposite
-                    ? OppositeParity(r)
-                    : r;
+                var c = TransferParity(r, boxCandidates[loop[i]].ParityTransfer);
                 pp[i] = new ParityPair(r, c);
             }
             else if (loop[i] % 3 == loop[i - 1] % 3)
             {
                 var c = pp[i - 1].ColumnParity;
-                var r = GetParityTransfer(boxCandidates[loop[i]]) == ParityTransfer.Opposite
-                    ? OppositeParity(c)
-                    : c;
+                var r = TransferParity(c, boxCandidates[loop[i]].ParityTransfer);
                 pp[i] = new ParityPair(r, c);
             }
             else throw new Exception();
@@ -137,7 +181,7 @@ public class ThorsHammerStrategy : SudokuStrategy
         List<Cell> cells = new();
         foreach (var mgp in boxCandidates.Values)
         {
-            foreach (var cell in mgp)
+            foreach (var cell in mgp.Cells)
             {
                 cells.Add(cell);
                 foreach (var p in solverData.PossibilitiesAt(cell).EnumeratePossibilities())
@@ -151,23 +195,9 @@ public class ThorsHammerStrategy : SudokuStrategy
         if (notInPattern.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(notInPattern[0]);
         else
         {
-            solverData.PreComputer.Graphs.ConstructSimple(SudokuConstructRuleBank.CellStrongLink, SudokuConstructRuleBank.CellWeakLink,
-                SudokuConstructRuleBank.UnitStrongLink, SudokuConstructRuleBank.UnitWeakLink);
-            var linkGraph = solverData.PreComputer.Graphs.SimpleLinkGraph;
-
-            foreach (var target in linkGraph.Neighbors(notInPattern[0]))
+            foreach (var target in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, notInPattern))
             {
-                var ok = true;
-                for (int i = 1; i < notInPattern.Count; i++)
-                {
-                    if (!linkGraph.AreNeighbors(notInPattern[i], target))
-                    {
-                        ok = false;
-                        break;
-                    }
-                }
-
-                if (ok) solverData.ChangeBuffer.ProposePossibilityRemoval(target);
+                solverData.ChangeBuffer.ProposePossibilityRemoval(target);
             }
         }
 
@@ -176,34 +206,23 @@ public class ThorsHammerStrategy : SudokuStrategy
 
         return false;
     }
-    
-    private ParityTransfer GetParityTransfer(BoxPositions mgp)
+
+    private static Parity TransferParity(Parity p, ParityTransfer t)
     {
-        var first = -1;
-        for (int i = 0; i < 3; i++)
-        {
-            if (mgp.Contains(i, 0))
-            {
-                first = i;
-                break;
-            }
-        }
+        return (Parity)(((int)p + (int)t) % 2);
+    }
+}
 
-        if (first == -1) throw new Exception();
-
-        var down = (first + 1) % 3;
-        if (mgp.Contains(down, 1)) return ParityTransfer.Same;
-
-        var up = first - 1 < 0 ? 2 : first - 1;
-        if (mgp.Contains(up, 1)) return ParityTransfer.Opposite;
-
-        throw new Exception();
+public readonly struct ThorsBox
+{
+    public ThorsBox(ParityTransfer parityTransfer, IEnumerable<Cell> cells)
+    {
+        ParityTransfer = parityTransfer;
+        Cells = cells;
     }
 
-    private Parity OppositeParity(Parity p)
-    {
-        return (Parity)(((int)p + 1) % 2);
-    }
+    public IEnumerable<Cell> Cells { get; }
+    public ParityTransfer ParityTransfer { get; }
 }
 
 public class BoxGraph : IEnumerable<int>

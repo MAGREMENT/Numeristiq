@@ -43,7 +43,7 @@ public class NonogramPreComputer
         return _verticalMainSpace[col];
     }
 
-    public IReadOnlyList<ValueSpace> HorizontalValueSpaces(int row)
+    public IReadOnlyList<ValueSpace> HorizontalValueSpaces(int row) //TODO reduce space if edge value
     {
         _horizontalValueSpaces[row] ??= DoHorizontalValueSpaces(row);
         return _horizontalValueSpaces[row]!;
@@ -241,7 +241,7 @@ public class NonogramPreComputer
                         mustBeUnavailable = true;
                         eCursor--;
                         if (eCursor < sCursor) return MainSpace.Invalid;
-                    } else buffer = start;
+                    } else buffer = end;
                 }
             }
 

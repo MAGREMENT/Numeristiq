@@ -110,10 +110,10 @@ public class ExtendedUniqueRectanglesStrategy : SudokuStrategy
         return false;
     }
 
-    private bool Process(ISudokuSolverData solverData, ReadOnlyBitSet16 poss, List<Cell> cells) //TODO to general method like "ProcessMustBeTrue"
+    private bool Process(ISudokuSolverData solverData, ReadOnlyBitSet16 poss, List<Cell> cells)
     {
-        List<CellPossibility> pNotInPattern = new List<CellPossibility>();
-        List<Cell> cNotInPattern = new List<Cell>();
+        var pNotInPattern = new List<CellPossibility>();
+        var cNotInPattern = new List<Cell>();
         var graph = solverData.PreComputer.Graphs.SimpleLinkGraph;
         
         foreach (var cell in cells)

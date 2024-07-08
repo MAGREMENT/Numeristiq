@@ -9,8 +9,6 @@ using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver;
 
-//TODO => Documentation + Explanation + Review highlighting for each strategy
-//TODO => For each strategy using old als, revamp
 public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolvingState, ISudokuHighlighter>,
     ISudokuSolverData
 {
@@ -97,7 +95,7 @@ public class SudokuSolver : NumericStrategySolver<SudokuStrategy, ISudokuSolving
 
         return result;
     }
-    
+
     public override bool CanRemovePossibility(CellPossibility cp)
     {
         return PossibilitiesAt(cp.Row, cp.Column).Contains(cp.Possibility);

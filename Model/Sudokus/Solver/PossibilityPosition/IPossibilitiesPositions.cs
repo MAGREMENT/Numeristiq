@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -39,5 +40,25 @@ public interface IPossibilitiesPositions
     public bool Contains(CellPossibility cp)
     {
         return Possibilities.Contains(cp.Possibility) && Positions.Contains(cp.Row, cp.Column);
+    }
+    
+    public string ToString()
+    {
+        var builder = new StringBuilder();
+
+        foreach (var pos in Possibilities.EnumeratePossibilities())
+        {
+            builder.Append(pos);
+        }
+
+        builder.Append("{ ");
+        foreach(var cell in EnumerateCells())
+        {
+            builder.Append(cell + " ");
+        }
+
+        builder.Append('}');
+
+        return builder.ToString();
     }
 }

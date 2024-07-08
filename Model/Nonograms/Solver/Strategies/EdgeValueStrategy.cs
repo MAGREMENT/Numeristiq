@@ -104,6 +104,6 @@ public class EdgeValueReportBuilder : IChangeReportBuilder<DichotomousChange, IN
 
     public Clue<INonogramHighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
     {
-        throw new System.NotImplementedException();
+        return Clue<INonogramHighlighter>.Default();
     }
 }

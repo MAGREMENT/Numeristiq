@@ -7,7 +7,7 @@ using Model.Utility.BitSets;
 
 namespace Model.Nonograms.Solver.Strategies;
 
-public class UnreachableSquareStrategy : Strategy<INonogramSolverData> //TODO fix
+public class UnreachableSquareStrategy : Strategy<INonogramSolverData>
 {
     public UnreachableSquareStrategy() : base("Unreachable Square", StepDifficulty.Medium, InstanceHandling.UnorderedAll)
     {
@@ -89,7 +89,7 @@ public class UnreachableSquareReportBuilder : IChangeReportBuilder<DichotomousCh
             highlights[i] = lighter =>
             {
                 lighter.HighlightValues(_orientation, _unit, _space.FirstValueIndex + n,
-                    _space.LastValueIndex + n, ChangeColoration.CauseOffOne);
+                    _space.FirstValueIndex + n, ChangeColoration.CauseOffOne);
                 lighter.EncircleLineSection(_orientation, _unit, _spaces[n].Start, _spaces[n].End, ChangeColoration.CauseOffOne);
             };
         }
@@ -99,6 +99,6 @@ public class UnreachableSquareReportBuilder : IChangeReportBuilder<DichotomousCh
 
     public Clue<INonogramHighlighter> BuildClue(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
     {
-        throw new System.NotImplementedException();
+        return Clue<INonogramHighlighter>.Default();
     }
 }

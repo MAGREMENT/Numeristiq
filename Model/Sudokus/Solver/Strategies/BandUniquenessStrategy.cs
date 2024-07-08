@@ -3,18 +3,15 @@ using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
 using Model.Sudokus.Solver.Position;
+using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
 
 namespace Model.Sudokus.Solver.Strategies;
 
-/// <summary>
-/// If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes)
-/// is spread over max N+1 mini-rows/-columns, then the group will contain at least one unavoidable set.
-/// </summary>
 public class BandUniquenessStrategy : SudokuStrategy
 {
-    public const string OfficialName = "Mini-Uniqueness";
+    public const string OfficialName = "Band-Uniqueness";
     private const InstanceHandling DefaultInstanceHandling = InstanceHandling.UnorderedAll;
 
     public BandUniquenessStrategy() : base(OfficialName, StepDifficulty.Medium, DefaultInstanceHandling)
@@ -24,46 +21,49 @@ public class BandUniquenessStrategy : SudokuStrategy
     
     public override void Apply(ISudokuSolverData solverData)
     {
+        List<CellPossibility> buffer = new();
+        
         for (int mini = 0; mini < 3; mini++)
         {
             var presence = new ReadOnlyBitSet16();
             var availability = new LinePositions();
-            var singleAvailability = new LinePositions();
 
             for (int col = 0; col < 9; col++)
             {
-                var availabilityCount = 0;
-                
                 for (int r = 0; r < 3; r++)
                 {
                     var row = mini * 3 + r;
                     var solved = solverData.Sudoku[row, col];
-                    
-                    if (solved == 0) availabilityCount++;
-                    else presence += solved;
-                }
 
-                if (availabilityCount > 0)
-                {
-                    availability.Add(col);
-                    if (availabilityCount == 1) singleAvailability.Add(col);
+                    if (solved == 0) availability.Add(col);
+                    else presence += solved;
                 }
             }
 
-            if (presence.Count <= 6 && availability.Count <= 9 - presence.Count + 2)
+            if (presence.Count < 9 && availability.Count == 9 - presence.Count + 2)
             {
-                foreach (var col in singleAvailability)
+                foreach (var col in availability)
                 {
                     for (int r = 0; r < 3; r++)
                     {
                         var row = mini * 3 + r;
-                        if (solverData.Sudoku[row, col] != 0) continue;
+                        var poss = solverData.PossibilitiesAt(row, col) - presence;
 
-                        foreach (var p in presence.EnumeratePossibilities())
+                        foreach (var p in poss.EnumeratePossibilities())
                         {
-                            solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
+                            buffer.Add(new CellPossibility(row, col, p));
                         }
                     }
+                    
+                    if (buffer.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(buffer[0]);
+                    else
+                    {
+                        foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, buffer))
+                        {
+                            solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
+                        }
+                    }
+                    buffer.Clear();
                 }
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
@@ -73,41 +73,42 @@ public class BandUniquenessStrategy : SudokuStrategy
 
             presence = new ReadOnlyBitSet16();
             availability.Void();
-            singleAvailability.Void();
             for (int row = 0; row < 9; row++)
             {
-                var availabilityCount = 0;
-                
                 for (int c = 0; c < 3; c++)
                 {
                     var col = mini * 3 + c;
                     var solved = solverData.Sudoku[row, col];
                     
-                    if (solved == 0) availabilityCount++;
+                    if (solved == 0) availability.Add(row);
                     else presence += solved;
-                }
-
-                if (availabilityCount > 0)
-                {
-                    availability.Add(row);
-                    if (availabilityCount == 1) singleAvailability.Add(row);
                 }
             }
 
-            if (presence.Count <= 6 && availability.Count <= 9 - presence.Count + 2)
+            if (presence.Count < 9 && availability.Count == 9 - presence.Count + 2)
             {
-                foreach (var row in singleAvailability)
+                foreach (var row in availability)
                 {
                     for (int c = 0; c < 3; c++)
                     {
                         var col = mini * 3 + c;
-                        if (solverData.Sudoku[row, col] != 0) continue;
+                        var poss = solverData.PossibilitiesAt(row, col) - presence;
 
-                        foreach (var p in presence.EnumeratePossibilities())
+                        foreach (var p in poss.EnumeratePossibilities())
                         {
-                            solverData.ChangeBuffer.ProposePossibilityRemoval(p, row, col);
+                            buffer.Add(new CellPossibility(row, col, p));
                         }
                     }
+                    
+                    if (buffer.Count == 1) solverData.ChangeBuffer.ProposeSolutionAddition(buffer[0]);
+                    else
+                    {
+                        foreach (var cp in SudokuCellUtility.SharedSeenExistingPossibilities(solverData, buffer))
+                        {
+                            solverData.ChangeBuffer.ProposePossibilityRemoval(cp);
+                        }
+                    }
+                    buffer.Clear();
                 }
 
                 if (solverData.ChangeBuffer.NotEmpty() && solverData.ChangeBuffer.Commit(
@@ -133,7 +134,8 @@ public class MiniUniquenessReportBuilder : IChangeReportBuilder<NumericChange, I
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"Band-Uniqueness in {_unit.ToString().ToLower()} band " + 
+                                                    $"{_mini + 1}", lighter =>
         {
             int color = (int)ChangeColoration.CauseOffOne;
             foreach (var p in _presence.EnumeratePossibilities())

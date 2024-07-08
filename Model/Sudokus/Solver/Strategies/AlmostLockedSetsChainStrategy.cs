@@ -149,7 +149,7 @@ public class AlmostLockedSetsChainReportBuilder : IChangeReportBuilder<NumericCh
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( _chain.ToString(), lighter =>
+        return new ChangeReport<ISudokuHighlighter>("Almost Locked Sets Chain : " +  _chain, lighter =>
         {
             var color = (int)ChangeColoration.CauseOffOne;
             foreach (var als in _chain.Elements)

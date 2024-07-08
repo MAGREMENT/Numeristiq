@@ -9,6 +9,7 @@ using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -173,7 +174,8 @@ public class AlignedPairExclusionReportBuilder : IChangeReportBuilder<NumericCha
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
         return new ChangeReport<ISudokuHighlighter>($"Aligned Pair Exclusion in r{_row1 + 1}c{_col1 + 1} and " +
-                                                    $"r{_row2 + 1}c{_col2 + 1}", lighter =>
+                                                    $"r{_row2 + 1}c{_col2 + 1} with {_als.ToStringSequence(", ")}",
+            lighter =>
         {
             lighter.HighlightCell(_row1, _col1, ChangeColoration.Neutral);
             lighter.HighlightCell(_row2, _col2, ChangeColoration.Neutral);

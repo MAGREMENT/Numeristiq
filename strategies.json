@@ -42,34 +42,6 @@
     "Settings": {}
   },
   {
-    "Name": "Hidden Triple",
-    "Enabled": true,
-    "Locked": false,
-    "InstanceHandling": 1,
-    "Settings": {}
-  },
-  {
-    "Name": "Naked Triple",
-    "Enabled": true,
-    "Locked": false,
-    "InstanceHandling": 1,
-    "Settings": {}
-  },
-  {
-    "Name": "Naked Quad",
-    "Enabled": true,
-    "Locked": false,
-    "InstanceHandling": 1,
-    "Settings": {}
-  },
-  {
-    "Name": "Hidden Quad",
-    "Enabled": true,
-    "Locked": false,
-    "InstanceHandling": 1,
-    "Settings": {}
-  },
-  {
     "Name": "Gurth\u0027s Theorem",
     "Enabled": true,
     "Locked": false,
@@ -78,7 +50,7 @@
   },
   {
     "Name": "Uniqueness Clue Cover",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
@@ -126,7 +98,7 @@
     "Settings": {}
   },
   {
-    "Name": "Mini-Uniqueness",
+    "Name": "Band-Uniqueness",
     "Enabled": true,
     "Locked": false,
     "InstanceHandling": 1,
@@ -199,14 +171,14 @@
   },
   {
     "Name": "Thor\u0027s Hammer",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 1,
     "Settings": {}
   },
   {
     "Name": "Non-Colorable Pattern",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {
@@ -291,14 +263,14 @@
   },
   {
     "Name": "Extended Unique Rectangles",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "BUG-Lite",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {

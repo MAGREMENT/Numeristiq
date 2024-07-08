@@ -9,6 +9,7 @@ using Model.Sudokus.Solver.Position;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -227,7 +228,13 @@ public class BUGLiteStrategy : SudokuStrategy
     }
 }
 
-public record BiCellPossibilities(Cell One, Cell Two, ReadOnlyBitSet16 Possibilities);
+public record BiCellPossibilities(Cell One, Cell Two, ReadOnlyBitSet16 Possibilities)
+{
+    public override string ToString()
+    {
+        return Possibilities.EnumeratePossibilities().ToStringSequence("") + "{" + One + ", " + Two + "}";
+    }
+}
 
 public record BUGLiteConditionMatch(BiCellPossibilities BiCellPossibilities, params IBUGLiteCondition[] OtherConditions);
 
@@ -387,7 +394,7 @@ public class BUGLiteReportBuilder : IChangeReportBuilder<NumericChange, ISudokuS
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>("BUG-Lite in " + _bcp.ToStringSequence(", "), lighter =>
         {
             foreach (var b in _bcp)
             {

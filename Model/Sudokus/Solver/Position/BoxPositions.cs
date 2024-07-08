@@ -123,29 +123,6 @@ public class BoxPositions : IReadOnlyBoxPositions
                          && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b10010010)) > 0
                          && System.Numerics.BitOperations.PopCount((uint)(_pos & 0b100100100)) > 0;
     }
-
-    public IEnumerable<BoxPositions> EveryDiagonalPattern()
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            if (!Contains(i, 0)) continue;
-            for (int j = 0; j < 3; j++)
-            {
-                if (j == i || !Contains(j, 1)) continue;
-                for (int k = 0; k < 3; k++)
-                {
-                    if (k == i || k == j || !Contains(k, 2)) continue;
-
-                    var mgp = new BoxPositions(_startRow / 3, _startCol / 3);
-                    mgp.Add(i, 0);
-                    mgp.Add(j, 1);
-                    mgp.Add(k, 2);
-
-                    yield return mgp;
-                }
-            }
-        }
-    }
     
     public override bool Equals(object? obj)
     {
@@ -163,6 +140,8 @@ public class BoxPositions : IReadOnlyBoxPositions
     {
         return this.ToStringSequence(" ");
     }
+
+    public (int, int) GetStarts() => (_startRow, _startCol);
 
     public LinePositions OnGridRow(int gridRow)
     {

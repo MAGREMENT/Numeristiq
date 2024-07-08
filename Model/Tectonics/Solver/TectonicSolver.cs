@@ -105,7 +105,16 @@ public class TectonicSolver : NumericStrategySolver<Strategy<ITectonicSolverData
 
     public override bool HasSolverFailed()
     {
-        return false; //TODO
+        for (int row = 0; row < RowCount; row++)
+        {
+            for (int col = 0; col < ColumnCount; col++)
+            {
+                var n = _tectonic[row, col];
+                if (n == 0 && PossibilitiesAt(row, col).Count == 0) return true;
+            }
+        }
+
+        return false;
     }
 
     protected override bool IsComplete()

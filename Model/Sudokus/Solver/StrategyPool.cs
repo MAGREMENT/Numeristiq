@@ -145,6 +145,10 @@ public static class StrategyPool
                                 "Any two cells cannot have solutions that are candidates contained in an almost locked set they both see."))
         .Add(new TextImageDescriptionLine("For example : the cells in pink are the targets for the exclusion", "ape.png", TextDisposition.Left));
 
+    private static readonly IDescription BandUniquenessDescription = new FullTextDescription(
+        "If a group of all instances of N different digits in a band (aka 3 rows or 3 columns in the same 3 boxes) is spread" +
+        " over N+1 or less mini-rows/-columns, then the group will contain at least one unavoidable set.");
+
     private static readonly Dictionary<string, IDescription> Descriptions = new()
     {
         {NakedSingleStrategy.OfficialName, NakedSingleDescription},
@@ -152,7 +156,8 @@ public static class StrategyPool
         {JuniorExocetStrategy.OfficialName, JuniorExocetDescription},
         {UniquenessClueCoverStrategy.OfficialName, UniquenessClueCoverDescription},
         {BUGStrategy.OfficialName, BUGDescription},
-        {AlignedPairExclusionStrategy.OfficialName, APEDescription}
+        {AlignedPairExclusionStrategy.OfficialName, APEDescription},
+        {BandUniquenessStrategy.OfficialName, BandUniquenessDescription}
     };
     
     public static IEnumerable<string> EnumerateStrategies(string filter)

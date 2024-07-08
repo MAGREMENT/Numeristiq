@@ -68,6 +68,26 @@ public class SudokuStrategiesTests
     }
 
     #endregion
+    
+    #region Band-Uniqueness
+
+    [Test]
+    public void BandUniquenessTest1()
+    {
+        TestSudokuStrategyInstance(new BandUniquenessStrategy(),
+            "v009u0v0lg03bgug05v00h03v0l005b0u009v005u0v8lohobgug0305o211g8gq218o8o41sgs209k4kiggak11igkg21kglc81ho030sggq8p0q40hhcp841033003h0ikh8hc412s2s81cod0ck032198g10s1g",
+            "- 336 436");
+    }
+    
+    [Test]
+    public void BandUniquenessTest2()
+    {
+        TestSudokuStrategyInstance(new BandUniquenessStrategy(),
+            "o84124qc0hoaq4ie11o80311qc41o8q4ic0ho80h24qc11oau4meea058103k82111kgko481128k00ho8s803m8054g28kg03g8051181682105cg11o2sg094ic24g11coc88ecoek6mg103g1coc88c21ck11c0",
+            "- 139 739");
+    }
+    
+    #endregion
 
     #region BUG-Lite
     
@@ -254,6 +274,64 @@ public class SudokuStrategiesTests
             "- 336 436 536 636 539 639 939");
     }
     
+    #endregion
+
+    #region Thor's Hammer
+
+    [Test]
+    public void ThorsHammerTest()
+    {
+        TestSudokuStrategyInstance(new ThorsHammerStrategy(new TwoByTwoLoopFinder()),
+            "q2q009q00541o2110h1141q00hq003o00509o2050h0911o0o24121410hh00309h42181g4q0q003410hq41109g40509r0q0q0r0410h03i01105i0410h09038109q0410503q00hi0110h03q011q00905i041",
+            new NumericChange(ChangeType.SolutionAddition, 1, 2, 0));
+    }
+
+    [Test]
+    public void ThorsHammerListTest()
+    {
+        _solver.StrategyManager.AddStrategy(new HiddenSingleStrategy());
+        _solver.StrategyManager.AddStrategy(new NakedSingleStrategy());
+        _solver.StrategyManager.AddStrategy(new ThorsHammerStrategy(new TwoByTwoLoopFinder()));
+
+        const string list = "...........1..2..3.3..4..56.17.8....2.87.34..34.21...8.74.38...1.342....8..1.7..4\n" +
+                            ".............12.34..5..36...37...84.6.4..8..785....3.6.7....46.4.38..7.556...7.83\n" +
+                            "..............1..2..3..4.56.1..73..553.41..7.7.48.5....415...8.3.71.8...85..47..3\n" +
+                            "..............1..2..3..4.56.1..73...53.41..7.7.48.5....415...8.3.71.85..85..47..3\n" +
+                            "..............1..2..3..4.56.1..73..553.4...7.7.48.5..1.415...8.3.71.8...85..47..3\n" +
+                            "..............1..2..3..4.56..7.18....4135..8.85.4.7..3.1.7.3..553.14..7.7.4.85...\n" +
+                            "..............1..2..3..4.56.1..73...53.4...7.7.48.5..1.415...8.3.71.85..85..47..3\n" +
+                            "..............1..2.34...56.....578.6..62.8.7..87.1..25....762.8.7.12..5.6..8.5.17\n" +
+                            "..............1..2..3..4.56.14.6..783.74.8...86..17..3.4..73...63.14...77.18.6...\n" +
+                            "..............1..2..3..4.56..7.48....1463..7886.1.7..3.4.7.3...63.41...77.1.86...\n" +
+                            "..............1..2..3.4..15..6.74....841.3.7.17.86...3.3841....6.1.378..74.6...3.\n" +
+                            "........1.....2.....3..456..31..7.56.8..6.7.37.65..81..58..6..73.7....8.61..78.3.\n" +
+                            "........1.....2.3..45...2......21.63..3.7.8.26..8.371.....67..8...2.817..8731..26\n" +
+                            "..............1.23.12....45.46.17....7.8.6...8.12....6.68.724..1..6.4...42.18..67\n" +
+                            "..............1.23.12....45.46.17....7.8.6..48.12....6.68.72...1..6.4...42.18..67\n" +
+                            "...........1..2..3..2.4..56.17.84....5.21...82.85.7..4.75.284..12...5.8.8.41....5\n" +
+                            "...........1..2..3..2.4..56.17.845...5.21...82.85.7..4.75.284..12...5.8.8.41.....\n" +
+                            "..............1.23.12.3..45..6.17...73.8.62..8.132..76.63.72...17.6.....2.81.3..7";
+
+        foreach (var line in list.Split('\n'))
+        {
+            if (line.Length == 0) continue;
+
+            _solver.SetSudoku(SudokuTranslator.TranslateLineFormat(line));
+            _solver.Solve();
+
+            bool contains = false;
+            foreach (var step in _solver.Steps)
+            {
+                if (step.Title.Equals("Thor's Hammer"))
+                {
+                    contains = true;
+                    break;
+                }
+            }
+            Assert.That(contains, Is.True);
+        }
+    }
+
     #endregion
 
     private void TestSudokuStrategyInstance(SudokuStrategy strategy, string stateBefore32, string expectedAsString)

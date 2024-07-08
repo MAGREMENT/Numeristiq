@@ -7,6 +7,7 @@ using Model.Sudokus.Solver.PossibilityPosition;
 using Model.Sudokus.Solver.Utility;
 using Model.Utility;
 using Model.Utility.BitSets;
+using Model.Utility.Collections;
 
 namespace Model.Sudokus.Solver.Strategies;
 
@@ -345,7 +346,8 @@ public class AlmostLockedCandidatesReportBuilder : IChangeReportBuilder<NumericC
 
     public ChangeReport<ISudokuHighlighter> BuildReport(IReadOnlyList<NumericChange> changes, ISudokuSolvingState snapshot)
     {
-        return new ChangeReport<ISudokuHighlighter>( "", lighter =>
+        return new ChangeReport<ISudokuHighlighter>($"Almost Locked Candidates in " +
+                                                    $"{_centerCells.ToStringSequence(", ")}", lighter =>
         {
             foreach (var cell in _centerCells)
             {
