@@ -16,10 +16,9 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
     {
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
-            var m = data.PreComputer.HorizontalMainSpace(row);
-            if (m.IsInvalid()) continue;
-
             var spaces = data.PreComputer.HorizontalValueSpaces(row);
+            if (spaces.Count == 0) continue;
+            
             var space = spaces[0];
             if (space.IsValid() && data.Nonogram[row, space.Start])
             {
@@ -29,10 +28,10 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Horizontal, row, space, m.FirstValueIndex)) && StopOnFirstPush) return;
+                        Orientation.Horizontal, row, space, spaces.FirstValueIndex)) && StopOnFirstPush) return;
             }
 
-            space = spaces[m.LastValueIndex - m.FirstValueIndex];
+            space = spaces[^1];
             if (space.IsValid() && data.Nonogram[row, space.End])
             {
                 for (int current = space.End - 1; current > space.End - space.Value; current--)
@@ -41,16 +40,15 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
                 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Horizontal, row, space, m.LastValueIndex)) && StopOnFirstPush) return;
+                        Orientation.Horizontal, row, space, spaces.LastValueIndex)) && StopOnFirstPush) return;
             }
         }
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
-            var m = data.PreComputer.VerticalMainSpace(col);
-            if (m.IsInvalid()) continue;
-
             var spaces = data.PreComputer.VerticalValueSpaces(col);
+            if (spaces.Count == 0) continue;
+            
             var space = spaces[0];
             if (space.IsValid() && data.Nonogram[space.Start, col])
             {
@@ -60,10 +58,10 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Vertical, col, space, m.FirstValueIndex)) && StopOnFirstPush) return;
+                        Orientation.Vertical, col, space, spaces.FirstValueIndex)) && StopOnFirstPush) return;
             }
 
-            space = spaces[m.LastValueIndex - m.FirstValueIndex];
+            space = spaces[^1];
             if (space.IsValid() && data.Nonogram[space.End, col])
             {
                 for (int current = space.End - 1; current > space.End - space.Value; current--)
@@ -72,7 +70,7 @@ public class EdgeValueStrategy : Strategy<INonogramSolverData>
                 }
                 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new EdgeValueReportBuilder(
-                        Orientation.Vertical, col, space, m.LastValueIndex)) && StopOnFirstPush) return;
+                        Orientation.Vertical, col, space, spaces.LastValueIndex)) && StopOnFirstPush) return;
             }
         }
     }

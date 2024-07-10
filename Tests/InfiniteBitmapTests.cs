@@ -1,7 +1,5 @@
-﻿using Model.Tectonics;
-using Model.Utility;
+﻿using Model.Utility;
 using Model.Utility.BitSets;
-using Tests.Utility;
 
 namespace Tests;
 
@@ -58,7 +56,7 @@ public class InfiniteBitmapTests
     [Test]
     public void HasNeighborTest()
     {
-        var bitmap = new TectonicBitmap(11, 12);
+        var bitmap = new InfiniteBitmap(11, 12);
         
         for (int row = 0; row < bitmap.RowCount; row++)
         {
@@ -90,68 +88,31 @@ public class InfiniteBitmapTests
     }
 
     [Test]
-    public void Add3x3Test()
+    public void FillAndEmptyNessTest()
     {
-        ImplementationSpeedComparator.Compare<Add3x3ToBitmap>(impl =>
+        var bm = new CalibratedInfiniteBitmap(14, 12);
+        bm.FillRow(1);
+        bm.FillRow(13);
+        bm.FillColumn(5);
+        bm.FillColumn(7);
+        Console.WriteLine(bm);
+        
+        for (int r = 0; r < bm.RowCount; r++)
         {
-            var bitmap = new TectonicBitmap(11, 12);
-
-            for (int row = 0; row < bitmap.RowCount; row++)
+            for (int c = 0; c < bm.ColumnCount; c++)
             {
-                for (int col = 0; col < bitmap.ColumnCount; col++)
-                {
-                    impl(bitmap, row, col);
-                    
-                    if (row > 0)
-                    {
-                        if (col > 0) Assert.That(bitmap.Contains(row - 1, col - 1), Is.True);
-                        if (col < bitmap.ColumnCount - 1) Assert.That(bitmap.Contains(row - 1, col + 1), Is.True);
-                        Assert.That(bitmap.Contains(row - 1, col), Is.True);
-                    }
-        
-                    if (col > 0) Assert.That(bitmap.Contains(row, col - 1), Is.True);
-                    if (col < bitmap.ColumnCount - 1) Assert.That(bitmap.Contains(row, col + 1), Is.True);
-                    Assert.That(bitmap.Contains(row, col), Is.True);
-        
-                    if (row < bitmap.RowCount - 1)
-                    {
-                        if (col > 0) Assert.That(bitmap.Contains(row + 1, col - 1), Is.True);
-                        if (col < bitmap.ColumnCount - 1) Assert.That(bitmap.Contains(row + 1, col + 1), Is.True);
-                        Assert.That(bitmap.Contains(row + 1, col), Is.True);
-                    }
-                        
-                    bitmap.Clear();
-                }
+                if (r is 1 or 13 || c is 5 or 7) Assert.That(bm.Contains(r, c), Is.True);
+                else Assert.That(bm.Contains(r, c), Is.False);
             }
-        }, 100, Add3x3ToBitmapNaively, Add3x3ToBitmapWithMethod);
-    }
-    
-    private delegate void Add3x3ToBitmap(TectonicBitmap bitmap, int row, int col);
-
-    private static void Add3x3ToBitmapWithMethod(TectonicBitmap bitmap, int row, int col)
-    {
-        bitmap.Add3x3(row, col);
-    }
-
-    private static void Add3x3ToBitmapNaively(TectonicBitmap bitmap, int row, int col)
-    {
-        if (row > 0)
-        {
-            if (col > 0) bitmap.Add(row - 1, col - 1);
-            if (col < bitmap.ColumnCount - 1) bitmap.Add(row - 1, col + 1);
-            bitmap.Add(row - 1, col);
         }
         
-        if (col > 0) bitmap.Add(row, col - 1);
-        if (col < bitmap.ColumnCount - 1) bitmap.Add(row, col + 1);
-        bitmap.Add(row, col);
+        bm.Clear();
+        bm.Add(2, 3);
         
-        if (row < bitmap.RowCount - 1)
-        {
-            if (col > 0) bitmap.Add(row + 1, col - 1);
-            if (col < bitmap.ColumnCount - 1) bitmap.Add(row + 1, col + 1);
-            bitmap.Add(row + 1, col);
-        }
+        Assert.That(bm.IsRowEmpty(1), Is.True);
+        Assert.That(bm.IsRowEmpty(2), Is.False);
+        Assert.That(bm.IsColumnEmpty(3), Is.False);
+        Assert.That(bm.IsColumnEmpty(4), Is.True);
     }
 }
 

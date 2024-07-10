@@ -7,8 +7,8 @@ public class InfiniteBitmap
     private const int BitsPerEntry = 64;
     
     protected readonly ulong[] _bits;
-    protected readonly int _rowsPerEntry;
     
+    public  int RowsPerUnit { get; }
     public int ColumnCount { get; }
     public int RowCount { get; }
     
@@ -16,30 +16,30 @@ public class InfiniteBitmap
     {
         RowCount = rowCount;
         ColumnCount = columnCount;
-        _rowsPerEntry = BitsPerEntry / ColumnCount;
-        _bits = new ulong[RowCount / _rowsPerEntry + 1];
+        RowsPerUnit = BitsPerEntry / ColumnCount;
+        _bits = new ulong[RowCount / RowsPerUnit + 1];
     }
 
     public bool Contains(int row, int col)
     {
-        var entry = row / _rowsPerEntry;
-        var offset = (row - entry * _rowsPerEntry) * ColumnCount + col;
+        var entry = row / RowsPerUnit;
+        var offset = (row - entry * RowsPerUnit) * ColumnCount + col;
         
         return ((_bits[entry] >> offset) & 1) > 0;
     }
 
     public void Add(int row, int col)
     {
-        var entry = row / _rowsPerEntry;
-        var offset = (row - entry * _rowsPerEntry) * ColumnCount + col;
+        var entry = row / RowsPerUnit;
+        var offset = (row - entry * RowsPerUnit) * ColumnCount + col;
         
         _bits[entry] |= 1UL << offset;
     }
 
     public void Remove(int row, int col)
     {
-        var entry = row / _rowsPerEntry;
-        var offset = (row - entry * _rowsPerEntry) * ColumnCount + col;
+        var entry = row / RowsPerUnit;
+        var offset = (row - entry * RowsPerUnit) * ColumnCount + col;
         
         _bits[entry] &= ~(1UL << offset);
     }
@@ -51,6 +51,8 @@ public class InfiniteBitmap
             _bits[i] = 0UL;
         }
     }
+
+    public ulong BitsAt(int index) => _bits[index];
 
     public override string ToString()
     {

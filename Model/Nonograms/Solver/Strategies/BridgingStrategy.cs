@@ -16,7 +16,7 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
     {
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
-            var space = data.PreComputer.HorizontalMainSpace(row);
+            var space = data.PreComputer.HorizontalRemainingValuesSpace(row);
             if (space.IsInvalid() || space.GetValueCount() != 1) continue;
 
             var last = -1;
@@ -41,7 +41,7 @@ public class BridgingStrategy : Strategy<INonogramSolverData>
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
-            var space = data.PreComputer.VerticalMainSpace(col);
+            var space = data.PreComputer.VerticalRemainingValuesSpace(col);
             if (space.IsInvalid() || space.GetValueCount() != 1) continue;
 
             var last = -1;

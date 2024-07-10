@@ -16,14 +16,11 @@ public class ValueOverlayStrategy : Strategy<INonogramSolverData>
     {
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
-            var m = data.PreComputer.HorizontalMainSpace(row);
-            if (m.IsInvalid()) continue;
-            
             var spaces = data.PreComputer.HorizontalValueSpaces(row);
             for(int i = 0; i < spaces.Count; i++)
             {
                 var space = spaces[i];
-                if (!space.IsValid()) continue;
+                if (space.GetLength() <= space.Value) continue;
                 
                 for (int col = space.End - space.Value + 1; col < space.Start + space.Value; col++)
                 {
@@ -31,20 +28,17 @@ public class ValueOverlayStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new ValueOverlayReportBuilder(
-                        Orientation.Horizontal, row, space, m.FirstValueIndex + i)) && StopOnFirstPush) return;
+                        Orientation.Horizontal, row, space, i)) && StopOnFirstPush) return;
             }
         }
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
-            var m = data.PreComputer.VerticalMainSpace(col);
-            if (m.IsInvalid()) continue;
-            
             var spaces = data.PreComputer.VerticalValueSpaces(col);
             for(int i = 0; i < spaces.Count; i++)
             {
                 var space = spaces[i];
-                if (!space.IsValid()) continue;
+                if (space.GetLength() <= space.Value) continue;
                 
                 for (int row = space.End - space.Value + 1; row < space.Start + space.Value; row++)
                 {
@@ -52,7 +46,7 @@ public class ValueOverlayStrategy : Strategy<INonogramSolverData>
                 }
 
                 if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new ValueOverlayReportBuilder(
-                        Orientation.Vertical, col, space, m.FirstValueIndex + i)) && StopOnFirstPush) return;
+                        Orientation.Vertical, col, space, i)) && StopOnFirstPush) return;
             }
         }
     }

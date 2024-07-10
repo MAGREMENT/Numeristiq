@@ -14,6 +14,11 @@ public static class TectonicCellUtility
     
     public static bool AreNeighborsOrSame(Cell c1, Cell c2)
         => Math.Abs(c1.Row - c2.Row) <= 1 && Math.Abs(c1.Column - c2.Column) <= 1;
+    
+    public static bool DoesSeeEachOther(IReadOnlyTectonic tectonic, Cell one, Cell two)
+    {
+        return AreNeighbors(one, two) || tectonic.GetZone(one).Contains(two);
+    }
 
     public static bool AreAdjacent(Cell c1, Cell c2)
     {
@@ -143,16 +148,11 @@ public static class TectonicCellUtility
         }
     }
 
-    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, Cell one, Cell two) //TODO to non-repeating cells
+    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyTectonic tectonic, Cell one, Cell two)
     {
-        foreach (var neighbor in GetNeighbors(one, tectonic.RowCount, tectonic.ColumnCount))
-        {
-            if (AreNeighbors(neighbor, two)) yield return neighbor;
-        }
-
         var z1 = tectonic.GetZone(one);
         var z2 = tectonic.GetZone(two);
-
+        
         if (z1.Equals(z2))
         {
             foreach (var cell in z1)
@@ -171,6 +171,11 @@ public static class TectonicCellUtility
             {
                 if (cell != two && AreNeighbors(cell, one)) yield return cell;
             }
+        }
+        
+        foreach (var neighbor in GetNeighbors(one, tectonic.RowCount, tectonic.ColumnCount))
+        {
+            if (!z1.Contains(neighbor) && !z2.Contains(neighbor) && AreNeighbors(neighbor, two)) yield return neighbor;
         }
     }
 

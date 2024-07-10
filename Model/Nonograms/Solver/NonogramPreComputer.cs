@@ -9,13 +9,13 @@ public class NonogramPreComputer
 {
     private readonly INonogramSolverData _data;
     
-    private MainSpace[] _horizontalMainSpace = Array.Empty<MainSpace>();
-    private MainSpace[] _verticalMainSpace = Array.Empty<MainSpace>();
-    private readonly InfiniteBitSet _hmsHits = new();
-    private readonly InfiniteBitSet _vmsHits = new();
+    private MultiValueSpace[] _horizontalMainSpace = Array.Empty<MultiValueSpace>();
+    private MultiValueSpace[] _verticalMainSpace = Array.Empty<MultiValueSpace>();
+    private readonly InfiniteBitSet _hrvHits = new();
+    private readonly InfiniteBitSet _vrvHits = new();
 
-    private List<ValueSpace>?[] _horizontalValueSpaces = Array.Empty<List<ValueSpace>>();
-    private List<ValueSpace>?[] _verticalValueSpaces = Array.Empty<List<ValueSpace>>();
+    private ValueSpaceCollection?[] _horizontalValueSpaces = Array.Empty<ValueSpaceCollection>();
+    private ValueSpaceCollection?[] _verticalValueSpaces = Array.Empty<ValueSpaceCollection>();
 
     public NonogramPreComputer(INonogramSolverData data)
     {
@@ -24,32 +24,32 @@ public class NonogramPreComputer
 
     public void AdaptToNewSize(int rowCount, int colCount)
     {
-        _horizontalMainSpace = new MainSpace[rowCount];
-        _horizontalValueSpaces = new List<ValueSpace>?[rowCount];
+        _horizontalMainSpace = new MultiValueSpace[rowCount];
+        _horizontalValueSpaces = new ValueSpaceCollection?[rowCount];
         
-        _verticalMainSpace = new MainSpace[colCount];
-        _verticalValueSpaces = new List<ValueSpace>?[colCount];
+        _verticalMainSpace = new MultiValueSpace[colCount];
+        _verticalValueSpaces = new ValueSpaceCollection?[colCount];
     }
 
-    public MainSpace HorizontalMainSpace(int row)
+    public MultiValueSpace HorizontalRemainingValuesSpace(int row)
     {
-        if (!_hmsHits.Contains(row)) _horizontalMainSpace[row] = DoHorizontalMainSpace(row);
+        if (!_hrvHits.Contains(row)) _horizontalMainSpace[row] = DoHorizontalRemainingValuesSpace(row);
         return _horizontalMainSpace[row];
     }
 
-    public MainSpace VerticalMainSpace(int col)
+    public MultiValueSpace VerticalRemainingValuesSpace(int col)
     {
-        if (!_vmsHits.Contains(col)) _verticalMainSpace[col] = DoVerticalMainSpace(col);
+        if (!_vrvHits.Contains(col)) _verticalMainSpace[col] = DoVerticalRemainingValuesSpace(col);
         return _verticalMainSpace[col];
     }
 
-    public IReadOnlyList<ValueSpace> HorizontalValueSpaces(int row) //TODO reduce space if edge value
+    public IReadOnlyValueSpaceCollection HorizontalValueSpaces(int row)
     {
         _horizontalValueSpaces[row] ??= DoHorizontalValueSpaces(row);
         return _horizontalValueSpaces[row]!;
     }
 
-    public IReadOnlyList<ValueSpace> VerticalValueSpaces(int col)
+    public IReadOnlyValueSpaceCollection VerticalValueSpaces(int col)
     {
         _verticalValueSpaces[col] ??= DoVerticalValueSpaces(col);
         return _verticalValueSpaces[col]!;
@@ -57,45 +57,59 @@ public class NonogramPreComputer
 
     public void Reset()
     {
-        _hmsHits.Clear();
-        _vmsHits.Clear();
+        _hrvHits.Clear();
+        _vrvHits.Clear();
         Array.Fill(_horizontalValueSpaces, null);
         Array.Fill(_verticalValueSpaces, null);
     }
 
-    private List<ValueSpace> DoHorizontalValueSpaces(int row)
+    private ValueSpaceCollection DoHorizontalValueSpaces(int row)
     {
-        var list = new List<ValueSpace>();
-        var main = HorizontalMainSpace(row);
+        var list = new ValueSpaceCollection();
+        var main = HorizontalRemainingValuesSpace(row);
         if (main.IsInvalid()) return list;
-
+        
         var spaceBefore = 0;
         var spaceAfter = _data.Nonogram.HorizontalLineCollection.NeededSpace(row, main.FirstValueIndex, main.LastValueIndex);
         for (int i = main.FirstValueIndex; i <= main.LastValueIndex; i++)
         {
             var v = _data.Nonogram.HorizontalLineCollection.TryGetValue(row, i);
             spaceAfter -= Math.Min(v, spaceAfter);
-            
-            var start = main.Start + spaceBefore;
-            var end = main.End - spaceAfter;
 
-            for (int pos = start; pos <= end; pos++)
+            int start, end;
+            if (i == main.FirstValueIndex && _data.Nonogram[row, main.Start])
             {
-                if (_data.IsAvailable(row, pos)) continue;
+                start = main.Start;
+                end = main.Start + v - 1;
+            }
+            else if (i == main.LastValueIndex && _data.Nonogram[row, main.End])
+            {
+                end = main.End;
+                start = main.End - v + 1;
+            }
+            else
+            {
+                start = main.Start + spaceBefore;
+                end = main.End - spaceAfter;
 
-                if (_data.Nonogram[row, pos])
+                for (int pos = start; pos <= end; pos++)
                 {
-                    var endPos = pos;
-                    while (endPos < _data.Nonogram.ColumnCount - 1 && _data.Nonogram[row, endPos + 1]) endPos++;
+                    if (_data.IsAvailable(row, pos)) continue;
 
-                    var length = endPos - pos + 1;
-                    if (pos - start < v + 1) start = Math.Max(pos - v + length, start);
-                    if (end - endPos < v + 1) end = Math.Min(endPos + v - length, end);
-                }
-                else
-                {
-                    if (pos - start < v) start = pos + 1;
-                    if (end - pos < v) end = pos - 1;
+                    if (_data.Nonogram[row, pos])
+                    {
+                        var endPos = pos;
+                        while (endPos < _data.Nonogram.ColumnCount - 1 && _data.Nonogram[row, endPos + 1]) endPos++;
+
+                        var length = endPos - pos + 1;
+                        if (pos - start < v + 1) start = Math.Max(pos - v + length, start);
+                        if (end - endPos < v + 1) end = Math.Min(endPos + v - length, end);
+                    }
+                    else
+                    {
+                        if (pos - start < v) start = pos + 1;
+                        if (end - pos < v) end = pos - 1;
+                    }
                 }
             }
 
@@ -104,13 +118,15 @@ public class NonogramPreComputer
             spaceAfter--;
         }
 
+        list.FirstValueIndex = main.FirstValueIndex;
+        list.LastValueIndex = main.LastValueIndex;
         return list;
     }
     
-    private List<ValueSpace> DoVerticalValueSpaces(int col)
+    private ValueSpaceCollection DoVerticalValueSpaces(int col)
     {
-        var list = new List<ValueSpace>();
-        var main = VerticalMainSpace(col);
+        var list = new ValueSpaceCollection();
+        var main = VerticalRemainingValuesSpace(col);
         if (main.IsInvalid()) return list;
 
         var spaceBefore = 0;
@@ -120,26 +136,40 @@ public class NonogramPreComputer
             var v = _data.Nonogram.VerticalLineCollection.TryGetValue(col, i);
             spaceAfter -= Math.Min(v, spaceAfter);
             
-            var start = main.Start + spaceBefore;
-            var end = main.End - spaceAfter;
-
-            for (int pos = start; pos <= end; pos++)
+            int start, end;
+            if (i == main.FirstValueIndex && _data.Nonogram[main.Start, col])
             {
-                if (_data.IsAvailable(pos, col)) continue;
+                start = main.Start;
+                end = main.Start + v - 1;
+            }
+            else if (i == main.LastValueIndex && _data.Nonogram[main.End, col])
+            {
+                end = main.End;
+                start = main.End - v + 1;
+            }
+            else
+            {
+                start = main.Start + spaceBefore;
+                end = main.End - spaceAfter;
 
-                if (_data.Nonogram[pos, col])
+                for (int pos = start; pos <= end; pos++)
                 {
-                    var endPos = pos;
-                    while (endPos < _data.Nonogram.RowCount - 1 && _data.Nonogram[endPos + 1, col]) endPos++;
+                    if (_data.IsAvailable(pos, col)) continue;
 
-                    var length = endPos - pos + 1;
-                    if (pos - start < v + 1) start = Math.Max(pos - v + length, start);
-                    if (end - endPos < v + 1) end = Math.Min(endPos + v - length, end);
-                }
-                else
-                {
-                    if (pos - start < v) start = pos + 1;
-                    if (end - pos < v) end = pos - 1;
+                    if (_data.Nonogram[pos, col])
+                    {
+                        var endPos = pos;
+                        while (endPos < _data.Nonogram.RowCount - 1 && _data.Nonogram[endPos + 1, col]) endPos++;
+
+                        var length = endPos - pos + 1;
+                        if (pos - start < v + 1) start = Math.Max(pos - v + length, start);
+                        if (end - endPos < v + 1) end = Math.Min(endPos + v - length, end);
+                    }
+                    else
+                    {
+                        if (pos - start < v) start = pos + 1;
+                        if (end - pos < v) end = pos - 1;
+                    }
                 }
             }
 
@@ -148,10 +178,12 @@ public class NonogramPreComputer
             spaceAfter--;
         }
 
+        list.FirstValueIndex = main.FirstValueIndex;
+        list.LastValueIndex = main.LastValueIndex;
         return list;
     }
     
-    private MainSpace DoHorizontalMainSpace(int row)
+    private MultiValueSpace DoHorizontalRemainingValuesSpace(int row)
     {
         var list = _data.Nonogram.HorizontalLineCollection.AsList(row);
         int sCursor = 0;
@@ -171,17 +203,17 @@ public class NonogramPreComputer
                     break;
                 }
 
-                presenceExpected--;
-                if (presenceExpected == 0)
-                {
-                    mustBeUnavailable = true;
-                    sCursor++;
-                }
+                if (--presenceExpected == 0) mustBeUnavailable = true;
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(row, start)) return MainSpace.Invalid;
+                if (_data.IsAvailable(row, start))
+                {
+                    start = buffer;
+                    break;
+                }
 
+                sCursor++;
                 mustBeUnavailable = false;
             }
             else
@@ -191,11 +223,9 @@ public class NonogramPreComputer
                 if (_data.Nonogram[row, start])
                 {
                     presenceExpected = list[sCursor] - 1;
-                    if (presenceExpected == 0)
-                    {
-                        mustBeUnavailable = true;
-                        sCursor++;
-                    } else buffer = start;
+                    buffer = start;
+                    
+                    if (presenceExpected == 0) mustBeUnavailable = true;
                 }
             }
 
@@ -215,18 +245,18 @@ public class NonogramPreComputer
                     break;
                 }
 
-                presenceExpected--;
-                if (presenceExpected == 0)
-                {
-                    mustBeUnavailable = true;
-                    eCursor--;
-                    if (eCursor < sCursor) return MainSpace.Invalid;
-                }
+                if (--presenceExpected == 0) mustBeUnavailable = true;
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(row, end)) return MainSpace.Invalid;
+                if (_data.IsAvailable(row, end))
+                {
+                    end = buffer;
+                    break;
+                }
 
+                eCursor--;
+                if (eCursor < sCursor) return MultiValueSpace.Invalid;
                 mustBeUnavailable = false;
             }
             else
@@ -236,23 +266,20 @@ public class NonogramPreComputer
                 if (_data.Nonogram[row, end])
                 {
                     presenceExpected = list[eCursor] - 1;
-                    if (presenceExpected == 0)
-                    {
-                        mustBeUnavailable = true;
-                        eCursor--;
-                        if (eCursor < sCursor) return MainSpace.Invalid;
-                    } else buffer = end;
+                    buffer = end;
+                    
+                    if (presenceExpected == 0) mustBeUnavailable = true;
                 }
             }
 
             end--;
-            if (end < start) return MainSpace.Invalid;
+            if (end < start) return MultiValueSpace.Invalid;
         }
 
-        return new MainSpace(start, end, sCursor, eCursor);
+        return new MultiValueSpace(start, end, sCursor, eCursor);
     }
 
-    private MainSpace DoVerticalMainSpace(int col)
+    private MultiValueSpace DoVerticalRemainingValuesSpace(int col)
     {
         var list = _data.Nonogram.VerticalLineCollection.AsList(col);
         int sCursor = 0;
@@ -271,18 +298,18 @@ public class NonogramPreComputer
                     start = buffer;
                     break;
                 }
-
-                presenceExpected--;
-                if (presenceExpected == 0)
-                {
-                    mustBeUnavailable = true;
-                    sCursor++;
-                }
+                
+                if (--presenceExpected == 0) mustBeUnavailable = true;
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(start, col)) return MainSpace.Invalid;
+                if (_data.IsAvailable(start, col))
+                {
+                    start = buffer;
+                    break;
+                }
 
+                sCursor++;
                 mustBeUnavailable = false;
             }
             else
@@ -292,11 +319,9 @@ public class NonogramPreComputer
                 if (_data.Nonogram[start, col])
                 {
                     presenceExpected = list[sCursor] - 1;
-                    if (presenceExpected == 0)
-                    {
-                        mustBeUnavailable = true;
-                        sCursor++;
-                    } else buffer = start;
+                    buffer = start;
+                    
+                    if (presenceExpected == 0) mustBeUnavailable = true;
                 }
             }
 
@@ -316,18 +341,18 @@ public class NonogramPreComputer
                     break;
                 }
 
-                presenceExpected--;
-                if (presenceExpected == 0)
-                {
-                    mustBeUnavailable = true;
-                    eCursor--;
-                    if (eCursor < sCursor) return MainSpace.Invalid;
-                }
+                if (--presenceExpected == 0) mustBeUnavailable = true;
             }
             else if (mustBeUnavailable)
             {
-                if (_data.IsAvailable(end, col)) return MainSpace.Invalid;
+                if (_data.IsAvailable(end, col))
+                {
+                    end = buffer;
+                    break;
+                }
 
+                eCursor--;
+                if (eCursor < sCursor) return MultiValueSpace.Invalid;
                 mustBeUnavailable = false;
             }
             else
@@ -337,20 +362,17 @@ public class NonogramPreComputer
                 if (_data.Nonogram[end, col])
                 {
                     presenceExpected = list[eCursor] - 1;
-                    if (presenceExpected == 0)
-                    {
-                        mustBeUnavailable = true;
-                        eCursor--;
-                        if (eCursor < sCursor) return MainSpace.Invalid;
-                    } else buffer = end;
+                    buffer = end;
+                    
+                    if (presenceExpected == 0) mustBeUnavailable = true;
                 }
             }
 
             end--;
-            if (end < start) return MainSpace.Invalid;
+            if (end < start) return MultiValueSpace.Invalid;
         }
 
-        return new MainSpace(start, end, sCursor, eCursor);
+        return new MultiValueSpace(start, end, sCursor, eCursor);
     }
 }
 
@@ -365,6 +387,28 @@ public readonly struct ValueSpace
 
     public bool IsValid() => End - Start + 1 >= Value;
     public int GetLength() => End - Start + 1;
+
+    public bool IsCompleted(IReadOnlyNonogram nonogram, int n, Orientation orientation)
+    {
+        if (GetLength() != Value) return false;
+        
+        if (orientation == Orientation.Horizontal)
+        {
+            for (int c = Start; c <= End; c++)
+            {
+                if (!nonogram[n, c]) return false;
+            }
+
+            return true;
+        }
+        
+        for (int r = Start; r <= End; r++)
+        {
+            if (!nonogram[r, n]) return false;
+        }
+
+        return true;
+    }
 
     /// <summary>
     /// Inclusive
@@ -402,11 +446,11 @@ public readonly struct ValueSpace
     }
 }
 
-public readonly struct MainSpace
+public readonly struct MultiValueSpace
 {
-    public static MainSpace Invalid = new(-1, -1, -1, -1);
+    public static MultiValueSpace Invalid = new(-1, -1, -1, -1);
     
-    public MainSpace(int start, int end, int firstValueIndex, int lastValueIndex)
+    public MultiValueSpace(int start, int end, int firstValueIndex, int lastValueIndex)
     {
         Start = start;
         End = end;
@@ -439,4 +483,16 @@ public readonly struct MainSpace
     public int End { get; }
     public int FirstValueIndex { get; }
     public int LastValueIndex { get; }
+}
+
+public interface IReadOnlyValueSpaceCollection : IReadOnlyList<ValueSpace>
+{
+    public int FirstValueIndex { get; }
+    public int LastValueIndex { get; }
+}
+
+public class ValueSpaceCollection : List<ValueSpace>, IReadOnlyValueSpaceCollection
+{
+    public int FirstValueIndex { get; set; }
+    public int LastValueIndex { get; set; }
 }

@@ -6,9 +6,9 @@ using Model.Utility;
 
 namespace Model.Nonograms.Solver.Strategies;
 
-public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
+public class PerfectRemainingSpaceStrategy : Strategy<INonogramSolverData>
 {
-    public PerfectSpaceStrategy() : base("Perfect Space", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
+    public PerfectRemainingSpaceStrategy() : base("Perfect Remaining Space", StepDifficulty.Basic, InstanceHandling.UnorderedAll)
     {
     }
 
@@ -16,7 +16,7 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
     {
         for (int row = 0; row < data.Nonogram.RowCount; row++)
         {
-            var space = data.PreComputer.HorizontalMainSpace(row);
+            var space = data.PreComputer.HorizontalRemainingValuesSpace(row);
             if (space.IsInvalid() || data.Nonogram.HorizontalLineCollection.NeededSpace(row,
                     space.FirstValueIndex, space.LastValueIndex) != space.End - space.Start + 1) continue;
             
@@ -32,13 +32,13 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
                 cursor++;
             }
 
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectMainSpaceStrategyReportBuilder(
+            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectRemainingSpaceStrategyReportBuilder(
                     space, row, Orientation.Horizontal)) && StopOnFirstPush) return;
         }
         
         for (int col = 0; col < data.Nonogram.ColumnCount; col++)
         {
-            var space = data.PreComputer.VerticalMainSpace(col);
+            var space = data.PreComputer.VerticalRemainingValuesSpace(col);
             if (space.IsInvalid() ||data.Nonogram.VerticalLineCollection.NeededSpace(col,
                     space.FirstValueIndex, space.LastValueIndex) != space.End - space.Start + 1) continue;
             
@@ -54,20 +54,20 @@ public class PerfectSpaceStrategy : Strategy<INonogramSolverData>
                 cursor++;
             }
             
-            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectMainSpaceStrategyReportBuilder(
+            if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new PerfectRemainingSpaceStrategyReportBuilder(
                     space, col, Orientation.Vertical)) && StopOnFirstPush) return;
         }
     }
 }
 
-public class PerfectMainSpaceStrategyReportBuilder : IChangeReportBuilder<DichotomousChange, INonogramSolvingState,
+public class PerfectRemainingSpaceStrategyReportBuilder : IChangeReportBuilder<DichotomousChange, INonogramSolvingState,
         INonogramHighlighter>
 {
-    private readonly MainSpace _space;
+    private readonly MultiValueSpace _space;
     private readonly int _unit;
     private readonly Orientation _orientation;
 
-    public PerfectMainSpaceStrategyReportBuilder(MainSpace space, int unit, Orientation orientation)
+    public PerfectRemainingSpaceStrategyReportBuilder(MultiValueSpace space, int unit, Orientation orientation)
     {
         _space = space;
         _unit = unit;
@@ -76,7 +76,7 @@ public class PerfectMainSpaceStrategyReportBuilder : IChangeReportBuilder<Dichot
 
     public ChangeReport<INonogramHighlighter> BuildReport(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
     {
-        return new ChangeReport<INonogramHighlighter>("Perfect Space", lighter =>
+        return new ChangeReport<INonogramHighlighter>("Perfect Remaining Space", lighter =>
         {
             lighter.EncircleLineSection(_orientation, _unit, _space.Start, _space.End, ChangeColoration.CauseOnOne);
             lighter.HighlightValues(_orientation, _unit, _space.FirstValueIndex, _space.LastValueIndex, ChangeColoration.CauseOnOne);

@@ -41,11 +41,11 @@ public static class BackTracking //TODO simple fill ?
         Dictionary<IZone, ReadOnlyBitSet8> zones = new();
         var neighbors = new[]
         {
-            new TectonicBitmap(start.RowCount, start.ColumnCount),
-            new TectonicBitmap(start.RowCount, start.ColumnCount),
-            new TectonicBitmap(start.RowCount, start.ColumnCount),
-            new TectonicBitmap(start.RowCount, start.ColumnCount),
-            new TectonicBitmap(start.RowCount, start.ColumnCount)
+            new InfiniteBitmap(start.RowCount, start.ColumnCount),
+            new InfiniteBitmap(start.RowCount, start.ColumnCount),
+            new InfiniteBitmap(start.RowCount, start.ColumnCount),
+            new InfiniteBitmap(start.RowCount, start.ColumnCount),
+            new InfiniteBitmap(start.RowCount, start.ColumnCount)
         };
 
         for (int row = 0; row < start.RowCount; row++)
@@ -69,7 +69,7 @@ public static class BackTracking //TODO simple fill ?
     }
 
     private static bool Search(IBackTrackingResult<ITectonic> result, ITectonic current, IPossibilitiesGiver giver,
-        IDictionary<IZone, ReadOnlyBitSet8> zones, IReadOnlyList<TectonicBitmap> neighbors, int position, int stopAt)
+        IDictionary<IZone, ReadOnlyBitSet8> zones, IReadOnlyList<InfiniteBitmap> neighbors, int position, int stopAt)
     {
         var full = current.RowCount * current.ColumnCount;
         for (; position < full; position++)

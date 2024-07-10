@@ -35,7 +35,7 @@ public class UnreachableSquareStrategy : Strategy<INonogramSolverData>
             }
 
             if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
-                    spaces, Orientation.Horizontal, row, data.PreComputer.HorizontalMainSpace(row))) && StopOnFirstPush) return;
+                    spaces, Orientation.Horizontal, row)) && StopOnFirstPush) return;
             bitSet.Clear();
         }
         
@@ -58,7 +58,7 @@ public class UnreachableSquareStrategy : Strategy<INonogramSolverData>
             }
 
             if (data.ChangeBuffer.NotEmpty() && data.ChangeBuffer.Commit(new UnreachableSquareReportBuilder(
-                    spaces, Orientation.Vertical, col, data.PreComputer.VerticalMainSpace(col))) && StopOnFirstPush) return;
+                    spaces, Orientation.Vertical, col)) && StopOnFirstPush) return;
             bitSet.Clear();
         }
     }
@@ -67,17 +67,15 @@ public class UnreachableSquareStrategy : Strategy<INonogramSolverData>
 public class UnreachableSquareReportBuilder : IChangeReportBuilder<DichotomousChange, INonogramSolvingState,
         INonogramHighlighter>
 {
-    private readonly MainSpace _space;
-    private readonly IReadOnlyList<ValueSpace> _spaces;
+    private readonly IReadOnlyValueSpaceCollection _spaces;
     private readonly Orientation _orientation;
     private readonly int _unit;
 
-    public UnreachableSquareReportBuilder(IReadOnlyList<ValueSpace> spaces, Orientation orientation, int unit, MainSpace space)
+    public UnreachableSquareReportBuilder(IReadOnlyValueSpaceCollection spaces, Orientation orientation, int unit)
     {
         _spaces = spaces;
         _orientation = orientation;
         _unit = unit;
-        _space = space;
     }
 
     public ChangeReport<INonogramHighlighter> BuildReport(IReadOnlyList<DichotomousChange> changes, INonogramSolvingState snapshot)
@@ -88,8 +86,8 @@ public class UnreachableSquareReportBuilder : IChangeReportBuilder<DichotomousCh
             var n = i;
             highlights[i] = lighter =>
             {
-                lighter.HighlightValues(_orientation, _unit, _space.FirstValueIndex + n,
-                    _space.FirstValueIndex + n, ChangeColoration.CauseOffOne);
+                lighter.HighlightValues(_orientation, _unit, _spaces.FirstValueIndex + n,
+                    _spaces.FirstValueIndex + n, ChangeColoration.CauseOffOne);
                 lighter.EncircleLineSection(_orientation, _unit, _spaces[n].Start, _spaces[n].End, ChangeColoration.CauseOffOne);
             };
         }

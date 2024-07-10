@@ -337,10 +337,12 @@ public interface IReadOnlyNonogramLineCollection : IEnumerable<IEnumerable<int>>
     IReadOnlyList<int> AsList(int index);
     int TryGetValue(int lineIndex, int valueIndex);
     int ValueCount(int index);
-    int MinValue(int index);
+    (int, int) MinValue(int index, int start, int end);
+    (int, int) MinValue(int index);
     int TotalExpected(int index);
     INonogramLineCollection Copy();
     int NeededSpace(int index, int start, int end);
+    public int NeededSpace(int index);
 }
 
 public interface INonogramLineCollection : IReadOnlyNonogramLineCollection
@@ -399,17 +401,25 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         return _list[index].Count;
     }
 
-    public int MinValue(int index)
+    public (int, int) MinValue(int index, int start, int end)
     {
         var l = _list[index];
-        var result = l[0];
-        for (int i = 1; i < l.Count; i++)
+        
+        var v = l[start];
+        var i = start;
+        for (int n = start + 1; n <= end; n++)
         {
-            result = Math.Min(l[i], result);
+            if (l[n] < v)
+            {
+                v = l[n];
+                i = n;
+            }
         }
 
-        return result;
+        return (i, v);
     }
+
+    public (int, int) MinValue(int index) => MinValue(index, 0, _list[index].Count - 1);
 
     public int TotalExpected(int index)
     {
@@ -440,6 +450,11 @@ public class ListListNonogramLineCollection : INonogramLineCollection
         }
 
         return result;    
+    }
+
+    public int NeededSpace(int index)
+    {
+        return NeededSpace(index, 0, _list[index].Count - 1);
     }
 
     public IEnumerator<IEnumerable<int>> GetEnumerator()

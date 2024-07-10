@@ -62,8 +62,9 @@ public class Instantiator
     public NonogramSolver InstantiateNonogramSolver()
     {
         var solver = new NonogramSolver();
-        solver.StrategyManager.AddStrategies(new PerfectSpaceStrategy(),
+        solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(),
             new NotEnoughSpaceStrategy(),
+            new PerfectValueSpaceStrategy(),
             new BridgingStrategy(),
             new EdgeValueStrategy(),
             new ValueCompletionStrategy(),
