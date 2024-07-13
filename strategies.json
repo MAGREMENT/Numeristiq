@@ -50,7 +50,7 @@
   },
   {
     "Name": "Uniqueness Clue Cover",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
@@ -263,14 +263,14 @@
   },
   {
     "Name": "Extended Unique Rectangles",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
   },
   {
     "Name": "BUG-Lite",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {

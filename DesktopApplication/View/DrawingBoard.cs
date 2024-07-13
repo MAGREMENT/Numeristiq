@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
@@ -277,7 +278,9 @@ public class TextInRectangleComponent : IDrawableComponent
 {
     protected static readonly CultureInfo Info = CultureInfo.CurrentUICulture;
     protected const FlowDirection Flow = FlowDirection.LeftToRight;
-    protected static readonly Typeface Typeface = new("Lucida Sans Typewriter"); //TODO to setting (lockable)
+    protected static readonly Typeface Typeface =
+        new(new FontFamily(new Uri("pack://application:,,,/View/Fonts/"), "./#Roboto Mono"),
+        FontStyles.Normal, FontWeights.Regular, FontStretches.Normal);
     
     protected FormattedText _text;
     protected readonly Rect _rect;

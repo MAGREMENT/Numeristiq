@@ -4,6 +4,7 @@ using Model;
 using Model.Core;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
+using Model.Repositories;
 using Model.Sudokus.Solver;
 using Model.Utility;
 
@@ -12,12 +13,12 @@ namespace DesktopApplication.Presenter.Sudokus.Manage;
 public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingCollection
 {
     private readonly SudokuStrategy _strategy;
-    private readonly IStrategyRepositoryUpdater _updater;
+    private readonly IStrategyRepository<SudokuStrategy> _repo;
 
-    public StrategySettingsPresenter(SudokuStrategy strategy, IStrategyRepositoryUpdater updater)
+    public StrategySettingsPresenter(SudokuStrategy strategy, IStrategyRepository<SudokuStrategy> repo)
     {
         _strategy = strategy;
-        _updater = updater;
+        _repo = repo;
     }
 
     public IEnumerator<(ISetting, int)> GetEnumerator()
@@ -50,7 +51,7 @@ public class StrategySettingsPresenter : IEnumerable<(ISetting, int)>, ISettingC
                 break;
         }
 
-        _updater.Update();
+        _repo.UpdateStrategy(_strategy);
     }
 }
 

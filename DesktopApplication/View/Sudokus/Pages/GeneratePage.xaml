@@ -7,7 +7,7 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="GeneratePage" d:DesignHeight="660" d:DesignWidth="1300">
+      Title="GeneratePage" d:DesignHeight="660" d:DesignWidth="1350">
     <Grid Background="{DynamicResource Background1}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -59,7 +59,7 @@
               Stroke="{DynamicResource Text}" Data="M 5,20 H 35 M 23,5 35,20 23,35" StrokeThickness="2"
               x:Name="ToFinalList"/>
         
-        <Grid Grid.Row="0" Grid.Column="4" Grid.RowSpan="2">
+        <Grid Grid.Row="0" Grid.Column="4" Grid.RowSpan="2" Margin="0, 0, 10, 10">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
@@ -97,13 +97,13 @@
             </Grid.ColumnDefinitions>
             
             <Button Grid.Row="0" Grid.Column="0" Width="150" Height="50" FontSize="20" x:Name="GenerateButton"
-                    Style="{StaticResource SolvePageButtonStyle}" Click="Generate">Generate</Button>
+                    Style="{StaticResource DefaultLightUpButtonStyle}" Click="Generate">Generate</Button>
             
             <controls:NumberInputControl Grid.Row="0" Grid.Column="1" Margin="5, 0, 0, 0" Width="90"
                                          Min="1" Max="40" ValueChanged="OnValueChange"/>
             
             <Button Grid.Row="1" Grid.Column="0" Width="150" Height="50" FontSize="20" x:Name="StopButton"
-                    Style="{StaticResource SolvePageButtonStyle}" Click="Stop" Margin="0,10,0,0">Stop</Button>
+                    Style="{StaticResource DefaultLightUpButtonStyle}" Click="Stop" Margin="0,10,0,0">Stop</Button>
         </Grid>
         
         <Grid Grid.Row="1" Grid.Column="2">

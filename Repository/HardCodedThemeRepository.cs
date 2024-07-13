@@ -1,16 +1,11 @@
-﻿using Model;
+﻿using Model.Repositories;
 using Model.Utility;
 
 namespace Repository;
 
-public class HardCodedThemeRepository : IRepository<Theme[]>
+public class HardCodedThemeRepository : IThemeRepository
 {
-    public bool Initialize(bool createNewOnNoneExisting)
-    {
-        return true;
-    }
-
-    public Theme[] Download()
+    public IReadOnlyList<Theme> GetThemes()
     {
         return new[]
         {
@@ -81,10 +76,5 @@ public class HardCodedThemeRepository : IRepository<Theme[]>
                 RGB.FromHex(0x637ED7), RGB.FromHex(0xC2CB43),
                 RGB.FromHex(0x49A37C))
         };
-    }
-
-    public bool Upload(Theme[] DAO)
-    {
-        return false;
     }
 }

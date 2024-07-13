@@ -4,21 +4,16 @@ using Model;
 
 namespace Repository;
 
-public class JSONRepository<T> : IRepository<T> where T : class?
+public abstract class JSONRepository
 {
     private readonly string _filePath;
 
-    public JSONRepository(string filePath)
+    protected JSONRepository(string filePath, bool searchParentDirectories, bool createIfNotFound)
     {
-        _filePath = filePath;
+        _filePath = Instantiate(filePath, searchParentDirectories, createIfNotFound);
     }
 
-    public virtual T? Download()
-    {
-        return InternalDownload<T>();
-    }
-
-    protected TDownload? InternalDownload<TDownload>() where TDownload : class?
+    protected TDownload? Download<TDownload>() where TDownload : class?
     {
         try
         {
@@ -31,7 +26,7 @@ public class JSONRepository<T> : IRepository<T> where T : class?
         }
     }
 
-    protected TDownload? InternalDownload<TDownload>(Stream stream) where TDownload : class?
+    protected TDownload? Download<TDownload>(Stream stream) where TDownload : class?
     {
         try
         {
@@ -43,13 +38,8 @@ public class JSONRepository<T> : IRepository<T> where T : class?
             return null;
         }
     }
-
-    public virtual bool Upload(T DAO)
-    {
-        return InternalUpload(DAO);
-    }
-
-    protected bool InternalUpload<TUpload>(TUpload DAO)
+    
+    protected bool Upload<TUpload>(TUpload DAO)
     {
         try
         {
@@ -72,7 +62,7 @@ public class JSONRepository<T> : IRepository<T> where T : class?
         }
     }
     
-    protected bool InternalUpload<TUpload>(TUpload DAO, Stream stream)
+    protected bool Upload<TUpload>(TUpload DAO, Stream stream)
     {
         try
         {
@@ -88,5 +78,36 @@ public class JSONRepository<T> : IRepository<T> where T : class?
         {
             return false;
         }
+    }
+    
+    private static string Instantiate(string fileName, bool searchParentDirectories, bool createIfNotFound)
+    {
+        var directory = Directory.GetCurrentDirectory();
+        var path = $@"{directory}\{fileName}";
+        bool exists = File.Exists(path);
+
+        if (searchParentDirectories && !exists)
+        {
+            var buffer = Directory.GetParent(path);
+            while (buffer is not null)
+            {
+                var p = $@"{buffer.FullName}\{fileName}";
+                if (File.Exists(p))
+                {
+                    path = p;
+                    exists = true;
+                    break;
+                }
+
+                buffer = Directory.GetParent(buffer.FullName);
+            }
+        }
+
+        if (createIfNotFound && !exists)
+        {
+            using var stream = File.Create(path);
+        }
+
+        return path;
     }
 }

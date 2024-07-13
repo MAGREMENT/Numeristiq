@@ -1,4 +1,5 @@
-﻿using Model.Sudokus.Solver;
+﻿using Model.Repositories;
+using Model.Sudokus.Solver;
 
 namespace DesktopApplication.Presenter.Sudokus.Manage;
 
@@ -6,14 +7,14 @@ public class SudokuManagePresenter
 {
     private readonly ISudokuManageView _view;
     private readonly StrategyManager<SudokuStrategy> _manager;
-    private readonly IStrategyRepositoryUpdater _updater;
+    private readonly IStrategyRepository<SudokuStrategy> _repo;
 
     public SudokuManagePresenter(ISudokuManageView view, StrategyManager<SudokuStrategy> manager, 
-        IStrategyRepositoryUpdater updater)
+        IStrategyRepository<SudokuStrategy> repo)
     {
         _view = view;
         _manager = manager;
-        _updater = updater;
+        _repo = repo;
     }
     
     public void Initialize()
@@ -48,7 +49,7 @@ public class SudokuManagePresenter
 
         var s = _manager.Strategies[index];
         _view.SetSelectedStrategyName(s.Name);
-        _view.SetManageableSettings(new StrategySettingsPresenter(s, _updater));
+        _view.SetManageableSettings(new StrategySettingsPresenter(s, _repo));
     }
 
     public void AddStrategy(string s, int position)
@@ -57,21 +58,21 @@ public class SudokuManagePresenter
         if (strategy is null) return;
         
         _manager.AddStrategy(strategy, position);
-        _updater.Update();
+        _repo.SetStrategies(_manager.Strategies);
         _view.SetStrategyList(_manager.Strategies);
     }
 
     public void InterchangeStrategies(int posFrom, int posTo)
     {
         _manager.InterchangeStrategies(posFrom, posTo);
-        _updater.Update();
+        _repo.SetStrategies(_manager.Strategies);
         _view.SetStrategyList(_manager.Strategies);
     }
 
     public void RemoveStrategy(int index)
     {
         _manager.RemoveStrategy(index);
-        _updater.Update();
+        _repo.SetStrategies(_manager.Strategies);
         _view.SetStrategyList(_manager.Strategies);
         _view.ClearSelectedStrategy();
     }
@@ -86,8 +87,8 @@ public class SudokuManagePresenter
     {
         using var stream = _view.GetUploadPresetStream();
         if (stream is null) return;
-        
-        _updater.Upload(stream);
+
+        _repo.AddPreset(_manager.Strategies, stream);
     }
 
     public void DownloadPreset()
@@ -95,6 +96,8 @@ public class SudokuManagePresenter
         using var stream = _view.GetDownloadPresetStream();
         if (stream is null) return;
 
-        _updater.Download(stream);
+        _manager.ClearStrategies();
+        _manager.AddStrategies(_repo.GetPreset(stream));
+        _view.SetStrategyList(_manager.Strategies);
     }
 }

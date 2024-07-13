@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
 using DesktopApplication.Presenter;
 using DesktopApplication.View.HelperWindows;

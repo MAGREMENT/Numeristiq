@@ -22,6 +22,8 @@ namespace Model.Sudokus.Solver;
 
 public static class StrategyPool
 {
+    #region Pool
+
     private static readonly Dictionary<string, GiveStrategy> Pool = new()
     {
         {NakedSingleStrategy.OfficialName, () => new NakedSingleStrategy()},
@@ -114,7 +116,11 @@ public static class StrategyPool
         {SeniorExocetStrategy.OfficialName, () => new SeniorExocetStrategy()},
         {SingleTargetExocetStrategy.OfficialName, () => new SingleTargetExocetStrategy()}
     };
-    
+
+    #endregion
+
+    #region Descriptions
+
     private static readonly IDescription NoDescription = new FullTextDescription("No Description Found");
 
     private static readonly IDescription NakedSingleDescription = new FullTextDescription(
@@ -159,6 +165,8 @@ public static class StrategyPool
         {AlignedPairExclusionStrategy.OfficialName, APEDescription},
         {BandUniquenessStrategy.OfficialName, BandUniquenessDescription}
     };
+
+    #endregion
     
     public static IEnumerable<string> EnumerateStrategies(string filter)
     {

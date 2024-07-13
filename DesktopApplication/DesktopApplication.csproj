@@ -14,6 +14,38 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Resource Include="View\Fonts\Poppins-Black.ttf" />
+      <Resource Include="View\Fonts\Poppins-BlackItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-Bold.ttf" />
+      <Resource Include="View\Fonts\Poppins-BoldItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-ExtraBold.ttf" />
+      <Resource Include="View\Fonts\Poppins-ExtraBoldItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-ExtraLight.ttf" />
+      <Resource Include="View\Fonts\Poppins-ExtraLightItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-Italic.ttf" />
+      <Resource Include="View\Fonts\Poppins-Light.ttf" />
+      <Resource Include="View\Fonts\Poppins-LightItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-Medium.ttf" />
+      <Resource Include="View\Fonts\Poppins-MediumItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-Regular.ttf" />
+      <Resource Include="View\Fonts\Poppins-SemiBold.ttf" />
+      <Resource Include="View\Fonts\Poppins-SemiBoldItalic.ttf" />
+      <Resource Include="View\Fonts\Poppins-Thin.ttf" />
+      <Resource Include="View\Fonts\Poppins-ThinItalic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-Bold.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-BoldItalic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-ExtraLight.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-ExtraLightItalic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-Italic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-Light.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-LightItalic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-Medium.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-MediumItalic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-Regular.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-SemiBold.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-SemiBoldItalic.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-Thin.ttf" />
+      <Resource Include="View\Fonts\RobotoMono-ThinItalic.ttf" />
       <Resource Include="View\Images\appicon.png" />
       <None Remove="View\Images\setting.png" />
       <Resource Include="View\Images\setting.png" />
@@ -21,6 +53,38 @@
       <Resource Include="View\Images\bin.png" />
       <None Remove="View\Images\Descriptions\ape.png" />
       <Resource Include="View\Images\Descriptions\ape.png" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-Bold.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-ThinItalic.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-Thin.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-SemiBoldItalic.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-SemiBold.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-Regular.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-MediumItalic.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-Medium.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-LightItalic.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-Light.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-Italic.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-ExtraLightItalic.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-ExtraLight.ttf" />
+      <None Remove="View\Fonts\Roboto_Mono\RobotoMono-BoldItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Black.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-BlackItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-ThinItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Thin.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-SemiBoldItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-SemiBold.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-MediumItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Regular.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Medium.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-LightItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Light.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Italic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-ExtraLightItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-ExtraLight.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-ExtraBoldItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-ExtraBold.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-BoldItalic.ttf" />
+      <None Remove="View\Fonts\Poppins\Poppins-Bold.ttf" />
 
 
 

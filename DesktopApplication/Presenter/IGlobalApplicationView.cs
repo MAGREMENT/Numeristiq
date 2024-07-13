@@ -1,4 +1,4 @@
-﻿using Model;
+﻿using Model.Repositories;
 
 namespace DesktopApplication.Presenter;
 

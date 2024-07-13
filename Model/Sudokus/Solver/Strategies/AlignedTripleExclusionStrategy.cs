@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -199,14 +200,14 @@ public class AlignedTripleExclusionStrategy : SudokuStrategy
 
     private bool Search(ISudokuSolverData solverData, Cell c1, Cell c2, Cell c3)
     {
-        var ssc = SudokuCellUtility.SharedSeenEmptyCells(solverData, c1, c2, c3);
+        var ssc = SudokuCellUtility.SharedSeenEmptyCells(solverData, c1, c2, c3).ToArray();
 
         var poss1 = solverData.PossibilitiesAt(c1);
         var poss2 = solverData.PossibilitiesAt(c2);
         var poss3 = solverData.PossibilitiesAt(c3);
         var or = poss1.OrMulti(poss2, poss3);
 
-        if (ssc.Count < poss1.Count || ssc.Count < poss2.Count || ssc.Count < poss3.Count) return false;
+        if (ssc.Length < poss1.Count || ssc.Length < poss2.Count || ssc.Length < poss3.Count) return false;
 
         List<IPossibilitiesPositions> usefulThings = new();
         HashSet<TriValue> forbiddenTri = new();

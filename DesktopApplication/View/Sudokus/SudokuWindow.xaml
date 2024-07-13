@@ -6,8 +6,8 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
-        Height="750" Width="1300"
-        MinHeight="750" MinWidth="1300"
+        Height="750" Width="1350"
+        MinHeight="750" MinWidth="1350"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -24,7 +24,7 @@
         </Grid.RowDefinitions>
         
         <controls:TitleBarControl Grid.Row="0" x:Name="TitleBar" Minimize="Minimize" ChangeSize="ChangeSize" Close="Close"
-                                AllowResize="False" AppIcon="../Images/appicon.png" AppTitle="Numeristiq"/>
+                                AllowResize="True" AppIcon="../Images/appicon.png" AppTitle="Numeristiq"/>
         
         <Frame NavigationUIVisibility="Hidden" Grid.Row="1" x:Name="Frame" Navigating="CancelNavigation"/>
         

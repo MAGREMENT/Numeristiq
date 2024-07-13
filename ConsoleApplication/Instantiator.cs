@@ -23,9 +23,8 @@ public class Instantiator
     {
         if (!_sudokuInstantiated)
         {
-            var pInstantiator = new PathInstantiator(!IsForProduction, true);
-            _sudokuStrategies = new SudokuStrategiesJSONRepository(pInstantiator.Instantiate("strategies.json"))
-                .Download();
+            _sudokuStrategies = new SudokuStrategyJSONRepository("strategies.json", 
+                !IsForProduction, true).GetStrategies();
             _sudokuInstantiated = true;
         }
 

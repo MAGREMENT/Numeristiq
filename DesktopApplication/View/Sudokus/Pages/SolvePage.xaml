@@ -7,27 +7,25 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1300">
+      Title="SolvePage" d:DesignHeight="660" d:DesignWidth="1350">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="405"/>
-            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         
-        <Border Grid.Column="0" 
-                Background="{DynamicResource Background2}"
-                Padding="10"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center">
-            <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3" x:Name="Board"
-                                 SmallLineWidth="1" BackgroundBrush="{DynamicResource Background2}" DefaultNumberBrush="{DynamicResource Text}"
-                                 LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
-                                 SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"
-                                 CellSelected="SelectCell" KeyDown="DoBoardInput"/>
-        </Border>
+        <global:SizeOptimizedContentControl Grid.Column="0" Margin="10" x:Name="EmbeddedDrawer">
+            <global:SizeOptimizedContentControl.OptimizableContent>
+                <controls:SudokuBoard PossibilitySize="22" BigLineWidth="3"
+                                      SmallLineWidth="1" BackgroundBrush="{DynamicResource Background2}" DefaultNumberBrush="{DynamicResource Text}"
+                                      LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
+                                      SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"
+                                      CellSelected="SelectCell" KeyDown="DoBoardInput"/>
+            </global:SizeOptimizedContentControl.OptimizableContent>
+        </global:SizeOptimizedContentControl>
         
-        <Grid Grid.Column="1" Margin="0, 0, 5, 5" Width="400">
+        <Grid Grid.Column="1" Margin="0, 0, 10, 10" Width="400">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
@@ -37,7 +35,7 @@
             <TextBlock Grid.Row="0" FontSize="18" VerticalAlignment="Center" FontWeight="Normal"
                        Foreground="{DynamicResource Text}">Steps</TextBlock>
             
-            <ScrollViewer Grid.Row="1" x:Name="LogViewer" Margin="0,0, 0, 5"
+            <ScrollViewer Grid.Row="1" x:Name="LogViewer" Margin="0,0, 0, 10"
                           Style="{StaticResource TransparentBarScrollViewer}" VerticalAlignment="Stretch">
                 <StackPanel x:Name="LogPanel"/>
             </ScrollViewer>
@@ -53,14 +51,14 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Solve" x:Name="SolveButton">Solve</Button>
-                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
-                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
-                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Clear" x:Name="ClearButton">Clear</Button>
+                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="0, 0, 5, 5" Click="Solve" x:Name="SolveButton">Solve</Button>
+                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5, 0, 0, 5" Click="Advance" x:Name="AdvanceButton">Advance</Button>
+                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="0, 5, 5, 0" Click="ChooseStep" x:Name="ChooseStepButton">Choose Step</Button>
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5, 5, 0, 0" Click="Clear" x:Name="ClearButton">Clear</Button>
             </Grid>
         </Grid>
         
-        <Grid Grid.Column="2">
+        <Grid Grid.Column="2" Margin="0, 0, 10, 10" Width="250">
             <Grid.RowDefinitions>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="*"/>
@@ -71,8 +69,8 @@
                            Foreground="{DynamicResource Text}">Strategies</TextBlock>
             </Grid>
             
-            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollViewer}" Height="620">
-                <StackPanel MinHeight="618" x:Name="StrategyPanel"/>
+            <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollViewer}">
+                <StackPanel x:Name="StrategyPanel"/>
             </ScrollViewer>
         </Grid>
         

@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Model.Core.Settings;
-using Model.Utility;
 using Model.Utility.Collections;
 
 namespace DesktopApplication.Presenter;
@@ -21,13 +20,12 @@ public class SettingsPresenter : IEnumerable<NamedListSpan<ISetting>>, ISettingC
 
     public void Set(int index, SettingValue value, bool checkValidity)
     {
-        _settings.Set(index, value, checkValidity);
-        if(_autoUpdate) Update();
+        _settings.Set(index, value, checkValidity, _autoUpdate);
     }
 
     public void Update()
     {
-        _settings.Update();
+        _settings.Update(ListSpan<ISetting>.Merge(_collection));
     }
 
     public IEnumerator<NamedListSpan<ISetting>> GetEnumerator()

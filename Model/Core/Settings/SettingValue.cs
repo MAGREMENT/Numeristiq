@@ -6,7 +6,6 @@ using Model.Utility;
 
 namespace Model.Core.Settings;
 
-[JsonConverter(typeof(SettingValueConverter))]
 public abstract class SettingValue
 {
     public virtual bool ToBool()
@@ -252,20 +251,5 @@ public class MinMaxSettingValue : SettingValue
     public override int GetHashCode()
     {
         return _minMax.GetHashCode();
-    }
-}
-
-public class SettingValueConverter : JsonConverter<SettingValue>
-{
-    public override SettingValue? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        var s = reader.GetString();
-        if (s is null) return null;
-        return new StringSettingValue(s);
-    }
-
-    public override void Write(Utf8JsonWriter writer, SettingValue value, JsonSerializerOptions options)
-    {
-        writer.WriteStringValue(value.ToString());
     }
 }

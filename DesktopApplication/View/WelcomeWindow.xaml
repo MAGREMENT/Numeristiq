@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
-        xmlns:board="clr-namespace:DesktopApplication.View"
         mc:Ignorable="d"
         Height="440" Width="450"
         WindowStyle="None"

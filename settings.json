@@ -13,5 +13,5 @@
   "Convert solo candidate to given for grid format": "True",
   "Main possibilities location": "9",
   "Test solution count for clue": "False",
-  "Fast possibility display": "True"
+  "Fast possibility display": "False"
 }

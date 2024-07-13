@@ -30,7 +30,7 @@ public partial class SolvePage : ISudokuSolveView
 
     #region ISudokuSolveView
 
-    public ISudokuSolverDrawer Drawer => Board;
+    public ISudokuSolverDrawer Drawer => (ISudokuSolverDrawer)EmbeddedDrawer.OptimizableContent!;
 
     public void SetSudokuAsString(string s)
     {
@@ -298,7 +298,7 @@ public partial class SolvePage : ISudokuSolveView
         try
         {
             var png = new PngBitmapEncoder();
-            png.Frames.Add(Board.AsImage());
+            png.Frames.Add(((SudokuBoard)EmbeddedDrawer.OptimizableContent!).AsImage());
             png.Save(stream);
         }
         catch (Exception)

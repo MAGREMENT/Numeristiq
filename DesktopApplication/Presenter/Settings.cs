@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Model;
 using Model.Core.Settings;
 using Model.Core.Settings.Types;
+using Model.Repositories;
 using Model.Sudokus;
 using Model.Sudokus.Player;
 using Model.Utility;
@@ -13,10 +13,10 @@ public class Settings
 {
     private readonly ISetting[] _settings;
     private readonly NamedListSpan<ISetting>[][] _collections;
-    private readonly IRepository<Dictionary<string, SettingValue>> _repository;
+    private readonly ISettingRepository _repository;
     private readonly Dictionary<int, List<OnSettingChange>> _events = new();
 
-    public Settings(IReadOnlyList<Theme> themes, IRepository<Dictionary<string, SettingValue>> repository)
+    public Settings(IReadOnlyList<Theme> themes, ISettingRepository repository)
     {
         _settings = new ISetting[]
         {
@@ -64,22 +64,23 @@ public class Settings
         _repository = repository;
     }
     
-    public void Update()
+    public void Update(ISetting setting)
     {
-        Dictionary<string, SettingValue> toUpload = new();
-
-        foreach (var setting in _settings)
-        {
-            toUpload.Add(setting.Name, setting.Get());
-        }
-        
-        _repository.Upload(toUpload);
+        _repository.UpdateSetting(setting);
+    }
+    
+    public void Update(IEnumerable<ISetting> settings)
+    {
+        _repository.UpdateSettings(settings);
     }
 
-    public void Set(int index, SettingValue value, bool checkValidity = true)
+    public void Set(int index, SettingValue value, bool checkValidity = true, bool update = true)
     {
+        var setting = _settings[index];
+        
         _settings[index].Set(value, checkValidity);
         FirePossibleEvents(index);
+        if (update) Update(setting);
     }
 
     public void TrySet(string name, SettingValue value)

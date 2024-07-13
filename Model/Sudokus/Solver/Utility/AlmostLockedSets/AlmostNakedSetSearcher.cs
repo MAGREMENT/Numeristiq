@@ -16,7 +16,7 @@ public class AlmostNakedSetSearcher
         _solverData = solverData;
     }
     
-    public List<IPossibilitiesPositions> InCells(List<Cell> coords, int maxSize, int difference)
+    public List<IPossibilitiesPositions> InCells(IReadOnlyList<Cell> coords, int maxSize, int difference)
     {
         List<IPossibilitiesPositions> result = new();
 
@@ -95,7 +95,7 @@ public class AlmostNakedSetSearcher
         return result;
     }
     
-    private void InCells(List<Cell> coords, List<Cell> visited,
+    private void InCells(IReadOnlyList<Cell> coords, List<Cell> visited,
         ReadOnlyBitSet16 current, int start, List<IPossibilitiesPositions> result)
     {
         for (int i = start; i < coords.Count; i++)

@@ -99,14 +99,12 @@ public static class SudokuCellUtility
         return true;
     }
 
-    public static List<Cell> SeenCells(Cell cell)
+    public static IEnumerable<Cell> SeenCells(Cell cell)
     {
-        List<Cell> result = new();
-        
         for (int i = 0; i < 9; i++)
         {
-            if (i != cell.Row) result.Add(new Cell(i, cell.Column));
-            if (i != cell.Column) result.Add(new Cell(cell.Row, i));
+            if (i != cell.Row) yield return new Cell(i, cell.Column);
+            if (i != cell.Column) yield return new Cell(cell.Row, i);
         }
 
         var startRow = cell.Row / 3 * 3;
@@ -118,11 +116,9 @@ public static class SudokuCellUtility
                 var row = startRow + i;
                 var col = startCol + i;
 
-                if (row != cell.Row && col != cell.Column) result.Add(new Cell(row, col));
+                if (row != cell.Row && col != cell.Column) yield return new Cell(row, col);
             }
         }
-
-        return result;
     }
     
     public static IEnumerable<Cell> SharedSeenCells(int row1, int col1, int row2, int col2)
@@ -153,12 +149,18 @@ public static class SudokuCellUtility
         }
     }
     
-    public static List<Cell> SharedSeenCells(IReadOnlyList<Cell> list)
+    public static IEnumerable<Cell> SharedSeenCells(IReadOnlyList<Cell> list)
     {
-        if (list.Count == 0) return new List<Cell>();
-        if (list.Count == 1) return SeenCells(list[^1]);
+        return list.Count switch
+        {
+            0 => new List<Cell>(),
+            1 => SeenCells(list[^1]),
+            _ => CheckedSeenCells(list)
+        };
+    }
 
-        var result = new List<Cell>();
+    private static IEnumerable<Cell> CheckedSeenCells(IReadOnlyList<Cell> list)
+    {
         foreach (var coord in SharedSeenCells(list[0], list[1]))
         {
             bool ok = true;
@@ -171,20 +173,16 @@ public static class SudokuCellUtility
                 }
             }
 
-            if (ok) result.Add(coord);
+            if (ok) yield return coord;
         }
-
-        return result;
     }
     
-    public static List<Cell> SeenEmptyCells(ISudokuSolvingState holder, Cell cell)
+    public static IEnumerable<Cell> SeenEmptyCells(ISudokuSolvingState holder, Cell cell)
     {
-        List<Cell> result = new();
-        
         for (int i = 0; i < 9; i++)
         {
-            if (i != cell.Row && holder[i, cell.Column] == 0) result.Add(new Cell(i, cell.Column));
-            if (i != cell.Column && holder[cell.Row, i] == 0) result.Add(new Cell(cell.Row, i));
+            if (i != cell.Row && holder[i, cell.Column] == 0) yield return new Cell(i, cell.Column);
+            if (i != cell.Column && holder[cell.Row, i] == 0) yield return new Cell(cell.Row, i);
         }
 
         var startRow = cell.Row / 3 * 3;
@@ -196,11 +194,9 @@ public static class SudokuCellUtility
                 var row = startRow + i;
                 var col = startCol + i;
 
-                if (row != cell.Row && col != cell.Column && holder[row, col] == 0) result.Add(new Cell(row, col));
+                if (row != cell.Row && col != cell.Column && holder[row, col] == 0) yield return new Cell(row, col);
             }
         }
-
-        return result;
     }
 
     public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, int row1, int col1, int row2, int col2)
@@ -208,12 +204,18 @@ public static class SudokuCellUtility
         return Searcher.SharedSeenEmptyCells(solverData, row1, col1, row2, col2);
     }
     
-    public static List<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, IReadOnlyList<Cell> list)
+    public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, IReadOnlyList<Cell> list)
     {
-        if (list.Count == 0) return new List<Cell>();
-        if (list.Count == 1) return SeenEmptyCells(solverData, list[^1]);
+        return list.Count switch
+        {
+            0 => new List<Cell>(),
+            1 => SeenEmptyCells(solverData, list[^1]),
+            _ => CheckedSharedSeenEmptyCells(solverData, list)
+        };
+    }
 
-        var result = new List<Cell>();
+    private static IEnumerable<Cell> CheckedSharedSeenEmptyCells(ISudokuSolverData solverData, IReadOnlyList<Cell> list)
+    {
         foreach (var coord in Searcher.SharedSeenEmptyCells(solverData, list[0].Row, list[0].Column,
                      list[1].Row, list[1].Column))
         {
@@ -227,16 +229,13 @@ public static class SudokuCellUtility
                 }
             }
 
-            if (ok) result.Add(coord);
+            if (ok) yield return coord;
         }
-
-        return result;
     }
 
-    public static List<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, Cell one, Cell two,
+    public static IEnumerable<Cell> SharedSeenEmptyCells(ISudokuSolverData solverData, Cell one, Cell two,
         params Cell[] others)
     {
-        List<Cell> result = new List<Cell>();
         foreach (var coord in SharedSeenEmptyCells(solverData, one.Row, one.Column, two.Row, two.Column))
         {
             bool ok = true;
@@ -249,10 +248,8 @@ public static class SudokuCellUtility
                 }
             }
 
-            if (ok) result.Add(coord);
+            if (ok) yield return coord;
         }
-
-        return result;
     }
     
     public static bool AreSpreadOverTwoBoxes(int row1, int col1, int row2, int col2)
@@ -267,39 +264,35 @@ public static class SudokuCellUtility
                (ShareAUnit(first.Row, first.Column, second.Row, second.Column) && first.Possibility == second.Possibility);
     }
 
-    public static List<CellPossibility> SeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility cp)
+    public static IEnumerable<CellPossibility> SeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility cp)
     {
-        var result = new List<CellPossibility>();
-
         foreach (var poss in solverData.PossibilitiesAt(cp.Row, cp.Column).EnumeratePossibilities())
         {
             if (poss == cp.Possibility) continue;
             
-            result.Add(new CellPossibility(cp.Row, cp.Column, poss));
+            yield return new CellPossibility(cp.Row, cp.Column, poss);
         }
 
         foreach (var col in solverData.RowPositionsAt(cp.Row, cp.Possibility))
         {
             if (col == cp.Column) continue;
 
-            result.Add(new CellPossibility(cp.Row, col, cp.Possibility));
+            yield return new CellPossibility(cp.Row, col, cp.Possibility);
         }
         
         foreach (var row in solverData.ColumnPositionsAt(cp.Column, cp.Possibility))
         {
             if (row == cp.Row) continue;
 
-            result.Add(new CellPossibility(row, cp.Column, cp.Possibility));
+            yield return new CellPossibility(row, cp.Column, cp.Possibility);
         }
         
         foreach (var pos in solverData.MiniGridPositionsAt(cp.Row / 3, cp.Column / 3, cp.Possibility))
         {
             if (pos == cp.ToCell()) continue;
 
-            result.Add(new CellPossibility(pos, cp.Possibility));
+            yield return new CellPossibility(pos, cp.Possibility);
         }
-
-        return result;
     }
 
     public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData, CellPossibility first,
@@ -309,13 +302,20 @@ public static class SudokuCellUtility
             second.Row, second.Column, second.Possibility);
     }
 
-    public static List<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData,
-        IReadOnlyList<CellPossibility> list) //TODO USE THIS + to enumerable
+    public static IEnumerable<CellPossibility> SharedSeenExistingPossibilities(ISudokuSolverData solverData,
+        IReadOnlyList<CellPossibility> list)
     {
-        if (list.Count == 0) return new List<CellPossibility>();
-        if (list.Count == 1) return SeenExistingPossibilities(solverData, list[0]);
+        return list.Count switch
+        {
+            0 => Enumerable.Empty<CellPossibility>(),
+            1 => SeenExistingPossibilities(solverData, list[0]),
+            _ => CheckedSharedSeenExistingPossibilities(solverData, list)
+        };
+    }
 
-        var result = new List<CellPossibility>();
+    private static IEnumerable<CellPossibility> CheckedSharedSeenExistingPossibilities(ISudokuSolverData solverData,
+        IReadOnlyList<CellPossibility> list)
+    {
         foreach (var cp in SharedSeenExistingPossibilities(solverData, list[0], list[1]))
         {
             bool ok = true;
@@ -328,10 +328,8 @@ public static class SudokuCellUtility
                 }
             }
 
-            if(ok) result.Add(cp);
+            if(ok) yield return cp;
         }
-
-        return result;
     }
 
     public static IEnumerable<CellPossibility> DefaultStrongLinks(ISudokuSolverData solverData, CellPossibility cp)

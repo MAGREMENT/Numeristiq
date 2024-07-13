@@ -39,9 +39,9 @@
                 Edit
             </RadioButton>
             
-            <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
+            <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10"
                     Click="Solve">Solve</Button>
-            <Button Style="{StaticResource SolvePageButtonStyle}" Margin="10"
+            <Button Style="{StaticResource DefaultLightUpButtonStyle}" Margin="10"
                     Click="Advance">Advance</Button>
         </StackPanel>
         

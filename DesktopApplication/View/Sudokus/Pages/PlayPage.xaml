@@ -6,7 +6,7 @@
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       xmlns:controls="clr-namespace:DesktopApplication.View.Sudokus.Controls"
       mc:Ignorable="d"
-      Title="PlayPage" d:DesignHeight="660" d:DesignWidth="1300">
+      Title="PlayPage" d:DesignHeight="660" d:DesignWidth="1350">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -159,7 +159,7 @@
                 </Grid>
             </Border>
             
-            <Button Margin="0, 10, 0, 0" HorizontalAlignment="Center" Style="{StaticResource SolvePageButtonStyle}"
+            <Button Margin="0, 10, 0, 0" HorizontalAlignment="Center" Style="{StaticResource DefaultLightUpButtonStyle}"
                     Click="ComputePossibilities" x:Name="ComputePossibilitiesButton">Compute Possibilities</Button>
             </StackPanel>
         </Grid>

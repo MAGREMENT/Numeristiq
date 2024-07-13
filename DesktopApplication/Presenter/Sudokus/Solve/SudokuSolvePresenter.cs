@@ -9,6 +9,7 @@ using Model.Core.Highlighting;
 using Model.Core.Settings;
 using Model.Core.Steps;
 using Model.Core.Trackers;
+using Model.Repositories;
 using Model.Sudokus;
 using Model.Sudokus.Solver;
 using Model.Utility;
@@ -22,7 +23,7 @@ public class SudokuSolvePresenter : ICommitApplier
     private readonly Disabler _enabler;
     private readonly SudokuHighlighterTranslator _translator;
     private readonly Settings _settings;
-    private readonly IStrategyRepositoryUpdater _updater;
+    private readonly IStrategyRepository<SudokuStrategy> _repo;
     private readonly SudokuSolver _solver;
     
     private INumericSolvingState? _currentlyDisplayedState;
@@ -35,14 +36,15 @@ public class SudokuSolvePresenter : ICommitApplier
     
     public SettingsPresenter SettingsPresenter { get; }
 
-    public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings, IStrategyRepositoryUpdater updater)
+    public SudokuSolvePresenter(ISudokuSolveView view, SudokuSolver solver, Settings settings,
+        IStrategyRepository<SudokuStrategy> repo)
     {
         _view = view;
         _enabler = new Disabler(_view);
         _translator = new SudokuHighlighterTranslator(_view.Drawer, settings);
         _solver = solver;
         _settings = settings;
-        _updater = updater;
+        _repo = repo;
 
         _view.Drawer.FastPossibilityDisplay = _settings.FastPossibilityDisplay;
 
@@ -192,8 +194,9 @@ public class SudokuSolvePresenter : ICommitApplier
     {
         if (index < 0 || index >= _solver.StrategyManager.Strategies.Count) return;
 
-        _solver.StrategyManager.Strategies[index].Enabled = enabled;
-        _updater.Update();
+        var strategy = _solver.StrategyManager.Strategies[index];
+        strategy.Enabled = enabled;
+        _repo.UpdateStrategy(strategy);
     }
 
     public void SelectCell(int row, int col)
@@ -266,6 +269,7 @@ public class SudokuSolvePresenter : ICommitApplier
     public void Apply(BuiltChangeCommit<NumericChange, ISudokuHighlighter> commit)
     {
         _solver.ApplyCommit(commit);
+        ShowCurrentState();
         UpdateLogs();
     }
 
@@ -387,8 +391,8 @@ public class SudokuSolvePresenter : ICommitApplier
             _view.EnableStrategy(i, s.Enabled);
             if (s.Locked) _view.LockStrategy(i);
         }
-        
-        _updater.Update();
+
+        _repo.SetStrategies(_solver.StrategyManager.Strategies);
     }
 }
 

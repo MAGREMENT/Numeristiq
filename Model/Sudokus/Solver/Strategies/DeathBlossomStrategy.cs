@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Model.Core;
 using Model.Core.Changes;
@@ -134,8 +135,8 @@ public class DeathBlossomStrategy : SudokuStrategy
             }
         }
 
-        var allStems = SudokuCellUtility.SharedSeenCells(buffer);
-        if (allStems.Count > 1)
+        var allStems = SudokuCellUtility.SharedSeenCells(buffer).ToArray();
+        if (allStems.Length > 1)
         {
             foreach (var cell in allStems)
             {
@@ -151,11 +152,11 @@ public class DeathBlossomStrategy : SudokuStrategy
 
 public class DeathBlossomReportBuilder : IChangeReportBuilder<NumericChange, ISudokuSolvingState, ISudokuHighlighter>
 {
-    private readonly List<Cell> _stems;
+    private readonly IReadOnlyList<Cell> _stems;
     private readonly Cell _target;
     private readonly IEnumerable<IPossibilitiesPositions> _als;
 
-    public DeathBlossomReportBuilder(List<Cell> stems, Cell target, IEnumerable<IPossibilitiesPositions> als)
+    public DeathBlossomReportBuilder(IReadOnlyList<Cell> stems, Cell target, IEnumerable<IPossibilitiesPositions> als)
     {
         _stems = stems;
         _target = target;

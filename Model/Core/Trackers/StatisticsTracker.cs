@@ -31,6 +31,12 @@ public class StatisticsTracker<TSolvingState> : Tracker<TSolvingState>
 
     private void Prepare(IEnumerable<Strategy> strategies)
     {
+        Count = 0;
+        _success = 0;
+        _solverFails = 0;
+        
+        _retransmissions.Clear();
+        _statistics.Clear();
         foreach (var strategy in strategies)
         {
             if (strategy.Enabled)

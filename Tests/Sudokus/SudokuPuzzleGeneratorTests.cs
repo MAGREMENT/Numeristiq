@@ -16,11 +16,10 @@ public class SudokuPuzzleGeneratorTests
     [Test]
     public void GenerationTest()
     {
-        var instantiator = new PathInstantiator(true, true);
-        var repo = new SudokuStrategiesJSONRepository(instantiator.Instantiate("strategies.json"));
+        var repo = new SudokuStrategyJSONRepository("strategies.json", true, true);
 
         var solver = new SudokuSolver();
-        solver.StrategyManager.AddStrategies(repo.Download());
+        solver.StrategyManager.AddStrategies(repo.GetStrategies());
 
         var finder = new HardestStrategyTracker();
         finder.AttachTo(solver);

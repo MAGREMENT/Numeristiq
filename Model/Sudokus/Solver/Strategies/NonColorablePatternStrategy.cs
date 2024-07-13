@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Highlighting;
@@ -98,9 +99,9 @@ public class NonColorablePatternStrategy : SudokuStrategy
                 }
             }
 
-            var targets = outPossibilities.Count == 1 
+            IReadOnlyList<CellPossibility> targets = outPossibilities.Count == 1 
                 ? outPossibilities 
-                : SudokuCellUtility.SharedSeenExistingPossibilities(solverData, outPossibilities);
+                : SudokuCellUtility.SharedSeenExistingPossibilities(solverData, outPossibilities).ToArray();
             if (targets.Count == 0 || IsPatternValid(perfect, combination, poss.Count))
             {
                 outPossibilities.Clear();

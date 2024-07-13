@@ -5,6 +5,7 @@ using Model;
 using Model.Core;
 using Model.Core.Changes;
 using Model.Core.Explanation;
+using Model.Repositories;
 using Model.Sudokus.Player;
 using Model.Sudokus.Solver;
 using Model.Utility;
@@ -25,6 +26,10 @@ public partial class App : IGlobalApplicationView
         InitializeComponent();
 
         GlobalApplicationPresenter.InitializeInstance(this);
+        FrameworkElement.StyleProperty.OverrideMetadata(typeof(Window), new FrameworkPropertyMetadata
+        {
+            DefaultValue = FindResource(typeof(Window))
+        });
     }
 
     public void SetTheme(Theme t)

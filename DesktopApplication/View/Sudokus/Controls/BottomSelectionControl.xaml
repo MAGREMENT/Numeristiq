@@ -5,20 +5,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border Background="{DynamicResource Background2}" BorderThickness="0, 1, 0, 0"
-            BorderBrush="{DynamicResource Text}">
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
+    <Grid Background="{DynamicResource Background2}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         
-            <RadioButton Grid.Column="0" Style="{StaticResource BottomSelectionRadioButtonStyle}" IsChecked="True" Checked="SwapTo0">Solve</RadioButton>
-            <RadioButton Grid.Column="1" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo1">Play</RadioButton>
-            <RadioButton Grid.Column="2" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo2">Manage</RadioButton>
-            <RadioButton Grid.Column="3" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo3">Generate</RadioButton>
-        </Grid>
-    </Border>
+        <RadioButton Grid.Column="0" Style="{StaticResource BottomSelectionRadioButtonStyle}" IsChecked="True" Checked="SwapTo0">Solve</RadioButton>
+        <RadioButton Grid.Column="1" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo1">Play</RadioButton>
+        <RadioButton Grid.Column="2" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo2">Manage</RadioButton>
+        <RadioButton Grid.Column="3" Style="{StaticResource BottomSelectionRadioButtonStyle}" Checked="SwapTo3">Generate</RadioButton>
+    </Grid>
 </UserControl>

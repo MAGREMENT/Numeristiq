@@ -6,7 +6,7 @@
       xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
       xmlns:pages="clr-namespace:DesktopApplication.View.Sudokus.Pages"
       mc:Ignorable="d"
-      Title="ManagePage" d:DesignHeight="660" d:DesignWidth="1300">
+      Title="ManagePage" d:DesignHeight="660" d:DesignWidth="1350">
     <Grid Background="{DynamicResource Background1}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -14,7 +14,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
-        <controls:SearchControl Grid.Column="0" Width="300" x:Name="Search" Searched="OnSearch"/>
+        <controls:SearchControl Grid.Column="0" Width="300" x:Name="Search" Searched="OnSearch" Margin="10, 10, 0, 10"/>
         
         <Grid Grid.Column="1" Margin="10, 0, 0, 0" Width="300">
             <Grid.RowDefinitions>
@@ -53,13 +53,12 @@
             </Grid>
     
             <ScrollViewer Grid.Row="1" Style="{StaticResource TransparentBarScrollViewer}" x:Name="StrategyScrollViewer"
-                          PreviewDragOver="ScrollOnDrag">
+                          PreviewDragOver="ScrollOnDrag" Margin="0, 0, 0, 10">
                 <StackPanel x:Name="StrategyPanel"/>
             </ScrollViewer>
         </Grid>
         
-        <Border Grid.Column="2" Width="670" Height="640" VerticalAlignment="Center" HorizontalAlignment="Center"
-                Background="{DynamicResource Background2}">
+        <Border Grid.Column="2" Margin="10" Background="{DynamicResource Background2}">
             <Border Margin="10" BorderBrush="{DynamicResource Text}" BorderThickness="1">
                 <Grid>
                     <Grid.RowDefinitions>

@@ -1,40 +1,67 @@
-using Model;
 using Model.Core;
 using Model.Core.Settings;
+using Model.Repositories;
 using Model.Sudokus.Solver;
 
 namespace Repository;
 
-public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<SudokuStrategy>>
+public class SudokuStrategyJSONRepository : JSONRepository, IStrategyRepository<SudokuStrategy>
 {
-    public SudokuStrategiesJSONRepository(string filePath) : base(filePath)
-    {
-    }
-
-    public override IReadOnlyList<SudokuStrategy>? Download()
-    {
-        return To(InternalDownload<StrategyDAO[]>());
-    }
-
-    public override bool Upload(IReadOnlyList<SudokuStrategy> DAO)
-    {
-        return InternalUpload(To(DAO));
-    }
+    private List<StrategyDAO>? _buffer;
     
-    public IReadOnlyList<SudokuStrategy>? Download(Stream stream)
+    public SudokuStrategyJSONRepository(string filePath, bool searchParentDirectories, bool createIfNotFound) 
+        : base(filePath, searchParentDirectories, createIfNotFound)
     {
-        return To(InternalDownload<StrategyDAO[]>(stream));
     }
 
-    public bool Upload(IReadOnlyList<SudokuStrategy> DAO, Stream stream)
+    public void SetStrategies(IReadOnlyList<SudokuStrategy> list)
     {
-        return InternalUpload(To(DAO), stream);
+        _buffer = From(list);
+        Upload(_buffer);
     }
 
-    private static List<SudokuStrategy>? To(StrategyDAO[]? download)
+    public IReadOnlyList<SudokuStrategy> GetStrategies()
     {
-        if (download is null) return null;
+        _buffer ??= Download<List<StrategyDAO>>();
+        return _buffer is null ? Array.Empty<SudokuStrategy>() : To(_buffer);
+    }
 
+    public void UpdateStrategy(SudokuStrategy strategy)
+    {
+        _buffer ??= Download<List<StrategyDAO>>();
+        if (_buffer is null) return;
+
+        var index = IndexOf(strategy.Name);
+        if (index != -1)
+        {
+            _buffer[index] = StrategyDAO.From(strategy);
+            Upload(_buffer);
+        }
+    }
+
+    public void AddPreset(IReadOnlyList<SudokuStrategy> list, Stream stream)
+    {
+        Upload(From(list), stream);
+    }
+
+    public IReadOnlyList<SudokuStrategy> GetPreset(Stream stream)
+    {
+        _buffer = Download<List<StrategyDAO>>(stream);
+        return _buffer is null ? Array.Empty<SudokuStrategy>() : To(_buffer);
+    }
+
+    private int IndexOf(string name)
+    {
+        for (int i = 0; i < _buffer!.Count; i++)
+        {
+            if (_buffer[i].Name.Equals(name)) return i;
+        }
+
+        return -1;
+    }
+
+    private static List<SudokuStrategy> To(IEnumerable<StrategyDAO> download)
+    {
         var result = new List<SudokuStrategy>();
         foreach (var d in download)
         {
@@ -45,15 +72,11 @@ public class SudokuStrategiesJSONRepository : JSONRepository<IReadOnlyList<Sudok
         return result;
     }
 
-    private static StrategyDAO[] To(IReadOnlyList<SudokuStrategy> DAO)
+    private static List<StrategyDAO> From(IReadOnlyList<SudokuStrategy> list)
     {
-        var toUpload = new StrategyDAO[DAO.Count];
-        for (int i = 0; i < DAO.Count; i++)
-        {
-            toUpload[i] = StrategyDAO.From(DAO[i]);
-        }
-
-        return toUpload;
+        var result = new List<StrategyDAO>(list.Count);
+        foreach (var e in list) result.Add(StrategyDAO.From(e));
+        return result;
     }
 }
 

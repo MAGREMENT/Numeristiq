@@ -41,24 +41,4 @@ public interface IPossibilitiesPositions
     {
         return Possibilities.Contains(cp.Possibility) && Positions.Contains(cp.Row, cp.Column);
     }
-    
-    public string ToString()
-    {
-        var builder = new StringBuilder();
-
-        foreach (var pos in Possibilities.EnumeratePossibilities())
-        {
-            builder.Append(pos);
-        }
-
-        builder.Append("{ ");
-        foreach(var cell in EnumerateCells())
-        {
-            builder.Append(cell + " ");
-        }
-
-        builder.Append('}');
-
-        return builder.ToString();
-    }
 }

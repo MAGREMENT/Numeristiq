@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using Model.Sudokus.Solver.Position;
 using Model.Utility;
 using Model.Utility.BitSets;
@@ -96,4 +97,24 @@ public class CPPossibilitiesPositions : IPossibilitiesPositions
 
     public int PossibilityCount => Possibilities.Count;
     public int PositionsCount => _cps.Length;
+    
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+
+        foreach (var pos in Possibilities.EnumeratePossibilities())
+        {
+            builder.Append(pos);
+        }
+
+        builder.Append("{ ");
+        foreach(var cell in EnumerateCells())
+        {
+            builder.Append(cell + " ");
+        }
+
+        builder.Append('}');
+
+        return builder.ToString();
+    }
 }

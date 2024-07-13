@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using DesktopApplication.Presenter.Sudokus.Play;
 using DesktopApplication.Presenter.Sudokus.Solve;
+using DesktopApplication.View.Controls;
 using DesktopApplication.View.Utility;
 using Model.Core.Changes;
 using Model.Core.Explanation;
@@ -18,7 +19,7 @@ using MathUtility = DesktopApplication.View.Utility.MathUtility;
 
 namespace DesktopApplication.View.Sudokus.Controls;
 
-public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighlighter, ISudokuPlayerDrawer
+public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighlighter, ISudokuPlayerDrawer, ISizeOptimizable
 {
     private const int BackgroundIndex = 0;
     private const int CellsHighlightIndex = 1;
@@ -140,19 +141,21 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         {
             _possibilitySize = value;
             _cellSize = _possibilitySize * 3;
-            UpdateSize();
+            UpdateSize(true);
         }
     }
     
     public double CellSize
     {
         get => _cellSize;
-        set
-        {
-            _cellSize = value;
-            _possibilitySize = _cellSize / 3;
-            UpdateSize();
-        }
+        set => SetCellSize(value, true);
+    }
+
+    private void SetCellSize(double value, bool fireEvent)
+    {
+        _cellSize = value;
+        _possibilitySize = _cellSize / 3;
+        UpdateSize(fireEvent);
     }
     
     public double SmallLineWidth
@@ -161,7 +164,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         set
         {
             _smallLineWidth = value;
-            UpdateSize();
+            UpdateSize(true);
         }
     }
     
@@ -171,7 +174,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         set
         {
             _bigLineWidth = value;
-            UpdateSize();
+            UpdateSize(true);
         }
     }
 
@@ -284,7 +287,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
             
             Dispatcher.Invoke(() =>
             {
-                Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _cellSize / 10 * 2.8,
+                Layers[NumbersIndex].Add(new TextInRectangleComponent(builder.ToString(), _cellSize / 10 * 2.5,
                     DefaultNumberBrush, new Rect(GetLeft(col), GetTop(row), _cellSize, _cellSize),
                     ComponentHorizontalAlignment.Center, ComponentVerticalAlignment.Center));
             });
@@ -779,7 +782,7 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         return row == -1 || col == -1 ? null : new[] { row, col };
     }
     
-    private void UpdateSize()
+    private void UpdateSize(bool fireEvent)
     {
         var newSize = _cellSize * 9 + _smallLineWidth * 6 + _bigLineWidth * 4;
         if (Math.Abs(_size - newSize) < 0.01) return;
@@ -792,6 +795,8 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
         UpdateBackground();
         UpdateLines();
         Refresh();
+        
+        if(fireEvent) OptimizableSizeChanged?.Invoke();
     }
 
     private void UpdateBackground()
@@ -837,4 +842,33 @@ public class SudokuBoard : DrawingBoard, ISudokuSolverDrawer, IExplanationHighli
     }
 
     #endregion
+
+    public event OnSizeChange? OptimizableSizeChanged;
+
+    public int WidthSizeMetricCount => 9;
+    public int HeightSizeMetricCount => 9;
+    public double GetHeightAdditionalSize()
+    {
+        return _bigLineWidth * 4 + _smallLineWidth * 6;
+    }
+
+    public double GetWidthAdditionalSize()
+    {
+        return _bigLineWidth * 4 + _smallLineWidth * 6;
+    }
+
+    public bool HasSize()
+    {
+        return true;
+    }
+
+    public double SimulateSizeMetric(int n, SizeType type)
+    {
+        return n * 9 + _smallLineWidth * 6 + _bigLineWidth * 4;
+    }
+
+    public void SetSizeMetric(int n)
+    {
+        SetCellSize(n, false);
+    }
 }

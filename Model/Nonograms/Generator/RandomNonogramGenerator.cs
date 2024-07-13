@@ -10,8 +10,8 @@ public class RandomNonogramGenerator : IPuzzleGenerator<Nonogram>
     public GridSizeRandomizer Randomizer { get; } = new(3, 20);
 
     public event OnNextStep? StepDone;
-    public bool KeepSymmetry { get; set; }
-    public bool KeepUniqueness { get; set; }
+    public bool KeepSymmetry { get; set; } //TODO
+    public bool KeepUniqueness { get; set; } //TODO
 
     public Nonogram Generate()
     {

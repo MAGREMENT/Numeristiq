@@ -39,24 +39,27 @@ public partial class SizeOptimizedContentControl
         InitializeComponent();
         
         NoSize.SetResourceReference(ForegroundProperty, "Text");
+        SizeChanged += (_, _) => AdjustOptimizableSize();
     }
 
     private void AdjustOptimizableSize()
     {
-        if (Width is double.NaN || Height is double.NaN) return;
-        
         if (_content is null || !_content.HasSize())
         {
             ContentHolder.Child = NoSize;
             return;
         }
-        
-        var availableWidth = Width - ContentHolder.Padding.Left - ContentHolder.Padding.Right;
-        var availableHeight = Height - ContentHolder.Padding.Top - ContentHolder.Padding.Bottom;
 
-        _content.SetSizeMetric(availableHeight - _content.Height < availableWidth - _content.Width
-            ? ComputeOptimalSize(availableHeight, _content.HeightSizeMetricCount, _content.GetHeightAdditionalSize(), SizeType.Height) 
-            : ComputeOptimalSize(availableWidth, _content.WidthSizeMetricCount, _content.GetWidthAdditionalSize(), SizeType.Width));
+        if (ActualWidth is not double.NaN and > 0 && ActualHeight is not double.NaN and > 0)
+        {
+            var availableWidth = ActualWidth - ContentHolder.Padding.Left - ContentHolder.Padding.Right;
+            var availableHeight = ActualHeight - ContentHolder.Padding.Top - ContentHolder.Padding.Bottom;
+
+            _content.SetSizeMetric(availableHeight - _content.Height < availableWidth - _content.Width
+                ? ComputeOptimalSize(availableHeight, _content.HeightSizeMetricCount, _content.GetHeightAdditionalSize(), SizeType.Height) 
+                : ComputeOptimalSize(availableWidth, _content.WidthSizeMetricCount, _content.GetWidthAdditionalSize(), SizeType.Width)); 
+        }
+        
         ContentHolder.Child = (FrameworkElement)_content;
     }
 

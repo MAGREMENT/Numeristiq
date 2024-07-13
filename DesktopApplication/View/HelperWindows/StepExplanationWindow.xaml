@@ -6,7 +6,7 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
-        Title="StepExplanationWindow" Height="630" Width="900"
+        Title="StepExplanationWindow" Height="640" Width="950"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">
@@ -29,13 +29,14 @@
         <controls:TitleBarControl Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="TitleBar" Minimize="Minimize"
                                   ChangeSize="ChangeSize" Close="Close" AllowResize="False" AppTitle="Step Explanation"/>
         
-        <controls1:SudokuBoard Grid.Row="1" Grid.Column="0" PossibilitySize="20" BigLineWidth="3" x:Name="Board" 
-                               SmallLineWidth="1" BackgroundBrush="{DynamicResource Background2}" DefaultNumberBrush="{DynamicResource Text}"
-                               LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
-                               SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"
-                               Margin="10, 0, 10, 0"/>
+        <Border Grid.Row="1" Grid.Column="0" Background="{DynamicResource Background2}" Margin="10" Padding="10">
+            <controls1:SudokuBoard PossibilitySize="20" BigLineWidth="3" x:Name="Board" 
+                                   SmallLineWidth="1" BackgroundBrush="Transparent" DefaultNumberBrush="{DynamicResource Text}"
+                                   LineBrush="{DynamicResource Text}" CursorBrush="{DynamicResource Secondary1}"
+                                   SpecialNumberBrush="{DynamicResource Primary1}" LinkBrush="{DynamicResource Accent}"/>
+        </Border>
         
-        <Grid Grid.Row="1" Grid.Column="1">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0, 10, 10, 0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -49,11 +50,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <CheckBox Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource OnOffCheckBox}"
-                          Checked="HighlightOn" Unchecked="HighlightOff" IsChecked="True">Highlight</CheckBox>
+                <CheckBox Grid.Column="0" VerticalAlignment="Center" Style="{StaticResource SliderCheckbox}"
+                          Checked="HighlightOn" Unchecked="HighlightOff" IsChecked="True">Highlights</CheckBox>
                 
-                <Button Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Width="150"
-                        Margin="0, 10, 0, 10" Click="OnFinished">Finished</Button>
+                <Button Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Width="150"
+                        Margin="0, 10, 0, 10" Click="OnFinished">Close</Button>
             </Grid>
         </Grid>
     </Grid>

@@ -43,8 +43,8 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 
-                <Button Grid.Column="0" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Solve">Solve</Button>
-                <Button Grid.Column="1" Style="{StaticResource SolvePageButtonStyle}" Margin="5" Click="Advance">Advance</Button>
+                <Button Grid.Column="0" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5" Click="Solve">Solve</Button>
+                <Button Grid.Column="1" Style="{StaticResource DefaultLightUpButtonStyle}" Margin="5" Click="Advance">Advance</Button>
             </Grid>
         </Grid>
         
