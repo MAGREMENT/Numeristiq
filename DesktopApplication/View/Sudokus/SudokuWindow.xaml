@@ -6,8 +6,8 @@
         xmlns:controls="clr-namespace:DesktopApplication.View.Controls"
         xmlns:controls1="clr-namespace:DesktopApplication.View.Sudokus.Controls"
         mc:Ignorable="d"
-        Height="750" Width="1350"
-        MinHeight="750" MinWidth="1350"
+        Height="750" Width="1380"
+        MinHeight="750" MinWidth="1380"
         WindowStyle="None"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen">

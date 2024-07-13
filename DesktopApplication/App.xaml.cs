@@ -36,6 +36,7 @@ public partial class App : IGlobalApplicationView
     {
         Resources["Background1"] = ThemeInformation.ToBrush(t.Background1);
         Resources["Background2"] = ThemeInformation.ToBrush(t.Background2);
+        Resources["Background2Color"] = ThemeInformation.ToColor(t.Background2);
         Resources["Background3"] = ThemeInformation.ToBrush(t.Background3);
         Resources["Primary1"] = ThemeInformation.ToBrush(t.Primary1);
         Resources["Primary1Color"] = ThemeInformation.ToColor(t.Primary1);
@@ -49,7 +50,9 @@ public partial class App : IGlobalApplicationView
         Resources["Text"] = ThemeInformation.ToBrush(t.Text);
         Resources["ThumbColor"] = ThemeInformation.ToColor(t.Text);
         Resources["On"] = ThemeInformation.ToBrush(t.On);
+        Resources["OnColor"] = ThemeInformation.ToColor(t.On);
         Resources["Off"] = ThemeInformation.ToBrush(t.Off);
+        Resources["OffColor"] = ThemeInformation.ToColor(t.Off);
         Resources["Disabled"] = ThemeInformation.ToBrush(t.Disabled);
         Resources["DifficultyNone"] = ThemeInformation.ToBrush(t.DifficultyNone);
         Resources["DifficultyBasic"] = ThemeInformation.ToBrush(t.DifficultyBasic);

@@ -50,7 +50,7 @@
   },
   {
     "Name": "Uniqueness Clue Cover",
-    "Enabled": true,
+    "Enabled": false,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}
@@ -383,7 +383,7 @@
   },
   {
     "Name": "Distributed Disjoint Subset",
-    "Enabled": false,
+    "Enabled": true,
     "Locked": false,
     "InstanceHandling": 0,
     "Settings": {}

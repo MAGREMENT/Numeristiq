@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
-using Model.Sudokus.Solver;
+using Model.Core;
 
 namespace DesktopApplication.View.Sudokus.Controls;
 
@@ -11,7 +12,7 @@ public partial class StrategyControl
 
     public event OnStrategyEnabled? StrategyEnabled;
     
-    public StrategyControl(SudokuStrategy strategy)
+    public StrategyControl(Strategy strategy)
     {
         InitializeComponent();
 
@@ -33,6 +34,7 @@ public partial class StrategyControl
         if (enabled)
         {
             CheckMark.SetResourceReference(Shape.StrokeProperty, "On");
+            //Background = GetGradient((Color)FindResource("Background2Color"), (Color)FindResource("OnColor"), true);
             CheckMark.Visibility = Visibility.Visible;
             CrossMark.Visibility = Visibility.Collapsed;
             TextBlock.HorizontalAlignment = HorizontalAlignment.Left;
@@ -65,6 +67,28 @@ public partial class StrategyControl
         bool nextEnabled = _state == 0;
         EnableStrategy(nextEnabled);
         StrategyEnabled?.Invoke(nextEnabled);
+    }
+
+    private static Brush GetGradient(Color back, Color high, bool isLeft)
+    {
+        return new LinearGradientBrush
+        {
+            StartPoint = new Point(0, 0.5),
+            EndPoint = new Point(1, 0.5),
+            GradientStops = new GradientStopCollection
+            {
+                new()
+                {
+                    Offset = isLeft ? 0 : 1,
+                    Color = high
+                },
+                new()
+                {
+                    Offset = isLeft ? 0.05 : 0.95,
+                    Color = back
+                }
+            }
+        };
     }
 }
 

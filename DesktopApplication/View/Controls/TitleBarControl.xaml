@@ -41,7 +41,7 @@
 			Grid.Column="3"
 			Click="OnMinimizeButtonClick"
 			RenderOptions.EdgeMode="Aliased"
-			Style="{StaticResource TitleBarButtonStyle}">
+			Style="{StaticResource TitleBarButton}">
 			<Path
 				Width="46"
 				Height="40"
@@ -55,7 +55,7 @@
 			x:Name="MaximizeButton"
 			Grid.Column="4"
 			Click="OnMaximizeRestoreButtonClick"
-			Style="{StaticResource TitleBarButtonStyle}">
+			Style="{StaticResource TitleBarButton}">
 			<Path
 				Width="46"
 				Height="40"
@@ -69,7 +69,7 @@
 			x:Name="RestoreButton"
 			Grid.Column="4"
 			Click="OnMaximizeRestoreButtonClick"
-			Style="{StaticResource TitleBarButtonStyle}">
+			Style="{StaticResource TitleBarButton}">
 			<Path
 				Width="46"
 				Height="40"
@@ -82,7 +82,7 @@
 		<Button
 			Grid.Column="5"
 			Click="OnCloseButtonClick"
-			Style="{StaticResource TitleBarCloseButtonStyle}">
+			Style="{StaticResource TitleBarCloseButton}">
 			<Path
 				Width="46"
 				Height="40"

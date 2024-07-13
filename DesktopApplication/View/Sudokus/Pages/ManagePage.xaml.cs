@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -270,9 +269,7 @@ public partial class ManagePage : ISudokuManageView
                     BorderThickness = new Thickness(3),
                     Child = new Image
                     {
-                        Source = new BitmapImage(new Uri("pack://application:,,," +
-                                                         $"/{Assembly.GetExecutingAssembly().GetName().Name};component" +
-                                                         $"/View/Images/Descriptions/{tidl.ImagePath}")),
+                        Source = new BitmapImage(new Uri($"pack://application:,,,/View/Images/Descriptions/{tidl.ImagePath}")),
                         VerticalAlignment = VerticalAlignment.Stretch,
                         HorizontalAlignment = HorizontalAlignment.Stretch
                     },
