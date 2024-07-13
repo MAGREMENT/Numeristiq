@@ -339,6 +339,8 @@ public interface IReadOnlyNonogramLineCollection : IEnumerable<IEnumerable<int>>
     int ValueCount(int index);
     (int, int) MinValue(int index, int start, int end);
     (int, int) MinValue(int index);
+    (int, int) MaxValue(int index, int start, int end);
+    (int, int) MaxValue(int index);
     int TotalExpected(int index);
     INonogramLineCollection Copy();
     int NeededSpace(int index, int start, int end);
@@ -420,6 +422,26 @@ public class ListListNonogramLineCollection : INonogramLineCollection
     }
 
     public (int, int) MinValue(int index) => MinValue(index, 0, _list[index].Count - 1);
+    
+    public (int, int) MaxValue(int index, int start, int end)
+    {
+        var l = _list[index];
+        
+        var v = l[start];
+        var i = start;
+        for (int n = start + 1; n <= end; n++)
+        {
+            if (l[n] > v)
+            {
+                v = l[n];
+                i = n;
+            }
+        }
+
+        return (i, v);
+    }
+
+    public (int, int) MaxValue(int index) => MaxValue(index, 0, _list[index].Count - 1);
 
     public int TotalExpected(int index)
     {

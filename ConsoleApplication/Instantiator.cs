@@ -64,9 +64,10 @@ public class Instantiator
         solver.StrategyManager.AddStrategies(new PerfectRemainingSpaceStrategy(),
             new NotEnoughSpaceStrategy(),
             new PerfectValueSpaceStrategy(),
-            new BridgingStrategy(),
-            new EdgeValueStrategy(),
             new ValueCompletionStrategy(),
+            new BridgingStrategy(),
+            new SplittingStrategy(),
+            new EdgeValueStrategy(),
             new ValueOverlayStrategy(),
             new UnreachableSquareStrategy());
         
